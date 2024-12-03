@@ -316,10 +316,11 @@ bool IsMatchingNoncePresent(
 
 bool AreAllMatchingHashesPresent(
     const network::mojom::blink::CSPSourceList* directive,
-    const IntegrityMetadataSet& hashes) {
-  if (!directive || hashes.empty())
+    const IntegrityMetadataSet& integrity_metadata) {
+  if (!directive || integrity_metadata.hashes.empty()) {
     return false;
-  for (const IntegrityMetadataPair& hash : hashes) {
+  }
+  for (const IntegrityMetadataPair& hash : integrity_metadata.hashes) {
     // Convert the hash from integrity metadata format to CSP format.
     network::mojom::blink::CSPHashSourcePtr csp_hash =
         network::mojom::blink::CSPHashSource::New();
@@ -824,7 +825,7 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
     ResourceRequest::RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
     const String& nonce,
-    const IntegrityMetadataSet& hashes,
+    const IntegrityMetadataSet& integrity_metadata,
     ParserDisposition parser_disposition) {
   DCHECK(type == CSPDirectiveName::BaseURI ||
          type == CSPDirectiveName::ConnectSrc ||
@@ -868,7 +869,7 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
       return CSPCheckResult::Allowed();
     }
     if (AreAllMatchingHashesPresent(OperativeDirective(csp, type).source_list,
-                                    hashes)) {
+                                    integrity_metadata)) {
       return CSPCheckResult::Allowed();
     }
   }

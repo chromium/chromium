@@ -807,7 +807,7 @@ bool ContentSecurityPolicy::AllowFromSource(
     ReportingDisposition reporting_disposition,
     CheckHeaderType check_header_type,
     const String& nonce,
-    const IntegrityMetadataSet& hashes,
+    const IntegrityMetadataSet& integrity_metadata,
     ParserDisposition parser_disposition) {
   SchemeRegistry::PolicyAreas area = SchemeRegistry::kPolicyAreaAll;
   if (type == CSPDirectiveName::ImgSrc)
@@ -847,7 +847,7 @@ bool ContentSecurityPolicy::AllowFromSource(
     }
     result &= CSPDirectiveListAllowFromSource(
         *policy, this, type, url, url_before_redirects, redirect_status,
-        reporting_disposition, nonce, hashes, parser_disposition);
+        reporting_disposition, nonce, integrity_metadata, parser_disposition);
   }
 
   if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
@@ -908,7 +908,7 @@ bool ContentSecurityPolicy::AllowObjectFromSource(const KURL& url) {
 bool ContentSecurityPolicy::AllowScriptFromSource(
     const KURL& url,
     const String& nonce,
-    const IntegrityMetadataSet& hashes,
+    const IntegrityMetadataSet& integrity_metadata,
     ParserDisposition parser_disposition,
     const KURL& url_before_redirects,
     RedirectStatus redirect_status,
@@ -917,7 +917,7 @@ bool ContentSecurityPolicy::AllowScriptFromSource(
   return AllowFromSource(CSPDirectiveName::ScriptSrcElem, url,
                          url_before_redirects, redirect_status,
                          reporting_disposition, check_header_type, nonce,
-                         hashes, parser_disposition);
+                         integrity_metadata, parser_disposition);
 }
 
 bool ContentSecurityPolicy::AllowWorkerContextFromSource(const KURL& url) {

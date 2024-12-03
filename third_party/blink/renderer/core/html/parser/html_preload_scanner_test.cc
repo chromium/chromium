@@ -262,7 +262,9 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
   void CheckNumberOfIntegrityConstraints(size_t expected) {
     size_t actual = 0;
     if (preload_request_) {
-      actual = preload_request_->IntegrityMetadataForTestingOnly().size();
+      IntegrityMetadataSet test_set =
+          preload_request_->IntegrityMetadataForTestingOnly();
+      actual = test_set.hashes.size() + test_set.signatures.size();
       EXPECT_EQ(expected, actual);
     }
   }

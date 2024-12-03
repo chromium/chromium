@@ -73,7 +73,8 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
     kAlgorithmUnknown
   };
 
-  static IntegrityAlgorithm FindBestAlgorithm(const IntegrityMetadataSet&);
+  static IntegrityAlgorithm FindBestAlgorithm(
+      const WTF::HashSet<IntegrityMetadataPair>&);
 
   typedef bool (*CheckFunction)(const IntegrityMetadata&,
                                 const char*,

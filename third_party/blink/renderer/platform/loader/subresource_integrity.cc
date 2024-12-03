@@ -120,12 +120,13 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     IntegrityReport& integrity_report) {
-  if (!metadata_set.size())
+  if (metadata_set.empty()) {
     return true;
+  }
 
-  // Check any of the "strongest" integrity constraints.
-  IntegrityAlgorithm max_algorithm = FindBestAlgorithm(metadata_set);
-  for (const IntegrityMetadata& metadata : metadata_set) {
+  // Check any of the "strongest" hash-based integrity constraints.
+  IntegrityAlgorithm max_algorithm = FindBestAlgorithm(metadata_set.hashes);
+  for (const IntegrityMetadata& metadata : metadata_set.hashes) {
     if (metadata.Algorithm() == max_algorithm &&
         CheckSubresourceIntegrityDigest(metadata, buffer)) {
       integrity_report.AddUseCount(
@@ -134,7 +135,10 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     }
   }
 
-  // If we arrive here, none of the "strongest" constaints have validated
+  // TODO(https://crbug.com/380783670): Check the strongest signature-based
+  // integrity constraints from `metadata_set.signatures`.
+
+  // If we arrive here, none of the "strongest" constraints have validated
   // the data we received. Report this fact.
   DigestValue digest;
   if (ComputeDigest(IntegrityAlgorithmToHashAlgorithm(max_algorithm), buffer,
@@ -161,7 +165,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
 }
 
 IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
-    const IntegrityMetadataSet& metadata_set) {
+    const WTF::HashSet<IntegrityMetadataPair>& metadata_pairs) {
   // Find the "strongest" algorithm in the set. (This relies on
   // IntegrityAlgorithm declaration order matching the "strongest" order, so
   // make the compiler check this assumption first.)
@@ -172,11 +176,11 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
 
   // metadata_set is non-empty, so we are guaranteed to always have a result.
   // This is effectively an implementation of std::max_element (C++17).
-  DCHECK(!metadata_set.empty());
-  auto iter = metadata_set.begin();
+  DCHECK(!metadata_pairs.empty());
+  auto iter = metadata_pairs.begin();
   IntegrityAlgorithm max_algorithm = iter->second;
   ++iter;
-  for (; iter != metadata_set.end(); ++iter) {
+  for (; iter != metadata_pairs.end(); ++iter) {
     max_algorithm = std::max(iter->second, max_algorithm);
   }
   return max_algorithm;
@@ -267,7 +271,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     IntegrityReport* integrity_report) {
   // We expect a "clean" metadata_set, since metadata_set should only be filled
   // once.
-  DCHECK(metadata_set.empty());
+  DCHECK(metadata_set.hashes.empty() && metadata_set.signatures.empty());
 
   Vector<UChar> characters;
   attribute.StripWhiteSpace().AppendTo(characters);
@@ -353,7 +357,9 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     }
 
     IntegrityMetadata integrity_metadata(digest, algorithm);
-    metadata_set.insert(integrity_metadata.ToPair());
+    // TODO(https://crbug.com/380783670): Differentiate between hash-based and
+    // signature-based algorithms.
+    metadata_set.hashes.insert(integrity_metadata.ToPair());
   }
 }
 

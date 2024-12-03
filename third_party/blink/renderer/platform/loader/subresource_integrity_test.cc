@@ -139,9 +139,9 @@ class SubresourceIntegrityTest : public testing::Test {
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
                                                   metadata_set);
-    EXPECT_EQ(1u, metadata_set.size());
-    if (metadata_set.size() > 0) {
-      IntegrityMetadata metadata = *metadata_set.begin();
+    EXPECT_EQ(1u, metadata_set.hashes.size());
+    if (metadata_set.hashes.size() > 0) {
+      IntegrityMetadata metadata = *metadata_set.hashes.begin();
       EXPECT_EQ(expected_digest, metadata.Digest());
       EXPECT_EQ(expected_algorithm, metadata.Algorithm());
     }
@@ -153,20 +153,20 @@ class SubresourceIntegrityTest : public testing::Test {
       size_t expected_metadata_array_size) {
     IntegrityMetadataSet expected_metadata_set;
     for (size_t i = 0; i < expected_metadata_array_size; i++) {
-      expected_metadata_set.insert(expected_metadata_array[i].ToPair());
+      expected_metadata_set.hashes.insert(expected_metadata_array[i].ToPair());
     }
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
                                                   metadata_set);
-    EXPECT_TRUE(
-        IntegrityMetadata::SetsEqual(expected_metadata_set, metadata_set));
+    EXPECT_EQ(expected_metadata_set, metadata_set);
   }
 
   void ExpectParseFailure(const char* integrity_attribute) {
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
                                                   metadata_set);
-    EXPECT_EQ(metadata_set.size(), 0u);
+    EXPECT_EQ(metadata_set.hashes.size(), 0u);
+    EXPECT_EQ(metadata_set.signatures.size(), 0u);
   }
 
   void ExpectEmptyParseResult(const char* integrity_attribute) {
@@ -174,7 +174,8 @@ class SubresourceIntegrityTest : public testing::Test {
 
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
                                                   metadata_set);
-    EXPECT_EQ(0u, metadata_set.size());
+    EXPECT_EQ(0u, metadata_set.hashes.size());
+    EXPECT_EQ(0u, metadata_set.signatures.size());
   }
 
   enum ServiceWorkerMode {
@@ -540,24 +541,24 @@ TEST_F(SubresourceIntegrityTest, FindBestAlgorithm) {
   // Each algorithm is its own best.
   EXPECT_EQ(IntegrityAlgorithm::kSha256,
             SubresourceIntegrity::FindBestAlgorithm(
-                IntegrityMetadataSet({{"", IntegrityAlgorithm::kSha256}})));
+                {{"", IntegrityAlgorithm::kSha256}}));
   EXPECT_EQ(IntegrityAlgorithm::kSha384,
             SubresourceIntegrity::FindBestAlgorithm(
-                IntegrityMetadataSet({{"", IntegrityAlgorithm::kSha384}})));
+                {{"", IntegrityAlgorithm::kSha384}}));
   EXPECT_EQ(IntegrityAlgorithm::kSha512,
             SubresourceIntegrity::FindBestAlgorithm(
-                IntegrityMetadataSet({{"", IntegrityAlgorithm::kSha512}})));
+                {{"", IntegrityAlgorithm::kSha512}}));
 
   // Test combinations of multiple algorithms.
   EXPECT_EQ(IntegrityAlgorithm::kSha384,
             SubresourceIntegrity::FindBestAlgorithm(
-                IntegrityMetadataSet({{"", IntegrityAlgorithm::kSha256},
-                                      {"", IntegrityAlgorithm::kSha384}})));
+                {{"", IntegrityAlgorithm::kSha256},
+                 {"", IntegrityAlgorithm::kSha384}}));
   EXPECT_EQ(IntegrityAlgorithm::kSha512,
             SubresourceIntegrity::FindBestAlgorithm(
-                IntegrityMetadataSet({{"", IntegrityAlgorithm::kSha256},
-                                      {"", IntegrityAlgorithm::kSha512},
-                                      {"", IntegrityAlgorithm::kSha384}})));
+                {{"", IntegrityAlgorithm::kSha256},
+                 {"", IntegrityAlgorithm::kSha512},
+                 {"", IntegrityAlgorithm::kSha384}}));
 }
 
 }  // namespace blink

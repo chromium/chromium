@@ -19,7 +19,20 @@ class IntegrityMetadata;
 
 using IntegrityAlgorithm = network::mojom::blink::IntegrityAlgorithm;
 using IntegrityMetadataPair = std::pair<String, IntegrityAlgorithm>;
-using IntegrityMetadataSet = WTF::HashSet<IntegrityMetadataPair>;
+
+// Contains the result of SRI's "Parse Metadata" algorithm:
+//
+// https://wicg.github.io/signature-based-sri/#abstract-opdef-parse-metadata
+struct IntegrityMetadataSet {
+  IntegrityMetadataSet() {}
+  bool empty() const { return hashes.empty() && signatures.empty(); }
+  WTF::HashSet<IntegrityMetadataPair> hashes;
+  WTF::HashSet<IntegrityMetadataPair> signatures;
+
+  bool operator==(const IntegrityMetadataSet& other) const {
+    return this->hashes == other.hashes && this->signatures == other.signatures;
+  }
+};
 
 class PLATFORM_EXPORT IntegrityMetadata {
   STACK_ALLOCATED();
@@ -35,9 +48,6 @@ class PLATFORM_EXPORT IntegrityMetadata {
   void SetAlgorithm(IntegrityAlgorithm algorithm) { algorithm_ = algorithm; }
 
   IntegrityMetadataPair ToPair() const;
-
-  static bool SetsEqual(const IntegrityMetadataSet& set1,
-                        const IntegrityMetadataSet& set2);
 
  private:
   String digest_;
