@@ -3093,6 +3093,7 @@ void Document::Shutdown() {
 
   GetFrame()->DocumentDetached();
   GetFrame()->GetEventHandlerRegistry().DocumentDetached(*this);
+  GetFrame()->Selection().ContextDestroyed();
 
   // Signal destruction to mutation observers.
   synchronous_mutation_observer_set_.ForEachObserver(
@@ -5776,6 +5777,10 @@ void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
       });
 
   if (container.InActiveDocument()) {
+    if (LocalFrame* frame = GetFrame()) {
+      frame->Selection().NodeChildrenWillBeRemoved(container);
+    }
+
     if (Page* page = GetPage()) {
       page->GetDragCaret().NodeChildrenWillBeRemoved(container);
     }
@@ -5810,6 +5815,10 @@ void Document::NodeWillBeRemoved(Node& n) {
       });
 
   if (n.InActiveDocument()) {
+    if (LocalFrame* frame = GetFrame()) {
+      frame->Selection().NodeWillBeRemoved(n);
+    }
+
     if (Page* page = GetPage()) {
       page->GetDragCaret().NodeWillBeRemoved(n);
     }

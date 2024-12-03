@@ -123,12 +123,12 @@ const EffectPaintPropertyNode& FrameSelection::CaretEffectNode() const {
 }
 
 bool FrameSelection::IsAvailable() const {
-  return SynchronousMutationObserver::GetDocument();
+  return document_.Get();
 }
 
 Document& FrameSelection::GetDocument() const {
   DCHECK(IsAvailable());
-  return *SynchronousMutationObserver::GetDocument();
+  return *document_.Get();
 }
 
 VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTree() const {
@@ -632,7 +632,7 @@ bool FrameSelection::IsHidden() const {
 void FrameSelection::DidAttachDocument(Document* document) {
   DCHECK(document);
   selection_editor_->DidAttachDocument(document);
-  SetDocument(document);
+  document_ = document;
 }
 
 void FrameSelection::ContextDestroyed() {
@@ -641,6 +641,8 @@ void FrameSelection::ContextDestroyed() {
   layout_selection_->ContextDestroyed();
 
   frame_->GetEditor().ClearTypingStyle();
+
+  document_ = nullptr;
 }
 
 void FrameSelection::LayoutBlockWillBeDestroyed(const LayoutBlock& block) {
@@ -1256,10 +1258,10 @@ void FrameSelection::ShowTreeForThis() const {
 
 void FrameSelection::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(document_);
   visitor->Trace(layout_selection_);
   visitor->Trace(selection_editor_);
   visitor->Trace(frame_caret_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 void FrameSelection::ScheduleVisualUpdate() const {
