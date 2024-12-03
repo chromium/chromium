@@ -42,56 +42,6 @@
 namespace commerce {
 namespace {
 
-shared::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
-    bookmarks::BookmarkModel& model,
-    const bookmarks::BookmarkNode* node,
-    const std::string& locale) {
-  auto bookmark_info = shared::mojom::BookmarkProductInfo::New();
-  bookmark_info->bookmark_id = node->id();
-
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      power_bookmarks::GetNodePowerBookmarkMeta(&model, node);
-  const power_bookmarks::ShoppingSpecifics specifics =
-      meta->shopping_specifics();
-
-  bookmark_info->info = shared::mojom::ProductInfo::New();
-  bookmark_info->info->title = specifics.title();
-  bookmark_info->info->domain = base::UTF16ToUTF8(
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          GURL(node->url())));
-
-  bookmark_info->info->product_url = node->url();
-  bookmark_info->info->image_url = GURL(meta->lead_image().url());
-  bookmark_info->info->cluster_id = specifics.product_cluster_id();
-
-  const power_bookmarks::ProductPrice price = specifics.current_price();
-  std::string currency_code = price.currency_code();
-
-  std::unique_ptr<payments::CurrencyFormatter> formatter =
-      std::make_unique<payments::CurrencyFormatter>(currency_code, locale);
-  formatter->SetMaxFractionalDigits(2);
-
-  bookmark_info->info->current_price =
-      base::UTF16ToUTF8(formatter->Format(base::NumberToString(
-          static_cast<float>(price.amount_micros()) / kToMicroCurrency)));
-
-  // Only send the previous price if it is higher than the current price. This
-  // is exclusively used to decide whether to show the price drop chip in the
-  // UI.
-  if (specifics.has_previous_price() &&
-      specifics.previous_price().amount_micros() >
-          specifics.current_price().amount_micros()) {
-    const power_bookmarks::ProductPrice previous_price =
-        specifics.previous_price();
-    bookmark_info->info->previous_price =
-        base::UTF16ToUTF8(formatter->Format(base::NumberToString(
-            static_cast<float>(previous_price.amount_micros()) /
-            kToMicroCurrency)));
-  }
-
-  return bookmark_info;
-}
-
 std::vector<shopping_service::mojom::UrlInfoPtr> UrlInfoToMojo(
     const std::vector<UrlInfo>& url_infos) {
   std::vector<shopping_service::mojom::UrlInfoPtr> url_info_ptr_list;

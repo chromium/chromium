@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
@@ -26,6 +27,11 @@ shared::mojom::ProductInfoPtr ProductInfoToMojoProduct(
 
 shared::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
     const ProductSpecificationsSet& set);
+
+shared::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
+    bookmarks::BookmarkModel& model,
+    const bookmarks::BookmarkNode* node,
+    const std::string& locale);
 
 }  // namespace commerce
 

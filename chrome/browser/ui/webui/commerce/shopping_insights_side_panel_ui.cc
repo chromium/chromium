@@ -100,6 +100,14 @@ void ShoppingInsightsSidePanelUI::BindInterface(
   shopping_service_factory_receiver_.Bind(std::move(receiver));
 }
 
+void ShoppingInsightsSidePanelUI::BindInterface(
+    mojo::PendingReceiver<
+        commerce::price_tracking::mojom::PriceTrackingHandlerFactory>
+        receiver) {
+  price_tracking_factory_receiver_.reset();
+  price_tracking_factory_receiver_.Bind(std::move(receiver));
+}
+
 void ShoppingInsightsSidePanelUI::CreateShoppingServiceHandler(
     mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
@@ -117,6 +125,22 @@ void ShoppingInsightsSidePanelUI::CreateShoppingServiceHandler(
           shopping_service, profile->GetPrefs(), tracker,
           std::make_unique<commerce::ShoppingUiHandlerDelegate>(this, profile),
           nullptr);
+}
+
+void ShoppingInsightsSidePanelUI::CreatePriceTrackingHandler(
+    mojo::PendingRemote<commerce::price_tracking::mojom::Page> page,
+    mojo::PendingReceiver<commerce::price_tracking::mojom::PriceTrackingHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  feature_engagement::Tracker* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
+      std::move(page), std::move(receiver), nullptr, shopping_service, tracker,
+      bookmark_model);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShoppingInsightsSidePanelUI)

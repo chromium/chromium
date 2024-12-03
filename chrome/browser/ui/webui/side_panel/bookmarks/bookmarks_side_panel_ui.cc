@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
+#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -273,6 +274,14 @@ void BookmarksSidePanelUI::BindInterface(
 }
 
 void BookmarksSidePanelUI::BindInterface(
+    mojo::PendingReceiver<
+        commerce::price_tracking::mojom::PriceTrackingHandlerFactory>
+        receiver) {
+  price_tracking_factory_receiver_.reset();
+  price_tracking_factory_receiver_.Bind(std::move(receiver));
+}
+
+void BookmarksSidePanelUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
         pending_receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
@@ -322,6 +331,22 @@ void BookmarksSidePanelUI::CreateShoppingServiceHandler(
   shopping_list_context_menu_controller_ =
       std::make_unique<commerce::ShoppingListContextMenuController>(
           bookmark_model, shopping_service, shopping_service_handler_.get());
+}
+
+void BookmarksSidePanelUI::CreatePriceTrackingHandler(
+    mojo::PendingRemote<commerce::price_tracking::mojom::Page> page,
+    mojo::PendingReceiver<commerce::price_tracking::mojom::PriceTrackingHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  feature_engagement::Tracker* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
+      std::move(page), std::move(receiver), nullptr, shopping_service, tracker,
+      bookmark_model);
 }
 
 bool BookmarksSidePanelUI::IsIncognitoModeAvailable() {
