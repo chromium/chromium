@@ -62,6 +62,7 @@ class MediaCodecBridge {
     private Queue<MediaFormatWrapper> mPendingFormat;
     private MediaFormatWrapper mCurrentFormat;
     private boolean mPendingError;
+    private int mPendingErrorCode; // only valid if mPendingError = true
     private boolean mPendingStart;
     private long mNativeMediaCodecBridge;
     private int mSequenceCounter;
@@ -72,6 +73,100 @@ class MediaCodecBridge {
     // callbacks are actually delivered. Always null in production.
     private static HandlerThread sCallbackHandlerThread;
     private static Handler sCallbackHandler;
+
+    // |errorCode| is the error reported by MediaCodec.CryptoException
+    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException)
+    // Translated values are defined in media/base/android/media_codec_bridge.h.
+    // MediaCodec.CryptoException error codes were deprecated in API 31 (Android S) and replaced by
+    // MediaDrm error codes.
+    private static int translateCryptoExceptionPreS(int errorCode) {
+        switch (errorCode) {
+            case MediaCodec.CryptoException.ERROR_NO_KEY:
+                return MediaCodecStatus.NO_KEY;
+            case MediaCodec.CryptoException.ERROR_KEY_EXPIRED:
+                return MediaCodecStatus.KEY_EXPIRED;
+            case MediaCodec.CryptoException.ERROR_RESOURCE_BUSY:
+                return MediaCodecStatus.RESOURCE_BUSY;
+            case MediaCodec.CryptoException.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
+                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
+            case MediaCodec.CryptoException.ERROR_SESSION_NOT_OPENED:
+                return MediaCodecStatus.SESSION_NOT_OPENED;
+            case MediaCodec.CryptoException.ERROR_UNSUPPORTED_OPERATION:
+                return MediaCodecStatus.UNSUPPORTED_OPERATION;
+            case 7: // ERROR_INSUFFICIENT_SECURITY, added in API 29
+                return MediaCodecStatus.INSUFFICIENT_SECURITY;
+            case 8: // ERROR_FRAME_TOO_LARGE, added in API 29
+                return MediaCodecStatus.FRAME_TOO_LARGE;
+            case 9: // ERROR_LOST_STATE, added in API 29
+                return MediaCodecStatus.LOST_STATE;
+            default:
+                Log.e(TAG, "Unknown CryptoException error code: " + errorCode);
+                return MediaCodecStatus.UNKNOWN_CRYPTO_EXCEPTION;
+        }
+    }
+
+    // |errorCode| is the error reported by MediaCodec.CryptoException.
+    // As of API 31 (Android S) it returns MediaDrm.ErrorCodes
+    // (https://developer.android.com/reference/android/media/MediaDrm.ErrorCodes).
+    // Not all possible values are handled here, only the ones specified as being returned by
+    // getErrorCode
+    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException#getErrorCode())
+    // Translated values are defined in media/base/android/media_codec_bridge.h.
+    @RequiresApi(Build.VERSION_CODES.S)
+    private static int translateCryptoExceptionPostS(int errorCode) {
+        switch (errorCode) {
+            case MediaDrm.ErrorCodes.ERROR_NO_KEY:
+                return MediaCodecStatus.NO_KEY;
+            case MediaDrm.ErrorCodes.ERROR_KEY_EXPIRED:
+                return MediaCodecStatus.KEY_EXPIRED;
+            case MediaDrm.ErrorCodes.ERROR_RESOURCE_BUSY:
+                return MediaCodecStatus.RESOURCE_BUSY;
+            case MediaDrm.ErrorCodes.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
+                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
+            case MediaDrm.ErrorCodes.ERROR_SESSION_NOT_OPENED:
+                return MediaCodecStatus.SESSION_NOT_OPENED;
+            case MediaDrm.ErrorCodes.ERROR_UNSUPPORTED_OPERATION:
+                return MediaCodecStatus.UNSUPPORTED_OPERATION;
+            case MediaDrm.ErrorCodes.ERROR_INSUFFICIENT_SECURITY:
+                return MediaCodecStatus.INSUFFICIENT_SECURITY;
+            case MediaDrm.ErrorCodes.ERROR_FRAME_TOO_LARGE:
+                return MediaCodecStatus.FRAME_TOO_LARGE;
+            case MediaDrm.ErrorCodes.ERROR_LOST_STATE:
+                return MediaCodecStatus.LOST_STATE;
+            case MediaDrm.ErrorCodes.ERROR_GENERIC_OEM:
+                return MediaCodecStatus.GENERIC_OEM;
+            case MediaDrm.ErrorCodes.ERROR_GENERIC_PLUGIN:
+                return MediaCodecStatus.GENERIC_PLUGIN;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_PARSE:
+                return MediaCodecStatus.LICENSE_PARSE;
+            case MediaDrm.ErrorCodes.ERROR_MEDIA_FRAMEWORK:
+                return MediaCodecStatus.MEDIA_FRAMEWORK;
+            case MediaDrm.ErrorCodes.ERROR_ZERO_SUBSAMPLES:
+                return MediaCodecStatus.ZERO_SUBSAMPLES;
+            default:
+                Log.e(TAG, "Unknown MediaDrm.ErrorCodes error: " + errorCode);
+                return MediaCodecStatus.UNKNOWN_MEDIADRM_EXCEPTION;
+        }
+    }
+
+    private static int convertCryptoException(MediaCodec.CryptoException e) {
+        return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
+                ? translateCryptoExceptionPreS(e.getErrorCode())
+                : translateCryptoExceptionPostS(e.getErrorCode());
+    }
+
+    private static int convertCodecException(MediaCodec.CodecException e) {
+        // https://developer.android.com/reference/android/media/MediaCodec.CodecException
+        switch (e.getErrorCode()) {
+            case MediaCodec.CodecException.ERROR_INSUFFICIENT_RESOURCE:
+                return MediaCodecStatus.INSUFFICIENT_RESOURCE;
+            case MediaCodec.CodecException.ERROR_RECLAIMED:
+                return MediaCodecStatus.RECLAIMED;
+            default:
+                Log.e(TAG, "Unknown CodecException error: " + e.getErrorCode());
+                return MediaCodecStatus.UNKNOWN_CODEC_EXCEPTION;
+        }
+    }
 
     private static class DequeueInputResult {
         private final int mStatus;
@@ -260,10 +355,16 @@ class MediaCodecBridge {
         }
 
         @Override
+        public void onCryptoError(MediaCodec codec, MediaCodec.CryptoException e) {
+            Log.e(TAG, "MediaCodec.onCryptoError: %s", e.getMessage());
+            mMediaCodecBridge.onError(convertCryptoException(e));
+        }
+
+        @Override
         public void onError(MediaCodec codec, MediaCodec.CodecException e) {
             // TODO(dalecurtis): We may want to drop transient errors here.
             Log.e(TAG, "MediaCodec.onError: %s", e.getDiagnosticInfo());
-            mMediaCodecBridge.onError(e);
+            mMediaCodecBridge.onError(convertCodecException(e));
         }
 
         @Override
@@ -341,8 +442,9 @@ class MediaCodecBridge {
         }
     }
 
-    public synchronized void onError(MediaCodec.CodecException e) {
+    public synchronized void onError(int errorCode) {
         mPendingError = true;
+        mPendingErrorCode = errorCode;
         mPendingInputBuffers.clear();
         mPendingOutputBuffers.clear();
         notifyBuffersAvailable();
@@ -438,11 +540,17 @@ class MediaCodecBridge {
             }
 
             mMediaCodec.start();
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Cannot start the media codec", e);
+            mPendingErrorCode = convertCodecException(e);
+            return false;
         } catch (IllegalStateException e) {
             Log.e(TAG, "Cannot start the media codec", e);
+            mPendingErrorCode = MediaCodecStatus.ILLEGAL_STATE;
             return false;
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Cannot start the media codec", e);
+            mPendingErrorCode = MediaCodecStatus.ERROR;
             return false;
         }
         return true;
@@ -452,7 +560,9 @@ class MediaCodecBridge {
     private DequeueInputResult dequeueInputBuffer(long timeoutUs) {
         if (mUseAsyncApi) {
             synchronized (this) {
-                if (mPendingError) return new DequeueInputResult(MediaCodecStatus.ERROR, -1);
+                if (mPendingError) {
+                    return new DequeueInputResult(mPendingErrorCode, -1);
+                }
                 if (mPendingStart || mPendingInputBuffers.isEmpty()) {
                     return new DequeueInputResult(MediaCodecStatus.TRY_AGAIN_LATER, -1);
                 }
@@ -473,6 +583,9 @@ class MediaCodecBridge {
                 Log.e(TAG, "Unexpected index_or_status: %d", indexOrStatus);
                 assert false;
             }
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Failed to dequeue input buffer", e);
+            status = convertCodecException(e);
         } catch (Exception e) {
             Log.e(TAG, "Failed to dequeue input buffer", e);
         }
@@ -510,8 +623,13 @@ class MediaCodecBridge {
             // clears mPendingStart to start accepting new buffers.
             if (mUseAsyncApi) {
                 prepareAsyncApiForRestart();
-                if (!start()) return MediaCodecStatus.ERROR;
+                if (!start()) {
+                    return mPendingErrorCode;
+                }
             }
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Failed to flush MediaCodec", e);
+            return convertCodecException(e);
         } catch (Exception e) {
             Log.e(TAG, "Failed to flush MediaCodec", e);
             return MediaCodecStatus.ERROR;
@@ -597,6 +715,12 @@ class MediaCodecBridge {
             int index, int offset, int size, long presentationTimeUs, int flags) {
         try {
             mMediaCodec.queueInputBuffer(index, offset, size, presentationTimeUs, flags);
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Failed to queue input buffer", e);
+            return convertCodecException(e);
+        } catch (MediaCodec.CryptoException e) {
+            Log.e(TAG, "Failed to queue input buffer", e);
+            return convertCryptoException(e);
         } catch (Exception e) {
             Log.e(TAG, "Failed to queue input buffer", e);
             return MediaCodecStatus.ERROR;
@@ -621,7 +745,7 @@ class MediaCodecBridge {
             request.queue();
         } catch (Exception e) {
             Log.e(TAG, "Failed to queue input block", e);
-            return MediaCodecStatus.ERROR;
+            return MediaCodecStatus.INPUT_SLOT_UNAVAILABLE;
         }
         return MediaCodecStatus.OK;
     }
@@ -664,81 +788,6 @@ class MediaCodecBridge {
             default:
                 Log.e(TAG, "Unsupported cipher mode: %d", nativeValue);
                 return MEDIA_CODEC_UNKNOWN_CIPHER_MODE;
-        }
-    }
-
-    // |errorCode| is the error reported by MediaCodec.CryptoException
-    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException)
-    // Translated values are defined in media/base/android/media_codec_bridge.h.
-    // MediaCodec.CryptoException error codes were deprecated in API 31 (Android S) and replaced by
-    // MediaDrm error codes.
-    private int translateCryptoExceptionPreS(int errorCode) {
-        switch (errorCode) {
-            case MediaCodec.CryptoException.ERROR_NO_KEY:
-                return MediaCodecStatus.NO_KEY;
-            case MediaCodec.CryptoException.ERROR_KEY_EXPIRED:
-                return MediaCodecStatus.KEY_EXPIRED;
-            case MediaCodec.CryptoException.ERROR_RESOURCE_BUSY:
-                return MediaCodecStatus.RESOURCE_BUSY;
-            case MediaCodec.CryptoException.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
-                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
-            case MediaCodec.CryptoException.ERROR_SESSION_NOT_OPENED:
-                return MediaCodecStatus.SESSION_NOT_OPENED;
-            case MediaCodec.CryptoException.ERROR_UNSUPPORTED_OPERATION:
-                return MediaCodecStatus.UNSUPPORTED_OPERATION;
-            case 7: // ERROR_INSUFFICIENT_SECURITY, added in API 29
-                return MediaCodecStatus.INSUFFICIENT_SECURITY;
-            case 8: // ERROR_FRAME_TOO_LARGE, added in API 29
-                return MediaCodecStatus.FRAME_TOO_LARGE;
-            case 9: // ERROR_LOST_STATE, added in API 29
-                return MediaCodecStatus.LOST_STATE;
-            default:
-                Log.e(TAG, "Unknown CryptoException error code: " + errorCode);
-                return MediaCodecStatus.ERROR;
-        }
-    }
-
-    // |errorCode| is the error reported by MediaCodec.CryptoException.
-    // As of API 31 (Android S) it returns MediaDrm.ErrorCodes
-    // (https://developer.android.com/reference/android/media/MediaDrm.ErrorCodes).
-    // Not all possible values are handled here, only the ones specified as being returned by
-    // getErrorCode
-    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException#getErrorCode())
-    // Translated values are defined in media/base/android/media_codec_bridge.h.
-    @RequiresApi(Build.VERSION_CODES.S)
-    private int translateCryptoExceptionPostS(int errorCode) {
-        switch (errorCode) {
-            case MediaDrm.ErrorCodes.ERROR_NO_KEY:
-                return MediaCodecStatus.NO_KEY;
-            case MediaDrm.ErrorCodes.ERROR_KEY_EXPIRED:
-                return MediaCodecStatus.KEY_EXPIRED;
-            case MediaDrm.ErrorCodes.ERROR_RESOURCE_BUSY:
-                return MediaCodecStatus.RESOURCE_BUSY;
-            case MediaDrm.ErrorCodes.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
-                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
-            case MediaDrm.ErrorCodes.ERROR_SESSION_NOT_OPENED:
-                return MediaCodecStatus.SESSION_NOT_OPENED;
-            case MediaDrm.ErrorCodes.ERROR_UNSUPPORTED_OPERATION:
-                return MediaCodecStatus.UNSUPPORTED_OPERATION;
-            case MediaDrm.ErrorCodes.ERROR_INSUFFICIENT_SECURITY:
-                return MediaCodecStatus.INSUFFICIENT_SECURITY;
-            case MediaDrm.ErrorCodes.ERROR_FRAME_TOO_LARGE:
-                return MediaCodecStatus.FRAME_TOO_LARGE;
-            case MediaDrm.ErrorCodes.ERROR_LOST_STATE:
-                return MediaCodecStatus.LOST_STATE;
-            case MediaDrm.ErrorCodes.ERROR_GENERIC_OEM:
-                return MediaCodecStatus.GENERIC_OEM;
-            case MediaDrm.ErrorCodes.ERROR_GENERIC_PLUGIN:
-                return MediaCodecStatus.GENERIC_PLUGIN;
-            case MediaDrm.ErrorCodes.ERROR_LICENSE_PARSE:
-                return MediaCodecStatus.LICENSE_PARSE;
-            case MediaDrm.ErrorCodes.ERROR_MEDIA_FRAMEWORK:
-                return MediaCodecStatus.MEDIA_FRAMEWORK;
-            case MediaDrm.ErrorCodes.ERROR_ZERO_SUBSAMPLES:
-                return MediaCodecStatus.ZERO_SUBSAMPLES;
-            default:
-                Log.e(TAG, "Unknown MediaDrm.ErrorCodes error: " + errorCode);
-                return MediaCodecStatus.ERROR;
         }
     }
 
@@ -790,13 +839,11 @@ class MediaCodecBridge {
                     TAG,
                     "Failed to queue secure input buffer, CryptoException.ErrorCode: "
                             + e.getErrorCode());
-            return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
-                    ? translateCryptoExceptionPreS(e.getErrorCode())
-                    : translateCryptoExceptionPostS(e.getErrorCode());
+            return convertCryptoException(e);
         } catch (MediaCodec.CodecException e) {
             Log.e(TAG, "Failed to queue secure input buffer.", e);
             Log.e(TAG, "Diagnostic: %s", e.getDiagnosticInfo());
-            return MediaCodecStatus.ERROR;
+            return convertCodecException(e);
         } catch (IllegalArgumentException e) {
             // IllegalArgumentException can occur when release() is called on the MediaCrypto
             // object, but the MediaCodecBridge is unaware of the change.
@@ -804,7 +851,7 @@ class MediaCodecBridge {
             return MediaCodecStatus.ERROR;
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to queue secure input buffer.", e);
-            return MediaCodecStatus.ERROR;
+            return MediaCodecStatus.ILLEGAL_STATE;
         }
         return MediaCodecStatus.OK;
     }
@@ -833,7 +880,7 @@ class MediaCodecBridge {
         if (mUseAsyncApi) {
             synchronized (this) {
                 if (mPendingError) {
-                    return new DequeueOutputResult(MediaCodecStatus.ERROR, -1, 0, 0, 0, 0);
+                    return new DequeueOutputResult(mPendingErrorCode, -1, 0, 0, 0, 0);
                 }
                 if (mPendingOutputBuffers.isEmpty()) {
                     return new DequeueOutputResult(
@@ -853,7 +900,6 @@ class MediaCodecBridge {
         int index = -1;
         try {
             int indexOrStatus = dequeueOutputBufferInternal(info, timeoutUs);
-
             if (indexOrStatus >= 0) { // index!
                 status = MediaCodecStatus.OK;
                 index = indexOrStatus;
@@ -868,7 +914,7 @@ class MediaCodecBridge {
                 assert false;
             }
         } catch (IllegalStateException e) {
-            status = MediaCodecStatus.ERROR;
+            status = MediaCodecStatus.ILLEGAL_STATE;
             Log.e(TAG, "Failed to dequeue output buffer", e);
         }
 

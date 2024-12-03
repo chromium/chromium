@@ -237,6 +237,13 @@ MediaCodecResult::Codes ConvertToMediaCodecEnum(MediaCodecStatus status) {
     case MEDIA_CODEC_ZERO_SUBSAMPLES:
     case MEDIA_CODEC_UNKNOWN_CIPHER_MODE:
     case MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED:
+    case MEDIA_CODEC_INSUFFICIENT_RESOURCE:
+    case MEDIA_CODEC_RECLAIMED:
+    case MEDIA_CODEC_INPUT_SLOT_UNAVAILABLE:
+    case MEDIA_CODEC_ILLEGAL_STATE:
+    case MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION:
+    case MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION:
+    case MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION:
       return MediaCodecResult::Codes::kError;
   }
 }
@@ -301,6 +308,22 @@ std::string ApplyDescriptiveMessage(MediaCodecStatus status) {
       return "Cipher mode is not supported.";
     case MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED:
       return "Pattern encryption only supported for 'cbcs' scheme (CBC mode).";
+    case MEDIA_CODEC_INSUFFICIENT_RESOURCE:
+      return "Required resource was not able to be allocated.";
+    case MEDIA_CODEC_RECLAIMED:
+      return "The resource manager reclaimed the media resource used by the "
+             "codec.";
+    case MEDIA_CODEC_INPUT_SLOT_UNAVAILABLE:
+      return "The input slot is not available or the index is out of range";
+    case MEDIA_CODEC_ILLEGAL_STATE:
+      return "Not in the Executing state.";
+    case MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION:
+      return "Unknown MediaCodec.CryptoException.";
+    case MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION:
+      return "Unknown MediaDrm.ErrorCode returned by "
+             "MediaCodec.CryptoException.";
+    case MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION:
+      return "Unknown MediaCodec.CodecException.";
   }
 }
 
