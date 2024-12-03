@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::Invoke;
 using ::testing::Return;
 
@@ -49,6 +50,22 @@ class SecretPortalKeyProviderTest : public testing::Test {
     EXPECT_CALL(*mock_bus_, GetObjectProxy(DBUS_SERVICE_DBUS,
                                            dbus::ObjectPath(DBUS_PATH_DBUS)))
         .WillRepeatedly(Return(mock_dbus_proxy_.get()));
+
+    mock_systemd_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
+        mock_bus_.get(), "org.freedesktop.systemd1",
+        dbus::ObjectPath("/org/freedesktop/systemd1"));
+    EXPECT_CALL(*mock_bus_,
+                GetObjectProxy("org.freedesktop.systemd1",
+                               dbus::ObjectPath("/org/freedesktop/systemd1")))
+        .Times(AtLeast(0))
+        .WillRepeatedly(Return(mock_systemd_proxy_.get()));
+    EXPECT_CALL(*mock_systemd_proxy_, DoCallMethod(_, _, _))
+        .Times(AtLeast(0))
+        .WillRepeatedly(
+            Invoke([](dbus::MethodCall*, int,
+                      dbus::ObjectProxy::ResponseCallback* callback) {
+              std::move(*callback).Run(nullptr);
+            }));
 
     EXPECT_CALL(*mock_bus_, AssertOnOriginThread()).WillRepeatedly([] {});
 
@@ -121,6 +138,7 @@ class SecretPortalKeyProviderTest : public testing::Test {
 
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_dbus_proxy_;
+  scoped_refptr<dbus::MockObjectProxy> mock_systemd_proxy_;
   scoped_refptr<dbus::MockObjectProxy> mock_response_proxy_;
   scoped_refptr<dbus::MockObjectProxy> mock_secret_proxy_;
   dbus::ObjectPath response_path_;

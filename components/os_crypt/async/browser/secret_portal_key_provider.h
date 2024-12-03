@@ -31,7 +31,8 @@ class Response;
 
 namespace dbus_xdg {
 class Request;
-}
+enum class SystemdUnitStatus;
+}  // namespace dbus_xdg
 
 namespace os_crypt_async {
 
@@ -107,7 +108,9 @@ class SecretPortalKeyProvider : public KeyProvider {
   bool UseForEncryption() override;
   bool IsCompatibleWithOsCryptSync() override;
 
-  void OnNameHasOwnerResponse(std::optional<bool> name_has_owner);
+  void OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus status);
+
+  void OnPortalServiceStarted(std::optional<bool> service_started);
 
   void OnRetrieveSecret(
       base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
