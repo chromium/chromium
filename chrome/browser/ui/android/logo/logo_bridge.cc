@@ -84,7 +84,7 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
   LogoObserverAndroid(const LogoObserverAndroid&) = delete;
   LogoObserverAndroid& operator=(const LogoObserverAndroid&) = delete;
 
-  ~LogoObserverAndroid() override {}
+  ~LogoObserverAndroid() override = default;
 
   // seach_provider_logos::LogoObserver:
   void OnLogoAvailable(const search_provider_logos::Logo* logo,
@@ -124,7 +124,7 @@ LogoBridge::LogoBridge(Profile* profile) : logo_service_(nullptr) {
   logo_service_ = LogoServiceFactory::GetForProfile(profile);
 }
 
-LogoBridge::~LogoBridge() {}
+LogoBridge::~LogoBridge() = default;
 
 void LogoBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;

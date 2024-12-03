@@ -7,9 +7,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
 
-TabModelObserver::TabModelObserver() {}
+TabModelObserver::TabModelObserver() = default;
 
-TabModelObserver::~TabModelObserver() {}
+TabModelObserver::~TabModelObserver() = default;
 
 void TabModelObserver::DidSelectTab(TabAndroid* tab,
                                     TabModel::TabSelectionType type) {}
