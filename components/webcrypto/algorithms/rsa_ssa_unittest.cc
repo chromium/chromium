@@ -644,7 +644,7 @@ TEST_F(WebCryptoRsaSsaTest, SignVerifyFailures) {
   // Ensure signatures that are greater than the modulus size fail.
   const size_t long_message_size_bytes = 1024;
   DCHECK_GT(long_message_size_bytes, kModulusLengthBits / 8);
-  const unsigned char kLongSignature[long_message_size_bytes] = {0};
+  const unsigned char kLongSignature[long_message_size_bytes] = {};
   EXPECT_EQ(Status::Success(), Verify(algorithm, public_key, kLongSignature,
                                       data, &signature_match));
   EXPECT_FALSE(signature_match);
