@@ -17,7 +17,7 @@ namespace wolvic {
 
 namespace {
 
-void WvrMatToTransform(const float in[16], gfx::Transform* out) {
+void WvrMatToTransform(const std::array<float, 16>& in, gfx::Transform* out) {
   *out = gfx::Transform::ColMajor(in[0], in[1], in[2], in[3], in[4], in[5],
                                   in[6], in[7], in[8], in[9], in[10], in[11],
                                   in[12], in[13], in[14], in[15]);
@@ -626,9 +626,7 @@ WvrManager::GetInputSourceState() {
     input_sources.push_back(std::move(input_source));
   }
 
-  memcpy(controller_state_, wvr_api_->get_system_state().controllerState,
-         sizeof(controller_state_));
-
+  controller_state_ = wvr_api_->get_system_state().controllerState;
   return input_sources;
 }
 
@@ -703,7 +701,6 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
   const mozilla::gfx::VRPose* pose = &system_state.sensorState.pose;
 
   frame_data->views = CreateViews(wvr_api_, pose);
-
   frame_data->input_state = GetInputSourceState();
 
   frame_data->mojo_from_viewer = PoseToVRPosePtr(pose);

@@ -7,8 +7,6 @@
 #ifndef GFX_VR_EXTERNAL_API_H
 #define GFX_VR_EXTERNAL_API_H
 
-#define __ANDROID__ 1
-
 #define GFX_VR_EIGHTCC(c1, c2, c3, c4, c5, c6, c7, c8)                  \
   ((uint64_t)(c1) << 56 | (uint64_t)(c2) << 48 | (uint64_t)(c3) << 40 | \
    (uint64_t)(c4) << 32 | (uint64_t)(c5) << 24 | (uint64_t)(c6) << 16 | \
@@ -20,16 +18,17 @@
 #  include <stdlib.h>
 #  include <string.h>
 #  include "mozilla/TypedEnumBits.h"
+#  include "mozilla/dom/TiedFields.h"
 #  include "mozilla/gfx/2D.h"
 #  include <stddef.h>
 #  include <stdint.h>
-#  include <type_traits>
 #endif  // MOZILLA_INTERNAL_API
 
 #if defined(__ANDROID__)
 #  include <pthread.h>
 #endif  // defined(__ANDROID__)
 
+#include <array>
 #include <cstdint>
 #include <type_traits>
 
@@ -49,8 +48,8 @@ namespace gfx {
 // and mapped files if we have both release and nightlies
 // running at the same time? Or...what if we have multiple
 // release builds running on same machine? (Bug 1563232)
-#define SHMEM_VERSION "0.0.11"
-static const int32_t kVRExternalVersion = 20;
+#define SHMEM_VERSION "0.0.13"
+static const int32_t kVRExternalVersion = 21;
 
 // We assign VR presentations to groups with a bitmask.
 // Currently, we will only display either content or chrome.
@@ -84,16 +83,40 @@ struct Point3D_POD {
   float x;
   float y;
   float z;
+
+#ifdef MOZILLA_INTERNAL_API
+  auto MutTiedFields() { return std::tie(x, y, z); }
+
+  bool operator==(const Point3D_POD& other) const {
+    return TiedFields(*this) == TiedFields(other);
+  }
+#endif
 };
 
 struct IntSize_POD {
   int32_t width;
   int32_t height;
+
+#ifdef MOZILLA_INTERNAL_API
+  auto MutTiedFields() { return std::tie(width, height); }
+
+  bool operator==(const IntSize_POD& other) const {
+    return TiedFields(*this) == TiedFields(other);
+  }
+#endif
 };
 
 struct FloatSize_POD {
   float width;
   float height;
+
+#ifdef MOZILLA_INTERNAL_API
+  auto MutTiedFields() { return std::tie(width, height); }
+
+  bool operator==(const FloatSize_POD& other) const {
+    return TiedFields(*this) == TiedFields(other);
+  }
+#endif
 };
 
 #ifndef MOZILLA_INTERNAL_API
@@ -161,18 +184,98 @@ enum class VRControllerType : uint8_t {
   _end
 };
 
+}  // namespace gfx
+
+template <class T>
+bool IsEnumCase(T);
+
+template <>
+inline constexpr bool IsEnumCase<gfx::VRControllerType>(
+    const gfx::VRControllerType raw) {
+  switch (raw) {
+    case gfx::VRControllerType::_empty:
+    case gfx::VRControllerType::HTCVive:
+    case gfx::VRControllerType::HTCViveCosmos:
+    case gfx::VRControllerType::HTCViveFocus:
+    case gfx::VRControllerType::HTCViveFocusPlus:
+    case gfx::VRControllerType::MSMR:
+    case gfx::VRControllerType::ValveIndex:
+    case gfx::VRControllerType::OculusGo:
+    case gfx::VRControllerType::OculusTouch:
+    case gfx::VRControllerType::OculusTouch2:
+    case gfx::VRControllerType::OculusTouch3:
+    case gfx::VRControllerType::PicoGaze:
+    case gfx::VRControllerType::PicoG2:
+    case gfx::VRControllerType::PicoNeo2:
+    case gfx::VRControllerType::Pico4:
+    case gfx::VRControllerType::MetaQuest3:
+    case gfx::VRControllerType::MagicLeap2:
+    case gfx::VRControllerType::PicoNeo3:
+    case gfx::VRControllerType::_end:
+      return true;
+  }
+  return false;
+}
+namespace gfx {
+
+// -
+
 enum class TargetRayMode : uint8_t { Gaze, TrackedPointer, Screen };
+
+}  // namespace gfx
+template <>
+inline constexpr bool IsEnumCase<gfx::TargetRayMode>(
+    const gfx::TargetRayMode raw) {
+  switch (raw) {
+    case gfx::TargetRayMode::Gaze:
+    case gfx::TargetRayMode::TrackedPointer:
+    case gfx::TargetRayMode::Screen:
+      return true;
+  }
+  return false;
+}
+namespace gfx {
+
+// -
 
 enum class GamepadMappingType : uint8_t { _empty, Standard, XRStandard };
 
-enum class VRDisplayBlendMode : uint8_t {
-  _empty,
-  Opaque,
-  Additive,
-  AlphaBlend
-};
+}  // namespace gfx
+template <>
+inline constexpr bool IsEnumCase<gfx::GamepadMappingType>(
+    const gfx::GamepadMappingType raw) {
+  switch (raw) {
+    case gfx::GamepadMappingType::_empty:
+    case gfx::GamepadMappingType::Standard:
+    case gfx::GamepadMappingType::XRStandard:
+      return true;
+  }
+  return false;
+}
+namespace gfx {
+
+// -
+
+enum class VRDisplayBlendMode : uint8_t { _empty, Opaque, Additive, AlphaBlend };
 
 enum class ImmersiveXRSessionType : uint8_t { VR, AR };
+
+}  // namespace gfx
+template <>
+inline constexpr bool IsEnumCase<gfx::VRDisplayBlendMode>(
+    const gfx::VRDisplayBlendMode raw) {
+  switch (raw) {
+    case gfx::VRDisplayBlendMode::_empty:
+    case gfx::VRDisplayBlendMode::Opaque:
+    case gfx::VRDisplayBlendMode::Additive:
+    case gfx::VRDisplayBlendMode::AlphaBlend:
+      return true;
+  }
+  return false;
+}
+namespace gfx {
+
+// -
 
 enum class VRDisplayCapabilityFlags : uint16_t {
   Cap_None = 0,
@@ -263,25 +366,42 @@ MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(VRDisplayBlendMode)
 #endif  // MOZILLA_INTERNAL_API
 
 struct VRPose {
-  float orientation[4];
-  float position[3];
-  float angularVelocity[3];
-  float angularAcceleration[3];
-  float linearVelocity[3];
-  float linearAcceleration[3];
+  std::array<float, 4> orientation;
+  std::array<float, 3> position;
+  std::array<float, 3> angularVelocity;
+  std::array<float, 3> angularAcceleration;
+  std::array<float, 3> linearVelocity;
+  std::array<float, 3> linearAcceleration;
+
+#ifdef MOZILLA_INTERNAL_API
+  auto MutTiedFields() {
+    return std::tie(orientation, position, angularVelocity, angularAcceleration,
+                    linearVelocity, linearAcceleration);
+  }
+
+  bool operator==(const VRPose& other) const {
+    return TiedFields(*this) == TiedFields(other);
+  }
+#endif  // MOZILLA_INTERNAL_API
 };
 
 struct VRHMDSensorState {
   uint64_t inputFrameID;
   double timestamp;
   VRDisplayCapabilityFlags flags;
+  uint16_t _padding;
 
   // These members will only change with inputFrameID:
   VRPose pose;
-  float leftViewMatrix[16];
-  float rightViewMatrix[16];
+  std::array<float, 16> leftViewMatrix;
+  std::array<float, 16> rightViewMatrix;
 
 #ifdef MOZILLA_INTERNAL_API
+
+  auto MutTiedFields() {
+    return std::tie(inputFrameID, timestamp, flags, _padding, pose,
+                    leftViewMatrix, rightViewMatrix);
+  }
 
   void Clear() { memset(this, 0, sizeof(VRHMDSensorState)); }
 
@@ -305,6 +425,13 @@ struct VRFieldOfView {
   double leftDegrees;
 
 #ifdef MOZILLA_INTERNAL_API
+  auto MutTiedFields() {
+    return std::tie(upDegrees, rightDegrees, downDegrees, leftDegrees);
+  }
+
+  bool operator==(const VRFieldOfView& other) const {
+    return TiedFields(*this) == TiedFields(other);
+  }
 
   VRFieldOfView() = default;
   VRFieldOfView(double up, double right, double down, double left)
@@ -318,12 +445,6 @@ struct VRFieldOfView {
     rightDegrees = atan(right) * 180.0 / M_PI;
     downDegrees = atan(down) * 180.0 / M_PI;
     leftDegrees = atan(left) * 180.0 / M_PI;
-  }
-
-  bool operator==(const VRFieldOfView& other) const {
-    return other.upDegrees == upDegrees && other.downDegrees == downDegrees &&
-           other.rightDegrees == rightDegrees &&
-           other.leftDegrees == leftDegrees;
   }
 
   bool operator!=(const VRFieldOfView& other) const {
@@ -346,53 +467,76 @@ struct VRDisplayState {
 
   // When true, indicates that the VR service has shut down
   bool shutdown;
+  std::array<uint8_t, 3> _padding1;
   // Minimum number of milliseconds to wait before attempting
   // to start the VR service again
   uint32_t minRestartInterval;
-  char displayName[kVRDisplayNameMaxLen];
+  std::array<char, kVRDisplayNameMaxLen> displayName;
   // eight byte character code identifier
   // LSB first, so "ABCDEFGH" -> ('H'<<56) + ('G'<<48) + ('F'<<40) +
   //                             ('E'<<32) + ('D'<<24) + ('C'<<16) +
   //                             ('B'<<8) + 'A').
   uint64_t eightCC;
   VRDisplayCapabilityFlags capabilityFlags;
-  VRDisplayBlendMode blendModes[kVRBlendModesMaxLen];
-  VRFieldOfView eyeFOV[VRDisplayState::NumEyes];
-  float eyeTransform[VRDisplayState::NumEyes][16];
+  std::array<VRDisplayBlendMode, kVRBlendModesMaxLen> blendModes;
+  std::array<uint8_t, 5 - kVRBlendModesMaxLen + 1> _padding2;
+  std::array<VRFieldOfView, VRDisplayState::NumEyes> eyeFOV;
+  static_assert(std::is_pod<VRFieldOfView>::value);
+  std::array<std::array<float, 16>, VRDisplayState::NumEyes> eyeTransform;
+  static_assert(std::is_pod<Point3D_POD>::value);
   IntSize_POD eyeResolution;
+  static_assert(std::is_pod<IntSize_POD>::value);
   float nativeFramebufferScaleFactor;
   bool suppressFrames;
   bool isConnected;
   bool isMounted;
+  uint8_t _padding3;
   FloatSize_POD stageSize;
+  static_assert(std::is_pod<FloatSize_POD>::value);
   // We can't use a Matrix4x4 here unless we ensure it's a POD type
-  float sittingToStandingTransform[16];
+  std::array<float, 16> sittingToStandingTransform;
   uint64_t lastSubmittedFrameId;
   bool lastSubmittedFrameSuccessful;
+  std::array<uint8_t, 3> _padding4;
   uint32_t presentingGeneration;
   // Telemetry
   bool reportsDroppedFrames;
+  std::array<uint8_t, 7> _padding5;
   uint64_t droppedFrameCount;
 
 #ifdef MOZILLA_INTERNAL_API
+  auto MutTiedFields() {
+    return std::tie(shutdown, _padding1, minRestartInterval, displayName,
+                    eightCC, capabilityFlags, blendModes, _padding2, eyeFOV,
+                    eyeTransform, eyeResolution, nativeFramebufferScaleFactor,
+                    suppressFrames, isConnected, isMounted, _padding3,
+                    stageSize, sittingToStandingTransform, lastSubmittedFrameId,
+                    lastSubmittedFrameSuccessful, _padding4,
+                    presentingGeneration, reportsDroppedFrames, _padding5,
+                    droppedFrameCount);
+  }
+
+  bool operator==(const VRDisplayState& other) const {
+    return TiedFields(*this) == TiedFields(other);
+  }
+
   void Clear() { memset(this, 0, sizeof(VRDisplayState)); }
 #endif
 };
-
-struct VRHandJointData {
-  float transform[16];
-  float radius;
-};
+static_assert(std::is_pod<VRDisplayState>::value);
 
 // https://www.w3.org/TR/webxr-hand-input-1/#skeleton-joints-section
 static const uint32_t kHandTrackingNumJoints = 25;
-
+struct VRHandJointData {
+  std::array<float, 16> transform;
+  float radius;
+};
 struct VRHandTrackingData {
-  VRHandJointData handJointData[kHandTrackingNumJoints];
+  std::array<VRHandJointData, kHandTrackingNumJoints> handJointData;
 };
 
 struct VRControllerState {
-  char controllerName[kVRControllerNameMaxLen];
+  std::array<char, kVRControllerNameMaxLen> controllerName;
 #ifdef MOZILLA_INTERNAL_API
   dom::GamepadHand hand;
 #else
@@ -406,6 +550,8 @@ struct VRControllerState {
 
   // https://immersive-web.github.io/webxr-gamepads-module/#enumdef-gamepadmappingtype
   GamepadMappingType mappingType;
+
+  uint32_t _padding1;
 
   // Start frame ID of the most recent primary select
   // action, or 0 if the select action has never occurred.
@@ -430,18 +576,21 @@ struct VRControllerState {
   uint32_t numButtons;
   uint32_t numAxes;
   uint32_t numHaptics;
+  uint32_t _padding2;
   // The current button pressed bit of button mask.
   uint64_t buttonPressed;
   // The current button touched bit of button mask.
   uint64_t buttonTouched;
-  float triggerValue[kVRControllerMaxButtons];
-  float axisValue[kVRControllerMaxAxis];
+  std::array<float, kVRControllerMaxButtons> triggerValue;
+  std::array<float, kVRControllerMaxAxis> axisValue;
 
 #ifdef MOZILLA_INTERNAL_API
   dom::GamepadCapabilityFlags flags;
 #else
   ControllerCapabilityFlags flags;
 #endif
+
+  uint16_t _padding3;
 
   // When Cap_Position is set in flags, pose corresponds
   // to the controllers' pose in grip space:
@@ -458,8 +607,23 @@ struct VRControllerState {
 
   bool hasHandTrackingData;
   VRHandTrackingData handTrackingData;
+  uint16_t _padding4;
 
 #ifdef MOZILLA_INTERNAL_API
+  auto MutTiedFields() {
+    return std::tie(controllerName, hand, type, targetRayMode, mappingType,
+                    _padding1, selectActionStartFrameId,
+                    selectActionStopFrameId, squeezeActionStartFrameId,
+                    squeezeActionStopFrameId, numButtons, numAxes, numHaptics,
+                    _padding2, buttonPressed, buttonTouched, triggerValue,
+                    axisValue, flags, _padding3, pose, targetRayPose,
+                    isPositionValid, isOrientationValid, _padding4);
+  }
+
+  bool operator==(const VRControllerState& other) const {
+    return TiedFields(*this) == TiedFields(other);
+  }
+
   void Clear() { memset(this, 0, sizeof(VRControllerState)); }
 #endif
 };
@@ -549,7 +713,7 @@ struct VRBrowserState {
   bool detectRuntimesOnly;
   bool presentationActive;
   bool navigationTransitionActive;
-  bool dropFame;
+  bool dropFrame;
   VRLayerState layerState[kVRLayerMaxCount];
   VRHapticState hapticState[kVRHapticsMaxCount];
   VRDisplayBlendMode blendMode;
@@ -564,8 +728,13 @@ struct VRSystemState {
   bool enumerationCompleted;
   VRDisplayState displayState;
   VRHMDSensorState sensorState;
-  VRControllerState controllerState[kVRControllerMaxCount];
+  std::array<VRControllerState, kVRControllerMaxCount> controllerState;
 };
+static_assert(std::is_pod<VRDisplayState>::value);
+static_assert(std::is_pod<VRHMDSensorState>::value);
+static_assert(std::is_pod<VRControllerState>::value);
+
+static_assert(std::is_pod<VRSystemState>::value);
 
 enum class VRFxEventType : uint8_t {
   NONE = 0,
@@ -694,6 +863,11 @@ struct VRExternalShmem {
 
 // As we are memcpy'ing VRExternalShmem and its members around, it must be a POD
 // type
+static_assert(std::is_pod<VRSystemState>::value);
+static_assert(std::is_pod<VRBrowserState>::value);
+static_assert(std::is_pod<VRWindowState>::value);
+static_assert(std::is_pod<VRTelemetryState>::value);
+
 static_assert(std::is_pod<VRExternalShmem>::value,
               "VRExternalShmem must be a POD type.");
 
