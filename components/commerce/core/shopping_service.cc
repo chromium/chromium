@@ -301,8 +301,8 @@ ShoppingService::ShoppingService(
         CanLoadProductSpecificationsFullPageUi(account_checker_.get())) {
       cluster_manager_ = std::make_unique<ClusterManager>(
           product_specifications_service_,
-          std::make_unique<ClusterServerProxy>(identity_manager,
-                                               url_loader_factory),
+          std::make_unique<ClusterServerProxy>(
+              identity_manager, url_loader_factory, account_checker_.get()),
           base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,
