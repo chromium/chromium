@@ -3620,10 +3620,7 @@ static_library("ui") {
         "views/status_icons/status_icon_linux_dbus.cc",
         "views/status_icons/status_icon_linux_dbus.h",
       ]
-      deps += [
-        "//components/dbus/menu",
-        "//components/dbus/thread_linux",
-      ]
+      deps += [ "//components/dbus" ]
     }
 
     # TODO(crbug.com/40193891): ozone_platform_x11 should not be leaked outside
@@ -5181,7 +5178,7 @@ static_library("ui") {
           "views/dark_mode_manager_linux.h",
         ]
         deps += [
-          "//components/dbus/thread_linux",
+          "//components/dbus",
           "//dbus",
         ]
       }

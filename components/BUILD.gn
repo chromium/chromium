@@ -830,12 +830,7 @@ test("components_unittests") {
   }
 
   if (use_dbus) {
-    deps += [
-      "//components/dbus/menu:unit_tests",
-      "//components/dbus/properties:unit_tests",
-      "//components/dbus/utils:unit_tests",
-      "//components/dbus/xdg:unit_tests",
-    ]
+    deps += [ "//components/dbus:unit_tests" ]
   }
 
   if (enable_pdf) {

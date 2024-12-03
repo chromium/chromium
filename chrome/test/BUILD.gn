@@ -9077,8 +9077,7 @@ test("unit_tests") {
         "../browser/ui/views/dark_mode_manager_linux_unittest.cc",
       ]
       deps += [
-        "//components/dbus/properties",
-        "//components/dbus/thread_linux",
+        "//components/dbus",
         "//dbus:test_support",
         "//ui/linux:test_support",
       ]

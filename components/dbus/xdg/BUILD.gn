@@ -3,12 +3,14 @@
 # found in the LICENSE file.
 
 source_set("xdg") {
+  visibility = [ "//components/dbus/*" ]
   sources = [
     "request.cc",
     "request.h",
     "systemd.cc",
     "systemd.h",
   ]
+  defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
   deps = [
     "//base",
     "//build:branding_buildflags",
@@ -19,6 +21,7 @@ source_set("xdg") {
 
 source_set("unit_tests") {
   testonly = true
+  visibility = [ "//components/dbus:unit_tests" ]
   sources = [ "systemd_unittest.cc" ]
   deps = [
     ":xdg",

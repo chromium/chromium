@@ -68,10 +68,7 @@ if (is_linux && use_dbus) {
     deps = [
       ":key_provider_interface",
       "//base",
-      "//components/dbus/properties",
-      "//components/dbus/thread_linux",
-      "//components/dbus/utils",
-      "//components/dbus/xdg",
+      "//components/dbus",
       "//components/os_crypt/async/common",
       "//components/os_crypt/sync",
       "//components/prefs",
@@ -92,8 +89,7 @@ if (is_linux && use_dbus) {
       ":key_provider_interface",
       ":secret_portal_key_provider",
       "//base",
-      "//components/dbus/properties",
-      "//components/dbus/utils",
+      "//components/dbus",
       "//components/os_crypt/async/common",
       "//dbus",
       "//testing/gtest",
@@ -129,8 +125,7 @@ source_set("unit_tests") {
     sources += [ "secret_portal_key_provider_unittest.cc" ]
     deps += [
       ":secret_portal_key_provider",
-      "//components/dbus/properties",
-      "//components/dbus/utils",
+      "//components/dbus",
       "//components/prefs:test_support",
       "//dbus:test_support",
       "//testing/gmock",

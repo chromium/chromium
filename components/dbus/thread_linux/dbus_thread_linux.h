@@ -23,7 +23,7 @@
 namespace dbus_thread_linux {
 
 // Obtains a task runner to handle DBus IO for usage on desktop Linux.
-COMPONENT_EXPORT(DBUS)
+COMPONENT_EXPORT(COMPONENTS_DBUS)
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
 }  // namespace dbus_thread_linux
