@@ -171,10 +171,6 @@ const base::FeatureParam<int>
         &kExtensionTelemetryForEnterprise, "EnterpriseReportingIntervalSeconds",
         /*default_value=*/300};
 
-BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
-             "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionTelemetryReportContactedHosts,
              "SafeBrowsingExtensionTelemetryReportContactedHosts",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -356,7 +352,6 @@ base::Value::List GetFeatureStatusList() {
       &kExtensionTelemetryDisableOffstoreExtensions,
       &kExtensionTelemetryForEnterprise,
       &kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
-      &kExtensionTelemetryPotentialPasswordTheft,
       &kExtensionTelemetryReportContactedHosts,
       &kExtensionTelemetryReportHostsContactedViaWebSocket,
       &kExtensionTelemetryTabsExecuteScriptSignal,
