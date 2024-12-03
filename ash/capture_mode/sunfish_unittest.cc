@@ -2694,6 +2694,30 @@ TEST_F(ScannerTest, GlowAnimationAfterPressingSmartActionsButton) {
   EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
 }
 
+// Tests that a glow animation is removed if the capture source changes.
+TEST_F(ScannerTest, GlowAnimationRemovedOnCaptureSourceChange) {
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  ASSERT_TRUE(smart_actions_button);
+  auto* capture_mode_controller = CaptureModeController::Get();
+  CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  CaptureRegionOverlayController* region_overlay_controller =
+      session_test_api.GetCaptureRegionOverlayController();
+  ASSERT_TRUE(region_overlay_controller);
+  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+
+  // Click on the smart actions button. Glow should be shown.
+  LeftClickOn(smart_actions_button);
+  WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
+
+  EXPECT_TRUE(region_overlay_controller->glow_animation_for_testing());
+
+  // Switch to video. Glow should be removed.
+  capture_mode_controller->SetType(CaptureModeType::kVideo);
+
+  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+}
+
 TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
   base::HistogramTester histogram_tester;
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(

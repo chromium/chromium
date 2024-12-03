@@ -954,10 +954,6 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   capture_toast_controller_.MaybeRepositionCaptureToast();
 }
 
-void CaptureModeSession::InvalidateImageSearchTokens() {
-  weak_token_factory_.InvalidateWeakPtrs();
-}
-
 views::Widget* CaptureModeSession::GetCaptureModeBarWidget() {
   return capture_mode_bar_widget_.get();
 }
@@ -1003,7 +999,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   A11yAlertCaptureSource(/*trigger_now=*/true);
 
   MaybeReparentCameraPreviewWidget();
-  InvalidateImageSearchTokens();
+  InvalidateImageSearch();
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
@@ -1015,7 +1011,7 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
                /*is_touch=*/false);
 
   A11yAlertCaptureType();
-  InvalidateImageSearchTokens();
+  InvalidateImageSearch();
 }
 
 void CaptureModeSession::OnRecordingTypeChanged() {
@@ -2549,7 +2545,7 @@ void CaptureModeSession::OnLocatedEventPressed(
   wm::ConvertPointToScreen(current_root_, &screen_location);
   MaybeUpdateCaptureUisOpacity(screen_location);
 
-  InvalidateImageSearchTokens();
+  InvalidateImageSearch();
 
   // Run `MaybeUpdateCameraPreviewBounds` at the exit of this function's
   // scope since the camera preview should be hidden if user is dragging to
@@ -2729,11 +2725,6 @@ void CaptureModeSession::UpdateCaptureRegion(
   if (old_capture_region == new_capture_region)
     return;
 
-  // TODO(crbug.com/374381937): The glow animation should also be removed in
-  // other situations where Scanner processing becomes invalid, e.g. alongside
-  // `InvalidateImageSearchTokens()`.
-  MaybeRemoveGlowAnimation();
-
   // Calculate the region that has been damaged and repaint the layer. Add some
   // extra padding to make sure the border and affordance circles are also
   // repainted.
@@ -2742,11 +2733,15 @@ void CaptureModeSession::UpdateCaptureRegion(
   damage_region.Inset(gfx::Insets(-kDamageInsetDp));
   layer()->SchedulePaint(damage_region);
 
+  // Invalidate any ongoing image search before the new capture region is
+  // applied, so that loading animations can be removed by scheduling a repaint
+  // around the old capture bounds if needed.
+  InvalidateImageSearch();
+
   controller_->SetUserCaptureRegion(new_capture_region, by_user);
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
-  InvalidateImageSearchTokens();
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -3086,10 +3081,14 @@ bool CaptureModeSession::IsUsingCustomCursor(CaptureModeType type) const {
 }
 
 void CaptureModeSession::ClampCaptureRegionToRootWindowSize() {
+  // Invalidate any ongoing image search before the new capture region is
+  // applied, so that loading animations can be removed by scheduling a repaint
+  // around the old capture bounds if needed.
+  InvalidateImageSearch();
+
   gfx::Rect new_capture_region = controller_->user_capture_region();
   new_capture_region.AdjustToFit(current_root_->bounds());
   controller_->SetUserCaptureRegion(new_capture_region, /*by_user=*/false);
-  InvalidateImageSearchTokens();
 }
 
 void CaptureModeSession::EndSelection(
@@ -3104,7 +3103,7 @@ void CaptureModeSession::EndSelection(
   UpdateActionContainerWidget();
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   CloseMagnifierGlass();
-  InvalidateImageSearchTokens();
+  InvalidateImageSearch();
 }
 
 void CaptureModeSession::RepaintRegion() {
@@ -3471,6 +3470,11 @@ void CaptureModeSession::RefreshGlowRegion() {
       layer(), controller_->user_capture_region());
 }
 
+void CaptureModeSession::InvalidateImageSearch() {
+  weak_token_factory_.InvalidateWeakPtrs();
+  MaybeRemoveGlowAnimation();
+}
+
 void CaptureModeSession::InitInternal() {
   layer()->set_delegate(this);
   auto* parent = GetParentContainer(current_root_);
@@ -3575,7 +3579,7 @@ void CaptureModeSession::InitInternal() {
 void CaptureModeSession::ShutdownInternal() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
   capture_region_overlay_controller_.reset();
-  InvalidateImageSearchTokens();
+  InvalidateImageSearch();
   display_observer_.reset();
   user_nudge_controller_.reset();
   capture_window_observer_.reset();
