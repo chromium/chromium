@@ -49,6 +49,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/keyboard_layout.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -1120,6 +1121,87 @@ TEST_F(TextfieldTest, MAYBE_KeysWithModifiersTest) {
     EXPECT_EQ(u"TheTxE134", textfield_->GetText());
   else
     EXPECT_EQ(u"TeTEx234", textfield_->GetText());
+}
+
+TEST_F(TextfieldTest, AccessibleTextSelectBound) {
+  InitTextfield();
+  ui::AXNodeData data;
+  gfx::Range range(4, 8);
+  auto canvas = std::make_unique<gfx::Canvas>(gfx::Size(1, 1), 1.0, false);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->OnPaint(canvas.get());
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 11);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 11);
+
+  textfield_->SetSelectedRange(range);
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 8);
+
+  textfield_->ExtendSelectionAndDelete(2, 1);
+  textfield_->SelectAll(false);
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 4);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->SetSelectedRange(range);
+  SendAlternateCut();
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 4);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->SetSelectedRange(range);
+  SendAlternateCopy();
+  SendAlternatePaste();
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 8);
+
+  textfield_->SetText(u"Setting text for test");
+  textfield_->SetEditableSelectionRange(gfx::Range(0));
+  textfield_->SelectWord();
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Setting", textfield_->GetSelectedText());
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 7);
+
+  textfield_->DeleteRange(textfield_->GetSelectedRange());
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 0);
+
+  textfield_->SetText(u"SettingText : ");
+  ui::KeyEvent key_event = ui::KeyEvent::FromCharacter(
+      0x5A, ui::VKEY_Z, ui::DomCode::NONE, ui::EF_NONE);
+  textfield_->InsertChar(key_event);
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 15);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 15);
+
+  textfield_->SetText(u"0123456789");
+  textfield_->SetSelectedRange(gfx::Range(3, 5));
+  textfield_->AddSecondarySelectedRange(gfx::Range(7, 9));
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 3);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 5);
 }
 
 TEST_F(TextfieldTest, ControlAndSelectTest) {
