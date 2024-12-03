@@ -2808,12 +2808,13 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.FormFillSuccessIOS"
-    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2024-12-12">
+    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2025-12-12">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records whether the form was successfully filled by Autofill on iOS.
+    Recorded after receiving the filling results from the renderer.
   </summary>
 </histogram>
 
