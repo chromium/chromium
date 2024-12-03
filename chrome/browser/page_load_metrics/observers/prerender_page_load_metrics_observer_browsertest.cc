@@ -11,11 +11,9 @@
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/preloading_trigger_type.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
-#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -645,7 +643,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   GURL prerender_iframe_url = embedded_test_server()->GetURL("/title1.html");
   prerender_helper_.AddPrerender(prerender_url);
   prerender_helper_.WaitForPrerenderLoadCompletion(prerender_url);
-
   content::test::PrerenderHostObserver observer(*web_contents(), prerender_url);
   prerender_helper_.NavigatePrimaryPage(prerender_url);
 
@@ -676,87 +673,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
           "PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus",
           content::PreloadingTriggerType::kSpeculationRule, ""),
       net::Error::OK, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       DomLoadedBeforeActivation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Navigate to an initial page.
-  auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
-
-  // Start a prerender.
-  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
-  prerender_helper_.AddPrerender(prerender_url);
-  prerender_helper_.WaitForPrerenderLoadCompletion(prerender_url);
-  content::test::PrerenderHostObserver observer(*web_contents(), prerender_url);
-  prerender_helper_.NavigatePrimaryPage(prerender_url);
-  // Flush metrics.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
-
-  histogram_tester().ExpectTotalCount(
-      prerender_helper_.GenerateHistogramName(
-          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation",
-          content::PreloadingTriggerType::kSpeculationRule, ""),
-      1);
-  std::unique_ptr<base::HistogramSamples> samples =
-      histogram_tester().GetHistogramSamplesSinceCreation(
-          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation");
-  EXPECT_GE(samples->sum(), 0);
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       DomLoadedAfterActivation) {
-  net::test_server::ControllableHttpResponse response(
-      embedded_test_server(), "/prerender/slow_layout.js");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Navigate to an initial page.
-  auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
-
-  // Start a prerender.
-  GURL prerender_url = embedded_test_server()->GetURL(
-      "/prerender/defer_domcontent_loaded_till_activation.html");
-  content::test::PrerenderHostRegistryObserver registry_observer(
-      *web_contents());
-  prerender_helper_.AddPrerenderAsync(prerender_url);
-  registry_observer.WaitForTrigger(prerender_url);
-  response.WaitForRequest();
-  content::RenderFrameHost* rfh =
-      prerender_helper_.GetPrerenderedMainFrameHost(prerender_url);
-
-  // The prerendered page is not loaded yet.
-  ASSERT_TRUE(rfh);
-  ASSERT_EQ(false, EvalJs(rfh, "dom_content_loaded_called"));
-
-  // Activate the page, and then release the blocking script.
-  content::test::PrerenderHostObserver observer(*web_contents(), prerender_url);
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents());
-  waiter->AddPageExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
-  std::ignore = ExecJs(web_contents()->GetPrimaryMainFrame(),
-                       content::JsReplace("location = $1", prerender_url));
-  observer.WaitForActivation();
-  response.Send(net::HTTP_OK, "text/javascript", "");
-  response.Done();
-  waiter->Wait();
-
-  // Flush metrics.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
-  histogram_tester().ExpectTotalCount(
-      prerender_helper_.GenerateHistogramName(
-          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation",
-          content::PreloadingTriggerType::kSpeculationRule, ""),
-      1);
-  std::unique_ptr<base::HistogramSamples> samples =
-      histogram_tester().GetHistogramSamplesSinceCreation(
-          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation");
-  EXPECT_LE(samples->sum(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,

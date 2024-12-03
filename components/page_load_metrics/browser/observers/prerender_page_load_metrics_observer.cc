@@ -56,10 +56,6 @@ const char kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[] =
 const char kPageLoadPrerenderActivatedPageLoaderStatus[] =
     "PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus";
 
-// Lead time brought by prerender
-const char kDomContentLoadedToActivation[] =
-    "PageLoad.Internal.Prerender2.DomContentLoadedToActivation";
-
 }  // namespace internal
 
 PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
@@ -113,12 +109,11 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
   // |navigation_handle| here is for the activation navigation, while
   // |GetDelegate().GetNavigationStart()| is the start time of initial prerender
   // navigation.
-  navigation_to_activation_time_ =
+  base::TimeDelta navigation_to_activation =
       navigation_handle->NavigationStart() - GetDelegate().GetNavigationStart();
   base::UmaHistogramCustomTimes(
       AppendSuffix(internal::kHistogramPrerenderNavigationToActivation),
-      navigation_to_activation_time_.value(), base::Milliseconds(10),
-      base::Minutes(10), 100);
+      navigation_to_activation, base::Milliseconds(10), base::Minutes(10), 100);
 
   ukm::builders::PrerenderPageLoad builder(GetDelegate().GetPageUkmSourceId());
   if (main_frame_resource_has_no_store_.has_value()) {
@@ -137,7 +132,7 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
 
   builder.SetWasPrerendered(true)
       .SetTiming_NavigationToActivation(
-          navigation_to_activation_time_.value().InMilliseconds())
+          navigation_to_activation.InMilliseconds())
       .SetNavigation_PageTransition(navigation_handle->GetPageTransition())
       .SetNavigation_InitiatorLocation(
           static_cast<int>(prerender_trigger_type));
@@ -234,34 +229,9 @@ PrerenderPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   return STOP_OBSERVING;
 }
 
-void PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics(
-    const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
-  if (!trigger_type_ || !main_resource_load_status_.has_value()) {
-    return;
-  }
-  CHECK(navigation_to_activation_time_.has_value());
-  const base::TimeDelta upper_bound = base::Minutes(1);
-
-  // If the event is not set, treat it's timestamp as infinite and then clamp it
-  // to the lower bound of the histogram, which indicates that the event is
-  // never fired.
-  base::TimeDelta dom_content_loaded_event_start =
-      main_frame_timing.document_timing->dom_content_loaded_event_start
-          .value_or(upper_bound + navigation_to_activation_time_.value());
-
-  base::UmaHistogramCustomTimes(
-      AppendSuffix(internal::kDomContentLoadedToActivation),
-      navigation_to_activation_time_.value() - dom_content_loaded_event_start,
-      -upper_bound, upper_bound, 100);
-
-  // TODO(crbug.com/40240492): Add more metrics to track the loading progress on
-  // the renderer side, e.g., loaded the blocking resources, etc.
-}
-
 void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
     const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
   MaybeRecordMainResourceLoadStatus();
-  MaybeRecordDocumentLoadMetrics(main_frame_timing);
 
   if (!GetDelegate().WasPrerenderedThenActivatedInForeground() ||
       !main_frame_timing.activation_start) {
