@@ -42,11 +42,11 @@
 namespace commerce {
 namespace {
 
-shopping_service::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
+shared::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
     bookmarks::BookmarkModel& model,
     const bookmarks::BookmarkNode* node,
     const std::string& locale) {
-  auto bookmark_info = shopping_service::mojom::BookmarkProductInfo::New();
+  auto bookmark_info = shared::mojom::BookmarkProductInfo::New();
   bookmark_info->bookmark_id = node->id();
 
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
@@ -54,7 +54,7 @@ shopping_service::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
   const power_bookmarks::ShoppingSpecifics specifics =
       meta->shopping_specifics();
 
-  bookmark_info->info = shopping_service::mojom::ProductInfo::New();
+  bookmark_info->info = shared::mojom::ProductInfo::New();
   bookmark_info->info->title = specifics.title();
   bookmark_info->info->domain = base::UTF16ToUTF8(
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
@@ -381,8 +381,8 @@ void RecordQualityEntry(
 }
 }  // namespace
 
-using shopping_service::mojom::BookmarkProductInfo;
-using shopping_service::mojom::BookmarkProductInfoPtr;
+using shared::mojom::BookmarkProductInfo;
+using shared::mojom::BookmarkProductInfoPtr;
 
 ShoppingServiceHandler::ShoppingServiceHandler(
     mojo::PendingRemote<shopping_service::mojom::Page> remote_page,
@@ -550,8 +550,8 @@ void ShoppingServiceHandler::HandleSubscriptionChange(
   // TODO(crbug.com/40066977): Update mojo call to pass cluster ID and make
   // BookmarkProductInfo a nullable parameter.
   if (!bookmarks.size()) {
-    auto bookmark_info = shopping_service::mojom::BookmarkProductInfo::New();
-    bookmark_info->info = shopping_service::mojom::ProductInfo::New();
+    auto bookmark_info = shared::mojom::BookmarkProductInfo::New();
+    bookmark_info->info = shared::mojom::ProductInfo::New();
     bookmark_info->info->cluster_id = cluster_id;
     remote_page_->PriceUntrackedForBookmark(std::move(bookmark_info));
     return;
@@ -611,7 +611,7 @@ void ShoppingServiceHandler::GetProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback) {
   if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
       !delegate_->GetCurrentTabUrl().has_value()) {
-    std::move(callback).Run(shopping_service::mojom::ProductInfo::New());
+    std::move(callback).Run(shared::mojom::ProductInfo::New());
     return;
   }
 
@@ -622,8 +622,7 @@ void ShoppingServiceHandler::GetProductInfoForCurrentUrl(
              GetProductInfoForCurrentUrlCallback callback, const GURL& url,
              const std::optional<const ProductInfo>& info) {
             if (!handler) {
-              std::move(callback).Run(
-                  shopping_service::mojom::ProductInfo::New());
+              std::move(callback).Run(shared::mojom::ProductInfo::New());
               return;
             }
 
@@ -642,8 +641,8 @@ void ShoppingServiceHandler::GetProductInfoForUrl(
                   GetProductInfoForUrlCallback callback, const GURL& url,
                   const std::optional<const ProductInfo>& info) {
                  if (!handler) {
-                   std::move(callback).Run(
-                       url, shopping_service::mojom::ProductInfo::New());
+                   std::move(callback).Run(url,
+                                           shared::mojom::ProductInfo::New());
                    return;
                  }
 

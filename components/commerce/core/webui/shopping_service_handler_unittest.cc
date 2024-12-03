@@ -63,20 +63,19 @@ class MockPage : public shopping_service::mojom::Page {
 
   MOCK_METHOD(void,
               PriceTrackedForBookmark,
-              (shopping_service::mojom::BookmarkProductInfoPtr product),
+              (shared::mojom::BookmarkProductInfoPtr product),
               (override));
   MOCK_METHOD(void,
               PriceUntrackedForBookmark,
-              (shopping_service::mojom::BookmarkProductInfoPtr product),
+              (shared::mojom::BookmarkProductInfoPtr product),
               (override));
   MOCK_METHOD(void,
               OperationFailedForBookmark,
-              (shopping_service::mojom::BookmarkProductInfoPtr product,
-               bool is_tracked),
+              (shared::mojom::BookmarkProductInfoPtr product, bool is_tracked),
               (override));
   MOCK_METHOD(void,
               OnProductBookmarkMoved,
-              (shopping_service::mojom::BookmarkProductInfoPtr product),
+              (shared::mojom::BookmarkProductInfoPtr product),
               (override));
 };
 
@@ -116,10 +115,10 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
 
 void GetEvaluationProductInfos(
     base::OnceClosure closure,
-    std::vector<shopping_service::mojom::BookmarkProductInfoPtr> expected,
-    std::vector<shopping_service::mojom::BookmarkProductInfoPtr> found) {
+    std::vector<shared::mojom::BookmarkProductInfoPtr> expected,
+    std::vector<shared::mojom::BookmarkProductInfoPtr> found) {
   ASSERT_EQ(expected.size(), found.size());
-  std::unordered_map<uint64_t, shopping_service::mojom::BookmarkProductInfoPtr*>
+  std::unordered_map<uint64_t, shared::mojom::BookmarkProductInfoPtr*>
       found_map;
   for (auto& item : found) {
     found_map[item->bookmark_id] = &item;
@@ -129,8 +128,7 @@ void GetEvaluationProductInfos(
     auto find_it = found_map.find(item->bookmark_id);
     ASSERT_FALSE(find_it == found_map.end());
 
-    shopping_service::mojom::BookmarkProductInfoPtr* found_item =
-        find_it->second;
+    shared::mojom::BookmarkProductInfoPtr* found_item = find_it->second;
 
     ASSERT_EQ(item->bookmark_id, (*found_item)->bookmark_id);
     ASSERT_EQ(item->info->current_price, (*found_item)->info->current_price);
@@ -245,9 +243,9 @@ TEST_F(ShoppingServiceHandlerTest, ConvertToMojoTypes) {
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
 
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> mojo_list =
+  std::vector<shared::mojom::BookmarkProductInfoPtr> mojo_list =
       ShoppingServiceHandler::BookmarkListToMojoList(*bookmark_model_,
-                                                  bookmark_list, "en-us");
+                                                     bookmark_list, "en-us");
 
   EXPECT_EQ(mojo_list[0]->bookmark_id, product->id());
   EXPECT_EQ(mojo_list[0]->info->current_price, "$1.23");
@@ -280,9 +278,9 @@ TEST_F(ShoppingServiceHandlerTest, ConvertToMojoTypes_PriceIncrease) {
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
 
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> mojo_list =
+  std::vector<shared::mojom::BookmarkProductInfoPtr> mojo_list =
       ShoppingServiceHandler::BookmarkListToMojoList(*bookmark_model_,
-                                                  bookmark_list, "en-us");
+                                                     bookmark_list, "en-us");
 
   EXPECT_EQ(mojo_list[0]->bookmark_id, product->id());
   EXPECT_EQ(mojo_list[0]->info->current_price, "$1.23");
@@ -436,9 +434,9 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductInfo_FeatureEnabled) {
   shopping_service_->SetGetAllPriceTrackedBookmarksCallbackValue(bookmark_list);
   shopping_service_->SetGetAllShoppingBookmarksValue(bookmark_list);
 
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> mojo_list =
+  std::vector<shared::mojom::BookmarkProductInfoPtr> mojo_list =
       ShoppingServiceHandler::BookmarkListToMojoList(*bookmark_model_,
-                                                  bookmark_list, "en-us");
+                                                     bookmark_list, "en-us");
 
   handler_->GetAllPriceTrackedBookmarkProductInfo(base::BindOnce(
       &GetEvaluationProductInfos, base::DoNothing(), std::move(mojo_list)));
@@ -462,9 +460,9 @@ TEST_F(ShoppingServiceHandlerTest, TestGetAllShoppingInfo_FeatureEnabled) {
   shopping_service_->SetGetAllPriceTrackedBookmarksCallbackValue(bookmark_list);
   shopping_service_->SetGetAllShoppingBookmarksValue(bookmark_list);
 
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> mojo_list =
+  std::vector<shared::mojom::BookmarkProductInfoPtr> mojo_list =
       ShoppingServiceHandler::BookmarkListToMojoList(*bookmark_model_,
-                                                  bookmark_list, "en-us");
+                                                     bookmark_list, "en-us");
 
   handler_->GetAllShoppingBookmarkProductInfo(
       base::BindOnce(&GetEvaluationProductInfos, run_loop.QuitClosure(),
@@ -485,8 +483,7 @@ TEST_F(ShoppingServiceHandlerTest,
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         shopping_service::mojom::ProductInfoPtr product_info) {
+      [](base::RunLoop* run_loop, shared::mojom::ProductInfoPtr product_info) {
         ASSERT_EQ("example_title", product_info->title);
         ASSERT_EQ("example_cluster_title", product_info->cluster_title);
         ASSERT_EQ(123u, product_info->cluster_id);
@@ -513,7 +510,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductInfoForUrl) {
       GURL("http://example.com/"),
       base::BindOnce(
           [](base::RunLoop* run_loop, const GURL& url,
-             shopping_service::mojom::ProductInfoPtr product_info) {
+             shared::mojom::ProductInfoPtr product_info) {
             ASSERT_EQ("example_title", product_info->title);
             ASSERT_EQ("example_cluster_title", product_info->cluster_title);
             ASSERT_EQ(123u, product_info->cluster_id);
@@ -536,8 +533,7 @@ TEST_F(ShoppingServiceHandlerTest,
   shopping_service_->SetIsPriceInsightsEligible(false);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         shopping_service::mojom::ProductInfoPtr product_info) {
+      [](base::RunLoop* run_loop, shared::mojom::ProductInfoPtr product_info) {
         ASSERT_EQ("", product_info->title);
         ASSERT_EQ("", product_info->cluster_title);
         run_loop->Quit();
@@ -1321,11 +1317,10 @@ TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_ShowRange) {
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("$100.00 - $200.00", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("$100.00 - $200.00", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1339,11 +1334,10 @@ TEST_F(ShoppingServiceHandlerTest,
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("$100.00+", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("$100.00+", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1357,11 +1351,10 @@ TEST_F(ShoppingServiceHandlerTest,
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("$200.00", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("$200.00", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1374,11 +1367,10 @@ TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_Unspecified) {
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("-", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("-", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1391,11 +1383,10 @@ TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_SinglePrice) {
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("$150.00", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("$150.00", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1443,7 +1434,7 @@ TEST_F(ShoppingServiceHandlerFeatureDisableTest,
 
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> empty_list;
+  std::vector<shared::mojom::BookmarkProductInfoPtr> empty_list;
 
   handler_->GetAllPriceTrackedBookmarkProductInfo(base::BindOnce(
       &GetEvaluationProductInfos, base::DoNothing(), std::move(empty_list)));

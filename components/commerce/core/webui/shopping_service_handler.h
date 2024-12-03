@@ -169,7 +169,7 @@ class ShoppingServiceHandler
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
 
-  static std::vector<shopping_service::mojom::BookmarkProductInfoPtr>
+  static std::vector<shared::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(
       bookmarks::BookmarkModel& model,
       const std::vector<const bookmarks::BookmarkNode*>& bookmarks,

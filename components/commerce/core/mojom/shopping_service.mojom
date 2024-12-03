@@ -10,56 +10,6 @@ import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "components/commerce/core/mojom/shared.mojom";
 
-// This is a specialized version of shopping_specifics proto. The
-// struct here has most of the same information with the proto but
-// focuses more on UI needs.
-struct ProductInfo {
-  // The title of the product.
-  string title;
-
-  // The title of the product cluster.
-  string cluster_title;
-
-  // The eTLD+1 domain of the merchant website where the
-  // product was originally tracked on. This should only be used
-  // for showing this information directly on the UI.
-  string domain;
-
-  // Direct link to the product image.
-  url.mojom.Url image_url;
-
-  // Direct link to the product page.
-  url.mojom.Url product_url;
-
-  // Price as shown in the page. This should include
-  // both the amount and the currency symbol.
-  string current_price;
-
-  // Previous price if there has been a price drop.
-  // This should include both the amount and the currency
-  // symbol.
-  string previous_price;
-
-  // The product cluster id.
-  uint64 cluster_id;
-
-  // The category labels of the product.
-  array<string> category_labels;
-
-  // A formatted string showing the summary of the product's price. This may be
-  // a range or a singular value and may not match the |current_price| above (as
-  // it represents a single offer).
-  string price_summary;
-};
-
-struct BookmarkProductInfo {
-  // The ID of the bookmark that owns this product info.
-  int64 bookmark_id;
-
-  // The product information associated with 'bookmark_id'.
-  ProductInfo info;
-};
-
 struct PricePoint {
   string date;
   float price;
@@ -218,11 +168,11 @@ interface ShoppingServiceHandlerFactory {
 interface ShoppingServiceHandler {
   // Returns all the tracked product info from bookmarks.
   GetAllPriceTrackedBookmarkProductInfo()
-      => (array<BookmarkProductInfo> productInfos);
+      => (array<commerce.shared.mojom.BookmarkProductInfo> productInfos);
 
   // Returns all the product info for shopping/product bookmarks.
   GetAllShoppingBookmarkProductInfo()
-      => (array<BookmarkProductInfo> productInfos);
+      => (array<commerce.shared.mojom.BookmarkProductInfo> productInfos);
 
   // Track price for bookmark with 'bookmark_id'.
   TrackPriceForBookmark(int64 bookmark_id);
@@ -231,11 +181,12 @@ interface ShoppingServiceHandler {
   UntrackPriceForBookmark(int64 bookmark_id);
 
   // Returns the product info for current url.
-  GetProductInfoForCurrentUrl() => (ProductInfo productInfo);
+  GetProductInfoForCurrentUrl()
+      => (commerce.shared.mojom.ProductInfo productInfo);
 
   // Returns the product info for the provided URL.
   GetProductInfoForUrl(url.mojom.Url url)
-      => (url.mojom.Url url, ProductInfo productInfo);
+      => (url.mojom.Url url, commerce.shared.mojom.ProductInfo productInfo);
 
   // Returns the price insights info for current url.
   GetPriceInsightsInfoForCurrentUrl()
@@ -327,11 +278,13 @@ interface ShoppingServiceHandler {
 interface Page {
   // Callback when a bookmark is observed to start being price tracked and
   // pass along the `BookmarkProductInfo` constructed from it.
-  PriceTrackedForBookmark(BookmarkProductInfo bookmark_product);
+  PriceTrackedForBookmark(
+      commerce.shared.mojom.BookmarkProductInfo bookmark_product);
 
   // Callback when a bookmark is observed to stop being price tracked and
   // pass along the `BookmarkProductInfo` constructed from it.
-  PriceUntrackedForBookmark(BookmarkProductInfo bookmark_product);
+  PriceUntrackedForBookmark(
+      commerce.shared.mojom.BookmarkProductInfo bookmark_product);
 
   // Callback to notify the WebUI to show error UI when a track/untrack
   // attempt is failed and pass along the `BookmarkProductInfo`
@@ -339,9 +292,11 @@ interface Page {
   // operation is to track price, false when the failed operation is to
   // untrack price.
   OperationFailedForBookmark(
-      BookmarkProductInfo bookmark_product, bool attempted_track);
+      commerce.shared.mojom.BookmarkProductInfo bookmark_product,
+      bool attempted_track);
 
   // Callback when a product bookmark is observed to be moved and
   // pass along the BookmarkProductInfo of the product.
-  OnProductBookmarkMoved(BookmarkProductInfo bookmark_product);
+  OnProductBookmarkMoved(
+      commerce.shared.mojom.BookmarkProductInfo bookmark_product);
 };

@@ -104,11 +104,11 @@ std::string GetFormattedPriceSummary(const ProductInfo& product_info,
 
 }  // namespace
 
-shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
+shared::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
     const std::optional<const ProductInfo>& info,
     const std::string& locale) {
-  auto product_info = shopping_service::mojom::ProductInfo::New();
+  auto product_info = shared::mojom::ProductInfo::New();
 
   if (!info.has_value()) {
     return product_info;
