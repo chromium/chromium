@@ -70,6 +70,21 @@ _DEDUPE_ENTRY_TYPES = _COMPONENT_TYPES + ('activity-alias', 'meta-data')
 
 _ROTATION_METADATA_KEY = 'com.google.play.apps.signing/RotationConfig.textproto'
 
+_ALLOWLISTED_NON_BASE_SERVICES = {
+    # Only on API level 33+ which is past the fix for b/169196314.
+    'androidx.pdf.service.PdfDocumentServiceImpl',
+    'androidx.pdf.service.PdfDocumentService',
+    # These need to be burned down.
+    'androidx.room.MultiInstanceInvalidationService',
+    'com.google.apps.tiktok.concurrent.AndroidFuturesService',
+    'com.google.apps.tiktok.concurrent.InternalForegroundService',
+}
+_ALLOWLISTED_NON_BASE_PROVIDERS = {
+    # These need to be burned down.
+    ('com.google.android.libraries.sharing.sharekit.provider.'
+     'ShareKitContentProvider')
+}
+
 
 def _ParseArgs(args):
   parser = argparse.ArgumentParser()
@@ -488,7 +503,7 @@ def _ValidateSplits(bundle_path, module_zips):
 
   # Remaining checks apply only when isolatedSplits="true".
   isolated_splits = manifests_by_name['base'].get(
-      f'{manifest_utils.ANDROID_NAMESPACE}isolatedSplits')
+      f'{{{manifest_utils.ANDROID_NAMESPACE}}}isolatedSplits')
   if isolated_splits != 'true':
     return errors
 
@@ -499,18 +514,23 @@ def _ValidateSplits(bundle_path, module_zips):
     if module_name == 'base':
       continue
     provider_names = _GetComponentNames(cur_manifest, 'provider')
-    if provider_names:
-      errors.append('Providers should all be declared in the base manifest.'
-                    ' "%s" module declared: %s' % (module_name, provider_names))
+    for p in provider_names:
+      if p not in _ALLOWLISTED_NON_BASE_PROVIDERS:
+        errors.append(f'Provider {p} should be declared in the base manifest,'
+                      f' but is in "{module_name}" module. For details, see '
+                      'https://chromium.googlesource.com/chromium/src/+/main/'
+                      'docs/android_isolated_splits.md#contentproviders')
 
   # Ensure all services are present in base module because service classes are
   # not found if they are not present in the base module. b/169196314
   # It is fine if they are defined in split manifests though.
-  for cur_manifest in manifests_by_name.values():
+  for module_name, cur_manifest in manifests_by_name.items():
     for service_name in _GetComponentNames(cur_manifest, 'service'):
-      if service_name not in base_classes:
-        errors.append("Service %s should be present in the base module's dex."
-                      " See b/169196314 for more details." % service_name)
+      if (service_name not in base_classes
+          and service_name not in _ALLOWLISTED_NON_BASE_SERVICES):
+        errors.append(f'Service {service_name} should be declared in the base'
+                      f' manifest, but is in "{module_name}" module. For'
+                      ' details, see b/169196314.')
 
   return errors
 
