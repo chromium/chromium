@@ -213,7 +213,17 @@ class BuildConfigGenerator extends DefaultTask {
             switch (license.name) {
                 case 'The Apache License, Version 2.0':
                 case 'The Apache Software License, Version 2.0':
-                    licenseStrings.add('Apache Version 2.0')
+                case 'Apache 2.0':
+                case 'Apache License 2.0':
+                case 'Apache License, Version 2.0':
+                case 'Apache Version 2.0':
+                    licenseStrings.add('Apache-2.0')
+                    break
+                case 'BSD':
+                    licenseStrings.add('BSD-3-Clause')
+                    break
+                case 'The MIT License':
+                    licenseStrings.add('MIT')
                     break
                 case 'GNU General Public License, version 2, with the Classpath Exception':
                     licenseStrings.add('GPL v2 with the classpath exception')
