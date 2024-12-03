@@ -485,10 +485,10 @@ std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
 
 bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
     const VideoEncodeAccelerator::Config& config) {
-  // Software bitrate controller is supported on only Intel backend.
+  // Software bitrate controller is not supported on AMD backend,
+  // crbug.com/365106092.
   const bool is_sw_bitrate_controller_supported =
-      VaapiWrapper::GetImplementationType() == VAImplementation::kIntelI965 ||
-      VaapiWrapper::GetImplementationType() == VAImplementation::kIntelIHD;
+      VaapiWrapper::GetImplementationType() != VAImplementation::kMesaGallium;
 
   uint8_t num_temporal_layers = 1;
   if (config.HasTemporalLayer()) {
