@@ -16014,41 +16014,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PMProcessPriorityPolicy",
-                        "PriorityOverridePendingViews"
-                    ],
-                    "disable_features": [
-                        "MacAllowBackgroundingRenderProcesses",
-                        "RestrictThreadPoolInBackground",
-                        "SetIsolatesPriority",
-                        "UnimportantFramesPriority",
-                        "UserVisibleProcessPriority"
-                    ]
-                },
-                {
-                    "name": "EnabledWithMacBackgrounding",
-                    "enable_features": [
                         "MacAllowBackgroundingRenderProcesses",
                         "PMProcessPriorityPolicy",
                         "PriorityOverridePendingViews"
-                    ],
-                    "disable_features": [
-                        "RestrictThreadPoolInBackground",
-                        "SetIsolatesPriority",
-                        "UnimportantFramesPriority",
-                        "UserVisibleProcessPriority"
-                    ]
-                },
-                {
-                    "name": "EnabledWithTriStatePriority",
-                    "enable_features": [
-                        "MacAllowBackgroundingRenderProcesses",
-                        "PMProcessPriorityPolicy",
-                        "PriorityOverridePendingViews",
-                        "RestrictThreadPoolInBackground",
-                        "SetIsolatesPriority",
-                        "UnimportantFramesPriority",
-                        "UserVisibleProcessPriority"
                     ]
                 }
             ]
