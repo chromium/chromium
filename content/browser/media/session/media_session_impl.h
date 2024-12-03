@@ -218,6 +218,10 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT void SetAudioFocusGroupId(
       const base::UnguessableToken& group_id) override;
 
+  // Returns the `RenderFrameHost` for the currently MediaSession routed
+  // service.
+  RenderFrameHost* GetRoutedFrame() override;
+
   // Suspend the media session.
   // |type| represents the origin of the request.
   CONTENT_EXPORT void Suspend(MediaSession::SuspendType suspend_type) override;

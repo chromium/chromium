@@ -88,6 +88,9 @@ const base::FilePath::CharType kAutopipToggleRegistrationPage[] =
     FILE_PATH_LITERAL(
         "media/picture-in-picture/autopip-toggle-registration.html");
 
+constexpr char kIframeAutoDocumentMediaPlaybackPipPage[] =
+    "/media/picture-in-picture/iframe-autopip-document-media-playback.html";
+
 class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
  public:
   MOCK_METHOD(void,
@@ -176,6 +179,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -210,6 +214,12 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kAutoDocumentVideoVisibilityPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
+  }
+
+  void LoadIframeAutoDocumentMediaPlaybackPipPage(Browser* browser) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, embedded_test_server()->GetURL(
+                     "a.com", kIframeAutoDocumentMediaPlaybackPipPage)));
   }
 
   void LoadCameraMicrophonePage(Browser* browser) {
@@ -263,6 +273,12 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         ->ExecuteJavaScriptWithUserGestureForTests(
             u"playVideo()", base::NullCallback(),
             content::ISOLATED_WORLD_ID_GLOBAL);
+  }
+
+  void PlayIframeVideo(content::RenderFrameHost* rfh) {
+    ASSERT_TRUE(ExecJs(rfh, R"(
+        playVideo();
+      )"));
   }
 
   void PauseVideo(content::WebContents* web_contents) {
@@ -738,6 +754,46 @@ IN_PROC_BROWSER_TEST_F(
   ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DoesNotDocumentAutopip_VideoInRemoteIFrame) {
+  // Load a page that registers for autopip.
+  LoadIframeAutoDocumentMediaPlaybackPipPage(browser());
+
+  // Get the render frame host for main_frame (a.com) and sub_frame (b.com).
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
+  auto* sub_frame = ChildFrameAt(main_frame, 0);
+
+  // Register message handler for b.com to handle `playVideo` message actions.
+  ASSERT_TRUE(ExecJs(sub_frame, R"(
+      window.addEventListener('message', (event) => {
+          console.log(`Received message: ${event.data.action}`);
+          if(event.data.action == 'playVideo') {
+            playVideo();
+          }
+      });
+  )"));
+
+  // Send a `postMessage` to b.com to start video playback.
+  PlayIframeVideo(main_frame);
+
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // There should not be a picture-in-picture window, since the video element is
+  // inside a remote iframe.
+  SwitchToNewTabAndDontExpectAutopip();
+
+  // Verify that `has_safe_url_` and `has_sufficiently_visible_video_` are both
+  // false, since the video element is within a remote iframe.
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  EXPECT_FALSE(tab_helper->get_has_safe_url_for_testing());
+  EXPECT_FALSE(tab_helper->get_has_sufficiently_visible_video_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,

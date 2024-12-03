@@ -142,6 +142,12 @@ class AutoPictureInPictureTabHelper
   // any auto-pip window we have open, though there might also not be one.
   void OnTabBecameActive();
 
+  bool get_has_safe_url_for_testing() const { return has_safe_url_; }
+
+  bool get_has_sufficiently_visible_video_for_testing() const {
+    return has_sufficiently_visible_video_;
+  }
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;

@@ -807,6 +807,13 @@ void MediaSessionImpl::SetAudioFocusGroupId(
   audio_focus_group_id_ = group_id;
 }
 
+RenderFrameHost* MediaSessionImpl::GetRoutedFrame() {
+  if (!routed_service_) {
+    return nullptr;
+  }
+  return routed_service_->GetRenderFrameHost();
+}
+
 void MediaSessionImpl::StartDucking() {
   if (is_ducking_)
     return;
