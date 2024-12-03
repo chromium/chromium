@@ -299,11 +299,9 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   ReleaseWGPUTextureAccessIfNeeded();
 
   // Populate the output resource.
-  uint32_t texture_target =
-      current_swap_buffer_->GetSharedImage()->GetTextureTarget();
-
   *out_resource = viz::TransferableResource::MakeGpu(
-      current_swap_buffer_->GetSharedImage(), texture_target,
+      current_swap_buffer_->GetSharedImage(),
+      current_swap_buffer_->GetSharedImage()->GetTextureTarget(),
       current_swap_buffer_->GetSyncToken(),
       current_swap_buffer_->GetSharedImage()->size(), Format(),
       current_swap_buffer_->GetSharedImage()->usage().Has(
