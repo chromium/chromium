@@ -8164,40 +8164,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="FacilitatedPayments.Pix.Transaction">
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    An event that is logged when a FacilitatedPayments transaction is completed.
-  </summary>
-  <metric name="Result" enum="FacilitatedPayments.TransactionResult">
-    <summary>
-      The result of the transaction.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="TriggerSource" enum="FacilitatedPayments.TriggerSource">
-    <summary>
-      The trigger source for this transaction.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
 <event name="FacilitatedPayments.PixCodeCopied">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>

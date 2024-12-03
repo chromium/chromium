@@ -72,12 +72,6 @@ reviewer.
   <int value="4" label="Landscape screen orientation"/>
 </enum>
 
-<enum name="FacilitatedPayments.TransactionResult">
-  <int value="0" label="Failed"/>
-  <int value="1" label="Succeeded"/>
-  <int value="2" label="Abandoned"/>
-</enum>
-
 <!-- LINT.IfChange(FacilitatedPayments.UiScreen) -->
 
 <enum name="FacilitatedPayments.UiScreen">

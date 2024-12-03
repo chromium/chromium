@@ -66,22 +66,6 @@ enum class PaymentNotOfferedReason {
   kMaxValue = kLandscapeScreenOrientation
 };
 
-// Result of the transaction from the time payment was offered to the user.
-enum class TransactionResult {
-  kFailed = 0,
-  kSuccess = 1,
-  kAbandoned = 2,
-  kMaxValue = kAbandoned
-};
-
-// The trigger source for the facilitated payments transaction.
-enum class TriggerSource {
-  kUnknown = 0,
-  kDOMSearch = 1,
-  kCopyEvent = 2,
-  kMaxValue = kCopyEvent
-};
-
 // Log when a Pix code is copied to the clippboard on an allowlisted merchant
 // website.
 void LogPixCodeCopied(ukm::SourceId ukm_source_id);
@@ -158,15 +142,6 @@ uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result);
 // successful or not.
 // TODO(crbug.com/377126728): Deprecate this method.
 void LogFopSelectorShown(bool shown);
-
-// TODO(crbug.com/377126728): Remove this method after 11-24-2024, when all
-// metrics have been merged into M-132 milestone branch.
-// Log the overall transaction result. The transactions is considered to have
-// started from the time payment was offered to the user.
-void LogTransactionResult(TransactionResult result,
-                          TriggerSource trigger_source,
-                          base::TimeDelta duration,
-                          ukm::SourceId ukm_source_id);
 
 // Logs showing a new UI screen.
 void LogUiScreenShown(UiState ui_screen);

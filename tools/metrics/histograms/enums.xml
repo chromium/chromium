@@ -5317,12 +5317,6 @@ Called by update_document_policy_enum.py.-->
   <int value="28" label="REPLACED_BY_SYSTEM_APP"/>
 </enum>
 
-<enum name="FacilitatedPayments.TriggerSource">
-  <int value="0" label="Payment triggered by an unknown source"/>
-  <int value="1" label="Payment triggered by finding the QR code in the DOM"/>
-  <int value="2" label="Payment triggered on user copying the QR code"/>
-</enum>
-
 <!-- LINT.IfChange(FastPairPairFailure) -->
 
 <enum name="FastPairPairFailure">
