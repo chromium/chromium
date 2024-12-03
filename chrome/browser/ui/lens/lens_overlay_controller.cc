@@ -1889,18 +1889,14 @@ void LensOverlayController::InitializeOverlay(
     ShowPreselectionBubble();
   }
 
-  if (lens::features::GetLensOverlayUseCustomBlur()) {
-    content::RenderWidgetHost* live_page_widget_host =
-        tab_->GetContents()
-            ->GetPrimaryMainFrame()
-            ->GetRenderViewHost()
-            ->GetWidget();
-
-    // Create the blur delegate so it is ready to blur once the view is visible.
-    lens_overlay_blur_layer_delegate_ =
-        std::make_unique<lens::LensOverlayBlurLayerDelegate>(
-            live_page_widget_host);
-  }
+  // Create the blur delegate so it is ready to blur once the view is visible.
+  content::RenderWidgetHost* live_page_widget_host = tab_->GetContents()
+                                                         ->GetPrimaryMainFrame()
+                                                         ->GetRenderViewHost()
+                                                         ->GetWidget();
+  lens_overlay_blur_layer_delegate_ =
+      std::make_unique<lens::LensOverlayBlurLayerDelegate>(
+          live_page_widget_host);
 
   state_ = State::kOverlay;
 
@@ -2416,26 +2412,16 @@ void LensOverlayController::AddBackgroundBlur() {
     return;
   }
 
-  if (lens_overlay_blur_layer_delegate_) {
-    // Add our blur layer to the view.
-    overlay_view_->SetPaintToLayer();
-    overlay_view_->layer()->Add(lens_overlay_blur_layer_delegate_->layer());
-    overlay_view_->layer()->StackAtBottom(
-        lens_overlay_blur_layer_delegate_->layer());
-    lens_overlay_blur_layer_delegate_->layer()->SetBounds(
-        overlay_view_->parent()->GetLocalBounds());
-    return;
-  }
+  // The blur layer should have been initialized earlier.
+  CHECK(lens_overlay_blur_layer_delegate_);
 
-  int blur_radius_pixels =
-      lens::features::GetLensOverlayLivePageBlurRadiusPixels();
-  if (blur_radius_pixels >= 0) {
-    // SetBackgroundBlur() multiplies by 3 to convert the given
-    // value to a pixel value. Since we are already in pixels, we need to divide
-    // by 3 so the blur is as expected.
-    overlay_web_view_->holder()->GetUILayer()->SetBackgroundBlur(
-        blur_radius_pixels / 3);
-  }
+  // Add our blur layer to the view.
+  overlay_view_->SetPaintToLayer();
+  overlay_view_->layer()->Add(lens_overlay_blur_layer_delegate_->layer());
+  overlay_view_->layer()->StackAtBottom(
+      lens_overlay_blur_layer_delegate_->layer());
+  lens_overlay_blur_layer_delegate_->layer()->SetBounds(
+      overlay_view_->parent()->GetLocalBounds());
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {

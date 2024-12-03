@@ -467,14 +467,6 @@ extern int GetLensOverlayMaxSignificantRegions();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double GetLensOverlayPostSelectionComparisonThreshold();
 
-// The radius of the live page / underlying tab contents blur in pixels.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetLensOverlayLivePageBlurRadiusPixels();
-
-// Enables our custom blur layer instead of that built into the ui::Layer.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetLensOverlayUseCustomBlur();
-
 // The radius of blur in pixels for the custom blur. This is separate from
 // LivePageBlurRadiusPixels because the custom blur applies a lower blur since
 // it is being applied to a downsampled image.
