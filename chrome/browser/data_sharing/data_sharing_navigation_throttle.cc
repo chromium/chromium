@@ -12,6 +12,22 @@
 
 namespace data_sharing {
 
+namespace {
+bool ShouldHandleShareURLNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame()) {
+    return false;
+  }
+
+  if (navigation_handle->IsRendererInitiated() &&
+      !navigation_handle->HasUserGesture()) {
+    return false;
+  }
+
+  return true;
+}
+}  // namespace
+
 // static
 std::unique_ptr<content::NavigationThrottle>
 DataSharingNavigationThrottle::MaybeCreateThrottleFor(
@@ -64,8 +80,10 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
   const GURL& url = navigation_handle()->GetURL();
   if (data_sharing_service &&
       data_sharing_service->ShouldInterceptNavigationForShareURL(url)) {
-    data_sharing_service->HandleShareURLNavigationIntercepted(
-        url, /* context = */ nullptr);
+    if (ShouldHandleShareURLNavigation(navigation_handle())) {
+      data_sharing_service->HandleShareURLNavigationIntercepted(
+          url, /* context = */ nullptr);
+    }
 
     // Close the tab if the url interception ends with an empty page.
     const GURL& last_committed_url =
