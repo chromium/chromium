@@ -36,11 +36,8 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(content::WebUI* web_ui)
   source->AddBoolean("canDeleteDeviceTrustKey",
                      utils::CanDeleteDeviceTrustKey());
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kConnectorsInternalsResources,
-                      kConnectorsInternalsResourcesSize),
-      IDR_CONNECTORS_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kConnectorsInternalsResources,
+                              IDR_CONNECTORS_INTERNALS_INDEX_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
       "require-trusted-types-for 'script';");

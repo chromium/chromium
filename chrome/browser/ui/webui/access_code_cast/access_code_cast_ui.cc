@@ -41,10 +41,8 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIAccessCodeCastHost);
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kAccessCodeCastResources, kAccessCodeCastResourcesSize),
-      IDR_ACCESS_CODE_CAST_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kAccessCodeCastResources,
+                              IDR_ACCESS_CODE_CAST_INDEX_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"accessCodeMessage", IDS_ACCESS_CODE_CAST_ACCESS_CODE_MESSAGE},

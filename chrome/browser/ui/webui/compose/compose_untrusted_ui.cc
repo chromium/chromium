@@ -51,9 +51,8 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUntrustedComposeUrl);
-webui::SetupWebUIDataSource(
-      source, base::make_span(kComposeResources, kComposeResourcesSize),
-      IDR_COMPOSE_COMPOSE_HTML);
+  webui::SetupWebUIDataSource(source, kComposeResources,
+                              IDR_COMPOSE_COMPOSE_HTML);
 
   // Localized strings.
   static constexpr webui::LocalizedString kStrings[] = {

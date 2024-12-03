@@ -32,9 +32,7 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
       chrome::kChromeUIUntrustedHatsURL);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kHatsResources, kHatsResourcesSize),
-      IDR_HATS_HATS_HTML);
+  webui::SetupWebUIDataSource(source, kHatsResources, IDR_HATS_HATS_HTML);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,

@@ -38,8 +38,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       web_ui->GetWebContents()->GetBrowserContext(), chrome::kChromeUIGlicHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(source, base::make_span(kGlicResources),
-                              IDR_GLIC_GLIC_HTML);
+  webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
 

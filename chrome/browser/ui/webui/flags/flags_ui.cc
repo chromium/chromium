@@ -86,9 +86,8 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   }
 #endif
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kFlagsUiResources, kFlagsUiResourcesSize),
-      IDR_FLAGS_UI_FLAGS_HTML);
+  webui::SetupWebUIDataSource(source, kFlagsUiResources,
+                              IDR_FLAGS_UI_FLAGS_HTML);
 
   // Make it possible to test chrome://flags/deprecated
   source->AddResourcePath("deprecated/test_loader.js",

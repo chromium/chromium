@@ -45,9 +45,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUntrustedDataSharingURL);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kDataSharingResources, kDataSharingResourcesSize),
-      IDR_DATA_SHARING_DATA_SHARING_HTML);
+  webui::SetupWebUIDataSource(source, kDataSharingResources,
+                              IDR_DATA_SHARING_DATA_SHARING_HTML);
 
   // Allow untrusted mojo resources to be loaded.
   source->OverrideContentSecurityPolicy(

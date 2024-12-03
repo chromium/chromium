@@ -112,9 +112,8 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
   // Set up the chrome://site-engagement/ source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISiteEngagementHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kEngagementResources, kEngagementResourcesSize),
-      IDR_ENGAGEMENT_SITE_ENGAGEMENT_HTML);
+  webui::SetupWebUIDataSource(source, kEngagementResources,
+                              IDR_ENGAGEMENT_SITE_ENGAGEMENT_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SiteEngagementUI)

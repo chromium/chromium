@@ -64,9 +64,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kCommerceProductSpecificationsResources,
-                      kCommerceProductSpecificationsResourcesSize),
+      source, kCommerceProductSpecificationsResources,
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
   // Set up chrome://compare/disclosure

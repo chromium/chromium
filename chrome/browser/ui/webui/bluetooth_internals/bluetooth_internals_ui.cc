@@ -42,8 +42,7 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
   webui::EnableTrustedTypesCSP(html_source);
 
   // Add required resources.
-  html_source->AddResourcePaths(base::make_span(
-      kBluetoothInternalsResources, kBluetoothInternalsResourcesSize));
+  html_source->AddResourcePaths(kBluetoothInternalsResources);
   html_source->SetDefaultResource(
       IDR_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HTML);
 }

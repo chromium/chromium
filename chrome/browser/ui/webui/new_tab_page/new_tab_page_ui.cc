@@ -466,9 +466,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       /*enable_lens_search=*/
       profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),
-      IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
+  webui::SetupWebUIDataSource(source, kNewTabPageResources,
+                              IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
 
   // Allow embedding of iframes for the doodle and
   // chrome-untrusted://new-tab-page for other external content and resources.

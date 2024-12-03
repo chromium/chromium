@@ -25,9 +25,7 @@ LocationInternalsUI::LocationInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUILocationInternalsHost);
 
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kLocationInternalsResources,
-                                              kLocationInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kLocationInternalsResources,
                               IDR_LOCATION_INTERNALS_LOCATION_INTERNALS_HTML);
 }
 

@@ -68,9 +68,8 @@ AppHomeUI::AppHomeUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIAppLauncherPageHost);
   AddAppHomeLocalizedStrings(source);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kAppHomeResources, kAppHomeResourcesSize),
-      IDR_APP_HOME_APP_HOME_HTML);
+  webui::SetupWebUIDataSource(source, kAppHomeResources,
+                              IDR_APP_HOME_APP_HOME_HTML);
 }
 
 void AppHomeUI::BindInterface(

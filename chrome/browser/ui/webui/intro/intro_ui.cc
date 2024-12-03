@@ -34,9 +34,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIIntroHost);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kIntroResources, kIntroResourcesSize),
-      IDR_INTRO_INTRO_HTML);
+  webui::SetupWebUIDataSource(source, kIntroResources, IDR_INTRO_INTRO_HTML);
 
   int title_id = IDS_FRE_SIGN_IN_TITLE_0;
   int backupCardDescription =

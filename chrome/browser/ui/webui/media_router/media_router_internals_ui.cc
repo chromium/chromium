@@ -42,9 +42,7 @@ MediaRouterInternalsUI::MediaRouterInternalsUI(content::WebUI* web_ui)
           chrome::kChromeUIMediaRouterInternalsHost);
 
   webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kMediaRouterInternalsResources,
-                      kMediaRouterInternalsResourcesSize),
+      html_source, kMediaRouterInternalsResources,
       IDR_MEDIA_ROUTER_INTERNALS_MEDIA_ROUTER_INTERNALS_HTML);
 
   content::WebContents* wc = web_ui->GetWebContents();

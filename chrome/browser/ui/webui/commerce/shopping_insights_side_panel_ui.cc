@@ -79,12 +79,9 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("shouldShowFeedback",
                      commerce::kPriceInsightsShowFeedback.Get());
 
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kSidePanelCommerceResources,
-                                              kSidePanelCommerceResourcesSize),
+  webui::SetupWebUIDataSource(source, kSidePanelCommerceResources,
                               IDR_SIDE_PANEL_COMMERCE_SHOPPING_INSIGHTS_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 ShoppingInsightsSidePanelUI::~ShoppingInsightsSidePanelUI() = default;

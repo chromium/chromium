@@ -51,9 +51,8 @@ void AddLocalizedString(content::WebUIDataSource* source,
 content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIBookmarksHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kBookmarksResources, kBookmarksResourcesSize),
-      IDR_BOOKMARKS_BOOKMARKS_HTML);
+  webui::SetupWebUIDataSource(source, kBookmarksResources,
+                              IDR_BOOKMARKS_BOOKMARKS_HTML);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in bookmarks/command_manager.js

@@ -305,9 +305,8 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceInterventionDemoMode));
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kDiscardsResources, kDiscardsResourcesSize),
-      IDR_DISCARDS_DISCARDS_HTML);
+  webui::SetupWebUIDataSource(source, kDiscardsResources,
+                              IDR_DISCARDS_DISCARDS_HTML);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

@@ -36,8 +36,7 @@ DownloadInternalsUI::DownloadInternalsUI(content::WebUI* web_ui)
 
   // Required resources.
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(base::make_span(
-      kDownloadInternalsResources, kDownloadInternalsResourcesSize));
+  html_source->AddResourcePaths(kDownloadInternalsResources);
   html_source->AddResourcePath("",
                                IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
 

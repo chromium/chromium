@@ -196,10 +196,8 @@ void CreateAndAddBrowserSwitchUIHTMLSource(content::WebUI* web_ui) {
                              IDS_ABOUT_BROWSER_SWITCH_PROTOCOL_ERROR);
   source->AddLocalizedString("title", IDS_ABOUT_BROWSER_SWITCH_TITLE);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kBrowserSwitchResources, kBrowserSwitchResourcesSize),
-      IDR_BROWSER_SWITCH_BROWSER_SWITCH_HTML);
+  webui::SetupWebUIDataSource(source, kBrowserSwitchResources,
+                              IDR_BROWSER_SWITCH_BROWSER_SWITCH_HTML);
 
   // Setup chrome://browser-switch/internals debug UI.
   source->AddResourcePath(

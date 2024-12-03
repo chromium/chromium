@@ -242,9 +242,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kHistoryResources, kHistoryResourcesSize),
-      IDR_HISTORY_HISTORY_HTML);
+  webui::SetupWebUIDataSource(source, kHistoryResources,
+                              IDR_HISTORY_HISTORY_HTML);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

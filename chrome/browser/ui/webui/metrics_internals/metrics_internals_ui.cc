@@ -34,9 +34,7 @@ MetricsInternalsUI::MetricsInternalsUI(content::WebUI* web_ui)
       chrome::kChromeUIMetricsInternalsHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kMetricsInternalsResources,
-                                              kMetricsInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kMetricsInternalsResources,
                               IDR_METRICS_INTERNALS_METRICS_INTERNALS_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<MetricsInternalsHandler>());

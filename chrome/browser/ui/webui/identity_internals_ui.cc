@@ -318,8 +318,7 @@ IdentityInternalsUI::IdentityInternalsUI(content::WebUI* web_ui)
           Profile::FromWebUI(web_ui), chrome::kChromeUIIdentityInternalsHost);
 
   // Required resources
-  html_source->AddResourcePaths(base::make_span(
-      kIdentityInternalsResources, kIdentityInternalsResourcesSize));
+  html_source->AddResourcePaths(kIdentityInternalsResources);
   html_source->SetDefaultResource(
       IDR_IDENTITY_INTERNALS_IDENTITY_INTERNALS_HTML);
 

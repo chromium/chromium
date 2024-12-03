@@ -106,9 +106,7 @@ BrowsingTopicsInternalsUI::BrowsingTopicsInternalsUI(content::WebUI* web_ui)
   AddTopicsConsentStrings(source, Profile::FromWebUI(web_ui));
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kBrowsingTopicsInternalsResources,
-                      kBrowsingTopicsInternalsResourcesSize),
+      source, kBrowsingTopicsInternalsResources,
       IDR_BROWSING_TOPICS_INTERNALS_BROWSING_TOPICS_INTERNALS_HTML);
 }
 

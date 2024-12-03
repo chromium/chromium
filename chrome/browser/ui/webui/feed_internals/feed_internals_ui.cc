@@ -36,10 +36,8 @@ FeedInternalsUI::FeedInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUISnippetsInternalsHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kFeedInternalsResources, kFeedInternalsResourcesSize),
-      IDR_FEED_INTERNALS_FEED_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(source, kFeedInternalsResources,
+                              IDR_FEED_INTERNALS_FEED_INTERNALS_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FeedInternalsUI)

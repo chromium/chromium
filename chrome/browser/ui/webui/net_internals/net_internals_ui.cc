@@ -67,10 +67,8 @@ namespace {
 void CreateAndAddNetInternalsHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUINetInternalsHost);
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kNetInternalsResources, kNetInternalsResourcesSize),
-      IDR_NET_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kNetInternalsResources,
+                              IDR_NET_INTERNALS_INDEX_HTML);
   webui::EnableTrustedTypesCSP(source);
 }
 

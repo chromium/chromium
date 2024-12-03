@@ -80,12 +80,9 @@ void AddStringResources(content::WebUIDataSource* source,
 void CreateAndAddFeedbackHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFeedbackHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kFeedbackResources, kFeedbackResourcesSize),
-      IDR_FEEDBACK_FEEDBACK_HTML);
-  source->AddResourcePaths(
-      base::make_span(kKeyValuePairViewerSharedResources,
-                      kKeyValuePairViewerSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kFeedbackResources,
+                              IDR_FEEDBACK_FEEDBACK_HTML);
+  source->AddResourcePaths(kKeyValuePairViewerSharedResources);
   AddStringResources(source, profile);
 }
 

@@ -170,11 +170,8 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
   source->AddBoolean("globalMediaControlsCastStartStop",
                      GlobalMediaControlsCastStartStopEnabled(profile_));
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kMediaRouterFeedbackResources,
-                      kMediaRouterFeedbackResourcesSize),
-      IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
+  webui::SetupWebUIDataSource(source, kMediaRouterFeedbackResources,
+                              IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
 
   web_ui->RegisterMessageCallback(
       "close", base::BindRepeating(&CastFeedbackUI::OnCloseMessage,

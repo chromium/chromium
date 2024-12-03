@@ -38,10 +38,8 @@ NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           Profile::FromWebUI(web_ui), chrome::kChromeUINearbyInternalsHost);
 
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kNearbyInternalsResources, kNearbyInternalsResourcesSize),
-      IDR_NEARBY_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(html_source, kNearbyInternalsResources,
+                              IDR_NEARBY_INTERNALS_INDEX_HTML);
 
   content::BrowserContext* context =
       web_ui->GetWebContents()->GetBrowserContext();

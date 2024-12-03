@@ -31,9 +31,7 @@ DataSharingInternalsUI::DataSharingInternalsUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIDataSharingInternalsHost);
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kDataSharingInternalsResources,
-                      kDataSharingInternalsResourcesSize),
+      source, kDataSharingInternalsResources,
       IDR_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_HTML);
 }
 

@@ -71,9 +71,8 @@ namespace {
 content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIDownloadsHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kDownloadsResources, kDownloadsResourcesSize),
-      IDR_DOWNLOADS_DOWNLOADS_HTML);
+  webui::SetupWebUIDataSource(source, kDownloadsResources,
+                              IDR_DOWNLOADS_DOWNLOADS_HTML);
 
   bool requests_ap_verdicts =
       safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(

@@ -132,8 +132,7 @@ std::string GetChildDescription(const content::ChildProcessData& data) {
 void CreateAndAddMemoryInternalsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIMemoryInternalsHost);
-  source->AddResourcePaths(base::make_span(kMemoryInternalsResources,
-                                           kMemoryInternalsResourcesSize));
+  source->AddResourcePaths(kMemoryInternalsResources);
   source->SetDefaultResource(IDR_MEMORY_INTERNALS_MEMORY_INTERNALS_HTML);
 }
 

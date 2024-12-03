@@ -78,8 +78,7 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
 #endif
   );
   source->UseStringsJs();
-  source->AddResourcePaths(
-      base::make_span(kComponentsResources, kComponentsResourcesSize));
+  source->AddResourcePaths(kComponentsResources);
   source->SetDefaultResource(IDR_COMPONENTS_COMPONENTS_HTML);
 }
 

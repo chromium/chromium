@@ -139,10 +139,8 @@ WebAppSettingsUI::WebAppSettingsUI(content::WebUI* web_ui)
   AddAppManagementStrings(html_source);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kAppSettingsResources, kAppSettingsResourcesSize),
-      IDR_APP_SETTINGS_WEB_APP_SETTINGS_HTML);
+  webui::SetupWebUIDataSource(html_source, kAppSettingsResources,
+                              IDR_APP_SETTINGS_WEB_APP_SETTINGS_HTML);
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   install_manager_observation_.Observe(&provider->install_manager());

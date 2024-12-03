@@ -67,9 +67,8 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   source_ = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUIInternalsHost);
 
-  webui::SetupWebUIDataSource(
-      source_, base::make_span(kInternalsResources, kInternalsResourcesSize),
-      IDR_INTERNALS_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(source_, kInternalsResources,
+                              IDR_INTERNALS_INTERNALS_HTML);
   source_->AddResourcePath("user-education",
                            IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
 

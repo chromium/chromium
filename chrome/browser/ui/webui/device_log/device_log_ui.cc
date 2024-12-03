@@ -119,8 +119,7 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
   html->AddLocalizedStrings(kStrings);
 
   html->UseStringsJs();
-  html->AddResourcePaths(base::make_span(kDeviceLogResources,
-                                         kDeviceLogResourcesSize));
+  html->AddResourcePaths(kDeviceLogResources);
   html->SetDefaultResource(IDR_DEVICE_LOG_DEVICE_LOG_UI_HTML);
 }
 

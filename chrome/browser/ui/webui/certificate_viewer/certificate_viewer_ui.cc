@@ -61,9 +61,7 @@ void CreateAndAddWebUIDataSource(Profile* profile, const std::string& host) {
   };
   html_source->AddLocalizedStrings(kStrings);
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kCertificateViewerResources,
-                                              kCertificateViewerResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kCertificateViewerResources,
                               IDR_CERTIFICATE_VIEWER_CERTIFICATE_VIEWER_HTML);
 }
 

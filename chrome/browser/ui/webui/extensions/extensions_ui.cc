@@ -80,9 +80,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                                                        bool in_dev_mode) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIExtensionsHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kExtensionsResources, kExtensionsResourcesSize),
-      IDR_EXTENSIONS_EXTENSIONS_HTML);
+  webui::SetupWebUIDataSource(source, kExtensionsResources,
+                              IDR_EXTENSIONS_EXTENSIONS_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       // Add common strings.

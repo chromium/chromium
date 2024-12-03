@@ -89,9 +89,8 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
                         l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kManagementResources, kManagementResourcesSize),
-      IDR_MANAGEMENT_MANAGEMENT_HTML);
+  webui::SetupWebUIDataSource(source, kManagementResources,
+                              IDR_MANAGEMENT_MANAGEMENT_HTML);
   return source;
 }
 
