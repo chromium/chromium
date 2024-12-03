@@ -2111,9 +2111,9 @@ void PaymentsDataManager::OnPaymentInstrumentsRefreshed(
     updated_urls.emplace_back(display_icon_url);
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(updated_urls,
-                       {AutofillImageFetcherBase::ImageSize::kSmall,
-                        AutofillImageFetcherBase::ImageSize::kLarge});
+    FetchImagesForURLs(
+        updated_urls,
+        base::span_from_ref(AutofillImageFetcherBase::ImageSize::kLarge));
   }
 }
 
