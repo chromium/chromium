@@ -1104,6 +1104,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Use platform default state"/>
 </enum>
 
+<enum name="UcmCreateStatus">
+  <int value="0" label="Fail"/>
+  <int value="1" label="Success"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

@@ -1146,6 +1146,17 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
+<histogram name="Cras.UcmCreateStatus.{Type}" enum="UcmCreateStatus"
+    expires_after="2025-12-03">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Checks whether a UCM instance is created successfully.</summary>
+  <token key="Type">
+    <variant name="HDMI"/>
+    <variant name="INTERNAL"/>
+  </token>
+</histogram>
+
 <histogram name="Cras.UnderrunsPerDeviceDuringAPNC{Device}" units="count"
     expires_after="2025-03-21">
   <owner>yuhsuan@chromium.org</owner>
