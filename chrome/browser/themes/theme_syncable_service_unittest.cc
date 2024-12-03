@@ -260,7 +260,7 @@ class ThemeSyncableServiceTest : public testing::Test,
  protected:
   ThemeSyncableServiceTest() : fake_theme_service_(nullptr) {}
 
-  ~ThemeSyncableServiceTest() override {}
+  ~ThemeSyncableServiceTest() override = default;
 
   void SetUp() override {
     // Setting a matching update URL is necessary to make the test theme
