@@ -713,13 +713,9 @@ WebAppSettingsPageHandler CreateAppManagementPageHandler(Profile* profile) {
 #endif
 
 void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
-  std::string simple_dialog_name =
-      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
-          ? "WebAppSimpleInstallDialog"
-          : "PWAConfirmationBubbleView";
   std::string widget_name = site == InstallableSite::kScreenshots
                                 ? "WebAppDetailedInstallDialog"
-                                : simple_dialog_name;
+                                : "WebAppSimpleInstallDialog";
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        widget_name);
   views::Widget* widget = waiter.WaitIfNeededAndGet();
