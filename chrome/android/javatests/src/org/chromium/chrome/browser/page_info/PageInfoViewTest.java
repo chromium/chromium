@@ -938,6 +938,7 @@ public class PageInfoViewTest {
         enableTrackingProtectionFixedExpiration(true, 33);
         enableModeBUiInCookiesController();
         onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onView(withText(containsString("Limited"))).check(matches(isDisplayed()));
         mRenderTestRule.render(
                 getPageInfoView(),
                 "PageInfo_TrackingProtectionSubpageLimitedDescription_Toggle_Off");
@@ -948,6 +949,8 @@ public class PageInfoViewTest {
                 allOf(
                         withText(containsString("days until Chrome limits cookies again")),
                         isDisplayed()));
+        onView(withText(containsString("Allowed"))).check(matches(isDisplayed()));
+
         mRenderTestRule.render(
                 getPageInfoView(),
                 "PageInfo_TrackingProtectionSubpageLimitedDescription_Toggle_On");
@@ -974,6 +977,7 @@ public class PageInfoViewTest {
                 allOf(
                         withText(containsString("Chrome will limit cookies again tomorrow")),
                         isDisplayed()));
+        onView(withText(containsString("Allowed"))).check(matches(isDisplayed()));
         mRenderTestRule.render(
                 getPageInfoView(),
                 "PageInfo_TrackingProtectionSubpageLimitedTomorrowDescription_Toggle_On");
@@ -1001,6 +1005,8 @@ public class PageInfoViewTest {
                                 containsString(
                                         "Help us improve Chrome by telling us why you allowed")),
                         isDisplayed()));
+        onView(withText(containsString("Allowed"))).check(matches(isDisplayed()));
+
         mRenderTestRule.render(
                 getPageInfoView(),
                 "PageInfo_CookiesSubpage_SubtitleDescription_ModeBDisabled_ToggleOn");
@@ -1030,6 +1036,8 @@ public class PageInfoViewTest {
                                 containsString(
                                         "You temporarily allowed this site to use third-party")),
                         isDisplayed()));
+        onView(withText(containsString("Allowed"))).check(matches(isDisplayed()));
+
         mRenderTestRule.render(
                 getPageInfoView(),
                 "PageInfo_CookiesSubpage_SubtitleDescription_ModeBEnabled_ToggleOn");
@@ -1050,6 +1058,7 @@ public class PageInfoViewTest {
         enableModeBUiInCookiesController();
         enableTrackingProtectionFixedExpiration(true, 33);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onView(withText(containsString("Blocked"))).check(matches(isDisplayed()));
         mRenderTestRule.render(
                 getPageInfoView(),
                 "PageInfo_TrackingProtectionSubpageBlockedDescriptionCookiesController_Toggle_Off");
