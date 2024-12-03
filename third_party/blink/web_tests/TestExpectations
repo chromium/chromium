@@ -2690,10 +2690,10 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-scoping/slotted-details-content.html [ Failure ]
-external/wpt/css/css-scoping/slotted-file-selector-button.html [ Failure ]
+crbug.com/381910338 external/wpt/css/css-scoping/slotted-details-content.html [ Failure ]
+crbug.com/381910338 external/wpt/css/css-scoping/slotted-file-selector-button.html [ Failure ]
 external/wpt/streams/readable-byte-streams/patched-global.any.* [ Crash ]
-external/wpt/webrtc/simulcast/getStats.https.html [ Skip Timeout ]
+crbug.com/381937281 external/wpt/webrtc/simulcast/getStats.https.html [ Skip Timeout ]
 crbug.com/381129856 [ Linux ] external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
 crbug.com/380969341 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/SourceBuffer-appendWindowEnd-rounding.html [ Failure ]
 crbug.com/381127883 [ Linux ] external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent_cached.py [ Failure ]
