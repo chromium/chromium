@@ -147,8 +147,8 @@ class WvrManager : public device::mojom::XRPresentationProvider,
 
   base::OnceClosure exit_vr_callback_;
 
-  mozilla::gfx::VRControllerState
-      controller_state_[mozilla::gfx::kVRControllerMaxCount];
+  std::array<mozilla::gfx::VRControllerState, mozilla::gfx::kVRControllerMaxCount>
+      controller_state_;
 
   mozilla::gfx::VRDisplayBlendMode blend_mode_;
   mozilla::gfx::ImmersiveXRSessionType session_type_;
