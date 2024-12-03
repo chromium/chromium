@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -24,6 +25,16 @@
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 
 namespace device {
+
+namespace {
+
+void RecordOpenSocketResult(bool success) {
+  static constexpr std::string_view kOpenSocketResult =
+      "Bluetooth.Serial.OpenSocketResult";
+  base::UmaHistogramBoolean(kOpenSocketResult, success);
+}
+
+}  // namespace
 
 // static
 void BluetoothSerialPortImpl::Open(
@@ -102,6 +113,7 @@ void BluetoothSerialPortImpl::OnSocketConnected(
       base::BindOnce([](BluetoothSerialPortImpl* self) { delete self; },
                      base::Unretained(this)));
   std::move(open_callback_).Run(std::move(port));
+  RecordOpenSocketResult(/*success=*/true);
 }
 
 void BluetoothSerialPortImpl::OnSocketConnectedError(
@@ -110,6 +122,7 @@ void BluetoothSerialPortImpl::OnSocketConnectedError(
   BLUETOOTH_LOG(ERROR) << "Failed to connect socket: address: " << address_
                        << ", message: " << message;
   std::move(open_callback_).Run(mojo::NullRemote());
+  RecordOpenSocketResult(/*success=*/false);
   delete this;
 }
 

@@ -1921,6 +1921,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.Serial.OpenSocketResult" enum="Boolean"
+    expires_after="2025-11-22">
+  <owner>xutan@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the results of attempts to connect to a Bluetooth Classic service as
+    a serial port. This is a boolean enum because the result is binary on some
+    systems, so detailed errors aren't available.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.StackName" enum="BluetoothStackName"
     expires_after="2025-04-13">
   <owner>michaelfsun@google.com</owner>
