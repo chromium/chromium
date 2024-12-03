@@ -263,25 +263,25 @@ class PictureLayerTilingSetTestWithResources : public testing::Test {
 TEST_F(PictureLayerTilingSetTestWithResources, NoTilings) {
   RunTest(0, 0.f, 0.f, 2.f, 0.f);
 }
-TEST_F(PictureLayerTilingSetTestWithResources, OneTilingSmaller) {
+TEST_F(PictureLayerTilingSetTestWithResources, OneTiling_Smaller) {
   RunTest(1, 1.f, 0.f, 2.f, 1.f);
 }
-TEST_F(PictureLayerTilingSetTestWithResources, OneTilingLarger) {
+TEST_F(PictureLayerTilingSetTestWithResources, OneTiling_Larger) {
   RunTest(1, 3.f, 0.f, 2.f, 3.f);
 }
-TEST_F(PictureLayerTilingSetTestWithResources, TwoTilingsSmaller) {
+TEST_F(PictureLayerTilingSetTestWithResources, TwoTilings_Smaller) {
   RunTest(2, 1.f, 1.f, 3.f, 2.f);
 }
 
-TEST_F(PictureLayerTilingSetTestWithResources, TwoTilingsSmallerEqual) {
+TEST_F(PictureLayerTilingSetTestWithResources, TwoTilings_SmallerEqual) {
   RunTest(2, 1.f, 1.f, 2.f, 2.f);
 }
 
-TEST_F(PictureLayerTilingSetTestWithResources, TwoTilingsLargerEqual) {
+TEST_F(PictureLayerTilingSetTestWithResources, TwoTilings_LargerEqual) {
   RunTest(2, 1.f, 1.f, 1.f, 1.f);
 }
 
-TEST_F(PictureLayerTilingSetTestWithResources, TwoTilingsLarger) {
+TEST_F(PictureLayerTilingSetTestWithResources, TwoTilings_Larger) {
   RunTest(2, 2.f, 8.f, 1.f, 2.f);
 }
 

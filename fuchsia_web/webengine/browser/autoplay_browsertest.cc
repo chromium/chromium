@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayTest,
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "playing");
 }
 
-IN_PROC_BROWSER_TEST_F(AutoplayTest, UserActivationPolicyNoUserActivation) {
+IN_PROC_BROWSER_TEST_F(AutoplayTest, UserActivationPolicy_NoUserActivation) {
   const GURL kUrl(embedded_test_server()->GetURL(kAutoplayVp8Url));
 
   FrameForTest frame =

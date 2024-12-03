@@ -72,7 +72,7 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
 
 // Verifies that calling messages from console.debug() calls go to the Fuchsia
 // system log when the script log level is set to DEBUG.
-TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevelDebug) {
+TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   base::SimpleTestLogListener log_listener;
   log_listener.ListenToLog(log(), nullptr);

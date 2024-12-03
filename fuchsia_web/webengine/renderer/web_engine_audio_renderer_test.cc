@@ -815,14 +815,14 @@ TEST_P(WebEngineAudioRendererTest, StartTicking) {
       /*playback_rate=*/1.0));
 }
 
-TEST_P(WebEngineAudioRendererTest, StartTickingRate150Percent) {
+TEST_P(WebEngineAudioRendererTest, StartTickingRate1_5) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(
       /*start_pos=*/base::Milliseconds(123),
       /*playback_rate=*/1.5));
 }
 
-TEST_P(WebEngineAudioRendererTest, StartTickingRate50Percent) {
+TEST_P(WebEngineAudioRendererTest, StartTickingRate0_5) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(
       /*start_pos=*/base::Milliseconds(123),
