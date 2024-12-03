@@ -1243,6 +1243,12 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
         builder.Append(')');
         break;
       }
+      case kPseudoScrollButton: {
+        builder.Append('(');
+        builder.Append(Argument());
+        builder.Append(')');
+        break;
+      }
       case kPseudoViewTransitionGroup:
       case kPseudoViewTransitionImagePair:
       case kPseudoViewTransitionNew:

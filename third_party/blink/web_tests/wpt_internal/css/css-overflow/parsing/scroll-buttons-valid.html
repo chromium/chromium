@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Overflow Test: ::scroll-button() valid tests</title>
+<link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-buttons">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script>
+  test_valid_selector('::scroll-button(up)');
+  test_valid_selector('::scroll-button(down)');
+  test_valid_selector('::scroll-button(left)');
+  test_valid_selector('::scroll-button(right)');
+  test_valid_selector('::scroll-button(block-start)');
+  test_valid_selector('::scroll-button(inline-start)');
+  test_valid_selector('::scroll-button(inline-end)');
+  test_valid_selector('::scroll-button(block-end)');
+</script>
