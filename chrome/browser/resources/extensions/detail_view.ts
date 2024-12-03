@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './host_permissions_toggle_list.js';
+import './icons.html.js';
 import './runtime_host_permissions.js';
 import '/strings.m.js';
 import './toggle_row.js';
@@ -243,8 +244,12 @@ export class ExtensionsDetailViewElement extends
         this.data.runtimeWarnings.length > 0;
   }
 
-  protected computeDevReloadButtonHidden_(): boolean {
-    return !this.canReloadItem();
+  protected showAccountUploadButton_(): boolean {
+    return this.data.canUploadAsAccountExtension;
+  }
+
+  protected showDevReloadButton_(): boolean {
+    return this.canReloadItem();
   }
 
   protected computeEnabledStyle_(): string {

@@ -187,8 +187,8 @@ cr-tooltip {
   color: var(--error-color);
 }
 
-#dev-reload-button {
-  margin-inline-end: 12px;
+#enableToggle {
+  margin-inline-start: 12px;
 }
 
 #blocklisted-warning:empty {

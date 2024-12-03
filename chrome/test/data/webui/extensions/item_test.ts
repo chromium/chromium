@@ -659,4 +659,14 @@ suite('ExtensionItemTest', function() {
         loadTimeData.getString('enableToggleTooltipDisabled'),
         crTooltip.textContent!.trim());
   });
+
+  test('CanUploadAsAccountExtension', async () => {
+    testVisible(item, '#account-upload-button', false);
+
+    const data = createExtensionInfo(item.data);
+    data.canUploadAsAccountExtension = true;
+    item.data = data;
+    await microtasksFinished();
+    testVisible(item, '#account-upload-button', true);
+  });
 });

@@ -1024,4 +1024,10 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(isVisible(itemPinnedToggle));
     assertFalse(itemPinnedToggle!.checked);
   });
+
+  test('CanUploadAsAccountExtension', async () => {
+    testVisible(item, '#account-upload-button', false);
+    await updateItemData({canUploadAsAccountExtension: true});
+    testVisible(item, '#account-upload-button', true);
+  });
 });

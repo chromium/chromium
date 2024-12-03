@@ -344,5 +344,6 @@ export function createDummyExtensionInfo():
         chrome.developerPrivate.SafetyCheckWarningReason.UNPUBLISHED,
     isAffectedByMV2Deprecation: false,
     didAcknowledgeMV2DeprecationNotice: false,
+    canUploadAsAccountExtension: false,
   };
 }

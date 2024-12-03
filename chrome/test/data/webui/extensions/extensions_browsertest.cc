@@ -239,6 +239,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, EnableExtensionToggleTooltips) {
   RunTestCase("EnableExtensionToggleTooltips");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, CanUploadAsAccountExtension) {
+  RunTestCase("CanUploadAsAccountExtension");
+}
+
 class CrExtensionsDetailViewTest : public ExtensionsBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
@@ -349,6 +353,11 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, PinnedToToolbar) {
   RunTestCase("PinnedToToolbar");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       CanUploadAsAccountExtension) {
+  RunTestCase("CanUploadAsAccountExtension");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
