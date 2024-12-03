@@ -6582,7 +6582,7 @@ AutotestPrivateStartOverdrawTrackingFunction::Run() {
         Error(base::StrCat({"Invalid displayId: ", *params->display_id})));
   }
 
-  DVLOG(1) << "AutotestPrivateStopOverdrawTrackingFunction displayId:"
+  DVLOG(1) << "AutotestPrivateStartOverdrawTrackingFunction displayId:"
            << target_display_id;
 
   // Validate display id.
