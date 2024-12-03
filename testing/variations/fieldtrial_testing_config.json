@@ -8319,24 +8319,6 @@
             ]
         }
     ],
-    "DiscardFrozenBrowsingInstancesWithGrowingPMF": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DiscardFrozenBrowsingInstancesWithGrowingPMF"
-                    ]
-                }
-            ]
-        }
-    ],
     "DiscardInputEventsToRecentlyMovedFrames": [
         {
             "platforms": [

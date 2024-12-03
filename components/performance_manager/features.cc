@@ -153,7 +153,7 @@ BASE_FEATURE(kMemoryMeasurementInFreezingPolicy,
 
 BASE_FEATURE(kDiscardFrozenBrowsingInstancesWithGrowingPMF,
              "DiscardFrozenBrowsingInstancesWithGrowingPMF",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Note: These params are associated with `kCPUMeasurementInFreezingPolicy`
 // instead of `kFreezingOnBatterySaver` or

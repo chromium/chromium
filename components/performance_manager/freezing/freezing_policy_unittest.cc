@@ -843,6 +843,10 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_Basic) {
 }
 
 TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kDiscardFrozenBrowsingInstancesWithGrowingPMF);
+
   const int growth_threshold_kb =
       features::kFreezingMemoryGrowthThresholdToDiscardKb.Get();
   // Pretend that the page is frozen.
