@@ -61,4 +61,11 @@
       =3 {{website_1}, {website_2}, and 1 more}
       other {{website_1}, {website_2}, and {more_count} more}}
     </message>
+    <message name="IDS_BULK_UPLOAD_BOOKMARK_FOLDER_SUBTITLE" desc="The subtitle text for a bookmark folder item in the batch upload dialog." translateable="false">
+    {count, plural,
+      =0 {# bookmarks}
+      =1 {# bookmark}
+      other {# bookmarks}
+    }
+    </message>
 </grit-part>

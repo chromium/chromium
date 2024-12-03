@@ -5,14 +5,21 @@
 #ifndef COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_LOCAL_DATA_BATCH_UPLOADER_H_
 #define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_LOCAL_DATA_BATCH_UPLOADER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
 
+class GURL;
+
 namespace bookmarks {
 class BookmarkModel;
+class BookmarkNode;
 }  // namespace bookmarks
 
 namespace sync_bookmarks {
+
+class BookmarkModelViewUsingLocalOrSyncableNodes;
 
 class BookmarkLocalDataBatchUploader
     : public syncer::DataTypeLocalDataBatchUploader {
@@ -35,6 +42,27 @@ class BookmarkLocalDataBatchUploader
 
  private:
   bool CanUpload() const;
+
+  // Returns the URLs of all the bookmarked items in the subtree (including
+  // subtree_root).
+  std::vector<GURL> GetBookmarkedUrlsInSubtree(
+      const BookmarkModelViewUsingLocalOrSyncableNodes&
+          local_or_syncable_bookmark_model_view,
+      const bookmarks::BookmarkNode* subtree_root) const;
+
+  // Returns the `LocalDataItemModel` corresponding to the given `node`.
+  //
+  // For folders:
+  // - title: <folder title>
+  // - subtitle: "<N> bookmarks", where N is the total number of children
+  //             (folders or bookmarks)
+  //
+  // For bookmarks:
+  // - title: <bookmark title>
+  // - subtitle: empty
+  syncer::LocalDataItemModel DataItemModelFromNode(
+      const bookmarks::BookmarkNode* node,
+      int bookmarked_urls_count) const;
 
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
