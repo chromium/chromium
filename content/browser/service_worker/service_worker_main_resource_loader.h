@@ -187,6 +187,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       blink::EmbeddedWorkerStatus embedded_status,
       bool is_warming_up,
       bool is_warmed_up);
+
+  void Fallback(ResponseHeadUpdateParams response_header_params);
+
   std::string GetInitialServiceWorkerStatusString();
   std::string GetFrameTreeNodeTypeString();
   bool IsEligibleForRecordingTimingMetrics();
