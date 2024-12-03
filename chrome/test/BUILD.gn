@@ -1735,6 +1735,7 @@ if (is_android) {
         "../browser/extensions/api/web_request/web_request_apitest.cc",
         "../browser/extensions/background_script_executor_browsertest.cc",
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
+        "../browser/extensions/system_cpu_apitest.cc",
         "../browser/extensions/system_memory_apitest.cc",
       ]
 
