@@ -42,7 +42,6 @@ build_webui("build") {
   web_component_files = [
     "common/app_language_selection_dialog/app_language_selection_dialog.ts",
     "common/app_language_selection_dialog/app_language_selection_item.ts",
-    "common/lacros_extension_controlled_indicator.ts",
     "common/password_prompt_dialog/password_prompt_dialog.ts",
     "controls/controlled_button.ts",
     "controls/controlled_radio_button.ts",
@@ -379,7 +378,6 @@ build_webui("build") {
     "common/app_management/store_mixin.ts",
     "common/deep_linking_mixin.ts",
     "common/global_scroll_target_mixin.ts",
-    "common/lacros_extension_control_browser_proxy.ts",
     "common/load_time_booleans.ts",
     "common/media_devices_proxy.ts",
     "common/route_observer_mixin.ts",

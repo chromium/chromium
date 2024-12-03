@@ -9,11 +9,6 @@
     width: 100%;
   }
 
-  lacros-extension-controlled-indicator {
-    margin-inline-start: 0;
-    width: 100%;
-  }
-
   .settings-box:first-of-type {
     border-top: none;
   }
@@ -33,21 +28,13 @@
   </div>
 </template>
 
-<template is="dom-if" if="[[proxySetByAshExtension_(managedProperties)]]">
+<template is="dom-if" if="[[isProxySetByExtension_(managedProperties)]]">
   <div class="settings-box">
     <extension-controlled-indicator
         extension-id="[[extensionInfo_.id]]"
         extension-name="[[extensionInfo_.name]]"
         extension-can-be-disabled="[[extensionInfo_.canBeDisabled]]">
     </extension-controlled-indicator>
-  </div>
-</template>
-<template is="dom-if" if="[[isProxySetByLacrosExtension_]]">
-  <div class="settings-box">
-    <lacros-extension-controlled-indicator
-        extension-id="[[extensionInfo_.id]]"
-        extension-name="[[extensionInfo_.name]]">
-    </lacros-extension-controlled-indicator>
   </div>
 </template>
 
