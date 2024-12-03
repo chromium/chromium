@@ -1027,6 +1027,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
   bool IsMouseFocusable(
       UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
+  // If the element might be a keyboard-focusable scroller, then it will call
+  // IsKeyboardFocusableScroller which can be slow. Avoid calling this function
+  // outside of focus sequential navigation.
   virtual bool IsKeyboardFocusable(
       UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
 
