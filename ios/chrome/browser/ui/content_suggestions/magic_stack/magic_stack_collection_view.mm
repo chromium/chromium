@@ -165,7 +165,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                intoSectionWithIdentifier:kMagicStackSectionIdentifier];
   }
   [self.diffableDataSource applySnapshot:snapshot
-                    animatingDifferences:YES
+                    animatingDifferences:NO
                               completion:nil];
 }
 
