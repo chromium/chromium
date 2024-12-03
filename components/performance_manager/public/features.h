@@ -41,6 +41,14 @@ BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);
 // from being loaded.
 BASE_DECLARE_FEATURE_PARAM(size_t, kBackgroundTabLoadingMinSiteEngagement);
 
+// If false, the background tab loading policy won't set the main frame restored
+// state before restoring a tab. This gives it the same bugs as TabLoader: the
+// notification permission and features stored in SiteDataReader won't be used,
+// because they're looked up by url which isn't available without the restored
+// state. This minimizes behaviour differences between TabLoader and the
+// Performance Manager policy, for performance comparisons.
+BASE_DECLARE_FEATURE_PARAM(bool, kBackgroundTabLoadingRestoreMainFrameState);
+
 // Make the Battery Saver Modes available to users. If this is enabled, it
 // doesn't mean the mode is enabled, just that the user has the option of
 // toggling it.

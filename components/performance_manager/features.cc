@@ -30,6 +30,12 @@ BASE_FEATURE_PARAM(size_t,
                    "min_site_engagement",
                    0);
 
+BASE_FEATURE_PARAM(bool,
+                   kBackgroundTabLoadingRestoreMainFrameState,
+                   &kBackgroundTabLoadingFromPerformanceManager,
+                   "restore_main_frame_state",
+                   true);
+
 BASE_FEATURE(kPerformanceControlsPerformanceSurvey,
              "PerformanceControlsPerformanceSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);

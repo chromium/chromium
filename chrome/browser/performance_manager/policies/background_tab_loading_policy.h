@@ -290,6 +290,12 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicySiteEngagementTest,
                            ShouldLoad_UpdatesTitleOrFaviconInBackground);
   FRIEND_TEST_ALL_PREFIXES(
+      BackgroundTabLoadingPolicyScheduleLoadTest,
+      ScheduleLoadForRestoredTabs_WithoutNotificationPermission);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackgroundTabLoadingPolicyScheduleLoadTest,
+      ScheduleLoadForRestoredTabs_WithNotificationPermission);
+  FRIEND_TEST_ALL_PREFIXES(
       ::performance_manager::BackgroundTabLoadingBrowserTest,
       RestoredTabsAreLoadedGradually);
 };

@@ -7,10 +7,12 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
@@ -22,6 +24,8 @@
 #include "components/performance_manager/test_support/persistence/test_site_data_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 
@@ -66,6 +70,8 @@ class MockBackgroundTabLoadingPolicy : public BackgroundTabLoadingPolicy {
   std::map<const PageNode*, raw_ptr<SiteDataReader, CtnExperimental>>
       site_data_readers_;
 };
+
+static constexpr size_t kMinSiteEngagement = 5;
 
 }  // namespace
 
@@ -576,12 +582,12 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
   page_node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
 }
 
+// Tests that enable the kBackgroundTabLoadingMinSiteEngagement feature param.
+
 class BackgroundTabLoadingPolicySiteEngagementTest
     : public BackgroundTabLoadingPolicyTest,
       public ::testing::WithParamInterface<std::optional<size_t>> {
  public:
-  static constexpr size_t kMinSiteEngagement = 5;
-
   BackgroundTabLoadingPolicySiteEngagementTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kBackgroundTabLoadingFromPerformanceManager,
@@ -598,12 +604,11 @@ class BackgroundTabLoadingPolicySiteEngagementTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackgroundTabLoadingPolicySiteEngagementTest,
-    ::testing::Values(
-        std::nullopt,  // Site engagement should be ignored.
-        0ul,
-        BackgroundTabLoadingPolicySiteEngagementTest::kMinSiteEngagement - 1,
-        BackgroundTabLoadingPolicySiteEngagementTest::kMinSiteEngagement,
-        BackgroundTabLoadingPolicySiteEngagementTest::kMinSiteEngagement + 1));
+    ::testing::Values(std::nullopt,  // Site engagement should be ignored.
+                      0ul,
+                      kMinSiteEngagement - 1,
+                      kMinSiteEngagement,
+                      kMinSiteEngagement + 1));
 
 TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
        ShouldLoad_NoBackgroundCommunication) {
@@ -656,6 +661,138 @@ TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
   // tabs with low site engagement to load.
   policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad;
   EXPECT_TRUE(policy()->ShouldLoad(data));
+}
+
+// End-to-end tests that ensure the `site_engagement` score and notification
+// permissions are piped through correctly from ScheduleLoadForRestoreTabs.
+class BackgroundTabLoadingPolicyScheduleLoadTest
+    : public BackgroundTabLoadingPolicyTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  BackgroundTabLoadingPolicyScheduleLoadTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kBackgroundTabLoadingFromPerformanceManager,
+        {
+            {"min_site_engagement", base::NumberToString(kMinSiteEngagement)},
+            {"restore_main_frame_state",
+             restore_main_frame_state_ ? "true" : "false"},
+        });
+  }
+
+  void TearDown() override {
+    // Destroy all nodes before tearing down the graph.
+    page_nodes_.clear();
+    BackgroundTabLoadingPolicyTest::TearDown();
+  }
+
+  // Adds a PageNode to `page_nodes_` and returns a PageNodeData struct for it.
+  PageNodeData AddPageNode(
+      GURL main_frame_url = GURL(),
+      blink::mojom::PermissionStatus notification_permission_status =
+          blink::mojom::PermissionStatus::ASK) {
+    auto page_node = CreateNode<performance_manager::PageNodeImpl>();
+    // Mark the PageNode as a tab as this is a requirement to pass it to
+    // ScheduleLoadForRestoredTabs().
+    page_node->SetType(PageType::kTab);
+    PageNodeData page_node_data(page_node->GetWeakPtr(), main_frame_url,
+                                notification_permission_status);
+    page_nodes_.push_back(std::move(page_node));
+    return page_node_data;
+  }
+
+ protected:
+  bool restore_main_frame_state_ = GetParam();
+
+  // PageNodes created and owned by the test.
+  std::vector<
+      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
+      page_nodes_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackgroundTabLoadingPolicyScheduleLoadTest,
+                         ::testing::Bool());
+
+TEST_P(BackgroundTabLoadingPolicyScheduleLoadTest,
+       ScheduleLoadForRestoredTabs_WithoutNotificationPermission) {
+  std::vector<PageNodeData> to_load;
+
+  // kMinTabsToLoad tabs will always be loaded, regardless of `site_engagement`.
+  for (size_t i = 0; i < BackgroundTabLoadingPolicy::kMinTabsToLoad; i++) {
+    auto page_node_data = AddPageNode();
+    EXPECT_CALL(*loader(), LoadPageNode(page_node_data.page_node.get()));
+    to_load.push_back(std::move(page_node_data));
+  }
+
+  // Tab with a low `site_engagement` score should not be loaded.
+  PageNodeData low_engagement_data = AddPageNode();
+  low_engagement_data.site_engagement = kMinSiteEngagement - 1;
+  EXPECT_CALL(*loader(), LoadPageNode(low_engagement_data.page_node.get()))
+      .Times(0);
+  to_load.push_back(std::move(low_engagement_data));
+
+  // Tab with a high `site_engagement` score should be loaded.
+  PageNodeData high_engagement_data = AddPageNode();
+  high_engagement_data.site_engagement = kMinSiteEngagement + 1;
+  EXPECT_CALL(*loader(), LoadPageNode(high_engagement_data.page_node.get()));
+  to_load.push_back(std::move(high_engagement_data));
+
+  // Tab with unknown `site_engagement` should be loaded.
+  PageNodeData no_engagement_data = AddPageNode();
+  EXPECT_FALSE(no_engagement_data.site_engagement.has_value());
+  EXPECT_CALL(*loader(), LoadPageNode(no_engagement_data.page_node.get()));
+  to_load.push_back(std::move(no_engagement_data));
+
+  policy()->SetMaxSimultaneousLoadsForTesting(to_load.size());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+}
+
+TEST_P(BackgroundTabLoadingPolicyScheduleLoadTest,
+       ScheduleLoadForRestoredTabs_WithNotificationPermission) {
+  std::vector<PageNodeData> to_load;
+
+  // kMinTabsToLoad tabs will always be loaded, regardless of `site_engagement`.
+  for (size_t i = 0; i < BackgroundTabLoadingPolicy::kMinTabsToLoad; i++) {
+    auto page_node_data = AddPageNode();
+    EXPECT_CALL(*loader(), LoadPageNode(page_node_data.page_node.get()));
+    to_load.push_back(std::move(page_node_data));
+  }
+
+  // The notification permission allows a tab with a low `site_engagement` score
+  // to be loaded. It should not be loaded if RestoreMainFrameState wasn't
+  // called, because the notification permission is lost (bug-for-bug
+  // compatibility with TabLoader).
+  PageNodeData low_engagement_data =
+      AddPageNode(GURL("http://low-engagement.example.com"),
+                  blink::mojom::PermissionStatus::GRANTED);
+  low_engagement_data.site_engagement = kMinSiteEngagement - 1;
+  EXPECT_CALL(*loader(), LoadPageNode(low_engagement_data.page_node.get()))
+      .Times(restore_main_frame_state_ ? 1 : 0);
+  to_load.push_back(std::move(low_engagement_data));
+
+  // Tab with a high `site_engagement` score should be loaded regardless of
+  // notification permission
+  PageNodeData high_engagement_data =
+      AddPageNode(GURL("http://high-engagement.example.com"),
+                  blink::mojom::PermissionStatus::GRANTED);
+  high_engagement_data.site_engagement = kMinSiteEngagement + 1;
+  EXPECT_CALL(*loader(), LoadPageNode(high_engagement_data.page_node.get()));
+  to_load.push_back(std::move(high_engagement_data));
+
+  // Tab with unknown `site_engagement` should be loaded regardless of
+  // notification permission.
+  PageNodeData no_engagement_data =
+      AddPageNode(GURL("http://no-engagement.example.com"),
+                  blink::mojom::PermissionStatus::GRANTED);
+  EXPECT_FALSE(no_engagement_data.site_engagement.has_value());
+  EXPECT_CALL(*loader(), LoadPageNode(no_engagement_data.page_node.get()));
+  to_load.push_back(std::move(no_engagement_data));
+
+  policy()->SetMaxSimultaneousLoadsForTesting(to_load.size());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
 }
 
 }  // namespace policies
