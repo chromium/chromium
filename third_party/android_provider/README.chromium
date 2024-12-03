@@ -17,5 +17,5 @@ https://android.googlesource.com/platform/cts/+/50f25a19f2a3de940d6ef7eac84b37d1
 Local Modifications:
 - Added logs
 - Introduced some helper method.
-- Add @TargetApi(Build.VERSION_CODES.Q).
+- Add @RequiresApi(Build.VERSION_CODES.Q).
 - Catch an exception thrown by ContentResolver.delete()
