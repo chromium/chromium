@@ -23,6 +23,7 @@
 namespace blink {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static BlinkFuzzerTestSupport test_support;
   FuzzedDataProvider fdp(data, size);
   FuzzDecoder(DecoderType::kCrabbyAvifDecoder, fdp);
   return 0;
