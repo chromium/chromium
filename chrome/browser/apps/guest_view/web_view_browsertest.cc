@@ -1432,14 +1432,10 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SelectShowHide) {
 #endif
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestChromeExtensionURL) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testChromeExtensionURL", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestChromeExtensionRelativePath) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testChromeExtensionRelativePath",
              "web_view/shim",
              NO_TEST_SERVER);

@@ -125,8 +125,11 @@ FrameTreeNodeId GuestPageHolderImpl::GetOuterDelegateFrameTreeNodeId() {
 }
 
 RenderFrameHostImpl* GuestPageHolderImpl::GetProspectiveOuterDocument() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (!delegate_) {
+    return nullptr;
+  }
+  return static_cast<RenderFrameHostImpl*>(
+      delegate_->GetProspectiveOuterDocument());
 }
 
 FrameTree* GuestPageHolderImpl::LoadingTree() {
