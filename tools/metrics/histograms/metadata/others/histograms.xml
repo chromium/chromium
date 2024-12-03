@@ -7069,7 +7069,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.GestureInterpreterLibevdevCros.TouchpadClick.{MaxTime}"
-    units="mm" expires_after="2025-03-23">
+    units="mm" expires_after="2025-06-01">
   <owner>seobrien@chromium.org</owner>
   <owner>chromeos-tango@google.com</owner>
   <summary>
@@ -8214,7 +8214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SB2.RemoteCall.CanCheckUrl.{CheckType}"
-    enum="BooleanCanCheckUrl" expires_after="2025-03-23">
+    enum="BooleanCanCheckUrl" expires_after="2025-06-01">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -10171,7 +10171,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2025-03-30">
+    enum="VoiceInteractionEventSource" expires_after="2025-06-01">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -10194,7 +10194,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
-    expires_after="2025-03-30">
+    expires_after="2025-06-01">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
