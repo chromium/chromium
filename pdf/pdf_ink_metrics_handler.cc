@@ -61,6 +61,27 @@ constexpr auto kPenColors =
         {SkColorSetRGB(0x88, 0x59, 0x45), StrokeMetricPenColor::kTan3},
     });
 
+constexpr auto kHighlighterColors =
+    base::MakeFixedFlatMap<SkColor, StrokeMetricHighlighterColor>({
+        {SkColorSetRGB(0xF2, 0x8B, 0x82),
+         StrokeMetricHighlighterColor::kLightRed},
+        {SkColorSetRGB(0xFD, 0xD6, 0x63),
+         StrokeMetricHighlighterColor::kLightYellow},
+        {SkColorSetRGB(0x34, 0xA8, 0x53),
+         StrokeMetricHighlighterColor::kLightGreen},
+        {SkColorSetRGB(0x42, 0x85, 0xF4),
+         StrokeMetricHighlighterColor::kLightBlue},
+        {SkColorSetRGB(0xFF, 0xAE, 0x80),
+         StrokeMetricHighlighterColor::kLightOrange},
+        {SkColorSetRGB(0xD9, 0x30, 0x25), StrokeMetricHighlighterColor::kRed},
+        {SkColorSetRGB(0xDD, 0xF3, 0x00),
+         StrokeMetricHighlighterColor::kYellow},
+        {SkColorSetRGB(0x25, 0xE3, 0x87), StrokeMetricHighlighterColor::kGreen},
+        {SkColorSetRGB(0x53, 0x79, 0xFF), StrokeMetricHighlighterColor::kBlue},
+        {SkColorSetRGB(0xFF, 0x63, 0x0C),
+         StrokeMetricHighlighterColor::kOrange},
+    });
+
 void ReportStrokeTypeAndSize(StrokeMetricBrushType type,
                              StrokeMetricBrushSize size) {
   base::UmaHistogramEnumeration("PDF.Ink2StrokeBrushType", type);
@@ -97,6 +118,11 @@ void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush) {
     auto color_iter = kPenColors.find(sk_color);
     CHECK(color_iter != kPenColors.end());
     base::UmaHistogramEnumeration("PDF.Ink2StrokePenColor", color_iter->second);
+  } else {
+    auto color_iter = kHighlighterColors.find(sk_color);
+    CHECK(color_iter != kHighlighterColors.end());
+    base::UmaHistogramEnumeration("PDF.Ink2StrokeHighlighterColor",
+                                  color_iter->second);
   }
 }
 

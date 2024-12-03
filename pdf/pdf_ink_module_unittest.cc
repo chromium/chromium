@@ -2060,6 +2060,8 @@ TEST_F(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
 class PdfInkModuleMetricsTest : public PdfInkModuleUndoRedoTest {
  protected:
   static constexpr char kPenColorMetric[] = "PDF.Ink2StrokePenColor";
+  static constexpr char kHighlighterColorMetric[] =
+      "PDF.Ink2StrokeHighlighterColor";
   static constexpr char kPenSizeMetric[] = "PDF.Ink2StrokePenSize";
   static constexpr char kHighlighterSizeMetric[] =
       "PDF.Ink2StrokeHighlighterSize";
@@ -2124,6 +2126,35 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushColorPen) {
 
   histograms.ExpectBucketCount(kPenColorMetric, StrokeMetricPenColor::kTan3, 1);
   histograms.ExpectTotalCount(kPenColorMetric, 3);
+  histograms.ExpectTotalCount(kHighlighterColorMetric, 0);
+}
+
+TEST_F(PdfInkModuleMetricsTest, StrokeBrushColorHighlighter) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+  base::HistogramTester histograms;
+
+  // Draw a stroke with "Light Red" color.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
+                                             /*color_b=*/0x82};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 6.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kHighlighterColorMetric,
+                               StrokeMetricHighlighterColor::kLightRed, 1);
+  histograms.ExpectTotalCount(kHighlighterColorMetric, 1);
+
+  // Draw a stroke with "Orange" color.
+  params.color_r = 0xFF;
+  params.color_g = 0x63;
+  params.color_b = 0x0C;
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 6.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kHighlighterColorMetric,
+                               StrokeMetricHighlighterColor::kOrange, 1);
+  histograms.ExpectTotalCount(kHighlighterColorMetric, 2);
+  histograms.ExpectTotalCount(kPenColorMetric, 0);
 }
 
 TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizePen) {

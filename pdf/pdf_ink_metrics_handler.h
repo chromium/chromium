@@ -41,6 +41,25 @@ enum class StrokeMetricBrushType {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// LINT.IfChange(PDFInk2StrokeHighlighterColor)
+enum class StrokeMetricHighlighterColor {
+  kLightRed = 0,
+  kLightYellow = 1,
+  kLightGreen = 2,
+  kLightBlue = 3,
+  kLightOrange = 4,
+  kRed = 5,
+  kYellow = 6,
+  kGreen = 7,
+  kBlue = 8,
+  kOrange = 9,
+  kMaxValue = 9,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeHighlighterColor)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // LINT.IfChange(PDFInk2StrokePenColor)
 enum class StrokeMetricPenColor {
   kBlack = 0,
