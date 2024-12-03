@@ -7456,8 +7456,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameDocumentGetBrowserTest,
   )");
 
   EXPECT_THAT(get_result.error,
-              testing::HasSubstr("the method on sharedStorage is not allowed "
-                                 "in an opaque origin context"));
+              testing::HasSubstr("is not allowed in an opaque origin context"));
 }
 
 IN_PROC_BROWSER_TEST_F(

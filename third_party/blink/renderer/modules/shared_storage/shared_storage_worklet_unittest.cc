@@ -815,6 +815,10 @@ TEST_F(SharedStorageWorkletTest,
     ];
 
     var expectedFunctions = [
+      "SharedStorageSetMethod",
+      "SharedStorageAppendMethod",
+      "SharedStorageDeleteMethod",
+      "SharedStorageClearMethod",
       "SharedStorageWorkletNavigator",
       "LockManager",
       "Lock",
@@ -1520,6 +1524,10 @@ TEST_F(SharedStorageWorkletTest,
           ];
 
           var expectedFunctions = [
+            "SharedStorageSetMethod",
+            "SharedStorageAppendMethod",
+            "SharedStorageDeleteMethod",
+            "SharedStorageClearMethod",
             "SharedStorageWorkletNavigator",
             "LockManager",
             "Lock",
@@ -1597,6 +1605,10 @@ TEST_F(SharedStorageWorkletTest,
           ];
 
           var expectedFunctions = [
+            "SharedStorageSetMethod",
+            "SharedStorageAppendMethod",
+            "SharedStorageDeleteMethod",
+            "SharedStorageClearMethod",
             "SharedStorageWorkletNavigator",
             "LockManager",
             "Lock",
@@ -2373,6 +2385,57 @@ TEST_F(SharedStorageWorkletTest, Set_ParamConvertedToStringError) {
   EXPECT_THAT(run_result.error_message, testing::HasSubstr("error 123"));
 
   EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
+}
+
+TEST_F(SharedStorageWorkletTest, CreateSetMethodObject_MissingValue) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          let a = new SharedStorageSetMethod("key0");
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
+
+  EXPECT_FALSE(run_result.success);
+  EXPECT_THAT(run_result.error_message,
+              testing::HasSubstr("2 arguments required, but only 1 present"));
+
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
+}
+
+TEST_F(SharedStorageWorkletTest, CreateSetMethodObject_Success) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          let a = new SharedStorageSetMethod("key0", "value0", {
+            ignoreIfPresent: true,
+            withLock: "lock1"
+          });
+
+          console.log(a);
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", CreateSerializedUndefined());
+
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_update_params_.size(), 0u);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[0],
+            "[object SharedStorageSetMethod]");
 }
 
 TEST_F(SharedStorageWorkletTest, Append_MissingKey) {
@@ -3519,6 +3582,10 @@ TEST_F(SharedStorageWebLocksDisabledTest,
        InterfaceAndObjectExposure_DuringAddModule) {
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
     var expectedUndefinedVariables = [
+      "SharedStorageSetMethod",
+      "SharedStorageAppendMethod",
+      "SharedStorageDeleteMethod",
+      "SharedStorageClearMethod",
       "SharedStorageWorkletNavigator",
       "LockManager",
       "Lock",
