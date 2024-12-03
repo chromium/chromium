@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -63,7 +63,7 @@ public class DataSharingFaviconProviderUnitTest {
                 .getForeignFaviconImageForURL(
                         eq(mProfile), eq(TAB_URL), anyInt(), callbackCaptor.capture());
         callbackCaptor.getValue().onFaviconAvailable(mBitmap, BITMAP_URL);
-        verify(mCallback).onResult(any());
+        verify(mCallback).onResult(notNull());
     }
 
     @Test

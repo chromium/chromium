@@ -1031,6 +1031,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/contextmenu:java",
       "//chrome/browser/creator/android:java",
       "//chrome/browser/creator/android:junit",
+      "//chrome/browser/data_sharing:avatar_junit_tests",
       "//chrome/browser/data_sharing:data_sharing_public_java",
       "//chrome/browser/data_sharing:factory_java",
       "//chrome/browser/data_sharing:favicon_java",

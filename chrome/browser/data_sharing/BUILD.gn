@@ -158,6 +158,34 @@ if (is_android) {
     ]
   }
 
+  robolectric_library("avatar_junit_tests") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingAvatarProviderUnitTest.java" ]
+    deps = [
+      ":avatar_java",
+      ":java_resources",
+      "//base:base_java",
+      "//base:base_junit_test_support",
+      "//base:callback_java",
+      "//chrome/browser/data_sharing:recent_activity_java",
+      "//chrome/browser/tab:java",
+      "//chrome/test/android:chrome_java_unit_test_support",
+      "//components/data_sharing:test_support_java",
+      "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
+      "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_junit_test_support",
+      "//url:url_java",
+    ]
+  }
+
   android_library("java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
