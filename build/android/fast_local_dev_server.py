@@ -40,17 +40,10 @@ def log(msg: str, quiet: bool = False):
   if quiet:
     return
   # Ensure we start our message on a new line.
-  msg = '\n' + msg
-  # Send messages to all connected terminals.
-  BuildManager.broadcast(msg)
-  print(msg)
+  print('\n' + msg)
 
 
-def set_status(msg: str,
-               *,
-               end: str = '',
-               quiet: bool = False,
-               build_id: str = None):
+def set_status(msg: str, *, quiet: bool = False, build_id: str = None):
   prefix = f'[{TaskStats.prefix()}] '
   # if message is specific to a build then also output to its logfile.
   if build_id:
@@ -70,7 +63,7 @@ def set_status(msg: str,
   # \033[K to replace the normal \n to erase until the end of the line.
   # Avoid the default line ending so the next \r overwrites the same line just
   #     like ninja's output.
-  print(f'\r{prefix}{msg}\033[K', end=end, flush=True)
+  print(f'\r{prefix}{msg}\033[K', end='', flush=True)
 
 
 def log_to_file(message: str, build_id: str):
@@ -81,6 +74,8 @@ def log_to_file(message: str, build_id: str):
 def _exception_hook(exctype: type, exc: Exception, tb):
   # Output uncaught exceptions to all live terminals
   BuildManager.broadcast(''.join(traceback.format_exception(exctype, exc, tb)))
+  # Cancel all pending tasks cleanly (i.e. delete stamp files if necessary).
+  TaskManager.deactivate()
   sys.__excepthook__(exctype, exc, tb)
 
 
@@ -335,6 +330,7 @@ class Task:
     self.remote_print = remote_print
     self.options = options
     self._terminated = False
+    self._replaced = False
     self._lock = threading.RLock()
     self._proc: Optional[subprocess.Popen] = None
     self._thread: Optional[threading.Thread] = None
@@ -347,42 +343,6 @@ class Task:
 
   def __eq__(self, other):
     return self.key == other.key and self.build_id == other.build_id
-
-  def schedule_delete_stampfile(self, wait_for_seconds=2):
-    """Delete stamp file on a timer.
-
-    Make sure the stamp file is deleted for new queued tasks in case the server
-    crashes/is stopped before actually running them.
-    """
-
-    def _helper(created_timestamp):
-      # Time since thread was created.
-      time_in_stasis = datetime.datetime.now() - created_timestamp
-      remaining_delta = datetime.timedelta(
-          seconds=wait_for_seconds) - time_in_stasis
-      remaining_seconds = remaining_delta.total_seconds()
-      if remaining_seconds > 0:
-        # We wait for some time before actually deleting the file to ensure the
-        # original siso/ninja build action has returned since siso expects the
-        # file to exist when the original action completes. However since the
-        # action has yet to be *actually* run by the build server, we delete the
-        # stamp file in case the server dies before running it.
-        #
-        # Technically this is a race condition with siso checking for the
-        # existence of the file.
-        time.sleep(remaining_seconds)
-      try:
-        os.unlink(os.path.join(self.cwd, self.stamp_file))
-      except FileNotFoundError:
-        pass
-
-    with self._lock:
-      # Make method idempotent.
-      if self._delete_stamp_thread:
-        return
-      self._delete_stamp_thread = threading.Thread(
-          target=_helper, args=(datetime.datetime.now(), ))
-      self._delete_stamp_thread.start()
 
   def start(self, on_complete_callback: Callable[[], None]) -> int:
     """Starts the task if it has not already been terminated.
@@ -399,23 +359,6 @@ class Task:
       if self._terminated:
         return 0
 
-      assert self._delete_stamp_thread is not None, (
-          'Task#schedule_delete_stampfile needs to be called before ' +
-          'Task#start')
-
-    # Make sure the stamp file is deleted before the task is run. Wait outside
-    # the lock in case we block.
-    set_status(
-        f'Ensuring stamp file {self.stamp_file} is deleted before '
-        'starting task ({self.name})',
-        quiet=self.options.quiet,
-        build_id=self.build_id)
-    self._delete_stamp_thread.join()
-
-    with self._lock:
-      # Need to recheck since we left and reentered the lock.
-      if self._terminated:
-        return 0
       # Use os.nice(19) to ensure the lowest priority (idle) for these analysis
       # tasks since we want to avoid slowing down the actual build.
       # TODO(wnwen): Use ionice to reduce resource consumption.
@@ -440,23 +383,14 @@ class Task:
       self._thread.start()
       return 1
 
-  def terminate(self):
+  def terminate(self, replaced=False):
     """Can be called multiple times to cancel and ignore the task's output."""
 
     with self._lock:
       if self._terminated:
         return
       self._terminated = True
-      stamp_deletion_thread = self._delete_stamp_thread
-
-    # Make sure stamp file is deleted if terminating. Use the thread (instead of
-    # deleting directly) to ensure we wait some time before deleting (see
-    # schedule_stamp_delete for why this is needed.)
-    if stamp_deletion_thread:
-      stamp_deletion_thread.join()
-    else:
-      self.schedule_delete_stampfile()
-      self._delete_stamp_thread.join()
+      self._replaced = replaced
 
     # It is safe to access _proc and _thread outside of _lock since they are
     # only changed by self.start holding _lock when self._terminate is false.
@@ -489,34 +423,46 @@ class Task:
     that this method does not need locking."""
 
     TaskStats.complete_task(build_id=self.build_id)
+    delete_stamp = False
     status_string = 'FINISHED'
     if self._terminated:
       status_string = 'TERMINATED'
-    else:
-      if stdout or self._return_code != 0:
-        status_string = 'FAILED'
-        message = '\n'.join([
-            f'FAILED: {self.name}',
-            f'Return code: {self._return_code}',
-            'CMD: ' + ' '.join(self.cmd),
-            'STDOUT:',
-            stdout,
-        ])
-        log_to_file(message, build_id=self.build_id)
-        log(message, quiet=self.options.quiet)
-        if self.remote_print:
-          self.tty.write(message)
-          self.tty.flush()
+      # When tasks are replaced, avoid deleting the stamp file, context:
+      # https://issuetracker.google.com/301961827.
+      if not self._replaced:
+        delete_stamp = True
+    elif stdout or self._return_code != 0:
+      status_string = 'FAILED'
+      delete_stamp = True
+      preamble = [
+          f'FAILED: {self.name}',
+          f'Return code: {self._return_code}',
+          'CMD: ' + ' '.join(self.cmd),
+          'STDOUT:',
+      ]
+
+      message = '\n'.join(preamble + [stdout])
+      log_to_file(message, build_id=self.build_id)
+      log(message, quiet=self.options.quiet)
+      if self.remote_print:
+        # Add emoji to show that output is from the build server.
+        preamble = [f'⏩ {line}' for line in preamble]
+        self.tty.write('\n'.join(preamble + [stdout]))
+        self.tty.flush()
     set_status(f'{status_string} {self.name}',
                quiet=self.options.quiet,
                build_id=self.build_id)
-
-
-def _cancel_old_build(current_tasks: Dict[Tuple[str, str], Task],
-                      new_task: Task):
-  for task in current_tasks.values():
-    if task.cwd == new_task.cwd and task.build_id != new_task.build_id:
-      task.terminate()
+    if delete_stamp:
+      # Force siso to consider failed targets as dirty.
+      try:
+        os.unlink(os.path.join(self.cwd, self.stamp_file))
+      except FileNotFoundError:
+        pass
+    else:
+      # We do not care about the action writing a too new mtime. Siso only cares
+      # about the mtime that is recorded in its database at the time the
+      # original action finished.
+      pass
 
 
 def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task], options):
@@ -543,14 +489,10 @@ def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task], options):
                   options=options)
   existing_task = current_tasks.get(new_task.key)
   if existing_task:
-    existing_task.terminate()
+    existing_task.terminate(replaced=True)
   current_tasks[new_task.key] = new_task
 
-  new_task.schedule_delete_stampfile()
   TaskManager.add_task(new_task, options)
-  # If we start a new build in the same directory, clear out tasks from the old
-  # build.
-  _cancel_old_build(current_tasks, new_task)
 
 
 def _handle_query_build(data, connection: socket.socket):
