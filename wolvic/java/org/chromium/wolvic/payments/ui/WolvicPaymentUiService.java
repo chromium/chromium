@@ -24,6 +24,8 @@ import org.chromium.components.payments.Section;
 
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -60,6 +62,7 @@ public class WolvicPaymentUiService {
     private List<PaymentApp> mPaymentApps;
 
     private static final String TAG = "WolvicPaymentUiService";
+    private Runnable mHider;
 
     /** The delegate of this class. */
     // TODO(jfernandez): Define the a complete delegate
@@ -250,10 +253,13 @@ public class WolvicPaymentUiService {
      *     successful; null if failed.
      */
     public @Nullable WebContents showPaymentHandlerUI(GURL url) {
-      WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-      if (windowAndroid == null) return null;
-      Activity activity = windowAndroid.getActivity().get();
+      if (mWebContents.getTopLevelNativeWindow() == null) return null;
+
+      Activity activity = mWebContents.getTopLevelNativeWindow().getActivity().get();
       if (activity == null) return null;
+
+      ActivityWindowAndroid windowAndroid = new ActivityWindowAndroid(activity, false,
+              IntentRequestTracker.createFromActivity(activity));
 
       WebContents paymentHandlerWebContents = createWebContents(mIsOffTheRecord);
       if (paymentHandlerWebContents == null)
@@ -274,6 +280,9 @@ public class WolvicPaymentUiService {
 
       mWebContents.notifyOnCreateNewPaymentHandler(paymentHandlerWebContents);
 
+      mHider = () -> {
+          paymentHandlerWebContents.destroy();
+      };
       return paymentHandlerWebContents;
     }
 
@@ -330,7 +339,8 @@ public class WolvicPaymentUiService {
         assert !mHasClosed;
         mHasClosed = true;
 
-        // TODO(jfernandez): Implement properly the "close" logic.
-
+        if (mHider == null) return;
+        mHider.run();
+        mHider = null;
     }
 }
