@@ -344,18 +344,18 @@
       <message name="IDS_IOS_AUTOFILL_ADDRESS2" desc="Title of the field of a profile address representing the second line of the address. [Length: 15em] [iOS only]">
         Address 2
       </message>
-      <message name="IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of address suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has address suggestions available for autofill purposes. According to the number of available addresses, the string goes from singular to plural. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_ADDRESS_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to addresses. This announcement is triggered when the user enters edit mode in an address-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
-           =1 {{count} saved address available above your keyboard.}
-           other {{count} saved addresses available above your keyboard.}}
+           =1 {{count} option for address available above your keyboard.}
+           other {{count} options for address available above your keyboard.}}
       </message>
       <message name="IDS_IOS_AUTOFILL_ADMIN_LEVEL2" desc="Title of the field of a profile address representing the administrative area level 2. A sub-division of a state, e.g. a Municipio in Brazil or Mexico. [Length: 15em] [iOS only]">
         Municipality
       </message>
-      <message name="IDS_IOS_AUTOFILL_AUTOCOMPLETE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of autocomplete suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that only has autocomplete suggestions available for autofill purposes. According to the number of available autocomplete suggestions, the string goes from singular to plural. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_AUTOCOMPLETE_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to autocomplete. This announcement is triggered when the user enters edit mode in an autocomplete-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
-           =1 {{count} saved autocomplete suggestion available above your keyboard.}
-           other {{count} saved autocomplete suggestions available above your keyboard.}}
+           =1 {{count} option for autocomplete available above your keyboard.}
+           other {{count} options for autocomplete available above your keyboard.}}
       </message>
       <message name="IDS_IOS_AUTOFILL_CARDHOLDER" desc="Title of the field representing the full name of a credit card holder. [Length: 15em] [iOS only]">
         Name on card
@@ -420,15 +420,15 @@
       <message name="IDS_IOS_AUTOFILL_NICKNAME" desc="Title of the field representing the user defined nickname of a credit card. [Length: 15em] [iOS only]">
         Card nickname
       </message>
-      <message name="IDS_IOS_AUTOFILL_PASSWORD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of password suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has password suggestions available for autofill purposes. According to the number of available passwords, the string goes from singular to plural. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_PASSWORD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to passwords. This announcement is triggered when the user enters edit mode in a password-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
-           =1 {{count} saved password available above your keyboard.}
-           other {{count} saved passwords available above your keyboard.}}
+           =1 {{count} option for password available above your keyboard.}
+           other {{count} options for password available above your keyboard.}}
       </message>
-      <message name="IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of payment method suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has payment method suggestions available for autofill purposes. According to the number of available payment methods, the string goes from singular to plural. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_PAYMENT_METHOD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to payment methods. This announcement is triggered when the user enters edit mode in a payment method-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
-           =1 {{count} saved payment method available above your keyboard.}
-           other {{count} saved payment methods available above your keyboard.}}
+           =1 {{count} option for payment method available above your keyboard.}
+           other {{count} options for payment method available above your keyboard.}}
       </message>
       <message name="IDS_IOS_AUTOFILL_PHONE" desc="Title of the field of a profile address representing the phone number of the addressee. [Length: 15em] [iOS only]">
         Phone

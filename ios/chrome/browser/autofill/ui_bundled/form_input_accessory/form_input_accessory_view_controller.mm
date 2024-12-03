@@ -484,24 +484,24 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
       case FillingProduct::kAddress:
       case FillingProduct::kPlusAddresses:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
-            IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            IDS_IOS_AUTOFILL_ADDRESS_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
       case FillingProduct::kPassword:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
-            IDS_IOS_AUTOFILL_PASSWORD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            IDS_IOS_AUTOFILL_PASSWORD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
       case FillingProduct::kCreditCard:
       case FillingProduct::kIban:
       case FillingProduct::kStandaloneCvc:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
-            IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            IDS_IOS_AUTOFILL_PAYMENT_METHOD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
       case FillingProduct::kAutocomplete:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
-            IDS_IOS_AUTOFILL_AUTOCOMPLETE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            IDS_IOS_AUTOFILL_AUTOCOMPLETE_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
       case FillingProduct::kMerchantPromoCode:
