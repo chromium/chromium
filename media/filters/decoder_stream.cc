@@ -251,11 +251,6 @@ void DecoderStream<StreamType>::Reset(base::OnceClosure closure) {
     return;
   }
 
-  // Finalize any in progress decoder selection. We'll rerun selection during
-  // a subsequent Initialize(), so this just ensures we don't try to
-  // Initialize() the same decoder type multiple times.
-  decoder_selector_.FinalizeDecoderSelection();
-
   // |decrypting_demuxer_stream_| will fire all of its read requests when
   // it resets. |reset_cb_| will be fired in OnDecoderReset(), after the
   // decrypting demuxer stream finishes its reset.
@@ -954,6 +949,10 @@ void DecoderStream<StreamType>::ReinitializeDecoder() {
   DCHECK_EQ(pending_decode_requests_, 0);
 
   state_ = State::kStateReinitializingDecoder;
+
+  // Clear any remaining decoders in the selector; BeginDecoderSelection() will
+  // create a whole new decoder list.
+  decoder_selector_.FinalizeDecoderSelection();
 
   // Note: Some VideoDecoder implementations (e.g., MediaCodecVideoDecoder) are
   // relying on the fact that the existing VideoDecoder instance is given first
