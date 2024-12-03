@@ -80,6 +80,17 @@ std::unique_ptr<views::View> MakeQrCodeImageView(const std::string& qr_url) {
   return std::move(image_view);
 }
 
+device::cablev2::CredentialRequestType
+CrossDeviceRequestTypeToCredentialRequestType(
+    RequestInfo::RequestType request_type) {
+  switch (request_type) {
+    case RequestInfo::RequestType::kGet:
+      return device::cablev2::CredentialRequestType::kPresentation;
+    case RequestInfo::RequestType::kCreate:
+      return device::cablev2::CredentialRequestType::kIssuance;
+  }
+}
+
 }  // anonymous namespace
 
 DigitalIdentityProviderDesktop::DigitalIdentityProviderDesktop() = default;
@@ -110,18 +121,36 @@ void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
                                              const url::Origin& rp_origin,
                                              base::Value request,
                                              DigitalIdentityCallback callback) {
+  Transact(web_contents, RequestInfo::RequestType::kGet, rp_origin, request,
+           std::move(callback));
+}
+
+void DigitalIdentityProviderDesktop::Create(content::WebContents* web_contents,
+                                            const url::Origin& rp_origin,
+                                            base::ValueView request,
+                                            DigitalIdentityCallback callback) {
+  Transact(web_contents, RequestInfo::RequestType::kCreate, rp_origin, request,
+           std::move(callback));
+}
+
+void DigitalIdentityProviderDesktop::Transact(
+    content::WebContents* web_contents,
+    RequestInfo::RequestType request_type,
+    const url::Origin& rp_origin,
+    base::ValueView request,
+    DigitalIdentityCallback callback) {
   web_contents_ = web_contents->GetWeakPtr();
   rp_origin_ = rp_origin;
   callback_ = std::move(callback);
 
-  RequestInfo request_info{RequestInfo::RequestType::kGet, rp_origin,
-                           std::move(request)};
+  RequestInfo request_info{request_type, rp_origin, request.ToValue()};
 
   std::array<uint8_t, device::cablev2::kQRKeySize> qr_generator_key;
   crypto::RandBytes(qr_generator_key);
 
   std::string qr_url = device::cablev2::qr::Encode(
-      qr_generator_key, device::cablev2::CredentialRequestType::kPresentation);
+      qr_generator_key,
+      CrossDeviceRequestTypeToCredentialRequestType(request_type));
 
   transaction_ = Transaction::New(
       std::move(request_info), qr_generator_key, base::BindRepeating([]() {
@@ -131,13 +160,6 @@ void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
                           weak_ptr_factory_.GetWeakPtr(), std::move(qr_url)),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnFinished,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DigitalIdentityProviderDesktop::Create(content::WebContents* web_contents,
-                                            const url::Origin& rp_origin,
-                                            base::ValueView request,
-                                            DigitalIdentityCallback callback) {
-  // TODO(crbug.com/378330032): implement this method.
 }
 
 void DigitalIdentityProviderDesktop::OnEvent(const std::string& qr_url,

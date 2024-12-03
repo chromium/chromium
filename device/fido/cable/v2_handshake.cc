@@ -599,6 +599,8 @@ const char* RequestTypeToString(RequestType request_type) {
                          switch (request_type) {
                            case CredentialRequestType::kPresentation:
                              return "dcp";
+                           case CredentialRequestType::kIssuance:
+                             return "dci";
                              // If adding a value here, also update
                              // `RequestTypeFromString`.
                          }
@@ -609,8 +611,12 @@ const char* RequestTypeToString(RequestType request_type) {
 RequestType RequestTypeFromString(const std::string& s) {
   if (s == "mc") {
     return FidoRequestType::kMakeCredential;
-  } else if (s == "dcp") {
+  }
+  if (s == "dcp") {
     return CredentialRequestType::kPresentation;
+  }
+  if (s == "dci") {
+    return CredentialRequestType::kIssuance;
   }
   // kGetAssertion is the default if the value is unknown too.
   return FidoRequestType::kGetAssertion;

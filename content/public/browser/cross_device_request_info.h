@@ -14,7 +14,7 @@ namespace content::digital_credentials::cross_device {
 // credentials request.
 struct RequestInfo {
   // The type of request to be sent via the cross-device flow.
-  enum class RequestType { kGet };
+  enum class RequestType { kGet, kCreate };
 
   // The type of the request
   RequestType request_type;

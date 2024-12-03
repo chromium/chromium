@@ -32,7 +32,7 @@ namespace content::digital_credentials::cross_device {
 namespace {
 
 class DigitalCredentialsCrossDeviceRequestDispatcherTest
-    : public ::testing::Test {
+    : public ::testing::TestWithParam<RequestInfo::RequestType> {
  public:
   void SetUp() override {
     network_context_ = device::cablev2::NewMockTunnelServer(std::nullopt);
@@ -74,7 +74,7 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
       const GURL url("https://example.com");
       base::Value::Dict request_value;
       request_value.Set("foo", "bar");
-      RequestInfo request_info{RequestInfo::RequestType::kGet,
+      RequestInfo request_info{/*request_type=*/GetParam(),
                                url::Origin::Create(url),
                                base::Value(std::move(request_value))};
       base::test::TestFuture<base::expected<Response, RequestDispatcher::Error>>
@@ -132,7 +132,7 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
   base::test::TaskEnvironment task_environment;
 };
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, Valid) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, Valid) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON,
                R"({"response": {"digital": {"data": "ok"}}})");
@@ -141,7 +141,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, Valid) {
   ASSERT_EQ(result.value()->GetString(), "ok");
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidJson) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidJson) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON, "!");
   ASSERT_FALSE(result.has_value());
@@ -149,7 +149,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidJson) {
             RequestDispatcher::Error(ProtocolError::kInvalidResponse));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorResponse) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorResponse) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON,
                R"({"response": {"digital": {"error": "NO_CREDENTIAL"}}})");
@@ -158,7 +158,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorResponse) {
             RequestDispatcher::Error(RemoteError::kNoCredential));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, OtherError) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, OtherError) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON,
                R"({"response": {"digital": {"error": "RANDOM_STUFF"}}})");
@@ -166,7 +166,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, OtherError) {
   EXPECT_EQ(result.error(), RequestDispatcher::Error(RemoteError::kOther));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorIsNotAString) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorIsNotAString) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON,
                R"({"response": {"digital": {"error": 1}}})");
@@ -175,7 +175,7 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, ErrorIsNotAString) {
             RequestDispatcher::Error(ProtocolError::kInvalidResponse));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidStructure) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidStructure) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON, R"({"result": 1})");
   ASSERT_FALSE(result.has_value());
@@ -183,13 +183,18 @@ TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, InvalidStructure) {
             RequestDispatcher::Error(ProtocolError::kInvalidResponse));
 }
 
-TEST_F(DigitalCredentialsCrossDeviceRequestDispatcherTest, CTAPResponse) {
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, CTAPResponse) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kCTAP, "");
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             RequestDispatcher::Error(ProtocolError::kTransportError));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DigitalCredentialsCrossDeviceRequestDispatcherTest,
+                         ::testing::Values(RequestInfo::RequestType::kGet,
+                                           RequestInfo::RequestType::kCreate));
 
 }  // namespace
 }  // namespace content::digital_credentials::cross_device

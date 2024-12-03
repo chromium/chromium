@@ -32,6 +32,8 @@ std::string RequestTypeToString(RequestInfo::RequestType type) {
   switch (type) {
     case RequestInfo::RequestType::kGet:
       return "credential.get";
+    case RequestInfo::RequestType::kCreate:
+      return "credential.create";
   }
 }
 
