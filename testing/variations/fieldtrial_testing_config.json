@@ -11753,6 +11753,21 @@
             ]
         }
     ],
+    "IOSIncognitoSoftLock": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSSoftLock"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSInternalAdditionalFeaturesSwitch": [
         {
             "platforms": [
