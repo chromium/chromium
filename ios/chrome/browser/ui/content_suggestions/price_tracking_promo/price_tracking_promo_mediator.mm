@@ -192,6 +192,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   base::RecordAction(
       base::UserMetricsAction("Commerce.PriceTracking.MagicStackPromo.Allow"));
   [self.NTPActionsDelegate priceTrackingPromoOpened];
+  [self.delegate promoWasTapped];
   __weak PriceTrackingPromoMediator* weakSelf = self;
   [PushNotificationUtil requestPushNotificationPermission:^(
                             BOOL granted, BOOL promptShown, NSError* error) {
