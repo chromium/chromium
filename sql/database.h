@@ -208,6 +208,12 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // If this option is false, CREATE VIEW and DROP VIEW succeed, but SELECT
   // statements targeting views fail.
   bool enable_views_discouraged = false;
+
+  // If non-null, specifies the vfs implementation for the database to look for.
+  // Most use-cases do not require the use of a
+  // VFS(https://www.sqlite.org/vfs.html). This option should only be used when
+  // there is a clear need for it.
+  const char* vfs_name_discouraged = nullptr;
 };
 
 // Holds database diagnostics in a structured format.

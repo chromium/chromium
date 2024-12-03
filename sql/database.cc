@@ -1936,7 +1936,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
                  db_file_path);
     base::ElapsedTimer library_call_timer;
     sqlite_result_code = ToSqliteResultCode(sqlite3_open_v2(
-        uri_file_path.c_str(), &db, open_flags, /*zVfs=*/nullptr));
+        uri_file_path.c_str(), &db, open_flags, options_.vfs_name_discouraged));
     RecordTimingHistogram("Sql.Database.Success.SqliteOpenTime.",
                           library_call_timer.Elapsed());
   }
