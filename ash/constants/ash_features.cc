@@ -3245,7 +3245,7 @@ BASE_FEATURE(kEnableFastInkForSoftwareCursor,
 // login tasks are finished.
 BASE_FEATURE(kDeferConciergeStartup,
              "DeferConciergeStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
 
