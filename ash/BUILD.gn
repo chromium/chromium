@@ -51,7 +51,6 @@ component("ash") {
     "accelerators/accelerator_prefs_delegate.h",
     "accelerators/accelerator_shift_disable_capslock_state_machine.cc",
     "accelerators/accelerator_shift_disable_capslock_state_machine.h",
-    "accelerators/accelerator_table.cc",
     "accelerators/accelerator_table.h",
     "accelerators/accelerator_tracker.cc",
     "accelerators/accelerator_tracker.h",
