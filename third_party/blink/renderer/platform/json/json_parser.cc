@@ -439,7 +439,7 @@ Error DecodeString(Cursor<CharType>* cursor,
   *output = buffer.ToString();
 
   // Validate constructed utf16 string.
-  if (output->Utf8(kStrictUTF8Conversion).empty()) {
+  if (output->Utf8(Utf8ConversionMode::kStrict).empty()) {
     cursor->pos = string_start;
     return Error::kUnsupportedEncoding;
   }

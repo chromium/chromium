@@ -31,15 +31,15 @@ class AtomicString;
 class CodePointIterator;
 class String;
 
-enum UTF8ConversionMode {
+enum class Utf8ConversionMode : uint8_t {
   // Unpaired surrogates are encoded using the standard UTF-8 encoding scheme,
   // even though surrogate characters should not be present in a valid UTF-8
   // string.
-  kLenientUTF8Conversion,
+  kLenient,
   // Conversion terminates at the first unpaired surrogate, if any.
-  kStrictUTF8Conversion,
+  kStrict,
   // Unpaired surrogates are replaced with U+FFFD (REPLACEMENT CHARACTER).
-  kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD
+  kStrictReplacingErrors
 };
 
 // A string like object that wraps either an 8bit or 16bit byte sequence
@@ -177,7 +177,7 @@ class WTF_EXPORT StringView {
   }
 
   [[nodiscard]] std::string Utf8(
-      UTF8ConversionMode mode = kLenientUTF8Conversion) const;
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const;
 
   bool IsAtomic() const { return SharedImpl() && SharedImpl()->IsAtomic(); }
 

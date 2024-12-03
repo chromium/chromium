@@ -61,7 +61,7 @@ static inline void PutUTF8Triple(base::span<uint8_t, 3u> buffer, UChar ch) {
   buffer[2] = (ch & 0x3F) | 0x80;
 }
 
-std::string StringView::Utf8(UTF8ConversionMode mode) const {
+std::string StringView::Utf8(Utf8ConversionMode mode) const {
   unsigned length = this->length();
 
   if (!length)
@@ -92,7 +92,7 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
     base::span<const UChar> characters = Span16();
     base::span<uint8_t> buffer(base::as_writable_byte_span(buffer_vector));
 
-    if (mode == kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD) {
+    if (mode == Utf8ConversionMode::kStrictReplacingErrors) {
       while (!characters.empty()) {
         // Use strict conversion to detect unpaired surrogates.
         unicode::ConversionResult result =
@@ -116,7 +116,7 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
       }
       buffer_written = buffer_vector.size() - buffer.size();
     } else {
-      const bool strict = mode == kStrictUTF8Conversion;
+      const bool strict = mode == Utf8ConversionMode::kStrict;
 
       unicode::ConversionResult result =
           unicode::ConvertUTF16ToUTF8(characters, buffer, strict);

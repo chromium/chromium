@@ -149,12 +149,12 @@ void MediaFragmentURIParser::ParseFragments() {
     bool valid_utf8 = true;
     std::string utf8_name;
     if (!name.empty()) {
-      utf8_name = name.Utf8(kStrictUTF8Conversion);
+      utf8_name = name.Utf8(Utf8ConversionMode::kStrict);
       valid_utf8 = !utf8_name.empty();
     }
     std::string utf8_value;
     if (valid_utf8 && !value.empty()) {
-      utf8_value = value.Utf8(kStrictUTF8Conversion);
+      utf8_value = value.Utf8(Utf8ConversionMode::kStrict);
       valid_utf8 = !utf8_value.empty();
     }
 

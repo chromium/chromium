@@ -502,8 +502,8 @@ void ContentSecurityPolicy::FillInCSPHashValues(
     return;
   }
 
-  StringUTF8Adaptor utf8_source(
-      source, kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD);
+  StringUTF8Adaptor utf8_source(source,
+                                Utf8ConversionMode::kStrictReplacingErrors);
 
   for (const auto& algorithm_map : kAlgorithmMap) {
     DigestValue digest;

@@ -507,7 +507,7 @@ static constexpr uint32_t kMaxStaticTextLength = 3227574;
 
 std::string TruncateString(const String& str,
                            uint32_t max_len = kMaxStringAttributeLength) {
-  auto str_utf8 = str.Utf8(kStrictUTF8Conversion);
+  auto str_utf8 = str.Utf8(Utf8ConversionMode::kStrict);
   if (str_utf8.size() > max_len) {
     std::string truncated;
     base::TruncateUTF8ToByteSize(str_utf8, max_len, &truncated);

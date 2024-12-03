@@ -46,7 +46,7 @@ bool Digestor::Update(base::span<const uint8_t> data) {
   return !has_failed_;
 }
 
-bool Digestor::UpdateUtf8(const String& string, WTF::UTF8ConversionMode mode) {
+bool Digestor::UpdateUtf8(const String& string, WTF::Utf8ConversionMode mode) {
   StringUTF8Adaptor utf8(string, mode);
   return Update(base::as_byte_span(utf8));
 }
