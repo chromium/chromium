@@ -37,11 +37,11 @@ std::vector<QuickInsertSearchResult> ConvertToSearchResults(
   return base::ToVector(
       (*response)->results, [](tenor::mojom::GifResponsePtr& result) {
         CHECK(result);
-        const tenor::mojom::GifUrlsPtr& urls = result->url;
+        tenor::mojom::GifUrlsPtr& urls = result->url;
         CHECK(urls);
         return QuickInsertSearchResult(QuickInsertGifResult(
-            urls->preview, urls->preview_image, result->preview_size,
-            urls->full, result->full_size,
+            std::move(urls->preview), std::move(urls->preview_image),
+            result->preview_size, std::move(urls->full), result->full_size,
             base::UTF8ToUTF16(result->content_description)));
       });
 }
