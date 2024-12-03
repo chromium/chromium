@@ -1112,7 +1112,7 @@ class SecurityStateLoadingTest : public SecurityStateTabHelperTest {
   SecurityStateLoadingTest(const SecurityStateLoadingTest&) = delete;
   SecurityStateLoadingTest& operator=(const SecurityStateLoadingTest&) = delete;
 
-  ~SecurityStateLoadingTest() override {}
+  ~SecurityStateLoadingTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {

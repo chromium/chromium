@@ -78,7 +78,7 @@ class CaptivePortalTestingNavigationThrottle
       const GURL& login_url,
       bool is_wifi_connection,
       const std::string& wifi_ssid);
-  ~CaptivePortalTestingNavigationThrottle() override {}
+  ~CaptivePortalTestingNavigationThrottle() override = default;
 
   // content::NavigationThrottle:
   const char* GetNameForLogging() override {
@@ -133,7 +133,7 @@ class TestingThrottleInstaller : public content::WebContentsObserver {
                            const GURL& login_url,
                            bool is_wifi_connection,
                            const std::string& wifi_ssid);
-  ~TestingThrottleInstaller() override {}
+  ~TestingThrottleInstaller() override = default;
 
   // content::WebContentsObserver:
   void DidStartNavigation(
