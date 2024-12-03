@@ -608,20 +608,35 @@ class ChromiumDepGraph {
         if (dep.id?.startsWith('com_google_android_')) {
             // Many google dependencies don't set their URL, here is a good default.
             dep.url = dep.url ?: 'https://developers.google.com/android/guides/setup'
-            // Some play services libraries do not come with a description but
-            // the only description we have for most of them is the name of the
-            // lib so might as well automate a fallback.
-            if (!dep.description && dep.id.startsWith('com_google_android_gms_play_services_')) {
-                String lib_name = dep.id.substring('com_google_android_gms_play_services_'.length())
-                lib_name = lib_name.replace('_', ' ').capitalize()
-                dep.description = "$lib_name library for gmscore / Google Play Services."
-            }
         } else if (dep.id?.startsWith('com_google_firebase_')) {
             // Same as above for some firebase dependencies.
             dep.url = dep.url ?: 'https://firebase.google.com'
         } else if (dep.id?.startsWith('androidx_')) {
             // Some androidx dependencies don't set their URL, here is a good default.
             dep.url = dep.url ?: 'https://developer.android.com/jetpack/androidx'
+        }
+
+        if (!dep.description && dep.id) {
+            // Some libraries do not come with a description. The only description we have for most
+            // of them is the name of the lib so might as well automate a fallback.
+            String lib_name = dep.id
+            String description = "pulled in via gradle."
+            // Removing common prefixes.
+            if (lib_name.startsWith('com_') || lib_name.startsWith('org_')) {
+                lib_name = lib_name.substring('com_'.length())
+            }
+            if (lib_name.startsWith('google_')) {
+                lib_name = lib_name.substring('google_'.length())
+            }
+            if (lib_name.startsWith('android_')) {
+                lib_name = lib_name.substring('android_'.length())
+            }
+            if (lib_name.startsWith('gms_play_services_')) {
+                lib_name = lib_name.substring('gms_play_services_'.length())
+                description = "library for gmscore / Google Play Services."
+            }
+            lib_name = lib_name.replace('_', ' ').capitalize()
+            dep.description = "$lib_name $description"
         }
 
         PropertyOverride overrides = PROPERTY_OVERRIDES.get(dep.id)
