@@ -88,8 +88,8 @@ class TestNetworkConnectionObserver
 
 class NetworkConnectionTrackerBrowserTest : public InProcessBrowserTest {
  public:
-  NetworkConnectionTrackerBrowserTest() {}
-  ~NetworkConnectionTrackerBrowserTest() override {}
+  NetworkConnectionTrackerBrowserTest() = default;
+  ~NetworkConnectionTrackerBrowserTest() override = default;
 
   // Simulates a network connection change.
   void SimulateNetworkChange(network::mojom::ConnectionType type) {

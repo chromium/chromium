@@ -18,7 +18,7 @@
 
 namespace chrome_browser_net {
 
-ProbeMessage::ProbeMessage() {}
+ProbeMessage::ProbeMessage() = default;
 
 bool ProbeMessage::ParseInput(const std::string& input,
                               ProbePacket* probe_packet) const {

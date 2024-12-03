@@ -15,7 +15,7 @@ ProxyBrowserTest::ProxyBrowserTest()
     : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
                     base::FilePath()) {}
 
-ProxyBrowserTest::~ProxyBrowserTest() {}
+ProxyBrowserTest::~ProxyBrowserTest() = default;
 
 void ProxyBrowserTest::SetUp() {
   ASSERT_TRUE(proxy_server_.Start());

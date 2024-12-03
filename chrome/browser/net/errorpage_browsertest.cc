@@ -245,7 +245,7 @@ class TestFailProvisionalLoadObserver : public content::WebContentsObserver {
   TestFailProvisionalLoadObserver& operator=(
       const TestFailProvisionalLoadObserver&) = delete;
 
-  ~TestFailProvisionalLoadObserver() override {}
+  ~TestFailProvisionalLoadObserver() override = default;
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {

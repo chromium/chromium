@@ -718,7 +718,7 @@ class ProfileNetworkContextServiceDiskCacheBrowsertest
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
-  ~ProfileNetworkContextServiceDiskCacheBrowsertest() override {}
+  ~ProfileNetworkContextServiceDiskCacheBrowsertest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchPath(switches::kDiskCacheDir,

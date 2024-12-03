@@ -27,13 +27,13 @@ namespace {
 
 class NSSTempCertsCacheChromeOSTest : public testing::Test {
  public:
-  NSSTempCertsCacheChromeOSTest() {}
+  NSSTempCertsCacheChromeOSTest() = default;
 
   NSSTempCertsCacheChromeOSTest(const NSSTempCertsCacheChromeOSTest&) = delete;
   NSSTempCertsCacheChromeOSTest& operator=(
       const NSSTempCertsCacheChromeOSTest&) = delete;
 
-  ~NSSTempCertsCacheChromeOSTest() override {}
+  ~NSSTempCertsCacheChromeOSTest() override = default;
 
  protected:
   // Checks if the certificate stored in |pem_cert_file| can be found in the

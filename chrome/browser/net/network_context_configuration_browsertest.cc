@@ -250,7 +250,7 @@ class NetworkContextConfigurationBrowserTest
   NetworkContextConfigurationBrowserTest& operator=(
       const NetworkContextConfigurationBrowserTest&) = delete;
 
-  ~NetworkContextConfigurationBrowserTest() override {}
+  ~NetworkContextConfigurationBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
@@ -1631,8 +1631,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, UploadFile) {
 class NetworkContextConfigurationFixedPortBrowserTest
     : public NetworkContextConfigurationBrowserTest {
  public:
-  NetworkContextConfigurationFixedPortBrowserTest() {}
-  ~NetworkContextConfigurationFixedPortBrowserTest() override {}
+  NetworkContextConfigurationFixedPortBrowserTest() = default;
+  ~NetworkContextConfigurationFixedPortBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
@@ -1671,14 +1671,14 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationFixedPortBrowserTest,
 class NetworkContextConfigurationProxyOnStartBrowserTest
     : public NetworkContextConfigurationBrowserTest {
  public:
-  NetworkContextConfigurationProxyOnStartBrowserTest() {}
+  NetworkContextConfigurationProxyOnStartBrowserTest() = default;
 
   NetworkContextConfigurationProxyOnStartBrowserTest(
       const NetworkContextConfigurationProxyOnStartBrowserTest&) = delete;
   NetworkContextConfigurationProxyOnStartBrowserTest& operator=(
       const NetworkContextConfigurationProxyOnStartBrowserTest&) = delete;
 
-  ~NetworkContextConfigurationProxyOnStartBrowserTest() override {}
+  ~NetworkContextConfigurationProxyOnStartBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
@@ -1709,7 +1709,7 @@ class NetworkContextConfigurationHttpPacBrowserTest
   NetworkContextConfigurationHttpPacBrowserTest& operator=(
       const NetworkContextConfigurationHttpPacBrowserTest&) = delete;
 
-  ~NetworkContextConfigurationHttpPacBrowserTest() override {}
+  ~NetworkContextConfigurationHttpPacBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     pac_test_server_.RegisterRequestHandler(base::BindRepeating(
@@ -1745,14 +1745,14 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationHttpPacBrowserTest, HttpPac) {
 class NetworkContextConfigurationFilePacBrowserTest
     : public NetworkContextConfigurationBrowserTest {
  public:
-  NetworkContextConfigurationFilePacBrowserTest() {}
+  NetworkContextConfigurationFilePacBrowserTest() = default;
 
   NetworkContextConfigurationFilePacBrowserTest(
       const NetworkContextConfigurationFilePacBrowserTest&) = delete;
   NetworkContextConfigurationFilePacBrowserTest& operator=(
       const NetworkContextConfigurationFilePacBrowserTest&) = delete;
 
-  ~NetworkContextConfigurationFilePacBrowserTest() override {}
+  ~NetworkContextConfigurationFilePacBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     const char kPacFileName[] = "foo.pac";
@@ -1783,14 +1783,14 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationFilePacBrowserTest, FilePac) {
 class NetworkContextConfigurationDataPacBrowserTest
     : public NetworkContextConfigurationBrowserTest {
  public:
-  NetworkContextConfigurationDataPacBrowserTest() {}
+  NetworkContextConfigurationDataPacBrowserTest() = default;
 
   NetworkContextConfigurationDataPacBrowserTest(
       const NetworkContextConfigurationDataPacBrowserTest&) = delete;
   NetworkContextConfigurationDataPacBrowserTest& operator=(
       const NetworkContextConfigurationDataPacBrowserTest&) = delete;
 
-  ~NetworkContextConfigurationDataPacBrowserTest() override {}
+  ~NetworkContextConfigurationDataPacBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::string contents;

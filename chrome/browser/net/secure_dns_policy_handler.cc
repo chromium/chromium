@@ -110,9 +110,9 @@ bool CheckDnsOverHttpsTemplatePolicy(const policy::PolicyMap& policies,
 
 namespace policy {
 
-SecureDnsPolicyHandler::SecureDnsPolicyHandler() {}
+SecureDnsPolicyHandler::SecureDnsPolicyHandler() = default;
 
-SecureDnsPolicyHandler::~SecureDnsPolicyHandler() {}
+SecureDnsPolicyHandler::~SecureDnsPolicyHandler() = default;
 
 // Verifies if the combination of policies which set the secure DNS mode and
 // the templates URI is valid. The templates URIs can be set via the cross
