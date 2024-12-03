@@ -747,6 +747,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+  if (kIPHBottomToolbarTipFeature.name == feature->name) {
+    // A config that allows the Bottom Toolbar IPH to be shown once
+    // a week, up to 3 times, unless the user interacts with Bottom Toolbar
+    // controls.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+
+    config->trigger = EventConfig("bottom_toolbar_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->event_configs.insert(EventConfig("bottom_toolbar_iph_trigger",
+                                             Comparator(LESS_THAN, 1), 7, 360));
+    config->used = EventConfig("bottom_toolbar_menu_triggered",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
   if (kIPHCCTHistory.name == feature->name) {
     // A config that allows the CCTHistory IPH to be shown once
     // a week, up to 3 times, unless the button is clicked at least once.

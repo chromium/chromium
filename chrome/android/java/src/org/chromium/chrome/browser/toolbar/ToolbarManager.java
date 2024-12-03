@@ -842,6 +842,7 @@ public class ToolbarManager
         mToolbarLongPressMenuHandler =
                 new ToolbarLongPressMenuHandler(
                         /* context= */ mActivity,
+                        profileSupplier,
                         mIsCustomTab,
                         mOmniboxFocusStateSupplier,
                         () -> getUrlBarTextWithoutAutocomplete(),
@@ -2516,14 +2517,25 @@ public class ToolbarManager
         }
     }
 
+    private void maybeShowBottomToolbarIph() {
+        if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+                mActivity, mIsCustomTab)) {
+            return;
+        }
+
+        mIphController.showBottomToolbarIph(mControlContainer.findViewById(R.id.location_bar));
+    }
+
     private void checkIfNtpLoaded() {
         NewTabPage ntp = getNewTabPageForCurrentTab();
+
         if (ntp != null) {
             ntp.setOmniboxStub(mLocationBar.getOmniboxStub());
             mLocationBarModel.notifyNtpStartedLoading();
             maybeShowPriceDropIph();
             mIsNtpShowingSupplier.set(true);
         } else {
+            maybeShowBottomToolbarIph();
             mIsNtpShowingSupplier.set(false);
         }
     }

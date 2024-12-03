@@ -201,8 +201,12 @@ DEFINE_VARIATION_PARAM(kIPHSharingHubWebnotesStylizeFeature,
                        "IPH_SharingHubWebnotesStylize");
 DEFINE_VARIATION_PARAM(kIPHRestoreTabsOnFREFeature, "IPH_RestoreTabsOnFRE");
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 DEFINE_VARIATION_PARAM(kIPHBottomToolbarTipFeature, "IPH_BottomToolbarTip");
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
 DEFINE_VARIATION_PARAM(kIPHiOSLensOverlayEntrypointTipFeature,
                        "IPH_iOSLensOverlayEntrypointTip");
 DEFINE_VARIATION_PARAM(kIPHLongPressToolbarTipFeature,
@@ -599,8 +603,13 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHSharingHubWebnotesStylizeFeature),
         VARIATION_ENTRY(kIPHRestoreTabsOnFREFeature),
         VARIATION_ENTRY(kIPHRtlGestureNavigationFeature),
-#elif BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
         VARIATION_ENTRY(kIPHBottomToolbarTipFeature),
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
         VARIATION_ENTRY(kIPHLongPressToolbarTipFeature),
         VARIATION_ENTRY(kIPHBadgedReadingListFeature),
         VARIATION_ENTRY(kIPHReadingListMessagesFeature),

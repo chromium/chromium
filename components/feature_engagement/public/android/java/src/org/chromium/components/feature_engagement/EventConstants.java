@@ -156,6 +156,9 @@ public final class EventConstants {
     public static final String APP_MENU_NEW_INCOGNITO_TAB_CLICKED =
             "app_menu_new_incognito_tab_clicked";
 
+    /** User has activated menu allowing them to move the toolbar to the bottom of the screen. */
+    public static final String BOTTOM_TOOLBAR_MENU_TRIGGERED = "bottom_toolbar_menu_triggered";
+
     /** Voice search button click on NTP. */
     public static final String NTP_VOICE_SEARCH_BUTTON_CLICKED = "ntp_voice_search_button_clicked";
 

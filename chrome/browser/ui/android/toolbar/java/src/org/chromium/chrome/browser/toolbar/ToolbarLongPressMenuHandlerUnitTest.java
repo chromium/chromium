@@ -51,11 +51,15 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarApi26;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -88,9 +92,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Mock private BasicListMenu mBasicListMenu;
     @Mock private ViewRectProvider mViewRectProvider;
     @Mock UiWidgetFactory mMockUiWidgetFactory;
+    @Mock Profile mProfile;
+    @Mock Tracker mTracker;
     @Spy PopupWindow mSpyPopupWindow;
 
     private ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
+    private ObservableSupplierImpl mProfileSupplier;
 
     private Activity mActivity;
     private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier;
@@ -106,11 +113,17 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         UrlBar urlBar = new UrlBarApi26(mActivity, null);
         mUrlBar = spy(urlBar);
 
+        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier.set(mProfile);
+
+        TrackerFactory.setTrackerForTests(mTracker);
+
         mOmniboxFocusStateSupplier = new ObservableSupplierImpl<>();
         mOmniboxFocusStateSupplier.set(false);
         mToolbarLongPressMenuHandler =
                 new ToolbarLongPressMenuHandler(
                         mActivity,
+                        mProfileSupplier,
                         false,
                         mOmniboxFocusStateSupplier,
                         () -> mUrlString,
@@ -169,6 +182,8 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
         mToolbarLongPressMenuHandler.getOnLongClickListener().onLongClick(mUrlBar);
         verify(mSpyPopupWindow).showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+
+        verify(mTracker).notifyEvent(EventConstants.BOTTOM_TOOLBAR_MENU_TRIGGERED);
     }
 
     @Test

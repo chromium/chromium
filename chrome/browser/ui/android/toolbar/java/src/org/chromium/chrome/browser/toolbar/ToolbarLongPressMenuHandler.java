@@ -21,9 +21,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -50,6 +54,7 @@ public class ToolbarLongPressMenuHandler {
     private final int mEdgeToTextDistance;
     private final int mUrlBarMargin;
     @NonNull private final Context mContext;
+    @NonNull private final ObservableSupplier<Profile> mProfileSupplier;
     @NonNull private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     @NonNull private final Supplier<String> mUrlBarTextSupplier;
     @NonNull private final Supplier<ViewRectProvider> mUrlBarViewRectProviderSupplier;
@@ -63,11 +68,13 @@ public class ToolbarLongPressMenuHandler {
      */
     public ToolbarLongPressMenuHandler(
             Context context,
+            ObservableSupplier<Profile> profileSupplier,
             boolean isCustomTab,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             Supplier<String> urlBarTextSupplier,
             Supplier<ViewRectProvider> urlBarViewRectProviderSupplier) {
         mContext = context;
+        mProfileSupplier = profileSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mUrlBarTextSupplier = urlBarTextSupplier;
         mUrlBarViewRectProviderSupplier = urlBarViewRectProviderSupplier;
@@ -154,6 +161,11 @@ public class ToolbarLongPressMenuHandler {
                         == View.LAYOUT_DIRECTION_RTL;
         int[] location = calculateShowLocation(onTop, isRtl, listMenu);
         mPopupMenu.showAtLocation(view, Gravity.NO_GRAVITY, location[0], location[1]);
+
+        // Notify the IPH that the User has interacted with the Bottom Toolbar menu.
+        // This effectively disables the IPH bubble.
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        tracker.notifyEvent(EventConstants.BOTTOM_TOOLBAR_MENU_TRIGGERED);
     }
 
     @VisibleForTesting

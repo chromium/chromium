@@ -113,8 +113,12 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHRestoreTabsOnFREFeature,
     &kIPHRtlGestureNavigationFeature,
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     &kIPHBottomToolbarTipFeature,
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
     &kIPHLongPressToolbarTipFeature,
     &kIPHBadgedReadingListFeature,
     &kIPHWhatsNewFeature,
