@@ -1171,8 +1171,8 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   int64_t instrument_id = 123545;
   std::string issuer_id = "affirm";
   std::string currency = "USD";
-  int price_lower_bound = 0;
-  int price_upper_bound = 35;
+  uint64_t price_lower_bound = 0;
+  uint64_t price_upper_bound = 35;
   sync_pb::AutofillWalletSpecifics
       payment_instrument_linked_bnpl_issuer_specifics =
           CreateAutofillWalletSpecificsForLinkedBnplIssuer(
