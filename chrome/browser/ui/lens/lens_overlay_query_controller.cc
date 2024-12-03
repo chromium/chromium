@@ -396,13 +396,26 @@ void LensOverlayQueryController::SendPageContentUpdateRequest(
       VitQueryParamValueForMimeType(underlying_content_type_));
   RunSuggestInputsCallback();
 
-  // Since the page content uses the full image request ID, but this is a new
-  // request, update the latest_full_image_request_data_ with a new request ID.
-  auto request_id = request_id_generator_->GetNextRequestId(
-      RequestIdUpdateMode::kFullImageRequest);
-  latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
-      std::move(request_id),
-      /*query_start_time=*/base::TimeTicks::Now());
+  if (query_controller_state_ ==
+      QueryControllerState::kAwaitingClusterInfoResponse) {
+    // If we are waiting for the cluster info response, we should not send the
+    // page content update request immediately. Instead, the cluster info
+    // response handler will call PrepareAndFetchPageContentRequest.
+    return;
+  }
+
+  if (page_contents_request_sent_) {
+    // Since the page content uses the full image request ID, but this is a new
+    // request, update the latest_full_image_request_data_ with a new request
+    // ID. The only exception is the first page content request, which should
+    // share the same request ID as the first full image request.
+    DCHECK_EQ(latest_full_image_request_data_->sequence_id(), 1);
+    auto request_id = request_id_generator_->GetNextRequestId(
+        RequestIdUpdateMode::kFullImageRequest);
+    latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
+        std::move(request_id),
+        /*query_start_time=*/base::TimeTicks::Now());
+  }
 
   PrepareAndFetchPageContentRequest();
 }
@@ -955,6 +968,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
     return;
   }
 
+  page_contents_request_sent_ = true;
   page_contents_request_start_time_ = base::TimeTicks::Now();
 
   // Create the request.
