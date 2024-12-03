@@ -136,7 +136,7 @@ void CGaiaCredentialProviderModule::InitializeCrashReporting() {
 }
 
 void CGaiaCredentialProviderModule::LogProcessDetails() {
-  wchar_t process_name[MAX_PATH] = {0};
+  wchar_t process_name[MAX_PATH] = {};
   GetModuleFileName(nullptr, process_name, MAX_PATH);
 
   LOGFN(INFO) << "GCPW Initialized in " << process_name

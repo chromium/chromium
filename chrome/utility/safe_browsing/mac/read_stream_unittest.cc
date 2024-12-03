@@ -118,7 +118,7 @@ TYPED_TEST_SUITE(ReadStreamTest, ReadStreamImpls);
 TYPED_TEST(ReadStreamTest, Read) {
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(128);
-  uint8_t buf[128] = {0};
+  uint8_t buf[128] = {};
   size_t bytes_read;
 
   {
@@ -173,7 +173,7 @@ TYPED_TEST(ReadStreamTest, ReadAll) {
 TYPED_TEST(ReadStreamTest, SeekSet) {
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(255);
-  uint8_t buf[32] = {0};
+  uint8_t buf[32] = {};
   size_t bytes_read;
 
   {
@@ -196,7 +196,7 @@ TYPED_TEST(ReadStreamTest, SeekSet) {
 TYPED_TEST(ReadStreamTest, SeekEnd) {
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(32);
-  uint8_t buf[32] = {0};
+  uint8_t buf[32] = {};
   size_t bytes_read;
 
   {

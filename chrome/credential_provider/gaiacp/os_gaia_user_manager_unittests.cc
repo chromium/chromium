@@ -47,17 +47,17 @@ TEST_F(GcpOSGaiaUserManagerTest, CreateGaiaUserTest) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_FALSE(nullptr == sid);
 
-  wchar_t gaia_username[kWindowsUsernameBufferLength] = {0};
+  wchar_t gaia_username[kWindowsUsernameBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaUsername, gaia_username,
                                    std::size(gaia_username));
   EXPECT_EQ(S_OK, hr);
 
-  wchar_t password[kWindowsPasswordBufferLength] = {0};
+  wchar_t password[kWindowsPasswordBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaPassword, password,
                                    std::size(password));
   EXPECT_EQ(S_OK, hr);
 
-  wchar_t stored_sid[kWindowsSidBufferLength] = {0};
+  wchar_t stored_sid[kWindowsSidBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaSid, stored_sid,
                                    std::size(stored_sid));
   EXPECT_EQ(S_OK, hr);
@@ -98,7 +98,7 @@ TEST_F(GcpOSGaiaUserManagerTest, ChangeGaiaUserPasswordIfNeededNoStoredSid) {
 
   EXPECT_STRNE(password.c_str(), new_password);
 
-  wchar_t stored_gaia_sid[kWindowsSidBufferLength] = {0};
+  wchar_t stored_gaia_sid[kWindowsSidBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaSid, stored_gaia_sid,
                                    std::size(stored_gaia_sid));
   ASSERT_EQ(S_OK, hr);

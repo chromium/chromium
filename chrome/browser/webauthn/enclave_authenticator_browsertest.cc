@@ -140,7 +140,7 @@ namespace {
 using trusted_vault::MockTrustedVaultConnection;
 
 constexpr int32_t kSecretVersion = 417;
-constexpr uint8_t kSecurityDomainSecret[32] = {0};
+constexpr uint8_t kSecurityDomainSecret[32] = {};
 constexpr char kEmail[] = "test@gmail.com";
 constexpr char kEmailLocalPartOnly[] = "test";
 // This value is derived by the Sync testing code from `kEmail` but is needed

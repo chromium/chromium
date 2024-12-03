@@ -3419,8 +3419,8 @@ std::string EnclaveManager::MakeWrappedPINForTesting(
   std::unique_ptr<HashedPIN> hashed = HashPINSlowly(pin);
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin =
       hashed->ToWrappedPIN(kGeneration);
-  const uint8_t kFakeCounterId[8] = {0};
-  const uint8_t kFakeVaultHandle[16] = {0};
+  const uint8_t kFakeCounterId[8] = {};
+  const uint8_t kFakeVaultHandle[16] = {};
 
   cbor::Value::MapValue map;
   map.emplace(1, base::span<const uint8_t>(hashed->hashed));
