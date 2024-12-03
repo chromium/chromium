@@ -38,6 +38,7 @@ import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
+import org.chromium.components.collaboration.messaging.RecentActivityAction;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -226,6 +227,7 @@ public class RecentActivityListMediatorUnitTest {
     @Test
     public void testActionFocusTab() {
         ActivityLogItem logItem = createLog1(CollaborationEvent.TAB_UPDATED);
+        logItem.action = RecentActivityAction.FOCUS_TAB;
         mTestItems.add(logItem);
         mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
         OnClickListener onClickListener =
@@ -237,6 +239,7 @@ public class RecentActivityListMediatorUnitTest {
     @Test
     public void testActionReopenTab() {
         ActivityLogItem logItem = createLog1(CollaborationEvent.TAB_REMOVED);
+        logItem.action = RecentActivityAction.REOPEN_TAB;
         mTestItems.add(logItem);
         mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
         OnClickListener onClickListener =
@@ -248,6 +251,7 @@ public class RecentActivityListMediatorUnitTest {
     @Test
     public void testActionOpenTabGroupEditDialog() {
         ActivityLogItem logItem = createLog1(CollaborationEvent.TAB_GROUP_COLOR_UPDATED);
+        logItem.action = RecentActivityAction.OPEN_TAB_GROUP_EDIT_DIALOG;
         mTestItems.add(logItem);
         mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
         OnClickListener onClickListener =
@@ -259,6 +263,7 @@ public class RecentActivityListMediatorUnitTest {
     @Test
     public void testActionManageSharingDialog() {
         ActivityLogItem logItem = createLog1(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
+        logItem.action = RecentActivityAction.MANAGE_SHARING;
         mTestItems.add(logItem);
         mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
         OnClickListener onClickListener =

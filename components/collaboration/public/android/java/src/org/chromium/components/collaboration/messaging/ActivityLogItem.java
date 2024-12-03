@@ -40,6 +40,9 @@ public class ActivityLogItem {
     // Whether the favicon should be shown for this row. Only tab related updates show a favicon.
     public boolean showFavicon;
 
+    // The type of action to be taken when this activity row is clicked.
+    public @RecentActivityAction int action;
+
     // Implicit metadata that will be used to invoke the delegate when the activity row is clicked.
     public MessageAttribution activityMetadata;
 }

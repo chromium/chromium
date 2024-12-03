@@ -18,6 +18,24 @@
 
 namespace collaboration::messaging {
 
+// Describes various types of actions that are taken when a recent activity row
+// is clicked. Each row corresponds to one type of action.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.collaboration.messaging
+enum class RecentActivityAction {
+  // Focus a given tab.
+  kFocusTab = 0,
+
+  // Reopen a given URL as a new tab in the group.
+  kReopenTab = 1,
+
+  // Open the tab group dialog UI to edit tab group properties.
+  kOpenTabGroupEditDialog = 2,
+
+  // Open the people group management screen.
+  kManageSharing = 3
+};
+
 // Struct containing information needed to show one row in the activity log UI.
 struct ActivityLogItem {
  public:

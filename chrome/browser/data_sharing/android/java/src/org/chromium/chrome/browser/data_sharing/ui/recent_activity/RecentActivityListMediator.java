@@ -19,6 +19,7 @@ import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.ActivityLogQueryParams;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
+import org.chromium.components.collaboration.messaging.RecentActivityAction;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -149,28 +150,22 @@ class RecentActivityListMediator {
     private OnClickListener createActivityLogItemOnClickListener(ActivityLogItem logItem) {
         return view -> {
             assert logItem != null;
-            // TODO(crbug.com/380962101): Move this switch case to native and provide an action enum
-            // in the ActivityLogItem itself.
-            switch (logItem.collaborationEvent) {
-                case CollaborationEvent.TAB_ADDED:
-                case CollaborationEvent.TAB_UPDATED:
+            switch (logItem.action) {
+                case RecentActivityAction.FOCUS_TAB:
                     int tabId = getTabMetadata(logItem).localTabId;
                     mFocusTabCallback.onResult(tabId);
                     break;
-                case CollaborationEvent.TAB_REMOVED:
+                case RecentActivityAction.REOPEN_TAB:
                     mReopenTabCallback.onResult(getTabLastKnownUrl(logItem));
                     break;
-                case CollaborationEvent.TAB_GROUP_NAME_UPDATED:
-                case CollaborationEvent.TAB_GROUP_COLOR_UPDATED:
+                case RecentActivityAction.OPEN_TAB_GROUP_EDIT_DIALOG:
                     mOpenTabGroupEditDialogCallback.run();
                     break;
-                case CollaborationEvent.COLLABORATION_MEMBER_ADDED:
-                case CollaborationEvent.COLLABORATION_MEMBER_REMOVED:
+                case RecentActivityAction.MANAGE_SHARING:
                     mManageSharingCallback.run();
                     break;
                 default:
-                    assert false
-                            : "No handler for collaboration event " + logItem.collaborationEvent;
+                    assert false : "No handler for recent activity action " + logItem.action;
             }
             mCloseBottomSheetCallback.run();
         };
