@@ -239,7 +239,7 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [
     CallWith=ScriptState,
     RaisesException
-  ] MLOperand constant(MLOperandDescriptor desc, ArrayBufferView bufferView);
+  ] MLOperand constant(MLOperandDescriptor desc, AllowSharedBufferSource buffer);
 
   [RaisesException] MLOperand argMin(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
   [RaisesException] MLOperand argMax(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});

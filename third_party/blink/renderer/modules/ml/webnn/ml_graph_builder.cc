@@ -1670,9 +1670,9 @@ MLOperand* MLGraphBuilder::input(ScriptState* script_state,
 
 MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
                                     const MLOperandDescriptor* desc,
-                                    NotShared<DOMArrayBufferView> buffer_view,
+                                    AllowSharedBufferSource* buffer,
                                     ExceptionState& exception_state) {
-  CHECK(buffer_view);
+  CHECK(buffer);
 
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
@@ -1681,18 +1681,21 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
       webnn::OperandDescriptor::Create(
           FromBlinkDataType(desc->dataType().AsEnum()), desc->shape()));
 
-  if (GetArrayBufferViewType(descriptor.data_type()) !=
-      buffer_view->GetType()) {
-    exception_state.ThrowTypeError(
-        "The buffer view type doesn't match the operand data type.");
-    return nullptr;
+  if (buffer->IsArrayBufferViewAllowShared()) {
+    if (GetArrayBufferViewType(descriptor.data_type()) !=
+        buffer->GetAsArrayBufferViewAllowShared().Get()->GetType()) {
+      exception_state.ThrowTypeError(
+          "The buffer view type doesn't match the operand data type.");
+      return nullptr;
+    }
   }
 
-  if (descriptor.PackedByteLength() != buffer_view->byteLength()) {
-    exception_state.ThrowTypeError(String::Format(
-        "The buffer view byte length (%zu) doesn't match the "
-        "expected byte length (%zu).",
-        buffer_view->byteLength(), descriptor.PackedByteLength()));
+  base::span<uint8_t> bytes = AsByteSpan(*buffer);
+  if (descriptor.PackedByteLength() != bytes.size()) {
+    exception_state.ThrowTypeError(
+        String::Format("The buffer's byte length (%zu) doesn't match the "
+                       "expected byte length (%zu).",
+                       bytes.size(), descriptor.PackedByteLength()));
     return nullptr;
   }
 
@@ -1708,7 +1711,7 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
       MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor));
 
   remote_->CreatePendingConstant(constant->handle(), descriptor.data_type(),
-                                 mojo_base::BigBuffer(buffer_view->ByteSpan()));
+                                 mojo_base::BigBuffer(bytes));
   return constant;
 }
 

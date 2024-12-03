@@ -1945,6 +1945,8 @@ crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/web
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/scatterElements.https.any.worker.html?gpu [ Skip ]
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/scatterND.https.any.html?gpu [ Skip ]
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/scatterND.https.any.worker.html?gpu [ Skip ]
+crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/shared_arraybuffer_constant.https.any.html?gpu [ Skip ]
+crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/shared_arraybuffer_constant.https.any.worker.html?gpu [ Skip ]
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/sigmoid.https.any.html?gpu [ Skip ]
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/sigmoid.https.any.worker.html?gpu [ Skip ]
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/slice.https.any.html?gpu [ Skip ]
