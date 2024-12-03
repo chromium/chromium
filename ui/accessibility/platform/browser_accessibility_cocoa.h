@@ -73,8 +73,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // left).
 - (NSRect)rectInScreen:(gfx::Rect)rect;
 
-- (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)tree_item_ids;
-
 // Return the method name for the given attribute. For testing only.
 - (NSString*)methodNameForAttribute:(NSString*)attribute;
 

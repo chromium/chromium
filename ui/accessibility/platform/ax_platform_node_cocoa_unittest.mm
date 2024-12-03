@@ -458,6 +458,61 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityColumnIndexRange) {
   EXPECT_EQ(range.length, 1UL);    // Only one column in this simple setup
 }
 
+// accessibilityRows on a tree.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowsOnTree) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTree
+    ++++2 kTreeItem
+    ++++++3 kGroup
+    ++++++++4 kTreeItem
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* tree = GetCocoaNode(1);
+  AXPlatformNodeCocoa* treeitem1 = GetCocoaNode(2);
+  AXPlatformNodeCocoa* treeitem2 = GetCocoaNode(4);
+  NSArray* rows = [tree accessibilityRows];
+  EXPECT_EQ([rows count], 2UL);
+  EXPECT_EQ([[rows objectAtIndex:0] node]->GetUniqueId(),
+            [treeitem1 node]->GetUniqueId());
+  EXPECT_EQ([[rows objectAtIndex:1] node]->GetUniqueId(),
+            [treeitem2 node]->GetUniqueId());
+}
+
+// accessibilityRows on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowsOnTable) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  AXPlatformNodeCocoa* row = GetCocoaNode(2);
+  NSArray* rows = [table accessibilityRows];
+  EXPECT_EQ([rows count], 1UL);
+  EXPECT_EQ([[rows firstObject] node]->GetUniqueId(),
+            [row node]->GetUniqueId());
+}
+
+// accessibilityRows on a column.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowsOnColumn) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kColumn intListAttribute=kIndirectChildIds,3
+    ++++3 kRow
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* column = GetCocoaNode(2);
+  AXPlatformNodeCocoa* row = GetCocoaNode(3);
+  NSArray* rows = [column accessibilityRows];
+  EXPECT_EQ([rows count], 1UL);
+  EXPECT_EQ([[rows firstObject] node]->GetUniqueId(),
+            [row node]->GetUniqueId());
+}
+
 // accessibilityRowIndexRange on a table cell.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowIndexRange) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(
