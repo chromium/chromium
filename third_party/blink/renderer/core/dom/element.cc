@@ -6053,6 +6053,13 @@ Attr* Element::removeAttributeNode(Attr* attr,
 }
 
 void Element::LangAttributeChanged() {
+  // Propagate the change to all descendants.
+  for (Element& child : ElementTraversal::ChildrenOf(*this)) {
+    if (child.hasAttribute(html_names::kLangAttr)) {
+      continue;
+    }
+    child.LangAttributeChanged();
+  }
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));

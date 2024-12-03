@@ -705,6 +705,11 @@ bool HTMLPermissionElement::MaybeRegisterPageEmbeddedPermissionControl() {
   return true;
 }
 
+void HTMLPermissionElement::LangAttributeChanged() {
+  UpdateText();
+  HTMLElement::LangAttributeChanged();
+}
+
 void HTMLPermissionElement::AttributeChanged(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
@@ -738,10 +743,6 @@ void HTMLPermissionElement::AttributeChanged(
     }
 
     is_precise_location_ = true;
-    UpdateText();
-  }
-
-  if (params.name == html_names::kLangAttr) {
     UpdateText();
   }
 
