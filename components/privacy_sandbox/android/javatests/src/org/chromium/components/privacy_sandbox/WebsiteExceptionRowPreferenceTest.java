@@ -13,17 +13,22 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -32,9 +37,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.Answer;
 
+import org.chromium.base.Callback;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
@@ -49,6 +58,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.privacy_sandbox.WebsiteExceptionRowPreference.WebsiteExceptionDeletedCallback;
+import org.chromium.url.GURL;
 
 /** Tests for WebsiteExceptionRowPreference. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -93,7 +103,7 @@ public class WebsiteExceptionRowPreferenceTest {
 
     @Test
     @SmallTest
-    public void testCreateException_displayedCorrectly() {
+    public void createException_displayedCorrectly() {
         Website site = new Website(WebsiteAddress.create("https://test.com"), null);
         mPreference = new WebsiteExceptionRowPreference(mActivity, site, mDelegate, mCallback);
         mPreferenceScreen.addPreference(mPreference);
@@ -107,7 +117,7 @@ public class WebsiteExceptionRowPreferenceTest {
 
     @Test
     @SmallTest
-    public void testCreateExceptionWithExpiration_displayedCorrectly() {
+    public void createExceptionWithExpiration_displayedCorrectly() {
         Website site = new Website(WebsiteAddress.create("https://test.com"), null);
         site.setContentSettingException(
                 ContentSettingsType.COOKIES,
@@ -131,7 +141,31 @@ public class WebsiteExceptionRowPreferenceTest {
 
     @Test
     @SmallTest
-    public void testDeleteException_triggersDeletionAndRefresh() {
+    public void createExceptionWithExpirationToday_displayedCorrectly() {
+        Website site = new Website(WebsiteAddress.create("https://test.com"), null);
+        site.setContentSettingException(
+                ContentSettingsType.COOKIES,
+                new ContentSettingException(
+                        ContentSettingsType.COOKIES,
+                        site.getAddress().getOrigin(),
+                        /* secondaryPattern= */ "*",
+                        ContentSettingValues.ALLOW,
+                        ProviderType.PREF_PROVIDER,
+                        /* expirationInDays= */ 0,
+                        /* isEmbargoed= */ false));
+        mPreference = new WebsiteExceptionRowPreference(mActivity, site, mDelegate, mCallback);
+        mPreferenceScreen.addPreference(mPreference);
+        // Check the title, summary, and the delete button.
+        onViewWaiting(withId(android.R.id.title))
+                .check(matches(allOf(withText("https://test.com"), isDisplayed())));
+        onView(withId(android.R.id.summary))
+                .check(matches(allOf(withText(containsString("today")), isDisplayed())));
+        onView(withId(R.id.image_view_widget)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void deleteException_triggersDeletionAndRefresh() {
         var site = new Website(WebsiteAddress.create("https://test.com"), null);
         var exception =
                 new ContentSettingException(
@@ -156,5 +190,55 @@ public class WebsiteExceptionRowPreferenceTest {
                         Mockito.eq(ContentSettingValues.DEFAULT));
         // Check the refresh callback is triggered.
         verify(mCallback).refreshBlockingExceptions();
+    }
+
+    @Test
+    @SmallTest
+    public void fetchFavicon_displaysFavicon() {
+        doAnswer(
+                        (Answer<Void>)
+                                a -> {
+                                    var callback = (Callback<Drawable>) a.getArguments()[1];
+                                    PostTask.postTask(
+                                            TaskTraits.UI_DEFAULT,
+                                            () -> {
+                                                Drawable icon =
+                                                        AppCompatResources.getDrawable(
+                                                                mActivity,
+                                                                android.R.drawable
+                                                                        .sym_def_app_icon);
+                                                callback.onResult(icon);
+                                            });
+                                    return null;
+                                })
+                .when(mSiteSettingsDelegate)
+                .getFaviconImageForURL(Mockito.any(), Mockito.any());
+        Website site = new Website(WebsiteAddress.create("https://test.com"), null);
+        mPreference = new WebsiteExceptionRowPreference(mActivity, site, mDelegate, mCallback);
+        mPreferenceScreen.addPreference(mPreference);
+        // Wait until the preference is displayed.
+        onViewWaiting(withId(android.R.id.title))
+                .check(matches(allOf(withText("https://test.com"), isDisplayed())));
+        onViewWaiting(withId(android.R.id.icon)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void fetchFaviconSubdomain_returnsFaviconUrl() {
+        doAnswer(
+                        (Answer<Void>)
+                                a -> {
+                                    var url = (GURL) a.getArguments()[0];
+                                    Assert.assertEquals("http://test.com/", url.getSpec());
+                                    return null;
+                                })
+                .when(mSiteSettingsDelegate)
+                .getFaviconImageForURL(Mockito.any(), Mockito.any());
+        Website site = new Website(WebsiteAddress.create("[*.]test.com"), null);
+        mPreference = new WebsiteExceptionRowPreference(mActivity, site, mDelegate, mCallback);
+        mPreferenceScreen.addPreference(mPreference);
+        // Wait until the preference is displayed.
+        onViewWaiting(withId(android.R.id.title)).check(matches(isDisplayed()));
+        verify(mSiteSettingsDelegate, times(1)).getFaviconImageForURL(Mockito.any(), Mockito.any());
     }
 }
