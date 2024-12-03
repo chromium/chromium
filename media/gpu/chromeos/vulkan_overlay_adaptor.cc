@@ -1062,7 +1062,7 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
   float x_end = 1.0f - 2.0f * crop_rect.x();
   float y_start = -1.0f - 2.0f * crop_rect.y();
   float y_end = 1.0f - 2.0f * crop_rect.y();
-  float vertex_push_constants[14] = {0};
+  float vertex_push_constants[14] = {};
   switch (transform) {
     case gfx::OVERLAY_TRANSFORM_NONE:
       vertex_push_constants[0] = x_end;

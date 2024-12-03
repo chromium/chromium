@@ -94,9 +94,9 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
       int visible_rect_crop = 0) {
     const int kDimension = 10;
     // Data buffers are overdimensioned to accommodate up to 16bpc samples.
-    static uint8_t y_data[2 * kDimension * kDimension] = {0};
-    static uint8_t u_data[2 * kDimension * kDimension / 4] = {0};
-    static uint8_t v_data[2 * kDimension * kDimension / 4] = {0};
+    static uint8_t y_data[2 * kDimension * kDimension] = {};
+    static uint8_t u_data[2 * kDimension * kDimension / 4] = {};
+    static uint8_t v_data[2 * kDimension * kDimension / 4] = {};
 
     const VideoPixelFormat format =
         (bit_depth > 8) ? PIXEL_FORMAT_YUV420P10 : PIXEL_FORMAT_I420;
@@ -165,10 +165,10 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
 
   static scoped_refptr<VideoFrame> CreateTestYUVAVideoFrame(int dimension) {
     const int kDimension = 10;
-    static uint8_t y_data[kDimension * kDimension] = {0};
-    static uint8_t u_data[kDimension * kDimension / 4] = {0};
-    static uint8_t v_data[kDimension * kDimension / 4] = {0};
-    static uint8_t a_data[kDimension * kDimension] = {0};
+    static uint8_t y_data[kDimension * kDimension] = {};
+    static uint8_t u_data[kDimension * kDimension / 4] = {};
+    static uint8_t v_data[kDimension * kDimension / 4] = {};
+    static uint8_t a_data[kDimension * kDimension] = {};
 
     constexpr VideoPixelFormat format = PIXEL_FORMAT_I420A;
     DCHECK_LE(dimension, kDimension);
@@ -195,9 +195,9 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   static scoped_refptr<VideoFrame> CreateTestNV12VideoFrame(int dimension) {
     // Set the video buffer memory dimension default to 10.
     const int kDimension = 10;
-    static uint8_t y_data[kDimension * kDimension] = {0};
+    static uint8_t y_data[kDimension * kDimension] = {};
     // Subsampled by 2x2, two components.
-    static uint8_t uv_data[kDimension * kDimension / 2] = {0};
+    static uint8_t uv_data[kDimension * kDimension / 2] = {};
 
     const VideoPixelFormat format = PIXEL_FORMAT_NV12;
     DCHECK_LE(dimension, kDimension);

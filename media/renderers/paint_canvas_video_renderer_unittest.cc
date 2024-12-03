@@ -984,7 +984,7 @@ TEST_F(PaintCanvasVideoRendererTest, CorrectFrameSizeToVisibleRect) {
   gfx::Size coded_size(fWidth, fHeight);
   gfx::Size visible_size(fWidth / 2, fHeight / 2);
 
-  uint8_t memory[fWidth * fHeight * 2] = {0};
+  uint8_t memory[fWidth * fHeight * 2] = {};
 
   auto video_frame = media::VideoFrame::WrapExternalData(
       media::PIXEL_FORMAT_Y16, coded_size, gfx::Rect(visible_size),

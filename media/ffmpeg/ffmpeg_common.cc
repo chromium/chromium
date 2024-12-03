@@ -1009,7 +1009,7 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
 }
 
 std::string AVErrorToString(int errnum) {
-  char errbuf[AV_ERROR_MAX_STRING_SIZE] = {0};
+  char errbuf[AV_ERROR_MAX_STRING_SIZE] = {};
   av_strerror(errnum, errbuf, AV_ERROR_MAX_STRING_SIZE);
   return std::string(errbuf);
 }

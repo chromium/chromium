@@ -327,7 +327,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, ConversionSuccessBigPacket) {
 
   // Create new packet with 1000 excess bytes.
   auto test_packet = ScopedAVPacket::Allocate();
-  static uint8_t excess_data[sizeof(kPacketDataOkWithFieldLen4) + 1000] = {0};
+  static uint8_t excess_data[sizeof(kPacketDataOkWithFieldLen4) + 1000] = {};
   memcpy(excess_data, kPacketDataOkWithFieldLen4,
          sizeof(kPacketDataOkWithFieldLen4));
   CreatePacket(test_packet.get(), excess_data, sizeof(excess_data));

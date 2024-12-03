@@ -534,18 +534,18 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
     }
     bool splitting_flag;
     READ_BOOL_OR_RETURN(&splitting_flag);
-    bool scalability_mask_flag[16] = {false};
+    bool scalability_mask_flag[16] = {};
     int num_scalability_types = 0;
     for (int i = 0; i < 16; ++i) {
       READ_BOOL_OR_RETURN(&scalability_mask_flag[i]);
       num_scalability_types += scalability_mask_flag[i];
     }
-    int dimension_id_len_minus1[16] = {0};
+    int dimension_id_len_minus1[16] = {};
     for (int j = 0; j < (num_scalability_types - splitting_flag); ++j) {
       READ_BITS_OR_RETURN(3, &dimension_id_len_minus1[j]);
     }
 
-    int dim_bit_offset[17] = {0};
+    int dim_bit_offset[17] = {};
     if (splitting_flag) {
       // Equation F-2
       for (int j = 1; j <= num_scalability_types - 1; ++j) {
@@ -572,7 +572,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
       if (vps_nuh_layer_id_present_flag) {
         READ_BITS_OR_RETURN(6, &layer_id_in_nuh_i);
       }
-      int dimension_id_i[16] = {0};
+      int dimension_id_i[16] = {};
       if (!splitting_flag) {
         for (int j = 0; j < num_scalability_types; ++j) {
           READ_BITS_OR_RETURN(dimension_id_len_minus1[j] + 1,
@@ -589,7 +589,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
 
       // F.7.4.3.1.1 dimension_id
       // We can skip layer zero because all dimension_id[0][j] == 0.
-      int scalability_id_i[16] = {0};
+      int scalability_id_i[16] = {};
       for (int sm_idx = 0, j = 0; sm_idx < 16; ++sm_idx) {
         if (scalability_mask_flag[sm_idx]) {
           scalability_id_i[sm_idx] = dimension_id_i[j++];

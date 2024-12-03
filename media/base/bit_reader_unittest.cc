@@ -80,7 +80,7 @@ TEST(BitReaderTest, SkipBitsTest) {
 }
 
 TEST(BitReaderTest, VariableSkipBitsTest) {
-  uint8_t buffer[256] = {0};
+  uint8_t buffer[256] = {};
 
   // The test alternates between ReadBits and SkipBits.
   // The first number is the number of bits to read, the second one is the
