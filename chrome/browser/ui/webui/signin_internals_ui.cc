@@ -13,8 +13,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/signin_internals_resources.h"
+#include "components/grit/signin_internals_resources_map.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -35,17 +37,16 @@ namespace {
 void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISignInInternalsHost);
+  webui::SetupWebUIDataSource(
+      source, base::span<const webui::ResourcePath>(kSigninInternalsResources),
+      IDR_SIGNIN_INTERNALS_SIGNIN_INDEX_HTML);
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
-
-  source->UseStringsJs();
-  source->AddResourcePath("signin_internals.js", IDR_SIGNIN_INTERNALS_INDEX_JS);
-  source->AddResourcePath("signin_index.css", IDR_SIGNIN_INTERNALS_INDEX_CSS);
-  source->SetDefaultResource(IDR_SIGNIN_INTERNALS_INDEX_HTML);
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

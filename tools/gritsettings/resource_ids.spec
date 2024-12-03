@@ -1027,6 +1027,10 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [7420],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/signin/core/browser/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7430],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/ukm/debug/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7440],
