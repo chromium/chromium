@@ -66,6 +66,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupUtils.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManager.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabSwitcherDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/RecentActivityActionHandlerImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/TabGridDialogShareBottomSheetContent.java",
     ]
 
@@ -105,6 +106,7 @@ if (is_android) {
     resources_package =
         "org.chromium.chrome.browser.data_sharing.ui.recent_activity"
     sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityActionHandler.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityBottomSheetContent.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListMediator.java",

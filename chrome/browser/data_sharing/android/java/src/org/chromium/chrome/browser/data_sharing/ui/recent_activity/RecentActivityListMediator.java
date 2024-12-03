@@ -40,10 +40,7 @@ class RecentActivityListMediator {
     private final MessagingBackendService mMessagingBackendService;
     private final FaviconProvider mFaviconProvider;
     private final AvatarProvider mAvatarProvider;
-    private final Callback<Integer> mFocusTabCallback;
-    private final Callback<String> mReopenTabCallback;
-    private final Runnable mOpenTabGroupEditDialogCallback;
-    private final Runnable mManageSharingCallback;
+    private final RecentActivityActionHandler mRecentActivityActionHandler;
     private final Runnable mCloseBottomSheetCallback;
 
     /**
@@ -54,11 +51,7 @@ class RecentActivityListMediator {
      * @param messagingBackendService The backed to query for the list of recent activities.
      * @param faviconProvider The backend for providing favicon for URLs.
      * @param avatarProvider The backend for providing avatars for users.
-     * @param focusTabCallback Callback to invoke to switch to a tab.
-     * @param reopenTabCallback Callback to invoke to reopen a removed tab from group.
-     * @param openTabGroupEditDialogCallback Callback to invoke to open the tab group title / color
-     *     editor dialog.
-     * @param manageSharingCallback Callback to invoke to open the people group management screen.
+     * @param recentActivityActionHandler Click event handler for activity rows.
      */
     public RecentActivityListMediator(
             @NonNull Context context,
@@ -66,20 +59,14 @@ class RecentActivityListMediator {
             MessagingBackendService messagingBackendService,
             FaviconProvider faviconProvider,
             AvatarProvider avatarProvider,
-            Callback<Integer> focusTabCallback,
-            Callback<String> reopenTabCallback,
-            Runnable openTabGroupEditDialogCallback,
-            Runnable manageSharingCallback,
+            RecentActivityActionHandler recentActivityActionHandler,
             Runnable closeBottomSheetCallback) {
         mContext = context;
         mModelList = modelList;
         mMessagingBackendService = messagingBackendService;
         mFaviconProvider = faviconProvider;
         mAvatarProvider = avatarProvider;
-        mFocusTabCallback = focusTabCallback;
-        mReopenTabCallback = reopenTabCallback;
-        mOpenTabGroupEditDialogCallback = openTabGroupEditDialogCallback;
-        mManageSharingCallback = manageSharingCallback;
+        mRecentActivityActionHandler = recentActivityActionHandler;
         mCloseBottomSheetCallback = closeBottomSheetCallback;
         assert mContext != null;
         assert mMessagingBackendService != null;
@@ -153,16 +140,16 @@ class RecentActivityListMediator {
             switch (logItem.action) {
                 case RecentActivityAction.FOCUS_TAB:
                     int tabId = getTabMetadata(logItem).localTabId;
-                    mFocusTabCallback.onResult(tabId);
+                    mRecentActivityActionHandler.focusTab(tabId);
                     break;
                 case RecentActivityAction.REOPEN_TAB:
-                    mReopenTabCallback.onResult(getTabLastKnownUrl(logItem));
+                    mRecentActivityActionHandler.reopenTab(getTabLastKnownUrl(logItem));
                     break;
                 case RecentActivityAction.OPEN_TAB_GROUP_EDIT_DIALOG:
-                    mOpenTabGroupEditDialogCallback.run();
+                    mRecentActivityActionHandler.openTabGroupEditDialog();
                     break;
                 case RecentActivityAction.MANAGE_SHARING:
-                    mManageSharingCallback.run();
+                    mRecentActivityActionHandler.manageSharing();
                     break;
                 default:
                     assert false : "No handler for recent activity action " + logItem.action;

@@ -65,10 +65,7 @@ public class RecentActivityListMediatorUnitTest {
     @Mock private AvatarProvider mAvatarProvider;
     @Captor private ArgumentCaptor<Callback<Drawable>> mFaviconResponseCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Drawable>> mAvatarResponseCallbackCaptor;
-    @Mock private Callback<Integer> mFocusTabCallback;
-    @Mock private Callback<String> mReopenTabCallback;
-    @Mock private Runnable mOpenTabGroupEditDialogCallback;
-    @Mock private Runnable mManageSharingCallback;
+    @Mock private RecentActivityActionHandler mRecentActivityActionHandler;
     @Mock private Drawable mDrawable;
     @Mock private Runnable mCloseBottomSheetRunnable;
     @Mock private Runnable mCallback1;
@@ -97,10 +94,7 @@ public class RecentActivityListMediatorUnitTest {
                         mMessagingBackendService,
                         mFaviconProvider,
                         mAvatarProvider,
-                        mFocusTabCallback,
-                        mReopenTabCallback,
-                        mOpenTabGroupEditDialogCallback,
-                        mManageSharingCallback,
+                        mRecentActivityActionHandler,
                         mCloseBottomSheetRunnable);
     }
 
@@ -233,7 +227,7 @@ public class RecentActivityListMediatorUnitTest {
         OnClickListener onClickListener =
                 mModelList.get(0).model.get(RecentActivityListProperties.ON_CLICK_LISTENER);
         onClickListener.onClick(null);
-        verify(mFocusTabCallback).onResult(eq(TAB_ID1));
+        verify(mRecentActivityActionHandler).focusTab(eq(TAB_ID1));
     }
 
     @Test
@@ -245,7 +239,7 @@ public class RecentActivityListMediatorUnitTest {
         OnClickListener onClickListener =
                 mModelList.get(0).model.get(RecentActivityListProperties.ON_CLICK_LISTENER);
         onClickListener.onClick(null);
-        verify(mReopenTabCallback).onResult(eq(TAB_URL1));
+        verify(mRecentActivityActionHandler).reopenTab(eq(TAB_URL1));
     }
 
     @Test
@@ -257,7 +251,7 @@ public class RecentActivityListMediatorUnitTest {
         OnClickListener onClickListener =
                 mModelList.get(0).model.get(RecentActivityListProperties.ON_CLICK_LISTENER);
         onClickListener.onClick(null);
-        verify(mOpenTabGroupEditDialogCallback).run();
+        verify(mRecentActivityActionHandler).openTabGroupEditDialog();
     }
 
     @Test
@@ -269,7 +263,7 @@ public class RecentActivityListMediatorUnitTest {
         OnClickListener onClickListener =
                 mModelList.get(0).model.get(RecentActivityListProperties.ON_CLICK_LISTENER);
         onClickListener.onClick(null);
-        verify(mManageSharingCallback).run();
+        verify(mRecentActivityActionHandler).manageSharing();
     }
 
     @Test

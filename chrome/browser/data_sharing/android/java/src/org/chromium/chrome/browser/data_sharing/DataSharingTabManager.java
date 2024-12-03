@@ -21,20 +21,15 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityActionHandler;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -839,30 +834,16 @@ public class DataSharingTabManager {
         DataSharingAvatarProvider avatarProvider =
                 new DataSharingAvatarProvider(activity, mDataSharingService.getUiDelegate());
 
-        Callback<Integer> focusTabCallback =
-                (tabId) -> {
-                    TabModel tabModel =
-                            mTabModelSelectorSupplier.get().getModel(/* incognito= */ false);
-                    int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
-                    assert tabIndex != TabModel.INVALID_TAB_INDEX;
-                    mTabModelSelectorSupplier.get().selectModel(/* incognito= */ false);
-                    tabModel.setIndex(tabIndex, TabSelectionType.FROM_USER);
-                };
-        Callback<String> reopenTabCallback =
-                (url) -> {
-                    TabGroupModelFilter tabGroupModelFilter =
-                            mTabModelSelectorSupplier
-                                    .get()
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(/* incognito= */ false);
-                    int rootId =
-                            tabGroupModelFilter.getRootIdFromStableId(
-                                    existingGroup.localId.tabGroupId);
-                    TabGroupUtils.openUrlInGroup(
-                            tabGroupModelFilter, url, rootId, TabLaunchType.FROM_TAB_GROUP_UI);
-                };
-        Runnable openTabGroupEditDialogCallback = () -> switchToTabGroup(existingGroup);
+        // TODO(crbug.com/380962101): Extract manage sharing into a different interface.
         Runnable manageSharingCallback = () -> showManageSharing(activity, collaborationId);
+        RecentActivityActionHandler recentActivityActionHandler =
+                new RecentActivityActionHandlerImpl(
+                        tabGroupSyncService,
+                        mTabModelSelectorSupplier.get(),
+                        mDataSharingTabSwitcherDelegate,
+                        collaborationId,
+                        existingGroup.syncId,
+                        manageSharingCallback);
         RecentActivityListCoordinator recentActivityListCoordinator =
                 new RecentActivityListCoordinator(
                         activity,
@@ -870,10 +851,7 @@ public class DataSharingTabManager {
                         mMessagingBackendService,
                         new DataSharingFaviconProvider(activity, mProfile, mFaviconHelper),
                         avatarProvider,
-                        focusTabCallback,
-                        reopenTabCallback,
-                        openTabGroupEditDialogCallback,
-                        manageSharingCallback);
+                        recentActivityActionHandler);
         recentActivityListCoordinator.requestShowUI(collaborationId);
     }
 

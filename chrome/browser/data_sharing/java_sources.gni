@@ -5,4 +5,5 @@
 data_sharing_java_tests = [
   "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManagerUnitTest.java",
   "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingFaviconProviderUnitTest.java",
+  "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/RecentActivityActionHandlerUnitTest.java",
 ]
