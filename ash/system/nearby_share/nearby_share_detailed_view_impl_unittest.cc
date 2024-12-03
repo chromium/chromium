@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/style/switch.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,6 +41,11 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
   Switch* GetQuickShareToggle() const {
     CHECK(detailed_view_);
     return detailed_view_->toggle_switch_;
+  }
+
+  HoverHighlightView* GetYourDevicesRow() const {
+    CHECK(detailed_view_);
+    return detailed_view_->your_devices_row_;
   }
 
   size_t GetCloseBubbleCallCount() const {
@@ -111,6 +117,20 @@ TEST_F(NearbyShareDetailedViewImplTest, QuickShareV2_ToggleQuickShareOff) {
   LeftClickOn(quick_share_toggle);
   EXPECT_FALSE(quick_share_toggle->GetIsOn());
   EXPECT_FALSE(test_delegate_->IsEnabled());
+}
+
+TEST_F(NearbyShareDetailedViewImplTest, QuickShareV2_ToggleYourDevices) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->SetVisibility(
+      ::nearby_share::mojom::Visibility::kAllContacts);
+  SetUpDetailedView();
+  EXPECT_EQ(::nearby_share::mojom::Visibility::kAllContacts,
+            test_delegate_->GetVisibility());
+
+  HoverHighlightView* your_devices_row = GetYourDevicesRow();
+  LeftClickOn(your_devices_row);
+  EXPECT_EQ(::nearby_share::mojom::Visibility::kYourDevices,
+            test_delegate_->GetVisibility());
 }
 
 }  // namespace ash

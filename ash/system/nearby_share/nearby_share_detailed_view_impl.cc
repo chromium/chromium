@@ -68,7 +68,14 @@ void NearbyShareDetailedViewImpl::CreateExtraTitleRowButtons() {
   tri_view()->AddView(TriView::Container::END, settings_button_);
 }
 
-void NearbyShareDetailedViewImpl::HandleViewClicked(views::View* view) {}
+void NearbyShareDetailedViewImpl::HandleViewClicked(views::View* view) {
+  CHECK(your_devices_row_);
+
+  if (view == your_devices_row_) {
+    OnYourDevicesSelected();
+    return;
+  }
+}
 
 void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
   DCHECK(!is_enabled_container_);
@@ -177,10 +184,14 @@ void NearbyShareDetailedViewImpl::OnQuickShareToggleClicked() {
   nearby_share_delegate_->SetEnabled(new_enabled_state);
 }
 
-// TODO(brandosocarras, b/360150790): Put device in Your devies, contacts
-// visibility on selected in quick settings.
-void NearbyShareDetailedViewImpl::OnYourDevicesSelected() {}
+void NearbyShareDetailedViewImpl::OnYourDevicesSelected() {
+  CHECK(nearby_share_delegate_);
+  nearby_share_delegate_->SetVisibility(
+      ::nearby_share::mojom::Visibility::kYourDevices);
+}
 
+// TODO(brandosocarras, b/360150790): Put device in Contacts
+// visibility on selected in quick settings.
 void NearbyShareDetailedViewImpl::OnContactsSelected() {}
 
 BEGIN_METADATA(NearbyShareDetailedViewImpl)
