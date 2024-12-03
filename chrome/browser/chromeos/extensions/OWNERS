@@ -6,5 +6,4 @@ tbarzic@chromium.org
 per-file *wallpaper*=file://ash/wallpaper/OWNERS
 
 # DeviceLocalAccount reviewers. emaxx@ is primary, others are backup.
-per-file device_local_account*=emaxx@chromium.org
 per-file device_local_account*=poromov@chromium.org
