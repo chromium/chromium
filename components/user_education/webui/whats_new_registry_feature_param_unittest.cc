@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/user_education/webui/mock_whats_new_storage_service.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,31 +41,6 @@ BASE_FEATURE(kTestModuleEnabled3,
              "TestModuleEnabled3",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
- public:
-  MockWhatsNewStorageService() = default;
-  MOCK_METHOD(const base::Value::List&, ReadModuleData, (), (const override));
-  MOCK_METHOD(std::optional<int>,
-              GetUsedVersion,
-              (std::string_view edition_name),
-              (const override));
-  MOCK_METHOD(int,
-              GetModuleQueuePosition,
-              (std::string_view module_name),
-              (const));
-  MOCK_METHOD(const base::Value::Dict&, ReadEditionData, (), (const, override));
-  MOCK_METHOD(std::optional<std::string_view>,
-              FindEditionForCurrentVersion,
-              (),
-              (const, override));
-  MOCK_METHOD(bool, IsUsedEdition, (const std::string_view), (const, override));
-  MOCK_METHOD(void, SetModuleEnabled, (const std::string_view), (override));
-  MOCK_METHOD(void, ClearModule, (const std::string_view), (override));
-  MOCK_METHOD(void, SetEditionUsed, (const std::string_view), (override));
-  MOCK_METHOD(void, ClearEdition, (const std::string_view), (override));
-  MOCK_METHOD(void, Reset, (), (override));
-};
-
 }  // namespace
 
 class WhatsNewRegistryFeatureParamTest : public testing::Test {
@@ -77,46 +53,46 @@ class WhatsNewRegistryFeatureParamTest : public testing::Test {
     feature_list_.Reset();
   }
 
-  void CreateRegistry(
-      std::unique_ptr<MockWhatsNewStorageService> mock_storage_service) {
+  void CreateRegistry() {
+    auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
+    EXPECT_CALL(*mock_storage_service, SetModuleEnabled(testing::_)).Times(3);
+    EXPECT_CALL(*mock_storage_service, ReadModuleData())
+        .WillRepeatedly(testing::ReturnRef(stored_enabled_modules_));
     whats_new_registry_ =
         std::make_unique<WhatsNewRegistry>(std::move(mock_storage_service));
-  }
-
-  void RegisterModules(
-      std::unique_ptr<MockWhatsNewStorageService> mock_storage_service) {
-    EXPECT_CALL(*mock_storage_service, SetModuleEnabled(testing::_)).Times(3);
-
-    CreateRegistry(std::move(mock_storage_service));
 
     // Modules
     whats_new_registry_->RegisterModule(
         WhatsNewModule(kTestModuleEnabled1, ""));
+    stored_enabled_modules_.Append(kTestModuleEnabled1.name);
     whats_new_registry_->RegisterModule(
         WhatsNewModule(kTestModuleEnabled2, ""));
+    stored_enabled_modules_.Append(kTestModuleEnabled2.name);
     whats_new_registry_->RegisterModule(
         WhatsNewModule(kTestModuleEnabled3, ""));
+    stored_enabled_modules_.Append(kTestModuleEnabled3.name);
 
+    // Editions
     whats_new_registry_->RegisterEdition(
         WhatsNewEdition(kTestEditionEnabled, ""));
   }
 
   void TearDown() override {
+    stored_enabled_modules_.clear();
     whats_new_registry_.reset();
     testing::Test::TearDown();
   }
 
  protected:
   std::unique_ptr<WhatsNewRegistry> whats_new_registry_;
+  base::Value::List stored_enabled_modules_;
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(WhatsNewRegistryFeatureParamTest, FeatureWithoutCustomization) {
   feature_list_.InitWithFeatures({kTestModuleEnabled1, kTestModuleEnabled2},
                                  {});
-
-  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
-  RegisterModules(std::move(mock_storage_service));
+  CreateRegistry();
 
   std::string customization1 = base::GetFieldTrialParamValueByFeature(
       kTestModuleEnabled1, whats_new::kCustomizationParam);
@@ -135,8 +111,7 @@ TEST_F(WhatsNewRegistryFeatureParamTest, FeatureWithCustomization) {
       {{kTestModuleEnabled1, {{whats_new::kCustomizationParam, "hello"}}},
        {kTestModuleEnabled2, {{}}}},
       {});
-  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
-  RegisterModules(std::move(mock_storage_service));
+  CreateRegistry();
 
   std::string customization1 = base::GetFieldTrialParamValueByFeature(
       kTestModuleEnabled1, whats_new::kCustomizationParam);
@@ -156,8 +131,7 @@ TEST_F(WhatsNewRegistryFeatureParamTest, MultipleFeaturesWithCustomizations) {
       {{kTestModuleEnabled1, {{whats_new::kCustomizationParam, "hello"}}},
        {kTestModuleEnabled2, {{whats_new::kCustomizationParam, "goodbye"}}}},
       {});
-  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
-  RegisterModules(std::move(mock_storage_service));
+  CreateRegistry();
 
   std::string customization1 = base::GetFieldTrialParamValueByFeature(
       kTestModuleEnabled1, whats_new::kCustomizationParam);
@@ -176,9 +150,7 @@ TEST_F(WhatsNewRegistryFeatureParamTest, MultipleFeaturesWithCustomizations) {
 TEST_F(WhatsNewRegistryFeatureParamTest, FeatureWithoutSurvey) {
   feature_list_.InitWithFeatures({kTestModuleEnabled1, kTestModuleEnabled2},
                                  {});
-
-  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
-  RegisterModules(std::move(mock_storage_service));
+  CreateRegistry();
 
   std::string survey_param = base::GetFieldTrialParamValueByFeature(
       kTestEditionEnabled, whats_new::kSurveyParam);
@@ -194,8 +166,7 @@ TEST_F(WhatsNewRegistryFeatureParamTest, FeatureWithSurvey) {
        {kTestModuleEnabled2, {{}}},
        {kTestEditionEnabled, {{whats_new::kSurveyParam, "hello"}}}},
       {});
-  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
-  RegisterModules(std::move(mock_storage_service));
+  CreateRegistry();
 
   std::string survey_param = base::GetFieldTrialParamValueByFeature(
       kTestEditionEnabled, whats_new::kSurveyParam);

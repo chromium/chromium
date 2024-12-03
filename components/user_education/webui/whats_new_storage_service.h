@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_USER_EDUCATION_WEBUI_WHATS_NEW_STORAGE_SERVICE_H_
 #define COMPONENTS_USER_EDUCATION_WEBUI_WHATS_NEW_STORAGE_SERVICE_H_
 
+#include <set>
+
 #include "base/values.h"
 
 namespace whats_new {
-
 // Virtual interface for supplying the WhatsNewRegistry with a store.
 // Keeps track of the order in which WhatsNewModules have been enabled
 // as well as during which milestone a WhatsNewEdition was shown to the user.
@@ -43,14 +44,14 @@ class WhatsNewStorageService {
   // Add a module to the ordered list of enabled modules.
   virtual void SetModuleEnabled(std::string_view module_name) = 0;
 
-  // Clear module from stored data.
-  virtual void ClearModule(std::string_view module_name) = 0;
-
   // Set a "used version" for an edition.
   virtual void SetEditionUsed(std::string_view edition_name) = 0;
 
+  // Clear module from stored data.
+  virtual void ClearModules(std::set<std::string_view> modules_to_clear) = 0;
+
   // Clear edition from stored data.
-  virtual void ClearEdition(std::string_view edition_name) = 0;
+  virtual void ClearEditions(std::set<std::string_view> editions_to_clear) = 0;
 
   // Reset all stored data for manual testing.
   // This should only be called from the internal testing page.
