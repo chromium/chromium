@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package autofill.core.browser.payments;
+
+option optimize_for = LITE_RUNTIME;
+
+// The proto defines the set of heuristic regexes used for amount extraction
+// from DOM search process. The set includes both the generic regexes that are
+// applicable to all allowlisted merchants and the merchant specific regexes
+// that are applicable to specific merchants. See http://shortn/_y8ukIThJlz for
+// more details.
+message HeuristicRegexes {
+  // GenericDetails provides 2 regex patterns that used for matching amount and
+  // keyword separately. Number of ancestor levels to search here defines the
+  // maximum level of nodes to search for matching regex patterns.
+  message GenericDetails {
+    optional string amount_pattern = 1;
+    optional string keyword_pattern = 2;
+    optional uint32 number_of_ancestor_levels_to_search = 3;
+  }
+
+  optional GenericDetails generic_details = 1;
+}

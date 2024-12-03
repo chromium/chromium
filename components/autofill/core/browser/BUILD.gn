@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -56,6 +57,10 @@ action("regex_patterns_inl_h") {
   outputs = [ "$target_gen_dir/form_parsing/regex_patterns_inl.h" ]
   args = [ "--input" ] + rebase_path(sources, root_build_dir) + [ "--output" ] +
          rebase_path(outputs, root_build_dir)
+}
+
+proto_library("amount_extraction_heuristic_regexes_proto") {
+  sources = [ "payments/amount_extraction_heuristic_regexes.proto" ]
 }
 
 static_library("browser") {
@@ -713,6 +718,7 @@ static_library("browser") {
   ]
 
   public_deps = [
+    ":amount_extraction_heuristic_regexes_proto",
     ":legal_message_line",
     "//components/autofill/core/browser/payments:card_unmask_challenge_option",
     "//components/autofill/core/browser/proto",
@@ -1240,6 +1246,7 @@ source_set("unit_tests") {
     "metrics/shadow_prediction_metrics_unittest.cc",
     "metrics/stored_profile_metrics_unittest.cc",
     "metrics/suggestions_list_metrics_unittest.cc",
+    "payments/amount_extraction_heuristic_regexes_unittest.cc",
     "payments/autofill_offer_manager_unittest.cc",
     "payments/credit_card_access_manager_risk_based_unittest.cc",
     "payments/credit_card_access_manager_unittest.cc",

@@ -24,21 +24,28 @@ class AmountExtractionHeuristicRegexes final {
       const AmountExtractionHeuristicRegexes&) = delete;
   ~AmountExtractionHeuristicRegexes();
 
-  // Updates the regex from a binary proto fetched from component updater.
+  // Updates the string from a binary proto fetched from component updater.
   // Returns `true` if the parsing process was successful, `false` otherwise.
-  bool PopulateRegexFromComponent(const std::string& binary_pb);
+  bool PopulateStringFromComponent(const std::string& binary_pb);
 
-  // Returns a keyword pattern string used for amount extraction from DOM search
-  // process.
-  std::string GetKeywordPattern() const;
+  // See comment for `keyword_pattern_`.
+  std::string keyword_pattern() const;
 
-  // Returns an amount pattern string used for amount extraction from DOM search
-  // process.
-  std::string GetAmountPattern() const;
+  // See comment for `amount_pattern_`.
+  std::string amount_pattern() const;
 
-  // Returns the number of ancestor levels to search in the amount extraction
+  // See comment for `number_of_ancestor_levels_to_search_`.
+  uint32_t number_of_ancestor_levels_to_search() const;
+
+ private:
+  // A keyword pattern string used for amount extraction from DOM search
   // process.
-  std::uint32_t GetNumberOfAncestorLevels() const;
+  std::string keyword_pattern_;
+  // An amount pattern string used for amount extraction from DOM search
+  // process.
+  std::string amount_pattern_;
+  // The number of ancestor levels to search in the amount extraction process.
+  uint32_t number_of_ancestor_levels_to_search_;
 };
 
 }  // namespace autofill::payments
