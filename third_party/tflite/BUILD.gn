@@ -48,6 +48,7 @@ config("tflite_config") {
     "src/third_party/xla/third_party/tsl",
     "//third_party/pthreadpool/src/include",
   ]
+  defines = [ "TFL_STATIC_LIBRARY_BUILD" ]
   if (is_android) {
     libs = [ "log" ]
   }
