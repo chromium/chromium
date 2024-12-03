@@ -33,7 +33,13 @@ constexpr char kObjectPathSystemd[] = "/org/freedesktop/systemd1";
 constexpr char kInterfaceSystemdManager[] = "org.freedesktop.systemd1.Manager";
 constexpr char kMethodStartTransientUnit[] = "StartTransientUnit";
 
-TEST(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInFlatpak) {
+class SetSystemdScopeUnitNameForXdgPortalTest : public ::testing::Test {
+ public:
+  void SetUp() override { ResetCachedStateForTesting(); }
+  void TearDown() override { ResetCachedStateForTesting(); }
+};
+
+TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInFlatpak) {
   scoped_refptr<dbus::MockBus> bus =
       base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
 
@@ -49,7 +55,7 @@ TEST(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInFlatpak) {
   EXPECT_EQ(status, SystemdUnitStatus::kUnitNotNecessary);
 }
 
-TEST(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInSnap) {
+TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInSnap) {
   scoped_refptr<dbus::MockBus> bus =
       base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
 
@@ -64,7 +70,7 @@ TEST(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInSnap) {
   EXPECT_EQ(status, SystemdUnitStatus::kUnitNotNecessary);
 }
 
-TEST(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
+TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
   scoped_refptr<dbus::MockBus> bus =
       base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
 
@@ -95,7 +101,7 @@ TEST(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
   EXPECT_EQ(status, SystemdUnitStatus::kUnitStarted);
 }
 
-TEST(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
+TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
   scoped_refptr<dbus::MockBus> bus =
       base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
 
@@ -122,7 +128,7 @@ TEST(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
   EXPECT_EQ(status, SystemdUnitStatus::kFailedToStart);
 }
 
-TEST(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
+TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
   scoped_refptr<dbus::MockBus> bus =
       base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
 

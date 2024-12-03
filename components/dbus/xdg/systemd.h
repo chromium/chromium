@@ -32,10 +32,14 @@ using SystemdUnitCallback = base::OnceCallback<void(SystemdUnitStatus)>;
 // systemd scope gets created when spawning via the application launcher. Child
 // processes also inherit the scope, so if the app launcher creates a terminal
 // which the user launches the browser with, then the browser will incorrectly
-// get the terminal name. This only needs to be called once.
+// get the terminal name. This function caches it's results and may be called
+// more than once, but must be called on the same sequence.
 COMPONENT_EXPORT(COMPONENTS_DBUS)
 void SetSystemdScopeUnitNameForXdgPortal(dbus::Bus* bus,
                                          SystemdUnitCallback callback);
+
+COMPONENT_EXPORT(COMPONENTS_DBUS)
+void ResetCachedStateForTesting();
 
 }  // namespace dbus_xdg
 

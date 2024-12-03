@@ -4,7 +4,11 @@
 
 #include "components/dbus/xdg/systemd.h"
 
+#include <vector>
+
 #include "base/environment.h"
+#include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
@@ -12,6 +16,7 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace dbus_xdg {
 
@@ -19,6 +24,10 @@ namespace dbus_xdg {
 template <typename T>
 using Dict = DbusArray<DbusStruct<DbusString, T>>;
 using VarDict = Dict<DbusVariant>;
+
+using SystemdUnitCallbacks = std::vector<SystemdUnitCallback>;
+using StatusOrCallbacks =
+    absl::variant<SystemdUnitStatus, SystemdUnitCallbacks>;
 
 namespace {
 
@@ -56,28 +65,66 @@ const char* GetAppNameSuffix(const std::string& channel) {
   return "";
 }
 
-void OnStartTransientUnitResponse(SystemdUnitCallback callback,
-                                  dbus::Response* response) {
-  std::move(callback).Run(response ? SystemdUnitStatus::kUnitStarted
-                                   : SystemdUnitStatus::kFailedToStart);
+// Global state for cached result or pending callbacks.
+StatusOrCallbacks& GetUnitNameState() {
+  static base::NoDestructor<StatusOrCallbacks> state(
+      std::in_place_type<SystemdUnitCallbacks>);
+  return *state;
+}
+
+void SetStateAndRunCallbacks(SystemdUnitStatus result) {
+  auto& state = GetUnitNameState();
+  auto callbacks = std::move(absl::get<SystemdUnitCallbacks>(state));
+  state = result;
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
+  }
+}
+
+void OnStartTransientUnitResponse(dbus::Response* response) {
+  SystemdUnitStatus result = response ? SystemdUnitStatus::kUnitStarted
+                                      : SystemdUnitStatus::kFailedToStart;
+  SetStateAndRunCallbacks(result);
 }
 
 }  // namespace
 
 void SetSystemdScopeUnitNameForXdgPortal(dbus::Bus* bus,
                                          SystemdUnitCallback callback) {
+#if DCHECK_IS_ON()
+  static base::SequenceChecker sequence_checker;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+#endif
+
+  auto& state = GetUnitNameState();
+
+  if (absl::holds_alternative<SystemdUnitStatus>(state)) {
+    // If the result is already cached, run the callback immediately.
+    std::move(callback).Run(absl::get<SystemdUnitStatus>(state));
+    return;
+  }
+
+  // Add the callback to the list of pending callbacks.
+  auto& callbacks = absl::get<SystemdUnitCallbacks>(state);
+  callbacks.push_back(std::move(callback));
+
+  if (callbacks.size() > 1) {
+    // An operation is already in progress.
+    return;
+  }
+
   auto env = base::Environment::Create();
-  if (env->HasVar("FLATPAK_SANDBOX_DIR") || env->HasVar(("SNAP"))) {
+  if (env->HasVar("FLATPAK_SANDBOX_DIR") || env->HasVar("SNAP")) {
     // xdg-desktop-portal has a separate reliable way of detecting the
     // application name for Flatpak and Snap environments, so the systemd unit
     // is not necessary in these cases.
-    std::move(callback).Run(SystemdUnitStatus::kUnitNotNecessary);
+    SetStateAndRunCallbacks(SystemdUnitStatus::kUnitNotNecessary);
     return;
   }
 
   pid_t pid = getpid();
   if (pid <= 1) {
-    std::move(callback).Run(SystemdUnitStatus::kInvalidPid);
+    SetStateAndRunCallbacks(SystemdUnitStatus::kInvalidPid);
     return;
   }
 
@@ -106,9 +153,12 @@ void SetSystemdScopeUnitNameForXdgPortal(dbus::Bus* bus,
   properties.Write(&writer);
   // No auxiliary units.
   Dict<VarDict>().Write(&writer);
-  systemd->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(OnStartTransientUnitResponse, std::move(callback)));
+  systemd->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                      base::BindOnce(&OnStartTransientUnitResponse));
+}
+
+void ResetCachedStateForTesting() {
+  GetUnitNameState() = SystemdUnitCallbacks();
 }
 
 }  // namespace dbus_xdg
