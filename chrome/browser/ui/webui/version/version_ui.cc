@@ -119,8 +119,7 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
 
   VersionUI::AddVersionDetailStrings(html_source);
 
-  html_source->AddResourcePaths(
-      base::make_span(kVersionUiResources, kVersionUiResourcesSize));
+  html_source->AddResourcePaths(kVersionUiResources);
   html_source->UseStringsJs();
 
 #if BUILDFLAG(IS_ANDROID)

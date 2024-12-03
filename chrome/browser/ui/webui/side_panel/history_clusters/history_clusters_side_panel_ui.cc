@@ -74,12 +74,9 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   history_embeddings::PopulateSourceForWebUI(source, profile);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelHistoryClustersResources,
-                      kSidePanelHistoryClustersResourcesSize),
+      source, kSidePanelHistoryClustersResources,
       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 HistoryClustersSidePanelUI::~HistoryClustersSidePanelUI() = default;

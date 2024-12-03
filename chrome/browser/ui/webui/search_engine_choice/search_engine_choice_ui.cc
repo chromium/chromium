@@ -138,9 +138,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
       search_engine_choice_service->IsProfileEligibleForDseGuestPropagation());
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSearchEngineChoiceResources,
-                      kSearchEngineChoiceResourcesSize),
+      source, kSearchEngineChoiceResources,
       IDR_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_HTML);
 }
 

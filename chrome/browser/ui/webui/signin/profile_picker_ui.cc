@@ -284,10 +284,8 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(GetMainViewTitleId()));
 
   AddStrings(html_source);
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kProfilePickerResources, kProfilePickerResourcesSize),
-      IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
+  webui::SetupWebUIDataSource(html_source, kProfilePickerResources,
+                              IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
 }
 
 ProfilePickerUI::~ProfilePickerUI() = default;

@@ -35,16 +35,12 @@ SegmentationInternalsUI::SegmentationInternalsUI(content::WebUI* web_ui)
         segmentation_platform::features::kSegmentationSurveyInternalsPage
             .Get()) {
       webui::SetupWebUIDataSource(
-          source,
-          base::make_span(kSegmentationInternalsResources,
-                          kSegmentationInternalsResourcesSize),
+          source, kSegmentationInternalsResources,
           IDR_SEGMENTATION_INTERNALS_SEGMENTATION_SURVEY_HTML);
     }
   } else {
     webui::SetupWebUIDataSource(
-        source,
-        base::make_span(kSegmentationInternalsResources,
-                        kSegmentationInternalsResourcesSize),
+        source, kSegmentationInternalsResources,
         IDR_SEGMENTATION_INTERNALS_SEGMENTATION_INTERNALS_HTML);
   }
 }

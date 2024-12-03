@@ -30,8 +30,7 @@ void CreateAndAddWebApksUIDataSource(Profile* profile) {
       WebUIDataSource::CreateAndAdd(profile, chrome::kChromeUIWebApksHost);
   html_source->UseStringsJs();
 
-  html_source->AddResourcePaths(
-      base::make_span(kWebapksResources, kWebapksResourcesSize));
+  html_source->AddResourcePaths(kWebapksResources);
   html_source->SetDefaultResource(IDR_WEBAPKS_ABOUT_WEBAPKS_HTML);
 }
 

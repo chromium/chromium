@@ -153,9 +153,7 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
   source->AddString("urlField", "");
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kNewTabPageThirdPartyResources,
-                      kNewTabPageThirdPartyResourcesSize),
+      source, kNewTabPageThirdPartyResources,
       IDR_NEW_TAB_PAGE_THIRD_PARTY_NEW_TAB_PAGE_THIRD_PARTY_HTML);
 }
 }  // namespace

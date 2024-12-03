@@ -41,9 +41,7 @@ void CreateAndAddSyncInternalsHTMLSource(Profile* profile) {
       "trusted-types jstemplate static-types;");
 
   source->UseStringsJs();
-  source->AddResourcePaths(
-      base::make_span(kSyncServiceSyncInternalsResources,
-                      kSyncServiceSyncInternalsResourcesSize));
+  source->AddResourcePaths(kSyncServiceSyncInternalsResources);
 
   source->SetDefaultResource(IDR_SYNC_SERVICE_SYNC_INTERNALS_INDEX_HTML);
 }

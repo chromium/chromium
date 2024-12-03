@@ -48,10 +48,8 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   auto* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIPrivacySandboxDialogHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kPrivacySandboxResources, kPrivacySandboxResourcesSize),
-      IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
+  webui::SetupWebUIDataSource(source, kPrivacySandboxResources,
+                              IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
 
   // Allow the chrome-untrusted://privacy-sandbox-dialog/privacy-policy page to
   // load as an iframe in the page.

@@ -75,8 +75,7 @@ static void SetSandboxStatusData(content::WebUIDataSource* source) {
 void CreateAndAddDataSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISandboxHost);
-  source->AddResourcePaths(base::make_span(kSandboxInternalsResources,
-                                           kSandboxInternalsResourcesSize));
+  source->AddResourcePaths(kSandboxInternalsResources);
   source->SetDefaultResource(IDR_SANDBOX_INTERNALS_SANDBOX_INTERNALS_HTML);
 
   source->OverrideContentSecurityPolicy(

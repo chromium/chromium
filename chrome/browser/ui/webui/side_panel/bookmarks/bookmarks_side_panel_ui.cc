@@ -241,12 +241,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
   const int resource = IDR_SIDE_PANEL_BOOKMARKS_POWER_BOOKMARKS_HTML;
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kSidePanelBookmarksResources,
-                                              kSidePanelBookmarksResourcesSize),
-                              resource);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kSidePanelBookmarksResources, resource);
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();

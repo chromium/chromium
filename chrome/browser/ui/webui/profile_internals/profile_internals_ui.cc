@@ -36,9 +36,7 @@ ProfileInternalsUI::ProfileInternalsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<ProfileInternalsHandler>());
 
   // Add required resources.
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kProfileInternalsResources,
-                                              kProfileInternalsResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kProfileInternalsResources,
                               IDR_PROFILE_INTERNALS_PROFILE_INTERNALS_HTML);
 }
 

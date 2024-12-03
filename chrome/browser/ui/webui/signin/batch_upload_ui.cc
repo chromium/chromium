@@ -71,9 +71,8 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
       profile, chrome::kChromeUIBatchUploadHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kBatchUploadResources, kBatchUploadResourcesSize),
-      IDR_BATCH_UPLOAD_BATCH_UPLOAD_HTML);
+  webui::SetupWebUIDataSource(source, kBatchUploadResources,
+                              IDR_BATCH_UPLOAD_BATCH_UPLOAD_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"batchUploadTitle", IDS_BATCH_UPLOAD_TITLE},

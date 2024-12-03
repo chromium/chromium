@@ -285,12 +285,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
                          ntp_features::kNtpBackgroundImageErrorDetection));
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelCustomizeChromeResources,
-                      kSidePanelCustomizeChromeResourcesSize),
+      source, kSidePanelCustomizeChromeResources,
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));

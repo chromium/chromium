@@ -44,8 +44,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   VersionUI::AddVersionDetailStrings(source);
   source->UseStringsJs();
 
-  source->AddResourcePaths(
-      base::make_span(kOmniboxResources, kOmniboxResourcesSize));
+  source->AddResourcePaths(kOmniboxResources);
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
   source->AddResourcePath("ml", IDR_OMNIBOX_ML_ML_HTML);
 

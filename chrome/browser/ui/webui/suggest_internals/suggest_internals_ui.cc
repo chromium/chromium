@@ -22,9 +22,7 @@ SuggestInternalsUI::SuggestInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISuggestInternalsHost);
 
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kSuggestInternalsResources,
-                                              kSuggestInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kSuggestInternalsResources,
                               IDR_SUGGEST_INTERNALS_SUGGEST_INTERNALS_HTML);
   webui::EnableTrustedTypesCSP(source);
 }

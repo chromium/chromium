@@ -32,9 +32,7 @@ OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIOnDeviceInternalsHost);
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kOnDeviceInternalsResources,
-                                              kOnDeviceInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kOnDeviceInternalsResources,
                               IDR_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_HTML);
 }
 

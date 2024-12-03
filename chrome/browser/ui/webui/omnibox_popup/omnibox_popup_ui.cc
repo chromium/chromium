@@ -43,10 +43,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 
   RealboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kOmniboxPopupResources, kOmniboxPopupResourcesSize),
-      IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
+  webui::SetupWebUIDataSource(source, kOmniboxPopupResources,
+                              IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
   webui::EnableTrustedTypesCSP(source);
 
   content::URLDataSource::Add(profile_,

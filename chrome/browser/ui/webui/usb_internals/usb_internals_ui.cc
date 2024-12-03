@@ -24,10 +24,8 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIUsbInternalsHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kUsbInternalsResources, kUsbInternalsResourcesSize),
-      IDR_USB_INTERNALS_USB_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(source, kUsbInternalsResources,
+                              IDR_USB_INTERNALS_USB_INTERNALS_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UsbInternalsUI)

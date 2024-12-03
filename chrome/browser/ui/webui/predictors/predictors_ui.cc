@@ -26,8 +26,7 @@ namespace {
 void CreateAndAddPredictorsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIPredictorsHost);
-  source->AddResourcePaths(
-      base::make_span(kPredictorsResources, kPredictorsResourcesSize));
+  source->AddResourcePaths(kPredictorsResources);
   source->SetDefaultResource(IDR_PREDICTORS_PREDICTORS_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::RequireTrustedTypesFor,

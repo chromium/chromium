@@ -31,10 +31,8 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
   // Set up the chrome://web-app-internals source.
   content::WebUIDataSource* internals = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIWebAppInternalsHost);
-  webui::SetupWebUIDataSource(
-      internals,
-      base::make_span(kWebAppInternalsResources, kWebAppInternalsResourcesSize),
-      IDR_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(internals, kWebAppInternalsResources,
+                              IDR_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HTML);
   internals->UseStringsJs();
   internals->AddBoolean("isIwaDevModeEnabled",
                         web_app::IsIwaDevModeEnabled(profile));

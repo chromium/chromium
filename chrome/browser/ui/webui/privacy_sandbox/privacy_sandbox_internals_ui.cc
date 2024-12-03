@@ -52,11 +52,8 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIPrivacySandboxInternalsHost);
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kPrivacySandboxInternalsResources,
-                      kPrivacySandboxInternalsResourcesSize),
-      IDR_PRIVACY_SANDBOX_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kPrivacySandboxInternalsResources,
+                              IDR_PRIVACY_SANDBOX_INTERNALS_INDEX_HTML);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {

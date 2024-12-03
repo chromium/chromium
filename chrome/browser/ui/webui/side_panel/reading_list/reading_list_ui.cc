@@ -77,13 +77,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelReadingListResources,
-                      kSidePanelReadingListResourcesSize),
-      IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kSidePanelReadingListResources,
+                              IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
+  source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 ReadingListUI::~ReadingListUI() = default;

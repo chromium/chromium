@@ -41,10 +41,8 @@ WebUIJsErrorUI::WebUIJsErrorUI(content::WebUI* web_ui)
   source->AddString("uncaughtErrorButton", "Throw Uncaught Error");
   source->AddString("promiseRejectButton", "Unhandled Promise Rejection");
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kWebuiJsErrorResources, kWebuiJsErrorResourcesSize),
-      IDR_WEBUI_JS_ERROR_WEBUI_JS_ERROR_HTML);
+  webui::SetupWebUIDataSource(source, kWebuiJsErrorResources,
+                              IDR_WEBUI_JS_ERROR_WEBUI_JS_ERROR_HTML);
 }
 
 WebUIJsErrorUI::~WebUIJsErrorUI() = default;

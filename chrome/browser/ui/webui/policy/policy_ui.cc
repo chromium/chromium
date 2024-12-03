@@ -243,9 +243,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 
   source->AddString("acceptedPaths",
                     allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kPolicyResources, kPolicyResourcesSize),
-      IDR_POLICY_POLICY_HTML);
+  webui::SetupWebUIDataSource(source, kPolicyResources, IDR_POLICY_POLICY_HTML);
 
   webui::EnableTrustedTypesCSP(source);
 }

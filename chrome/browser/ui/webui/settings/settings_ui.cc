@@ -470,13 +470,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),
-      IDR_SETTINGS_SETTINGS_HTML);
+  webui::SetupWebUIDataSource(html_source, kSettingsResources,
+                              IDR_SETTINGS_SETTINGS_HTML);
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
-  html_source->AddResourcePaths(
-      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+  html_source->AddResourcePaths(kSettingsSharedResources);
 #endif
 
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());

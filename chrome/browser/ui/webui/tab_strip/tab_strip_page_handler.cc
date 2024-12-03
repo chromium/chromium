@@ -864,7 +864,7 @@ void TabStripPageHandler::HandleThumbnailUpdate(
   TRACE_EVENT0("browser", "TabStripPageHandler:HandleThumbnailUpdate");
   std::string data_uri;
   if (image)
-    data_uri = webui::MakeDataURIForImage(base::make_span(image->data), "jpeg");
+    data_uri = webui::MakeDataURIForImage(base::span(image->data), "jpeg");
 
   const SessionID::id_type tab_id = extensions::ExtensionTabUtil::GetTabId(tab);
   page_->TabThumbnailUpdated(tab_id, data_uri);
