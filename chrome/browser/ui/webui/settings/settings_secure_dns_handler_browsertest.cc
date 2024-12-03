@@ -111,9 +111,9 @@ net::DohProviderEntry::List GetDohProviderListForTesting() {
 }
 
 bool FindDropdownItem(const base::Value::List& resolvers,
-                      const std::string& name,
-                      const std::string& value,
-                      const std::string& policy) {
+                      std::string_view name,
+                      std::string_view value,
+                      std::string_view policy) {
   base::Value::Dict dict;
   dict.Set("name", name);
   dict.Set("value", value);
