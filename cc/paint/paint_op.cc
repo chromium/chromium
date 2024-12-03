@@ -685,8 +685,7 @@ void DrawSkottieOp::Serialize(PaintOpWriter& writer,
         // will mark the |helper| as invalid and the buffer will keep growing
         // until a max size is reached (currently 64MB which should be ample for
         // text).
-        writer.WriteData(text_property_val.text().size(),
-                         text_property_val.text().c_str());
+        writer.WriteData(base::as_byte_span(text_property_val.text()));
         writer.Write(gfx::RectFToSkRect(text_property_val.box()));
       });
 }

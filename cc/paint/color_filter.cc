@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
@@ -98,10 +99,12 @@ class TableColorFilter : public ColorFilter {
     return PaintOpWriter::SerializedSizeOfBytes(256 * 4);
   }
   void SerializeData(PaintOpWriter& writer) const override {
-    writer.WriteData(256, table_->alphaTable());
-    writer.WriteData(256, table_->redTable());
-    writer.WriteData(256, table_->greenTable());
-    writer.WriteData(256, table_->blueTable());
+    // SAFETY: the various SkColorTable::...table() methods always return
+    // 256-byte arrays.
+    writer.WriteData(UNSAFE_BUFFERS(base::span(table_->alphaTable(), 256u)));
+    writer.WriteData(UNSAFE_BUFFERS(base::span(table_->redTable(), 256u)));
+    writer.WriteData(UNSAFE_BUFFERS(base::span(table_->greenTable(), 256u)));
+    writer.WriteData(UNSAFE_BUFFERS(base::span(table_->blueTable(), 256u)));
   }
 
  private:
