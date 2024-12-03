@@ -3817,7 +3817,7 @@ public class StripLayoutHelper
             return;
         }
 
-        mReorderDelegate.startReorder(mStripTabs, interactingView, getEffectiveTabWidth(), x);
+        mReorderDelegate.startReorderMode(mStripTabs, interactingView, getEffectiveTabWidth(), x);
     }
 
     void updateStripForExternalTabDrop(float startX) {

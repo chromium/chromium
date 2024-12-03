@@ -4,7 +4,23 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import androidx.annotation.NonNull;
+
 interface ReorderStrategy {
+    /**
+     * Begin reordering the interacting view.
+     *
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param interactingView The interacting {@link StripLayoutView}.
+     * @param effectiveTabWidth The width of a tab, accounting for overlap.
+     * @param x The x coordinate that the reorder action began at.
+     */
+    void startReorderMode(
+            StripLayoutTab[] stripTabs,
+            @NonNull StripLayoutView interactingView,
+            float effectiveTabWidth,
+            float x);
+
     /**
      * Updates the location of the reordering tab. This 1. visually offsets the tab (clamped to the
      * bounds of the strip) and 2. triggers a reorder (with animations) if the threshold is reached.
