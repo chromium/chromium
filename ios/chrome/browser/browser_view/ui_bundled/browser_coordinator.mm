@@ -748,6 +748,7 @@ enum class ToolbarKind {
   [self hideDriveFilePicker];
 
   [self.passKitCoordinator stop];
+  self.passKitCoordinator = nil;
 
   [self.printCoordinator dismissAnimated:YES];
 
@@ -769,7 +770,7 @@ enum class ToolbarKind {
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
 
-  [self.pageInfoCoordinator stop];
+  [self hidePageInfo];
 
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
@@ -791,8 +792,7 @@ enum class ToolbarKind {
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
 
-  [self.priceNotificationsViewCoordiantor stop];
-  self.priceNotificationsViewCoordiantor = nil;
+  [self hidePriceNotifications];
 
   [self.unitConversionCoordinator stop];
   self.unitConversionCoordinator = nil;
@@ -1429,8 +1429,7 @@ enum class ToolbarKind {
   [self.vcardCoordinator stop];
   self.vcardCoordinator = nil;
 
-  [self.pageInfoCoordinator stop];
-  self.pageInfoCoordinator = nil;
+  [self hidePageInfo];
 
   [self.passKitCoordinator stop];
   self.passKitCoordinator = nil;
@@ -1465,8 +1464,7 @@ enum class ToolbarKind {
   [self.printCoordinator stop];
   self.printCoordinator = nil;
 
-  [self.priceNotificationsViewCoordiantor stop];
-  self.priceNotificationsViewCoordiantor = nil;
+  [self hidePriceNotifications];
 
   [self.promosManagerCoordinator stop];
   self.promosManagerCoordinator = nil;
@@ -1492,8 +1490,7 @@ enum class ToolbarKind {
 
   [self stopStoreKitCoordinator];
 
-  [self.textZoomCoordinator stop];
-  self.textZoomCoordinator = nil;
+  [self hideTextZoomUI];
 
   [self stopAutofillAddCreditCardCoordinator];
 
@@ -2428,6 +2425,7 @@ enum class ToolbarKind {
     helper->StopFinding();
   } else {
     [self.findBarCoordinator stop];
+    self.findBarCoordinator = nil;
   }
 }
 
@@ -2454,6 +2452,7 @@ enum class ToolbarKind {
     helper->DismissFindNavigator();
   } else {
     [self.findBarCoordinator stop];
+    self.findBarCoordinator = nil;
   }
 }
 
@@ -2521,8 +2520,7 @@ enum class ToolbarKind {
     return;
   }
 
-  FindBarCoordinator* findBarCoordinator = self.findBarCoordinator;
-  [findBarCoordinator stop];
+  [self.findBarCoordinator stop];
   self.findBarCoordinator = [self newFindBarCoordinator];
   [self.findBarCoordinator start];
 }
@@ -2734,13 +2732,10 @@ enum class ToolbarKind {
 
 - (void)toolbarAccessoryCoordinatorDidDismissUI:
     (ChromeCoordinator*)coordinator {
-  if (self.findBarCoordinator) {
-    self.findBarCoordinator = nil;
-  }
+  [self.findBarCoordinator stop];
+  self.findBarCoordinator = nil;
 
-  if (self.textZoomCoordinator) {
-    self.textZoomCoordinator = nil;
-  }
+  [self hideTextZoomUI];
 
   if (!_nextToolbarToPresent.has_value()) {
     return;
@@ -2780,11 +2775,7 @@ enum class ToolbarKind {
     }
   }
 
-  TextZoomCoordinator* textZoomCoordinator = self.textZoomCoordinator;
-  if (textZoomCoordinator) {
-    [textZoomCoordinator stop];
-  }
-
+  [self.textZoomCoordinator stop];
   self.textZoomCoordinator = [self newTextZoomCoordinator];
   [self.textZoomCoordinator start];
 }
@@ -2798,7 +2789,7 @@ enum class ToolbarKind {
       fontSizeTabHelper->SetTextZoomUIActive(false);
     }
   }
-  [self.textZoomCoordinator stop];
+  [self hideTextZoomUI];
 }
 
 - (void)showTextZoomUIIfActive {
@@ -2819,6 +2810,7 @@ enum class ToolbarKind {
 
 - (void)hideTextZoomUI {
   [self.textZoomCoordinator stop];
+  self.textZoomCoordinator = nil;
 }
 
 - (TextZoomCoordinator*)newTextZoomCoordinator {
@@ -3110,6 +3102,7 @@ enum class ToolbarKind {
 
 - (void)hidePriceNotifications {
   [self.priceNotificationsViewCoordiantor stop];
+  self.priceNotificationsViewCoordiantor = nil;
 }
 
 - (void)presentPriceNotificationsWhileBrowsingIPH {
