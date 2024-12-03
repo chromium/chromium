@@ -182,7 +182,7 @@ std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
   response.reserve(1 + x962.size() + 1 + key_handle.size() +
                    attestation_cert->size() + sig.size());
   response.push_back(kU2fRegistrationResponseHeader);
-  Append(&response, base::as_bytes(base::make_span(x962)));
+  Append(&response, base::as_byte_span(x962));
   response.push_back(key_handle.size());
   Append(&response, key_handle);
   Append(&response, *attestation_cert);

@@ -394,7 +394,7 @@ void GamepadDeviceMac::UpdateGamepadForValue(IOHIDValueRef value,
     // Handle Dualshock4 input reports that do not specify HID gamepad usages
     // in the report descriptor.
     uint32_t report_id = IOHIDElementGetReportID(element);
-    auto report = base::make_span(IOHIDValueGetBytePtr(value), value_length);
+    auto report = base::span(IOHIDValueGetBytePtr(value), value_length);
     if (dualshock4_->ProcessInputReport(report_id, report, gamepad))
       return;
   }

@@ -390,7 +390,7 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
   cbor::Value& response = maybe_response.value();
   const std::string& cred_id_str = ui_request_->entity->credential_id();
   auto parse_result = ParseGetAssertionResponse(
-      std::move(response), base::as_bytes(base::make_span(cred_id_str)));
+      std::move(response), base::as_byte_span(cred_id_str));
   if (absl::holds_alternative<ErrorResponse>(parse_result)) {
     auto& error_details = absl::get<ErrorResponse>(parse_result);
     ProcessErrorResponse(error_details);

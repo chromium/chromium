@@ -47,10 +47,8 @@ TEST(EndorsementTest,
   auto endorser = ConvertPemToRaw(GetContentsFromFile("endorser.pem"));
   ASSERT_TRUE(endorser.has_value());
   std::string log_entry_str = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> log_entry =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)log_entry_str.data()),
-                      log_entry_str.size());
-  EXPECT_TRUE(VerifyEndorserPublicKey(log_entry, *endorser));
+  EXPECT_TRUE(
+      VerifyEndorserPublicKey(base::as_byte_span(log_entry_str), *endorser));
 }
 
 TEST(EndorsementTest,
@@ -58,110 +56,77 @@ TEST(EndorsementTest,
   auto endorser = ConvertPemToRaw(GetContentsFromFile("endorser.pem"));
   ASSERT_TRUE(endorser.has_value());
   std::string log_entry_str = GetContentsFromFile("logentry_backslash.json");
-  base::span<const uint8_t> log_entry =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)log_entry_str.data()),
-                      log_entry_str.size());
-  EXPECT_FALSE(VerifyEndorserPublicKey(log_entry, *endorser));
+  EXPECT_FALSE(
+      VerifyEndorserPublicKey(base::as_byte_span(log_entry_str), *endorser));
 }
 
 TEST(EndorsementTest, VerifyEndorserPublicKey_WithInvalidKey_ReturnsFalse) {
   auto endorser = ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
   ASSERT_TRUE(endorser.has_value());
   std::string log_entry_str = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> log_entry =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)log_entry_str.data()),
-                      log_entry_str.size());
-  EXPECT_FALSE(VerifyEndorserPublicKey(log_entry, *endorser));
+  EXPECT_FALSE(
+      VerifyEndorserPublicKey(base::as_byte_span(log_entry_str), *endorser));
 }
 
 TEST(EndorsementTest,
      VerifyBindaryEndorsement_WithValidEndorsement_ReturnsTrue) {
   std::string endorsement_str = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> endorsement =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)endorsement_str.data()),
-                      endorsement_str.size());
   std::string signature_str = GetContentsFromFile("endorsement.json.sig");
-  base::span<const uint8_t> signature =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)signature_str.data()),
-                      signature_str.size());
   std::string log_entry_str = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> log_entry =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)log_entry_str.data()),
-                      log_entry_str.size());
   auto endorser_pub_key =
       ConvertPemToRaw(GetContentsFromFile("endorser_public_key.pem"));
   ASSERT_TRUE(endorser_pub_key.has_value());
   auto rekor_pub_key =
       ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
   ASSERT_TRUE(rekor_pub_key.has_value());
-  EXPECT_TRUE(VerifyBinaryEndorsement(base::Time::Now(), endorsement, signature,
-                                      log_entry, *endorser_pub_key,
-                                      *rekor_pub_key));
+  EXPECT_TRUE(VerifyBinaryEndorsement(
+      base::Time::Now(), base::as_byte_span(endorsement_str),
+      base::as_byte_span(signature_str), base::as_byte_span(log_entry_str),
+      *endorser_pub_key, *rekor_pub_key));
 }
 
 TEST(EndorsementTest,
      VerifyBindaryEndorsement_WithInvalidEndorserPublicKey_ReturnsFalse) {
   std::string endorsement_str = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> endorsement =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)endorsement_str.data()),
-                      endorsement_str.size());
   std::string signature_str = GetContentsFromFile("endorsement.json.sig");
-  base::span<const uint8_t> signature =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)signature_str.data()),
-                      signature_str.size());
   std::string log_entry_str = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> log_entry =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)log_entry_str.data()),
-                      log_entry_str.size());
   auto rekor_pub_key =
       ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
   ASSERT_TRUE(rekor_pub_key.has_value());
-  EXPECT_FALSE(VerifyBinaryEndorsement(base::Time::Now(), endorsement,
-                                       signature, log_entry, *rekor_pub_key,
-                                       *rekor_pub_key));
+  EXPECT_FALSE(VerifyBinaryEndorsement(
+      base::Time::Now(), base::as_byte_span(endorsement_str),
+      base::as_byte_span(signature_str), base::as_byte_span(log_entry_str),
+      *rekor_pub_key, *rekor_pub_key));
 }
 
 TEST(EndorsementTest,
      VerifyBindaryEndorsement_WithInvalidRekorPublicKey_ReturnsFalse) {
   std::string endorsement_str = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> endorsement =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)endorsement_str.data()),
-                      endorsement_str.size());
   std::string signature_str = GetContentsFromFile("endorsement.json.sig");
-  base::span<const uint8_t> signature =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)signature_str.data()),
-                      signature_str.size());
   std::string log_entry_str = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> log_entry =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)log_entry_str.data()),
-                      log_entry_str.size());
   auto endorser_pub_key =
       ConvertPemToRaw(GetContentsFromFile("endorser_public_key.pem"));
   ASSERT_TRUE(endorser_pub_key.has_value());
-  EXPECT_FALSE(VerifyBinaryEndorsement(base::Time::Now(), endorsement,
-                                       signature, log_entry, *endorser_pub_key,
-                                       *endorser_pub_key));
+  EXPECT_FALSE(VerifyBinaryEndorsement(
+      base::Time::Now(), base::as_byte_span(endorsement_str),
+      base::as_byte_span(signature_str), base::as_byte_span(log_entry_str),
+      *endorser_pub_key, *endorser_pub_key));
 }
 
 TEST(EndorsementTest,
      VerifyBindaryEndorsement_WithRekorKeyAndNoLogEntry_ReturnsFalse) {
   std::string endorsement_str = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> endorsement =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)endorsement_str.data()),
-                      endorsement_str.size());
   std::string signature_str = GetContentsFromFile("endorsement.json.sig");
-  base::span<const uint8_t> signature =
-      base::make_span(static_cast<uint8_t*>((uint8_t*)signature_str.data()),
-                      signature_str.size());
   auto endorser_pub_key =
       ConvertPemToRaw(GetContentsFromFile("endorser_public_key.pem"));
   ASSERT_TRUE(endorser_pub_key.has_value());
   auto rekor_pub_key =
       ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
   ASSERT_TRUE(rekor_pub_key.has_value());
-  EXPECT_FALSE(VerifyBinaryEndorsement(base::Time::Now(), endorsement,
-                                       signature, {}, *endorser_pub_key,
-                                       *rekor_pub_key));
+  EXPECT_FALSE(VerifyBinaryEndorsement(base::Time::Now(),
+                                       base::as_byte_span(endorsement_str),
+                                       base::as_byte_span(signature_str), {},
+                                       *endorser_pub_key, *rekor_pub_key));
 }
 
 }  // namespace device::enclave

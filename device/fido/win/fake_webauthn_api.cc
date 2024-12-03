@@ -236,7 +236,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
     PWEBAUTHN_CREDENTIAL_EX exclude_credential =
         options->pExcludeCredentialList->ppCredentials[i];
     std::vector<uint8_t> credential_id = fido_parsing_utils::Materialize(
-        base::make_span(exclude_credential->pbId, exclude_credential->cbId));
+        base::span(exclude_credential->pbId, exclude_credential->cbId));
     if (registrations_.contains(credential_id)) {
       return NTE_EXISTS;
     }
@@ -249,7 +249,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
   std::array<uint8_t, crypto::kSHA256Length> rp_id_hash =
       fido_parsing_utils::CreateSHA256Hash(rp_id);
   std::vector<uint8_t> user_id =
-      fido_parsing_utils::Materialize(base::make_span(user->pbId, user->cbId));
+      fido_parsing_utils::Materialize(base::span(user->pbId, user->cbId));
 
   RegistrationData registration(std::move(private_key), std::move(rp_id_hash),
                                 /*counter=*/1);

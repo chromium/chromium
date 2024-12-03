@@ -271,10 +271,8 @@ bool VerifyRekorBody(const Body& body,
   if (!public_key.has_value()) {
     return false;
   }
-  return VerifySignatureRaw(
-             base::make_span(static_cast<uint8_t*>((uint8_t*)signature.data()),
-                             signature.size()),
-             contents_bytes, public_key.value())
+  return VerifySignatureRaw(base::as_byte_span(signature), contents_bytes,
+                            public_key.value())
       .has_value();
 }
 

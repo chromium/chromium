@@ -77,12 +77,13 @@ TEST_P(PINProtocolTest, EncryptDecrypt) {
   std::vector<uint8_t> shared_key;
   pin_protocol().Encapsulate(PeerKeyAgreement(), &shared_key);
 
-  const std::vector<uint8_t> ciphertext = pin_protocol().Encrypt(
-      shared_key, base::as_bytes(base::make_span(kTestPlaintext)));
+  const std::vector<uint8_t> ciphertext =
+      pin_protocol().Encrypt(shared_key, base::as_byte_span(kTestPlaintext));
   ASSERT_FALSE(ciphertext.empty());
 
-  EXPECT_THAT(pin_protocol().Decrypt(shared_key, ciphertext),
-              ElementsAreArray(base::make_span(kTestPlaintext)));
+  EXPECT_THAT(
+      pin_protocol().Decrypt(shared_key, ciphertext),
+      ElementsAreArray(base::span_with_nul_from_cstring(kTestPlaintext)));
 }
 
 TEST_P(PINProtocolTest, AuthenticateVerify) {
@@ -90,12 +91,12 @@ TEST_P(PINProtocolTest, AuthenticateVerify) {
   std::vector<uint8_t> shared_key;
   pin_protocol().Encapsulate(PeerKeyAgreement(), &shared_key);
 
-  const std::vector<uint8_t> mac = pin_protocol().Authenticate(
-      shared_key, base::as_bytes(base::make_span(kTestMessage)));
+  const std::vector<uint8_t> mac =
+      pin_protocol().Authenticate(shared_key, base::as_byte_span(kTestMessage));
   ASSERT_FALSE(mac.empty());
 
-  EXPECT_TRUE(pin_protocol().Verify(
-      shared_key, base::as_bytes(base::make_span(kTestMessage)), mac));
+  EXPECT_TRUE(
+      pin_protocol().Verify(shared_key, base::as_byte_span(kTestMessage), mac));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

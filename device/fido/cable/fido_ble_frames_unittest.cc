@@ -26,8 +26,8 @@ TEST(FidoBleFramesTest, InitializationFragment) {
   const std::vector<uint8_t> data = GetSomeData(25);
   constexpr uint16_t kDataLength = 21123;
 
-  FidoBleFrameInitializationFragment fragment(
-      FidoBleDeviceCommand::kMsg, kDataLength, base::make_span(data));
+  FidoBleFrameInitializationFragment fragment(FidoBleDeviceCommand::kMsg,
+                                              kDataLength, base::span(data));
   std::vector<uint8_t> buffer;
   const size_t binary_size = fragment.Serialize(&buffer);
   EXPECT_EQ(buffer.size(), binary_size);
@@ -47,7 +47,7 @@ TEST(FidoBleFramesTest, ContinuationFragment) {
   const auto data = GetSomeData(25);
   constexpr uint8_t kSequence = 61;
 
-  FidoBleFrameContinuationFragment fragment(base::make_span(data), kSequence);
+  FidoBleFrameContinuationFragment fragment(base::span(data), kSequence);
 
   std::vector<uint8_t> buffer;
   const size_t binary_size = fragment.Serialize(&buffer);

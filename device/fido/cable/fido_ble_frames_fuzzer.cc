@@ -16,7 +16,7 @@
 #include "device/fido/fido_constants.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* raw_data, size_t size) {
-  auto data_span = base::make_span(raw_data, size);
+  auto data_span = base::span(raw_data, size);
   std::vector<uint8_t> data(data_span.begin(), data_span.end());
 
   {

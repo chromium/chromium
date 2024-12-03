@@ -263,7 +263,7 @@ void PopulateServiceData(
     if (!bytes)
       continue;
 
-    auto bytes_span = base::make_span(*bytes);
+    auto bytes_span = base::span(*bytes);
     if (bytes_span.size() < num_bytes_uuid) {
       BLUETOOTH_LOG(ERROR) << "Buffer Length is too small: "
                            << bytes_span.size() << " vs. " << num_bytes_uuid;

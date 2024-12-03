@@ -357,8 +357,8 @@ static std::optional<CredentialMetadata> UnsealV2OrLaterCredentialMetadata(
     return std::nullopt;
   }
 
-  std::optional<cbor::Value> maybe_array = cbor::Reader::Read(base::make_span(
-      reinterpret_cast<const uint8_t*>(plaintext->data()), plaintext->size()));
+  std::optional<cbor::Value> maybe_array =
+      cbor::Reader::Read(base::span(*plaintext));
   if (!maybe_array || !maybe_array->is_array()) {
     return std::nullopt;
   }
