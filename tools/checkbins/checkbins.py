@@ -47,6 +47,7 @@ CETCOMPAT_NOT_REQUIRED = [
     'chrome_proxy.exe',
     'chrome_pwa_launcher.exe',
     'dxcompiler.dll',  # TODO(crbug.com/40927190)
+    'elevated_tracing_service.exe',
     'elevation_service.exe',
     'nacl64.exe',
     'notification_helper.exe',

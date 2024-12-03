@@ -320,6 +320,36 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
   list->AddWorkItem(install_service_work_item);
 }
 
+// Adds work items to register the Tracing Service with Windows if it is
+// already installed.
+void AddTracingServiceWorkItems(const base::FilePath& tracing_service_path,
+                                WorkItemList* list) {
+  DCHECK(::IsUserAnAdmin());
+
+  if (tracing_service_path.empty()) {
+    LOG(DFATAL) << "The path to tracing_service.exe is invalid.";
+    return;
+  }
+
+  // TODO(grt): Change this condition so that the service is unconditionally
+  // installed for dev channel and otherwise updated if it is already installed.
+  const CLSID clsid = install_static::GetTracingServiceClsid();
+  if (!InstallServiceWorkItem::IsComServiceInstalled(clsid)) {
+    return;
+  }
+
+  WorkItem* install_service_work_item = new InstallServiceWorkItem(
+      install_static::GetTracingServiceName(),
+      install_static::GetTracingServiceDisplayName(),
+      GetLocalizedString(IDS_TRACING_SERVICE_DESCRIPTION_BASE),
+      SERVICE_DEMAND_START, base::CommandLine(tracing_service_path),
+      base::CommandLine(base::CommandLine::NO_PROGRAM),
+      install_static::GetClientStateKeyPath(), {clsid},
+      {install_static::GetTracingServiceIid()});
+  install_service_work_item->set_best_effort(true);
+  list->AddWorkItem(install_service_work_item);
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Adds work items to add the "store-dmtoken" command to Chrome's version key.
 // This method is a no-op if this is anything other than system-level Chrome.
@@ -1202,11 +1232,16 @@ void AddFinalizeUpdateWorkItems(const base::Version& new_version,
   // overwriting any of the following post-install tasks.
   AddDowngradeCleanupItems(new_version, list);
 
+  const base::FilePath target_path = installer_state.target_path();
   AddOldWerHelperRegistrationCleanupItems(installer_state.root_key(),
-                                          installer_state.target_path(), list);
-  AddWerHelperRegistration(
-      installer_state.root_key(),
-      GetWerHelperPath(installer_state.target_path(), new_version), list);
+                                          target_path, list);
+  AddWerHelperRegistration(installer_state.root_key(),
+                           GetWerHelperPath(target_path, new_version), list);
+
+  if (installer_state.system_install()) {
+    AddTracingServiceWorkItems(GetTracingServicePath(target_path, new_version),
+                               list);
+  }
 
   const std::wstring client_state_key = install_static::GetClientStateKeyPath();
 
