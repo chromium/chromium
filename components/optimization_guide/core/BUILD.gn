@@ -655,44 +655,11 @@ action("on_device_model_execution_proto_generator") {
   script =
       "//components/optimization_guide/tools/gen_on_device_proto_descriptors.py"
 
-  inputs = [
-    "$root_gen_dir/components/optimization_guide/proto/compose.descriptor",
-    "$root_gen_dir/components/optimization_guide/proto/string_value.descriptor",
-    "$root_gen_dir/components/optimization_guide/proto/tab_organization.descriptor",
-    "$root_gen_dir/components/optimization_guide/proto/history_answer.descriptor",
-    "$root_gen_dir/components/optimization_guide/proto/prompt_api.descriptor",
-    "$root_gen_dir/components/optimization_guide/proto/summarize.descriptor",
-    "$root_gen_dir/components/optimization_guide/proto/history_query_intent.descriptor",
-    "$root_gen_dir/components/optimization_guide/proto/scam_detection.descriptor",
-  ]
+  inputs = [ "$root_gen_dir/components/optimization_guide/proto/optimization_guide_proto.descriptor" ]
   outputs = [ output_proto_descriptors_cc_file ]
 
-  args = [
-    "--output_cc=" +
-        rebase_path(output_proto_descriptors_cc_file, root_build_dir),
-    "--include=\"components/optimization_guide/proto/features/compose.pb.h\"",
-    "--include=\"components/optimization_guide/proto/string_value.pb.h\"",
-    "--include=\"components/optimization_guide/proto/features/tab_organization.pb.h\"",
-    "--include=\"components/optimization_guide/proto/features/history_answer.pb.h\"",
-    "--include=\"components/optimization_guide/proto/features/prompt_api.pb.h\"",
-    "--include=\"components/optimization_guide/proto/features/summarize.pb.h\"",
-    "--include=\"components/optimization_guide/proto/features/history_query_intent.pb.h\"",
-    "--include=\"components/optimization_guide/proto/features/scam_detection.pb.h\"",
-    "--request=.optimization_guide.proto.ComposeRequest",
-    "--request=.optimization_guide.proto.TabOrganizationRequest",
-    "--request=.optimization_guide.proto.HistoryAnswerRequest",
-    "--request=.optimization_guide.proto.StringValue",
-    "--request=.optimization_guide.proto.SummarizeRequest",
-    "--request=.optimization_guide.proto.PromptApiRequest",
-    "--request=.optimization_guide.proto.HistoryQueryIntentRequest",
-    "--request=.optimization_guide.proto.ScamDetectionRequest",
-    "--response=.optimization_guide.proto.ComposeResponse",
-    "--response=.optimization_guide.proto.TabOrganizationResponse",
-    "--response=.optimization_guide.proto.HistoryAnswerResponse",
-    "--response=.optimization_guide.proto.HistoryQueryIntentResponse",
-    "--response=.optimization_guide.proto.ScamDetectionResponse",
-    "--response=.optimization_guide.proto.StringValue",
-  ]
+  args = [ "--output_cc=" +
+           rebase_path(output_proto_descriptors_cc_file, root_build_dir) ]
   foreach(file, inputs) {
     args += [
       "--input_file",
@@ -701,14 +668,7 @@ action("on_device_model_execution_proto_generator") {
   }
 
   deps = [
-    "//components/optimization_guide/proto:compose_proto_descriptor",
-    "//components/optimization_guide/proto:history_answer_proto_descriptor",
-    "//components/optimization_guide/proto:history_query_intent_proto_descriptor",
-    "//components/optimization_guide/proto:prompt_api_proto_descriptor",
-    "//components/optimization_guide/proto:scam_detection_proto_descriptor",
-    "//components/optimization_guide/proto:string_value_proto_descriptor",
-    "//components/optimization_guide/proto:summarize_descriptor",
-    "//components/optimization_guide/proto:tab_organization_proto_descriptor",
+    "//components/optimization_guide/proto:optimization_guide_proto_descriptors",
     "//third_party/protobuf:py_proto_runtime",
   ]
 }

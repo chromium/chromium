@@ -6,10 +6,17 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/string_value.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
 option java_outer_classname = "PromptApi";
+
+message PromptApiLoggingData {
+  PromptApiRequest request = 1;
+  StringValue response = 2;
+}
 
 enum PromptApiRole {
   PROMPT_API_ROLE_UNSPECIFIED = 0;
