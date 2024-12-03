@@ -703,7 +703,7 @@ TEST_F(HostResolverManagerTest, JobsClearedOnCompletion) {
   EXPECT_EQ(0u, resolver_->num_jobs_for_testing());
 }
 
-TEST_F(HostResolverManagerTest, JobsClearedOnCompletionMultipleRequests) {
+TEST_F(HostResolverManagerTest, JobsClearedOnCompletion_MultipleRequests) {
   proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42");
   proc_->SignalMultiple(1u);
 
@@ -720,7 +720,7 @@ TEST_F(HostResolverManagerTest, JobsClearedOnCompletionMultipleRequests) {
   EXPECT_EQ(0u, resolver_->num_jobs_for_testing());
 }
 
-TEST_F(HostResolverManagerTest, JobsClearedOnCompletionFailure) {
+TEST_F(HostResolverManagerTest, JobsClearedOnCompletion_Failure) {
   proc_->AddRuleForAllFamilies(std::string(),
                                "0.0.0.1");  // Default to failures.
   proc_->SignalMultiple(1u);
@@ -734,7 +734,7 @@ TEST_F(HostResolverManagerTest, JobsClearedOnCompletionFailure) {
   EXPECT_EQ(0u, resolver_->num_jobs_for_testing());
 }
 
-TEST_F(HostResolverManagerTest, JobsClearedOnCompletionAbort) {
+TEST_F(HostResolverManagerTest, JobsClearedOnCompletion_Abort) {
   proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42");
 
   ResolveHostResponseHelper response(resolver_->CreateRequest(
@@ -1463,7 +1463,7 @@ TEST_F(HostResolverManagerTest, StartWithinEvictionCallback) {
 
 // Test where we start a new request within an eviction callback that itself
 // evicts the first evictor.
-TEST_F(HostResolverManagerTest, StartWithinEvictionCallbackDoubleEviction) {
+TEST_F(HostResolverManagerTest, StartWithinEvictionCallback_DoubleEviction) {
   CreateSerialResolver();
   resolver_->SetMaxQueuedJobsForTesting(1);
 
@@ -1504,7 +1504,7 @@ TEST_F(HostResolverManagerTest, StartWithinEvictionCallbackDoubleEviction) {
   EXPECT_THAT(new_response->result_error(), IsOk());
 }
 
-TEST_F(HostResolverManagerTest, StartWithinEvictionCallbackSameRequest) {
+TEST_F(HostResolverManagerTest, StartWithinEvictionCallback_SameRequest) {
   CreateSerialResolver();
   resolver_->SetMaxQueuedJobsForTesting(2);
 
@@ -2109,7 +2109,7 @@ TEST_F(HostResolverManagerTest, QueueOverflow) {
 }
 
 // Tests that jobs can self-evict by setting the max queue to 0.
-TEST_F(HostResolverManagerTest, QueueOverflowSelfEvict) {
+TEST_F(HostResolverManagerTest, QueueOverflow_SelfEvict) {
   CreateSerialResolver();
   resolver_->SetMaxQueuedJobsForTesting(0);
 
@@ -2201,7 +2201,7 @@ TEST_F(HostResolverManagerTest, AddressFamilyWithRawIPs) {
           testing::ElementsAre(CreateExpected("::1", 80))))));
 }
 
-TEST_F(HostResolverManagerTest, LocalOnlyFromCache) {
+TEST_F(HostResolverManagerTest, LocalOnly_FromCache) {
   proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42");
   proc_->SignalMultiple(1u);  // Need only one.
 
@@ -2242,7 +2242,7 @@ TEST_F(HostResolverManagerTest, LocalOnlyFromCache) {
   EXPECT_FALSE(cache_hit_request.request()->GetStaleInfo().value().is_stale());
 }
 
-TEST_F(HostResolverManagerTest, LocalOnlyStaleEntry) {
+TEST_F(HostResolverManagerTest, LocalOnly_StaleEntry) {
   proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42");
   proc_->SignalMultiple(1u);  // Need only one.
 
@@ -2332,15 +2332,15 @@ void HostResolverManagerTest::LocalOnlyFromIpTest(bool is_async) {
   }
 }
 
-TEST_F(HostResolverManagerTest, LocalOnlyFromIpAsync) {
+TEST_F(HostResolverManagerTest, LocalOnly_FromIpAsync) {
   LocalOnlyFromIpTest(true);
 }
 
-TEST_F(HostResolverManagerTest, LocalOnlyFromIpSync) {
+TEST_F(HostResolverManagerTest, LocalOnly_FromIpSync) {
   LocalOnlyFromIpTest(false);
 }
 
-TEST_F(HostResolverManagerTest, LocalOnlyInvalidName) {
+TEST_F(HostResolverManagerTest, LocalOnly_InvalidName) {
   proc_->AddRuleForAllFamilies("foo,bar.com", "192.168.1.42");
 
   HostResolver::ResolveHostParameters source_none_parameters;
@@ -2360,7 +2360,7 @@ TEST_F(HostResolverManagerTest, LocalOnlyInvalidName) {
   EXPECT_FALSE(response.request()->GetStaleInfo());
 }
 
-TEST_F(HostResolverManagerTest, LocalOnlyInvalidLocalhost) {
+TEST_F(HostResolverManagerTest, LocalOnly_InvalidLocalhost) {
   HostResolver::ResolveHostParameters source_none_parameters;
   source_none_parameters.source = HostResolverSource::LOCAL_ONLY;
 
@@ -2423,7 +2423,7 @@ TEST_F(HostResolverManagerTest, StaleAllowed) {
   EXPECT_TRUE(stale_request.request()->GetStaleInfo().value().is_stale());
 }
 
-TEST_F(HostResolverManagerTest, StaleAllowedNonLocal) {
+TEST_F(HostResolverManagerTest, StaleAllowed_NonLocal) {
   proc_->AddRuleForAllFamilies("just.testing", "192.168.2.42");
   proc_->SignalMultiple(1u);  // Need only one.
 
@@ -2472,11 +2472,11 @@ void HostResolverManagerTest::StaleAllowedFromIpTest(bool is_async) {
   EXPECT_FALSE(response.request()->GetStaleInfo());
 }
 
-TEST_F(HostResolverManagerTest, StaleAllowedFromIpAsync) {
+TEST_F(HostResolverManagerTest, StaleAllowed_FromIpAsync) {
   StaleAllowedFromIpTest(true);
 }
 
-TEST_F(HostResolverManagerTest, StaleAllowedFromIpSync) {
+TEST_F(HostResolverManagerTest, StaleAllowed_FromIpSync) {
   StaleAllowedFromIpTest(false);
 }
 
@@ -4968,7 +4968,7 @@ TEST_F(HostResolverManagerDnsTest, OnDnsTaskFailureAbortedJob) {
 }
 
 // Fallback to proc allowed with ANY source.
-TEST_F(HostResolverManagerDnsTest, FallbackBySourceAny) {
+TEST_F(HostResolverManagerDnsTest, FallbackBySource_Any) {
   // Ensure fallback is otherwise allowed by resolver settings.
   set_allow_fallback_to_systemtask(true);
 
@@ -4995,7 +4995,7 @@ TEST_F(HostResolverManagerDnsTest, FallbackBySourceAny) {
 }
 
 // Fallback to proc not allowed with DNS source.
-TEST_F(HostResolverManagerDnsTest, FallbackBySourceDns) {
+TEST_F(HostResolverManagerDnsTest, FallbackBySource_Dns) {
   // Ensure fallback is otherwise allowed by resolver settings.
   set_allow_fallback_to_systemtask(true);
 
@@ -5021,7 +5021,7 @@ TEST_F(HostResolverManagerDnsTest, FallbackBySourceDns) {
 }
 
 // Fallback to proc on DnsClient change allowed with ANY source.
-TEST_F(HostResolverManagerDnsTest, FallbackOnAbortBySourceAny) {
+TEST_F(HostResolverManagerDnsTest, FallbackOnAbortBySource_Any) {
   // Ensure fallback is otherwise allowed by resolver settings.
   set_allow_fallback_to_systemtask(true);
 
@@ -5055,7 +5055,7 @@ TEST_F(HostResolverManagerDnsTest, FallbackOnAbortBySourceAny) {
 }
 
 // Fallback to system on DnsClient change not allowed with DNS source.
-TEST_F(HostResolverManagerDnsTest, FallbackOnAbortBySourceDns) {
+TEST_F(HostResolverManagerDnsTest, FallbackOnAbortBySource_Dns) {
   // Ensure fallback is otherwise allowed by resolver settings.
   set_allow_fallback_to_systemtask(true);
 
@@ -5586,15 +5586,15 @@ void HostResolverManagerDnsTest::Ipv6UnreachableInvalidConfigTest(
               CreateExpected("::5", 500), CreateExpected("1.2.3.4", 500))))));
 }
 // Without a valid DnsConfig, assume IPv6 is needed and ignore prober.
-TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableInvalidConfigAsync) {
+TEST_F(HostResolverManagerDnsTest, Ipv6Unreachable_InvalidConfigAsync) {
   Ipv6UnreachableInvalidConfigTest(true);
 }
 
-TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableInvalidConfigSync) {
+TEST_F(HostResolverManagerDnsTest, Ipv6Unreachable_InvalidConfigSync) {
   Ipv6UnreachableInvalidConfigTest(false);
 }
 
-TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableUseLocalIpv6) {
+TEST_F(HostResolverManagerDnsTest, Ipv6Unreachable_UseLocalIpv6) {
   CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
                                     false /* ipv6_reachable */,
                                     true /* check_ipv6_on_wifi */);
@@ -5634,7 +5634,7 @@ TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableUseLocalIpv6) {
 // Confirm that resolving "localhost" is unrestricted even if there are no
 // global IPv6 address. See SystemHostResolverCall for rationale.
 // Test both the DnsClient and system host resolver paths.
-TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableLocalhost) {
+TEST_F(HostResolverManagerDnsTest, Ipv6Unreachable_Localhost) {
   CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
                                     false /* ipv6_reachable */,
                                     true /* check_ipv6_on_wifi */);
@@ -6103,7 +6103,7 @@ TEST_F(HostResolverManagerDnsTest, AAAACompletesFirst) {
   EXPECT_THAT(responses[2]->result_error(), IsError(ERR_DNS_TIMED_OUT));
 }
 
-TEST_F(HostResolverManagerDnsTest, AAAACompletesFirstAutomaticMode) {
+TEST_F(HostResolverManagerDnsTest, AAAACompletesFirst_AutomaticMode) {
   MockDnsClientRuleList rules;
   rules.emplace_back(
       "secure_slow_nx_insecure_4slow_ok", dns_protocol::kTypeA,
@@ -6157,7 +6157,7 @@ TEST_F(HostResolverManagerDnsTest, AAAACompletesFirstAutomaticMode) {
   EXPECT_TRUE(!!cache_result);
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomatic) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic) {
   proc_->AddRuleForAllFamilies("nx_succeed", "192.168.1.100");
   set_allow_fallback_to_systemtask(true);
 
@@ -6226,7 +6226,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomatic) {
                   testing::ElementsAre(CreateExpected("192.168.1.100", 80))))));
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticSecureCache) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_SecureCache) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
   overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
@@ -6259,7 +6259,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticSecureCache) {
       response_secure_cached.request()->GetStaleInfo().value().is_stale());
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticInsecureCache) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_InsecureCache) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
   overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
@@ -6291,7 +6291,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticInsecureCache) {
       response_insecure_cached.request()->GetStaleInfo().value().is_stale());
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticDowngrade) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Downgrade) {
   ChangeDnsConfig(CreateValidDnsConfig());
   // There is no DoH server available.
   DnsConfigOverrides overrides;
@@ -6360,7 +6360,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticDowngrade) {
   EXPECT_TRUE(!!cache_result);
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticUnavailable) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Unavailable) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
   overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
@@ -6399,7 +6399,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticUnavailable) {
   EXPECT_TRUE(!!cache_result);
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticUnavailableFail) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Unavailable_Fail) {
   set_allow_fallback_to_systemtask(false);
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
@@ -6479,7 +6479,7 @@ TEST_F(HostResolverManagerDnsTest,
   resolver_->DeregisterResolveContext(&resolve_context2);
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticStale) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_Stale) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
   overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
@@ -6586,7 +6586,7 @@ TEST_F(HostResolverManagerDnsTest,
                   testing::ElementsAre(kExpectedInsecureIP)))));
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticDotActive) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic_DotActive) {
   proc_->AddRuleForAllFamilies("insecure_automatic", "192.168.1.100");
   DnsConfig config = CreateValidDnsConfig();
   config.dns_over_tls_active = true;
@@ -6662,7 +6662,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeAutomaticDotActive) {
                   testing::ElementsAre(kExpectedInsecureIP)))));
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeSecure) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure) {
   proc_->AddRuleForAllFamilies("nx_succeed", "192.168.1.100");
   set_allow_fallback_to_systemtask(true);
 
@@ -6708,7 +6708,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeSecure) {
       response_system.request()->GetResolveErrorInfo().is_secure_network_error);
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeSecureInsecureAsyncDisabled) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_InsecureAsyncDisabled) {
   proc_->AddRuleForAllFamilies("nx_succeed", "192.168.1.100");
   set_allow_fallback_to_systemtask(true);
   resolver_->SetInsecureDnsClientEnabled(
@@ -6734,7 +6734,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeSecureInsecureAsyncDisabled) {
   EXPECT_TRUE(!!cache_result);
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeSecureLocalCacheMiss) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_Local_CacheMiss) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
   overrides.secure_dns_mode = SecureDnsMode::kSecure;
@@ -6767,7 +6767,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsModeSecureLocalCacheMiss) {
   EXPECT_FALSE(cache_miss_request.request()->GetStaleInfo());
 }
 
-TEST_F(HostResolverManagerDnsTest, SecureDnsModeSecureLocalCacheHit) {
+TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_Local_CacheHit) {
   ChangeDnsConfig(CreateValidDnsConfig());
   DnsConfigOverrides overrides;
   overrides.secure_dns_mode = SecureDnsMode::kSecure;
@@ -6897,7 +6897,7 @@ TEST_F(HostResolverManagerDnsTest, SlowResolve) {
 // Test for a resolve with a secure transaction that takes longer than usual to
 // complete. In automatic mode, because fallback to insecure is available, the
 // secure transaction is expected to quickly timeout and fallback to insecure.
-TEST_F(HostResolverManagerDnsTest, SlowSecureResolveAutomaticMode) {
+TEST_F(HostResolverManagerDnsTest, SlowSecureResolve_AutomaticMode) {
   set_allow_fallback_to_systemtask(false);
 
   MockDnsClientRuleList rules = CreateDefaultDnsRules();
@@ -6951,7 +6951,7 @@ TEST_F(HostResolverManagerDnsTest, SlowSecureResolveAutomaticMode) {
 // Test for a resolve with a secure transaction that takes longer than usual to
 // complete. In secure mode, because no fallback is available, this is expected
 // to wait longer before timeout and complete successfully.
-TEST_F(HostResolverManagerDnsTest, SlowSecureResolveSecureMode) {
+TEST_F(HostResolverManagerDnsTest, SlowSecureResolve_SecureMode) {
   MockDnsClientRuleList rules = CreateDefaultDnsRules();
   AddSecureDnsRule(&rules, "slow", dns_protocol::kTypeA,
                    MockDnsClientRule::ResultType::kSlow, false /* delay */);
@@ -7658,7 +7658,7 @@ TEST_F(HostResolverManagerDnsTest, CachedError) {
   EXPECT_FALSE(cache_hit_response.request()->GetStaleInfo().value().is_stale());
 }
 
-TEST_F(HostResolverManagerDnsTest, CachedErrorAutomaticMode) {
+TEST_F(HostResolverManagerDnsTest, CachedError_AutomaticMode) {
   CreateResolver();
   set_allow_fallback_to_systemtask(false);
   ChangeDnsConfig(CreateValidDnsConfig());
@@ -7699,7 +7699,7 @@ TEST_F(HostResolverManagerDnsTest, CachedErrorAutomaticMode) {
   EXPECT_TRUE(!!cache_result);
 }
 
-TEST_F(HostResolverManagerDnsTest, CachedErrorSecureMode) {
+TEST_F(HostResolverManagerDnsTest, CachedError_SecureMode) {
   CreateResolver();
   set_allow_fallback_to_systemtask(false);
   ChangeDnsConfig(CreateValidDnsConfig());
@@ -7786,7 +7786,7 @@ TEST_F(HostResolverManagerDnsTest, CanonicalName) {
       testing::Pointee(testing::UnorderedElementsAre("canonical", "alias")));
 }
 
-TEST_F(HostResolverManagerDnsTest, CanonicalNamePreferV6) {
+TEST_F(HostResolverManagerDnsTest, CanonicalName_PreferV6) {
   MockDnsClientRuleList rules;
   AddDnsRule(&rules, "alias", dns_protocol::kTypeA, IPAddress::IPv4Localhost(),
              "wrong", false /* delay */);
@@ -7813,7 +7813,7 @@ TEST_F(HostResolverManagerDnsTest, CanonicalNamePreferV6) {
                   testing::UnorderedElementsAre("correct", "alias", "wrong")));
 }
 
-TEST_F(HostResolverManagerDnsTest, CanonicalNameV4Only) {
+TEST_F(HostResolverManagerDnsTest, CanonicalName_V4Only) {
   MockDnsClientRuleList rules;
   AddDnsRule(&rules, "alias", dns_protocol::kTypeA, IPAddress::IPv4Localhost(),
              "correct", false /* delay */);
@@ -9035,7 +9035,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryRejectsIpLiteral) {
 
 // Test that TXT records can be extracted from a response that also contains
 // unrecognized record types.
-TEST_F(HostResolverManagerDnsTest, TxtQueryMixedWithUnrecognizedType) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_MixedWithUnrecognizedType) {
   std::vector<std::string> text_strings = {"foo"};
 
   MockDnsClientRuleList rules;
@@ -9071,7 +9071,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryMixedWithUnrecognizedType) {
               testing::Pointee(testing::ElementsAre("foo")));
 }
 
-TEST_F(HostResolverManagerDnsTest, TxtQueryInvalidConfig) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_InvalidConfig) {
   set_allow_fallback_to_systemtask(false);
   // Set empty DnsConfig.
   InvalidateDnsConfig();
@@ -9085,7 +9085,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryInvalidConfig) {
   EXPECT_THAT(response.result_error(), IsError(ERR_DNS_CACHE_MISS));
 }
 
-TEST_F(HostResolverManagerDnsTest, TxtQueryNonexistentDomain) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_NonexistentDomain) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9139,7 +9139,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryNonexistentDomain) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, TxtQueryFailure) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_Failure) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9176,7 +9176,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryFailure) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-TEST_F(HostResolverManagerDnsTest, TxtQueryTimeout) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_Timeout) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9213,7 +9213,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryTimeout) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-TEST_F(HostResolverManagerDnsTest, TxtQueryEmpty) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_Empty) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9267,7 +9267,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryEmpty) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, TxtQueryMalformed) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_Malformed) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9304,7 +9304,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryMalformed) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-TEST_F(HostResolverManagerDnsTest, TxtQueryMismatchedName) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_MismatchedName) {
   std::vector<std::vector<std::string>> text_records = {{"text"}};
   MockDnsClientRuleList rules;
   rules.emplace_back("host", dns_protocol::kTypeTXT, false /* secure */,
@@ -9337,7 +9337,7 @@ TEST_F(HostResolverManagerDnsTest, TxtQueryMismatchedName) {
   EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
 }
 
-TEST_F(HostResolverManagerDnsTest, TxtQueryWrongType) {
+TEST_F(HostResolverManagerDnsTest, TxtQuery_WrongType) {
   // Respond to a TXT query with an A response.
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -9568,7 +9568,7 @@ TEST_F(HostResolverManagerDnsTest, PtrQueryHandlesReverseIpLookup) {
                   HostPortPair("foo.test", 108))));
 }
 
-TEST_F(HostResolverManagerDnsTest, PtrQueryNonexistentDomain) {
+TEST_F(HostResolverManagerDnsTest, PtrQuery_NonexistentDomain) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9602,7 +9602,7 @@ TEST_F(HostResolverManagerDnsTest, PtrQueryNonexistentDomain) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, PtrQueryFailure) {
+TEST_F(HostResolverManagerDnsTest, PtrQuery_Failure) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9636,7 +9636,7 @@ TEST_F(HostResolverManagerDnsTest, PtrQueryFailure) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, PtrQueryTimeout) {
+TEST_F(HostResolverManagerDnsTest, PtrQuery_Timeout) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9670,7 +9670,7 @@ TEST_F(HostResolverManagerDnsTest, PtrQueryTimeout) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, PtrQueryEmpty) {
+TEST_F(HostResolverManagerDnsTest, PtrQuery_Empty) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9704,7 +9704,7 @@ TEST_F(HostResolverManagerDnsTest, PtrQueryEmpty) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, PtrQueryMalformed) {
+TEST_F(HostResolverManagerDnsTest, PtrQuery_Malformed) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -9738,7 +9738,7 @@ TEST_F(HostResolverManagerDnsTest, PtrQueryMalformed) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, PtrQueryMismatchedName) {
+TEST_F(HostResolverManagerDnsTest, PtrQuery_MismatchedName) {
   std::vector<std::string> ptr_records = {{"foo.com"}};
   MockDnsClientRuleList rules;
   rules.emplace_back("host", dns_protocol::kTypePTR, false /* secure */,
@@ -9768,7 +9768,7 @@ TEST_F(HostResolverManagerDnsTest, PtrQueryMismatchedName) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, PtrQueryWrongType) {
+TEST_F(HostResolverManagerDnsTest, PtrQuery_WrongType) {
   // Respond to a TXT query with an A response.
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -9955,7 +9955,7 @@ TEST_F(HostResolverManagerDnsTest, SrvQueryRejectsIpLiteral) {
 
 // 0-weight services are allowed. Ensure that we can handle such records,
 // especially the case where all entries have weight 0.
-TEST_F(HostResolverManagerDnsTest, SrvQueryZeroWeight) {
+TEST_F(HostResolverManagerDnsTest, SrvQuery_ZeroWeight) {
   const TestServiceRecord kRecord1 = {5, 0, 80, "bar.com"};
   const TestServiceRecord kRecord2 = {5, 0, 5, "google.com"};
   MockDnsClientRuleList rules;
@@ -9989,7 +9989,7 @@ TEST_F(HostResolverManagerDnsTest, SrvQueryZeroWeight) {
                   HostPortPair("bar.com", 80), HostPortPair("google.com", 5))));
 }
 
-TEST_F(HostResolverManagerDnsTest, SrvQueryNonexistentDomain) {
+TEST_F(HostResolverManagerDnsTest, SrvQuery_NonexistentDomain) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -10023,7 +10023,7 @@ TEST_F(HostResolverManagerDnsTest, SrvQueryNonexistentDomain) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, SrvQueryFailure) {
+TEST_F(HostResolverManagerDnsTest, SrvQuery_Failure) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -10057,7 +10057,7 @@ TEST_F(HostResolverManagerDnsTest, SrvQueryFailure) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, SrvQueryTimeout) {
+TEST_F(HostResolverManagerDnsTest, SrvQuery_Timeout) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -10091,7 +10091,7 @@ TEST_F(HostResolverManagerDnsTest, SrvQueryTimeout) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, SrvQueryEmpty) {
+TEST_F(HostResolverManagerDnsTest, SrvQuery_Empty) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -10125,7 +10125,7 @@ TEST_F(HostResolverManagerDnsTest, SrvQueryEmpty) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, SrvQueryMalformed) {
+TEST_F(HostResolverManagerDnsTest, SrvQuery_Malformed) {
   // Setup fallback to confirm it is not used for non-address results.
   set_allow_fallback_to_systemtask(true);
   proc_->AddRuleForAllFamilies("host", "192.168.1.102");
@@ -10159,7 +10159,7 @@ TEST_F(HostResolverManagerDnsTest, SrvQueryMalformed) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, SrvQueryMismatchedName) {
+TEST_F(HostResolverManagerDnsTest, SrvQuery_MismatchedName) {
   std::vector<TestServiceRecord> srv_records = {{1, 2, 3, "foo.com"}};
   MockDnsClientRuleList rules;
   rules.emplace_back("host", dns_protocol::kTypeSRV, false /* secure */,
@@ -10189,7 +10189,7 @@ TEST_F(HostResolverManagerDnsTest, SrvQueryMismatchedName) {
               AnyOf(nullptr, Pointee(IsEmpty())));
 }
 
-TEST_F(HostResolverManagerDnsTest, SrvQueryWrongType) {
+TEST_F(HostResolverManagerDnsTest, SrvQuery_WrongType) {
   // Respond to a SRV query with an A response.
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -13276,7 +13276,7 @@ TEST_F(HostResolverManagerDnsTest, DohProbeRequest) {
   EXPECT_FALSE(mock_dns_client_->factory()->doh_probes_running());
 }
 
-TEST_F(HostResolverManagerDnsTest, DohProbeRequestBeforeConfig) {
+TEST_F(HostResolverManagerDnsTest, DohProbeRequest_BeforeConfig) {
   InvalidateDnsConfig();
 
   std::unique_ptr<HostResolver::ProbeRequest> request =
@@ -13288,7 +13288,7 @@ TEST_F(HostResolverManagerDnsTest, DohProbeRequestBeforeConfig) {
   EXPECT_TRUE(mock_dns_client_->factory()->doh_probes_running());
 }
 
-TEST_F(HostResolverManagerDnsTest, DohProbeRequestInvalidateConfig) {
+TEST_F(HostResolverManagerDnsTest, DohProbeRequest_InvalidateConfig) {
   ChangeDnsConfig(CreateValidDnsConfig());
 
   std::unique_ptr<HostResolver::ProbeRequest> request =
@@ -13301,7 +13301,7 @@ TEST_F(HostResolverManagerDnsTest, DohProbeRequestInvalidateConfig) {
   EXPECT_FALSE(mock_dns_client_->factory()->doh_probes_running());
 }
 
-TEST_F(HostResolverManagerDnsTest, DohProbeRequestRestartOnConnectionChange) {
+TEST_F(HostResolverManagerDnsTest, DohProbeRequest_RestartOnConnectionChange) {
   DestroyResolver();
   test::ScopedMockNetworkChangeNotifier notifier;
   CreateSerialResolver();

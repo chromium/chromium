@@ -109,7 +109,7 @@ TEST_F(GlobalFirstPartySetsTest, Clone) {
   EXPECT_EQ(sets, sets.Clone());
 }
 
-TEST_F(GlobalFirstPartySetsTest, CtorPrimaryWithAliasValid) {
+TEST_F(GlobalFirstPartySetsTest, Ctor_PrimaryWithAlias_Valid) {
   GlobalFirstPartySets global_sets(
       kVersion, /*entries=*/
       {
@@ -130,7 +130,7 @@ TEST_F(GlobalFirstPartySetsTest, CtorPrimaryWithAliasValid) {
                                             std::nullopt))));
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryNonexistent) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_Nonexistent) {
   SchemefulSite example(GURL("https://example.test"));
 
   EXPECT_THAT(
@@ -138,7 +138,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryNonexistent) {
       std::nullopt);
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryExists) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_Exists) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite decoy_site(GURL("https://decoy.test"));
   FirstPartySetEntry entry(example, SiteType::kPrimary, std::nullopt);
@@ -154,7 +154,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryExists) {
               Optional(entry));
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryNoNormalization) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_NoNormalization) {
   SchemefulSite https_example(GURL("https://example.test"));
   SchemefulSite associated(GURL("https://associated.test"));
   SchemefulSite wss_example(GURL("wss://example.test"));
@@ -171,7 +171,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryNoNormalization) {
               std::nullopt);
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryExistsViaOverride) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite associated(GURL("https://associated.test"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
@@ -191,7 +191,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryExistsViaOverride) {
               Optional(override_entry));
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryRemovedViaOverride) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite associated(GURL("https://associated.test"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
@@ -210,7 +210,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryRemovedViaOverride) {
               std::nullopt);
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryExistsViaAlias) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaAlias) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry entry(example, SiteType::kPrimary, std::nullopt);
@@ -224,7 +224,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryExistsViaAlias) {
               Optional(entry));
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryExistsViaOverrideWithDecoyAlias) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
@@ -242,7 +242,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryExistsViaOverrideWithDecoyAlias) {
               Optional(override_entry));
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryRemovedViaOverrideWithDecoyAlias) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
@@ -259,7 +259,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryRemovedViaOverrideWithDecoyAlias) {
               std::nullopt);
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntryAliasesIgnoredForConfig) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_AliasesIgnoredForConfig) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
@@ -279,11 +279,11 @@ TEST_F(GlobalFirstPartySetsTest, FindEntryAliasesIgnoredForConfig) {
               public_entry);
 }
 
-TEST_F(GlobalFirstPartySetsTest, EmptyEmpty) {
+TEST_F(GlobalFirstPartySetsTest, Empty_Empty) {
   EXPECT_TRUE(GlobalFirstPartySets().empty());
 }
 
-TEST_F(GlobalFirstPartySetsTest, EmptyNonemptyEntries) {
+TEST_F(GlobalFirstPartySetsTest, Empty_NonemptyEntries) {
   EXPECT_FALSE(
       GlobalFirstPartySets(
           kVersion,
@@ -297,7 +297,7 @@ TEST_F(GlobalFirstPartySetsTest, EmptyNonemptyEntries) {
           .empty());
 }
 
-TEST_F(GlobalFirstPartySetsTest, EmptyNonemptyManualSet) {
+TEST_F(GlobalFirstPartySetsTest, Empty_NonemptyManualSet) {
   GlobalFirstPartySets sets;
   sets.ApplyManuallySpecifiedSet(LocalSetDeclaration(
       /*set_entries=*/
@@ -311,7 +311,7 @@ TEST_F(GlobalFirstPartySetsTest, EmptyNonemptyManualSet) {
   EXPECT_FALSE(sets.empty());
 }
 
-TEST_F(GlobalFirstPartySetsTest, InvalidPublicSetsVersionNonemptyManualSet) {
+TEST_F(GlobalFirstPartySetsTest, InvalidPublicSetsVersion_NonemptyManualSet) {
   GlobalFirstPartySets sets(
       base::Version(), /*entries=*/
       {
@@ -626,7 +626,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
 }
 
-TEST_F(PopulatedGlobalFirstPartySetsTest, ForEachPublicSetEntryFullIteration) {
+TEST_F(PopulatedGlobalFirstPartySetsTest, ForEachPublicSetEntry_FullIteration) {
   int count = 0;
   EXPECT_TRUE(global_sets().ForEachPublicSetEntry(
       [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
@@ -636,7 +636,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest, ForEachPublicSetEntryFullIteration) {
   EXPECT_EQ(count, 7);
 }
 
-TEST_F(PopulatedGlobalFirstPartySetsTest, ForEachPublicSetEntryEarlyReturn) {
+TEST_F(PopulatedGlobalFirstPartySetsTest, ForEachPublicSetEntry_EarlyReturn) {
   int count = 0;
   EXPECT_FALSE(global_sets().ForEachPublicSetEntry(
       [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
@@ -863,7 +863,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata) {
             FirstPartySetMetadata(std::nullopt, std::nullopt));
 }
 
-TEST_F(GlobalFirstPartySetsTest, ComputeConfigEmpty) {
+TEST_F(GlobalFirstPartySetsTest, ComputeConfig_Empty) {
   EXPECT_EQ(GlobalFirstPartySets(
                 kVersion,
                 /*entries=*/
@@ -1202,7 +1202,7 @@ TEST_F(
                                              std::nullopt))));
 }
 
-TEST_F(GlobalFirstPartySetsTest, TransitiveOverlapTwoCommonPrimaries) {
+TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonPrimaries) {
   SchemefulSite primary0(GURL("https://primary0.test"));
   SchemefulSite associated_site0(GURL("https://associatedsite0.test"));
   SchemefulSite primary1(GURL("https://primary1.test"));
@@ -1281,7 +1281,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlapTwoCommonPrimaries) {
                                              std::nullopt))));
 }
 
-TEST_F(GlobalFirstPartySetsTest, TransitiveOverlapTwoCommonAssociatedSites) {
+TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
   SchemefulSite primary0(GURL("https://primary0.test"));
   SchemefulSite associated_site0(GURL("https://associatedsite0.test"));
   SchemefulSite primary1(GURL("https://primary1.test"));
@@ -1360,7 +1360,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlapTwoCommonAssociatedSites) {
                                              std::nullopt))));
 }
 
-TEST_F(GlobalFirstPartySetsTest, InvalidPublicSetsVersionComputeConfig) {
+TEST_F(GlobalFirstPartySetsTest, InvalidPublicSetsVersion_ComputeConfig) {
   const GlobalFirstPartySets sets(
       base::Version(), /*entries=*/
       {

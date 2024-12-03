@@ -19,11 +19,11 @@ using ::testing::UnorderedElementsAre;
 
 namespace net {
 
-TEST(LocalSetDeclarationTest, ValidEmptySet) {
+TEST(LocalSetDeclarationTest, Valid_EmptySet) {
   EXPECT_THAT(LocalSetDeclaration(), IsEmpty());
 }
 
-TEST(LocalSetDeclarationTest, ValidBasic) {
+TEST(LocalSetDeclarationTest, Valid_Basic) {
   SchemefulSite primary(GURL("https://primary.test"));
   SchemefulSite associated(GURL("https://associated.test"));
 
@@ -40,7 +40,7 @@ TEST(LocalSetDeclarationTest, ValidBasic) {
                        FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
 }
 
-TEST(LocalSetDeclarationTest, ValidBasicWithAliases) {
+TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
   SchemefulSite primary(GURL("https://primary.test"));
   SchemefulSite primary_cctld(GURL("https://primary.cctld"));
   SchemefulSite associated(GURL("https://associated.test"));

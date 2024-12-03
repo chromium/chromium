@@ -2143,7 +2143,7 @@ TEST_F(URLRequestTest, DoNotSaveCookies) {
   }
 }
 
-TEST_F(URLRequestTest, DoNotSendCookiesViaPolicy) {
+TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2204,11 +2204,11 @@ TEST_F(URLRequestTest, DoNotSendCookiesViaPolicy) {
 
 // TODO(crbug.com/41225288) This test is flaky on iOS.
 #if BUILDFLAG(IS_IOS)
-#define MAYBE_DoNotSaveCookiesViaPolicy FLAKY_DoNotSaveCookiesViaPolicy
+#define MAYBE_DoNotSaveCookies_ViaPolicy FLAKY_DoNotSaveCookies_ViaPolicy
 #else
-#define MAYBE_DoNotSaveCookiesViaPolicy DoNotSaveCookiesViaPolicy
+#define MAYBE_DoNotSaveCookies_ViaPolicy DoNotSaveCookies_ViaPolicy
 #endif
-TEST_F(URLRequestTest, MAYBE_DoNotSaveCookiesViaPolicy) {
+TEST_F(URLRequestTest, MAYBE_DoNotSaveCookies_ViaPolicy) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2287,7 +2287,7 @@ TEST_F(URLRequestTest, DoNotSaveEmptyCookies) {
   }
 }
 
-TEST_F(URLRequestTest, DoNotSendCookiesViaPolicyAsync) {
+TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy_Async) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2337,7 +2337,7 @@ TEST_F(URLRequestTest, DoNotSendCookiesViaPolicyAsync) {
   }
 }
 
-TEST_F(URLRequestTest, DoNotSaveCookiesViaPolicyAsync) {
+TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy_Async) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -2631,7 +2631,7 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies) {
   }
 }
 
-TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookiesRedirect) {
+TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies_Redirect) {
   EmbeddedTestServer http_server;
   RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -3219,7 +3219,7 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookiesSpecialScheme) {
   }
 }
 
-TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookiesRedirect) {
+TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies_Redirect) {
   EmbeddedTestServer http_server;
   RegisterDefaultHandlers(&http_server);
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -4743,7 +4743,7 @@ TEST_F(URLRequestTestHTTP, UnexpectedServerAuthTest) {
   }
 }
 
-TEST_F(URLRequestTestHTTP, GetTestNoCache) {
+TEST_F(URLRequestTestHTTP, GetTest_NoCache) {
   ASSERT_TRUE(http_test_server()->Start());
 
   TestDelegate d;
@@ -7068,7 +7068,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect) {
   }
 }
 
-TEST_F(URLRequestTestHTTP, DeferredRedirectModifiedHeaders) {
+TEST_F(URLRequestTestHTTP, DeferredRedirect_ModifiedHeaders) {
   test_server::HttpRequest http_request;
   int num_observed_requests = 0;
   http_test_server()->RegisterRequestMonitor(
@@ -7120,7 +7120,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirectModifiedHeaders) {
   }
 }
 
-TEST_F(URLRequestTestHTTP, DeferredRedirectRemovedHeaders) {
+TEST_F(URLRequestTestHTTP, DeferredRedirect_RemovedHeaders) {
   test_server::HttpRequest http_request;
   int num_observed_requests = 0;
   http_test_server()->RegisterRequestMonitor(

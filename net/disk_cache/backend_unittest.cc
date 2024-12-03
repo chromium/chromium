@@ -808,7 +808,7 @@ TEST_F(DiskCacheBackendTest, SimpleCreateBackendRecoveryAppCache) {
 }
 
 // Tests that |BackendImpl| fails to initialize with a missing file.
-TEST_F(DiskCacheBackendTest, CreateBackendMissingFile) {
+TEST_F(DiskCacheBackendTest, CreateBackend_MissingFile) {
   ASSERT_TRUE(CopyTestCache("bad_entry"));
   base::FilePath filename = cache_path_.AppendASCII("data_1");
   base::DeleteFile(filename);
@@ -926,7 +926,7 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingFileIO) {
 // builds because they contain a lot of intentional memory leaks.
 #if !defined(LEAK_SANITIZER)
 // We'll be leaking from this test.
-TEST_F(DiskCacheBackendTest, ShutdownWithPendingFileIOFast) {
+TEST_F(DiskCacheBackendTest, ShutdownWithPendingFileIO_Fast) {
   // The integrity test sets kNoRandom so there's a version mismatch if we don't
   // force new eviction.
   SetNewEviction();
@@ -1007,7 +1007,7 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingIO) {
 
 #if !defined(LEAK_SANITIZER)
 // We'll be leaking from this test.
-TEST_F(DiskCacheBackendTest, ShutdownWithPendingIOFast) {
+TEST_F(DiskCacheBackendTest, ShutdownWithPendingIO_Fast) {
   // The integrity test sets kNoRandom so there's a version mismatch if we don't
   // force new eviction.
   SetNewEviction();
@@ -1044,7 +1044,7 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingCreate) {
 
 #if !defined(LEAK_SANITIZER)
 // We'll be leaking an entry from this test.
-TEST_F(DiskCacheBackendTest, ShutdownWithPendingCreateFast) {
+TEST_F(DiskCacheBackendTest, ShutdownWithPendingCreate_Fast) {
   // The integrity test sets kNoRandom so there's a version mismatch if we don't
   // force new eviction.
   SetNewEviction();
@@ -3442,7 +3442,7 @@ TEST_F(DiskCacheBackendTest, MemoryCapsWritesToMaxSize) {
       IsError(net::ERR_INSUFFICIENT_RESOURCES));
 }
 
-TEST_F(DiskCacheTest, BackendUsageStatsTimer) {
+TEST_F(DiskCacheTest, Backend_UsageStatsTimer) {
   MessageLoopHelper helper;
 
   ASSERT_TRUE(CleanupCacheDir());
@@ -3479,7 +3479,7 @@ TEST_F(DiskCacheBackendTest, TimerNotCreated) {
   DisableIntegrityCheck();
 }
 
-TEST_F(DiskCacheBackendTest, BackendUsageStats) {
+TEST_F(DiskCacheBackendTest, Backend_UsageStats) {
   InitCache();
   disk_cache::Entry* entry;
   ASSERT_THAT(CreateEntry("key", &entry), IsOk());

@@ -472,7 +472,7 @@ TEST_F(CTLogVerifierTest, ExcessDataInPublicKey) {
   EXPECT_FALSE(log);
 }
 
-TEST_F(CTLogVerifierTest, VerifiesConsistencyProofEdgeCasesEmptyProof) {
+TEST_F(CTLogVerifierTest, VerifiesConsistencyProofEdgeCases_EmptyProof) {
   std::vector<std::string> empty_proof;
   std::string old_root(GetEmptyTreeHash()), new_root(GetEmptyTreeHash());
 
@@ -496,7 +496,7 @@ TEST_F(CTLogVerifierTest, VerifiesConsistencyProofEdgeCasesEmptyProof) {
       VerifyConsistencyProof(*log_, 1, old_root, 2, new_root, empty_proof));
 }
 
-TEST_F(CTLogVerifierTest, VerifiesConsistencyProofEdgeCasesMismatchingRoots) {
+TEST_F(CTLogVerifierTest, VerifiesConsistencyProofEdgeCases_MismatchingRoots) {
   const std::string old_root(GetEmptyTreeHash());
   std::string new_root;
   std::vector<std::string> empty_proof;
@@ -568,7 +568,7 @@ INSTANTIATE_TEST_SUITE_P(KnownGoodProofs,
                          CTLogVerifierAuditProofTest,
                          ::testing::Range(size_t(0), std::size(kAuditProofs)));
 
-TEST_F(CTLogVerifierTest, VerifiesAuditProofEdgeCasesInvalidLeafIndex) {
+TEST_F(CTLogVerifierTest, VerifiesAuditProofEdgeCases_InvalidLeafIndex) {
   std::vector<std::string> proof;
   EXPECT_FALSE(
       VerifyAuditProof(*log_, 1, 0, proof, std::string(), std::string()));

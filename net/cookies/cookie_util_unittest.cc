@@ -62,7 +62,7 @@ TEST(CookieUtilTest, TestDomainIsHostOnly) {
 
 // A cookie domain containing non-ASCII characters is not allowed, even if it
 // matches the domain from the URL.
-TEST(CookieUtilTest, GetCookieDomainWithStringNonASCII) {
+TEST(CookieUtilTest, GetCookieDomainWithString_NonASCII) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kCookieDomainRejectNonASCII);
 
@@ -75,7 +75,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringNonASCII) {
 }
 
 // An empty domain string results in the domain from the URL.
-TEST(CookieUtilTest, GetCookieDomainWithStringEmpty) {
+TEST(CookieUtilTest, GetCookieDomainWithString_Empty) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(GURL("http://example.com"),
@@ -86,7 +86,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringEmpty) {
 
 // An empty domain string results in the domain from the URL, which has been
 // canonicalized. Regression test for https://crbug.com/362535230.
-TEST(CookieUtilTest, GetCookieDomainWithStringEmptyNonCanonical) {
+TEST(CookieUtilTest, GetCookieDomainWithString_EmptyNonCanonical) {
   // `GURL` doesn't canonicalize the below URL, since it doesn't recognize the
   // scheme. So we ensure that `GetCookieDomainWithString` recanonicalizes it.
   CookieInclusionStatus status;
@@ -99,7 +99,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringEmptyNonCanonical) {
 
 // A cookie domain string equal to the URL host, when that is an IP, results in
 // the IP.
-TEST(CookieUtilTest, GetCookieDomainWithStringIP) {
+TEST(CookieUtilTest, GetCookieDomainWithString_IP) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -110,7 +110,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringIP) {
 
 // A cookie domain string equal to a dot prefixed to the URL host, when that is
 // an IP, results in the IP, without the dot.
-TEST(CookieUtilTest, GetCookieDomainWithStringDotIP) {
+TEST(CookieUtilTest, GetCookieDomainWithString_DotIP) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -120,7 +120,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringDotIP) {
 }
 
 // A cookie domain string containing %-encoding is not allowed.
-TEST(CookieUtilTest, GetCookieDomainWithStringPercentEncoded) {
+TEST(CookieUtilTest, GetCookieDomainWithString_PercentEncoded) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
@@ -129,7 +129,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringPercentEncoded) {
 }
 
 // A cookie domain string that cannot be canonicalized is not allowed.
-TEST(CookieUtilTest, GetCookieDomainWithStringUnCanonicalizable) {
+TEST(CookieUtilTest, GetCookieDomainWithString_UnCanonicalizable) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
@@ -139,7 +139,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringUnCanonicalizable) {
 
 // A cookie domain that is an eTLD but matches the URL results in a host cookie
 // domain.
-TEST(CookieUtilTest, GetCookieDomainWithStringETldMatchesUrl) {
+TEST(CookieUtilTest, GetCookieDomainWithString_ETldMatchesUrl) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -150,7 +150,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringETldMatchesUrl) {
 
 // A cookie domain that is an eTLD but matches the URL results in a host cookie
 // domain, even if it is given with a dot prefix.
-TEST(CookieUtilTest, GetCookieDomainWithStringETldMatchesUrlDotPrefix) {
+TEST(CookieUtilTest, GetCookieDomainWithString_ETldMatchesUrl_DotPrefix) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -161,7 +161,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringETldMatchesUrlDotPrefix) {
 
 // A cookie domain that is an eTLD but matches the URL results in a host cookie
 // domain, even if its capitalization is non-canonical.
-TEST(CookieUtilTest, GetCookieDomainWithStringETldMatchesUrlNonCanonical) {
+TEST(CookieUtilTest, GetCookieDomainWithString_ETldMatchesUrl_NonCanonical) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -171,7 +171,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringETldMatchesUrlNonCanonical) {
 }
 
 // A cookie domain that is an eTLD but does not match the URL is not allowed.
-TEST(CookieUtilTest, GetCookieDomainWithStringETldDifferentUrl) {
+TEST(CookieUtilTest, GetCookieDomainWithString_ETldDifferentUrl) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
@@ -181,7 +181,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringETldDifferentUrl) {
 
 // A cookie domain with a different eTLD+1 ("organization-identifying host")
 // from the URL is not allowed.
-TEST(CookieUtilTest, GetCookieDomainWithStringDifferentOrgHost) {
+TEST(CookieUtilTest, GetCookieDomainWithString_DifferentOrgHost) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
@@ -190,7 +190,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringDifferentOrgHost) {
 }
 
 // A cookie domain that matches the URL results in a domain cookie domain.
-TEST(CookieUtilTest, GetCookieDomainWithStringMatchesUrl) {
+TEST(CookieUtilTest, GetCookieDomainWithString_MatchesUrl) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -201,7 +201,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringMatchesUrl) {
 
 // A cookie domain that matches the URL but has a `.` prefix results in a domain
 // cookie domain.
-TEST(CookieUtilTest, GetCookieDomainWithStringMatchesUrlWithDot) {
+TEST(CookieUtilTest, GetCookieDomainWithString_MatchesUrlWithDot) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -211,7 +211,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringMatchesUrlWithDot) {
 }
 
 // A cookie domain that is a subdomain of the URL host is not allowed.
-TEST(CookieUtilTest, GetCookieDomainWithStringSubdomain) {
+TEST(CookieUtilTest, GetCookieDomainWithString_Subdomain) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
@@ -220,7 +220,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringSubdomain) {
 }
 
 // A URL that is a subdomain of the cookie domain results in a domain cookie.
-TEST(CookieUtilTest, GetCookieDomainWithStringUrlSubdomain) {
+TEST(CookieUtilTest, GetCookieDomainWithString_UrlSubdomain) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -231,7 +231,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringUrlSubdomain) {
 
 // A URL of which the cookie domain is a substring, but not a dotted suffix,
 // is not allowed.
-TEST(CookieUtilTest, GetCookieDomainWithStringSubstringButUrlNotSubdomain) {
+TEST(CookieUtilTest, GetCookieDomainWithString_SubstringButUrlNotSubdomain) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
@@ -241,7 +241,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringSubstringButUrlNotSubdomain) {
 
 // A URL which has a different subdomain of the eTLD+1 than the cookie domain is
 // not allowed, regardless of which hostname is longer.
-TEST(CookieUtilTest, GetCookieDomainWithStringDifferentSubdomain) {
+TEST(CookieUtilTest, GetCookieDomainWithString_DifferentSubdomain) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
@@ -253,7 +253,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringDifferentSubdomain) {
 }
 
 // A URL without a host can set a "host" cookie with no cookie domain.
-TEST(CookieUtilTest, GetCookieDomainWithStringNoUrlHost) {
+TEST(CookieUtilTest, GetCookieDomainWithString_NoUrlHost) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -264,7 +264,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringNoUrlHost) {
 // A URL with two trailing dots (which is an invalid hostname per
 // rfc6265bis-11#5.1.2 and will cause GetDomainAndRegistry to return an empty
 // string) is not allowed.
-TEST(CookieUtilTest, GetCookieDomainWithStringTrailingDots) {
+TEST(CookieUtilTest, GetCookieDomainWithString_TrailingDots) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
@@ -288,7 +288,7 @@ TEST(CookieUtilTest,
 
 // A URL containing an IP address is allowed, if that IP matches the cookie
 // domain.
-TEST(CookieUtilTest, GetCookieDomainWithStringUrlHostIP) {
+TEST(CookieUtilTest, GetCookieDomainWithString_UrlHostIP) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -298,7 +298,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringUrlHostIP) {
 
 // A cookie domain with a dot-prefixed IP is allowed, if the IP matches
 // the URL, but is transformed to a host cookie domain.
-TEST(CookieUtilTest, GetCookieDomainWithStringUrlHostIPDomainCookie) {
+TEST(CookieUtilTest, GetCookieDomainWithString_UrlHostIP_DomainCookie) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
@@ -308,7 +308,7 @@ TEST(CookieUtilTest, GetCookieDomainWithStringUrlHostIPDomainCookie) {
 
 // A URL containing a TLD that is unknown as a registry is allowed, if it
 // matches the cookie domain.
-TEST(CookieUtilTest, GetCookieDomainWithStringUnknownRegistry) {
+TEST(CookieUtilTest, GetCookieDomainWithString_UnknownRegistry) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_TRUE(cookie_util::GetCookieDomainWithString(GURL("http://bar/"), "bar",
@@ -503,7 +503,7 @@ TEST(CookieUtilTest, TestRequestCookieParsing) {
   }
 }
 
-TEST(CookieUtilTest, TestRequestCookieParsingMalformed) {
+TEST(CookieUtilTest, TestRequestCookieParsing_Malformed) {
   std::vector<RequestCookieParsingTest> tests;
 
   // Missing equal sign.
@@ -1078,7 +1078,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptGet) {
   }
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptGetSchemefulDowngrade) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptGet_SchemefulDowngrade) {
   // Some test cases where the context is downgraded when computed schemefully.
   // (Should already be covered above, but just to be explicit.)
   EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
@@ -1103,7 +1103,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptGetSchemefulDowngrade) {
                 false /* force_ignore_site_for_cookies */));
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptGetWebSocketSchemes) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptGet_WebSocketSchemes) {
   // wss/https and http/ws are considered the same for schemeful purposes.
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForScriptGet(
                   kWssUrl, kSecureSiteForCookies, kSecureSiteInitiator,
@@ -1183,7 +1183,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest) {
   }
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForRequestSchemefulDowngrade) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_SchemefulDowngrade) {
   // Some test cases where the context is downgraded when computed schemefully.
   // (Should already be covered above, but just to be explicit.)
 
@@ -1267,7 +1267,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequestSchemefulDowngrade) {
                 false /* force_ignore_site_for_cookies */));
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForRequestWebSocketSchemes) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_WebSocketSchemes) {
   // wss/https and http/ws are considered the same for schemeful purposes.
   // (ws/wss requests cannot be main frame navigations.)
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
@@ -1297,7 +1297,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequestWebSocketSchemes) {
 // Test cases where the URL chain contains multiple members, where the last
 // member (current request URL) is same-site to kSiteUrl. (Everything is listed
 // as same-site or cross-site relative to kSiteUrl.)
-TEST_P(CookieUtilComputeSameSiteContextTest, ForRequestRedirect) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
   struct {
     std::string method;
     bool url_chain_is_same_site;
@@ -1463,7 +1463,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptSet) {
   }
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptSetSchemefulDowngrade) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptSet_SchemefulDowngrade) {
   // Some test cases where the context is downgraded when computed schemefully.
   // (Should already be covered above, but just to be explicit.)
   EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX,
@@ -1478,7 +1478,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptSetSchemefulDowngrade) {
                 false /* force_ignore_site_for_cookies */));
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptSetWebSocketSchemes) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptSet_WebSocketSchemes) {
   // wss/https and http/ws are considered the same for schemeful purposes.
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForScriptSet(
                   kWssUrl, kSecureSiteForCookies,
@@ -1531,7 +1531,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse) {
   }
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForResponseSchemefulDowngrade) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_SchemefulDowngrade) {
   // Some test cases where the context is downgraded when computed schemefully.
   // (Should already be covered above, but just to be explicit.)
 
@@ -1584,7 +1584,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponseSchemefulDowngrade) {
   }
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForResponseWebSocketSchemes) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_WebSocketSchemes) {
   // wss/https and http/ws are considered the same for schemeful purposes.
   // (ws/wss requests cannot be main frame navigations.)
 
@@ -1609,7 +1609,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponseWebSocketSchemes) {
 // Test cases where the URL chain contains multiple members, where the last
 // member (current request URL) is same-site to kSiteUrl. (Everything is listed
 // as same-site or cross-site relative to kSiteUrl.)
-TEST_P(CookieUtilComputeSameSiteContextTest, ForResponseRedirect) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
   struct {
     bool url_chain_is_same_site;
     bool site_for_cookies_is_same_site;
@@ -1746,7 +1746,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest,
                 false /* force_ignore_site_for_cookies */));
 }
 
-TEST_P(CookieUtilComputeSameSiteContextTest, ForSubresourceWebSocketSchemes) {
+TEST_P(CookieUtilComputeSameSiteContextTest, ForSubresource_WebSocketSchemes) {
   // wss/https and http/ws are considered the same for schemeful purposes.
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForSubresource(
                   kWssUrl, kSecureSiteForCookies,

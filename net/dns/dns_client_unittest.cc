@@ -117,7 +117,7 @@ TEST_F(DnsClientTest, InvalidConfig) {
   EXPECT_FALSE(client_->GetCurrentSession());
 }
 
-TEST_F(DnsClientTest, CanUseSecureDnsTransactionsNoDohServers) {
+TEST_F(DnsClientTest, CanUseSecureDnsTransactions_NoDohServers) {
   client_->SetInsecureEnabled(/*enabled=*/true,
                               /*additional_types_enabled=*/true);
   client_->SetSystemConfig(BasicValidConfig());
@@ -189,7 +189,7 @@ TEST_F(DnsClientTest, UnhandledOptions) {
   EXPECT_EQ(client_->GetCurrentSession()->config(), expected_config);
 }
 
-TEST_F(DnsClientTest, CanUseSecureDnsTransactionsProbeSuccess) {
+TEST_F(DnsClientTest, CanUseSecureDnsTransactions_ProbeSuccess) {
   client_->SetSystemConfig(ValidConfigWithDoh(true /* doh_only */));
   resolve_context_->InvalidateCachesAndPerSessionData(
       client_->GetCurrentSession(), true /* network_change */);
@@ -250,7 +250,7 @@ TEST_F(DnsClientTest, AllAllowed) {
             ValidConfigWithDoh(false /* doh_only */));
 }
 
-TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferredFailures) {
+TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
   client_->SetInsecureEnabled(/*enabled=*/true,
                               /*additional_types_enabled=*/true);
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
@@ -391,7 +391,7 @@ TEST_F(DnsClientTest, ReplaceCurrentSession) {
   EXPECT_TRUE(client_->GetCurrentSession());
 }
 
-TEST_F(DnsClientTest, ReplaceCurrentSessionNoSession) {
+TEST_F(DnsClientTest, ReplaceCurrentSession_NoSession) {
   ASSERT_FALSE(client_->GetCurrentSession());
 
   client_->ReplaceCurrentSession();

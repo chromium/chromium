@@ -1658,7 +1658,7 @@ TEST(HostCacheTest, SerializeForDebugging) {
   ASSERT_EQ(kNetworkAnonymizationKey.ToDebugString(), *nak_string);
 }
 
-TEST(HostCacheTest, SerializeAndDeserializeText) {
+TEST(HostCacheTest, SerializeAndDeserialize_Text) {
   base::TimeTicks now;
 
   base::TimeDelta ttl = base::Seconds(99);
@@ -1689,7 +1689,7 @@ TEST(HostCacheTest, SerializeAndDeserializeText) {
   EXPECT_THAT(result->second.text_records(), text_records);
 }
 
-TEST(HostCacheTest, SerializeAndDeserializeHostname) {
+TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
   base::TimeTicks now;
 
   base::TimeDelta ttl = base::Seconds(99);
@@ -2253,7 +2253,7 @@ TEST(HostCacheTest, MergeAliases) {
   EXPECT_EQ(result, expected);
 }
 
-TEST(HostCacheTest, MergeEntriesFrontEmpty) {
+TEST(HostCacheTest, MergeEntries_frontEmpty) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
 
   const IPAddress kAddressBack(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -2281,7 +2281,7 @@ TEST(HostCacheTest, MergeEntriesFrontEmpty) {
               UnorderedElementsAre("alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntriesBackEmpty) {
+TEST(HostCacheTest, MergeEntries_backEmpty) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   HostCache::Entry front(OK, {kEndpointFront}, {"alias1", "alias2", "alias3"},
@@ -2308,7 +2308,7 @@ TEST(HostCacheTest, MergeEntriesBackEmpty) {
               UnorderedElementsAre("alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntriesBothEmpty) {
+TEST(HostCacheTest, MergeEntries_bothEmpty) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
   HostCache::Entry back(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
 
@@ -2324,7 +2324,7 @@ TEST(HostCacheTest, MergeEntriesBothEmpty) {
   EXPECT_FALSE(result.has_ttl());
 }
 
-TEST(HostCacheTest, MergeEntriesFrontWithAliasesNoAddressesBackWithBoth) {
+TEST(HostCacheTest, MergeEntries_frontWithAliasesNoAddressesBackWithBoth) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
   std::set<std::string> aliases_front({"alias0", "alias1", "alias2"});
   front.set_aliases(aliases_front);
@@ -2349,7 +2349,7 @@ TEST(HostCacheTest, MergeEntriesFrontWithAliasesNoAddressesBackWithBoth) {
               UnorderedElementsAre("alias0", "alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntriesBackWithAliasesNoAddressesFrontWithBoth) {
+TEST(HostCacheTest, MergeEntries_backWithAliasesNoAddressesFrontWithBoth) {
   HostCache::Entry back(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
   std::set<std::string> aliases_back({"alias1", "alias2", "alias3"});
   back.set_aliases(aliases_back);
@@ -2374,7 +2374,7 @@ TEST(HostCacheTest, MergeEntriesBackWithAliasesNoAddressesFrontWithBoth) {
               UnorderedElementsAre("alias0", "alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntriesFrontWithAddressesNoAliasesBackWithBoth) {
+TEST(HostCacheTest, MergeEntries_frontWithAddressesNoAliasesBackWithBoth) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   HostCache::Entry front(OK, {kEndpointFront}, /*aliases=*/{},
@@ -2400,7 +2400,7 @@ TEST(HostCacheTest, MergeEntriesFrontWithAddressesNoAliasesBackWithBoth) {
               UnorderedElementsAre("alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntriesBackWithAddressesNoAliasesFrontWithBoth) {
+TEST(HostCacheTest, MergeEntries_backWithAddressesNoAliasesFrontWithBoth) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   HostCache::Entry front(OK, {kEndpointFront}, {"alias1", "alias2", "alias3"},
@@ -2426,7 +2426,7 @@ TEST(HostCacheTest, MergeEntriesBackWithAddressesNoAliasesFrontWithBoth) {
               UnorderedElementsAre("alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntriesDifferentTtl) {
+TEST(HostCacheTest, MergeEntries_differentTtl) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS,
                          base::Days(12));
   HostCache::Entry back(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS,
@@ -2438,7 +2438,7 @@ TEST(HostCacheTest, MergeEntriesDifferentTtl) {
   EXPECT_EQ(base::Seconds(42), result.ttl());
 }
 
-TEST(HostCacheTest, MergeEntriesFrontCannonnamePreserved) {
+TEST(HostCacheTest, MergeEntries_FrontCannonnamePreserved) {
   HostCache::Entry front(OK, /*ip_endpoints=*/{}, /*aliases=*/{"name1"},
                          HostCache::Entry::SOURCE_DNS);
 
@@ -2452,7 +2452,7 @@ TEST(HostCacheTest, MergeEntriesFrontCannonnamePreserved) {
 }
 
 // Test that the back canonname can be used if there is no front cannonname.
-TEST(HostCacheTest, MergeEntriesBackCannonnameUsable) {
+TEST(HostCacheTest, MergeEntries_BackCannonnameUsable) {
   HostCache::Entry front(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                          HostCache::Entry::SOURCE_DNS);
 

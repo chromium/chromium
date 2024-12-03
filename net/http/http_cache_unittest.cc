@@ -6006,7 +6006,7 @@ TEST_F(HttpCacheSimpleGetTest, WaitForBackend) {
 
 // Tests that we can cancel requests that are queued waiting for the backend
 // to be initialized.
-TEST_F(HttpCacheSimpleGetTest, WaitForBackendCancelCreate) {
+TEST_F(HttpCacheSimpleGetTest, WaitForBackend_CancelCreate) {
   auto factory = std::make_unique<MockBlockingBackendFactory>();
   MockBlockingBackendFactory* factory_ptr = factory.get();
   MockHttpCache cache(std::move(factory));

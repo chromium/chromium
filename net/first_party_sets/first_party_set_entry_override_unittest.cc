@@ -11,11 +11,11 @@
 
 namespace net {
 
-TEST(FirstPartySetEntryOverrideTest, IsDeletionTrue) {
+TEST(FirstPartySetEntryOverrideTest, IsDeletion_true) {
   EXPECT_TRUE(FirstPartySetEntryOverride().IsDeletion());
 }
 
-TEST(FirstPartySetEntryOverrideTest, IsDeletionFalse) {
+TEST(FirstPartySetEntryOverrideTest, IsDeletion_false) {
   EXPECT_FALSE(
       FirstPartySetEntryOverride(
           FirstPartySetEntry(SchemefulSite(GURL("https://example.test")),

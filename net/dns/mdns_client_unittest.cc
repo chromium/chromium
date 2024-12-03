@@ -720,7 +720,7 @@ TEST_F(MDnsTest, StopListening) {
   EXPECT_FALSE(test_client_->IsListening());
 }
 
-TEST_F(MDnsTest, StopListeningCacheCleanupScheduled) {
+TEST_F(MDnsTest, StopListening_CacheCleanupScheduled) {
   auto owned_clock = std::make_unique<base::SimpleTestClock>();
   base::SimpleTestClock* clock = owned_clock.get();
   test_clock_ = std::move(owned_clock);

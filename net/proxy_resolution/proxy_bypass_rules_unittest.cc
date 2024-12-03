@@ -377,7 +377,7 @@ TEST(ProxyBypassRulesTest, BypassSimpleHostnames) {
   ExpectBypassMisc(rules, false, {"foo", "loopback"});
 }
 
-TEST(ProxyBypassRulesTest, ParseAndMatchCIDRIPv4) {
+TEST(ProxyBypassRulesTest, ParseAndMatchCIDR_IPv4) {
   ProxyBypassRules rules;
   rules.ParseFromString("192.168.1.1/16");
   ASSERT_EQ(1u, rules.rules().size());
@@ -395,7 +395,7 @@ TEST(ProxyBypassRulesTest, ParseAndMatchCIDRIPv4) {
   EXPECT_FALSE(rules.Matches(GURL("http://192.168.1.1.xx")));
 }
 
-TEST(ProxyBypassRulesTest, ParseAndMatchCIDRIPv6) {
+TEST(ProxyBypassRulesTest, ParseAndMatchCIDR_IPv6) {
   ProxyBypassRules rules;
   rules.ParseFromString("a:b:c:d::/48");
   ASSERT_EQ(1u, rules.rules().size());
