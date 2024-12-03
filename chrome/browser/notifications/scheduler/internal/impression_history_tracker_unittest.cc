@@ -84,7 +84,7 @@ TestCase CreateDefaultTestCase() {
 
 class MockImpressionStore : public CollectionStore<ClientState> {
  public:
-  MockImpressionStore() {}
+  MockImpressionStore() = default;
   MockImpressionStore(const MockImpressionStore&) = delete;
   MockImpressionStore& operator=(const MockImpressionStore&) = delete;
 

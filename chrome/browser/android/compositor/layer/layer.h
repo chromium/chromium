@@ -21,8 +21,8 @@ class Layer : public base::RefCounted<Layer> {
   virtual scoped_refptr<cc::slim::Layer> layer() = 0;
 
  protected:
-  Layer() {}
-  virtual ~Layer() {}
+  Layer() = default;
+  virtual ~Layer() = default;
 
  private:
   friend class base::RefCounted<Layer>;
