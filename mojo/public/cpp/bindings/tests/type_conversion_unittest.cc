@@ -103,7 +103,7 @@ TEST(TypeConversionTest, CustomTypeConverter) {
   EXPECT_EQ(rect->height, rect2->height);
 }
 
-TEST(TypeConversionTest, CustomTypeConverterArrayNull) {
+TEST(TypeConversionTest, CustomTypeConverter_Array_Null) {
   std::vector<RectPtr> rects;
 
   auto redmond_rects = ConvertTo<std::vector<RedmondRect>>(rects);
@@ -111,7 +111,7 @@ TEST(TypeConversionTest, CustomTypeConverterArrayNull) {
   EXPECT_TRUE(redmond_rects.empty());
 }
 
-TEST(TypeConversionTest, CustomTypeConverterArray) {
+TEST(TypeConversionTest, CustomTypeConverter_Array) {
   const RedmondRect kBase = {10, 20, 30, 40};
 
   std::vector<RectPtr> rects(10);
@@ -128,7 +128,7 @@ TEST(TypeConversionTest, CustomTypeConverterArray) {
   EXPECT_TRUE(AreEqualRectArrays(rects, rects2));
 }
 
-TEST(TypeConversionTest, CustomTypeConverterNested) {
+TEST(TypeConversionTest, CustomTypeConverter_Nested) {
   RedmondNamedRegion redmond_region;
   redmond_region.name = "foopy";
 

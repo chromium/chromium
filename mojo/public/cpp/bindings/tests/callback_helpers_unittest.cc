@@ -45,7 +45,7 @@ void CallClosure(base::OnceClosure cl) {
 
 }  // namespace
 
-TEST(CallbackWithDeleteTest, SetIntegersRun) {
+TEST(CallbackWithDeleteTest, SetIntegers_Run) {
   int a = 0;
   int b = 0;
   auto cb =
@@ -56,7 +56,7 @@ TEST(CallbackWithDeleteTest, SetIntegersRun) {
   EXPECT_EQ(b, 2);
 }
 
-TEST(CallbackWithDeleteTest, SetIntegersDestruction) {
+TEST(CallbackWithDeleteTest, SetIntegers_Destruction) {
   int a = 0;
   int b = 0;
   {
@@ -68,7 +68,7 @@ TEST(CallbackWithDeleteTest, SetIntegersDestruction) {
   EXPECT_EQ(b, 4);
 }
 
-TEST(CallbackWithDefaultTest, CallClosureRun) {
+TEST(CallbackWithDefaultTest, CallClosure_Run) {
   int a = 0;
   int b = 0;
   auto cb = WrapCallbackWithDefaultInvokeIfNotRun(
@@ -78,7 +78,7 @@ TEST(CallbackWithDefaultTest, CallClosureRun) {
   EXPECT_EQ(b, 2);
 }
 
-TEST(CallbackWithDefaultTest, CallClosureDestruction) {
+TEST(CallbackWithDefaultTest, CallClosure_Destruction) {
   int a = 0;
   int b = 0;
   {
@@ -90,7 +90,7 @@ TEST(CallbackWithDefaultTest, CallClosureDestruction) {
   EXPECT_EQ(b, 4);
 }
 
-TEST(CallbackWithDefaultTest, ClosureRun) {
+TEST(CallbackWithDefaultTest, Closure_Run) {
   bool a = false;
   auto cb =
       WrapCallbackWithDefaultInvokeIfNotRun(base::BindOnce(&SetBool, &a, true));
@@ -98,7 +98,7 @@ TEST(CallbackWithDefaultTest, ClosureRun) {
   EXPECT_TRUE(a);
 }
 
-TEST(CallbackWithDefaultTest, ClosureDestruction) {
+TEST(CallbackWithDefaultTest, Closure_Destruction) {
   bool a = false;
   {
     auto cb = WrapCallbackWithDefaultInvokeIfNotRun(
@@ -107,7 +107,7 @@ TEST(CallbackWithDefaultTest, ClosureDestruction) {
   EXPECT_TRUE(a);
 }
 
-TEST(CallbackWithDefaultTest, SetBoolRun) {
+TEST(CallbackWithDefaultTest, SetBool_Run) {
   bool a = false;
   auto cb =
       WrapCallbackWithDefaultInvokeIfNotRun(base::BindOnce(&SetBool, &a), true);
@@ -115,7 +115,7 @@ TEST(CallbackWithDefaultTest, SetBoolRun) {
   EXPECT_TRUE(a);
 }
 
-TEST(CallbackWithDefaultTest, SetBoolFromRawPtrRun) {
+TEST(CallbackWithDefaultTest, SetBoolFromRawPtr_Run) {
   bool a = false;
   bool* b = new bool(false);
   bool c = true;
@@ -125,7 +125,7 @@ TEST(CallbackWithDefaultTest, SetBoolFromRawPtrRun) {
   EXPECT_TRUE(a);
 }
 
-TEST(CallbackWithDefaultTest, SetBoolFromRawPtrDestruction) {
+TEST(CallbackWithDefaultTest, SetBoolFromRawPtr_Destruction) {
   bool a = false;
   bool* b = new bool(true);
   {
@@ -135,7 +135,7 @@ TEST(CallbackWithDefaultTest, SetBoolFromRawPtrDestruction) {
   EXPECT_TRUE(a);
 }
 
-TEST(CallbackWithDefaultTest, SetBoolDestruction) {
+TEST(CallbackWithDefaultTest, SetBool_Destruction) {
   bool a = false;
   {
     auto cb = WrapCallbackWithDefaultInvokeIfNotRun(
@@ -144,7 +144,7 @@ TEST(CallbackWithDefaultTest, SetBoolDestruction) {
   EXPECT_TRUE(a);
 }
 
-TEST(CallbackWithDefaultTest, SetIntegersRun) {
+TEST(CallbackWithDefaultTest, SetIntegers_Run) {
   int a = 0;
   int b = 0;
   auto cb = WrapCallbackWithDefaultInvokeIfNotRun(
@@ -154,7 +154,7 @@ TEST(CallbackWithDefaultTest, SetIntegersRun) {
   EXPECT_EQ(b, 2);
 }
 
-TEST(CallbackWithDefaultTest, SetIntegersDestruction) {
+TEST(CallbackWithDefaultTest, SetIntegers_Destruction) {
   int a = 0;
   int b = 0;
   {
@@ -165,7 +165,7 @@ TEST(CallbackWithDefaultTest, SetIntegersDestruction) {
   EXPECT_EQ(b, 4);
 }
 
-TEST(CallbackWithDefaultTest, SetIntegerFromUniquePtrRun) {
+TEST(CallbackWithDefaultTest, SetIntegerFromUniquePtr_Run) {
   int a = 0;
   auto cb = WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(&SetIntegerFromUniquePtr, &a), std::make_unique<int>(1));
@@ -173,7 +173,7 @@ TEST(CallbackWithDefaultTest, SetIntegerFromUniquePtrRun) {
   EXPECT_EQ(a, 2);
 }
 
-TEST(CallbackWithDefaultTest, SetIntegerFromUniquePtrDestruction) {
+TEST(CallbackWithDefaultTest, SetIntegerFromUniquePtr_Destruction) {
   int a = 0;
   {
     auto cb = WrapCallbackWithDefaultInvokeIfNotRun(
@@ -182,7 +182,7 @@ TEST(CallbackWithDefaultTest, SetIntegerFromUniquePtrDestruction) {
   EXPECT_EQ(a, 1);
 }
 
-TEST(CallbackWithDefaultTest, SetStringRun) {
+TEST(CallbackWithDefaultTest, SetString_Run) {
   std::string a;
   auto cb = WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(&SetString, &a), "hello");
@@ -190,7 +190,7 @@ TEST(CallbackWithDefaultTest, SetStringRun) {
   EXPECT_EQ(a, "world");
 }
 
-TEST(CallbackWithDefaultTest, SetStringDestruction) {
+TEST(CallbackWithDefaultTest, SetString_Destruction) {
   std::string a;
   {
     auto cb = WrapCallbackWithDefaultInvokeIfNotRun(
