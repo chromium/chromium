@@ -10963,15 +10963,6 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootGravedigger")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"clear-login-database-for-all-migrated-upm-users",
-     flag_descriptions::kClearLoginDatabaseForAllMigratedUPMUsersName,
-     flag_descriptions::kClearLoginDatabaseForAllMigratedUPMUsersDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kClearLoginDatabaseForAllMigratedUPMUsers)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"clear-undecryptable-passwords",
      flag_descriptions::kClearUndecryptablePasswordsName,
      flag_descriptions::kClearUndecryptablePasswordsDescription, kOsAll,

@@ -47,8 +47,6 @@ source_set("backend") {
   ]
 
   sources = [
-    "android_backend_with_double_deletion.cc",
-    "android_backend_with_double_deletion.h",
     "built_in_backend_to_android_backend_migrator.cc",
     "built_in_backend_to_android_backend_migrator.h",
     "password_manager_lifecycle_helper.cc",
@@ -551,7 +549,6 @@ source_set("unit_tests") {
     "account_chooser_dialog_android_unittest.cc",
     "all_passwords_bottom_sheet_controller_unittest.cc",
     "all_passwords_bottom_sheet_helper_unittest.cc",
-    "android_backend_with_double_deletion_unittest.cc",
     "auto_signin_first_run_dialog_android_unittest.cc",
     "built_in_backend_to_android_backend_migrator_unittest.cc",
     "cred_man_controller_unittest.cc",

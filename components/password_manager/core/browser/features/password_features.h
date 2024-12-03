@@ -150,10 +150,6 @@ inline constexpr base::FeatureParam<bool> kSimulateFailedMigration = {
 // authentication mandatory before password filling in untrusted locations.
 BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
 
-// Enables clearing the login database for the users who already migrated their
-// credentials to GMS Core.
-BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
-
 // If enabled, the profile login db will no longer be renamed to account
 // login db upon UPM with split stores activation. The db is cleared on
 // the following run anyway.

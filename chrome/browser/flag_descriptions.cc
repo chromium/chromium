@@ -4454,12 +4454,6 @@ const char kClankDefaultBrowserPromoRoleManagerDescription[] =
     "Sets the Role Manager Default Browser Promo for testing the new "
     "Default Browser Promo Feature";
 
-const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[] =
-    "This feature clears LoginDatabase for all users when UPM is properly "
-    "enabled and the credentials were migrated to GMS Core.";
-const char kClearLoginDatabaseForAllMigratedUPMUsersName[] =
-    "Clear LoginDatabase for all migrated UPM users";
-
 const char kTabStateFlatBufferName[] = "Enable TabState FlatBuffer";
 const char kTabStateFlatBufferDescription[] =
     "Migrates TabState from a pickle based schema to a FlatBuffer based "

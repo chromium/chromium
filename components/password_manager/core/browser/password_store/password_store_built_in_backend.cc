@@ -103,15 +103,11 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (base::FeatureList::IsEnabled(
-          features::kClearLoginDatabaseForAllMigratedUPMUsers)) {
-    // This backend shouldn't be created for the users migrated to UPM with
-    // split stores.
-    CHECK_NE(
-        prefs->GetInteger(
-            password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores),
-        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
-  }
+  // This backend shouldn't be created for the users migrated to UPM with
+  // split stores.
+  CHECK_NE(prefs->GetInteger(
+               password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores),
+           static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(

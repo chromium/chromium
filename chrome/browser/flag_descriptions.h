@@ -2579,9 +2579,6 @@ extern const char kClankDefaultBrowserPromoDescription[];
 extern const char kClankDefaultBrowserPromoRoleManagerName[];
 extern const char kClankDefaultBrowserPromoRoleManagerDescription[];
 
-extern const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[];
-extern const char kClearLoginDatabaseForAllMigratedUPMUsersName[];
-
 extern const char kTabStateFlatBufferName[];
 extern const char kTabStateFlatBufferDescription[];
 
