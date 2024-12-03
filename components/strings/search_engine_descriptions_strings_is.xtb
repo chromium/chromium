@@ -6,6 +6,7 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="is">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Keyrt af ChatGPT's GPT-4</translation>
+  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Lokaðu fyrir auglýsingar og rekja spor einhvers meðan þú vafrar á vefnum.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Notaðu Google til að finna það sem þú þarft</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Leitarvél sem verndar friðhelgi þína.</translation>
   <translation id="IDS_YEP_SEARCH_DESCRIPTION">Vefsleitarvélin sem miðar að því að deila auglýsingatekjum með höfundum.</translation>
