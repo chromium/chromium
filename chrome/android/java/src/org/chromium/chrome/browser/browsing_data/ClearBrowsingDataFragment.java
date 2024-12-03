@@ -476,7 +476,9 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
             dismissProgressDialog();
         } else {
             dismissProgressDialog();
-            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+            var mainFragment = getParentFragment() != null ? getParentFragment() : this;
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .finishCurrentSettings(mainFragment);
         }
     }
 
