@@ -232,11 +232,6 @@
 //   convert `const char[]` literals to spans.
 // - For convenience, provides `as_[writable_]byte_span()` to convert
 //   spanifiable objects directly to byte spans.
-//
-// Because `span` predated C++17 and CTAD, there are also (deprecated)
-// type-deducing `make_span()` utility functions. Avoid these; use CTAD
-// (`span(...)` without explicit template args) or relevant helper methods.
-// TODO(crbug.com/341907909): Remove these.
 
 namespace base {
 
@@ -1520,32 +1515,6 @@ template <int&... ExplicitArgumentBarrier, typename ElementType, size_t Extent>
 constexpr auto as_writable_byte_span(
     ElementType (&arr LIFETIME_BOUND)[Extent]) {
   return as_writable_bytes(span<ElementType, Extent>(arr));
-}
-
-// Type-deducing helper to construct a span.
-// Deprecated: Use CTAD (i.e. use `span()` directly without template arguments).
-// TODO(crbug.com/341907909): Remove.
-template <int&... ExplicitArgumentBarrier, typename It, typename EndOrSize>
-  requires(std::contiguous_iterator<It>)
-// SAFETY: `it` must point to the first of a (possibly-empty) series of
-// contiguous valid elements. If `end_or_size` is a size, the series must
-// contain at least that many valid elements; if it is an iterator or sentinel,
-// it must refer to the same allocation, and all elements in the range [it,
-// end_or_size) must be valid. Otherwise, the span will allow access to invalid
-// elements, resulting in UB.
-UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, EndOrSize end_or_size) {
-  return UNSAFE_BUFFERS(span(it, end_or_size));
-}
-template <int&... ExplicitArgumentBarrier, typename R>
-  requires(internal::SpanConstructibleFrom<R &&>)
-constexpr auto make_span(R&& r LIFETIME_BOUND) {
-  return span(std::forward<R>(r));
-}
-template <int&... ExplicitArgumentBarrier, typename R>
-  requires(internal::SpanConstructibleFrom<R &&> &&
-           std::ranges::borrowed_range<R>)
-constexpr auto make_span(R&& r) {
-  return span(std::forward<R>(r));
 }
 
 }  // namespace base

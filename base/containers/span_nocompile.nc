@@ -71,7 +71,6 @@ void ConstContainerToMutableConversionDisallowed() {
   const std::vector<int> v = {1, 2, 3};
   span<int> span1(v);             // expected-error {{no matching constructor for initialization of 'span<int>'}}
   span<int, 2u> span2({1, 2});    // expected-error {{no matching constructor for initialization of 'span<int, 2U>'}}
-  span<int> span3(make_span(v));  // expected-error {{no matching constructor for initialization of 'span<int>'}}
 }
 
 // A dynamic const container should not be implicitly convertible to a static span.
@@ -97,9 +96,6 @@ void StdSetConversionDisallowed() {
   span<int> span1(set.begin(), 0u);                // expected-error {{no matching constructor for initialization of 'span<int>'}}
   span<int> span2(set.begin(), set.end());         // expected-error {{no matching constructor for initialization of 'span<int>'}}
   span<int> span3(set);                            // expected-error {{no matching constructor for initialization of 'span<int>'}}
-  auto span4 = make_span(set.begin(), 0u);         // expected-error@*:* {{no matching function for call to 'make_span'}}
-  auto span5 = make_span(set.begin(), set.end());  // expected-error@*:* {{no matching function for call to 'make_span'}}
-  auto span6 = make_span(set);                     // expected-error@*:* {{no matching function for call to 'make_span'}}
 }
 
 // Static views of spans with static extent must not exceed the size.
@@ -158,22 +154,6 @@ void SpanFromNonConstRvalueRange() {
 
   std::vector<int> vec = {1, 2, 3, 4, 5};
   [[maybe_unused]] auto d = span(std::move(vec));  // expected-error {{no matching conversion}}
-}
-
-// make_span can only be called on a range rvalue when the element type is
-// read-only or the range is a borrowed range.
-void MakeSpanFromNonConstRvalueRange() {
-  std::array<bool, 3> arr = {true, false, true};
-  [[maybe_unused]] auto a = make_span(std::move(arr));  // expected-error {{no matching function for call to 'make_span'}}
-
-  std::string str = "ok";
-  [[maybe_unused]] auto b = make_span(std::move(str));  // expected-error {{no matching function for call to 'make_span'}}
-
-  std::u16string str16 = u"ok";
-  [[maybe_unused]] auto c = make_span(std::move(str16));  // expected-error {{no matching function for call to 'make_span'}}
-
-  std::vector<int> vec = {1, 2, 3, 4, 5};
-  [[maybe_unused]] auto d = make_span(std::move(vec));  // expected-error {{no matching function for call to 'make_span'}}
 }
 
 void Dangling() {
@@ -246,8 +226,7 @@ void NotSizeTSize() {
   // we get assertion failures below where we expect.
   enum Length1 { kSize1 = -1 };
   enum Length2 { kSize2 = -1 };
-  auto s1 = make_span(vector.data(), kSize1);  // expected-error@*:* {{no matching function for call to 'strict_cast'}}
-  span s2(vector.data(), kSize2);              // expected-error@*:* {{no matching function for call to 'strict_cast'}}
+  span s(vector.data(), kSize2);  // expected-error@*:* {{no matching function for call to 'strict_cast'}}
 }
 
 void BadConstConversionsWithStdSpan() {
