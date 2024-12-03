@@ -574,7 +574,9 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithImages) {
     pieces.push_back("cheddar");
 
     SkBitmap cheesy_bitmap;
-    cheesy_bitmap.allocN32Pixels(7, 21);
+    cheesy_bitmap.allocPixels(
+        SkImageInfo::Make(7, 21, kRGBA_8888_SkColorType, kOpaque_SkAlphaType),
+        0);
     cheesy_bitmap.eraseColor(SK_ColorYELLOW);
     pieces.push_back(cheesy_bitmap);
 
@@ -588,7 +590,9 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithImages) {
     pieces.push_back("bleu");
 
     SkBitmap moldy_cheese;
-    moldy_cheese.allocN32Pixels(63, 42);
+    moldy_cheese.allocPixels(
+        SkImageInfo::Make(63, 42, kRGBA_8888_SkColorType, kOpaque_SkAlphaType),
+        0);
     moldy_cheese.eraseColor(SK_ColorBLUE);
     pieces.push_back(moldy_cheese);
 
