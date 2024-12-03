@@ -377,7 +377,7 @@
     ],
 
     'codesearch_gen_chromium_ios_bot_reclient': [
-      'codesearch_ios_reclient', 'ios', 'ios_disable_code_signing'
+      'codesearch_ios_reclient', 'ios', 'ios_device', 'ios_disable_code_signing'
     ],
 
     'codesearch_gen_chromium_mac_bot_reclient': [
