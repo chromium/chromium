@@ -15,6 +15,7 @@
 #include "gin/converter.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -29,6 +30,266 @@ namespace {
 constexpr char kPermissionsPolicyError[] =
     "The \"shared-storage\" Permissions Policy denied the method on "
     "sharedStorage";
+
+constexpr char kNotAConstructorError[] =
+    "The shared storage method object constructor cannot be called as a "
+    "function";
+
+network::mojom::SharedStorageModifierMethodWithOptionsPtr
+CreateMojomSetMethodFromParameters(
+    AuctionV8Helper* v8_helper,
+    const v8::FunctionCallbackInfo<v8::Value>& args,
+    bool shared_storage_permissions_policy_allowed,
+    const std::string& function_name) {
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(v8_helper, time_limit_scope,
+                               base::StrCat({function_name, "(): "}), &args,
+                               /*min_required_args=*/2);
+  std::u16string arg0_key;
+  std::u16string arg1_value;
+  args_converter.ConvertArg(0, "key", arg0_key);
+  args_converter.ConvertArg(1, "value", arg1_value);
+
+  std::optional<bool> ignore_if_present;
+  std::optional<std::string> with_lock;
+  if (args_converter.is_success() && args.Length() > 2) {
+    DictConverter options_dict_converter(
+        v8_helper, time_limit_scope,
+        base::StrCat({function_name, " 'options' argument "}), args[2]);
+    options_dict_converter.GetOptional("ignoreIfPresent", ignore_if_present);
+    options_dict_converter.GetOptional("withLock", with_lock);
+    args_converter.SetStatus(options_dict_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+    return nullptr;
+  }
+
+  if (!shared_storage_permissions_policy_allowed) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kPermissionsPolicyError)));
+    return nullptr;
+  }
+
+  // IDL portions of checking done, now do semantic checking.
+  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate,
+        base::StrCat({"Invalid 'key' argument in ", function_name, "()"}))));
+    return nullptr;
+  }
+
+  if (!network::IsValidSharedStorageValueStringLength(arg1_value.size())) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate,
+        base::StrCat({"Invalid 'value' argument in ", function_name, "()"}))));
+    return nullptr;
+  }
+
+  auto method = network::mojom::SharedStorageModifierMethod::NewSetMethod(
+      network::mojom::SharedStorageSetMethod::New(
+          arg0_key, arg1_value, ignore_if_present.value_or(false)));
+
+  return network::mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
+}
+
+network::mojom::SharedStorageModifierMethodWithOptionsPtr
+CreateMojomAppendMethodFromParameters(
+    AuctionV8Helper* v8_helper,
+    const v8::FunctionCallbackInfo<v8::Value>& args,
+    bool shared_storage_permissions_policy_allowed,
+    const std::string& function_name) {
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(v8_helper, time_limit_scope,
+                               base::StrCat({function_name, "(): "}), &args,
+                               /*min_required_args=*/2);
+
+  std::u16string arg0_key;
+  std::u16string arg1_value;
+  args_converter.ConvertArg(0, "key", arg0_key);
+  args_converter.ConvertArg(1, "value", arg1_value);
+
+  std::optional<std::string> with_lock;
+  if (args_converter.is_success() && args.Length() > 2) {
+    DictConverter options_dict_converter(
+        v8_helper, time_limit_scope,
+        base::StrCat({function_name, " 'options' argument "}), args[2]);
+    options_dict_converter.GetOptional("withLock", with_lock);
+    args_converter.SetStatus(options_dict_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+    return nullptr;
+  }
+
+  if (!shared_storage_permissions_policy_allowed) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kPermissionsPolicyError)));
+    return nullptr;
+  }
+
+  // IDL portions of checking done, now do semantic checking.
+  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate,
+        base::StrCat({"Invalid 'key' argument in ", function_name, "()"}))));
+    return nullptr;
+  }
+
+  if (!network::IsValidSharedStorageValueStringLength(arg1_value.size())) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate,
+        base::StrCat({"Invalid 'value' argument in ", function_name, "()"}))));
+    return nullptr;
+  }
+
+  auto method = network::mojom::SharedStorageModifierMethod::NewAppendMethod(
+      network::mojom::SharedStorageAppendMethod::New(arg0_key, arg1_value));
+
+  return network::mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
+}
+
+network::mojom::SharedStorageModifierMethodWithOptionsPtr
+CreateMojomDeleteMethodFromParameters(
+    AuctionV8Helper* v8_helper,
+    const v8::FunctionCallbackInfo<v8::Value>& args,
+    bool shared_storage_permissions_policy_allowed,
+    const std::string& function_name) {
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(v8_helper, time_limit_scope,
+                               base::StrCat({function_name, "(): "}), &args,
+                               /*min_required_args=*/1);
+
+  std::u16string arg0_key;
+  args_converter.ConvertArg(0, "key", arg0_key);
+
+  std::optional<std::string> with_lock;
+  if (args_converter.is_success() && args.Length() > 1) {
+    DictConverter options_dict_converter(
+        v8_helper, time_limit_scope,
+        base::StrCat({function_name, " 'options' argument "}), args[1]);
+    options_dict_converter.GetOptional("withLock", with_lock);
+    args_converter.SetStatus(options_dict_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+    return nullptr;
+  }
+
+  if (!shared_storage_permissions_policy_allowed) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kPermissionsPolicyError)));
+    return nullptr;
+  }
+
+  // IDL portions of checking done, now do semantic checking.
+  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate,
+        base::StrCat({"Invalid 'key' argument in ", function_name, "()"}))));
+    return nullptr;
+  }
+
+  auto method = network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+      network::mojom::SharedStorageDeleteMethod::New(arg0_key));
+
+  return network::mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
+}
+
+network::mojom::SharedStorageModifierMethodWithOptionsPtr
+CreateMojomClearMethodFromParameters(
+    AuctionV8Helper* v8_helper,
+    const v8::FunctionCallbackInfo<v8::Value>& args,
+    bool shared_storage_permissions_policy_allowed,
+    const std::string& function_name) {
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(v8_helper, time_limit_scope,
+                               base::StrCat({function_name, "(): "}), &args,
+                               /*min_required_args=*/0);
+
+  std::optional<std::string> with_lock;
+  if (args_converter.is_success() && args.Length() > 0) {
+    DictConverter options_dict_converter(
+        v8_helper, time_limit_scope,
+        base::StrCat({function_name, " 'options' argument "}), args[0]);
+    options_dict_converter.GetOptional("withLock", with_lock);
+    args_converter.SetStatus(options_dict_converter.TakeStatus());
+  }
+
+  if (args_converter.is_failed()) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+    return nullptr;
+  }
+
+  if (!shared_storage_permissions_policy_allowed) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kPermissionsPolicyError)));
+    return nullptr;
+  }
+
+  auto method = network::mojom::SharedStorageModifierMethod::NewClearMethod(
+      network::mojom::SharedStorageClearMethod::New());
+
+  return network::mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
+}
+
+// SharedStorageMethod represents a method for modifying shared storage. It
+// manages its own lifecycle through weak reference handling to support
+// automatic garbage collection.
+class SharedStorageMethod {
+ public:
+  // Constructs a SharedStorageMethod with a Mojom method and sets up
+  // weak reference management.
+  //
+  // Responsibilities:
+  // - Create a V8 External wrapping the C++ object
+  // - Establish a persistent, weak reference to the External
+  // - Set the External as an internal field of the JavaScript object
+  // - Ensure proper cleanup when the JavaScript object is garbage collected
+  SharedStorageMethod(
+      v8::Isolate* isolate,
+      v8::Local<v8::Object> obj,
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method)
+      : mojom_method_(std::move(mojom_method)) {
+    v8::Local<v8::External> external = v8::External::New(isolate, this);
+    persistent_external_.Reset(isolate, external);
+    obj->SetInternalField(0, external);
+    persistent_external_.SetWeak(this, WeakCallback,
+                                 v8::WeakCallbackType::kParameter);
+  }
+
+  // Weak callback invoked by V8's garbage collector when the associated
+  // JavaScript object becomes unreachable.
+  //
+  // Responsibilities:
+  // - Clear the persistent external reference
+  // - Delete the SharedStorageMethod instance
+  static void WeakCallback(
+      const v8::WeakCallbackInfo<SharedStorageMethod>& data) {
+    SharedStorageMethod* method = data.GetParameter();
+    method->persistent_external_.Reset();
+    delete method;
+  }
+
+ private:
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method_;
+  v8::Persistent<v8::External> persistent_external_;
+};
 
 }  // namespace
 
@@ -89,6 +350,61 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
       ->Set(context, v8_helper_->CreateStringFromLiteral("sharedStorage"),
             shared_storage)
       .Check();
+
+  // These modifier methods are part of the Web Locks integration launch.
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageWebLocks)) {
+    v8::Local<v8::FunctionTemplate> set_method_ctor_template =
+        v8::FunctionTemplate::New(v8_helper_->isolate(),
+                                  &SharedStorageBindings::SetMethodConstructor,
+                                  v8_this);
+    set_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    v8::Local<v8::Function> set_method_ctor =
+        set_method_ctor_template->GetFunction(context).ToLocalChecked();
+    context->Global()
+        ->Set(context,
+              v8_helper_->CreateStringFromLiteral("SharedStorageSetMethod"),
+              set_method_ctor)
+        .Check();
+
+    v8::Local<v8::FunctionTemplate> append_method_ctor_template =
+        v8::FunctionTemplate::New(
+            v8_helper_->isolate(),
+            &SharedStorageBindings::AppendMethodConstructor, v8_this);
+    append_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    v8::Local<v8::Function> append_method_ctor =
+        append_method_ctor_template->GetFunction(context).ToLocalChecked();
+    context->Global()
+        ->Set(context,
+              v8_helper_->CreateStringFromLiteral("SharedStorageAppendMethod"),
+              append_method_ctor)
+        .Check();
+
+    v8::Local<v8::FunctionTemplate> delete_method_ctor_template =
+        v8::FunctionTemplate::New(
+            v8_helper_->isolate(),
+            &SharedStorageBindings::DeleteMethodConstructor, v8_this);
+    delete_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    v8::Local<v8::Function> delete_method_ctor =
+        delete_method_ctor_template->GetFunction(context).ToLocalChecked();
+    context->Global()
+        ->Set(context,
+              v8_helper_->CreateStringFromLiteral("SharedStorageDeleteMethod"),
+              delete_method_ctor)
+        .Check();
+
+    v8::Local<v8::FunctionTemplate> clear_method_ctor_template =
+        v8::FunctionTemplate::New(
+            v8_helper_->isolate(),
+            &SharedStorageBindings::ClearMethodConstructor, v8_this);
+    clear_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    v8::Local<v8::Function> clear_method_ctor =
+        clear_method_ctor_template->GetFunction(context).ToLocalChecked();
+    context->Global()
+        ->Set(context,
+              v8_helper_->CreateStringFromLiteral("SharedStorageClearMethod"),
+              clear_method_ctor)
+        .Check();
+  }
 }
 
 void SharedStorageBindings::Reset() {}
@@ -99,63 +415,17 @@ void SharedStorageBindings::Set(
   SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
       v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
-  v8::Isolate* isolate = v8_helper->isolate();
 
-  if (!bindings->shared_storage_permissions_policy_allowed_) {
-    isolate->ThrowException(v8::Exception::TypeError(
-        gin::StringToV8(isolate, kPermissionsPolicyError)));
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
+      CreateMojomSetMethodFromParameters(
+          v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
+          /*function_name=*/"sharedStorage.set");
+  if (!mojom_method) {
     return;
   }
-
-  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
-  ArgsConverter args_converter(v8_helper, time_limit_scope,
-                               "sharedStorage.set(): ", &args,
-                               /*min_required_args=*/2);
-  std::u16string arg0_key;
-  std::u16string arg1_value;
-  args_converter.ConvertArg(0, "key", arg0_key);
-  args_converter.ConvertArg(1, "value", arg1_value);
-
-  std::optional<bool> ignore_if_present;
-  std::optional<std::string> with_lock;
-  if (args_converter.is_success() && args.Length() > 2) {
-    DictConverter options_dict_converter(
-        v8_helper, time_limit_scope, "sharedStorage.set 'options' argument ",
-        args[2]);
-    options_dict_converter.GetOptional("ignoreIfPresent", ignore_if_present);
-    options_dict_converter.GetOptional("withLock", with_lock);
-    args_converter.SetStatus(options_dict_converter.TakeStatus());
-  }
-
-  if (args_converter.is_failed()) {
-    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
-    return;
-  }
-
-  // IDL portions of checking done, now do semantic checking.
-  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
-    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
-        isolate, "Invalid 'key' argument in sharedStorage.set()")));
-    return;
-  }
-
-  if (!network::IsValidSharedStorageValueStringLength(arg1_value.size())) {
-    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
-        isolate, "Invalid 'value' argument in sharedStorage.set()")));
-    return;
-  }
-
-  auto method = network::mojom::SharedStorageModifierMethod::NewSetMethod(
-      network::mojom::SharedStorageSetMethod::New(
-          arg0_key, arg1_value, ignore_if_present.value_or(false)));
-
-  auto method_with_options =
-      network::mojom::SharedStorageModifierMethodWithOptions::New(
-          std::move(method), std::move(with_lock));
 
   bindings->shared_storage_host_->SharedStorageUpdate(
-      std::move(method_with_options),
-      bindings->source_auction_worklet_function_);
+      std::move(mojom_method), bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -164,61 +434,17 @@ void SharedStorageBindings::Append(
   SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
       v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
-  v8::Isolate* isolate = v8_helper->isolate();
 
-  if (!bindings->shared_storage_permissions_policy_allowed_) {
-    isolate->ThrowException(v8::Exception::TypeError(
-        gin::StringToV8(isolate, kPermissionsPolicyError)));
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
+      CreateMojomAppendMethodFromParameters(
+          v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
+          /*function_name=*/"sharedStorage.append");
+  if (!mojom_method) {
     return;
   }
-
-  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
-  ArgsConverter args_converter(v8_helper, time_limit_scope,
-                               "sharedStorage.append(): ", &args,
-                               /*min_required_args=*/2);
-
-  std::u16string arg0_key;
-  std::u16string arg1_value;
-  args_converter.ConvertArg(0, "key", arg0_key);
-  args_converter.ConvertArg(1, "value", arg1_value);
-
-  std::optional<std::string> with_lock;
-  if (args_converter.is_success() && args.Length() > 2) {
-    DictConverter options_dict_converter(
-        v8_helper, time_limit_scope, "sharedStorage.append 'options' argument ",
-        args[2]);
-    options_dict_converter.GetOptional("withLock", with_lock);
-    args_converter.SetStatus(options_dict_converter.TakeStatus());
-  }
-
-  if (args_converter.is_failed()) {
-    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
-    return;
-  }
-
-  // IDL portions of checking done, now do semantic checking.
-  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
-    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
-        isolate, "Invalid 'key' argument in sharedStorage.append()")));
-    return;
-  }
-
-  if (!network::IsValidSharedStorageValueStringLength(arg1_value.size())) {
-    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
-        isolate, "Invalid 'value' argument in sharedStorage.append()")));
-    return;
-  }
-
-  auto method = network::mojom::SharedStorageModifierMethod::NewAppendMethod(
-      network::mojom::SharedStorageAppendMethod::New(arg0_key, arg1_value));
-
-  auto method_with_options =
-      network::mojom::SharedStorageModifierMethodWithOptions::New(
-          std::move(method), std::move(with_lock));
 
   bindings->shared_storage_host_->SharedStorageUpdate(
-      std::move(method_with_options),
-      bindings->source_auction_worklet_function_);
+      std::move(mojom_method), bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -227,53 +453,17 @@ void SharedStorageBindings::Delete(
   SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
       v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
-  v8::Isolate* isolate = v8_helper->isolate();
 
-  if (!bindings->shared_storage_permissions_policy_allowed_) {
-    isolate->ThrowException(v8::Exception::TypeError(
-        gin::StringToV8(isolate, kPermissionsPolicyError)));
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
+      CreateMojomDeleteMethodFromParameters(
+          v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
+          /*function_name=*/"sharedStorage.delete");
+  if (!mojom_method) {
     return;
   }
-
-  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
-  ArgsConverter args_converter(v8_helper, time_limit_scope,
-                               "sharedStorage.delete(): ", &args,
-                               /*min_required_args=*/1);
-
-  std::u16string arg0_key;
-  args_converter.ConvertArg(0, "key", arg0_key);
-
-  std::optional<std::string> with_lock;
-  if (args_converter.is_success() && args.Length() > 1) {
-    DictConverter options_dict_converter(
-        v8_helper, time_limit_scope, "sharedStorage.delete 'options' argument ",
-        args[1]);
-    options_dict_converter.GetOptional("withLock", with_lock);
-    args_converter.SetStatus(options_dict_converter.TakeStatus());
-  }
-
-  if (args_converter.is_failed()) {
-    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
-    return;
-  }
-
-  // IDL portions of checking done, now do semantic checking.
-  if (!network::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
-    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
-        isolate, "Invalid 'key' argument in sharedStorage.delete()")));
-    return;
-  }
-
-  auto method = network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
-      network::mojom::SharedStorageDeleteMethod::New(arg0_key));
-
-  auto method_with_options =
-      network::mojom::SharedStorageModifierMethodWithOptions::New(
-          std::move(method), std::move(with_lock));
 
   bindings->shared_storage_host_->SharedStorageUpdate(
-      std::move(method_with_options),
-      bindings->source_auction_worklet_function_);
+      std::move(mojom_method), bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -282,42 +472,125 @@ void SharedStorageBindings::Clear(
   SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
       v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
-  v8::Isolate* isolate = v8_helper->isolate();
 
-  if (!bindings->shared_storage_permissions_policy_allowed_) {
-    isolate->ThrowException(v8::Exception::TypeError(
-        gin::StringToV8(isolate, kPermissionsPolicyError)));
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
+      CreateMojomClearMethodFromParameters(
+          v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
+          /*function_name=*/"sharedStorage.clear");
+  if (!mojom_method) {
     return;
   }
-
-  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
-  ArgsConverter args_converter(v8_helper, time_limit_scope,
-                               "sharedStorage.clear(): ", &args,
-                               /*min_required_args=*/0);
-
-  std::optional<std::string> with_lock;
-  if (args_converter.is_success() && args.Length() > 0) {
-    DictConverter options_dict_converter(
-        v8_helper, time_limit_scope, "sharedStorage.clear 'options' argument ",
-        args[0]);
-    options_dict_converter.GetOptional("withLock", with_lock);
-    args_converter.SetStatus(options_dict_converter.TakeStatus());
-  }
-
-  if (args_converter.is_failed()) {
-    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
-    return;
-  }
-
-  auto method = network::mojom::SharedStorageModifierMethod::NewClearMethod(
-      network::mojom::SharedStorageClearMethod::New());
-
-  auto method_with_options =
-      network::mojom::SharedStorageModifierMethodWithOptions::New(
-          std::move(method), std::move(with_lock));
 
   bindings->shared_storage_host_->SharedStorageUpdate(
-      std::move(method_with_options),
-      bindings->source_auction_worklet_function_);
+      std::move(mojom_method), bindings->source_auction_worklet_function_);
 }
+
+// static
+void SharedStorageBindings::SetMethodConstructor(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
+      v8::External::Cast(*args.Data())->Value());
+  AuctionV8Helper* v8_helper = bindings->v8_helper_;
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  if (!args.IsConstructCall()) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kNotAConstructorError)));
+    return;
+  }
+
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
+      CreateMojomSetMethodFromParameters(
+          v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
+          /*function_name=*/"SharedStorageSetMethod");
+  if (!mojom_method) {
+    return;
+  }
+
+  v8::Local<v8::Object> obj = args.This();
+  new SharedStorageMethod(isolate, obj, std::move(mojom_method));
+  args.GetReturnValue().Set(obj);
+}
+
+// static
+void SharedStorageBindings::AppendMethodConstructor(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
+      v8::External::Cast(*args.Data())->Value());
+  AuctionV8Helper* v8_helper = bindings->v8_helper_;
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  if (!args.IsConstructCall()) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kNotAConstructorError)));
+    return;
+  }
+
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
+      CreateMojomAppendMethodFromParameters(
+          v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
+          /*function_name=*/"SharedStorageAppendMethod");
+  if (!mojom_method) {
+    return;
+  }
+
+  v8::Local<v8::Object> obj = args.This();
+  new SharedStorageMethod(isolate, obj, std::move(mojom_method));
+  args.GetReturnValue().Set(obj);
+}
+
+// static
+void SharedStorageBindings::DeleteMethodConstructor(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
+      v8::External::Cast(*args.Data())->Value());
+  AuctionV8Helper* v8_helper = bindings->v8_helper_;
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  if (!args.IsConstructCall()) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kNotAConstructorError)));
+    return;
+  }
+
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
+      CreateMojomDeleteMethodFromParameters(
+          v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
+          /*function_name=*/"SharedStorageDeleteMethod");
+  if (!mojom_method) {
+    return;
+  }
+
+  v8::Local<v8::Object> obj = args.This();
+  new SharedStorageMethod(isolate, obj, std::move(mojom_method));
+  args.GetReturnValue().Set(obj);
+}
+
+// static
+void SharedStorageBindings::ClearMethodConstructor(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  SharedStorageBindings* bindings = static_cast<SharedStorageBindings*>(
+      v8::External::Cast(*args.Data())->Value());
+  AuctionV8Helper* v8_helper = bindings->v8_helper_;
+  v8::Isolate* isolate = v8_helper->isolate();
+
+  if (!args.IsConstructCall()) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        gin::StringToV8(isolate, kNotAConstructorError)));
+    return;
+  }
+
+  network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
+      CreateMojomClearMethodFromParameters(
+          v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
+          /*function_name=*/"SharedStorageClearMethod");
+  if (!mojom_method) {
+    return;
+  }
+
+  v8::Local<v8::Object> obj = args.This();
+  new SharedStorageMethod(isolate, obj, std::move(mojom_method));
+  args.GetReturnValue().Set(obj);
+}
+
 }  // namespace auction_worklet

@@ -2523,7 +2523,11 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
     std::vector<std::string> error_msgs;
 
     Run(scope, script, "testSet", error_msgs,
-        /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
+        /*args=*/
+        v8::LocalVector<v8::Value>(
+            helper_->isolate(),
+            {gin::ConvertToV8(helper_->isolate(), std::string("a")),
+             gin::ConvertToV8(helper_->isolate(), std::string("b"))}));
     EXPECT_THAT(error_msgs,
                 ElementsAre("https://example.test/script.js:3 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
@@ -2535,7 +2539,11 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
     std::vector<std::string> error_msgs;
 
     Run(scope, script, "testAppend", error_msgs,
-        /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
+        /*args=*/
+        v8::LocalVector<v8::Value>(
+            helper_->isolate(),
+            {gin::ConvertToV8(helper_->isolate(), std::string("a")),
+             gin::ConvertToV8(helper_->isolate(), std::string("b"))}));
     EXPECT_THAT(error_msgs,
                 ElementsAre("https://example.test/script.js:7 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
@@ -2547,7 +2555,10 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
     std::vector<std::string> error_msgs;
 
     Run(scope, script, "testDelete", error_msgs,
-        /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
+        /*args=*/
+        v8::LocalVector<v8::Value>(
+            helper_->isolate(),
+            {gin::ConvertToV8(helper_->isolate(), std::string("a"))}));
     EXPECT_THAT(error_msgs,
                 ElementsAre("https://example.test/script.js:11 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
@@ -2564,6 +2575,96 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
                 ElementsAre("https://example.test/script.js:15 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
                             "Policy denied the method on sharedStorage."));
+  }
+}
+
+// When there's an IDL error and the permissions policy is disabled, the IDL
+// error should be captured, as it's evaluated first.
+TEST_F(ContextRecyclerTest,
+       SharedStorageMethodsPermissionsPolicyDisabledAndIDLError) {
+  const char kScript[] = R"(
+    function testSet(...args) {
+      sharedStorage.set(...args);
+    }
+
+    function testAppend(...args) {
+      sharedStorage.append(...args);
+    }
+
+    function testDelete(...args) {
+      sharedStorage.delete(...args);
+    }
+
+    function testClear(...args) {
+      sharedStorage.clear({
+        withLock: {
+          toString: () => {
+            throw "Error 123";
+          }
+        }
+      });
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddSharedStorageBindings(
+        nullptr, mojom::AuctionWorkletFunction::kBidderGenerateBid,
+        /*shared_storage_permissions_policy_allowed=*/false);
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testSet", error_msgs,
+        /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.test/script.js:3 Uncaught TypeError: "
+            "sharedStorage.set(): at least 2 argument(s) are required."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testAppend", error_msgs,
+        /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.test/script.js:7 Uncaught TypeError: "
+            "sharedStorage.append(): at least 2 argument(s) are required."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testDelete", error_msgs,
+        /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.test/script.js:11 Uncaught TypeError: "
+            "sharedStorage.delete(): at least 1 argument(s) are required."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "testClear", error_msgs,
+        /*args=*/v8::LocalVector<v8::Value>(helper_->isolate()));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:15 Uncaught Error 123."));
   }
 }
 
