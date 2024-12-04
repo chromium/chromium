@@ -208,6 +208,7 @@ source_set("popup_internal") {
     "//ios/chrome/browser/omnibox/ui_bundled:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
