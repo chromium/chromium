@@ -37,6 +37,16 @@ using RequiredNoticeId = ui::ElementIdentifier;
 #define DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(name) \
   DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, name)
 
+// This can be used to scope an identifier to a class; use this in the public
+// part of the class definition.
+#define DECLARE_CLASS_REQUIRED_NOTICE_IDENTIFIER(name) \
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(name)
+
+// Use this in the .cc file to define an identifier scoped to a class, this must
+// be paired with the DECLARE macro above.
+#define DEFINE_CLASS_REQUIRED_NOTICE_IDENTIFIER(Class, Name) \
+  DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(Class, Name)
+
 namespace internal {
 // Special value in the "show after" list that causes the notice to happen last.
 DECLARE_REQUIRED_NOTICE_IDENTIFIER(kShowAfterAllNotices);

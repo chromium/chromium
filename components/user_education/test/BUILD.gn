@@ -17,6 +17,8 @@ source_set("test") {
     "test_feature_promo_precondition.h",
     "test_help_bubble.cc",
     "test_help_bubble.h",
+    "test_product_messaging_controller.cc",
+    "test_product_messaging_controller.h",
     "test_user_education_storage_service.cc",
     "test_user_education_storage_service.h",
     "user_education_session_mocks.cc",
