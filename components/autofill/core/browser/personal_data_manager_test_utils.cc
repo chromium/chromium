@@ -49,7 +49,7 @@ void MakePrimaryAccountAvailable(
   signin::ConsentLevel consent_level = use_sync_transport_mode
                                            ? signin::ConsentLevel::kSignin
                                            : signin::ConsentLevel::kSync;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   identity_test_env.ClearPrimaryAccount();
   account_info =
       identity_test_env.MakePrimaryAccountAvailable(email, consent_level);

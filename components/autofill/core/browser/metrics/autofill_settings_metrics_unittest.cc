@@ -254,43 +254,6 @@ TEST_P(AutofillSettingsMetricsTest,
       AutofillPreferenceSetter::kCustodian, !GetParam());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// [ChromeOS-only] Tests that Autofill Profile disabled by standalone browser is
-// logged at startup.
-TEST_P(AutofillSettingsMetricsTest,
-       EmitsAutofillProfileDisabledByStandaloneBrowserAtStartup) {
-  autofill_client_->GetPrefs()->SetStandaloneBrowserPref(
-      prefs::kAutofillProfileEnabled, base::Value(GetParam()));
-
-  // The constructor of `AddressDataManager` emits
-  // `Autofill.Address.DisabledReason.Startup`. Its instance is created at
-  // startup.
-  CreateAddressDataManager();
-
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.Address.DisabledReason.Startup",
-      AutofillPreferenceSetter::kStandaloneBrowser, !GetParam());
-}
-
-// [ChromeOS-only] Tests that Autofill Profile disabled by standalone browser is
-// logged at page load.
-TEST_P(AutofillSettingsMetricsTest,
-       EmitsAutofillProfileDisabledByStandaloneBrowserAtPageLoad) {
-  autofill_client_->SetAutofillProfileEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetStandaloneBrowserPref(
-      prefs::kAutofillProfileEnabled, base::Value(GetParam()));
-
-  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{});
-
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.Address.DisabledReason.PageLoad",
-      AutofillPreferenceSetter::kStandaloneBrowser, !GetParam());
-}
-
-#endif
-
 // Tests that payment method Autofill disabled by user setting is logged at
 // startup.
 TEST_P(AutofillSettingsMetricsTest,
@@ -422,43 +385,6 @@ TEST_P(AutofillSettingsMetricsTest,
       "Autofill.CreditCard.DisabledReason.PageLoad",
       AutofillPreferenceSetter::kCustodian, !GetParam());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// [ChromeOS-only] Tests that payment method Autofill disabled by standalone
-// browser is logged at startup.
-TEST_P(AutofillSettingsMetricsTest,
-       EmitsAutofillPaymentMethodsDisabledByStandaloneBrowserAtStartup) {
-  autofill_client_->GetPrefs()->SetStandaloneBrowserPref(
-      prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
-
-  // The constructor of `PaymentsDataManager` emits
-  // `Autofill.CreditCard.DisabledReason.Startup`. Its instance is created at
-  // startup.
-  CreatePaymentsDataManager();
-
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.CreditCard.DisabledReason.Startup",
-      AutofillPreferenceSetter::kStandaloneBrowser, !GetParam());
-}
-
-// [ChromeOS-only] Tests that payment method Autofill disabled by standalone
-// browser is logged at page load.
-TEST_P(AutofillSettingsMetricsTest,
-       EmitsAutofillPaymentMethodsDisabledByStandaloneBrowserAtPageLoad) {
-  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetStandaloneBrowserPref(
-      prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
-
-  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{});
-
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.CreditCard.DisabledReason.PageLoad",
-      AutofillPreferenceSetter::kStandaloneBrowser, !GetParam());
-}
-
-#endif
 
 TEST_P(AutofillSettingsMetricsTest,
        EmitsActionAutofillProfileDisabledOnPrefChangeByUser) {

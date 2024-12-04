@@ -485,8 +485,7 @@ bool AutofillExternalDelegate::HasActiveScreenReader() const {
   return false;
 #else
   // Note: This always returns false if ChromeVox is in use because the
-  // process-wide AXMode is not updated in that case; except for Lacros, where
-  // kScreenReader mirrors the spoken feedback preference.
+  // process-wide AXMode is not updated in that case.
   return ui::AXPlatform::GetInstance().GetMode().has_mode(
       ui::AXMode::kScreenReader);
 #endif

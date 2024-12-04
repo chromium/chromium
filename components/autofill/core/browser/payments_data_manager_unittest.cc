@@ -1608,7 +1608,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 
 // Test that ensure local data is not lost on sign-in.
 // Clearing/changing the primary account is not supported on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PaymentsDataManagerTest, KeepExistingLocalDataOnSignIn) {
   // Sign out.
   identity_test_env_.ClearPrimaryAccount();
@@ -2823,7 +2823,7 @@ TEST_F(PaymentsDataManagerTest, IsServerCard_UniqueLocalCard) {
   ASSERT_FALSE(payments_data_manager().IsServerCard(&local_card));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PaymentsDataManagerSyncTransportModeTest,
        ShouldShowCardsFromAccountOption_FlagOff) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -2955,7 +2955,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 }
 
 #else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_CHROMEOS_ASH)
+        // !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PaymentsDataManagerSyncTransportModeTest,
        ShouldShowCardsFromAccountOption) {
   // The method should return false if one of these is not respected:
@@ -3022,7 +3022,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_CHROMEOS_ASH)
+        // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PaymentsDataManagerSyncTransportModeTest,
        GetPaymentsSigninStateForMetrics) {
@@ -3056,7 +3056,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
             payments_data_manager().GetPaymentsSigninStateForMetrics());
 
 // ClearPrimaryAccount is not supported on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Check that the sync state is |SignedOut| when the account info is empty.
   {
     identity_test_env_.ClearPrimaryAccount();
@@ -3067,7 +3067,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 #endif
 
   // Simulate that the user has enabled the sync feature.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // MakePrimaryAccountAvailable is not supported on CrOS.
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
 #else
@@ -3111,7 +3111,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
 
   // Account wallet storage only makes sense together with support for
   // unconsented primary accounts, i.e. on Win/Mac/Linux.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(
       !sync_service_.IsSyncFeatureEnabled() &&
       sync_service_.GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA));
@@ -3161,7 +3161,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
     EXPECT_FALSE(prefs::IsUserOptedInWalletSyncTransport(
         prefs_.get(), active_info.account_id));
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   ///////////////////////////////////////////////////////////
   // kSignedInAndSyncFeature
