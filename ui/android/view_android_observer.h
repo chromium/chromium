@@ -22,6 +22,9 @@ class UI_ANDROID_EXPORT ViewAndroidObserver {
   // Notifies the view has been destroyed.
   virtual void OnViewAndroidDestroyed() {}
 
+  // Notifies that the delegate has been set.
+  virtual void OnDelegateSet() {}
+
  protected:
   virtual ~ViewAndroidObserver() {}
 };
