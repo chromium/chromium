@@ -124,8 +124,9 @@ MerchantTrustService::GetMerchantDataFromProto(
       }
     }
 
-    // TODO(crbug.com/378819357): Add reviews summary once it is added to the
-    // proto.
+    if(merchant_proto.has_reviews_summary()) {
+      merchant_data->reviews_summary = merchant_proto.reviews_summary();
+    }
   }
 
   return merchant_data;

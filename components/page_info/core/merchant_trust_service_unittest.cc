@@ -31,11 +31,14 @@ using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationMetadata;
 
 namespace {
+const char kTestSummary[] = "This is a test summary.";
+
 commerce::MerchantTrustSignalsV2 CreateValidProto() {
   commerce::MerchantTrustSignalsV2 proto;
   proto.set_merchant_star_rating(3.8);
   proto.set_merchant_count_rating(45);
   proto.set_merchant_details_page_url("https://page_url.com");
+  proto.set_reviews_summary(kTestSummary);
   return proto;
 }
 
@@ -101,6 +104,7 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionTrue) {
                                       ukm::UkmRecorder::GetNewSourceID());
   EXPECT_TRUE(info.has_value());
   EXPECT_EQ(info->page_url, GURL("https://page_url.com"));
+  EXPECT_EQ(info->reviews_summary, kTestSummary);
 }
 
 // Tests that proto are not returned correctly when optimization guide decision
