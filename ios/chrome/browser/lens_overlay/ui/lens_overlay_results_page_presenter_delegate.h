@@ -16,8 +16,9 @@
 // The results bottom sheet detent dimension has changed.
 - (void)onResultsPageDimensionStateChanged:(SheetDimensionState)state;
 
-// The occlusion insets amount has been determined.
-- (void)onResultsPageVerticalOcclusionInsetsSettled:(CGFloat)offsetNeeded;
+// The occlusion insets amount has been changed.
+- (void)onResultsPageVerticalOcclusionInsetsChanged:(CGFloat)offsetNeeded
+                                         reposition:(BOOL)reposition;
 
 @end
 

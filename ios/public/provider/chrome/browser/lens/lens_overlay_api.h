@@ -83,6 +83,9 @@ class GURL;
 // Disables flyout menus from displaying.
 - (void)disableFlyoutMenu:(BOOL)disable;
 
+// Sets the rest height of the guidance view.
+- (void)setGuidanceRestHeight:(CGFloat)height;
+
 @end
 
 namespace ios {

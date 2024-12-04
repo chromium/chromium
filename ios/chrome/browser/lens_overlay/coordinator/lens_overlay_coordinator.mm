@@ -554,10 +554,11 @@ const int kExpectedExitAnimationCount = 2;
   }
 }
 
-- (void)onResultsPageVerticalOcclusionInsetsSettled:(CGFloat)offsetNeeded {
+- (void)onResultsPageVerticalOcclusionInsetsChanged:(CGFloat)offsetNeeded
+                                         reposition:(BOOL)reposition {
   [_selectionViewController
       setOcclusionInsets:UIEdgeInsetsMake(0, 0, offsetNeeded, 0)
-              reposition:YES
+              reposition:reposition
                 animated:YES];
 }
 
@@ -941,6 +942,9 @@ const int kExpectedExitAnimationCount = 2;
   if (_associatedTabHelper) {
     _associatedTabHelper->ClearViewportSnapshot();
   }
+
+  [_selectionViewController
+      setGuidanceRestHeight:_resultsPagePresenter.resultsPageSheetHeight];
 }
 
 @end

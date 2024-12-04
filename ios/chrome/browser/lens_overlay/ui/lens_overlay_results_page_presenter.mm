@@ -143,6 +143,8 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
                    [weakSelf handlePanRecognizersAddedAfter:
                                  panRecognizersBeforePresenting
                                                    onWindow:window];
+                   weakSelf.resultsPageSheetHeight =
+                       [weakSelf calculateResultsPageSheetHeight];
                    if (completion) {
                      completion();
                    }
@@ -187,18 +189,13 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
     return;
   }
 
-  CGRect presentedFrame = _resultViewController.view.frame;
-  CGRect newFrame =
-      [_resultViewController.view convertRect:presentedFrame
-                                       toView:_baseViewController.view];
-  CGFloat containerHeight = _baseViewController.view.frame.size.height;
-  CGFloat currentSheetHeight = containerHeight - newFrame.origin.y;
+  self.resultsPageSheetHeight = [self calculateResultsPageSheetHeight];
 
   // Trigger the Lens UI exit flow when the release occurs below the threshold,
   // allowing the overlay animation to run concurrently with the sheet dismissal
   // one.
   BOOL sheetClosedThresholdReached =
-      currentSheetHeight <= kThresholdHeightForClosingSheet;
+      self.resultsPageSheetHeight <= kThresholdHeightForClosingSheet;
   BOOL userTouchesTheScreen = _windowPanTracker.isPanning;
   BOOL shouldDestroyLensUI =
       sheetClosedThresholdReached && !userTouchesTheScreen;
@@ -215,7 +212,53 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   CGFloat estimatedMediumDetentHeight = window.frame.size.height / 2;
   CGFloat offsetNeeded = estimatedMediumDetentHeight + kSelectionOffsetPadding;
 
-  [self.delegate onResultsPageVerticalOcclusionInsetsSettled:offsetNeeded];
+  [self.delegate onResultsPageVerticalOcclusionInsetsChanged:offsetNeeded
+                                                  reposition:YES];
+}
+
+- (CGFloat)calculateResultsPageSheetHeight {
+  if (!_resultViewController || !_baseViewController) {
+    return 0;
+  }
+
+  CGFloat containerHeight = _baseViewController.view.frame.size.height;
+  CGFloat currentSheetHeight;
+
+  // The presentation layer represents the state of the layer as it currently
+  // appears on screen, which will include the frame changes during an
+  // animation, unlike the standard view frame. Opt for the presentation layer
+  // when available, as it will be a more accurate representation of what is
+  // currently being shown.
+  if (_resultViewController.view.layer.presentationLayer) {
+    CGRect resultViewPresentationFrame =
+        _resultViewController.view.layer.presentationLayer.frame;
+    CGRect convertedResultViewPresentationFrame =
+        [_resultViewController.view.layer.presentationLayer
+            convertRect:resultViewPresentationFrame
+                toLayer:_baseViewController.view.layer];
+    currentSheetHeight =
+        containerHeight - convertedResultViewPresentationFrame.origin.y;
+  } else {
+    CGRect resultViewFrame = _resultViewController.view.frame;
+    CGRect convertedResultViewFrame =
+        [_resultViewController.view convertRect:resultViewFrame
+                                         toView:_baseViewController.view];
+    currentSheetHeight = containerHeight - convertedResultViewFrame.origin.y;
+  }
+
+  return currentSheetHeight;
+}
+
+- (void)setResultsPageSheetHeight:(CGFloat)newSheetHeight {
+  if (_resultsPageSheetHeight == newSheetHeight) {
+    return;
+  }
+  _resultsPageSheetHeight = newSheetHeight;
+
+  // Update occlusion insets for the new results sheet height to move elements
+  // anchored to the top of the results sheet. Do not reposition the selection.
+  [self.delegate onResultsPageVerticalOcclusionInsetsChanged:newSheetHeight
+                                                  reposition:NO];
 }
 
 #pragma mark - UIPanGestureRecognizer handlers

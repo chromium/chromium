@@ -78,6 +78,10 @@
   // NO-OP
 }
 
+- (void)setGuidanceRestHeight:(CGFloat)height {
+  // NO-OP
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {
