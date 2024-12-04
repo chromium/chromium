@@ -43,11 +43,11 @@ const uint32_t kOverrideMaxTopK = 5u;
 const float kDefaultTemperature = 0.0;
 const uint64_t kTestModelDownloadSize = 572u;
 
-const std::string kTestPrompt = "Test prompt";
-const std::string kExpectedFormattedTestPrompt = "User: Test prompt\nModel: ";
-const std::string kTestSystemPrompts = "Test system prompt";
-const std::string kExpectedFormattedSystemPrompts = "Test system prompt\n";
-const std::string kTestResponse = "Test response";
+const char kTestPrompt[] = "Test prompt";
+const char kExpectedFormattedTestPrompt[] = "User: Test prompt\nModel: ";
+const char kTestSystemPrompts[] = "Test system prompt";
+const char kExpectedFormattedSystemPrompts[] = "Test system prompt\n";
+const char kTestResponse[] = "Test response";
 
 const char kTestInitialPromptsUser1[] = "How are you?";
 const char kTestInitialPromptsSystem1[] = "I'm fine, thank you, and you?";
@@ -169,7 +169,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     std::string prompt_input = kTestPrompt;
     std::string expected_context = "";
     std::string expected_cloned_context =
-        kExpectedFormattedTestPrompt + kTestResponse + "\n";
+        base::StrCat({kExpectedFormattedTestPrompt, kTestResponse, "\n"});
     std::string expected_prompt = kExpectedFormattedTestPrompt;
     bool use_prompt_api_proto = false;
     bool should_overflow_context = false;
@@ -490,9 +490,9 @@ TEST_P(AILanguageModelTest, PromptSessionWithSystemPrompt) {
       .system_prompt = kTestSystemPrompts,
       .prompt_input = kTestPrompt,
       .expected_context = kExpectedFormattedSystemPrompts,
-      .expected_cloned_context = kExpectedFormattedSystemPrompts +
-                                 kExpectedFormattedTestPrompt + kTestResponse +
-                                 "\n",
+      .expected_cloned_context =
+          base::StrCat({kExpectedFormattedSystemPrompts,
+                        kExpectedFormattedTestPrompt, kTestResponse, "\n"}),
       .expected_prompt = kExpectedFormattedTestPrompt,
   });
 }
@@ -502,9 +502,9 @@ TEST_P(AILanguageModelTest, PromptSessionWithInitialPrompts) {
       .initial_prompts = GetTestInitialPrompts(),
       .prompt_input = kTestPrompt,
       .expected_context = kExpectedFormattedInitialPrompts,
-      .expected_cloned_context = kExpectedFormattedInitialPrompts +
-                                 kExpectedFormattedTestPrompt + kTestResponse +
-                                 "\n",
+      .expected_cloned_context =
+          base::StrCat({kExpectedFormattedInitialPrompts,
+                        kExpectedFormattedTestPrompt, kTestResponse, "\n"}),
       .expected_prompt = kExpectedFormattedTestPrompt,
   });
 }
@@ -515,9 +515,9 @@ TEST_P(AILanguageModelTest, PromptSessionWithSystemPromptAndInitialPrompts) {
       .initial_prompts = GetTestInitialPrompts(),
       .prompt_input = kTestPrompt,
       .expected_context = kExpectedFormattedSystemPromptAndInitialPrompts,
-      .expected_cloned_context =
-          kExpectedFormattedSystemPrompts + kExpectedFormattedInitialPrompts +
-          kExpectedFormattedTestPrompt + kTestResponse + "\n",
+      .expected_cloned_context = base::StrCat(
+          {kExpectedFormattedSystemPrompts, kExpectedFormattedInitialPrompts,
+           kExpectedFormattedTestPrompt, kTestResponse, "\n"}),
       .expected_prompt = kExpectedFormattedTestPrompt,
   });
 }
