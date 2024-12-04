@@ -52,6 +52,14 @@ void Separator::SetOrientation(Orientation orientation) {
   orientation_ = orientation;
 }
 
+int Separator::GetBorderRadius() const {
+  return border_radius_;
+}
+
+void Separator::SetBorderRadius(int radius) {
+  border_radius_ = radius;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Separator, View overrides:
 
@@ -101,13 +109,22 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
   const int w = std::max(1, r - x);
   const int h = std::max(1, b - y);
 
-  canvas->FillRect({x, y, w, h}, color);
+  if (border_radius_) {
+    cc::PaintFlags flags;
+    flags.setColor(color);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setBlendMode(SkBlendMode::kSrcOver);
+    canvas->DrawRoundRect({x, y, w, h}, border_radius_, flags);
+  } else {
+    canvas->FillRect({x, y, w, h}, color);
+  }
 }
 
 BEGIN_METADATA(Separator)
 ADD_PROPERTY_METADATA(ui::ColorId, ColorId)
 ADD_PROPERTY_METADATA(int, PreferredLength)
 ADD_PROPERTY_METADATA(Separator::Orientation, Orientation)
+ADD_PROPERTY_METADATA(int, BorderRadius)
 END_METADATA
 
 }  // namespace views

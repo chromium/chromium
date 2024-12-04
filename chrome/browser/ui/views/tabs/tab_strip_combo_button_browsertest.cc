@@ -42,3 +42,19 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonBrowserTest, BuildsComboButton) {
   EXPECT_NE(nullptr, tab_strip_combo_button()->new_tab_button());
   EXPECT_NE(nullptr, tab_strip_combo_button()->tab_search_container());
 }
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonBrowserTest, SeparatorVisibility) {
+  EXPECT_TRUE(tab_strip_combo_button()->separator()->IsDrawn());
+
+  ui::MouseEvent enter_event(ui::EventType::kMouseEntered, gfx::Point(),
+                             gfx::Point(), base::TimeTicks(), ui::EF_NONE, 0);
+  tab_strip_combo_button()->OnMouseEvent(&enter_event);
+
+  EXPECT_FALSE(tab_strip_combo_button()->separator()->IsDrawn());
+
+  ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
+                            gfx::Point(), base::TimeTicks(), ui::EF_NONE, 0);
+  tab_strip_combo_button()->OnMouseEvent(&exit_event);
+
+  EXPECT_TRUE(tab_strip_combo_button()->separator()->IsDrawn());
+}

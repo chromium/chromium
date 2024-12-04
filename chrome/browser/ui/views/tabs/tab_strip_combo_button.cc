@@ -16,8 +16,17 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+constexpr int kSeparatorBorderRadius = 2;
+constexpr int kSeparatorWidth = 2;
+constexpr int kSeparatorWidthNoBackground = 1;
+constexpr int kSeparatorHeight = 16;
+}  // namespace
 
 TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
                                          TabStrip* tab_strip) {
@@ -42,18 +51,28 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
         kColorNewTabButtonCRBackgroundFrameInactive);
   }
 
-  new_tab_button_ = AddChildView(std::move(new_tab_button));
-
-  new_tab_button_->SetTooltipText(
+  new_tab_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
-  new_tab_button_->GetViewAccessibility().SetName(
+  new_tab_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
 
 #if BUILDFLAG(IS_LINUX)
   // The New Tab Button can be middle-clicked on Linux.
-  new_tab_button_->SetTriggerableEventFlags(
-      new_tab_button_->GetTriggerableEventFlags() | ui::EF_MIDDLE_MOUSE_BUTTON);
+  new_tab_button->SetTriggerableEventFlags(
+      new_tab_button->GetTriggerableEventFlags() | ui::EF_MIDDLE_MOUSE_BUTTON);
 #endif
+
+  std::unique_ptr<views::Separator> separator =
+      std::make_unique<views::Separator>();
+  const int color_id = features::HasTabstripComboButtonWithBackground()
+                           ? kColorTabStripComboButtonSeparator
+                           : kColorTabStripComboButtonSeparatorOnHeader;
+  separator->SetColorId(color_id);
+  separator->SetBorderRadius(kSeparatorBorderRadius);
+  const int separator_width = features::HasTabstripComboButtonWithBackground()
+                                  ? kSeparatorWidth
+                                  : kSeparatorWidthNoBackground;
+  separator->SetPreferredSize(gfx::Size(separator_width, kSeparatorHeight));
 
   std::unique_ptr<TabSearchContainer> tab_search_container =
       std::make_unique<TabSearchContainer>(
@@ -63,12 +82,30 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
   tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
 
-  tab_search_container_ = AddChildView(std::move(tab_search_container));
-  tab_search_container_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+  auto* button_container = AddChildView(std::make_unique<views::View>());
+  auto* separator_container = AddChildView(std::make_unique<views::View>());
+  button_container->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  separator_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  separator_container->SetCanProcessEventsWithinSubtree(false);
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>());
+  new_tab_button_ = button_container->AddChildView(std::move(new_tab_button));
+  tab_search_container_ =
+      button_container->AddChildView(std::move(tab_search_container));
+  separator_ = separator_container->AddChildView(std::move(separator));
+
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetNotifyEnterExitOnChild(true);
+}
+
+void TabStripComboButton::OnMouseEntered(const ui::MouseEvent& event) {
+  separator_->SetVisible(false);
+}
+
+void TabStripComboButton::OnMouseExited(const ui::MouseEvent& event) {
+  separator_->SetVisible(true);
 }
 
 BEGIN_METADATA(TabStripComboButton)

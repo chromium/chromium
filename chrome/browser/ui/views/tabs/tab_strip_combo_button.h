@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 
 class BrowserWindowInterface;
@@ -24,13 +25,20 @@ class TabStripComboButton : public views::View {
   TabStripComboButton& operator=(const TabStripComboButton&) = delete;
   ~TabStripComboButton() override = default;
 
+  // views::View:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+
   views::Button* new_tab_button() { return new_tab_button_; }
 
   TabSearchContainer* tab_search_container() { return tab_search_container_; }
 
+  views::Separator* separator() { return separator_; }
+
  private:
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_COMBO_BUTTON_H_
