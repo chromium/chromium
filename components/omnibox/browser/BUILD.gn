@@ -196,6 +196,10 @@ static_library("browser") {
     "document_suggestions_service.h",
     "favicon_cache.cc",
     "favicon_cache.h",
+    "featured_search_provider.cc",
+    "featured_search_provider.h",
+    "history_embeddings_provider.cc",
+    "history_embeddings_provider.h",
     "history_fuzzy_provider.cc",
     "history_fuzzy_provider.h",
     "history_match.cc",
@@ -338,12 +342,14 @@ static_library("browser") {
     "//components/dom_distiller/core:core",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//components/history_clusters/core",
+    "//components/history_embeddings",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/navigation_metrics",
     "//components/open_from_clipboard",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
-    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/pref_registry",
     "//components/prefs",
@@ -398,14 +404,7 @@ static_library("browser") {
   }
 
   if (!is_ios) {
-    sources += [
-      "history_embeddings_provider.cc",
-      "history_embeddings_provider.h",
-    ]
-    deps += [
-      "//components/history_embeddings",
-      "//ui/base/clipboard",
-    ]
+    deps += [ "//ui/base/clipboard" ]
   }
 
   if (use_blink) {
@@ -415,18 +414,7 @@ static_library("browser") {
       "history_cluster_provider.cc",
       "history_cluster_provider.h",
     ]
-    deps += [
-      "//components/history_clusters/core",
-      "//components/history_embeddings",
-      "//content/public/common",
-    ]
-  }
-
-  if (!is_android && !is_ios) {
-    sources += [
-      "featured_search_provider.cc",
-      "featured_search_provider.h",
-    ]
+    deps += [ "//content/public/common" ]
   }
 
   if (enable_extensions) {
@@ -733,7 +721,8 @@ static_library("test_support") {
     "//components/bookmarks/test",
     "//components/history/core/browser",
     "//components/history/core/test",
-    "//components/optimization_guide/core:core",
+    "//components/history_embeddings",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/resources",
@@ -761,10 +750,6 @@ static_library("test_support") {
       "fake_on_device_tail_model_service.cc",
       "fake_on_device_tail_model_service.h",
     ]
-  }
-
-  if (!is_ios) {
-    deps += [ "//components/history_embeddings" ]
   }
 }
 
@@ -818,6 +803,8 @@ source_set("unit_tests") {
     "fake_autocomplete_controller.cc",
     "fake_autocomplete_controller.h",
     "favicon_cache_unittest.cc",
+    "featured_search_provider_unittest.cc",
+    "history_embeddings_provider_unittest.cc",
     "history_fuzzy_provider_unittest.cc",
     "history_provider_unittest.cc",
     "history_quick_provider_unittest.cc",
@@ -876,10 +863,6 @@ source_set("unit_tests") {
     ]
   }
 
-  if (!is_android && !is_ios) {
-    sources += [ "featured_search_provider_unittest.cc" ]
-  }
-
   deps = [
     ":browser",
     ":test_support",
@@ -892,10 +875,13 @@ source_set("unit_tests") {
     "//components/dom_distiller/core:core",
     "//components/favicon/core/test:test_support",
     "//components/history/core/test",
+    "//components/history_embeddings",
+    "//components/history_embeddings:test_support",
     "//components/memory_pressure:test_support",
     "//components/ntp_tiles:ntp_tiles",
     "//components/omnibox/common",
     "//components/open_from_clipboard:test_support",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
@@ -936,13 +922,8 @@ source_set("unit_tests") {
     sources += [
       "actions/history_clusters_action_unittest.cc",
       "history_cluster_provider_unittest.cc",
-      "history_embeddings_provider_unittest.cc",
     ]
-    deps += [
-      "//components/history_embeddings",
-      "//components/history_embeddings:unit_tests",
-      "//ui/base/clipboard:clipboard_test_support",
-    ]
+    deps += [ "//ui/base/clipboard:clipboard_test_support" ]
   }
 
   if (is_chromeos) {

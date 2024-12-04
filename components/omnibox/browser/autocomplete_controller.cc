@@ -41,6 +41,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
@@ -55,6 +56,8 @@
 #include "components/omnibox/browser/calculator_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/document_provider.h"
+#include "components/omnibox/browser/featured_search_provider.h"
+#include "components/omnibox/browser/history_embeddings_provider.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/history_scoring_signals_annotator.h"
@@ -93,16 +96,10 @@
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "components/omnibox/browser/featured_search_provider.h"
-#endif
-
 #if !BUILDFLAG(IS_IOS)
 #include "components/history_clusters/core/config.h"  // nogncheck
-#include "components/history_embeddings/history_embeddings_features.h"  //nogncheck
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
-#include "components/omnibox/browser/history_embeddings_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
 
@@ -1274,13 +1271,11 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     open_tab_provider_ = new OpenTabProvider(provider_client_.get());
     providers_.push_back(open_tab_provider_.get());
   }
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (provider_types & AutocompleteProvider::TYPE_FEATURED_SEARCH) {
     featured_search_provider_ =
         new FeaturedSearchProvider(provider_client_.get());
     providers_.push_back(featured_search_provider_.get());
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void AutocompleteController::UpdateResult(UpdateType update_type,
@@ -1489,12 +1484,10 @@ void AutocompleteController::PostProcessMatches() {
   // `AutocompleteProvider` interface and iterate all providers here.
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(internal_result_);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // `featured_search_provider_` isn't interested in "invisible" autocomplete
   // runs, e.g. when text is copied.
   if (featured_search_provider_ && !input_.omit_asynchronous_matches())
     featured_search_provider_->RegisterDisplayedMatches(internal_result_);
-#endif
 
   // Mark the rich autocompletion feature triggered if the top match, or
   // would-be-top-match if rich autocompletion is counterfactual enabled, is

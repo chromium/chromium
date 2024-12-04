@@ -358,7 +358,9 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
 
 TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kStarterPackIPH);
+  features.InitWithFeaturesAndParameters(
+      {{omnibox::kStarterPackExpansion, {}}, {omnibox::kStarterPackIPH, {}}},
+      {});
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.
   AutocompleteInput input;

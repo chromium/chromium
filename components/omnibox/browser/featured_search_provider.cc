@@ -44,8 +44,6 @@
 
 namespace {
 
-constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
-
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
     case IphType::kNone:
@@ -236,8 +234,7 @@ void FeaturedSearchProvider::AddStarterPackMatch(
       match.fill_into_edit.substr(input.text().length());
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  if (kIsDesktop &&
-      input.current_page_classification() !=
+  if (input.current_page_classification() !=
           metrics::OmniboxEventProto::NTP_REALBOX &&
       template_url.keyword().starts_with(u'@')) {
     // The Gemini provider doesn't follow the "Search X" pattern and should
@@ -351,8 +348,8 @@ void FeaturedSearchProvider::RegisterDisplayedMatches(
 void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
     const TemplateURL& template_url,
     const AutocompleteInput& input) {
-  if (!kIsDesktop || input.current_page_classification() ==
-                         metrics::OmniboxEventProto::NTP_REALBOX) {
+  if (input.current_page_classification() ==
+      metrics::OmniboxEventProto::NTP_REALBOX) {
     return;
   }
 

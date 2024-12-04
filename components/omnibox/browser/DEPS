@@ -12,8 +12,6 @@ include_rules = [
   "+components/google/core/common/google_util.h",
   "+components/grit",
   "+components/history/core/browser",
-  "+components/history_embeddings",
-  "+components/history_embeddings/core",
   "+components/history/core/test",
   "+components/history_clusters/core",
   "+components/history_embeddings",

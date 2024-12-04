@@ -1,10 +1,10 @@
 include_rules = [
   "+chromeos/constants/chromeos_features.h",
-  "+components/history",
+  "+components/history/core",
   "+components/keyed_service/core",
-  "+components/os_crypt/async",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
+  "+components/os_crypt/async",
   "+components/page_content_annotations/core",
   "+mojo/public/cpp/bindings",
   "+services/passage_embeddings",

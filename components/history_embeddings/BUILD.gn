@@ -61,6 +61,19 @@ static_library("history_embeddings") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_history_embeddings_service.cc",
+    "mock_history_embeddings_service.h",
+  ]
+  deps = [
+    ":history_embeddings",
+    "//base/test:test_support",
+    "//components/history/core/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -68,8 +81,6 @@ source_set("unit_tests") {
     "ml_answerer_unittest.cc",
     "ml_embedder_unittest.cc",
     "ml_intent_classifier_unittest.cc",
-    "mock_history_embeddings_service.cc",
-    "mock_history_embeddings_service.h",
     "passages_util_unittest.cc",
     "search_strings_update_listener_unittest.cc",
     "sql_database_unittest.cc",
@@ -77,6 +88,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":history_embeddings",
+    ":test_support",
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",
