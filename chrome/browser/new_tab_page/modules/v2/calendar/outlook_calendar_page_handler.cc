@@ -71,7 +71,10 @@ void OutlookCalendarPageHandler::OnJsonParsed(
     const auto& event_dict = event.GetDict();
     std::optional<bool> has_attachments = event_dict.FindBool("hasAttachments");
     const std::string* title = event_dict.FindString("subject");
+    std::optional<bool> is_canceled = event_dict.FindBool("isCancelled");
     const std::string* calendar_url = event_dict.FindString("webLink");
+    const std::string* response_status =
+        event_dict.FindStringByDottedPath("responseStatus.response");
     const std::string* conference_url =
         event_dict.FindStringByDottedPath("onlineMeeting.joinUrl");
     const std::string* location =
@@ -90,7 +93,7 @@ void OutlookCalendarPageHandler::OnJsonParsed(
     // found in the response.
     if (!has_attachments.has_value() || !title || !calendar_url ||
         !start_time || !end_time || !is_organizer.has_value() || !attendees ||
-        !location ||
+        !location || !response_status || !is_canceled.has_value() ||
         !base::Time::FromUTCString((*start_time).c_str(), &start_timestamp) ||
         !base::Time::FromUTCString((*end_time).c_str(), &end_timestamp)) {
       std::move(callback).Run(
@@ -103,11 +106,30 @@ void OutlookCalendarPageHandler::OnJsonParsed(
     created_event->start_time = start_timestamp;
     created_event->end_time = end_timestamp;
     created_event->url = GURL(*calendar_url);
-    // TODO(357700028) Handle case where the user is not the event organizer.
-    created_event->is_accepted = is_organizer.value();
-    // TODO(357700028): Filter out attendees that declined.
+    created_event->is_accepted =
+        *response_status == "accepted" || is_organizer.value();
+
+    // On Outlook calendar, if an event exists and the user is not the
+    // organizer, there must be another user attending (the organizer by
+    // default), unless the event is canceled, but not removed from calendar.
     // Note: If user is the organizer they are not found in the attendees list.
-    created_event->has_other_attendee = !(*attendees).empty();
+    if (is_organizer.value()) {
+      for (const auto& attendee : *attendees) {
+        const std::string* attendee_response =
+            attendee.GetDict().FindStringByDottedPath("status.response");
+        if (!attendee_response) {
+          std::move(callback).Run(
+              std::vector<ntp::calendar::mojom::CalendarEventPtr>());
+          return;
+        } else if (*attendee_response == "accepted") {
+          created_event->has_other_attendee = true;
+          break;
+        }
+      }
+    } else {
+      created_event->has_other_attendee = !is_canceled.value();
+    }
+
     created_event->location = *location;
     if (conference_url) {
       created_event->conference_url = GURL(*conference_url);
