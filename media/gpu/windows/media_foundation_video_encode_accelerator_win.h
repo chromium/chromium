@@ -120,6 +120,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     bool discard_output = false;
     std::optional<int> qp;
     uint32_t frame_id;
+    base::TimeDelta timestamp;
   };
 
   // Encoder state.
@@ -230,6 +231,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // EncodeOutput needs to be copied into a BitstreamBufferRef as a FIFO.
   base::circular_deque<std::unique_ptr<EncodeOutput>> encoder_output_queue_;
+
+  // True if the last ProcessInput() returns MF_E_NOTACCEPTING.
+  bool has_not_accepted_sample_ = false;
 
   // Counter of inputs which is used to assign temporal layer indexes
   // according to the corresponding layer pattern. Reset for every key frame.
