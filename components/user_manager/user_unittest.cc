@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_manager {
@@ -35,7 +36,8 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
     const raw_ptr<const User, DanglingUntriaged> user_;
   };
 
-  const AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kGaiaId));
 
   ScopedUser kiosk_user(User::CreateKioskAppUser(account_id));
   EXPECT_TRUE(kiosk_user.IsAffiliated());

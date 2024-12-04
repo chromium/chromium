@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "google_apis/gaia/gaia_id.h"
 
 enum class AccountType {
   // Unspecified account (eg. other domains)
@@ -58,7 +59,7 @@ class COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID) AccountId {
   void clear();
 
   AccountType GetAccountType() const;
-  const std::string& GetGaiaId() const;
+  const GaiaId& GetGaiaId() const;
   const std::string& GetObjGuid() const;
   // Users of AccountId should make no assumptions on the format of email.
   // I.e. it cannot be used as account identifier, because it is (in general)
@@ -74,7 +75,7 @@ class COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID) AccountId {
   void SetUserEmail(std::string_view email);
 
   static AccountId FromNonCanonicalEmail(std::string_view email,
-                                         std::string_view gaia_id,
+                                         const GaiaId& gaia_id,
                                          AccountType account_type);
   // This method is to be used during transition period only.
   // AccountId with UNKNOWN AccountType;
@@ -83,7 +84,7 @@ class COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID) AccountId {
   // full account information.
   // AccountId with GOOGLE AccountType;
   static AccountId FromUserEmailGaiaId(std::string_view user_email,
-                                       std::string_view gaia_id);
+                                       const GaiaId& gaia_id);
   // These methods are used to construct Active Directory AccountIds.
   // AccountId with ACTIVE_DIRECTORY AccountType;
   static AccountId AdFromUserEmailObjGuid(std::string_view email,
@@ -105,13 +106,17 @@ class COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID) AccountId {
   COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
   friend std::ostream& operator<<(std::ostream&, const AccountId&);
 
-  AccountId(std::string_view id,
-            std::string_view user_email,
-            AccountType account_type);
+  AccountId(std::string_view user_email,
+            AccountType account_type,
+            const GaiaId& gaia_id,
+            std::string_view active_directory_id);
 
-  std::string id_;
   std::string user_email_;
   AccountType account_type_ = AccountType::UNKNOWN;
+  // ID for AccountType::GOOGLE, empty otherwise.
+  GaiaId gaia_id_;
+  // ID for AccountType::ACTIVE_DIRECTORY (deprecated), empty otherwise.
+  std::string active_directory_id_;
 };
 
 // Overload << operator to allow logging of AccountIds.

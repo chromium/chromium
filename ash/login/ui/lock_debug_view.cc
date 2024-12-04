@@ -254,7 +254,7 @@ class LockDebugView::DebugDataDispatcherTransformer
         users[i].basic_user_info.account_id = AccountId::FromUserEmailGaiaId(
             users[i].basic_user_info.account_id.GetUserEmail() +
                 base::NumberToString(i),
-            users[i].basic_user_info.account_id.GetGaiaId() +
+            users[i].basic_user_info.account_id.GetGaiaId().ToString() +
                 base::NumberToString(i));
       }
 
