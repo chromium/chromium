@@ -77,11 +77,11 @@ class CastMediaSinkServiceImplTest : public ::testing::TestWithParam<bool> {
   CastMediaSinkServiceImplTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         mock_time_task_runner_(new base::TestMockTimeTaskRunner()),
+        mock_cast_socket_service_(
+            new cast_channel::MockCastSocketService(mock_time_task_runner_)),
         dial_media_sink_service_(
             base::DoNothing(),
             base::SequencedTaskRunner::GetCurrentDefault()),
-        mock_cast_socket_service_(
-            new cast_channel::MockCastSocketService(mock_time_task_runner_)),
         media_sink_service_impl_(
             mock_sink_discovered_cb_.Get(),
             mock_cast_socket_service_.get(),
@@ -142,12 +142,12 @@ class CastMediaSinkServiceImplTest : public ::testing::TestWithParam<bool> {
       DiscoveryNetworkMonitor::CreateInstanceForTest(&FakeGetNetworkInfo);
 
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
-  DialMediaSinkServiceImpl dial_media_sink_service_;
   std::unique_ptr<cast_channel::MockCastSocketService>
       mock_cast_socket_service_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_for_dial_;
+  DialMediaSinkServiceImpl dial_media_sink_service_;
   CastMediaSinkServiceImpl media_sink_service_impl_;
+  raw_ptr<base::MockOneShotTimer> mock_timer_;
+  raw_ptr<base::MockOneShotTimer> mock_timer_for_dial_;
   testing::NiceMock<MockObserver> observer_;
 };
 
