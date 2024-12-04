@@ -520,8 +520,7 @@ void FocusFakebox() {
   }
 
   // Clear the pasteboard in case there is a URL copied.
-  UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
-  [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
+  [ChromeEarlGrey clearPasteboard];
 
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
@@ -569,10 +568,6 @@ void FocusFakebox() {
 }
 
 - (void)testCopyPaste {
-  // TODO(crbug.com/381419242): Re-enable when fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails consistently on iPads.");
-  }
   [self openPage1];
 
   // Long pressing should allow copying.
