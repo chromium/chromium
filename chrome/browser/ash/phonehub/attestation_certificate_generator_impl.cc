@@ -30,8 +30,7 @@ AttestationCertificateGeneratorImpl::AttestationCertificateGeneratorImpl(
   auto key_registry = device_sync::CryptAuthKeyRegistryImpl::Factory::Create(
       profile->GetPrefs());
   key_registry_ = std::move(key_registry);
-  if (features::IsPhoneHubAttestationRetriesEnabled() &&
-      NetworkHandler::IsInitialized()) {
+  if (NetworkHandler::IsInitialized()) {
     NetworkHandler::Get()->network_state_handler()->AddObserver(this,
                                                                 FROM_HERE);
   }
@@ -39,8 +38,7 @@ AttestationCertificateGeneratorImpl::AttestationCertificateGeneratorImpl(
 }
 
 AttestationCertificateGeneratorImpl::~AttestationCertificateGeneratorImpl() {
-  if (features::IsPhoneHubAttestationRetriesEnabled() &&
-      NetworkHandler::IsInitialized()) {
+  if (NetworkHandler::IsInitialized()) {
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
                                                                    FROM_HERE);
   }
@@ -48,7 +46,7 @@ AttestationCertificateGeneratorImpl::~AttestationCertificateGeneratorImpl() {
 
 bool AttestationCertificateGeneratorImpl::
     ShouldRegenerateAttestationCertificate() {
-  if (features::IsPhoneHubAttestationRetriesEnabled() && !is_valid_) {
+  if (!is_valid_) {
     return true;
   }
 

@@ -2300,11 +2300,6 @@ BASE_FEATURE(kPerDeskShelf, "PerDeskShelf", base::FEATURE_DISABLED_BY_DEFAULT);
 // and perform phone-side actions within ChromeOS.
 BASE_FEATURE(kPhoneHub, "PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Retry generating attestation certificates when there are failures.
-BASE_FEATURE(kPhoneHubAttestationRetries,
-             "PhoneHubAttestationRetries",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Camera Roll feature in Phone Hub, which allows users to access
 // recent photos and videos taken on a connected Android device
 BASE_FEATURE(kPhoneHubCameraRoll,
@@ -4287,10 +4282,6 @@ bool IsPhoneHubPingOnBubbleOpenEnabled() {
 
 bool IsPhoneHubEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHub);
-}
-
-bool IsPhoneHubAttestationRetriesEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubAttestationRetries);
 }
 
 bool IsPhoneHubCallNotificationEnabled() {
