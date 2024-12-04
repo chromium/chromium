@@ -37,6 +37,8 @@
 
 namespace content {
 
+using perfetto::protos::pbzero::ChromeTrackEvent;
+
 namespace {
 
 // Constant used to mark two call sites that must always agree on whether
@@ -1402,6 +1404,8 @@ bool SiteInstanceImpl::HasEffectiveURL(BrowserContext* browser_context,
 }
 
 void SiteInstanceImpl::LockProcessIfNeeded() {
+  TRACE_EVENT("navigation", "SiteInstanceImpl::LockProcessIfNeeded",
+              ChromeTrackEvent::kSiteInstance, this);
   RenderProcessHost* process = site_instance_group_->process();
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -1442,8 +1446,10 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // strong protection. If only some sites are isolated, we need
       // additional logic to prevent the non-isolated sites from requesting
       // resources for isolated sites. https://crbug.com/509125
-      TRACE_EVENT2("navigation", "RenderProcessHost::SetProcessLock", "site id",
-                   id_.value(), "lock", lock_to_set.ToString());
+      TRACE_EVENT_INSTANT(
+          "navigation",
+          "SiteInstanceImpl::LockProcessIfNeeded_set_process_lock", "lock",
+          lock_to_set.ToString());
       process->SetProcessLock(GetIsolationContext(), lock_to_set);
     } else if (process_lock != lock_to_set) {
       // We should never attempt to reassign a different origin lock to a
