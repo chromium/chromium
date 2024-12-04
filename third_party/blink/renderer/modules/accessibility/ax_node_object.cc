@@ -5008,6 +5008,8 @@ String AXNodeObject::TextFromDescendants(
   AXObject* previous = nullptr;
   ax::mojom::blink::NameFrom last_used_name_from =
       ax::mojom::blink::NameFrom::kNone;
+  AXObjectVector action_objects =
+      RelationVectorFromAria(html_names::kAriaActionsAttr);
 
   CHECK(!NeedsToUpdateCachedValues());
 
@@ -5029,6 +5031,11 @@ String AXNodeObject::TextFromDescendants(
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
+
+    // Exclude nodes referenced by aria-actions.
+    if (action_objects.Contains(child)) {
+      continue;
+    }
 
     if (child->IsHiddenForTextAlternativeCalculation(
             aria_label_or_description_root)) {
