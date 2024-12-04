@@ -14,8 +14,10 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -709,6 +711,56 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingSelectRoot) {
   select->setAttribute(html_names::kMultipleAttr, AtomicString("true"));
   EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
   EXPECT_TRUE(select->NeedsStyleRecalc());
+}
+
+TEST_F(HTMLSelectElementTest, GetListItems) {
+  // Structure:
+  // <select>
+  //   <option id=one></option>
+  //   <div>
+  //     <option id=two></option>
+  //   </div>
+  //   <option id=three>
+  //     <option id=four></option>
+  //   </option>
+  //   <hr>
+  //     <option id=five></option>
+  //   </hr>
+  //   <optgroup id=groupone>
+  //     <option id=six></option>
+  //     <optgroup id=grouptwo>
+  //       <option id=seven></option>
+  //     </optgroup>
+  //   </optgroup>
+  // </select>
+  auto* select = MakeGarbageCollected<HTMLSelectElement>(GetDocument());
+  GetDocument().body()->appendChild(select);
+  auto* one = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  select->appendChild(one);
+  auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  select->appendChild(div);
+  auto* two = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  div->appendChild(two);
+  auto* three = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  select->appendChild(three);
+  auto* four = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  three->appendChild(four);
+  auto* hr = MakeGarbageCollected<HTMLHRElement>(GetDocument());
+  select->appendChild(hr);
+  auto* five = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  hr->appendChild(five);
+  auto* groupone = MakeGarbageCollected<HTMLOptGroupElement>(GetDocument());
+  select->appendChild(groupone);
+  auto* six = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  groupone->appendChild(six);
+  auto* grouptwo = MakeGarbageCollected<HTMLOptGroupElement>(GetDocument());
+  groupone->appendChild(grouptwo);
+  auto* seven = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  grouptwo->appendChild(seven);
+
+  VectorOf<HTMLElement> expected_items({one, two, three, hr, groupone, six});
+  VectorOf<HTMLElement> actual_items = select->GetListItems();
+  EXPECT_EQ(expected_items, actual_items);
 }
 
 }  // namespace blink

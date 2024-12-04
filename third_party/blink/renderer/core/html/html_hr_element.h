@@ -29,7 +29,7 @@ namespace blink {
 
 class HTMLSelectElement;
 
-class HTMLHRElement final : public HTMLElement {
+class CORE_EXPORT HTMLHRElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
