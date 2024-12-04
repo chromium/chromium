@@ -242,8 +242,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // Create the resource provider for the target for the blit.
   std::unique_ptr<CanvasResourceProvider> resource_provider;
   {
-    SkImageInfo dest_info = SkImageInfo::Make(
-        dest_size, dest_color_type, dest_alpha_type, dest_color_space);
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kNo;
     // If `source` is accelerated, then use a SharedImage provider.
