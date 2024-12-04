@@ -8494,3 +8494,6 @@ crbug.com/377927602 external/wpt/selection/caret/collapse-pre-linestart-1.html [
 # Gardener 2024-11-12
 crbug.com/378566920 [ Debug Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
 crbug.com/378566920 [ Debug Mac14 ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
+
+# Gardener 2024-11-18
+crbug.com/379516106 [ Mac14 Debug ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
