@@ -1509,7 +1509,10 @@ any piece of software it manages is permitted to send usage stats.
 ### Telemetry
 When the updater installs an application (an installer is run) it sends an
 event with `"eventtype": 2` indicating the outcome of installation. The updater
-does not send such a ping for its own installation.
+does not send such a ping for its own successful installation, but if the
+updater installation fails, then the updater sends an error event with
+`"eventtype": 2`. For example:
+`"event":[{"errorcode":75075,"eventresult":1,"eventtype":2,`.
 
 When the updater updates an application (including itself) it sends an
 event with `"eventtype": 3` indicating the outcome of update operation.
