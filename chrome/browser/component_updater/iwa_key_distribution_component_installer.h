@@ -35,12 +35,7 @@ class IwaKeyDistributionComponentInstallerPolicy
   static constexpr base::FilePath::CharType kDataFileName[] =
       FILE_PATH_LITERAL("iwa-key-distribution.pb");
 
-  using ComponentReadyCallback =
-      base::RepeatingCallback<void(const base::Version&,
-                                   const base::FilePath& installed_file_path,
-                                   bool is_preloaded)>;
-
-  explicit IwaKeyDistributionComponentInstallerPolicy(ComponentReadyCallback);
+  IwaKeyDistributionComponentInstallerPolicy();
   ~IwaKeyDistributionComponentInstallerPolicy() override;
 
   IwaKeyDistributionComponentInstallerPolicy(
@@ -65,9 +60,6 @@ class IwaKeyDistributionComponentInstallerPolicy
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  // Repeatedly called from `ComponentReady()`.
-  ComponentReadyCallback on_component_ready_;
 };
 
 // Called once during startup to make the component update service aware of

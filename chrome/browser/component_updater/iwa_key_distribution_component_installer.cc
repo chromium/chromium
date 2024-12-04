@@ -44,10 +44,7 @@ BASE_FEATURE(kIwaKeyDistributionComponent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 IwaKeyDistributionComponentInstallerPolicy::
-    IwaKeyDistributionComponentInstallerPolicy(
-        ComponentReadyCallback on_component_ready)
-    : on_component_ready_(std::move(on_component_ready)) {}
-
+    IwaKeyDistributionComponentInstallerPolicy() = default;
 IwaKeyDistributionComponentInstallerPolicy::
     ~IwaKeyDistributionComponentInstallerPolicy() = default;
 
@@ -87,14 +84,15 @@ void IwaKeyDistributionComponentInstallerPolicy::ComponentReady(
 
   VLOG(1) << "Iwa Key Distribution Component ready, version " << version
           << " in " << install_dir;
-  on_component_ready_.Run(
-      version, install_dir.Append(kDataFileName),
-      /*is_preloaded=*/manifest.FindBool(kPreloadedKey).value_or(false));
+  web_app::IwaKeyDistributionInfoProvider::GetInstance()
+      ->LoadKeyDistributionData(
+          version, install_dir.Append(kDataFileName),
+          /*is_preloaded=*/manifest.FindBool(kPreloadedKey).value_or(false));
 }
 
 base::FilePath
 IwaKeyDistributionComponentInstallerPolicy::GetRelativeInstallDir() const {
-  return base::FilePath(FILE_PATH_LITERAL("IwaKeyDistribution"));
+  return base::FilePath(kRelativeInstallDirName);
 }
 
 void IwaKeyDistributionComponentInstallerPolicy::GetHash(
@@ -117,15 +115,9 @@ void RegisterIwaKeyDistributionComponent(ComponentUpdateService* cus) {
     return;
   }
 
-  using Handler = web_app::IwaKeyDistributionInfoProvider;
-
-  // `base::Unretained()` is safe here as IwaKeyDistributionInfoProvider is a
-  // singleton that never goes away.
   base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<IwaKeyDistributionComponentInstallerPolicy>(
-          base::BindRepeating(&Handler::LoadKeyDistributionData,
-                              base::Unretained(Handler::GetInstance()))),
-      /*action_handler=*/nullptr, base::TaskPriority::BEST_EFFORT)
+      std::make_unique<IwaKeyDistributionComponentInstallerPolicy>(),
+      /*action_handler=*/nullptr, base::TaskPriority::USER_VISIBLE)
       ->Register(cus, base::DoNothing());
 }
 
