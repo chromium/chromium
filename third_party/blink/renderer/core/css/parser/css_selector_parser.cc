@@ -1237,10 +1237,8 @@ bool IsSimpleSelectorValidAfterPseudoElement(
              CSSSelector::kPseudoScrollMarker;
     case CSSSelector::kPseudoUnknown:
       return true;
-    case CSSSelector::kPseudoPickerIcon:
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoBefore:
-    case CSSSelector::kPseudoCheckMark:
       if (simple_selector.GetPseudoType() == CSSSelector::kPseudoMarker &&
           RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled()) {
         return true;
