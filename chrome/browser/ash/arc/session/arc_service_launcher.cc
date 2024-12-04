@@ -38,9 +38,7 @@
 #include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 #include "ash/components/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
@@ -117,15 +115,21 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#else
+#include "ash/constants/ash_switches.h"
+#include "base/files/file_path.h"
+#endif
 
+namespace arc {
+namespace {
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 // Delay for repeatedly checking if the TPM is owned or not.
 constexpr base::TimeDelta kTpmOwnershipCheckDelay = base::Seconds(5);
 // Timeout for waiting for the daemon to become available after we have owned
 // the TPM.
 constexpr base::TimeDelta kDaemonWaitTimeoutSec = base::Seconds(30);
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-namespace arc {
-namespace {
 
 // `ChromeBrowserMainPartsAsh` owns.
 ArcServiceLauncher* g_arc_service_launcher = nullptr;
@@ -142,6 +146,7 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
                                              std::move(delegate));
 }
 
+#if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 void CheckArcvmDlcImageStatus() {
   base::FilePath arc_vm_dlc_image_path(
       "/opt/google/vms/android/system.raw.img");
@@ -153,6 +158,7 @@ void CheckArcvmDlcImageStatus() {
   bool is_arcvm_dlc_image_available = base::PathExists(arc_vm_dlc_image_path);
   arc::SetArcvmDlcImageStatus(is_arcvm_dlc_image_available);
 }
+#endif  //! BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
 }  // namespace
 
