@@ -4721,7 +4721,9 @@
       "external/wpt/css/css-values/attr-notype-fallback.html",
       "external/wpt/css/css-values/attr-pseudo-elem-invalidation.html",
       "external/wpt/css/css-values/attr-security.html",
-      "external/wpt/css/css-values/attr-universal-selector.html"
+      "external/wpt/css/css-values/attr-universal-selector.html",
+      "fast/css-generated-content/attr-content-dynamic.html",
+      "fast/css/invalidation/content-attr.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
