@@ -25,8 +25,6 @@ per-file media_router_strings.grdp=file://chrome/browser/media/router/OWNERS
 
 per-file nearby_share_strings.grdp=file://chrome/browser/nearby_sharing/OWNERS
 
-per-file welcome_strings.grdp=file://chrome/browser/ui/webui/welcome/OWNERS
-
 per-file printing_strings.grdp=file://printing/OWNERS
 
 per-file profiles_strings.grdp=file://chrome/app/profiles_strings_grdp/OWNERS

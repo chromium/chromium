@@ -7294,16 +7294,6 @@ bool ChromeContentBrowserClient::HandleWebUI(
   }
 #endif
 
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/40647483): Remove when issue is resolved.
-  if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->host() == chrome::kChromeUIWelcomeWin10Host) {
-    *url =
-        ReplaceURLHostAndPath(*url, chrome::kChromeUIWelcomeHost, url->path());
-    return true;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
   if (!ChromeWebUIControllerFactory::GetInstance()->UseWebUIForURL(
           browser_context, *url) &&
       !content::WebUIConfigMap::GetInstance().GetConfig(browser_context,
@@ -7362,16 +7352,6 @@ bool ChromeContentBrowserClient::ShowPaymentHandlerWindow(
 bool ChromeContentBrowserClient::HandleWebUIReverse(
     GURL* url,
     content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/40647483): Remove when issue is resolved.
-  // No need to actually reverse-rewrite the URL, but return true to update the
-  // displayed URL when rewriting chrome://welcome-win10 to chrome://welcome.
-  if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->host() == chrome::kChromeUIWelcomeHost) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://settings/certificates to

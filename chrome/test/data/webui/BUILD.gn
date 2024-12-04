@@ -82,7 +82,6 @@ source_set("browser_tests") {
     sources += [
       "intro/intro_browsertest.cc",
       "signin/batch_upload_view_browsertest.cc",
-      "welcome/welcome_browsertest.cc",
     ]
   }
 
@@ -674,13 +673,11 @@ generate_grd("build_grd") {
       "inline_login:build_grdp",
       "intro:build_grdp",
       "signin:build_grdp",
-      "welcome:build_grdp",
     ]
     grdp_files += [
       "$target_gen_dir/inline_login/resources.grdp",
       "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
-      "$target_gen_dir/welcome/resources.grdp",
     ]
   }
 

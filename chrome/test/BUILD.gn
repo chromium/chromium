@@ -7054,7 +7054,6 @@ test("unit_tests") {
       "../browser/signin/logout_tab_helper_unittest.cc",
       "../browser/signin/process_dice_header_delegate_impl_unittest.cc",
       "../browser/ui/startup/first_run_service_unittest.cc",
-      "../browser/ui/startup/startup_browser_policy_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
     ]
   }

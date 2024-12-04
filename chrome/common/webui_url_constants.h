@@ -301,8 +301,6 @@ inline constexpr char kChromeUIVersionURL[] = "chrome://version/";
 inline constexpr char16_t kChromeUIVersionURL16[] = u"chrome://version/";
 inline constexpr char kChromeUIWebRtcLogsHost[] = "webrtc-logs";
 inline constexpr char kChromeUIWebuiGalleryHost[] = "webui-gallery";
-inline constexpr char kChromeUIWelcomeHost[] = "welcome";
-inline constexpr char kChromeUIWelcomeURL[] = "chrome://welcome/";
 
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr char kChromeUIInternalsQueryTilesPath[] = "query-tiles";
@@ -711,8 +709,6 @@ inline constexpr char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/40647483): Remove when issue is resolved.
-inline constexpr char kChromeUIWelcomeWin10Host[] = "welcome-win10";
 inline constexpr char kCleanupSubPage[] = "cleanup";
 #endif
 

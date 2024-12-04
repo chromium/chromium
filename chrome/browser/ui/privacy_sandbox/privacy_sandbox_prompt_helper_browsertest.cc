@@ -370,26 +370,26 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, UnsuitableUrl) {
               PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIWelcomeURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_test_server()->GetURL("a.test", "/title1.html")));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAutofillSubPage)));
-  int navigation_count = 3;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(ash::kChromeUIHelpAppURL)));
-  navigation_count++;
-#endif
+  std::vector<GURL> urls_to_open = {
+      https_test_server()->GetURL("a.test", "/title1.html"),
+      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAutofillSubPage),
 #if BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIOSSettingsURL)));
-  navigation_count++;
+      GURL(ash::kChromeUIHelpAppURL),
+      GURL(chrome::kChromeUIOSSettingsURL),
 #endif
+  };
+
+  for (size_t i = 0; i < urls_to_open.size(); ++i) {
+    if (i == 0) {
+      // Open the first URL in a new tab to create a fresh new tab helper.
+      ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+          browser(), urls_to_open[i], WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    } else {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls_to_open[i]));
+    }
+  }
+
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(kPrivacySandboxDialogDisplayHostHistogram,
                                     0);
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, UnsuitableUrl) {
         1},
        {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
             kUrlNotSuitable,
-        navigation_count}});
+        urls_to_open.size()}});
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,

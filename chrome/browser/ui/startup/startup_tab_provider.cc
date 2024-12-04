@@ -155,6 +155,20 @@ bool IsChromeControlledNtpUrl(const GURL& url) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+bool IsWelcomePageUrl(const GURL& url) {
+  static constexpr std::string_view kChromeUIWelcomeHost = "welcome";
+#if BUILDFLAG(IS_WIN)
+  static constexpr std::string_view kChromeUIWelcomeWin10Host = "welcome-win10";
+#endif
+
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         (url.host_piece() == kChromeUIWelcomeHost
+#if BUILDFLAG(IS_WIN)
+          || url.host_piece() == kChromeUIWelcomeWin10Host
+#endif
+         );
+}
+
 }  // namespace
 
 StartupTabs StartupTabProviderImpl::GetDistributionFirstRunTabs(
@@ -277,12 +291,7 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
       if (url.host_piece() == kNewTabUrlHost) {
         url = GURL(chrome::kChromeUINewTabURL);
       }
-      if (url.SchemeIs(content::kChromeUIScheme) &&
-          (url.host_piece() == chrome::kChromeUIWelcomeHost
-#if BUILDFLAG(IS_WIN)
-           || url.host_piece() == chrome::kChromeUIWelcomeWin10Host
-#endif
-           )) {
+      if (IsWelcomePageUrl(url)) {
         // These URLs are still referenced from some of the installers. As
         // these chrome UIs are removed, avoid opening tabs pointing to
         // invalid pages.

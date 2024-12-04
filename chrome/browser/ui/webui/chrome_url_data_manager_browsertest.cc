@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -194,12 +193,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     enabled_features.push_back(whats_new::kForceEnabled);
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-    if (GetParam() == std::string_view("chrome://welcome")) {
-      enabled_features.push_back(welcome::kForceEnabled);
-    }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -494,7 +487,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://browser-switch",
     "chrome://browser-switch/internals",
     "chrome://profile-picker",
-    "chrome://welcome",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Note: Disabled because a DCHECK fires when directly visiting the URL.

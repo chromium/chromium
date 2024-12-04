@@ -114,7 +114,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/app_home/app_home_ui.h"
-#include "chrome/browser/ui/webui/welcome/helpers.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -144,11 +143,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
-#endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/webui/welcome/helpers.h"
-#include "chrome/browser/ui/webui/welcome/welcome_ui.h"
 #endif
 
 using content::WebUI;

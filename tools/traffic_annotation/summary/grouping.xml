@@ -611,7 +611,6 @@ after discussions on the right group.
       <annotation id="backdrop_collection_names_download"/>
       <annotation id="backdrop_next_image_download"/>
       <annotation id="drive_service"/>
-      <annotation id="nux_ntp_background_preview"/>
       <annotation id="popular_sites_fetch"/>
       <annotation id="promo_service"/>
     </sender>
