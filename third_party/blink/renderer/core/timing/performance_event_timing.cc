@@ -355,4 +355,16 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
   return traced_value;
 }
 
+bool PerformanceEventTiming::NeedsNextPaintMeasurement() const {
+  // Skip events that don't need a next paint measure.
+  if (!reporting_info_.fallback_time.is_null()) {
+    return false;
+  }
+  // Skip events that haven't finished processing yet.
+  if (reporting_info_.processing_end_time.is_null()) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace blink

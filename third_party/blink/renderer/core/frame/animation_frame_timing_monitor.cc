@@ -77,6 +77,10 @@ void AnimationFrameTimingMonitor::BeginMainFrame(
   state_ = State::kRenderingFrame;
   ApplyTaskDuration(now - current_task_start_);
 
+  WindowPerformance* performance = DOMWindowPerformance::performance(
+      *local_root_window.GetFrame()->DomWindow());
+  performance->SetRenderStartTimeForPendingEvents(now);
+
   RequestPresentationTimeForTracing(*local_root_window.GetFrame());
 }
 

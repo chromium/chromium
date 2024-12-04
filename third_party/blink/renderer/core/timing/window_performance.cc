@@ -677,14 +677,8 @@ void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
     if (!entry->GetEventTimingReportingInfo()->commit_finish_time.is_null()) {
       continue;
     }
-    // Skip events that don't need a next paint measure
-    if (!entry->GetEventTimingReportingInfo()->fallback_time.is_null()) {
-      continue;
-    }
-    // Skip events that haven't finished processing yet.
-    // This can happen when rendering runs during event dispatch, such as with
-    // nested event loops, which can happen with visibility change.
-    if (entry->GetEventTimingReportingInfo()->processing_end_time.is_null()) {
+    // Skip events that don't need a next paint measure.
+    if (!entry->NeedsNextPaintMeasurement()) {
       continue;
     }
     // The following check should be true in typical conditions, but seems to
@@ -694,6 +688,21 @@ void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
     //       event_presentation_promise_count_);
     entry->GetEventTimingReportingInfo()->commit_finish_time =
         commit_finish_time;
+  }
+}
+
+void WindowPerformance::SetRenderStartTimeForPendingEvents(
+    base::TimeTicks render_start_time) {
+  for (auto entry : event_timing_entries_) {
+    // Skip events that already have a render start time.
+    if (!entry->GetEventTimingReportingInfo()->render_start_time.is_null()) {
+      continue;
+    }
+    // Skip events that don't need a next paint measure.
+    if (!entry->NeedsNextPaintMeasurement()) {
+      continue;
+    }
+    entry->GetEventTimingReportingInfo()->render_start_time = render_start_time;
   }
 }
 

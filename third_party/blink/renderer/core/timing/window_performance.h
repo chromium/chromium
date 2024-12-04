@@ -111,6 +111,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void UpdatePendingEventTimingsWithFallbackTime(base::TimeTicks fallback_time);
 
+  // Set render start time for all pending events that have finished processing.
+  void SetRenderStartTimeForPendingEvents(base::TimeTicks render_start_time);
+
   void OnPaintFinished();
 
   void AddElementTiming(const AtomicString& name,
