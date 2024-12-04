@@ -59,7 +59,7 @@ class MojoDecoderBufferConverter {
 
 }  // namespace
 
-TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferNormal) {
+TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_Normal) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "hello, world";
 
@@ -77,7 +77,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferNormal) {
   converter.ConvertAndVerify(buffer);
 }
 
-TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferEOS) {
+TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_EOS) {
   base::test::SingleThreadTaskEnvironment task_environment;
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CreateEOSBuffer());
 
@@ -87,7 +87,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferEOS) {
 
 // TODO(xhwang): Investigate whether we can get rid of zero-byte-buffer.
 // See http://crbug.com/663438
-TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferZeroByteBuffer) {
+TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_ZeroByteBuffer) {
   base::test::SingleThreadTaskEnvironment task_environment;
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
 
@@ -95,7 +95,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferZeroByteBuffer) {
   converter.ConvertAndVerify(buffer);
 }
 
-TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferKeyFrame) {
+TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_KeyFrame) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "hello, world";
 
@@ -107,7 +107,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferKeyFrame) {
   converter.ConvertAndVerify(buffer);
 }
 
-TEST(MojoDecoderBufferConverterTest, ConvertDecoderBufferEncryptedBuffer) {
+TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_EncryptedBuffer) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "hello, world";
   const char kKeyId[] = "00112233445566778899aabbccddeeff";
