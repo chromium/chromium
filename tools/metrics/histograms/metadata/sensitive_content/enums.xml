@@ -31,6 +31,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Content sensitivity changed to sensitive"/>
 </enum>
 
+<enum name="TabSwitchingSurfaceContentSensitivity">
+  <int value="0" label="Marked as not sensitive"/>
+  <int value="1" label="Marked as sensitive"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
@@ -312,10 +313,13 @@ public class TabUiUtils {
      * @param contentSensitivitySetter Function that sets the content sensitivity on the tab
      *     switcher view. The parameter of this function is a boolean, which is true if the content
      *     is sensitive.
+     * @param histogram Boolean histogram that records the content sensitivity.
      */
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public static void updateViewContentSensitivityForTabs(
-            @Nullable TabList tabList, Callback<Boolean> contentSensitivitySetter) {
+            @Nullable TabList tabList,
+            Callback<Boolean> contentSensitivitySetter,
+            String histogram) {
         if (tabList == null) {
             return;
         }
@@ -323,12 +327,14 @@ public class TabUiUtils {
         for (int i = 0; i < tabList.getCount(); i++) {
             if (tabList.getTabAt(i).getTabHasSensitiveContent()) {
                 contentSensitivitySetter.onResult(/* contentIsSensitive= */ true);
+                RecordHistogram.recordBooleanHistogram(histogram, /* contentIsSensitive= */ true);
                 return;
             }
         }
         // If not marked as not sensitive, the tab switcher might remain sensitive from a previous
         // set of tabs.
         contentSensitivitySetter.onResult(/* contentIsSensitive= */ false);
+        RecordHistogram.recordBooleanHistogram(histogram, /* contentIsSensitive= */ false);
     }
 
     /** Returns whether any tabs have sensitive content. */
@@ -350,16 +356,19 @@ public class TabUiUtils {
      * @param contentSensitivitySetter Function that sets the content sensitivity on the tab
      *     switcher view. The parameter of this function is a boolean, which is true if the content
      *     is sensitive.
+     * @param histogram Boolean histogram that records the content sensitivity.
      */
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public static void updateViewContentSensitivityForTabs(
-            @Nullable List<Tab> tabList, Callback<Boolean> contentSensitivitySetter) {
+            @Nullable List<Tab> tabList,
+            Callback<Boolean> contentSensitivitySetter,
+            String histogram) {
         if (tabList == null) {
             return;
         }
 
-        // If not marked as not sensitive, the tab switcher might remain sensitive from a
-        // previous set of tabs.
-        contentSensitivitySetter.onResult(anySensitiveContent(tabList));
+        boolean isSensitive = anySensitiveContent(tabList);
+        contentSensitivitySetter.onResult(isSensitive);
+        RecordHistogram.recordBooleanHistogram(histogram, isSensitive);
     }
 }

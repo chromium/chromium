@@ -44,6 +44,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
@@ -226,10 +227,14 @@ public class SensitiveContentTest {
         assertFalse(tab.getTabHasSensitiveContent());
     }
 
+    // This test also tests if metrics are recorded properly.
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testRegularTabSwitcherBecomesSensitive() {
+        final String histogram = "SensitiveContent.TabSwitching.RegularTabSwitcherPane.Sensitivity";
+        HistogramWatcher histogramWatcherForTrueBucket =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
         // Open a second tab.
         PageStation page = mPage.openNewTabFast();
         final Tab secondTab = page.getLoadedTab();
@@ -248,20 +253,30 @@ public class SensitiveContentTest {
         regularTabSwitcher = regularTabSwitcher.closeTabAtIndex(1, RegularTabSwitcherStation.class);
         // Select the only remaining tab.
         page = regularTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
+        histogramWatcherForTrueBucket.assertExpected();
+
+        HistogramWatcher histogramWatcherForFalseBucket =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
         // Open the tab switcher.
         regularTabSwitcher = page.openRegularTabSwitcher();
         // Check that the tab switcher is not sensitive anymore.
         checkContentSensitivityOfViewWithId(
                 R.id.tab_list_recycler_view, /* contentIsSensitive= */ false);
+        histogramWatcherForFalseBucket.assertExpected();
 
         // Go back to a tab to cleanup tab state.
         regularTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
     }
 
+    // This test also tests if metrics are recorded properly.
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testIncognitoTabSwitcherBecomesSensitive() {
+        final String histogram =
+                "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity";
+        HistogramWatcher histogramWatcherForTrueBucket =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
         // Open the first incognito tab.
         PageStation page = mPage.openNewIncognitoTabFast();
         // Open the second incognito tab.
@@ -277,7 +292,10 @@ public class SensitiveContentTest {
         // Check that the incognito tab switcher is sensitive.
         checkContentSensitivityOfViewWithId(
                 R.id.tab_list_recycler_view, /* contentIsSensitive= */ true);
+        histogramWatcherForTrueBucket.assertExpected();
 
+        HistogramWatcher histogramWatcherForFalseBucket =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
         // Close the second incognito tab (the only tab with sensitive content).
         incognitoTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(1, IncognitoTabSwitcherStation.class);
@@ -288,6 +306,7 @@ public class SensitiveContentTest {
         // Check that the incognito tab switcher is not sensitive anymore.
         checkContentSensitivityOfViewWithId(
                 R.id.tab_list_recycler_view, /* contentIsSensitive= */ false);
+        histogramWatcherForFalseBucket.assertExpected();
 
         // Go back to a tab to cleanup tab state.
         incognitoTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
@@ -351,11 +370,15 @@ public class SensitiveContentTest {
         incognitoTabSwitcher.openAppMenu().openNewTab();
     }
 
+    // This test also tests if metrics are recorded properly.
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     @Restriction(DeviceFormFactor.PHONE)
     public void testTabGroupUiOpenedFromBottomToolbarBecomesSensitive() {
+        final String histogram = "SensitiveContent.TabSwitching.BottomTabStripGroupUI.Sensitivity";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
         // Load sensitive content only into the first tab.
         final Tab firstTab = mPage.getLoadedTab();
         PageStation page =
@@ -379,6 +402,7 @@ public class SensitiveContentTest {
         assertNotEquals(
                 getContentViewOfCurrentTab().getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_SENSITIVE);
+        histogramWatcher.assertExpected();
     }
 
     @Test

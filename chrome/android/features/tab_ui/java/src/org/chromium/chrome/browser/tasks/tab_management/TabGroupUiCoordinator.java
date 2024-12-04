@@ -311,7 +311,9 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
                 TabUiUtils.updateViewContentSensitivityForTabs(
-                        tabs, mTabGridDialogControllerSupplier.get()::setGridContentSensitivity);
+                        tabs,
+                        mTabGridDialogControllerSupplier.get()::setGridContentSensitivity,
+                        "SensitiveContent.TabSwitching.BottomTabStripGroupUI.Sensitivity");
             }
             mTabGridDialogControllerSupplier.get().resetWithListOfTabs(tabs);
         }

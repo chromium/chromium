@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -450,27 +451,46 @@ public class TabUiUtilsUnitTest {
     @Test
     public void testUpdateViewContentSensitivityForListOfTabs() {
         List<Tab> tabList = List.of(mTab);
+        final String histogram = "SensitiveContent.TabSwitching.RegularTabSwitcherPane.Sensitivity";
 
+        HistogramWatcher histogramWatcherForTrueBucket =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
         when(mTab.getTabHasSensitiveContent()).thenReturn(true);
-        TabUiUtils.updateViewContentSensitivityForTabs(tabList, mContentSensitivitySetter);
+        TabUiUtils.updateViewContentSensitivityForTabs(
+                tabList, mContentSensitivitySetter, histogram);
         verify(mContentSensitivitySetter).onResult(true);
+        histogramWatcherForTrueBucket.assertExpected();
 
+        HistogramWatcher histogramWatcherForFalseBucket =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
         when(mTab.getTabHasSensitiveContent()).thenReturn(false);
-        TabUiUtils.updateViewContentSensitivityForTabs(tabList, mContentSensitivitySetter);
+        TabUiUtils.updateViewContentSensitivityForTabs(
+                tabList, mContentSensitivitySetter, histogram);
         verify(mContentSensitivitySetter).onResult(false);
+        histogramWatcherForFalseBucket.assertExpected();
     }
 
     @Test
     public void testUpdateViewContentSensitivityForTabList() {
+        final String histogram = "SensitiveContent.TabSwitching.BottomTabStripGroupUI.Sensitivity";
+
         when(mTabModel.getCount()).thenAnswer(invocation -> 1);
         when(mTabModel.getTabAt(0)).thenAnswer(invocation -> mTab);
 
+        HistogramWatcher histogramWatcherForTrueBucket =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
         when(mTab.getTabHasSensitiveContent()).thenReturn(true);
-        TabUiUtils.updateViewContentSensitivityForTabs(mTabModel, mContentSensitivitySetter);
+        TabUiUtils.updateViewContentSensitivityForTabs(
+                mTabModel, mContentSensitivitySetter, histogram);
         verify(mContentSensitivitySetter).onResult(true);
+        histogramWatcherForTrueBucket.assertExpected();
 
+        HistogramWatcher histogramWatcherForFalseBucket =
+                HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ false);
         when(mTab.getTabHasSensitiveContent()).thenReturn(false);
-        TabUiUtils.updateViewContentSensitivityForTabs(mTabModel, mContentSensitivitySetter);
+        TabUiUtils.updateViewContentSensitivityForTabs(
+                mTabModel, mContentSensitivitySetter, histogram);
         verify(mContentSensitivitySetter).onResult(false);
+        histogramWatcherForFalseBucket.assertExpected();
     }
 }
