@@ -793,8 +793,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
 }
 
 // Flaky on Mac: https://crbug.com/1511356
-// Flaky on Win: https://crbug.com/365250293
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Flaky on Win and Linux: https://crbug.com/365250293
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SpaceEntersKeywordMode DISABLED_SpaceEntersKeywordMode
 #else
 #define MAYBE_SpaceEntersKeywordMode SpaceEntersKeywordMode
