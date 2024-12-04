@@ -98,12 +98,12 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
 
  private:
   // KioskAppDataDelegate:
-  void GetKioskAppIconCacheDir(base::FilePath* cache_dir) override {
+  base::FilePath GetKioskAppIconCacheDir() override {
     base::FilePath user_data_dir;
     bool has_dir =
         base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
     DCHECK(has_dir);
-    *cache_dir = user_data_dir;
+    return user_data_dir;
   }
 
   void OnKioskAppDataChanged(const std::string& app_id) override {

@@ -62,7 +62,7 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   void RemoveObserver(KioskAppManagerObserver* observer);
 
   // KioskAppDataDelegate overrides:
-  void GetKioskAppIconCacheDir(base::FilePath* cache_dir) override;
+  base::FilePath GetKioskAppIconCacheDir() override;
   void OnKioskAppDataChanged(const std::string& app_id) override;
   void OnKioskAppDataLoadFailure(const std::string& app_id) override;
   void OnExternalCacheDamaged(const std::string& app_id) override;
@@ -98,6 +98,7 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
 
   base::ObserverList<KioskAppManagerObserver, /*check_empty=*/true> observers_;
 
+ private:
   base::WeakPtrFactory<KioskAppManagerBase> weak_ptr_factory_{this};
 };
 

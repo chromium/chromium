@@ -335,8 +335,7 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
     ASSERT_TRUE(required_platform_version);
     EXPECT_EQ(expected_required_platform_version, *required_platform_version);
 
-    base::FilePath expected_icon_path;
-    manager()->GetKioskAppIconCacheDir(&expected_icon_path);
+    base::FilePath expected_icon_path = manager()->GetKioskAppIconCacheDir();
     expected_icon_path =
         expected_icon_path.AppendASCII(app_id).AddExtension(".png");
     EXPECT_EQ(expected_icon_path.value(), *icon_path_string);

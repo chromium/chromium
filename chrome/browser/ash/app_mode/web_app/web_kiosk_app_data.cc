@@ -38,12 +38,7 @@
 
 namespace ash {
 
-constexpr int kWebKioskIconSize = 128;  // size of the icon in px.
-
 namespace {
-// Maximum image size is 256x256..
-constexpr int kMaxIconFileSize =
-    (2 * kWebKioskIconSize) * (2 * kWebKioskIconSize) * 4 + 1000;
 
 const char kKeyLaunchUrl[] = "launch_url";
 const char kKeyLastIconUrl[] = "last_icon_url";
@@ -102,6 +97,11 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
     network::mojom::URLLoaderFactory* loader_factory =
         system_network_context_manager->GetURLLoaderFactory();
 
+    // Assuming maximum image size is 256x256.
+    constexpr int kMaxIconFileSize = (2 * WebKioskAppData::kIconSize) *
+                                         (2 * WebKioskAppData::kIconSize) * 4 +
+                                     1000;
+
     simple_loader_->DownloadToString(
         loader_factory,
         base::BindOnce(
@@ -141,7 +141,7 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
     }
 
     int size = decoded_image.width();
-    if (size == kWebKioskIconSize) {
+    if (size == WebKioskAppData::kIconSize) {
       client_->OnDidDownloadIcon(decoded_image);
       return;
     }
@@ -150,7 +150,8 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
         FROM_HERE,
         {base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(ResizeImageBlocking, decoded_image, kWebKioskIconSize),
+        base::BindOnce(ResizeImageBlocking, decoded_image,
+                       WebKioskAppData::kIconSize),
         base::BindOnce(&WebKioskAppData::OnDidDownloadIcon, client_));
   }
 
@@ -251,10 +252,10 @@ void WebKioskAppData::UpdateAppInfo(const std::string& title,
 
   base::FilePath cache_dir;
   if (delegate_) {
-    delegate_->GetKioskAppIconCacheDir(&cache_dir);
+    cache_dir = delegate_->GetKioskAppIconCacheDir();
   }
 
-  auto it = icon_bitmaps.any.find(kWebKioskIconSize);
+  auto it = icon_bitmaps.any.find(kIconSize);
   if (it != icon_bitmaps.any.end()) {
     const SkBitmap& bitmap = it->second;
     icon_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
@@ -329,7 +330,7 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
 
   base::FilePath cache_dir;
   if (delegate_) {
-    delegate_->GetKioskAppIconCacheDir(&cache_dir);
+    cache_dir = delegate_->GetKioskAppIconCacheDir();
   }
 
   SaveIcon(icon, cache_dir);

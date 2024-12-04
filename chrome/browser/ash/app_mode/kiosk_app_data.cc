@@ -415,7 +415,7 @@ void KioskAppData::SetCache(const std::string& name,
 
   base::FilePath cache_dir;
   if (delegate_) {
-    delegate_->GetKioskAppIconCacheDir(&cache_dir);
+    cache_dir = delegate_->GetKioskAppIconCacheDir();
   }
 
   SaveIcon(icon, cache_dir);

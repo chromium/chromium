@@ -27,10 +27,11 @@ namespace ash {
 
 class KioskAppDataDelegate;
 
-extern const int kWebKioskIconSize;
-
 class WebKioskAppData : public KioskAppDataBase {
  public:
+  // Size of a kiosk web app icon in pixels.
+  static constexpr int kIconSize = 128;
+
   enum class Status {
     kInit,       // Data initialized with app id.
     kLoading,    // Loading data from cache or web store.
