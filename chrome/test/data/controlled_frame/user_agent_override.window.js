@@ -34,13 +34,16 @@ promise_test(async (test) => {
   const iwaUserAgent = navigator.userAgent;
 
   let cfUserAgent = await getControlledFrameUserAgent(controlledFrame);
+  assert_false(controlledFrame.isUserAgentOverridden());
   assert_true(cfUserAgent === iwaUserAgent);
 
   await setUserAgentOverrideAndAwaitReload(controlledFrame, 'foobar');
+  assert_true(controlledFrame.isUserAgentOverridden());
   cfUserAgent = await getControlledFrameUserAgent(controlledFrame);
   assert_true(cfUserAgent === 'foobar');
 
   await setUserAgentOverrideAndAwaitReload(controlledFrame, '');
+  assert_false(controlledFrame.isUserAgentOverridden());
   cfUserAgent = await getControlledFrameUserAgent(controlledFrame);
   assert_true(cfUserAgent === iwaUserAgent);
 }, 'User Agent Override');
