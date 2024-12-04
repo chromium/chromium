@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/gcm_driver/config.gni")
 
 buildflag_header("gcm_buildflags") {
@@ -105,7 +104,6 @@ static_library("gcm_driver") {
       "gcm_stats_recorder_impl.h",
     ]
     deps += [
-      "//build:chromeos_buildflags",
       "//components/crx_file",
       "//components/version_info:version_info",
       "//google_apis/gcm",
@@ -199,9 +197,6 @@ source_set("unit_tests") {
       "gcm_stats_recorder_impl_unittest.cc",
     ]
 
-    deps += [
-      "//build:chromeos_buildflags",
-      "//components/signin/public/identity_manager:test_support",
-    ]
+    deps += [ "//components/signin/public/identity_manager:test_support" ]
   }
 }
