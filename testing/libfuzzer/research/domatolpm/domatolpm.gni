@@ -10,6 +10,51 @@ template("domatolpm") {
   _gen_target_name = "${_name}_proto_gen"
   _gen_file_format = "${target_gen_dir}/${_name}"
   _target_gen_dir = target_gen_dir
+
+  # It was determined that above 12 files, the compilation time does not
+  # improve anymore.
+  _generated_protos = [
+    "${_gen_file_format}_sub0.proto",
+    "${_gen_file_format}_sub1.proto",
+    "${_gen_file_format}_sub2.proto",
+    "${_gen_file_format}_sub3.proto",
+    "${_gen_file_format}_sub4.proto",
+    "${_gen_file_format}_sub5.proto",
+    "${_gen_file_format}_sub6.proto",
+    "${_gen_file_format}_sub7.proto",
+    "${_gen_file_format}_sub8.proto",
+    "${_gen_file_format}_sub9.proto",
+    "${_gen_file_format}_sub10.proto",
+    "${_gen_file_format}_sub11.proto",
+  ]
+  _generated_cpps = [
+    "${_gen_file_format}.cc",
+    "${_gen_file_format}.h",
+    "${_gen_file_format}_sub0.cc",
+    "${_gen_file_format}_sub0.h",
+    "${_gen_file_format}_sub1.cc",
+    "${_gen_file_format}_sub1.h",
+    "${_gen_file_format}_sub2.cc",
+    "${_gen_file_format}_sub2.h",
+    "${_gen_file_format}_sub3.cc",
+    "${_gen_file_format}_sub3.h",
+    "${_gen_file_format}_sub4.cc",
+    "${_gen_file_format}_sub4.h",
+    "${_gen_file_format}_sub5.cc",
+    "${_gen_file_format}_sub5.h",
+    "${_gen_file_format}_sub6.cc",
+    "${_gen_file_format}_sub6.h",
+    "${_gen_file_format}_sub7.cc",
+    "${_gen_file_format}_sub7.h",
+    "${_gen_file_format}_sub8.cc",
+    "${_gen_file_format}_sub8.h",
+    "${_gen_file_format}_sub9.cc",
+    "${_gen_file_format}_sub9.h",
+    "${_gen_file_format}_sub10.cc",
+    "${_gen_file_format}_sub10.h",
+    "${_gen_file_format}_sub11.cc",
+    "${_gen_file_format}_sub11.h",
+  ]
   action(_script_target_name) {
     testonly = true
     script = "//testing/libfuzzer/research/domatolpm/generator.py"
@@ -28,20 +73,18 @@ template("domatolpm") {
       "//testing/libfuzzer/research/domatolpm/templates/domatolpm.h.tmpl",
       "//testing/libfuzzer/research/domatolpm/templates/domatolpm.proto.tmpl",
     ]
-    outputs = [
-      "${_gen_file_format}.proto",
-      "${_gen_file_format}_sub.proto",
-      "${_gen_file_format}.cc",
-      "${_gen_file_format}.h",
-    ]
+    outputs = [ "${_gen_file_format}.proto" ]
+    outputs += _generated_protos
+    outputs += _generated_cpps
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
   }
   proto_library(_gen_target_name) {
     testonly = true
     proto_deps = [ ":${_script_target_name}" ]
-    sources = [
-      "${_gen_file_format}.proto",
-      "${_gen_file_format}_sub.proto",
-    ]
+    sources = [ "${_gen_file_format}.proto" ]
+    sources += _generated_protos
     proto_in_dir = "${root_gen_dir}"
     proto_out_dir = "."
     generate_python = false
@@ -54,10 +97,7 @@ template("domatolpm") {
       "//base",
     ]
     deps = [ "//testing/libfuzzer/research/domatolpm:domatolpm_context" ]
-    sources = [
-      "${_gen_file_format}.cc",
-      "${_gen_file_format}.h",
-    ]
+    sources = _generated_cpps
   }
 }
 
