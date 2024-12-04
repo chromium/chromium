@@ -21,6 +21,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 
 /**
@@ -143,11 +144,7 @@ public class SigninTestRule extends AccountManagerTestRule {
         assert !mIsSignedIn : "An account is already signed in!";
 
         AccountInfo testChildAccount =
-                new AccountInfo.Builder(
-                                generateChildEmail("test@gmail.com"),
-                                FakeAccountManagerFacade.toGaiaId("test-gaia-id"))
-                        .fullName("ChildTest Full")
-                        .givenName("ChildTest Given")
+                new AccountInfo.Builder(TestAccounts.CHILD_ACCOUNT)
                         .accountCapabilities(builder.setIsSubjectToParentalControls(true).build())
                         .build();
 

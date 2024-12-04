@@ -58,6 +58,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
@@ -169,7 +170,7 @@ public class SigninSignoutIntegrationTest {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
 
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        mSigninTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         SyncConsentActivity syncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -179,8 +180,7 @@ public class SigninSignoutIntegrationTest {
                                     .launchActivityForPromoDefaultFlow(
                                             mActivityTestRule.getActivity(),
                                             SigninAccessPoint.SETTINGS,
-                                            AccountManagerTestRule
-                                                    .TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL
+                                            TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL
                                                     .getEmail());
                         });
 
@@ -202,7 +202,7 @@ public class SigninSignoutIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL,
+                            TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL,
                             mSigninManager
                                     .getIdentityManager()
                                     .getPrimaryAccountInfo(ConsentLevel.SYNC));

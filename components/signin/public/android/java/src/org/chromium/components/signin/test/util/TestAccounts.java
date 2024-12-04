@@ -68,11 +68,55 @@ public class TestAccounts {
                     .hostedDomain("example.com")
                     .accountImage(createAvatar())
                     .build();
+
     public static final AccountInfo TEST_ACCOUNT_NO_NAME =
             new AccountInfo.Builder(
                             "test.noname@gmail.com",
                             FakeAccountManagerFacade.toGaiaId("test.noname@gmail.com"))
                     .build();
+
+    /**
+     * To be used in test cases where we want to test Signin flows for accounts that don't have a
+     * displayable email.
+     */
+    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
+            new AccountInfo.Builder(
+                            generateChildEmail("test@gmail.com"),
+                            FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
+                    .fullName("Test1 Full")
+                    .givenName("Test1 Given")
+                    .accountImage(createAvatar())
+                    .accountCapabilities(
+                            new AccountCapabilitiesBuilder()
+                                    .setCanHaveEmailAddressDisplayed(false)
+                                    .setIsSubjectToParentalControls(true)
+                                    .build())
+                    .build();
+
+    /**
+     * To be used in test cases where we want to test Signin flows for accounts that don't have a
+     * displayable name or email.
+     */
+    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME =
+            new AccountInfo.Builder(
+                            generateChildEmail("test@gmail.com"),
+                            FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
+                    .accountImage(createAvatar())
+                    .accountCapabilities(
+                            new AccountCapabilitiesBuilder()
+                                    .setCanHaveEmailAddressDisplayed(false)
+                                    .setIsSubjectToParentalControls(true)
+                                    .build())
+                    .build();
+
+    /**
+     * Creates an email used to identify child accounts in tests. A child-specific prefix will be
+     * appended to the base name so that the created account will be considered as {@link
+     * ChildAccountStatus#REGULAR_CHILD} in {@link FakeAccountManagerFacade}.
+     */
+    private static String generateChildEmail(String baseName) {
+        return FakeAccountManagerFacade.generateChildEmail(baseName);
+    }
 
     /** Returns an avatar image created from test resource. */
     private static Bitmap createAvatar() {
