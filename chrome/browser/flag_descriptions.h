@@ -4029,9 +4029,6 @@ extern const char kImeSystemEmojiPickerVariantGroupingDescription[];
 extern const char kImeUsEnglishModelUpdateName[];
 extern const char kImeUsEnglishModelUpdateDescription[];
 
-extern const char kJellyColorsName[];
-extern const char kJellyColorsDescription[];
-
 extern const char kCrosComponentsName[];
 extern const char kCrosComponentsDescription[];
 

@@ -6918,8 +6918,7 @@ const char kImeSystemEmojiPickerGIFSupportDescription[] =
 const char kImeSystemEmojiPickerJellySupportName[] =
     "Enable jelly colors for the System Emoji Picker";
 const char kImeSystemEmojiPickerJellySupportDescription[] =
-    "Enable jelly colors for the System Emoji Picker. Requires "
-    "jelly-colors flag to be enabled.";
+    "Enable jelly colors for the System Emoji Picker.";
 
 const char kImeSystemEmojiPickerMojoSearchName[] =
     "Enable mojo search for the System Emoji Picker";
@@ -6936,9 +6935,6 @@ const char kImeUsEnglishModelUpdateName[] =
     "Enable US English IME model update";
 const char kImeUsEnglishModelUpdateDescription[] =
     "Enable updated US English IME language models for native IME";
-
-const char kJellyColorsName[] = "Jelly Colors";
-const char kJellyColorsDescription[] = "Enable Jelly coloring";
 
 const char kCrosComponentsName[] = "Cros Components";
 const char kCrosComponentsDescription[] =
