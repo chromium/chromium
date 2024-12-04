@@ -401,12 +401,15 @@ net::CookieLegacyScope CookieSettingsBase::GetCookieLegacyScopeForDomain(
 }
 
 bool CookieSettingsBase::ShouldConsiderMitigationsFor3pcd(
-    const GURL& first_party_url) const {
+    const GURL& first_party_url,
+    net::CookieSettingOverrides overrides) const {
   // Mitigations should take effect if they are enabled (through means such as
   // 3PCD or forced 3PC phaseout) or if third-party cookies are not blocked
   // globally and the origin trial for third-party cookie deprecation is enabled
   // under `first_party_url` .
-  return MitigationsEnabledFor3pcd() ||
+  return overrides.Has(net::CookieSettingOverride::
+                           kForceEnableThirdPartyCookieMitigations) ||
+         MitigationsEnabledFor3pcd() ||
          (!ShouldBlockThirdPartyCookies() &&
           IsBlockedByTopLevel3pcdOriginTrial(first_party_url));
 }
@@ -430,7 +433,7 @@ bool CookieSettingsBase::IsAllowedBy3pcdTrialSettings(
     net::CookieSettingOverrides overrides) const {
   return base::FeatureList::IsEnabled(net::features::kTpcdTrialSettings) &&
          !overrides.Has(net::CookieSettingOverride::kSkipTPCDTrial) &&
-         ShouldConsiderMitigationsFor3pcd(first_party_url) &&
+         ShouldConsiderMitigationsFor3pcd(first_party_url, overrides) &&
          GetContentSetting(url, first_party_url,
                            ContentSettingsType::TPCD_TRIAL,
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
@@ -442,7 +445,7 @@ bool CookieSettingsBase::IsAllowedByTopLevel3pcdTrialSettings(
   return base::FeatureList::IsEnabled(
              net::features::kTopLevelTpcdTrialSettings) &&
          !overrides.Has(net::CookieSettingOverride::kSkipTopLevelTPCDTrial) &&
-         ShouldConsiderMitigationsFor3pcd(first_party_url) &&
+         ShouldConsiderMitigationsFor3pcd(first_party_url, overrides) &&
          // Top-level 3pcd trial settings use
          // |WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE| by default and as a
          // result only use a primary pattern (with wildcard placeholder for the
@@ -463,7 +466,7 @@ bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings(
     net::CookieSettingOverrides overrides) const {
   return base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants) &&
          !overrides.Has(net::CookieSettingOverride::kSkipTPCDMetadataGrant) &&
-         ShouldConsiderMitigationsFor3pcd(first_party_url);
+         ShouldConsiderMitigationsFor3pcd(first_party_url, overrides);
 }
 
 CookieSettingsBase::IsAllowedWithMetadata
@@ -502,7 +505,7 @@ bool CookieSettingsBase::IsAllowedBy3pcdHeuristicsGrantsSettings(
              content_settings::features::kTpcdHeuristicsGrants) &&
          features::kTpcdReadHeuristicsGrants.Get() &&
          !overrides.Has(net::CookieSettingOverride::kSkipTPCDHeuristicsGrant) &&
-         ShouldConsiderMitigationsFor3pcd(first_party_url) &&
+         ShouldConsiderMitigationsFor3pcd(first_party_url, overrides) &&
          GetContentSetting(url, first_party_url,
                            ContentSettingsType::TPCD_HEURISTICS_GRANTS,
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;

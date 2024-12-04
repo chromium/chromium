@@ -42,8 +42,10 @@ enum class CookieSettingOverride {
   // stringent requirements, such as the FedCM/SAA integration (which requires
   // the `identity-credentials-get` policy), are not in scope for this variant.
   kStorageAccessGrantEligibleViaHeader = 7,
+  // When present, third-party cookies may be allowed through mitigations.
+  kForceEnableThirdPartyCookieMitigations = 8,
 
-  kMaxValue = kStorageAccessGrantEligibleViaHeader,
+  kMaxValue = kForceEnableThirdPartyCookieMitigations,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,
