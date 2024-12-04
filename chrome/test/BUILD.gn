@@ -10568,6 +10568,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/default_link_capturing_interactive_uitest.cc",
         "../browser/ui/views/media_preview/permission_prompt_preview_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_navigation_capturing_iph_interactive_uitest.cc",
+        "../browser/ui/webui/settings/sync_settings_interactive_uitest.cc",
       ]
     }
 
