@@ -25,6 +25,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/dbus/utils/name_has_owner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -118,23 +119,16 @@ class DBusScreenSaverWatcher {
 
     // Calling methods on a non-existent service will lead to a timeout rather
     // than an immediate error, so check for service existence first.
-    dbus::ObjectProxy* dbus_proxy = bus_->GetObjectProxy(
-        DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
-    dbus::MethodCall name_has_owner_call(DBUS_INTERFACE_DBUS, "NameHasOwner");
-    dbus::MessageWriter writer(&name_has_owner_call);
-    writer.AppendString(kServices[current_service_].service_name);
-    dbus_proxy->CallMethod(
-        &name_has_owner_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+    dbus_utils::NameHasOwner(
+        bus_.get(), kServices[current_service_].service_name,
         base::BindOnce(&DBusScreenSaverWatcher::OnServiceHasOwner,
                        weak_factory_.GetWeakPtr()));
   }
 
-  void OnServiceHasOwner(dbus::Response* response) {
+  void OnServiceHasOwner(std::optional<bool> name_has_owner) {
     DCHECK_LT(current_service_, kServiceCount);
 
-    dbus::MessageReader reader(response);
-    bool owned = false;
-    if (!response || !reader.PopBool(&owned) || !owned) {
+    if (!name_has_owner.value_or(false)) {
       VLOG(1) << kServices[current_service_].service_name
               << " D-Bus service does not exist";
       ++current_service_;
@@ -174,12 +168,13 @@ class DBusScreenSaverWatcher {
     // make an explicit method call and check that no error is returned.
     dbus::MethodCall method_call(kServices[current_service_].interface,
                                  kMethodName);
-    proxy_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                       base::BindOnce(&DBusScreenSaverWatcher::OnGetActive,
-                                      weak_factory_.GetWeakPtr()));
+    proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DBusScreenSaverWatcher::OnGetActive,
+                       weak_factory_.GetWeakPtr()));
   }
 
-  void OnGetActive(dbus::Response* response) {
+  void OnGetActive(dbus::Response* response, dbus::ErrorResponse*) {
     DCHECK_LT(current_service_, kServiceCount);
 
     if (!response || !UpdateLockState(response)) {
@@ -196,8 +191,9 @@ class DBusScreenSaverWatcher {
   bool UpdateLockState(dbus::Message* message) {
     dbus::MessageReader reader(message);
     bool active;
-    if (!reader.PopBool(&active) || reader.HasMoreData())
+    if (!reader.PopBool(&active) || reader.HasMoreData()) {
       return false;
+    }
     lock_state_ = active ? LockState::kLocked : LockState::kUnlocked;
     return true;
   }
@@ -228,25 +224,29 @@ DBusScreenSaverWatcher* GetDBusScreenSaverWatcher() {
 int CalculateIdleTime() {
   auto* const screen = display::Screen::GetScreen();
   // The screen can be nullptr in tests.
-  if (!screen)
+  if (!screen) {
     return 0;
+  }
   return screen->CalculateIdleTime().InSeconds();
 }
 
 bool CheckIdleStateIsLocked() {
-  if (IdleStateForTesting().has_value())
+  if (IdleStateForTesting().has_value()) {
     return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
+  }
 
 #if BUILDFLAG(USE_DBUS)
   auto lock_state = GetDBusScreenSaverWatcher()->lock_state();
-  if (lock_state != DBusScreenSaverWatcher::LockState::kUnknown)
+  if (lock_state != DBusScreenSaverWatcher::LockState::kUnknown) {
     return lock_state == DBusScreenSaverWatcher::LockState::kLocked;
+  }
 #endif
 
   auto* const screen = display::Screen::GetScreen();
   // The screen can be nullptr in tests.
-  if (!screen)
+  if (!screen) {
     return false;
+  }
   return screen->IsScreenSaverActive();
 }
 
