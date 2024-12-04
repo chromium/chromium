@@ -15,6 +15,7 @@
 #include "ash/scanner/scanner_session.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -26,6 +27,11 @@ ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate)
     : delegate_(std::move(delegate)) {}
 
 ScannerController::~ScannerController() = default;
+
+void ScannerController::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  scanner_session_ = nullptr;
+}
 
 bool ScannerController::CanStartSession() {
   ScannerProfileScopedDelegate* profile_scoped_delegate =
