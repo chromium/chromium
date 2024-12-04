@@ -20388,33 +20388,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ManualFallback_PlusAddress_OpenCreatePlusAddress">
-  <owner>vidhanj@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <description>
-    The user tapped on &quot;Create plus address&quot; in the Address/Password
-    Manual Fallback view.
-  </description>
-</action>
-
-<action name="ManualFallback_PlusAddress_OpenManagePlusAddress">
-  <owner>vidhanj@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <description>
-    The user tapped on &quot;Manage plus addresses&quot; in the Address/Password
-    Manual Fallback view.
-  </description>
-</action>
-
-<action name="ManualFallback_PlusAddress_OpenSelectPlusAddress">
-  <owner>vidhanj@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <description>
-    The user tapped on &quot;Select plus addresses&quot; in the Address/Password
-    Manual Fallback view.
-  </description>
-</action>
-
 <action name="ManualFallback_PlusAddress_SelectPlusAddress">
   <owner>vidhanj@google.com</owner>
   <owner>jkeitel@google.com</owner>
