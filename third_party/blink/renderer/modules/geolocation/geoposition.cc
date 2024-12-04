@@ -8,11 +8,11 @@
 
 namespace blink {
 
-ScriptValue Geoposition::toJSON(ScriptState* script_state) const {
+ScriptObject Geoposition::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.AddInteger("timestamp", timestamp_);
-  builder.AddV8Value("coords", coordinates_->toJSON(script_state).V8Value());
-  return builder.GetScriptValue();
+  builder.AddV8Value("coords", coordinates_->toJSON(script_state).V8Object());
+  return builder.ToScriptObject();
 }
 
 }  // namespace blink

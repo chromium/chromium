@@ -35,7 +35,7 @@ class CORE_EXPORT PerformanceServerTiming final : public ScriptWrappable {
   static HeapVector<Member<PerformanceServerTiming>> FromParsedServerTiming(
       const Vector<mojom::blink::ServerTimingInfoPtr>&);
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
  private:
   const String name_;

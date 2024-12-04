@@ -50,7 +50,7 @@ class MODULES_EXPORT PaymentResponse final
               PaymentAddress* shipping_address);
   void UpdatePayerDetail(payments::mojom::blink::PayerDetailPtr);
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
   const String& requestId() const { return request_id_; }
   const String& methodName() const { return method_name_; }

@@ -48,13 +48,13 @@ v8::Local<v8::Value> BuildDetails(
   }
 
   if (json.empty()) {
-    return V8ObjectBuilder(script_state).V8Value();
+    return V8ObjectBuilder(script_state).V8Object();
   }
 
   v8::TryCatch try_catch(script_state->GetIsolate());
   v8::Local<v8::Value> parsed_value = FromJSONString(script_state, json);
   if (try_catch.HasCaught()) {
-    return V8ObjectBuilder(script_state).V8Value();
+    return V8ObjectBuilder(script_state).V8Object();
   }
 
   return parsed_value;
@@ -115,7 +115,8 @@ void PaymentResponse::UpdatePayerDetail(
   payer_phone_ = detail->phone;
 }
 
-ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
+ScriptObject PaymentResponse::toJSONForBinding(
+    ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddString("requestId", requestId());
   result.AddString("methodName", methodName());
@@ -124,7 +125,7 @@ ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
   if (shippingAddress()) {
     result.AddV8Value(
         "shippingAddress",
-        shippingAddress()->toJSONForBinding(script_state).V8Value());
+        shippingAddress()->toJSONForBinding(script_state).V8Object());
   } else {
     result.AddNull("shippingAddress");
   }
@@ -134,7 +135,7 @@ ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
       .AddStringOrNull("payerEmail", payerEmail())
       .AddStringOrNull("payerPhone", payerPhone());
 
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 ScriptValue PaymentResponse::details(ScriptState* script_state) const {

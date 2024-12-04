@@ -38,8 +38,8 @@
 
 namespace blink {
 
+class ScriptObject;
 class ScriptState;
-class ScriptValue;
 
 // Legacy support for NT1(https://www.w3.org/TR/navigation-timing/).
 class CORE_EXPORT PerformanceNavigation final : public ScriptWrappable,
@@ -59,7 +59,7 @@ class CORE_EXPORT PerformanceNavigation final : public ScriptWrappable,
   uint8_t type() const;
   uint16_t redirectCount() const;
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
   void Trace(Visitor*) const override;
 };

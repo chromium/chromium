@@ -51,7 +51,7 @@ class Geoposition final : public ScriptWrappable {
 
   EpochTimeStamp timestamp() const { return timestamp_; }
   GeolocationCoordinates* coords() const { return coordinates_.Get(); }
-  ScriptValue toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state) const;
 
  private:
   Member<GeolocationCoordinates> coordinates_;

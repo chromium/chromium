@@ -42,8 +42,8 @@
 
 namespace blink {
 
+class ScriptObject;
 class ScriptState;
-class ScriptValue;
 class V8ObjectBuilder;
 
 using PerformanceEntryType = unsigned;
@@ -90,7 +90,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   // Other classes must NOT override this.
   virtual DOMHighResTimeStamp duration() const;
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
   bool IsResource() const { return EntryTypeEnum() == kResource; }
   bool IsMark() const { return EntryTypeEnum() == kMark; }

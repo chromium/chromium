@@ -52,7 +52,7 @@ v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
   for (auto& it : map) {
     builder.Add(it.key, it.value);
   }
-  v8::Local<v8::Object> v8_object = builder.V8Value();
+  v8::Local<v8::Object> v8_object = builder.V8Object();
   if (v8_object.IsEmpty()) {
     NOTREACHED();
   }

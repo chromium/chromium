@@ -317,7 +317,7 @@ class CORE_EXPORT Performance : public EventTarget {
   // Determine whether a given Node can be exposed via a Web Perf API.
   static bool CanExposeNode(Node*);
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
   enum Metrics { kRecordSwaps = 0, kDoNotRecordSwaps = 1 };
 

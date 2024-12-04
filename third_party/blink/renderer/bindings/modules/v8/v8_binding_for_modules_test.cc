@@ -234,9 +234,9 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyStringValue) {
   v8::Isolate* isolate = scope.GetIsolate();
 
   // object = { foo: "zoo" }
-  ScriptValue script_value = V8ObjectBuilder(scope.GetScriptState())
-                                 .AddString("foo", "zoo")
-                                 .GetScriptValue();
+  ScriptObject script_value = V8ObjectBuilder(scope.GetScriptState())
+                                  .AddString("foo", "zoo")
+                                  .ToScriptObject();
   CheckKeyPathStringValue(isolate, script_value, "foo", "zoo");
   CheckKeyPathNullValue(isolate, script_value, "bar");
 }
@@ -249,9 +249,9 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyNumberValue) {
   v8::Isolate* isolate = scope.GetIsolate();
 
   // object = { foo: 456 }
-  ScriptValue script_value = V8ObjectBuilder(scope.GetScriptState())
-                                 .AddNumber("foo", 456)
-                                 .GetScriptValue();
+  ScriptObject script_value = V8ObjectBuilder(scope.GetScriptState())
+                                  .AddNumber("foo", 456)
+                                  .ToScriptObject();
   CheckKeyPathNumberValue(isolate, script_value, "foo", 456);
   CheckKeyPathNullValue(isolate, script_value, "bar");
 }
@@ -285,10 +285,10 @@ TEST(IDBKeyFromValueAndKeyPathTest, SubProperty) {
   v8::Isolate* isolate = scope.GetIsolate();
 
   // object = { foo: { bar: "zee" } }
-  ScriptValue script_value =
+  ScriptObject script_value =
       V8ObjectBuilder(script_state)
           .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
-          .GetScriptValue();
+          .ToScriptObject();
   CheckKeyPathStringValue(isolate, script_value, "foo.bar", "zee");
   CheckKeyPathNullValue(isolate, script_value, "bar");
 }
@@ -539,15 +539,15 @@ TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
   NonThrowableExceptionState exception_state;
 
   // object = { foo: { bar: "zee" }, bad: null }
-  v8::Local<v8::Value> value =
+  v8::Local<v8::Object> object =
       V8ObjectBuilder(script_state)
           .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
           .AddNull("bad")
-          .V8Value();
+          .V8Object();
 
   // Index key path member matches store key path.
   std::unique_ptr<IDBKey> key = CreateIDBKeyFromValueAndKeyPaths(
-      isolate, value,
+      isolate, object,
       /*store_key_path=*/IDBKeyPath("id"),
       /*index_key_path=*/IDBKeyPath(Vector<String>{"id", "foo.bar"}),
       exception_state);
@@ -558,7 +558,7 @@ TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
 
   // Index key path member matches, but there are unmatched members too.
   EXPECT_FALSE(CreateIDBKeyFromValueAndKeyPaths(
-      isolate, value,
+      isolate, object,
       /*store_key_path=*/IDBKeyPath("id"),
       /*index_key_path=*/IDBKeyPath(Vector<String>{"id", "foo.bar", "nope"}),
       exception_state));
@@ -566,7 +566,7 @@ TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
   // Index key path member matches, but there are invalid subkeys too.
   EXPECT_FALSE(
       CreateIDBKeyFromValueAndKeyPaths(
-          isolate, value,
+          isolate, object,
           /*store_key_path=*/IDBKeyPath("id"),
           /*index_key_path=*/IDBKeyPath(Vector<String>{"id", "foo.bar", "bad"}),
           exception_state)
@@ -574,14 +574,14 @@ TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
 
   // Index key path member does not match store key path.
   EXPECT_FALSE(CreateIDBKeyFromValueAndKeyPaths(
-      isolate, value,
+      isolate, object,
       /*store_key_path=*/IDBKeyPath("id"),
       /*index_key_path=*/IDBKeyPath(Vector<String>{"id2", "foo.bar"}),
       exception_state));
 
   // Index key path is not array, matches store key path.
   EXPECT_FALSE(CreateIDBKeyFromValueAndKeyPaths(
-      isolate, value,
+      isolate, object,
       /*store_key_path=*/IDBKeyPath("id"),
       /*index_key_path=*/IDBKeyPath("id"), exception_state));
 }
@@ -611,9 +611,9 @@ TEST(InjectIDBKeyTest, TopLevelPropertyStringValue) {
   V8TestingScope scope;
 
   // object = { foo: "zoo" }
-  ScriptValue script_object = V8ObjectBuilder(scope.GetScriptState())
-                                  .AddString("foo", "zoo")
-                                  .GetScriptValue();
+  ScriptObject script_object = V8ObjectBuilder(scope.GetScriptState())
+                                   .AddString("foo", "zoo")
+                                   .ToScriptObject();
   std::unique_ptr<IDBKey> idb_string_key = IDBKey::CreateString("myNewKey");
   CheckInjection(scope.GetScriptState(), idb_string_key.get(), script_object,
                  "bar");
@@ -630,10 +630,10 @@ TEST(InjectIDBKeyTest, SubProperty) {
   ScriptState* script_state = scope.GetScriptState();
 
   // object = { foo: { bar: "zee" } }
-  ScriptValue script_object =
+  ScriptObject script_object =
       V8ObjectBuilder(script_state)
           .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
-          .GetScriptValue();
+          .ToScriptObject();
 
   std::unique_ptr<IDBKey> idb_string_key = IDBKey::CreateString("myNewKey");
   CheckInjection(scope.GetScriptState(), idb_string_key.get(), script_object,

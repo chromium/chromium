@@ -36,7 +36,7 @@ HeapVector<ScriptValue> InternalsUkmRecorder::getMetrics(
     for (const auto& iterator : entry.metrics) {
       builder.AddNumber(String(iterator.first), iterator.second);
     }
-    result.push_back(builder.GetScriptValue());
+    result.push_back(builder.ToScriptObject());
   }
 
   return result;

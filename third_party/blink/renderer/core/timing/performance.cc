@@ -1410,10 +1410,10 @@ bool Performance::CanExposeNode(Node* node) {
   return true;
 }
 
-ScriptValue Performance::toJSONForBinding(ScriptState* script_state) const {
+ScriptObject Performance::toJSONForBinding(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   BuildJSONValue(result);
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void Performance::BuildJSONValue(V8ObjectBuilder& builder) const {

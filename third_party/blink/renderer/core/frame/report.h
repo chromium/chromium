@@ -11,6 +11,8 @@
 
 namespace blink {
 
+class ScriptObject;
+
 // The constants are implemented as static members of a class to have an unique
 // address and not violate ODR.
 struct CORE_EXPORT ReportType {
@@ -44,7 +46,7 @@ class CORE_EXPORT Report : public ScriptWrappable {
     ScriptWrappable::Trace(visitor);
   }
 
-  ScriptValue toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state) const;
 
   // Provides a hash-like value for identifying reports with same content.
   // Collision of match id is possible.

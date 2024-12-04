@@ -168,11 +168,11 @@ void PerformanceEntry::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptValue PerformanceEntry::toJSONForBinding(
+ScriptObject PerformanceEntry::toJSONForBinding(
     ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   BuildJSONValue(result);
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void PerformanceEntry::BuildJSONValue(V8ObjectBuilder& builder) const {

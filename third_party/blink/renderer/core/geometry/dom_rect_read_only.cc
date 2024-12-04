@@ -17,7 +17,8 @@ DOMRectReadOnly* DOMRectReadOnly::Create(double x,
   return MakeGarbageCollected<DOMRectReadOnly>(x, y, width, height);
 }
 
-ScriptValue DOMRectReadOnly::toJSONForBinding(ScriptState* script_state) const {
+ScriptObject DOMRectReadOnly::toJSONForBinding(
+    ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddNumber("x", x());
   result.AddNumber("y", y());
@@ -27,7 +28,7 @@ ScriptValue DOMRectReadOnly::toJSONForBinding(ScriptState* script_state) const {
   result.AddNumber("right", right());
   result.AddNumber("bottom", bottom());
   result.AddNumber("left", left());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 DOMRectReadOnly* DOMRectReadOnly::FromRect(const gfx::Rect& rect) {

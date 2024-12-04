@@ -42,8 +42,8 @@ namespace blink {
 class RTCIceCandidateInit;
 class ExceptionState;
 class ExecutionContext;
+class ScriptObject;
 class ScriptState;
-class ScriptValue;
 class V8RTCIceCandidateType;
 class V8RTCIceComponent;
 class V8RTCIceProtocol;
@@ -78,7 +78,7 @@ class MODULES_EXPORT RTCIceCandidate final : public ScriptWrappable {
   std::optional<V8RTCIceServerTransportProtocol> relayProtocol() const;
   std::optional<String> url() const;
 
-  ScriptValue toJSONForBinding(ScriptState*);
+  ScriptObject toJSONForBinding(ScriptState*);
 
   RTCIceCandidatePlatform* PlatformCandidate() const;
 

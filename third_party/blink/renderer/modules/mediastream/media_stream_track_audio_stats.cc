@@ -71,7 +71,7 @@ void MediaStreamTrackAudioStats::resetLatency(ScriptState* script_state) {
   temp_stats.Absorb(stats_);
 }
 
-ScriptValue MediaStreamTrackAudioStats::toJSON(ScriptState* script_state) {
+ScriptObject MediaStreamTrackAudioStats::toJSON(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddNumber("deliveredFrames", deliveredFrames(script_state));
   result.AddNumber("deliveredFramesDuration",
@@ -82,7 +82,7 @@ ScriptValue MediaStreamTrackAudioStats::toJSON(ScriptState* script_state) {
   result.AddNumber("averageLatency", averageLatency(script_state));
   result.AddNumber("minimumLatency", minimumLatency(script_state));
   result.AddNumber("maximumLatency", maximumLatency(script_state));
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void MediaStreamTrackAudioStats::Trace(Visitor* visitor) const {
