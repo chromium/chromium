@@ -382,11 +382,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     /** Hides the dialog. */
     public void destroy() {
         if (mTabListEditorCoordinator != null) {
-            if (mTabListEditorCoordinator.getController().isVisible()) {
-                hide(/* animationDuration= */ 0, this::tearDownTabListEditorCoordinator);
-            } else {
-                tearDownTabListEditorCoordinator();
-            }
+            mRootView.removeView(mDialogView);
+            mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
+                    mTabListItemSizeChangedObserver);
+            mTabListEditorCoordinator.getController().hide();
+            tearDownTabListEditorCoordinator();
         }
 
         if (mEdgeToEdgePadAdjuster != null) {
