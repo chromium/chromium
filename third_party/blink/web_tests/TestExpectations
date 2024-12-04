@@ -8614,25 +8614,6 @@ crbug.com/363353213 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtp
 # TODO(crbug.com/362797911): Re-enable this test
 crbug.com/362797911 [ Linux ] fast/text-autosizing/textarea-fontsize-change.html [ Failure Pass ]
 
-# These tests only pass because wasm type reflection is implied by the
-# experimental JSPI flag. Temporarily disable them as we remove the obsolete
-# flag implication on the V8 side, and re-enable them with up-to-date
-# *-expected.txt files once the change lands in Chrome.
-crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/memory/type.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/memory/type.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/table/type.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 external/wpt/wasm/jsapi/table/type.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.worker.html [ Failure Pass ]
-crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/type.tentative.any.html [ Failure Pass ]
-crbug.com/42202153 virtual/shared_array_buffer_on_desktop/external/wpt/wasm/jsapi/memory/type.tentative.any.worker.html [ Failure Pass ]
-
 # Gardener 2024-09-09
 crbug.com/365444428 [ Linux ] fast/events/middleClickAutoscroll-event-fired.html [ Failure Pass ]
 crbug.com/363342597 [ Mac13 ] shadow-dom/focus-navigation/focus-scroller-activeElement-on-event.html [ Failure Pass Timeout ]
