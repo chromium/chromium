@@ -30,6 +30,8 @@ namespace on_device_translation {
 namespace {
 
 using blink::mojom::TranslationAvailability;
+using blink::mojom::TranslatorLanguageCode;
+using blink::mojom::TranslatorLanguageCodePtr;
 
 bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
                         const std::string_view lang) {
@@ -96,16 +98,16 @@ std::vector<LanguageCategory> CreateLanguageCategoryList() {
 //   6. Not installed and non-preferred popular languages
 //   7. Not installed and non-preferred non-popular languages
 // Note: `preferred` means that the language is in the user's accept language.
-std::vector<std::vector<std::string>> CreateLanguageCategories(
+std::vector<std::vector<TranslatorLanguageCodePtr>> CreateLanguageCategories(
     const std::vector<std::string_view>& accept_languages,
     const std::set<LanguagePackKey>& installed_packs,
     bool is_en_preferred) {
-  std::vector<std::vector<std::string>> language_categories(
+  std::vector<std::vector<TranslatorLanguageCodePtr>> language_categories(
       kLanguageCategoriesSize);
   language_categories[GetLanguageCategoryIndex(/*installed=*/true,
                                                is_en_preferred,
                                                /*popular=*/true)]
-      .emplace_back("en");
+      .emplace_back(TranslatorLanguageCode::New("en"));
 
   for (const auto& it : kLanguagePackComponentConfigMap) {
     const LanguagePackKey key = it.first;
@@ -117,7 +119,8 @@ std::vector<std::vector<std::string>> CreateLanguageCategories(
     const bool popular = IsPopularLanguage(supported_language);
     const size_t index =
         GetLanguageCategoryIndex(installed, preferred, popular);
-    language_categories[index].emplace_back(language_code);
+    language_categories[index].push_back(
+        TranslatorLanguageCode::New(std::string(language_code)));
   }
   return language_categories;
 }
@@ -209,14 +212,14 @@ void TranslationManagerImpl::Create(
 }
 
 void TranslationManagerImpl::CanCreateTranslator(
-    const std::string& source_lang,
-    const std::string& target_lang,
+    blink::mojom::TranslatorLanguageCodePtr source_lang,
+    blink::mojom::TranslatorLanguageCodePtr target_lang,
     CanCreateTranslatorCallback callback) {
   CHECK(browser_context_);
   PrefService* profile_pref =
       Profile::FromBrowserContext(browser_context_.get())->GetPrefs();
-  RecordTranslationAPICallForLanguagePair("CanTranslate", source_lang,
-                                          target_lang);
+  RecordTranslationAPICallForLanguagePair("CanTranslate", source_lang->code,
+                                          target_lang->code);
   if (!profile_pref->GetBoolean(prefs::kTranslatorAPIAllowed)) {
     std::move(callback).Run(
         blink::mojom::CanCreateTranslatorResult::kNoDisallowedByPolicy);
@@ -224,12 +227,12 @@ void TranslationManagerImpl::CanCreateTranslator(
   }
   if (!PassAcceptLanguagesCheck(
           profile_pref->GetString(language::prefs::kAcceptLanguages),
-          source_lang, target_lang)) {
+          source_lang->code, target_lang->code)) {
     std::move(callback).Run(
         blink::mojom::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
     return;
   }
-  GetServiceController().CanTranslate(source_lang, target_lang,
+  GetServiceController().CanTranslate(source_lang->code, target_lang->code,
                                       std::move(callback));
 }
 
@@ -237,8 +240,8 @@ void TranslationManagerImpl::CreateTranslator(
     mojo::PendingRemote<blink::mojom::TranslationManagerCreateTranslatorClient>
         client,
     blink::mojom::TranslatorCreateOptionsPtr options) {
-  RecordTranslationAPICallForLanguagePair("Create", options->source_lang,
-                                          options->target_lang);
+  RecordTranslationAPICallForLanguagePair("Create", options->source_lang->code,
+                                          options->target_lang->code);
   CHECK(browser_context_);
   PrefService* profile_pref =
       Profile::FromBrowserContext(browser_context_.get())->GetPrefs();
@@ -250,14 +253,14 @@ void TranslationManagerImpl::CreateTranslator(
   }
   if (!PassAcceptLanguagesCheck(
           profile_pref->GetString(language::prefs::kAcceptLanguages),
-          options->source_lang, options->target_lang)) {
+          options->source_lang->code, options->target_lang->code)) {
     mojo::Remote(std::move(client))
         ->OnResult(blink::mojom::CreateTranslatorResult::NewError(
             blink::mojom::CreateTranslatorError::kAcceptLanguagesCheckFailed));
     return;
   }
   GetServiceController().CreateTranslator(
-      options->source_lang, options->target_lang,
+      options->source_lang->code, options->target_lang->code,
       base::BindOnce(
           [](base::WeakPtr<TranslationManagerImpl> self,
              mojo::PendingRemote<
@@ -292,7 +295,7 @@ void TranslationManagerImpl::CreateTranslator(
                     std::move(blink_remote)));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(client),
-          options->source_lang, options->target_lang));
+          options->source_lang->code, options->target_lang->code));
 }
 
 // static

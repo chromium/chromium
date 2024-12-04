@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translation_language_options.h"
@@ -25,6 +26,7 @@ namespace blink {
 namespace {
 
 using mojom::blink::CreateTranslatorError;
+using mojom::blink::TranslatorLanguageCode;
 
 const char kExceptionMessageUnableToCreateTranslator[] =
     "Unable to create translator for the given source and target language.";
@@ -186,7 +188,8 @@ ScriptPromise<V8TranslationAvailability> Translation::canTranslate(
         V8TranslationAvailability(V8TranslationAvailability::Enum::kNo));
   } else {
     GetTranslationManagerRemote()->CanCreateTranslator(
-        options->sourceLanguage(), options->targetLanguage(),
+        TranslatorLanguageCode::New(options->sourceLanguage()),
+        TranslatorLanguageCode::New(options->targetLanguage()),
         WTF::BindOnce(
             [](ScriptPromiseResolver<V8TranslationAvailability>* resolver,
                CanCreateTranslatorResult result) {
@@ -247,8 +250,9 @@ ScriptPromise<LanguageTranslator> Translation::createTranslator(
       options->targetLanguage(), client.InitWithNewPipeAndPassReceiver());
   GetTranslationManagerRemote()->CreateTranslator(
       std::move(client),
-      mojom::blink::TranslatorCreateOptions::New(options->sourceLanguage(),
-                                                 options->targetLanguage()));
+      mojom::blink::TranslatorCreateOptions::New(
+          TranslatorLanguageCode::New(options->sourceLanguage()),
+          TranslatorLanguageCode::New(options->targetLanguage())));
   return promise;
 }
 

@@ -6,6 +6,13 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/on_device_translation/translator.mojom";
 
+
+struct TranslatorLanguageCode {
+  // BCP 47 language code used for the Translator API.
+  // This code may be hardcoded in Chrome or passed from the JS API.
+  string code;
+};
+
 // The result of TranslationManager's CanCreateTranslator IPC.
 enum CanCreateTranslatorResult {
   // Both the library and the language pack are ready.
@@ -101,15 +108,15 @@ interface TranslationManagerCreateTranslatorClient {
 
 // This is used when creating a new Translator for Translator API.
 // https://github.com/WICG/translation-api/
-// Both `source_lang` and `target_lang` are ISO 639 language code passed from
-// JS via `translation.createTranslator()` method. They will be used in the
-// translation service process to load appropriate language packages and create
-// a translator.
+// Both `source_lang` and `target_lang` are passed from JS via
+// `translation.createTranslator()` method. They will be used in the translation
+// service process to load appropriate language packages and create a
+// translator.
 struct TranslatorCreateOptions {
   // This is `AITranslatorCreateOptions`'s `sourceLanguage` of Translator API.
-  string source_lang;
+  TranslatorLanguageCode source_lang;
   // This is `AITranslatorCreateOptions`'s `targetLanguage` of Translator API.
-  string target_lang;
+  TranslatorLanguageCode target_lang;
 };
 
 // The availability of a translation.
@@ -122,10 +129,10 @@ enum TranslationAvailability {
 // The information of a translator availability.
 struct TranslatorAvailabilityInfo {
   // The language categories for the availability matrix.
-  // Each language string is the ISO 639 language code which is supported by
-  // the Translator API's implementation library.
+  // Each language code is the language code which is supported by the
+  // Translator API's implementation library.
   // Note: `preferred` means that the language is in the user's accept language.
-  array<array<string>> language_categories;
+  array<array<TranslatorLanguageCode>> language_categories;
 
   // The availability matrix for each language category. The availability matrix
   // is a 2D array, where the first dimension represents the source language
@@ -143,14 +150,14 @@ interface TranslationManager {
   // Returns if it is supported to create a translator that could translate
   // texts from `source_lang` to `target_lang`.
   //
-  // Both `source_lang` and `target_lang` are ISO 639 language code passed from
-  // JS via `translation.canTranslate()` method as `TranslationLanguageOptions`
-  // in the explainer. This canTranslate() method was removed from the explainer.
+  // Both `source_lang` and `target_lang` are passed from JS via
+  // `translation.canTranslate()` method as `TranslationLanguageOptions` in the
+  // explainer. This canTranslate() method was removed from the explainer.
   // So this `CanCreateTranslator IPC` will be eventually removed when we remove
   // the `translation.canTranslate()` method (crbug.com/379643382).
   // https://github.com/WICG/translation-api/blob/5151a1b1b/README.md#full-api-surface-in-web-idl
   CanCreateTranslator(
-    string source_lang, string target_lang
+    TranslatorLanguageCode source_lang, TranslatorLanguageCode target_lang
   ) => (CanCreateTranslatorResult result);
 
   // Creates a translator that could translate texts from `source_lang`

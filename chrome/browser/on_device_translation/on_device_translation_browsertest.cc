@@ -48,6 +48,7 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 
 using ::blink::mojom::CanCreateTranslatorResult;
+using ::blink::mojom::TranslatorLanguageCode;
 using ::content::JsReplace;
 using ::testing::_;
 using ::testing::Invoke;
@@ -168,7 +169,8 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
                                    remote.BindNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     remote->CanCreateTranslator(
-        std::string(sourceLang), std::string(targetLang),
+        TranslatorLanguageCode::New(std::string(sourceLang)),
+        TranslatorLanguageCode::New(std::string(targetLang)),
         base::BindLambdaForTesting([&](CanCreateTranslatorResult result) {
           EXPECT_EQ(result, expected_result);
           run_loop.Quit();

@@ -19,11 +19,14 @@ namespace {
 // Returns the index of the language category that contains the given language,
 // or std::nullopt if the language is not found.
 std::optional<size_t> GetLanguageCategoryIndex(
-    const Vector<Vector<String>>& language_categories,
+    const Vector<Vector<mojom::blink::TranslatorLanguageCodePtr>>&
+        language_categories,
     const String& language) {
   for (size_t i = 0; i < language_categories.size(); ++i) {
-    if (language_categories[i].Find(language) != WTF::kNotFound) {
-      return i;
+    for (const auto& language_code : language_categories[i]) {
+      if (language_code->code == language) {
+        return i;
+      }
     }
   }
   return std::nullopt;

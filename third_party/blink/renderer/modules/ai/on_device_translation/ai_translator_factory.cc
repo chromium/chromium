@@ -108,8 +108,10 @@ ScriptPromise<AITranslator> AITranslatorFactory::create(
       client.InitWithNewPipeAndPassReceiver());
   GetTranslationManagerRemote()->CreateTranslator(
       std::move(client),
-      mojom::blink::TranslatorCreateOptions::New(options->sourceLanguage(),
-                                                 options->targetLanguage()));
+      mojom::blink::TranslatorCreateOptions::New(
+          mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
+          mojom::blink::TranslatorLanguageCode::New(
+              options->targetLanguage())));
 
   return resolver->Promise();
 }
