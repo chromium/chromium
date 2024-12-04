@@ -38,6 +38,7 @@ source_set("modals") {
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/ui_bundled/coordinators:translate_public",
+    "//ios/chrome/browser/infobars/ui_bundled/presentation",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/passwords/model:public",
     "//ios/chrome/browser/shared/ui/symbols",

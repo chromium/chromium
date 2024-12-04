@@ -98,6 +98,7 @@
                prefService:self.browser->GetProfile()->GetPrefs()];
   modalMediator.consumer = modalViewController;
   modalMediator.translateMediatorDelegate = self;
+  modalViewController.presentationHandler = self;
   self.modalMediator = modalMediator;
   self.modalViewController = modalViewController;
 }
