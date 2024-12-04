@@ -19935,6 +19935,7 @@
                 {
                     "name": "EnabledWithHats",
                     "params": {
+                        "background-password-check-interval-in-days": "1",
                         "probability": "0.5",
                         "survey": "safety-hub-android-survey",
                         "trigger_id": "BqU7h7abt0tK1KeaPYj0WkmwAz4h"
