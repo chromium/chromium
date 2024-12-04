@@ -14,8 +14,6 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/core/features.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -100,8 +98,7 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionTrue) {
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionTrue));
 
   std::optional<page_info::MerchantData> info =
-      service()->GetMerchantTrustInfo(GURL("https://foo.com"),
-                                      ukm::UkmRecorder::GetNewSourceID());
+      service()->GetMerchantTrustInfo(GURL("https://foo.com"));
   EXPECT_TRUE(info.has_value());
   EXPECT_EQ(info->page_url, GURL("https://page_url.com"));
   EXPECT_EQ(info->reviews_summary, kTestSummary);
@@ -114,8 +111,7 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionUnknown) {
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionUnknown));
 
   std::optional<page_info::MerchantData> info =
-      service()->GetMerchantTrustInfo(GURL("https://foo.com"),
-                                      ukm::UkmRecorder::GetNewSourceID());
+      service()->GetMerchantTrustInfo(GURL("https://foo.com"));
   EXPECT_FALSE(info.has_value());
 }
 
@@ -123,8 +119,7 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionUnknown) {
 TEST_F(MerchantTrustServiceTest, NoOptimizationGuideNotAllowed) {
   SetOptimizationGuideAllowed(false);
   std::optional<page_info::MerchantData> info =
-      service()->GetMerchantTrustInfo(GURL("https://foo.com"),
-                                      ukm::UkmRecorder::GetNewSourceID());
+      service()->GetMerchantTrustInfo(GURL("https://foo.com"));
   EXPECT_FALSE(info.has_value());
 }
 
@@ -139,8 +134,7 @@ TEST_F(MerchantTrustServiceTest, SampleData) {
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionUnknown));
 
   std::optional<page_info::MerchantData> info =
-      service()->GetMerchantTrustInfo(GURL("https://foo.com"),
-                                      ukm::UkmRecorder::GetNewSourceID());
+      service()->GetMerchantTrustInfo(GURL("https://foo.com"));
   EXPECT_TRUE(info.has_value());
   EXPECT_EQ(
       info->page_url,

@@ -14,7 +14,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/page_info/core/page_info_types.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 class GURL;
@@ -40,7 +39,7 @@ class MerchantTrustService : public KeyedService {
 
   // Returns merchant trust information for the website with |url|.
   virtual std::optional<page_info::MerchantData>
-  GetMerchantTrustInfo(const GURL& url, ukm::SourceId source_id) const;
+  GetMerchantTrustInfo(const GURL& url) const;
 
  private:
   const raw_ptr<optimization_guide::OptimizationGuideDecider>

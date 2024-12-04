@@ -47,8 +47,7 @@ MerchantTrustService::MerchantTrustService(
 }
 
 std::optional<page_info::MerchantData>
-MerchantTrustService::GetMerchantTrustInfo(const GURL& url,
-                                           ukm::SourceId source_id) const {
+MerchantTrustService::GetMerchantTrustInfo(const GURL& url) const {
   if (!optimization_guide::IsValidURLForURLKeyedHint(url)) {
     return std::nullopt;
   }
