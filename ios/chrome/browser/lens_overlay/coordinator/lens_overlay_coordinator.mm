@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_metrics_recorder.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_network_issue_alert_presenter.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -104,7 +105,8 @@ const CGFloat kMenuSymbolSize = 18;
                                       LensOverlayResultConsumer,
                                       LensOverlayDetentsChangeObserver,
                                       LensOverlayConsentViewControllerDelegate,
-                                      LensOverlayPanTrackerDelegate>
+                                      LensOverlayPanTrackerDelegate,
+                                      LensOverlayNetworkIssueDelegate>
 
 // Whether the `_containerViewController` is currently presented.
 @property(nonatomic, assign, readonly) BOOL isLensOverlayVisible;
@@ -160,6 +162,9 @@ const CGFloat kMenuSymbolSize = 18;
 
   /// A helper object that provides a central point for recording metrics.
   LensOverlayMetricsRecorder* _metricsRecorder;
+
+  /// Network issue alert presenter.
+  LensOverlayNetworkIssueAlertPresenter* _networkIssueAlertPresenter;
 }
 
 #pragma mark - public
@@ -193,6 +198,10 @@ const CGFloat kMenuSymbolSize = 18;
   // lens.
   _mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
+
+  _networkIssueAlertPresenter = [[LensOverlayNetworkIssueAlertPresenter alloc]
+      initWithBaseViewController:_containerViewController];
+  _networkIssueAlertPresenter.delegate = self;
 
   if ([self termsOfServiceAccepted]) {
     [_selectionViewController start];
@@ -560,6 +569,13 @@ const CGFloat kMenuSymbolSize = 18;
   }
 }
 
+#pragma mark - LensOverlayNetworkIssueDelegate
+
+- (void)onNetworkIssueAlertAcknowledged {
+  [self destroyLensUI:YES
+               reason:lens::LensOverlayDismissalSource::kNetworkIssue];
+}
+
 #pragma mark - LensOverlayDetentsChangeObserver
 
 - (void)onBottomSheetDimensionStateChanged:(SheetDimensionState)state {
@@ -669,7 +685,7 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (void)handleSearchRequestErrored {
   [_resultMediator handleSearchRequestErrored];
-  [self showNoInternetAlert];
+  [_networkIssueAlertPresenter showAlert];
 }
 
 #pragma mark - LensOverlayConsentViewControllerDelegate
@@ -708,33 +724,6 @@ const CGFloat kMenuSymbolSize = 18;
 
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];
-}
-
-- (void)showNoInternetAlert {
-  if (!_containerViewController) {
-    return;
-  }
-
-  UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_ALERT_TITLE)
-                       message:l10n_util::GetNSString(
-                                   IDS_IOS_LENS_ALERT_SUBTITLE)
-                preferredStyle:UIAlertControllerStyleAlert];
-
-  __weak __typeof(self) weakSelf = self;
-  UIAlertAction* defaultAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_ALERT_CLOSE_ACTION)
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction* action) {
-                [weakSelf destroyLensUI:YES
-                                 reason:lens::LensOverlayDismissalSource::
-                                            kLensPermissionsDenied];
-              }];
-  [alert addAction:defaultAction];
-
-  [_containerViewController presentViewController:alert
-                                         animated:YES
-                                       completion:nil];
 }
 
 // Lens needs to have visibility into the user's identity and whether the search
@@ -893,6 +882,7 @@ const CGFloat kMenuSymbolSize = 18;
   [_displayLink invalidate];
   _displayLink = nil;
   _scopedForceOrientation.reset();
+  _networkIssueAlertPresenter = nil;
 }
 
 // The tab helper for the active web state.

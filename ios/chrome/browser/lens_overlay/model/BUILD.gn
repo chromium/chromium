@@ -33,8 +33,22 @@ source_set("model") {
   ]
   public_deps = [
     ":detent_state_header",
+    ":network_issue_alert_presenter",
     "//base",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+  ]
+}
+
+source_set("network_issue_alert_presenter") {
+  sources = [
+    "lens_overlay_network_issue_alert_presenter.h",
+    "lens_overlay_network_issue_alert_presenter.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ui/base",
+    "//url",
   ]
 }
 
