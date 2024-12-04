@@ -50,7 +50,7 @@ class OmniboxChipButton : public views::MdTextButton {
 
   // Customize the button.
   void SetTheme(OmniboxChipTheme theme);
-  void SetMessage(std::u16string message);
+  void SetIcon(const gfx::VectorIcon& icon);
 
   OmniboxChipTheme GetOmniboxChipTheme() const { return theme_; }
 
@@ -63,7 +63,6 @@ class OmniboxChipButton : public views::MdTextButton {
   // chips (default/neutral states). For any other changes to the look and feel
   // of the chips, consider subclassing and overriding as needed.
   virtual ui::ImageModel GetIconImageModel() const;
-  virtual const gfx::VectorIcon& GetIcon() const;
   virtual ui::ColorId GetForegroundColorId() const;
   virtual ui::ColorId GetBackgroundColorId() const;
 
@@ -81,6 +80,8 @@ class OmniboxChipButton : public views::MdTextButton {
   void ForceAnimateCollapse();
 
   void OnAnimationValueMaybeChanged();
+
+  const gfx::VectorIcon& GetIcon() const;
 
   int GetIconSize() const;
 

@@ -39,7 +39,6 @@ class IntentChipButton : public OmniboxChipButton {
 
   // OmniboxChipButton:
   ui::ImageModel GetIconImageModel() const override;
-  const gfx::VectorIcon& GetIcon() const override;
   ui::ColorId GetForegroundColorId() const override;
   ui::ColorId GetBackgroundColorId() const override;
 
