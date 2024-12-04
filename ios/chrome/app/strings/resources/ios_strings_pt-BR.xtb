@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Ativar as notificações de Confirmação de segurança…</translation>
 <translation id="1652333207707886577">Personalizar seu menu</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Tempo restante: {TIME} segundo}=1{Tempo restante: {TIME} segundo}one{Tempo restante: {TIME} segundo}other{Tempo restante: {TIME} segundos}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} senha salva disponível acima do teclado.}one{{count} senha salva disponível acima do teclado.}other{{count} senhas salvas disponíveis acima do teclado.}}</translation>
 <translation id="1654232554734641711">Acesso permitido ao microfone</translation>
 <translation id="16554782717487656">Detectar unidades</translation>
 <translation id="1657011748321897393">O compartilhamento falhou porque não há conexão de rede.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Abrir a grade de guias</translation>
 <translation id="20485545164632846">novo item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> contas usando a mesma senha</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} forma de pagamento salva disponível acima do teclado.}one{{count} forma de pagamento salva disponível acima do teclado.}other{{count} formas de pagamento salvas disponíveis acima do teclado.}}</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="20638360198452347">Seletor de tipo de unidade de medida</translation>
 <translation id="2067852168641682340">Salvar sempre nesta conta</translation>
@@ -329,7 +327,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2390457533592708044">Ocultar "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Não foi possível entregar seu pacote</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} endereço salvo disponível acima do teclado.}one{{count} endereço salvo disponível acima do teclado.}other{{count} endereços salvos disponíveis acima do teclado.}}</translation>
 <translation id="2424805048070062787">Continuar com esta guia</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
 <translation id="243275146591958220">Cancelar download</translation>
@@ -757,7 +754,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4525629404718770519">Mostrar prévias de links</translation>
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} sugestão de preenchimento automático salva disponível acima do teclado.}one{{count} sugestão de preenchimento automático salva disponível acima do teclado.}other{{count} sugestões de preenchimento automático salvas disponíveis acima do teclado.}}</translation>
 <translation id="4547181496285029457">Voltar à guia recente</translation>
 <translation id="4552042254369397518">Copiando…</translation>
 <translation id="4564893319561643483">Ocultar "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4597892826846980979">Receber notificações de guias</translation>
 <translation id="4601095002996233687">Verificações detalhadas de downloads suspeitos.</translation>
 <translation id="4606247758155004938">O navegador é gerenciado pela sua organização.</translation>
+<translation id="4607887340472970274">Monitoramento de preços</translation>
 <translation id="4611811151908969241">Ocultar opção "Parar de seguir <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Pesquisando com o Google</translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
@@ -1274,7 +1271,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6710079714193676716">Gerenciado pela sua organização. Talvez alguns recursos estejam indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Acessar o feed</translation>
 <translation id="6713676799463473249">Última modificação: <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Monitorar preço</translation>
 <translation id="6722623263381062480">Guias recebidas</translation>
 <translation id="6723740634201835758">Na Conta do Google</translation>
 <translation id="672735642903863329">Acesse seus favoritos, senhas e mais em todos os seus dispositivos.</translation>
@@ -1440,7 +1436,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="75362970626182391">Novo grupo de guias</translation>
 <translation id="7537586195939242955">Impossível instalar senha no livro de senhas no momento.</translation>
 <translation id="754655535278952384">Verificada <ph name="TIME" /></translation>
-<translation id="755255281989213264">Personalizar menu</translation>
 <translation id="7553234618121028547">Para desativar, abra <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" /> e acesse "Opções de senha".</translation>
 <translation id="7557508262441527045">Saiu</translation>
 <translation id="7561196759112975576">Sempre</translation>

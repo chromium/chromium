@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Ενεργοποίηση ειδοποιήσεων Ελέγχου ασφαλείας…</translation>
 <translation id="1652333207707886577">Προσαρμογή του μενού</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Χρόνος που απομένει: {TIME} δευτερόλεπτα}=1{Χρόνος που απομένει: {TIME} δευτερόλεπτο}other{Χρόνος που απομένει: {TIME} δευτερόλεπτα}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{Διατίθεται {count} αποθηκευμένος κωδικός πρόσβασης πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένοι κωδικοί πρόσβασης πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="1654232554734641711">Επιτρέπεται η πρόσβαση στο μικρόφωνο.</translation>
 <translation id="16554782717487656">Εντοπισμός μονάδων</translation>
 <translation id="1657011748321897393">Η κοινοποίηση απέτυχε επειδή δεν έχετε συνδεθεί στο δίκτυο.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Άνοιγμα του πλέγματος καρτελών</translation>
 <translation id="20485545164632846">νέο στοιχείο</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> λογαριασμοί χρησιμοποιούν τον ίδιο κωδικό πρόσβασης</translation>
-<translation id="2050196510205866090">{count,plural, =1{Διατίθεται {count} αποθηκευμένος τρόπος πληρωμής επάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένοι τρόποι πληρωμής επάνω από το πληκτρολόγιο.}}</translation>
 <translation id="2059166748188874810">Δήμος</translation>
 <translation id="20638360198452347">Επιλογέας τύπου μονάδας</translation>
 <translation id="2067852168641682340">Αποθήκευση σε αυτόν τον λογαριασμό κάθε φορά</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">Απόκρυψη <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Δεν είναι δυνατή η παράδοση του πακέτου σας</translation>
 <translation id="2410754283952462441">Επιλέξτε λογαριασμό</translation>
-<translation id="2411749908844615428">{count,plural, =1{Διατίθεται {count} αποθηκευμένη διεύθυνση πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένες διευθύνσεις πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="2424805048070062787">Συνέχεια με αυτή την καρτέλα</translation>
 <translation id="2426805022920575512">Επιλογή άλλου λογαριασμού</translation>
 <translation id="243275146591958220">Ακύρωση λήψης</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">Εμφάνιση προεπισκοπήσεων συνδέσμων</translation>
 <translation id="452750746583162491">Έλεγχος συγχρονισμένων δεδομένων</translation>
 <translation id="4532845899244822526">Επιλογή φακέλου</translation>
-<translation id="4539187448429948815">{count,plural, =1{Διατίθεται {count} αποθηκευμένη πρόταση αυτόματης συμπλήρωσης πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένες προτάσεις αυτόματης συμπλήρωσης πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="4547181496285029457">Επιστροφή στην καρτέλα Πρόσφατα</translation>
 <translation id="4552042254369397518">Αντιγραφή…</translation>
 <translation id="4564893319561643483">Απόκρυψη <ph name="TITLE" /></translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">Λήψη ειδοποιήσεων καρτελών</translation>
 <translation id="4601095002996233687">Λεπτομερείς σαρώσεις σε βάθος για ύποπτες λήψεις.</translation>
 <translation id="4606247758155004938">Η διαχείριση του προγράμματος περιήγησής σας πραγματοποιείται από τον οργανισμό σας.</translation>
+<translation id="4607887340472970274">Παρακολούθηση τιμής</translation>
 <translation id="4611811151908969241">Απόκρυψη της επιλογής Κατάργηση παρακολούθησης <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Αναζήτηση με την Google</translation>
 <translation id="4619564267100705184">Επαλήθευση ταυτότητας</translation>
@@ -1275,7 +1272,6 @@
 <translation id="6710079714193676716">Διαχειριζόμενο από τον οργανισμό σας. Ορισμένες λειτουργίες ενδέχεται να μην είναι διαθέσιμες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Μετάβαση στη Ροή</translation>
 <translation id="6713676799463473249">Τροποποιήθηκε <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Παρακολούθηση τιμής</translation>
 <translation id="6722623263381062480">Καρτέλες που έχουν ληφθεί</translation>
 <translation id="6723740634201835758">Στον Λογαριασμό σας Google</translation>
 <translation id="672735642903863329">Μεταφέρετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα σε όλες τις συσκευές σας.</translation>
@@ -1441,7 +1437,6 @@
 <translation id="75362970626182391">Νέα ομάδα καρτελών</translation>
 <translation id="7537586195939242955">Δεν είναι δυνατή η εγκατάσταση της κάρτας σας στο Passbook.</translation>
 <translation id="754655535278952384">Έγινε έλεγχος <ph name="TIME" /></translation>
-<translation id="755255281989213264">Προσαρμογή μενού</translation>
 <translation id="7553234618121028547">Για απενεργοποίηση, ανοίξτε τις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" /> και μεταβείτε στις Επιλογές κωδικών πρόσβασης.</translation>
 <translation id="7557508262441527045">Έγινε αποσύνδεση</translation>
 <translation id="7561196759112975576">Πάντα</translation>

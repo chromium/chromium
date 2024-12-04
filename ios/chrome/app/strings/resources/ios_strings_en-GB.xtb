@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Turn on safety check notifications…</translation>
 <translation id="1652333207707886577">Customise your menu</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Time remaining: {TIME} seconds}=1{Time remaining: {TIME} second}other{Time remaining: {TIME} seconds}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} saved password available above your keyboard.}other{{count} saved passwords available above your keyboard.}}</translation>
 <translation id="1654232554734641711">Microphone access allowed</translation>
 <translation id="16554782717487656">Detect units</translation>
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Open the tab grid</translation>
 <translation id="20485545164632846">new item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> accounts using same password</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} saved payment method available above your keyboard.}other{{count} saved payment methods available above your keyboard.}}</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="20638360198452347">Unit type selector</translation>
 <translation id="2067852168641682340">Save to this account every time</translation>
@@ -329,7 +327,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2390457533592708044">Hide '<ph name="MODULE_NAME" />'</translation>
 <translation id="2403129868389095715">Your package can't be delivered</translation>
 <translation id="2410754283952462441">Choose an account</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} saved address available above your keyboard.}other{{count} saved addresses available above your keyboard.}}</translation>
 <translation id="2424805048070062787">Continue with this tab</translation>
 <translation id="2426805022920575512">Choose another account</translation>
 <translation id="243275146591958220">Cancel download</translation>
@@ -757,7 +754,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4525629404718770519">Show link previews</translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4532845899244822526">Choose folder</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} saved autocomplete suggestion available above your keyboard.}other{{count} saved autocomplete suggestions available above your keyboard.}}</translation>
 <translation id="4547181496285029457">Return to recent tab</translation>
 <translation id="4552042254369397518">Copying…</translation>
 <translation id="4564893319561643483">Hide '<ph name="TITLE" />'</translation>
@@ -770,6 +766,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4597892826846980979">Get tabs notifications</translation>
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
+<translation id="4607887340472970274">Price tracking</translation>
 <translation id="4611811151908969241">Hide Unfollow <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Searching with Google</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
@@ -1274,7 +1271,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6710079714193676716">Managed by your organisation. Some features may be unavailable. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Go to feed</translation>
 <translation id="6713676799463473249">Modified on <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Track price</translation>
 <translation id="6722623263381062480">Received tabs</translation>
 <translation id="6723740634201835758">In your Google Account</translation>
 <translation id="672735642903863329">Get your bookmarks, passwords and more on all your devices.</translation>
@@ -1440,7 +1436,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="75362970626182391">New tab group</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
-<translation id="755255281989213264">Customise menu</translation>
 <translation id="7553234618121028547">To turn off, open <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> and go to Password options.</translation>
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>

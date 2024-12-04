@@ -1365,6 +1365,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7425037327577270384">Hjälp mig skriva</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Det gick inte att inaktivera eller ta bort detta APN. Se till att aktiverade <ph name="ATTACH" />-APN inaktiveras eller tas bort.</translation>
+<translation id="7453118953486228603">Klicka för att sammanfatta den markerade texten</translation>
 <translation id="7458970041932198923">Anslut till ett nätverk och läs in sidan igen för att visa och ställa in avatarer.</translation>
 <translation id="7469648432129124067">En portal hittades</translation>
 <translation id="7481312909269577407">Framåt</translation>
@@ -1723,6 +1724,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="9133772297793293778">Tryck på 1–4 specialtangenter och en annan tangent på tangentbordet. Avsluta redigeringsläget genom att trycka på Alt + Esc.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Vänster skifttangent</translation>
+<translation id="9147928237330776930">För få ord för att sammanfatta</translation>
 <translation id="9149391708638971077">Kör minnestest</translation>
 <translation id="9159524746324788320">hamburgare</translation>
 <translation id="9161276708550942948">blanksteg</translation>

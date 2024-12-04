@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">নিরাপত্তা সংক্রান্ত পরীক্ষার বিজ্ঞপ্তি চালু করুন…</translation>
 <translation id="1652333207707886577">আপনার মেনু কাস্টমাইজ করুন</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{সময় বাকি আছে: {TIME} সেকেন্ড}=1{সময় বাকি আছে: {TIME} সেকেন্ড}one{সময় বাকি আছে: {TIME} সেকেন্ড}other{সময় বাকি আছে: {TIME} সেকেন্ড}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count}টি সেভ করা পাসওয়ার্ড আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা পাসওয়ার্ড আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা পাসওয়ার্ড আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="1654232554734641711">মাইক্রোফোন অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="16554782717487656">একক শনাক্ত করুন</translation>
 <translation id="1657011748321897393">শেয়ার করা ব্যার্থ হয়েছে কারণ আপনি নেটওয়ার্কের সাথে সংযুক্ত নন৷</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">ট্যাব গ্রিড খুলুন</translation>
 <translation id="20485545164632846">নতুন আইটেম</translation>
 <translation id="2049727122989709386"><ph name="COUNT" />টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
 <translation id="20638360198452347">ইউনিটের ধরন বাছাইকারী</translation>
 <translation id="2067852168641682340">প্রতিবার এই অ্যাকাউন্টে সেভ করুন</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" আড়াল করুন</translation>
 <translation id="2403129868389095715">আপনার প্যাকেজ ডেলিভার করা যাচ্ছে না</translation>
 <translation id="2410754283952462441">একটি অ্যাকাউন্ট বেছে নিন</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="2424805048070062787">এই ট্যাবে চালিয়ে যান</translation>
 <translation id="2426805022920575512">অন্য একটি অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="243275146591958220">ডাউনলোড বাতিল করুন</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">লিঙ্কের প্রিভিউ দেখুন</translation>
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
 <translation id="4532845899244822526">ফোল্ডার বেছে নিন</translation>
-<translation id="4539187448429948815">{count,plural, =1{আপনার কীবোর্ডের উপরে {count}টি অটোকমপ্লিট সাজেশন উপলভ্য আছে।}one{আপনার কীবোর্ডের উপরে {count}টি অটোকমপ্লিট সাজেশন উপলভ্য আছে।}other{আপনার কীবোর্ডের উপরে {count}টি অটোকমপ্লিট সাজেশন উপলভ্য আছে।}}</translation>
 <translation id="4547181496285029457">সাম্প্রতিক ট্যাবে ফিরে যান</translation>
 <translation id="4552042254369397518">কপি করা হচ্ছে…</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" আড়াল করুন</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">ট্যাব সম্পর্কিত বিজ্ঞপ্তি পান</translation>
 <translation id="4601095002996233687">এই সুবিধা সন্দেহজনক ডাউনলোড যাচাই করতে ভালভাবে স্ক্যান করে।</translation>
 <translation id="4606247758155004938">আপনার সংস্থা ব্রাউজার ম্যানেজ করছে।</translation>
+<translation id="4607887340472970274">প্রাইস ট্র্যাকিং</translation>
 <translation id="4611811151908969241">'<ph name="DOMAIN_NAME" /> আনফলো করুন' বিকল্পটি লুকান</translation>
 <translation id="461440297010471931">Google এর মাধ্যমে সার্চ করা হচ্ছে</translation>
 <translation id="4619564267100705184">নিজের পরিচয় যাচাই করুন</translation>
@@ -1275,7 +1272,6 @@
 <translation id="6710079714193676716">আপনার সংস্থা এটি ম্যানেজ করে। কিছু ফিচার হয়ত উপলভ্য নয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">ফিডে যান</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />-এ পরিবর্তন করা হয়েছে</translation>
-<translation id="6717862474255265991">দাম ট্র্যাক করুন</translation>
 <translation id="6722623263381062480">প্রাপ্ত ট্যাব</translation>
 <translation id="6723740634201835758">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="672735642903863329">আপনার সবকটি ডিভাইসে, বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু পান।</translation>
@@ -1441,7 +1437,6 @@
 <translation id="75362970626182391">নতুন ট্যাব গ্রুপ</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ে পাসবুকে আপনার পাস ইনস্টল করা যাবে না৷</translation>
 <translation id="754655535278952384"><ph name="TIME" />-এ টিক চিহ্ন দেওয়া হয়েছে</translation>
-<translation id="755255281989213264">মেনু কাস্টমাইজ করুন</translation>
 <translation id="7553234618121028547">বন্ধ করতে, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্প খুলে পাসওয়ার্ড বিকল্পে যান।</translation>
 <translation id="7557508262441527045">সাইন-আউট করুন</translation>
 <translation id="7561196759112975576">সবসময়</translation>

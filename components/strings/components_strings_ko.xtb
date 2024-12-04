@@ -278,7 +278,6 @@
 <translation id="1473495410389165587">작성 지원 기능을 이용하려면 3개 이상의 단어를 입력하세요.</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">청소 서비스</translation>
-<translation id="1475299637784133125">브라우저 버전을 찾는다면 다음으로 이동하세요.</translation>
 <translation id="1476595624592550506">비밀번호 변경</translation>
 <translation id="1482372785911828880">매우 가늘게</translation>
 <translation id="1482879811280872320">사이클</translation>
@@ -2656,7 +2655,6 @@
 <translation id="57838592816432529">음소거</translation>
 <translation id="5784606427469807560">카드 확인 중에 문제가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.</translation>
 <translation id="5785756445106461925">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 모양을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
 <translation id="5794065675298686371">가격 추적 알림 사용 설정</translation>
 <translation id="5800727402210090597">휴대전화 수리 및 서비스</translation>
@@ -4411,7 +4409,6 @@
 <translation id="8987663052629670333">사진 인화 서비스</translation>
 <translation id="8987927404178983737">월</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">시스템 버전을 찾는다면 다음으로 이동하세요.</translation>
 <translation id="899688752321268742">사용자가 현재 기기를 사용 중인지 <ph name="URL" />에서 알고자 합니다.</translation>
 <translation id="8997023839087525404">서버에서 인증서 투명성 정책을 사용하여 공개되지 않은 인증서를 제시했습니다. 인증서 투명성 정책은 인증서가 신뢰할 수 있으며 공격자로부터 사용자를 보호하고 있음을 보장하기 위한 것으로 일부 인증서의 경우 필수사항입니다.</translation>
 <translation id="9000145382638074673">내 기기</translation>

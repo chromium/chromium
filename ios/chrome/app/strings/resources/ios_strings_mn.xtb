@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Аюулгүй байдлын шалгалтын мэдэгдлийг асаах…</translation>
 <translation id="1652333207707886577">Цэсээ өөрчилнө үү</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Үлдсэн хугацаа: {TIME} секунд}=1{Үлдсэн хугацаа: {TIME} секунд}other{Үлдсэн хугацаа: {TIME} секунд}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{Таны гарын дээр хадгалсан {count} нууц үг боломжтой байна.}other{Таны гарын дээр хадгалсан {count} нууц үг боломжтой байна.}}</translation>
 <translation id="1654232554734641711">Микрофоны хандалтыг зөвшөөрсөн</translation>
 <translation id="16554782717487656">Нэгж илрүүлэх</translation>
 <translation id="1657011748321897393">Та сүлжээнд холбогдоогүй байгаа учраас хуваалцах ажиллагаа амжилтгүй боллоо.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Табын хүснэгтийг нээх</translation>
 <translation id="20485545164632846">шинэ зүйл</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> бүртгэл ижил нууц үг ашиглаж байна</translation>
-<translation id="2050196510205866090">{count,plural, =1{Таны гарын дээр хадгалсан {count} төлбөрийн хэрэгсэл боломжтой байна.}other{Таны гарын дээр хадгалсан {count} төлбөрийн хэрэгсэл боломжтой байна.}}</translation>
 <translation id="2059166748188874810">Хотын захиргаа</translation>
 <translation id="20638360198452347">Нэгжийн төрөл сонгогч</translation>
 <translation id="2067852168641682340">Энэ бүртгэлд үргэлж хадгалах</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />"-г нуух</translation>
 <translation id="2403129868389095715">Таны илгээмжийг хүргэх боломжгүй</translation>
 <translation id="2410754283952462441">Бүртгэл сонгох</translation>
-<translation id="2411749908844615428">{count,plural, =1{Таны гарын дээр хадгалсан {count} хаяг боломжтой байна.}other{Таны гарын дээр хадгалсан {count} хаяг боломжтой байна.}}</translation>
 <translation id="2424805048070062787">Энэ табтай үргэлжлүүлэх</translation>
 <translation id="2426805022920575512">Өөр бүртгэл сонгох</translation>
 <translation id="243275146591958220">Таталтыг цуцлах</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">Холбоосны урьдчилан үзэлтийг харуулах</translation>
 <translation id="452750746583162491">Синк хийсэн өгөгдлөө шалгах</translation>
 <translation id="4532845899244822526">Хавтас сонгох</translation>
-<translation id="4539187448429948815">{count,plural, =1{Таны гарын дээр хадгалсан автоматаар бөглөх {count} зөвлөмж боломжтой байна.}other{Таны гарын дээр хадгалсан автоматаар бөглөх {count} зөвлөмж боломжтой байна.}}</translation>
 <translation id="4547181496285029457">Саяхны таб руу буцах</translation>
 <translation id="4552042254369397518">Хуулж байна…</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />"-г нуух</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">Табын мэдэгдэл авах</translation>
 <translation id="4601095002996233687">Сэжигтэй татаж авсан файлд хийх нарийвчилсан скан.</translation>
 <translation id="4606247758155004938">Таны хөтчийг танай байгууллага удирддаг.</translation>
+<translation id="4607887340472970274">Үнэ мөшгөх</translation>
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" />-г дагахаа болихыг нуух</translation>
 <translation id="461440297010471931">Google-р хайж байна</translation>
 <translation id="4619564267100705184">Өөрийгөө мөн болохыг бататгах</translation>
@@ -1274,7 +1271,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6710079714193676716">Танай байгууллагаас удирддаг. Зарим онцлог боломжгүй байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Хангамж руу очих</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />-нд өөрчилсөн</translation>
-<translation id="6717862474255265991">Үнэ мөшгөх</translation>
 <translation id="6722623263381062480">Хүлээн авсан таб</translation>
 <translation id="6723740634201835758">Таны Google бүртгэлд</translation>
 <translation id="672735642903863329">Хавчуурга, нууц үг болон бусад зүйлийг бүгдийг төхөөрөмжүүддээ аваарай.</translation>
@@ -1440,7 +1436,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="75362970626182391">Шинэ табын бүлэг</translation>
 <translation id="7537586195939242955">Уучлаарай, таны Pass-ыг одоогоор Passbook руу суулгаж болохгүй байна.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> шалгасан</translation>
-<translation id="755255281989213264">Цэсийг өөрчлөх</translation>
 <translation id="7553234618121028547">Унтраахын тулд <ph name="BEGIN_LINK" />Тохиргоог<ph name="END_LINK" /> нээж, Нууц үгний сонголт руу очно уу.</translation>
 <translation id="7557508262441527045">Гарсан</translation>
 <translation id="7561196759112975576">Үргэлж</translation>

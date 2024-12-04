@@ -9831,7 +9831,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="8173864651667424191">Khi lựa chọn in dưới dạng hình ảnh có sẵn thì hệ thống sẽ đặt lựa chọn này thành chế độ mặc định cho phần xem trước bản in của tài liệu PDF.</translation>
 <translation id="8175922758834816585">Bật tính năng phản hồi bằng giọng nói trên màn hình đăng nhập và cho phép người dùng tạm thời tắt tính năng này</translation>
 <translation id="8176035528522326671">Cho phép người dùng doanh nghiệp trở thành người dùng chính duy nhất có nhiều hồ sơ (Hành vi mặc định cho người dùng do doanh nghiệp quản lý)</translation>
-<translation id="817717947404114735">Bật vùng đệm thích ứng cho Web Audio.</translation>
+<translation id="817717947404114735">Bật tính năng lưu vào bộ đệm thích ứng đối với Web Audio.</translation>
 <translation id="8179082421668183060">Nếu bạn đặt chính sách này thành một danh sách chuỗi, thì các chuỗi sẽ được liên kết bằng dấu cách và chuyển từ <ph name="IE_PRODUCT_NAME" /> tới <ph name="PRODUCT_NAME" /> ở dạng tham số dòng lệnh. Nếu một tham số chứa <ph name="URL_PLACEHOLDER" />, thì <ph name="URL_PLACEHOLDER" /> sẽ được thay bằng URL của trang cần mở. Nếu không có tham số nào chứa <ph name="URL_PLACEHOLDER" />, thì URL này sẽ được thêm vào cuối dòng lệnh.
 
       Các biến môi trường được mở rộng. Trên <ph name="MS_WIN_NAME" />, <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> được thay bằng giá trị của biến môi trường <ph name="ENV_VARIABLE_VALUE" />.

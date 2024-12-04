@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Activar notificacións de Comprobación de seguranza…</translation>
 <translation id="1652333207707886577">Personaliza o teu menú</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Tempo restante: {TIME} segundos}=1{Tempo restante: {TIME} segundo}other{Tempo restante: {TIME} segundos}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{Hai {count} contrasinal gardado dispoñible sobre o teclado.}other{Hai {count} contrasinais gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="1654232554734641711">Permítese o acceso ao micrófono</translation>
 <translation id="16554782717487656">Detectar unidades</translation>
 <translation id="1657011748321897393">Non se puido compartir porque non tes conexión á rede.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Abre a grade de pestanas</translation>
 <translation id="20485545164632846">novo elemento</translation>
 <translation id="2049727122989709386">Hai <ph name="COUNT" /> contas nas que se usa o mesmo contrasinal</translation>
-<translation id="2050196510205866090">{count,plural, =1{Hai {count} método de pago gardado dispoñible sobre o teclado.}other{Hai {count} métodos de pago gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="2059166748188874810">Concello</translation>
 <translation id="20638360198452347">Selector do tipo de unidade</translation>
 <translation id="2067852168641682340">Gardar sempre nesta conta</translation>
@@ -329,7 +327,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2390457533592708044">Oculta <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Non se pode entregar o paquete</translation>
 <translation id="2410754283952462441">Escolle unha conta</translation>
-<translation id="2411749908844615428">{count,plural, =1{Hai {count} enderezo gardado dispoñible sobre o teclado.}other{Hai {count} enderezos gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="2424805048070062787">Continuar con esta pestana</translation>
 <translation id="2426805022920575512">Escoller outra conta</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
@@ -757,7 +754,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4525629404718770519">Mostrar vistas previas das ligazóns</translation>
 <translation id="452750746583162491">Revisar os datos sincronizados</translation>
 <translation id="4532845899244822526">Selecciona cartafol</translation>
-<translation id="4539187448429948815">{count,plural, =1{Hai {count} suxestión da función de autocompletar gardada dispoñible sobre o teclado.}other{Hai {count} suxestións da función de autocompletar gardadas dispoñibles sobre o teclado.}}</translation>
 <translation id="4547181496285029457">Volver á pestana recente</translation>
 <translation id="4552042254369397518">Copiando…</translation>
 <translation id="4564893319561643483">Ocultar <ph name="TITLE" /></translation>
@@ -770,6 +766,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4597892826846980979">Recibe notificacións de pestanas</translation>
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606247758155004938">A túa organización xestiona o teu navegador.</translation>
+<translation id="4607887340472970274">Seguimento de prezos</translation>
 <translation id="4611811151908969241">Ocultar Deixar de seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Realizando buscas con Google</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
@@ -1274,7 +1271,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6710079714193676716">Xestionado pola túa organización. É posible que algunhas funcións non estean dispoñibles. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Ir ao feed</translation>
 <translation id="6713676799463473249">Última modificación: <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Facer seguimento do prezo</translation>
 <translation id="6722623263381062480">Pestanas recibidas</translation>
 <translation id="6723740634201835758">Na túa Conta de Google</translation>
 <translation id="672735642903863329">Accede aos teus marcadores, contrasinais e moito máis en todos os dispositivos.</translation>
@@ -1440,7 +1436,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="75362970626182391">Novo grupo de pestanas</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
 <translation id="754655535278952384">Última comprobación: <ph name="TIME" /></translation>
-<translation id="755255281989213264">Personalizar menú</translation>
 <translation id="7553234618121028547">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a Password Options (Opcións de contrasinais).</translation>
 <translation id="7557508262441527045">Pechouse a sesión</translation>
 <translation id="7561196759112975576">Sempre</translation>

@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">تفعيل إشعارات ميزة "التحقّق من الأمان"…</translation>
 <translation id="1652333207707886577">تخصيص القائمة</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{الوقت المتبقي: {TIME} ثانية}=1{الوقت المتبقي: ثانية واحدة ({TIME})}two{الوقت المتبقي: ثانيتان ({TIME})}few{الوقت المتبقي: {TIME} ثوانٍ}many{الوقت المتبقي: {TIME} ثانية}other{الوقت المتبقي: {TIME} ثانية}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{تتوفّر كلمة مرور واحدة ({count}) محفوظة أعلى لوحة المفاتيح.}zero{تتوفّر {count} كلمة مرور محفوظة أعلى لوحة المفاتيح.}two{تتوفّر كلمتا مرور ({count}) محفوظتَان أعلى لوحة المفاتيح.}few{تتوفّر {count} كلمات مرور محفوظة أعلى لوحة المفاتيح.}many{تتوفّر {count} كلمة مرور محفوظة أعلى لوحة المفاتيح.}other{تتوفّر {count} كلمة مرور محفوظة أعلى لوحة المفاتيح.}}</translation>
 <translation id="1654232554734641711">الوصول إلى الميكروفون مسموح به.</translation>
 <translation id="16554782717487656">رصد الوحدات</translation>
 <translation id="1657011748321897393">تعذّرت المشاركة بسبب عدم اتصالك بالشبكة.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">فتح شبكة علامات التبويب</translation>
 <translation id="20485545164632846">عنصر جديد</translation>
 <translation id="2049727122989709386">‫<ph name="COUNT" /> حساب يستخدم كلمة المرور نفسها</translation>
-<translation id="2050196510205866090">{count,plural, =1{تتوفّر طريقة دفع واحدة ({count}) محفوظة أعلى لوحة المفاتيح.}zero{تتوفّر {count} طريقة دفع محفوظة أعلى لوحة المفاتيح.}two{تتوفّر طريقتا دفع ({count}) محفوظتَان أعلى لوحة المفاتيح.}few{تتوفّر {count} طرق دفع محفوظة أعلى لوحة المفاتيح.}many{تتوفّر {count} طريقة دفع محفوظة أعلى لوحة المفاتيح.}other{تتوفّر {count} طريقة دفع محفوظة أعلى لوحة المفاتيح.}}</translation>
 <translation id="2059166748188874810">بلدية</translation>
 <translation id="20638360198452347">مُحدِّد نوع الوحدة</translation>
 <translation id="2067852168641682340">الحفظ في هذا الحساب في كل مرة</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">إخفاء "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">يتعذَّر تسليم الطرد.</translation>
 <translation id="2410754283952462441">اختيار حساب</translation>
-<translation id="2411749908844615428">{count,plural, =1{يتوفّر عنوان واحد ({count}) محفوظ أعلى لوحة المفاتيح.}zero{يتوفّر {count} عنوان محفوظ أعلى لوحة المفاتيح.}two{يتوفّر عنوانَان ({count}) محفوظان أعلى لوحة المفاتيح.}few{تتوفّر {count} عناوين محفوظة أعلى لوحة المفاتيح.}many{يتوفّر {count} عنوانًا محفوظًا أعلى لوحة المفاتيح.}other{يتوفّر {count} عنوان محفوظ أعلى لوحة المفاتيح.}}</translation>
 <translation id="2424805048070062787">المتابعة باستخدام علامة التبويب هذه</translation>
 <translation id="2426805022920575512">اختيار حساب آخر</translation>
 <translation id="243275146591958220">إلغاء التنزيل</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">عرض معاينات الروابط</translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4532845899244822526">اختيار مجلد</translation>
-<translation id="4539187448429948815">{count,plural, =1{يتوفّر اقتراح واحد ({count}) محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}zero{يتوفّر {count} اقتراح محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}two{يتوفّر اقتراحان ({count}) محفوظان للإكمال التلقائي أعلى لوحة المفاتيح.}few{تتوفّر {count} اقتراحات محفوظة للإكمال التلقائي أعلى لوحة المفاتيح.}many{يتوفّر {count} اقتراحًا محفوظًا للإكمال التلقائي أعلى لوحة المفاتيح.}other{يتوفّر {count} اقتراح محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}}</translation>
 <translation id="4547181496285029457">العودة إلى أحدث علامة تبويب</translation>
 <translation id="4552042254369397518">جارٍ النسخ…</translation>
 <translation id="4564893319561643483">إخفاء "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">تلقّي إشعارات علامات التبويب</translation>
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4606247758155004938">تتولّى مؤسستك إدارة متصفِّحك.</translation>
+<translation id="4607887340472970274">تتبُّع الأسعار</translation>
 <translation id="4611811151908969241">إخفاء ميزة "إلغاء المتابعة <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">‏البحث من خلال Google</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
@@ -1274,7 +1271,6 @@
 <translation id="6710079714193676716">تتم إدارة المتصفِّح من خلال مؤسستك. وقد تكون بعض الميزات غير متوفِّرة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">الانتقال إلى "الخلاصة"</translation>
 <translation id="6713676799463473249">تاريخ آخر تعديل: <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">تتبُّع السعر</translation>
 <translation id="6722623263381062480">علامات التبويب المُستلمَة</translation>
 <translation id="6723740634201835758">‏في حسابك على Google</translation>
 <translation id="672735642903863329">الحصول على الإشارات المرجعية وكلمات المرور وإعدادات أخرى واستخدامها على جميع أجهزتك</translation>
@@ -1440,7 +1436,6 @@
 <translation id="75362970626182391">مجموعة علامات تبويب جديدة</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور <ph name="TIME" /></translation>
-<translation id="755255281989213264">تخصيص القائمة</translation>
 <translation id="7553234618121028547">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (الإعدادات) ثم انتقِل إلى Password Options (خيارات كلمات المرور).</translation>
 <translation id="7557508262441527045">تمّ تسجيل الخروج.</translation>
 <translation id="7561196759112975576">دائمًا</translation>

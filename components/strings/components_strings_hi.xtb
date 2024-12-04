@@ -278,7 +278,6 @@
 <translation id="1473495410389165587">लिखने में मदद पाने के लिए, तीन या इससे ज़्यादा शब्द डालें</translation>
 <translation id="147358896496811705">2ए0</translation>
 <translation id="1474576429883213321">साफ़-सफ़ाई की सेवाएं</translation>
-<translation id="1475299637784133125">ब्राउज़र वर्शन जानना है? यहां जाएं</translation>
 <translation id="1476595624592550506">अपना पासवर्ड बदलें</translation>
 <translation id="1482372785911828880">बहुत पतला</translation>
 <translation id="1482879811280872320">साइकलिंग</translation>
@@ -2656,7 +2655,6 @@
 <translation id="57838592816432529">म्यूट करें</translation>
 <translation id="5784606427469807560">आपके कार्ड की पुष्टि करते समय समस्‍या हुई. अपना इंटरनेट कनेक्‍शन जांचें और फिर से कोशिश करें.</translation>
 <translation id="5785756445106461925">इसके अतिरिक्त, इस पेज में ऐसे अन्य संसाधन भी शामिल हैं, जो सुरक्षित नहीं हैं. ट्रांज़िट में होने के दौरान ये संसाधन अन्य लोगों द्वारा देखे जा सकते हैं और पेज का स्वरूप बदलने के लिए किसी हमवलावर द्वारा इनमें बदलाव किए जा सकते हैं.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">इस डिवाइस से, पेमेंट का यह तरीका मिटा दिया जाएगा</translation>
 <translation id="5794065675298686371">कीमत ट्रैक करने से जुड़ी सूचनाएं पाने की सुविधा चालू करें</translation>
 <translation id="5800727402210090597">मोबाइल फ़ोन ठीक करने की और इससे जुड़ी सेवाएं</translation>
@@ -2745,6 +2743,7 @@
 <translation id="5969199813874624822">कीमत सेव करके उसे ट्रैक करें</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">छठा रोल</translation>
+<translation id="5974745851230707809">धीरे-धीरे पैसे चुकाने के विकल्प</translation>
 <translation id="5975083100439434680">ज़ूम आउट</translation>
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
 <translation id="5984570616552610254">चेंबर में नमी की मात्रा</translation>
@@ -4338,6 +4337,7 @@
 <translation id="882338992931677877">मैन्युअल स्लॉट</translation>
 <translation id="8830320733681313421">Hagaki पोस्टकार्ड</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" /> में फ़ाइलें देखें</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> से ज़्यादा की खरीदारी करने पर उपलब्ध</translation>
 <translation id="8833007469711500369">वॉशर और ड्रायर</translation>
 <translation id="8834962751196791179">आपको यह चेतावनी इसलिए दिख रही है, क्योंकि यह साइट एचटीटीपीएस के साथ काम नहीं करती. साथ ही, आपके डिवाइस पर गुप्त मोड चालू है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">साइंस-फ़िक्शन पर आधारित टीवी शो और फ़ैंटसी शो</translation>
@@ -4413,7 +4413,6 @@
 <translation id="8987663052629670333">फ़ोटो प्रिंटिंग की सेवाएं</translation>
 <translation id="8987927404178983737">माह</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">सिस्टम वर्शन जानना है? यहां जाएं</translation>
 <translation id="899688752321268742"><ph name="URL" /> को यह जानना है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="8997023839087525404">सर्वर ने एक प्रमाणपत्र प्रस्तुत किया है, जिसे प्रमाणपत्र पारदर्शिता पॉलिसी का उपयोग करके सार्वजनिक रूप से प्रकट नहीं किया गया था. कुछ प्रमाणपत्रों के लिए यह पक्का करना आवश्यक है कि वे विश्वसनीय हैं और आक्रमणकर्ताओं से रक्षा करते हैं.</translation>
 <translation id="9000145382638074673">आपके डिवाइस</translation>

@@ -1365,6 +1365,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7425037327577270384">Auta minua kirjoittamaan</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">APN:ää ei voi poistaa käytöstä tai kokonaan. Varmista, että käyttöön otetut APN:t, jotka on <ph name="ATTACH" />, on poistettu käytöstä tai kokonaan.</translation>
+<translation id="7453118953486228603">Tee valitusta tekstistä yhteenveto klikkaamalla</translation>
 <translation id="7458970041932198923">Muodosta verkkoyhteys ja päivitä sivu nähdäksesi ja käyttääksesi avatareja.</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7481312909269577407">Seuraava</translation>
@@ -1723,6 +1724,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="9133772297793293778">Paina näppäimistöllä 1–4:ää muokkauspainiketta ja yhtä muuta näppäintä. Poistu muokkaustilasta painamalla alt + esc.</translation>
 <translation id="9137526406337347448">Googlen palvelut</translation>
 <translation id="9138630967333032450">Vasen vaihtonäppäin</translation>
+<translation id="9147928237330776930">Sanoja on liian vähän yhteenvedon tekemiseen</translation>
 <translation id="9149391708638971077">Suorita muistitesti</translation>
 <translation id="9159524746324788320">hampurilaiset</translation>
 <translation id="9161276708550942948">välilyönti</translation>

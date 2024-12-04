@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">安全チェックの通知をオンにする…</translation>
 <translation id="1652333207707886577">メニューをカスタマイズ</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{残り時間: {TIME} 秒}=1{残り時間: {TIME} 秒}other{残り時間: {TIME} 秒}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}other{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}}</translation>
 <translation id="1654232554734641711">マイクへのアクセスが許可されています</translation>
 <translation id="16554782717487656">単位を検出する</translation>
 <translation id="1657011748321897393">ネットワークに接続されていないため共有できませんでした。</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">タブグリッドを開く</translation>
 <translation id="20485545164632846">新しいアイテム</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> 個のアカウントで同じパスワードを使用しています</translation>
-<translation id="2050196510205866090">{count,plural, =1{キーボードの上部に保存済みのお支払方法が {count} 件表示されています。}other{キーボードの上部に保存済みのお支払方法が {count} 件表示されています。}}</translation>
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="20638360198452347">単位タイプセレクタ</translation>
 <translation id="2067852168641682340">毎回このアカウントに保存</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">「<ph name="MODULE_NAME" />」を非表示にします</translation>
 <translation id="2403129868389095715">配達不能</translation>
 <translation id="2410754283952462441">アカウントの選択</translation>
-<translation id="2411749908844615428">{count,plural, =1{キーボードの上部に保存済みの住所が {count} 件表示されています。}other{キーボードの上部に保存済みの住所が {count} 件表示されています。}}</translation>
 <translation id="2424805048070062787">このタブを続行</translation>
 <translation id="2426805022920575512">別のアカウントを選択</translation>
 <translation id="243275146591958220">ダウンロードをキャンセル</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">リンク プレビューを表示する</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4532845899244822526">フォルダの選択</translation>
-<translation id="4539187448429948815">{count,plural, =1{キーボードの上部に保存済みの予測入力の候補が {count} 件表示されています。}other{キーボードの上部に保存済みの予測入力の候補が {count} 件表示されています。}}</translation>
 <translation id="4547181496285029457">最近使用したタブに戻る</translation>
 <translation id="4552042254369397518">コピー中…</translation>
 <translation id="4564893319561643483">「<ph name="TITLE" />」を非表示にします</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">タブの通知を受け取る</translation>
 <translation id="4601095002996233687">不審なダウンロードを詳しくスキャンします。</translation>
 <translation id="4606247758155004938">お使いのブラウザは組織によって管理されています。</translation>
+<translation id="4607887340472970274">価格の追跡</translation>
 <translation id="4611811151908969241">[<ph name="DOMAIN_NAME" /> のフォローを解除] を非表示</translation>
 <translation id="461440297010471931">Google 検索エンジンを使用</translation>
 <translation id="4619564267100705184">本人確認</translation>
@@ -1274,7 +1271,6 @@
 <translation id="6710079714193676716">組織によって管理されています。一部の機能は使用できません。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">フィードに移動</translation>
 <translation id="6713676799463473249">更新: <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">価格を追跡</translation>
 <translation id="6722623263381062480">受信したタブ</translation>
 <translation id="6723740634201835758">Google アカウント</translation>
 <translation id="672735642903863329">すべてのデバイスで同じブックマーク、パスワード、その他の設定を使用できます。</translation>
@@ -1440,7 +1436,6 @@
 <translation id="75362970626182391">新しいタブグループ</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
 <translation id="754655535278952384">前回の確認: <ph name="TIME" /></translation>
-<translation id="755255281989213264">メニューのカスタマイズ</translation>
 <translation id="7553234618121028547">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワードのオプション] に移動します。</translation>
 <translation id="7557508262441527045">ログアウトしました</translation>
 <translation id="7561196759112975576">常に使用</translation>

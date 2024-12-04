@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Коопсуздукту текшерүү функциясынын билдирмелерин күйгүзүү…</translation>
 <translation id="1652333207707886577">Менюну тууралоо</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Калган убакыт: {TIME} секунд}=1{Калган убакыт: {TIME} секунд}other{Калган убакыт: {TIME} секунд}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{Сакталган {count} сырсөз баскычтоптун өйдө жагында жеткиликтүү.}other{Сакталган {count} сырсөз баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="1654232554734641711">Микрофонду колдонууга уруксат берилди</translation>
 <translation id="16554782717487656">Бирдиктерди аныктоо</translation>
 <translation id="1657011748321897393">Тармакка туташпай тургандыктан, бөлүшө албай калдыңыз.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Өтмөк торчосун ачуу</translation>
 <translation id="20485545164632846">жаңы нерсе</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> аккаунтта бир сырсөз колдонулууда</translation>
-<translation id="2050196510205866090">{count,plural, =1{Сакталган {count} төлөм ыкмасы баскычтоптун өйдө жагында жеткиликтүү.}other{Сакталган {count} төлөм ыкмасы баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="20638360198452347">Бирдик түрүн тандагыч</translation>
 <translation id="2067852168641682340">Бул аккаунтка ар дайым сактаңыз</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" функциясын жашыруу</translation>
 <translation id="2403129868389095715">Таңгагыңызды жеткирүү мүмкүн эмес</translation>
 <translation id="2410754283952462441">Аккаунт тандоо</translation>
-<translation id="2411749908844615428">{count,plural, =1{Сакталган {count} дарек баскычтоптун өйдө жагында жеткиликтүү.}other{Сакталган {count} дарек баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="2424805048070062787">Ушул өтмөктө улантуу</translation>
 <translation id="2426805022920575512">Башка аккаунтту тандоо</translation>
 <translation id="243275146591958220">Жүктөп алууну токтотуу</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">Шилтемелерди карап көрүүлөрдү көрсөтүү</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
 <translation id="4532845899244822526">Куржун тандаңыз</translation>
-<translation id="4539187448429948815">{count,plural, =1{Сакталган {count} автотолтуруу сунушу баскычтоптун өйдө жагында жеткиликтүү.}other{Сакталган {count} автотолтуруу сунушу баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="4547181496285029457">Акыркы өтмөккө өтүү</translation>
 <translation id="4552042254369397518">Көчүрүлүүдө…</translation>
 <translation id="4564893319561643483">Жашыруу: "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">Өтмөктөр тууралуу билдирмелерди алыңыз</translation>
 <translation id="4601095002996233687">Жүктөлүп алынган шектүү файлдарды тереңирээк текшерүү</translation>
 <translation id="4606247758155004938">Серепчиңиз уюмуңуз тарабынан башкарылат.</translation>
+<translation id="4607887340472970274">Бааларга көз салуу</translation>
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> жазылуу баскычын жашыруу</translation>
 <translation id="461440297010471931">Google менен изделүүдө</translation>
 <translation id="4619564267100705184">Өзүңүз экениңизди ырастаңыз</translation>
@@ -1274,7 +1271,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6710079714193676716">Уюмуңуз тарабынан башкарылат. Айрым функциялар иштебеши мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Түрмөккө өтүү</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" /> өзгөртүлгөн</translation>
-<translation id="6717862474255265991">Баага көз салуу</translation>
 <translation id="6722623263381062480">Алынган өтмөктөр</translation>
 <translation id="6723740634201835758">Google аккаунтуңузда</translation>
 <translation id="672735642903863329">Бардык түзмөктөрүңүздө кыстармаларды, сырсөздөрдү жана башка нерселерди алыңыз.</translation>
@@ -1440,7 +1436,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="75362970626182391">Жаңы өтмөктөр тобу</translation>
 <translation id="7537586195939242955">Кечиресиз, учурда картаңызды Passbook'ка орнотуу мүмкүн эмес</translation>
 <translation id="754655535278952384"><ph name="TIME" /> текшерилди</translation>
-<translation id="755255281989213264">Менюну тууралоо</translation>
 <translation id="7553234618121028547">Өчүрүү үчүн <ph name="BEGIN_LINK" />Тууралоону<ph name="END_LINK" /> ачып, Сырсөздөрдүн параметрлерине өтүңүз.</translation>
 <translation id="7557508262441527045">Аккаунтуңуздан чыктыңыз</translation>
 <translation id="7561196759112975576">Ар дайым</translation>

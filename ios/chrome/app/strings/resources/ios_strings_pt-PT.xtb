@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Ativar notificações da verificação de segurança…</translation>
 <translation id="1652333207707886577">Personalize o menu</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Tempo restante: {TIME} segundos}=1{Tempo restante: {TIME} segundo}other{Tempo restante: {TIME} segundos}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} palavra-passe guardada disponível acima do teclado.}other{{count} palavras-passe guardadas disponíveis acima do teclado.}}</translation>
 <translation id="1654232554734641711">Acesso ao microfone permitido</translation>
 <translation id="16554782717487656">Detetar unidades</translation>
 <translation id="1657011748321897393">A partilha falhou porque não está ligado à rede.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Abra a grelha de separadores</translation>
 <translation id="20485545164632846">novo item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> contas estão a usar a mesma palavra-passe</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} método de pagamento guardado disponível acima do teclado.}other{{count} métodos de pagamento guardados disponíveis acima do teclado.}}</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="20638360198452347">Seletor do tipo de unidade</translation>
 <translation id="2067852168641682340">Guardar sempre nesta conta</translation>
@@ -329,7 +327,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2390457533592708044">Oculte "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Não é possível entregar o seu pacote</translation>
 <translation id="2410754283952462441">Selecione uma conta</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} morada guardada disponível acima do teclado.}other{{count} moradas guardadas disponíveis acima do teclado.}}</translation>
 <translation id="2424805048070062787">Continue com este separador</translation>
 <translation id="2426805022920575512">Selecionar outra conta</translation>
 <translation id="243275146591958220">Cancelar transferência</translation>
@@ -757,7 +754,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4525629404718770519">Mostrar pré-visualizações de links</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} sugestão de preenchimento automático guardada disponível acima do teclado.}other{{count} sugestões de preenchimento automático guardadas disponíveis acima do teclado.}}</translation>
 <translation id="4547181496285029457">Volte ao separador Recentes</translation>
 <translation id="4552042254369397518">A copiar…</translation>
 <translation id="4564893319561643483">Oculte "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4597892826846980979">Receba notificações de separadores</translation>
 <translation id="4601095002996233687">Análises detalhadas de transferências suspeitas.</translation>
 <translation id="4606247758155004938">O seu navegador é gerido pela sua organização.</translation>
+<translation id="4607887340472970274">Acompanhamento de preço</translation>
 <translation id="4611811151908969241">Ocultar Deixar de seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Pesquisar com o Google</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
@@ -1274,7 +1271,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6710079714193676716">Gerido pela sua entidade. Algumas funcionalidades podem estar indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Aceder ao feed</translation>
 <translation id="6713676799463473249">Modificado a <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Acompanhar preço</translation>
 <translation id="6722623263381062480">Separadores recebidos</translation>
 <translation id="6723740634201835758">Na sua Conta Google</translation>
 <translation id="672735642903863329">Obtenha marcadores, palavras-passe e muito mais em todos os seus dispositivos.</translation>
@@ -1440,7 +1436,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="75362970626182391">Novo grupo de separadores</translation>
 <translation id="7537586195939242955">De momento não é possível instalar a sua Palavra-passe no Passbook.</translation>
 <translation id="754655535278952384">Última verificação: <ph name="TIME" /></translation>
-<translation id="755255281989213264">Personalize o menu</translation>
 <translation id="7553234618121028547">Para desativar, abra as <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /> e aceda a Opções de palavras-passe.</translation>
 <translation id="7557508262441527045">Sessão terminada</translation>
 <translation id="7561196759112975576">Sempre</translation>

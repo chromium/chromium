@@ -261,6 +261,7 @@
 <translation id="4510853178268397146">ଏହି ଏକ୍ସଟେନସନ ଏହା କିପରି ଡାଟା ସଂଗ୍ରହ ଏବଂ ବ୍ୟବହାର କରେ ପରି ଗୋପନୀୟତା କାର୍ଯ୍ୟଗୁଡ଼ିକ ପବ୍ଲିସ କରିନାହିଁ। ଆପଣ ଏହାକୁ କାଢ଼ି ଦିଅନ୍ତୁ ବୋଲି Chromium ସୁପାରିଶ କରେ।</translation>
 <translation id="452711251841752011">Chromiumକୁ ସ୍ୱାଗତ; ନୂଆ ବ୍ରାଉଜର୍ ୱିଣ୍ଡୋ ଖୋଲାଯାଇଛି</translation>
 <translation id="4531137820806573936">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱକୁ ମେପ କରି ଆପଣଙ୍କ ହାତକୁ ଟ୍ରାକ କରିବା ପାଇଁ Chromium ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
+<translation id="4534145890176164066">Chromium ଫର୍ମଗୁଡ଼ିକୁ ଭଲ ଭାବରେ ବୁଝିପାରେ ଏବଂ ଆପଣଙ୍କ ପାଇଁ ସେଗୁଡ଼ିକୁ ଶୀଘ୍ର ଅଟୋଫିଲ କରିପାରିବ</translation>
 <translation id="4536805923587466102">ଆପଣ ପୂର୍ବରୁ ଅନ୍ୟ ଏକ Chromium ପ୍ରୋଫାଇଲରେ <ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି</translation>
 <translation id="4544142686420020088">Chromium ଅପଡେଟ୍ ହେଲା ନାହିଁ, କିଛି ତ୍ରୁଟି ହୋଇଗଲା। <ph name="BEGIN_LINK" />Chromium ଅପଡେଟ୍ ସମସ୍ୟା ଏବଂ ବିଫଳ ଅପଡେଟଗୁଡ଼ିକର ସମାଧାନ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ଏବଂ ଜିନିଷଗୁଡ଼ିକୁ ଦ୍ରୁତ କରିବା ପାଇଁ Chromium ଏହି ଟାବକୁ ନିଷ୍କ୍ରିୟ କରିପାରେ।</translation>
@@ -479,6 +480,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" /> ଆକ୍ସେସ କରିବା ପାଇଁ <ph name="ALTERNATIVE_BROWSER_NAME" />ଖୋଲିବାକୁ ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ Chromium କନ୍‌ଫିଗର୍ କରିଛନ୍ତି।</translation>
 <translation id="7355355292030546812">ଏହି ଫାଇଲଟି <ph name="USER_EMAIL" /> ସମେତ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ଏବଂ ସୋସିଆଲ ନେଟୱାର୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ କ୍ଷତି କରିପାରୁଥିବା ଯୋଗୁଁ Chromium ଏହି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି</translation>
 <translation id="7384121030444253939">ଏହି ଏକ୍ସଟେନସନ ଆଉ ସପୋର୍ଟ କରୁନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଆପଣ ଏହାକୁ କାଢ଼ି ଦେବା ପାଇଁ Chromium ସୁପାରିଶ କରେ।</translation>
+<translation id="7389750180956889333">Chromium ଫର୍ମଗୁଡ଼ିକୁ ଭଲ ଭାବରେ ବୁଝିପାରେ ଏବଂ ଆପଣଙ୍କ ପାଇଁ ସେଗୁଡ଼ିକୁ ଶୀଘ୍ର ଅଟୋଫିଲ କରିପାରିବ। <ph name="BEGIN_LINK" />Chrome ଅଟୋଫିଲ<ph name="END_LINK" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="7398989605938454041">Chromium ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ସାହାଯ୍ୟରେ ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ Chromium ଷ୍ଟଫକୁ ଅଲଗା କରିପାରିବେ। କାର୍ଯ୍ୟ ଏବଂ ମଜା ମଧ୍ୟରେ ସ୍ପ୍ଲିଟ କରିବାକୁ ଏହା ସହଜ କରିଥାଏ।</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium ଡେଭ୍‌ଲପର୍‌</translation>
 <translation id="7450541714075000668">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>

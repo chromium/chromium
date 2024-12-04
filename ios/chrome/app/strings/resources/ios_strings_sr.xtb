@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Укључи обавештења Провере безбедности…</translation>
 <translation id="1652333207707886577">Прилагодите мени</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Преостало време: {TIME} секунди}=1{Преостало време: {TIME} секунда}one{Преостало време: {TIME} секунда}few{Преостало време: {TIME} секунде}other{Преостало време: {TIME} секунди}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} сачувана лозинка је доступна изнад тастатуре.}one{{count} сачувана лозинка је доступна изнад тастатуре.}few{{count} сачуване лозинке су доступне изнад тастатуре.}other{{count} сачуваних лозинки је доступно изнад тастатуре.}}</translation>
 <translation id="1654232554734641711">Приступ микрофону је дозвољен</translation>
 <translation id="16554782717487656">Откриј јединице</translation>
 <translation id="1657011748321897393">Дељење није успело зато што нисте повезани са мрежом.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="20485545164632846">нова ставка</translation>
 <translation id="2049727122989709386">Налози (<ph name="COUNT" />) користе исту лозинку</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} сачувани начин плаћања је доступан изнад тастатуре.}one{{count} сачувани начин плаћања је доступан изнад тастатуре.}few{{count} сачувана начина плаћања су доступна изнад тастатуре.}other{{count} сачуваних начина плаћања је доступно изнад тастатуре.}}</translation>
 <translation id="2059166748188874810">Општина</translation>
 <translation id="20638360198452347">Бирач типа јединице</translation>
 <translation id="2067852168641682340">Сачувај на овом налогу сваки пут</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">Сакриј „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
 <translation id="2410754283952462441">Изаберите налог</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} сачувана адреса је доступна изнад тастатуре.}one{{count} сачувана адреса је доступна изнад тастатуре.}few{{count} сачуване адресе су доступне изнад тастатуре.}other{{count} сачуваних адреса је доступно изнад тастатуре.}}</translation>
 <translation id="2424805048070062787">Наставите са овом картицом</translation>
 <translation id="2426805022920575512">Изаберите други налог</translation>
 <translation id="243275146591958220">Откажи преузимање</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">Прикажи прегледе линкова</translation>
 <translation id="452750746583162491">Прегледајте синхронизоване податке</translation>
 <translation id="4532845899244822526">Изаберите фолдер</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} сачувани предлог за аутоматско довршавање је доступан изнад тастатуре.}one{{count} сачувани предлог за аутоматско довршавање је доступан изнад тастатуре.}few{{count} сачувана предлога за аутоматско довршавање су доступна изнад тастатуре.}other{{count} сачуваних предлога за аутоматско довршавање је доступно изнад тастатуре.}}</translation>
 <translation id="4547181496285029457">Вратите се на недавну картицу</translation>
 <translation id="4552042254369397518">Копира се…</translation>
 <translation id="4564893319561643483">Сакријте „<ph name="TITLE" />“</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">Добијајте обавештења о картицамa</translation>
 <translation id="4601095002996233687">Детаљна скенирања сумњивих преузимања.</translation>
 <translation id="4606247758155004938">Организација управља прегледачем.</translation>
+<translation id="4607887340472970274">Праћење цена</translation>
 <translation id="4611811151908969241">Сакриј опцију Опозови праћење <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Претражујете помоћу Google-а</translation>
 <translation id="4619564267100705184">Потврдите идентитет</translation>
@@ -1274,7 +1271,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6710079714193676716">Овим управља организација. Неке функције можда нису доступне. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Иди на фид</translation>
 <translation id="6713676799463473249">Измењено <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Прати цену</translation>
 <translation id="6722623263381062480">Примљене картице</translation>
 <translation id="6723740634201835758">На Google налогу</translation>
 <translation id="672735642903863329">Приступајте обележивачима, лозинкама и другом садржају на свим уређајима.</translation>
@@ -1440,7 +1436,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="75362970626182391">Нова група картица</translation>
 <translation id="7537586195939242955">Жао нам је, приступна реч сада не може да се инсталира у Passbook.</translation>
 <translation id="754655535278952384">Проверено је <ph name="TIME" /></translation>
-<translation id="755255281989213264">Прилагодите мени</translation>
 <translation id="7553234618121028547">Да бисте искључили, отворите <ph name="BEGIN_LINK" />Подешавања<ph name="END_LINK" /> и идите у Опције лозинки.</translation>
 <translation id="7557508262441527045">Одјављени сте</translation>
 <translation id="7561196759112975576">Увек</translation>

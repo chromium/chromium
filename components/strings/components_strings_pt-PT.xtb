@@ -278,7 +278,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1473495410389165587">Introduza 3 ou mais palavras para obter ajuda na escrita</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Serviços de limpeza</translation>
-<translation id="1475299637784133125">Está à procura da versão do navegador? Visite</translation>
 <translation id="1476595624592550506">Altere a palavra-passe</translation>
 <translation id="1482372785911828880">Extra fino</translation>
 <translation id="1482879811280872320">Ciclismo</translation>
@@ -2656,7 +2655,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784606427469807560">Ocorreu um erro ao confirmar o cartão. Verifique a sua ligação à Internet e tente novamente.</translation>
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Estes recursos podem ser vistos por outros utilizadores em trânsito e modificados por um utilizador mal intencionado com o intuito de alterar o aspeto da página.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pagamento vai ser eliminado deste dispositivo</translation>
 <translation id="5794065675298686371">Ative as notificações de acompanhamento de preço</translation>
 <translation id="5800727402210090597">Serviços e reparação de telemóveis</translation>
@@ -2745,6 +2743,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5969199813874624822">Guarde e monitorize o preço</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rolo</translation>
+<translation id="5974745851230707809">Opções de pagamento em prestações</translation>
 <translation id="5975083100439434680">Reduzir</translation>
 <translation id="5979084224081478209">Rever palavras-passe</translation>
 <translation id="5984570616552610254">Humidade da câmara</translation>
@@ -4337,6 +4336,7 @@ Detalhes adicionais:
 <translation id="882338992931677877">Ranhura manual</translation>
 <translation id="8830320733681313421">Postal Hagaki</translation>
 <translation id="8830565333350631528">Ver ficheiros no <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Disponível para compras superiores a <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Máquinas de lavar e secar roupa</translation>
 <translation id="8834962751196791179">Está a ver este aviso porque o site não suporta HTTPS e está no Modo de navegação anónima. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Programas de TV de ficção científica e fantasia</translation>
@@ -4412,7 +4412,6 @@ Detalhes adicionais:
 <translation id="8987663052629670333">Serviços de impressão de fotos</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">Está à procura da versão do sistema? Visite</translation>
 <translation id="899688752321268742"><ph name="URL" /> quer saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="8997023839087525404">O servidor apresentou um certificado que não foi divulgado publicamente através da política de Transparência de certificados. Trata-se de um requisito para alguns certificados de modo a assegurar que são fidedignos e protegem contra utilizadores mal intencionados.</translation>
 <translation id="9000145382638074673">Os seus dispositivos</translation>

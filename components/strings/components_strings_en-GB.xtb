@@ -278,7 +278,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1473495410389165587">Enter three or more words to get writing help</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Cleaning Services</translation>
-<translation id="1475299637784133125">Looking for browser version? Visit</translation>
 <translation id="1476595624592550506">Change your password</translation>
 <translation id="1482372785911828880">Extra thin</translation>
 <translation id="1482879811280872320">Cycling</translation>
@@ -2656,7 +2655,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784606427469807560">There was a problem confirming your card. Check your Internet connection and try again.</translation>
 <translation id="5785756445106461925">Further, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the look of the page.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">This payment method will be deleted from this device</translation>
 <translation id="5794065675298686371">Turn on price tracking notifications</translation>
 <translation id="5800727402210090597">Mobile Phone Repair and Services</translation>
@@ -4412,7 +4410,6 @@ Additional details:
 <translation id="8987663052629670333">Photo Printing Services</translation>
 <translation id="8987927404178983737">Month</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">Looking for system version? Visit</translation>
 <translation id="899688752321268742"><ph name="URL" /> wants to know when you're actively using this device</translation>
 <translation id="8997023839087525404">The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.</translation>
 <translation id="9000145382638074673">Your devices</translation>

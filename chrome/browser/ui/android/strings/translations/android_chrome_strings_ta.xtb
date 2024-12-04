@@ -942,6 +942,7 @@
 <translation id="5316947901395241499">கடவுச்சொற்களைச் சேமிப்பதை உங்கள் நிர்வாகி முடக்கியுள்ளார்</translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5319359161174645648">Google ஆனது Chromeஐப் பரிந்துரைக்கிறது</translation>
+<translation id="5326246328175179736">இந்தக் கணக்கைப் பயன்படுத்தி உங்களால் உள்நுழைய முடியாது</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் பயன்படுத்துங்கள்</translation>
 <translation id="5342314432463739672">அனுமதிக் கோரிக்கைகள்</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> திறக்கப்பட்ட தளங்கள் எதுவும் இல்லை</translation>
@@ -951,6 +952,7 @@
 <translation id="5375577065097716013">Google Lens மூலம் படத்தைத் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">மறைநிலையில் இருந்து வெளியேறு</translation>
 <translation id="5395376160638294582">உங்கள் Google கணக்கில் எப்போதும் Chrome தரவைப் பயன்படுத்த முடிவதை உறுதிசெய்துகொள்ளவும்</translation>
+<translation id="5397794290049113714">நீங்கள்</translation>
 <translation id="539881862970320163">வலிமையான கடவுச்சொல் பரிந்துரைக்கப்பட்டது. கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> இல் <ph name="ONE_TIME_CODE" /> என்ற குறியீட்டைச் சமர்ப்பிக்கவா?</translation>
 <translation id="5410300144953132176">பக்கக் குழுவில் உங்களைச் சேர்க்க <ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) விரும்புகிறார். இணைப்பு உள்ள அனைவராலும் எல்லாப் பக்கங்களையும் திருத்த முடியும் என்பதால் கவனமுடன் சேரவும். இணைப்பு 48 மணிநேரத்தில் காலாவதியாகும்.</translation>
@@ -978,6 +980,7 @@
 <translation id="5514904542973294328">இந்தச் சாதனத்தின் நிர்வாகி முடக்கியுள்ளார்</translation>
 <translation id="5515439363601853141">கடவுச்சொல்லைப் பார்க்க, அன்லாக் செய்யவும்</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> இன் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள் உள்ளன.</translation>
+<translation id="5517326820028369152">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு</translation>
 <translation id="5524843473235508879">திசைதிருப்புவது தடுக்கப்பட்டது.</translation>
 <translation id="5526281268548144413">பல சாளரங்களில் உள்ள பக்கங்கள் மூடப்படாது</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# நிமி முன்பு}other{# நிமி முன்பு}}</translation>
@@ -1280,6 +1283,7 @@
 <translation id="6817747507826986771">இந்தப் பக்கத்தை உடனடியாகப் பகிரலாம். இந்த ஷார்ட்கட்டை மாற்ற தொட்டுப் பிடித்திருக்கவும்.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Google Password Manager அறிவிப்பு மூடப்பட்டது</translation>
+<translation id="6824933543577433709">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு மூடப்பட்டுள்ளது</translation>
 <translation id="6828070228333235514">விலையைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="6830728435402077660">பாதுகாப்பற்றது</translation>
 <translation id="6831043979455480757">Translate</translation>
@@ -1498,6 +1502,7 @@
 <translation id="7691043218961417207">பின்தொடர வேண்டிய உள்ளடக்கத்தைக் கண்டறியுங்கள்</translation>
 <translation id="7697383401610880082">இழுப்பதற்கான ஹேண்டில்</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> இல் மின்னஞ்சலை உருவாக்கவும்</translation>
+<translation id="7702420606070050505">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="7707922173985738739">மொபைல் டேட்டாவைப் பயன்படுத்து</translation>
 <translation id="7709918231054955894">உங்கள் உலாவிப் பக்கங்கள் அனைத்தையும் பெறுங்கள்</translation>
 <translation id="7733878270780732638">சாதனத்தில் போதிய இடமில்லை.</translation>

@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">സുരക്ഷാ പരിശോധനാ അറിയിപ്പുകൾ ഓണാക്കുക…</translation>
 <translation id="1652333207707886577">നിങ്ങളുടെ മെനു ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{അവശേഷിക്കുന്ന സമയം: {TIME} സെക്കൻഡ്}=1{അവശേഷിക്കുന്ന സമയം: {TIME} സെക്കൻഡ്}other{അവശേഷിക്കുന്ന സമയം: {TIME} സെക്കൻഡ്}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പാസ്‌വേഡ് ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ലഭ്യമാണ്.}}</translation>
 <translation id="1654232554734641711">മൈക്രോഫോൺ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="16554782717487656">യൂണിറ്റുകൾ കണ്ടെത്തുക</translation>
 <translation id="1657011748321897393">നിങ്ങൾ ഒരു നെറ്റ്‌വർക്കുമായി കണക്റ്റ് ചെയ്യാത്തതിനാൽ പങ്കിടൽ പരാജയപ്പെട്ടു.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="20485545164632846">പുതിയ ഇനം</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> അക്കൗണ്ടുകൾ ഒരേ പാസ്‌വേഡ് ഉപയോഗിക്കുന്നു</translation>
-<translation id="2050196510205866090">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പേയ്മെന്റ് രീതി ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പേയ്മെന്റ് രീതികൾ ലഭ്യമാണ്.}}</translation>
 <translation id="2059166748188874810">മുൻസിപ്പാലിറ്റി</translation>
 <translation id="20638360198452347">യൂണിറ്റ് തരം സെലക്‌ടർ</translation>
 <translation id="2067852168641682340">എല്ലായ്‌പ്പോഴും ഈ അക്കൗണ്ടിലേക്ക് സംരക്ഷിക്കുക</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" മറയ്ക്കുക</translation>
 <translation id="2403129868389095715">നിങ്ങളുടെ പാക്കേജ് ഡെലിവർ ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="2410754283952462441">ഒരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
-<translation id="2411749908844615428">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച വിലാസം ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച വിലാസങ്ങൾ ലഭ്യമാണ്.}}</translation>
 <translation id="2424805048070062787">ഈ ടാബിൽ തുടരുക</translation>
 <translation id="2426805022920575512">മറ്റൊരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="243275146591958220">ഡൗൺലോഡ് ചെയ്യുന്നത് റദ്ദാക്കുക</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">ലിങ്ക് പ്രിവ്യൂകൾ കാണിക്കുക</translation>
 <translation id="452750746583162491">നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ അവലോകനം ചെയ്യുക</translation>
 <translation id="4532845899244822526">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
-<translation id="4539187448429948815">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ, സംരക്ഷിച്ച {count} സ്വയമേവ പൂർത്തിയാക്കൽ നിർദ്ദേശം ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ, സംരക്ഷിച്ച {count} സ്വയമേവ പൂർത്തിയാക്കൽ നിർദ്ദേശങ്ങൾ ലഭ്യമാണ്.}}</translation>
 <translation id="4547181496285029457">ഏറ്റവും അവസാനം തുറന്ന ടാബിലേക്ക് മടങ്ങുക</translation>
 <translation id="4552042254369397518">പകർത്തുന്നു…</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" മറയ്ക്കുക</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">ടാബുകൾ സംബന്ധിച്ച അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="4601095002996233687">സംശയാസ്പദമായ ഡൗൺലോഡുകൾക്കായി വിശദമായ സ്കാനുകൾ.</translation>
 <translation id="4606247758155004938">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്.</translation>
+<translation id="4607887340472970274">നിരക്ക് ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="4611811151908969241">'<ph name="DOMAIN_NAME" /> അൺഫോളോ ചെയ്യുക' മറയ്ക്കുക</translation>
 <translation id="461440297010471931">Google ഉപയോഗിച്ച് തിരയുന്നു</translation>
 <translation id="4619564267100705184">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -1274,7 +1271,6 @@
 <translation id="6710079714193676716">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്. ചില ഫീച്ചറുകൾ ലഭ്യമായേക്കില്ല. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">ഫീഡിലേക്ക് പോകുക</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />-ന് പരിഷ്‌കരിച്ചു</translation>
-<translation id="6717862474255265991">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="6722623263381062480">ലഭിച്ച ടാബുകൾ</translation>
 <translation id="6723740634201835758">നിങ്ങളുടെ Google അക്കൗണ്ടിലേത്</translation>
 <translation id="672735642903863329">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും നേടുക.</translation>
@@ -1440,7 +1436,6 @@
 <translation id="75362970626182391">പുതിയ ടാബ് ഗ്രൂപ്പ്</translation>
 <translation id="7537586195939242955">ക്ഷമിക്കണം, നിങ്ങളുടെ പാസ് ഈ സമയം പാസ്‌ബുക്കിൽ ഇൻസ്റ്റാൾ ചെയ്യാൻ കഴിയില്ല.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> പരിശോധിച്ചു</translation>
-<translation id="755255281989213264">മെനു ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="7553234618121028547">ഓഫാക്കാൻ, <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> തുറന്ന് പാസ്‌വേഡ് ഓപ്ഷനുകളിലേക്ക് പോകുക.</translation>
 <translation id="7557508262441527045">സൈൻ ഔട്ട് ചെയ്‌തു</translation>
 <translation id="7561196759112975576">എല്ലായ്പ്പോഴും</translation>
