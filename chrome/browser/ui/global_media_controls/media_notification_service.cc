@@ -42,13 +42,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/media_ui.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace mojom {
@@ -91,17 +88,11 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::MediaUI* GetMediaUI() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/373971535): Figure how to call `media_ui_ash()` once crosapi
+  // is gone.
   if (crosapi::CrosapiManager::IsInitialized()) {
     return crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::MediaUI>()) {
-    return chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::MediaUI>()
-        .get();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -200,9 +191,7 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // On Lacros-enabled Chrome OS, MediaNotificationService instances exist on
-  // both Ash and Lacros sides. The Ash-side instance manages Casting from
-  // System Web Apps.
+  // The Ash instance manages Casting from System Web Apps.
   if (GetMediaUI()) {
     GetMediaUI()->RegisterDeviceService(
         content::MediaSession::GetSourceId(profile),
