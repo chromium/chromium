@@ -4969,6 +4969,11 @@ std::string HTMLMediaElement::GetActivePresentationId() {
   return remote_playback_client_->GetPresentationId().Ascii();
 }
 
+ExecutionContext* HTMLMediaElement::GetExecutionContextForPlayer() const {
+  return opener_document_ ? opener_document_->GetExecutionContext()
+                          : GetExecutionContext();
+}
+
 HTMLMediaElement::OpenerContextObserver::OpenerContextObserver(
     HTMLMediaElement* element)
     : element_(element) {}

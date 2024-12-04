@@ -2055,15 +2055,25 @@ class WebContentsConsoleObserver : public WebContentsObserver {
   std::vector<Message> messages_;
 };
 
-// A helper class to get DevTools inspector log messages (e.g. network errors).
+// A helper class to get DevTools inspector messages for `Domain` (e.g. network
+// errors, media logs).
 class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
  public:
-  explicit DevToolsInspectorLogWatcher(WebContents* web_contents);
+  enum class Domain {
+    Log,
+    Media,
+  };
+
+  explicit DevToolsInspectorLogWatcher(WebContents* web_contents,
+                                       Domain domain = Domain::Log);
   ~DevToolsInspectorLogWatcher() override;
 
   void FlushAndStopWatching();
   std::string last_message() { return last_message_; }
   GURL last_url() { return last_url_; }
+
+  std::string last_media_notification() { return last_media_notification_; }
+  void ClearLastMediaNotification() { last_media_notification_.clear(); }
 
   // DevToolsAgentHostClient:
   void DispatchProtocolMessage(DevToolsAgentHost* host,
@@ -2076,6 +2086,8 @@ class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
   base::RunLoop run_loop_disable_log_;
   std::string last_message_;
   GURL last_url_;
+  Domain domain_;
+  std::string last_media_notification_;
 };
 
 // Static methods that simulates Mojo methods as if they were called by a

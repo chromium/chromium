@@ -328,6 +328,13 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
             content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
+  void TriggerNewPlayerCreation(content::WebContents* web_contents) {
+    web_contents->GetPrimaryMainFrame()
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            u"triggerNewPlayerCreation()", base::NullCallback(),
+            content::ISOLATED_WORLD_ID_GLOBAL);
+  }
+
   void WaitForMediaSessionActionRegistered(content::WebContents* web_contents) {
     media_session::test::MockMediaSessionMojoObserver observer(
         *content::MediaSession::Get(web_contents));
@@ -1733,4 +1740,82 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   SwitchToExistingTab(second_web_contents);
   WaitForAutoPip(first_web_contents);
   EXPECT_TRUE(first_web_contents->HasPictureInPictureDocument());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DevToolsMediaLogsRecordedForOpener) {
+  LoadAutoDocumentVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+
+  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
+  ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  // Trigger the creation of a new player. This will help us test if
+  // subsequently generated media logs are correctly routed.
+  TriggerNewPlayerCreation(web_contents);
+
+  {
+    // Start watching the DevTools logs and clear the latest media notification.
+    content::DevToolsInspectorLogWatcher log_watcher(
+        web_contents, content::DevToolsInspectorLogWatcher::Domain::Media);
+    log_watcher.ClearLastMediaNotification();
+
+    // Generate media logs.
+    PlayVideo(web_contents);
+    WaitForMediaSessionPlaying(web_contents);
+
+    // Verify that media logs were recorded, since the player should be using
+    // the media element execution context of the opener document.
+    log_watcher.FlushAndStopWatching();
+    ASSERT_FALSE(log_watcher.last_media_notification().empty());
+  }
+
+  SwitchBackToOpenerAndWaitForPipToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DevToolsMediaLogsNotRecordedForPipWindow) {
+  LoadAutoDocumentVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+
+  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
+  ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  {
+    // Start watching the DevTools logs.
+    auto* pip_web_contents =
+        PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+    ASSERT_NE(nullptr, pip_web_contents);
+    content::DevToolsInspectorLogWatcher pip_log_watcher(
+        pip_web_contents, content::DevToolsInspectorLogWatcher::Domain::Media);
+
+    // Trigger the creation of a new player. This will help us test if
+    // subsequently generated media logs are correctly routed.
+    TriggerNewPlayerCreation(web_contents);
+
+    // Generate media logs.
+    PlayVideo(web_contents);
+    WaitForMediaSessionPlaying(web_contents);
+
+    // Verify that media logs were not recorded, since the player should be
+    // using the media element execution context of the opener document.
+    pip_log_watcher.FlushAndStopWatching();
+    ASSERT_TRUE(pip_log_watcher.last_media_notification().empty());
+  }
+
+  SwitchBackToOpenerAndWaitForPipToClose();
 }

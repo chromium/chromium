@@ -60,9 +60,17 @@
         navigator.mediaSession.playbackState = "paused";
     }
 
-    function openPip() {
-        documentPictureInPicture.requestWindow();
+    function triggerNewPlayerCreation() {
+        video.removeAttribute('src');
+        video.src = "../bigbuck.webm";
+        return true;
+    }
+
+    async function openPip() {
+        pipWindow = await documentPictureInPicture.requestWindow();
+        pipWindow.document.body.append(video);
     }
 
     navigator.mediaSession.setActionHandler('enterpictureinpicture', openPip);
+
 </script>
