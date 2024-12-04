@@ -5325,6 +5325,26 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
     self._driver.MouseClick()
     self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
 
+  def testScriptMouseClick(self):
+    """ Regression test for crbug.com/379584343. """
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    div = self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>old</div>";'
+        'var div = document.getElementsByTagName("div")[0];'
+        'div.style["width"] = "100px";'
+        'div.style["height"] = "100px";'
+        'div.addEventListener("click", function() {'
+        '  var div = document.getElementsByTagName("div")[0];'
+        '  div.innerHTML="new<br>";'
+        '});'
+        'return div;')
+    elem = {
+        'element-6066-11e4-a52e-4f735466cecf': div._id,
+        'ELEMENT': div._id
+    }
+    self._driver.ExecuteScript('arguments[0].click()', elem)
+    self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
+
   def testMouseDoubleClick(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     div = self._driver.ExecuteScript(
