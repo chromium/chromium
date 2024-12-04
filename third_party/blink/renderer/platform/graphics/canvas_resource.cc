@@ -916,7 +916,17 @@ bool ExternalCanvasResource::
       "blink",
       "ExternalCanvasResource::PrepareAcceleratedTransferableResource");
   GenOrFlushSyncToken();
-  *out_resource = transferable_resource_;
+
+  *out_resource = viz::TransferableResource::MakeGpu(
+      transferable_resource_.mailbox(), transferable_resource_.texture_target(),
+      transferable_resource_.sync_token(), transferable_resource_.size,
+      transferable_resource_.format,
+      transferable_resource_.is_overlay_candidate,
+      transferable_resource_.resource_source);
+  out_resource->color_space = transferable_resource_.color_space;
+  out_resource->hdr_metadata = transferable_resource_.hdr_metadata;
+  out_resource->origin = transferable_resource_.origin;
+
   return true;
 }
 
