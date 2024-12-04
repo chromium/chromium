@@ -93,6 +93,12 @@ def _UploadChangesToCL(message: str) -> None:
 def _AddFeature(index: int, feature_dict: dict[str, str],
                 path_to_milestone_folder: str) -> None:
     start = time.time()
+    validation_error = whats_new_util.ValidateWhatsNewData(feature_dict)
+    if validation_error:
+        print(
+            f'Error in row {index}, {feature_dict["Feature name"]}, '
+            f'submitter {feature_dict["Submitter email"]}: {validation_error}')
+        return
     new_enum = whats_new_util.UpdateWhatsNewItemAndGetNewTypeValue(
         feature_dict)
     whats_new_util.UpdateWhatsNewPlist(feature_dict, new_enum)
