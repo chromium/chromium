@@ -326,13 +326,13 @@ ChromeAutofillClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-AutofillCrowdsourcingManager* ChromeAutofillClient::GetCrowdsourcingManager() {
+AutofillCrowdsourcingManager& ChromeAutofillClient::GetCrowdsourcingManager() {
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
     crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
         this, GetChannel(), GetLogManager());
   }
-  return crowdsourcing_manager_.get();
+  return *crowdsourcing_manager_;
 }
 
 AutofillOptimizationGuide* ChromeAutofillClient::GetAutofillOptimizationGuide()

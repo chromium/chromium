@@ -29,9 +29,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
  public:
   ~AutofillProvider() override;
 
-  static bool is_crowdsourcing_manager_disabled_for_testing();
-  static void set_is_crowdsourcing_manager_disabled_for_testing();
-
   // These events come from AutofillDriver.
   // See autofill_driver.mojom for documentation.
   virtual void OnAskForValuesToFill(

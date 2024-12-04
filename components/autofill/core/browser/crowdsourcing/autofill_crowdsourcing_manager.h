@@ -107,7 +107,7 @@ class AutofillCrowdsourcingManager {
 
  protected:
   AutofillCrowdsourcingManager(AutofillClient* client,
-                               const std::string& api_key,
+                               std::string api_key,
                                LogManager* log_manager);
 
   // Gets the length of the payload from request data. Used to simulate

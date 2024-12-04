@@ -235,9 +235,6 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
         client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
   }
-  if (!client().GetCrowdsourcingManager()) {
-    return;
-  }
   const PersonalDataManager& pdm = client().GetPersonalDataManager();
   FieldTypeSet non_empty_types;
   for (const AutofillProfile* profile :
@@ -252,7 +249,7 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
       non_empty_types.contains(CREDIT_CARD_NUMBER)) {
     non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }
-  client().GetCrowdsourcingManager()->StartUploadRequest(
+  client().GetCrowdsourcingManager().StartUploadRequest(
       /*upload_contents=*/EncodeUploadRequest(*submitted_form, non_empty_types,
                                               /*login_form_signature=*/{},
                                               observed_submission),

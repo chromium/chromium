@@ -62,7 +62,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDriverFactory& GetAutofillDriverFactory() override;
-  AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
+  AutofillCrowdsourcingManager& GetCrowdsourcingManager() override;
   PersonalDataManager& GetPersonalDataManager() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;

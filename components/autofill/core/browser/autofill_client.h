@@ -241,7 +241,7 @@ class AutofillClient {
 
   // Returns the AutofillCrowdsourcingManager for communication with the
   // Autofill server.
-  virtual AutofillCrowdsourcingManager* GetCrowdsourcingManager();
+  virtual AutofillCrowdsourcingManager& GetCrowdsourcingManager() = 0;
 
   // Gets the PersonalDataManager instance associated with the original Chrome
   // profile.

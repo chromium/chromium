@@ -104,7 +104,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   version_info::Channel GetChannel() const final;
   bool IsOffTheRecord() const final;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
-  AutofillCrowdsourcingManager* GetCrowdsourcingManager() final;
+  AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   AutofillOptimizationGuide* GetAutofillOptimizationGuide() const final;
   FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       final;

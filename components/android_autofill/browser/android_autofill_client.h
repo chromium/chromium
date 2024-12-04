@@ -85,7 +85,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   const std::string& GetAppLocale() const final;
   bool IsOffTheRecord() const final;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
-  autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() final;
+  autofill::AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   autofill::PersonalDataManager& GetPersonalDataManager() final;
   autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() final;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;

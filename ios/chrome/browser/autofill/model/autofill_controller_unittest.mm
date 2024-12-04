@@ -30,6 +30,7 @@
 #import "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #import "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -275,14 +276,6 @@ class AutofillControllerTest : public PlatformTest {
   ~AutofillControllerTest() override {}
 
  protected:
-  class TestAutofillClient : public ChromeAutofillClientIOS {
-   public:
-    using ChromeAutofillClientIOS::ChromeAutofillClientIOS;
-    AutofillCrowdsourcingManager* GetCrowdsourcingManager() override {
-      return nullptr;
-    }
-  };
-
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(AutofillDriverIOS* driver)
@@ -350,6 +343,8 @@ class AutofillControllerTest : public PlatformTest {
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
+      {.disable_server_communication = true}};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
@@ -392,7 +387,7 @@ void AutofillControllerTest::SetUp() {
   InfoBarManagerImpl::CreateForWebState(web_state());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
-  autofill_client_ = std::make_unique<TestAutofillClient>(
+  autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
       profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
   autofill_client_->GetPersonalDataManager()

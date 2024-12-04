@@ -1303,8 +1303,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     return client().GetPersonalDataManager();
   }
 
-  MockAutofillCrowdsourcingManager* crowdsourcing_manager() {
-    return static_cast<MockAutofillCrowdsourcingManager*>(
+  MockAutofillCrowdsourcingManager& crowdsourcing_manager() {
+    return static_cast<MockAutofillCrowdsourcingManager&>(
         client().GetCrowdsourcingManager());
   }
 
@@ -1451,13 +1451,13 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
                            FormControlType::kInputText),
        CreateTestFormField("Email", "email", "", FormControlType::kInputText)});
 
-  EXPECT_CALL(*crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
   EXPECT_CALL(
-      *crowdsourcing_manager(),
+      crowdsourcing_manager(),
       StartQueryRequest(
           ElementsAre(FormStructureHasRendererId(form.renderer_id())), _, _));
   EXPECT_CALL(
-      *crowdsourcing_manager(),
+      crowdsourcing_manager(),
       StartQueryRequest(
           ElementsAre(FormStructureHasRendererId(form2.renderer_id())), _, _));
   FormsSeen({form});
@@ -2938,9 +2938,9 @@ TEST_F(BrowserAutofillManagerTest,
   client().SetAutofillPaymentMethodsEnabled(false);
   client().SetAutofillProfileEnabled(false);
   // If the password manager is enabled, that's enough to parse the form.
-  EXPECT_CALL(*crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
   EXPECT_CALL(
-      *crowdsourcing_manager(),
+      crowdsourcing_manager(),
       StartQueryRequest(
           ElementsAre(FormStructureHasRendererId(form.renderer_id())), _, _));
   FormsSeen({form});
@@ -7136,7 +7136,7 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
     BrowserAutofillManagerTest::SetUp();
 
     // All uploads should be expected explicitly.
-    EXPECT_CALL(*crowdsourcing_manager(), StartUploadRequest).Times(0);
+    EXPECT_CALL(crowdsourcing_manager(), StartUploadRequest).Times(0);
 
     form_.set_name(u"MyForm");
     form_.set_url(GURL("https://myform.com/form.html"));
@@ -7164,7 +7164,7 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
 // Ensure that a vote is submitted after a regular form submission.
 TEST_F(BrowserAutofillManagerVotingTest, Submission) {
   SimulateTypingFirstNameIntoFirstField();
-  EXPECT_CALL(*crowdsourcing_manager(),
+  EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(
                   FirstElementIs(AllOf(
                       FormSignatureIs(CalculateFormSignature(form_)),
@@ -7195,7 +7195,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
   // 4. Simulate removing the focus from the form, which generates a second blur
   // vote which should be sent.
   EXPECT_CALL(
-      *crowdsourcing_manager(),
+      crowdsourcing_manager(),
       StartUploadRequest(
           FirstElementIs(AllOf(
               FormSignatureIs(first_form_signature),
@@ -7221,7 +7221,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
   // Because the next field after the two names is not a credit card field,
   // field disambiguation removes the credit card name votes.
   EXPECT_CALL(
-      *crowdsourcing_manager(),
+      crowdsourcing_manager(),
       StartUploadRequest(
           FirstElementIs(AllOf(
               FormSignatureIs(second_form_signature),
@@ -7239,7 +7239,7 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
   SimulateTypingFirstNameIntoFirstField();
 
   // Simulate removing focus from form, which triggers a blur vote.
-  EXPECT_CALL(*crowdsourcing_manager(),
+  EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(
                   FirstElementIs(AllOf(
                       FormSignatureIs(CalculateFormSignature(form_)),
@@ -7263,7 +7263,7 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
   // Simulate removing focus from form, which enqueues a blur vote. The blur
   // vote will be ignored and only the submission will be sent.
   manager().OnFocusOnNonFormField();
-  EXPECT_CALL(*crowdsourcing_manager(),
+  EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(
                   FirstElementIs(AllOf(
                       FormSignatureIs(CalculateFormSignature(form_)),

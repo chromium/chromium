@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -105,8 +106,13 @@ class TestAutofillClientTemplate : public T {
 
   bool IsOffTheRecord() const override { return is_off_the_record_; }
 
-  AutofillCrowdsourcingManager* GetCrowdsourcingManager() override {
-    return crowdsourcing_manager_.get();
+  AutofillCrowdsourcingManager& GetCrowdsourcingManager() override {
+    if (!crowdsourcing_manager_) {
+      crowdsourcing_manager_ =
+          std::make_unique<testing::NiceMock<MockAutofillCrowdsourcingManager>>(
+              this, GetLogManager());
+    }
+    return *crowdsourcing_manager_;
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -576,8 +582,6 @@ class TestAutofillClientTemplate : public T {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
 
-  std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
 
@@ -609,6 +613,8 @@ class TestAutofillClientTemplate : public T {
       LogManager::Create(&log_router_, base::NullCallback());
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};
+
+  std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
