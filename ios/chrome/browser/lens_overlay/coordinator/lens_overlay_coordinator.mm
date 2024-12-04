@@ -521,7 +521,7 @@ const int kExpectedExitAnimationCount = 2;
 
 - (void)onNetworkIssueAlertAcknowledged {
   [self destroyLensUI:YES
-               reason:lens::LensOverlayDismissalSource::kLensPermissionsDenied];
+               reason:lens::LensOverlayDismissalSource::kNetworkIssue];
 }
 
 #pragma mark - LensOverlayResultsPagePresenterDelegate
