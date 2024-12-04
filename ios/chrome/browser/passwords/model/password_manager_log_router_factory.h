@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_MANAGER_LOG_ROUTER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -17,15 +17,10 @@ class LogRouter;
 namespace ios {
 // Singleton that owns all PasswordStores and associates them with
 // profile.
-class PasswordManagerLogRouterFactory : public BrowserStateKeyedServiceFactory {
+class PasswordManagerLogRouterFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static autofill::LogRouter* GetForProfile(ProfileIOS* profile);
   static PasswordManagerLogRouterFactory* GetInstance();
-
-  PasswordManagerLogRouterFactory(const PasswordManagerLogRouterFactory&) =
-      delete;
-  PasswordManagerLogRouterFactory& operator=(
-      const PasswordManagerLogRouterFactory&) = delete;
 
  private:
   friend class base::NoDestructor<PasswordManagerLogRouterFactory>;
