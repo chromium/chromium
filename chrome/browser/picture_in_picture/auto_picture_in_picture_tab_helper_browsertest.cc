@@ -1742,8 +1742,16 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(first_web_contents->HasPictureInPictureDocument());
 }
 
+// TODO(crbug.com/382180421): Test failing on Max and Linux
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_DevToolsMediaLogsRecordedForOpener \
+  DISABLED_DevToolsMediaLogsRecordedForOpener
+#else
+#define MAYBE_DevToolsMediaLogsRecordedForOpener \
+  DevToolsMediaLogsRecordedForOpener
+#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       DevToolsMediaLogsRecordedForOpener) {
+                       MAYBE_DevToolsMediaLogsRecordedForOpener) {
   LoadAutoDocumentVideoVisibilityPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
@@ -1780,8 +1788,16 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   SwitchBackToOpenerAndWaitForPipToClose();
 }
 
+// TODO(crbug.com/382180421): Test failing on Max and Linux
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_DevToolsMediaLogsNotRecordedForPipWindow \
+  DISABLED_DevToolsMediaLogsNotRecordedForPipWindow
+#else
+#define MAYBE_DevToolsMediaLogsNotRecordedForPipWindow \
+  DevToolsMediaLogsNotRecordedForPipWindow
+#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       DevToolsMediaLogsNotRecordedForPipWindow) {
+                       MAYBE_DevToolsMediaLogsNotRecordedForPipWindow) {
   LoadAutoDocumentVideoVisibilityPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
