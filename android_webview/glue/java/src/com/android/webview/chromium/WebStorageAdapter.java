@@ -167,6 +167,10 @@ final class WebStorageAdapter extends WebStorage {
         }
     }
 
+    /* package */ AwQuotaManagerBridge getQuotaManagerBridge() {
+        return mQuotaManagerBridge;
+    }
+
     private static boolean checkNeedsPost() {
         // Init is guaranteed to have happened if a WebStorageAdapter is created, so do not
         // need to check WebViewChromiumFactoryProvider.hasStarted.

@@ -12,6 +12,7 @@ import android.webkit.WebMessagePort;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
+import android.webkit.WebStorage;
 
 import androidx.annotation.RequiresApi;
 
@@ -138,5 +139,13 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
                 new SupportLibWebViewCookieManagerAdapter(
                         WebkitToSharedGlueConverter.getCookieManager(
                                 (CookieManager) cookieManager)));
+    }
+
+    @Override
+    public /* WebStorageAdapter */ InvocationHandler convertWebStorage(Object webStorage) {
+        return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                new SupportLibWebStorageAdapter(
+                        WebkitToSharedGlueConverter.getQuotaManagerBridge(
+                                (WebStorage) webStorage)));
     }
 }
