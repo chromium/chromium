@@ -1256,8 +1256,8 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       crossbench_test = CrossbenchTest(options, isolated_out_dir)
       for run_num in range(options.benchmark_max_runs):
         print(f'\n### {display_name} (attempt #{run_num}) ###')
-        return_code = crossbench_test.execute_benchmark(
-            benchmark, display_name, options.passthrough_args)
+        return_code = crossbench_test.execute_benchmark(benchmark, display_name,
+                                                        benchmark_args)
         if return_code == 0:
           break
       overall_return_code = return_code or overall_return_code
