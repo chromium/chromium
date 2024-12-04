@@ -156,7 +156,7 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo) {
             CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
-TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwoReset) {
+TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_Reset) {
   scoped_refptr<H265Picture> pic0 = accelerator_->CreateH265Picture();
   scoped_refptr<H265Picture> pic1 = accelerator_->CreateH265Picture();
   H265VPS vps;
@@ -208,7 +208,7 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwoReset) {
             CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
-TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwoConfigChange) {
+TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_ConfigChange) {
   scoped_refptr<H265Picture> pic0 = accelerator_->CreateH265Picture();
   scoped_refptr<H265Picture> pic1 = accelerator_->CreateH265Picture();
   H265VPS vps;
