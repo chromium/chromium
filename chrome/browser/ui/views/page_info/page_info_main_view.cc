@@ -168,7 +168,7 @@ PageInfoMainView::PageInfoMainView(
 
   // TODO(crbug.com/381400291): Rename |allow_about_this_site| to
   // |allow_extended_site_info| and check it for merchant trust too.
-  if (base::FeatureList::IsEnabled(page_info::kMerchantTrust)) {
+  if (page_info::IsMerchantTrustFeatureEnabled()) {
     merchant_trust_section_ =
         extended_site_info_section_->AddChildView(CreateContainerView());
   }
