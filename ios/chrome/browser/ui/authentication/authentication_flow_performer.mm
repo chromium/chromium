@@ -25,6 +25,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_urls.h"
+#import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
@@ -64,6 +65,7 @@ NSString* const kAuthenticationSnackbarCategory =
 }  // namespace
 
 @interface AuthenticationFlowPerformer () <
+    ChangeProfileObserving,
     ManagedProfileCreationCoordinatorDelegate>
 @end
 
@@ -76,17 +78,22 @@ NSString* const kAuthenticationSnackbarCategory =
   // Dialog to display an error.
   AlertCoordinator* _errorAlertCoordinator;
   std::unique_ptr<base::OneShotTimer> _watchdogTimer;
+  id<ChangeProfileCommands> _changeProfileHandler;
+  OnProfileSwitchCompletion _onProfileSwitchCompletion;
 }
 
 - (id<AuthenticationFlowPerformerDelegate>)delegate {
   return _delegate;
 }
 
-- (instancetype)initWithDelegate:
-    (id<AuthenticationFlowPerformerDelegate>)delegate {
+- (instancetype)
+        initWithDelegate:(id<AuthenticationFlowPerformerDelegate>)delegate
+    changeProfileHandler:(id<ChangeProfileCommands>)changeProfileHandler {
   self = [super init];
-  if (self)
+  if (self) {
     _delegate = delegate;
+    _changeProfileHandler = changeProfileHandler;
+  }
   return self;
 }
 
@@ -125,13 +132,34 @@ NSString* const kAuthenticationSnackbarCategory =
 
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
-      withHostedDomain:(NSString*)hostedDomain
-             toProfile:(ProfileIOS*)profile {
-  AuthenticationServiceFactory::GetForProfile(profile)->SignIn(identity,
-                                                               accessPoint);
+        currentProfile:(ProfileIOS*)currentProfile {
+  AuthenticationServiceFactory::GetForProfile(currentProfile)
+      ->SignIn(identity, accessPoint);
+}
+
+- (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
+                    sceneIdentifier:(NSString*)sceneIdentifier
+                         completion:(OnProfileSwitchCompletion)completion {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  _onProfileSwitchCompletion = std::move(completion);
+  std::optional<std::string> profileName =
+      GetApplicationContext()
+          ->GetAccountProfileMapper()
+          ->FindProfileNameForGaiaID(base::SysNSStringToUTF8(identity.gaiaID));
+  if (!profileName.has_value()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(_onProfileSwitchCompletion), false));
+    return;
+  }
+  [_changeProfileHandler changeProfile:base::SysUTF8ToNSString(*profileName)
+                              forScene:sceneIdentifier
+                              observer:self];
 }
 
 - (void)signOutProfile:(ProfileIOS*)profile {
+  // TODO(crbug.com/375604649): Skip sign out if the identity to sign-in is in a
+  // different profile.
   __weak __typeof(_delegate) weakDelegate = _delegate;
   AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
@@ -362,6 +390,21 @@ NSString* const kAuthenticationSnackbarCategory =
         }
         [weakSelf.delegate didFetchUserPolicyWithSuccess:success];
       }));
+}
+
+#pragma mark - ChangeProfileObserving
+
+- (void)operationFailed:(ChangeProfileFailure)failure {
+  std::move(_onProfileSwitchCompletion).Run(false);
+}
+
+- (void)willStartOperation:(UIViewController*)viewController {
+  // Nothing to do.
+}
+
+- (void)operationDidComplete:(UIViewController*)viewController
+              withSceneState:(SceneState*)sceneState {
+  std::move(_onProfileSwitchCompletion).Run(true);
 }
 
 #pragma mark - Private

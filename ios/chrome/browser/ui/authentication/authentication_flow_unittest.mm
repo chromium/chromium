@@ -149,8 +149,7 @@ class AuthenticationFlowTest : public PlatformTest {
                                     NSString* hosted_domain) {
     [[performer_ expect] signInIdentity:identity
                           atAccessPoint:accessPoint
-                       withHostedDomain:hosted_domain
-                              toProfile:profile_.get()];
+                         currentProfile:profile_.get()];
   }
 
   // Signs in successfully as `identity`, and checks that all the intermediary

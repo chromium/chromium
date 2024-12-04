@@ -18,14 +18,19 @@
 #import "components/sync/base/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -88,6 +93,32 @@ enum class CancelationReason {
   kFailed,
 };
 
+// Returns YES if the `identity.gaiaID` is in one of the AccountInfo of
+// `account_infos`.
+BOOL IsIdentityInAccountInfos(id<SystemIdentity> identity,
+                              const std::vector<AccountInfo>& account_infos) {
+  std::string gaia_id = base::SysNSStringToUTF8(identity.gaiaID);
+  for (const auto& account_info : account_infos) {
+    if (account_info.gaia == gaia_id) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+// Returns YES if the `identity.gaiaID` is in one of the CoreAccountInfo of
+// `core_account_infos`.
+BOOL IsIdentityInCoreAccountInfos(
+    id<SystemIdentity> identity,
+    const std::vector<CoreAccountInfo>& core_account_infos) {
+  std::string gaia_id = base::SysNSStringToUTF8(identity.gaiaID);
+  for (const auto& core_account_info : core_account_infos) {
+    if (core_account_info.gaia == gaia_id) {
+      return YES;
+    }
+  }
+  return NO;
+}
 
 }  // namespace
 
@@ -193,7 +224,12 @@ enum class CancelationReason {
   _selfRetainer = self;
   // Kick off the state machine.
   if (!_performer) {
-    _performer = [[AuthenticationFlowPerformer alloc] initWithDelegate:self];
+    id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
+        _browser->GetSceneState().profileState.appState.appCommandDispatcher,
+        ChangeProfileCommands);
+    _performer = [[AuthenticationFlowPerformer alloc]
+            initWithDelegate:self
+        changeProfileHandler:changeProfileHandler];
   }
   // Make sure -[AuthenticationFlow startSignInWithCompletion:] doesn't call
   // the completion block synchronously.
@@ -427,16 +463,41 @@ enum class CancelationReason {
     self.userDecisionCompletion();
   }
   ProfileIOS* profile = [self originalProfile];
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
+  BOOL isValidIdentityInProfile = NO;
+  BOOL isValidIdentityOnDevice = NO;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    isValidIdentityOnDevice = IsIdentityInAccountInfos(
+        identity, identityManager->GetAccountsOnDevice());
+    isValidIdentityInProfile = IsIdentityInCoreAccountInfos(
+        identity, identityManager->GetAccountsWithRefreshTokens());
+  } else {
+    isValidIdentityOnDevice = isValidIdentityInProfile =
+        accountManagerService->IsValidIdentity(identity);
+  }
 
-  if (accountManagerService->IsValidIdentity(identity)) {
+  if (isValidIdentityInProfile) {
     [_performer signInIdentity:identity
                  atAccessPoint:self.accessPoint
-              withHostedDomain:_identityToSignInHostedDomain
-                     toProfile:profile];
+                currentProfile:profile];
     _didSignIn = YES;
     [self continueSignin];
+  } else if (isValidIdentityOnDevice) {
+    CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+    NSString* sceneIdentifier = _browser->GetSceneState().sceneSessionID;
+    __weak __typeof(self) weakSelf = self;
+    OnProfileSwitchCompletion completion = base::BindOnce(
+        [](__typeof(self) strongSelf, bool success) {
+          [strongSelf onSwitchToProfileWithSuccess:success];
+        },
+        weakSelf);
+    [_performer switchToProfileWithIdentity:identity
+                            sceneIdentifier:sceneIdentifier
+                                 completion:std::move(completion)];
   } else {
     // Handle the case where the identity is no longer valid.
     NSError* error = ios::provider::CreateMissingIdentitySigninError();
@@ -599,6 +660,9 @@ enum class CancelationReason {
 
 // The original profile used for services that don't exist in incognito mode.
 - (ProfileIOS*)originalProfile {
+  if (!_browser) {
+    return nullptr;
+  }
   return _browser->GetProfile()->GetOriginalProfile();
 }
 
@@ -636,6 +700,29 @@ enum class CancelationReason {
   }
 
   return YES;
+}
+
+// Called when the profile switching succeeded or failed (according to
+// `success`).
+- (void)onSwitchToProfileWithSuccess:(BOOL)success {
+  if (success) {
+    // TODO(crbug.com/375604649): Need to define how to finish the
+    // authentication flow after the profile switching.
+    // * What happens for the steps after SIGN_IN?
+    //    REGISTER_FOR_USER_POLICY
+    //    FETCH_USER_POLICY
+    //    FETCH_CAPABILITIES
+    //    COMPLETE_WITH_SUCCESS
+    // * Is there metrics to record before to the flow is finished?
+    // It is important to reach the last step otherwise AuthenticationFlow is
+    // leaked since `_selfRetainer` returns itself.
+
+    // The _browser doesn't exist anymore, since the profile has been switched.
+    _browser = nil;
+  } else {
+    // TODO(crbug.com/375604649): Generate an error and call:
+    // `[self handleAuthenticationError:error];`.
+  }
 }
 
 #pragma mark - Used for testing

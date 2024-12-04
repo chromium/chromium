@@ -162,6 +162,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   self.identityManager = nullptr;
   self.userPrefService = nullptr;
   _identityManagerObserverBridge.reset();
+  _authenticationFlow = nil;
 }
 
 - (void)systemIdentityAdded:(id<SystemIdentity>)identity {
