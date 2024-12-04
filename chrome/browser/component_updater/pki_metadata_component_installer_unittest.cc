@@ -9,14 +9,19 @@
 
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 
+#include <vector>
+
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/key_pinning.pb.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
+#include "components/certificate_transparency/ct_known_logs.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -99,6 +104,11 @@ class PKIMetadataComponentInstallerTest : public testing::Test {
     ct_config_.set_disable_ct_enforcement(false);
     ct_config_.mutable_log_list()->set_compatibility_version(
         kMaxSupportedCTCompatibilityVersion);
+    ct_config_.mutable_log_list()->mutable_timestamp()->set_seconds(
+        (certificate_transparency::GetLogListTimestamp()
+             .InMillisecondsSinceUnixEpoch() /
+         1000) +
+        1);
     {
       auto* log_operator = ct_config_.mutable_log_list()->add_operators();
       log_operator->add_email(kLogOperatorEmail);
@@ -391,6 +401,39 @@ TEST_F(PKIMetadataComponentInstallerTest,
   EXPECT_EQ(host_pins.size(), 0u);
 }
 
+#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+// Tests that installing the PKI Metadata component does not update the pinning
+// list if the built in list is newer.
+TEST_F(PKIMetadataComponentInstallerTest,
+       InstallComponentKPListOlderThanBuiltIn) {
+  // Initialize the network service.
+  content::GetNetworkService();
+  task_environment_.RunUntilIdle();
+
+  // Change the timestamp so it's older than the built in list.
+  pinlist_.mutable_timestamp()->set_seconds(
+      (net::TransportSecurityState::GetBuiltInPinsListTimestamp()
+           .InMillisecondsSinceUnixEpoch() /
+       1000) -
+      1);
+  WriteKPConfigToFile();
+
+  policy_->ComponentReady(base::Version("1.2.3.4"),
+                          component_install_dir_.GetPath(),
+                          base::Value::Dict());
+  task_environment_.RunUntilIdle();
+
+  network::NetworkService* network_service =
+      network::NetworkService::GetNetworkServiceForTesting();
+  ASSERT_TRUE(network_service);
+
+  // The pin list should not have been updated.
+  EXPECT_FALSE(network_service->pins_list_updated());
+  EXPECT_EQ(network_service->pinsets().size(), 0u);
+  EXPECT_EQ(network_service->host_pins().size(), 0u);
+}
+#endif
+
 #if BUILDFLAG(IS_CT_SUPPORTED)
 // Tests that installing the PKI Metadata component updates the CT configuration
 // in the network service.
@@ -531,6 +574,43 @@ TEST_F(PKIMetadataComponentInstallerTest,
   const net::CertVerifyProc::ImplParams& impl_params =
       cert_verifier_service_factory->get_impl_params();
   EXPECT_EQ(impl_params.ct_logs.size(), 0u);
+}
+
+// Tests that installing the PKI Metadata component does not update the CT log
+// list if the log list it includes is older than the built in one.
+TEST_F(PKIMetadataComponentInstallerTest,
+       InstallComponentCTListOlderThanBuiltIn) {
+  // Initialize the network service and cert verifier service factory.
+  content::GetNetworkService();
+  content::GetCertVerifierServiceFactory();
+  task_environment_.RunUntilIdle();
+
+  // Change the timestamp so it is older than the built in list.
+  ct_config_.mutable_log_list()->mutable_timestamp()->set_seconds(
+      (certificate_transparency::GetLogListTimestamp()
+           .InMillisecondsSinceUnixEpoch() /
+       1000) -
+      1);
+  WriteCTConfigToFile();
+
+  policy_->ComponentReady(base::Version("1.2.3.4"),
+                          component_install_dir_.GetPath(),
+                          base::Value::Dict());
+  task_environment_.RunUntilIdle();
+
+  network::NetworkService* network_service =
+      network::NetworkService::GetNetworkServiceForTesting();
+  ASSERT_TRUE(network_service);
+
+  // The logs should not have been updated.
+  EXPECT_EQ(network_service->log_list().size(), 0u);
+  EXPECT_TRUE(network_service->is_ct_enforcement_enabled_for_testing());
+
+  cert_verifier::CertVerifierServiceFactoryImpl* cert_verifier_service_factory =
+      content::GetCertVerifierServiceFactoryForTesting();
+  ASSERT_TRUE(cert_verifier_service_factory);
+  EXPECT_EQ(cert_verifier_service_factory->get_impl_params().ct_logs.size(),
+            0u);
 }
 
 // Tests that calling |ReconfigureAfterNetworkRestart| is a no-op if the
