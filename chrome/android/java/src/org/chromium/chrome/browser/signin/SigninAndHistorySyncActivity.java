@@ -47,8 +47,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.UiUtils;
@@ -76,23 +74,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             "SigninAndHistorySyncActivity.BottomSheetStringsSubtitle";
     private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS =
             "SigninAndHistorySyncActivity.BottomSheetStringsDismiss";
-    // TODO(crbug.com/375392859): Remove this with PUT_PARCELABLE_SIGNIN_CONFIG_IN_EXTRA if no crash
-    // related to the use of FullscreenSigninAndHistorySyncConfig as Parcelable extra is observed.
-    private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_TITLE =
-            "SigninAndHistorySyncActivity.FullscreenSigninConfigTitle";
-    private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_SUBTITLE =
-            "SigninAndHistorySyncActivity.FullscreenSigninConfigSubtitle";
-    private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_DISMISS_TEXT =
-            "SigninAndHistorySyncActivity.FullscreenSigninConfigDismissText";
-    private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_LOGO =
-            "SigninAndHistorySyncActivity.FullscreenSigninConfigLogo";
-    private static final String ARGUMENT_HISTORY_SYNC_CONFIG_TITLE =
-            "SigninAndHistorySyncActivity.HistorySyncConfigTitle";
-    private static final String ARGUMENT_HISTORY_SYNC_CONFIG_SUBTITLE =
-            "SigninAndHistorySyncActivity.HistorySyncConfigSubtitle";
-    private static final String ARGUMENT_HISTORY_SYNC_CONFIG_HISTORY_OPT_IN_MODE =
-            "SigninAndHistorySyncActivity.HistorySyncConfigHistoryOptInMode";
-
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
     private static final String ARGUMENT_NO_ACCOUNT_SIGNIN_MODE =
             "SigninAndHistorySyncActivity.NoAccountSigninMode";
@@ -139,48 +120,9 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
 
         if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
             updateSystemUiForFullscreenSignin();
-            FullscreenSigninAndHistorySyncConfig config;
-            if (SigninFeatureMap.isEnabled(SigninFeatures.PUT_PARCELABLE_SIGNIN_CONFIG_IN_EXTRA)) {
-                config = intent.getParcelableExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG);
-            } else {
-                int signinTitleId =
-                        intent.getIntExtra(
-                                ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_TITLE, R.string.signin_fre_title);
-                int signinSubtitleId =
-                        intent.getIntExtra(
-                                ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_SUBTITLE,
-                                R.string.signin_fre_subtitle);
-                int signinDismissText =
-                        intent.getIntExtra(
-                                ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_DISMISS_TEXT,
-                                R.string.signin_fre_dismiss_button);
-                int signinLogoId =
-                        intent.getIntExtra(
-                                ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_LOGO,
-                                R.drawable.fre_product_logo);
-                int historySyncTitleId =
-                        intent.getIntExtra(
-                                ARGUMENT_HISTORY_SYNC_CONFIG_TITLE, R.string.history_sync_title);
-                int historySyncSubtitleId =
-                        intent.getIntExtra(
-                                ARGUMENT_HISTORY_SYNC_CONFIG_SUBTITLE,
-                                R.string.history_sync_subtitle);
-                @HistorySyncConfig.OptInMode
-                int historyOptInMode =
-                        intent.getIntExtra(
-                                ARGUMENT_HISTORY_SYNC_CONFIG_HISTORY_OPT_IN_MODE,
-                                HistorySyncConfig.OptInMode.OPTIONAL);
-                config =
-                        new FullscreenSigninAndHistorySyncConfig.Builder()
-                                .signinTitleId(signinTitleId)
-                                .signinSubtitleId(signinSubtitleId)
-                                .signinDismissTextId(signinDismissText)
-                                .signinLogoId(signinLogoId)
-                                .historySyncTitleId(historySyncTitleId)
-                                .historySyncSubtitleId(historySyncSubtitleId)
-                                .historyOptInMode(historyOptInMode)
-                                .build();
-            }
+            FullscreenSigninAndHistorySyncConfig config =
+                    intent.getParcelableExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG);
+
             mCoordinator =
                     new FullscreenSigninAndHistorySyncCoordinator(
                             this,
@@ -394,22 +336,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
         intent.putExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, true);
-        if (SigninFeatureMap.isEnabled(SigninFeatures.PUT_PARCELABLE_SIGNIN_CONFIG_IN_EXTRA)) {
-            intent.putExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG, config);
-        } else {
-            intent.putExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_TITLE, config.signinConfig.titleId);
-            intent.putExtra(
-                    ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_SUBTITLE, config.signinConfig.subtitleId);
-            intent.putExtra(
-                    ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_DISMISS_TEXT,
-                    config.signinConfig.dismissTextId);
-            intent.putExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG_LOGO, config.signinConfig.logoId);
-            intent.putExtra(ARGUMENT_HISTORY_SYNC_CONFIG_TITLE, config.historySyncConfig.titleId);
-            intent.putExtra(
-                    ARGUMENT_HISTORY_SYNC_CONFIG_SUBTITLE, config.historySyncConfig.subtitleId);
-            intent.putExtra(
-                    ARGUMENT_HISTORY_SYNC_CONFIG_HISTORY_OPT_IN_MODE, config.historyOptInMode);
-        }
+        intent.putExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG, config);
         intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
         return intent;
     }
