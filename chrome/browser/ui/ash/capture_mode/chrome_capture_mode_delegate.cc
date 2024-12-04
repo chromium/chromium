@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
-#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -524,7 +523,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
   }
   if (!lens_overlay_query_controller_) {
     lens_overlay_query_controller_ =
-        std::make_unique<lens::LensOverlayQueryController>(
+        std::make_unique<LensOverlayQueryController>(
             base::BindRepeating(
                 &ChromeCaptureModeDelegate::HandleStartQueryResponse,
                 weak_ptr_factory_.GetWeakPtr()),

@@ -10,6 +10,12 @@ static_library("capture_mode") {
   sources = [
     "chrome_capture_mode_delegate.cc",
     "chrome_capture_mode_delegate.h",
+    "lens_overlay_query_controller.cc",
+    "lens_overlay_query_controller.h",
+    "lens_overlay_request_id_generator.cc",
+    "lens_overlay_request_id_generator.h",
+    "lens_overlay_url_builder.cc",
+    "lens_overlay_url_builder.h",
     "search_results_view.cc",
     "search_results_view.h",
   ]
@@ -41,7 +47,10 @@ static_library("capture_mode") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/experiences/screenshot_area",
     "//chromeos/ash/services/recording/public/mojom",
+    "//components/base32",
     "//components/drive",
+    "//components/endpoint_fetcher",
+    "//components/language/core/common:common",
     "//components/lens",
     "//content/public/browser",
     "//services/screen_ai/public/mojom",

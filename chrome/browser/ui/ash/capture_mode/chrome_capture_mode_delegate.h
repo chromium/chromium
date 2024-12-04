@@ -18,8 +18,8 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "chrome/browser/ui/ash/capture_mode/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -203,9 +203,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // TODO(crbug.com/375491451): Remove this.
-  std::unique_ptr<lens::LensOverlayQueryController>
-      lens_overlay_query_controller_;
+  std::unique_ptr<LensOverlayQueryController> lens_overlay_query_controller_;
 
   std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
 
