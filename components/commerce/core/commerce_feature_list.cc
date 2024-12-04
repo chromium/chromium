@@ -206,7 +206,7 @@ BASE_FEATURE(kPriceTrackingIconColors,
 // Promotion in Magic Stack for Price Tracking users from other platforms.
 BASE_FEATURE(kPriceTrackingPromo,
              "PriceTrackingPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProductSpecifications,
              "ProductSpecifications",
