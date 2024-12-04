@@ -13532,6 +13532,20 @@ be describing additional metrics about the same event.
       back; E.g., mp4, avi, mp3, etc.
     </summary>
   </metric>
+  <metric name="DemuxerType" enum="MediaDemuxerType">
+    <summary>
+      Type of media::Demuxer used for the playback. DemuxerType does not change
+      dynamically during one playback, and is only determined after any HLS
+      fallback might happen.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="FinalPipelineStatus" enum="PipelineStatus">
     <summary>
       media::PipelineStatus enum value. Always 0 if the playback succeeded; all

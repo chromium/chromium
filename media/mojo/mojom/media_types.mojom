@@ -614,6 +614,18 @@ enum RendererType {
   kTest= 11,             // Renderer implementations used in tests
 };
 
+// See media/base/demuxer.h for description.
+enum DemuxerType {
+  kUnknownDemuxer = 0,
+  kMockDemuxer = 1,
+  kFFmpegDemuxer = 2,
+  kChunkDemuxer = 3,
+  kMediaUrlDemuxer = 4,
+  kFrameInjectingDemuxer = 5,
+  kStreamProviderDemuxer = 6,
+  kManifestDemuxer = 7,
+};
+
 // See media::CreateCdmStatus
 enum CreateCdmStatus {
   kSuccess = 0,

@@ -217,6 +217,7 @@ class FakeMediaMetricsProvider
       media::mojom::blink::MediaContainerName container_name) override {}
   void SetRendererType(
       media::mojom::blink::RendererType renderer_type) override {}
+  void SetDemuxerType(media::mojom::DemuxerType demuxer_type) override {}
   void SetKeySystem(const String& key_system) override {}
   void SetHasWaitingForKey() override {}
   void SetIsHardwareSecure() override {}

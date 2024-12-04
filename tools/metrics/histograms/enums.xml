@@ -26767,6 +26767,17 @@ Called by update_use_counter_css.py.-->
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
 
+<enum name="MediaDemuxerType">
+  <int value="0" label="kUnknownDemuxer"/>
+  <int value="1" label="kMockDemuxer"/>
+  <int value="2" label="kFFmpegDemuxer"/>
+  <int value="3" label="kChunkDemuxer"/>
+  <int value="4" label="kMediaUrlDemuxer"/>
+  <int value="5" label="kFrameInjectingDemuxer"/>
+  <int value="6" label="kStreamProviderDemuxer"/>
+  <int value="7" label="kManifestDemuxer"/>
+</enum>
+
 <enum name="MediaEncryptionType">
   <int value="0" label="None"/>
   <int value="1" label="Clear"/>
