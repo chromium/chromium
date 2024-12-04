@@ -14,7 +14,6 @@
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/invalidation/impl/profile_identity_provider.h"
 #import "components/invalidation/profile_invalidation_provider.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry.h"
 #import "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
@@ -29,8 +28,9 @@ using invalidation::ProfileInvalidationProvider;
 invalidation::ProfileInvalidationProvider*
 IOSChromeProfileInvalidationProviderFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<ProfileInvalidationProvider*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<invalidation::ProfileInvalidationProvider>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -43,9 +43,7 @@ IOSChromeProfileInvalidationProviderFactory::GetInstance() {
 
 IOSChromeProfileInvalidationProviderFactory::
     IOSChromeProfileInvalidationProviderFactory()
-    : BrowserStateKeyedServiceFactory(
-          "InvalidationService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("InvalidationService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(IOSChromeInstanceIDProfileServiceFactory::GetInstance());
