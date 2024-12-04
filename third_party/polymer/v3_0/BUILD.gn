@@ -17,8 +17,6 @@ js_files = [
   "iron-media-query/iron-media-query.js",
   "iron-resizable-behavior/iron-resizable-behavior.js",
   "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
-  "paper-behaviors/paper-ripple-mixin.js",
-  "paper-ripple/paper-ripple.js",
 ]
 
 if (is_chromeos_ash) {
@@ -55,7 +53,9 @@ if (is_chromeos_ash) {
     "neon-animation/neon-animated-pages.js",
     "neon-animation/neon-animation-behavior.js",
     "neon-animation/neon-animation-runner-behavior.js",
+    "paper-behaviors/paper-ripple-mixin.js",
     "paper-progress/paper-progress.js",
+    "paper-ripple/paper-ripple.js",
     "paper-spinner/paper-spinner-behavior.js",
     "paper-spinner/paper-spinner-lite.js",
     "paper-spinner/paper-spinner-styles.js",
@@ -184,8 +184,6 @@ ts_library("library") {
     "components-chromium/iron-media-query/iron-media-query.d.ts",
     "components-chromium/iron-resizable-behavior/iron-resizable-behavior.d.ts",
     "components-chromium/iron-scroll-target-behavior/iron-scroll-target-behavior.d.ts",
-    "components-chromium/paper-behaviors/paper-ripple-mixin.d.ts",
-    "components-chromium/paper-ripple/paper-ripple.d.ts",
     "components-chromium/polymer/interfaces.d.ts",
     "components-chromium/polymer/lib/elements/array-selector.d.ts",
     "components-chromium/polymer/lib/elements/custom-style.d.ts",
@@ -276,7 +274,9 @@ ts_library("library") {
       "components-chromium/neon-animation/neon-animated-pages.d.ts",
       "components-chromium/neon-animation/neon-animation-behavior.d.ts",
       "components-chromium/neon-animation/neon-animation-runner-behavior.d.ts",
+      "components-chromium/paper-behaviors/paper-ripple-mixin.d.ts",
       "components-chromium/paper-progress/paper-progress.d.ts",
+      "components-chromium/paper-ripple/paper-ripple.d.ts",
       "components-chromium/paper-spinner/paper-spinner-behavior.d.ts",
       "components-chromium/paper-spinner/paper-spinner-lite.d.ts",
       "components-chromium/paper-spinner/paper-spinner-styles.d.ts",
