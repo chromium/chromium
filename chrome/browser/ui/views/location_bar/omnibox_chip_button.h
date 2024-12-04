@@ -21,7 +21,7 @@ class OmniboxChipButton : public views::MdTextButton {
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChipElementId);
-  explicit OmniboxChipButton(PressedCallback callback);
+  explicit OmniboxChipButton(PressedCallback callback = PressedCallback());
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
   OmniboxChipButton& operator=(const OmniboxChipButton& button) = delete;
   ~OmniboxChipButton() override;

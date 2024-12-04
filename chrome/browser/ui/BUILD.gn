@@ -4236,6 +4236,8 @@ static_library("ui") {
       "views/location_bar/location_bar_view.h",
       "views/location_bar/location_icon_view.cc",
       "views/location_bar/location_icon_view.h",
+      "views/location_bar/merchant_trust_chip_button_controller.cc",
+      "views/location_bar/merchant_trust_chip_button_controller.h",
       "views/location_bar/omnibox_chip_button.cc",
       "views/location_bar/omnibox_chip_button.h",
       "views/location_bar/omnibox_chip_theme.h",
