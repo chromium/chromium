@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_BASE_IP_ADDRESS_H_
 #define NET_BASE_IP_ADDRESS_H_
 
@@ -21,6 +16,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
@@ -62,8 +58,8 @@ class NET_EXPORT IPAddressBytes {
   uint8_t* begin() { return data(); }
 
   // Returns a pointer past the last element.
-  const uint8_t* end() const { return data() + size_; }
-  uint8_t* end() { return data() + size_; }
+  const uint8_t* end() const { return UNSAFE_TODO(data() + size_); }
+  uint8_t* end() { return UNSAFE_TODO(data() + size_); }
 
   // Returns a reference to the last element.
   uint8_t& back() {
@@ -324,7 +320,9 @@ template <size_t N>
 bool IPAddressStartsWith(const IPAddress& address, const uint8_t (&prefix)[N]) {
   if (address.size() < N)
     return false;
-  return std::equal(prefix, prefix + N, address.bytes().begin());
+  // SAFETY: N is size of `prefix` as inferred by the compiler.
+  return std::equal(prefix, UNSAFE_BUFFERS(prefix + N),
+                    address.bytes().begin());
 }
 
 // According to RFC6052 Section 2.2 IPv4-Embedded IPv6 Address Format.

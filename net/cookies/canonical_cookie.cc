@@ -42,11 +42,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cookies/canonical_cookie.h"
 
 #include <limits>
@@ -55,6 +50,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -618,8 +614,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   url::Component canon_path_component;
   url::CanonicalizePath(cookie_path.data(), path_component, &canon_path,
                         &canon_path_component);
-  std::string encoded_cookie_path = std::string(
-      canon_path.data() + canon_path_component.begin, canon_path_component.len);
+  std::string encoded_cookie_path =
+      std::string(UNSAFE_TODO(canon_path.data() + canon_path_component.begin),
+                  canon_path_component.len);
 
   if (!path.empty()) {
     if (cookie_path != path) {

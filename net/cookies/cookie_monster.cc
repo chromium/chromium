@@ -42,11 +42,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cookies/cookie_monster.h"
 
 #include <functional>
@@ -58,6 +53,7 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -467,7 +463,7 @@ CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
       last_statistic_record_time_(base::Time::Now()) {
   cookieable_schemes_.insert(
       cookieable_schemes_.begin(), kDefaultCookieableSchemes,
-      kDefaultCookieableSchemes + kDefaultCookieableSchemesCount);
+      UNSAFE_TODO(kDefaultCookieableSchemes + kDefaultCookieableSchemesCount));
   net_log_.BeginEvent(NetLogEventType::COOKIE_STORE_ALIVE, [&] {
     return NetLogCookieMonsterConstructorParams(store_ != nullptr);
   });
@@ -1926,7 +1922,7 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
       << "InternalDeleteCookie()"
       << ", cause:" << deletion_cause << ", cc: " << cc->DebugString();
 
-  ChangeCausePair mapping = kChangeCauseMapping[deletion_cause];
+  ChangeCausePair mapping = UNSAFE_TODO(kChangeCauseMapping[deletion_cause]);
   if (deletion_cause != DELETE_COOKIE_DONT_RECORD) {
     net_log_.AddEvent(NetLogEventType::COOKIE_STORE_COOKIE_DELETED,
                       [&](NetLogCaptureMode capture_mode) {
@@ -1981,7 +1977,7 @@ void CookieMonster::InternalDeletePartitionedCookie(
       << "InternalDeletePartitionedCookie()"
       << ", cause:" << deletion_cause << ", cc: " << cc->DebugString();
 
-  ChangeCausePair mapping = kChangeCauseMapping[deletion_cause];
+  ChangeCausePair mapping = UNSAFE_TODO(kChangeCauseMapping[deletion_cause]);
   if (deletion_cause != DELETE_COOKIE_DONT_RECORD) {
     net_log_.AddEvent(NetLogEventType::COOKIE_STORE_COOKIE_DELETED,
                       [&](NetLogCaptureMode capture_mode) {
