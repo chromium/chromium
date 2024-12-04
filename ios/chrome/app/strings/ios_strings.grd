@@ -1617,6 +1617,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MANAGER_OPEN_ACCESSIBILITY_LABEL" desc="Accessibility label (read by VoiceOver) for the button to open a file in the Drive app, after that file was downloaded and saved to Drive. [iOS only]">
         Open in Google Drive
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_ORIGIN_HOST_LABEL" desc="String showing the host that triggered the download.">
+        From: <ph name="ORIGINATING_HOST">$1<ex>chromium.org</ex></ph>
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_PERCENT_DOWNLOADED" desc="Accessibility label for the percentage of the file that has been downloaded. [iOS only]">
         <ph name="PERCENT">$1<ex>49</ex></ph> percent downloaded
       </message>

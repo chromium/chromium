@@ -23,6 +23,7 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
   DownloadNativeTaskImpl(
       WebState* web_state,
       const GURL& original_url,
+      NSString* originating_host,
       NSString* http_method,
       const std::string& content_disposition,
       int64_t total_bytes,

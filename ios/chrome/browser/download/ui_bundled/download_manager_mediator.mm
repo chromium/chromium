@@ -11,6 +11,7 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
@@ -216,6 +217,16 @@ void DownloadManagerMediator::UpdateConsumer() {
   [consumer_ setProgress:GetDownloadManagerProgress()];
 
   [consumer_ setFileName:base::apple::FilePathToNSString(filename)];
+
+  // Show the originating host if it is not the one presented in the omnibox.
+  if ([download_task_->GetOriginatingHost() length] &&
+      download_task_->GetWebState()->GetLastCommittedURL().host() !=
+          base::SysNSStringToUTF8(download_task_->GetOriginatingHost())) {
+    [consumer_ setOriginatingHost:download_task_->GetOriginatingHost()];
+  } else {
+    [consumer_ setOriginatingHost:nil];
+  }
+
   int a11y_announcement = GetDownloadManagerA11yAnnouncement();
   if (a11y_announcement != -1) {
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,

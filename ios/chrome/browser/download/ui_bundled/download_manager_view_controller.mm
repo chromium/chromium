@@ -156,6 +156,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 @interface DownloadManagerViewController () <FullscreenUIElement> {
   NSString* _fileName;
+  NSString* _originatingHost;
   int64_t _countOfBytesReceived;
   int64_t _countOfBytesExpectedToReceive;
   float _progress;
@@ -358,6 +359,13 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 - (void)setFileName:(NSString*)fileName {
   if (![_fileName isEqualToString:fileName]) {
     _fileName = [fileName copy];
+    [self updateViews];
+  }
+}
+
+- (void)setOriginatingHost:(NSString*)originatingHost {
+  if (![_originatingHost isEqualToString:originatingHost]) {
+    _originatingHost = [originatingHost copy];
     [self updateViews];
   }
 }
@@ -830,16 +838,23 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   // Update status label text.
   self.statusLabel.text = [self localizedFileNameAndSizeWithPeriod:NO];
   // Update detail label text.
+  NSMutableArray* details = [NSMutableArray array];
+  if ([_originatingHost length]) {
+    [details addObject:l10n_util::GetNSStringF(
+                           IDS_IOS_DOWNLOAD_MANAGER_ORIGIN_HOST_LABEL,
+                           base::SysNSStringToUTF16(_originatingHost))];
+  }
   if (self.incognito) {
-    self.detailLabel.text =
-        l10n_util::GetNSString(IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE);
+    [details addObject:l10n_util::GetNSString(
+                           IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE)];
+  }
+  if (details.count) {
     // Set to '0' to ensure the entire incognito warning is visible.
     self.detailLabel.numberOfLines = 0;
+    self.detailLabel.text = [details componentsJoinedByString:@"\n"];
   } else {
-    // The detail label has no text to display.
     self.detailLabel.text = nil;
   }
-
   // Update title and accessibility identifier of download button.
   UIButtonConfiguration* downloadButtonConfiguration =
       self.downloadButton.configuration;
