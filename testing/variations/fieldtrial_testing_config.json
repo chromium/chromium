@@ -17625,8 +17625,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20241023",
+                    "name": "EnabledWithBodySizeLimit2048KiB_20241204",
                     "params": {
+                        "kPrerender2FallbackBodySizeLimit": "2097152",
                         "kPrerender2FallbackPrefetchReusablePolicy": "UseIfIsLikelyAheadOfPrerender"
                     },
                     "enable_features": [
