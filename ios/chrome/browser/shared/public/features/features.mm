@@ -274,6 +274,11 @@ BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
 BASE_FEATURE(kEnableLensOverlay,
              "EnableLensOverlay",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableLensViewFinderUnifiedExperience,
+             "EnableLensViewFinderUnifiedExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Update to the correct milestone after launch.
 // Also update in components/omnibox/browser/autocomplete_result.cc.
 const base::NotFatalUntil kLensOverlayNotFatalUntil = base::NotFatalUntil::M200;

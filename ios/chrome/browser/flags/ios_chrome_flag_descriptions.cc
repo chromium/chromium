@@ -1159,6 +1159,11 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
 const char kEnableLensOverlayName[] = "Enable Lens Overlay";
 const char kEnableLensOverlayDescription[] = "Enables lens overlay UI";
 
+const char kEnableLensViewFinderUnifiedExperienceName[] =
+    "Enable LVF Unified Experience";
+const char kEnableLensViewFinderUnifiedExperienceDescription[] =
+    "Enables Lens View Finder unified experience";
+
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"

@@ -310,6 +310,9 @@ BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 BASE_DECLARE_FEATURE(kEnableLensOverlay);
 extern const base::NotFatalUntil kLensOverlayNotFatalUntil;
 
+// Feature flag to enable the Lens View Finder Unified experience
+BASE_DECLARE_FEATURE(kEnableLensViewFinderUnifiedExperience);
+
 // Feature flag to enable the Lens overlay location bar entrypoint. Enabled by
 // default.
 BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypoint);

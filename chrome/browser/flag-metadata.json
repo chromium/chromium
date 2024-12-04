@@ -3380,6 +3380,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "enable-lens-view-finder-unified-experience",
+    "owners": ["radunitescu@google.com"],
+    "expiry_milestone": 137
+  },
+  {
     "name": "enable-libinput-to-handle-touchpad",
     "owners": [ "mmaslanka@chromium.org", "nicholasbishop@chromium.org", "chromeos-tango@google.com" ],
     // Used for testing libinput to check if it works better than the gestures

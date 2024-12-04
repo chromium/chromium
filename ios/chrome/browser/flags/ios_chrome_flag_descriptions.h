@@ -1033,6 +1033,10 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 extern const char kEnableLensOverlayName[];
 extern const char kEnableLensOverlayDescription[];
 
+// Title and description for the flag to enable Lens View Finder unification
+extern const char kEnableLensViewFinderUnifiedExperienceName[];
+extern const char kEnableLensViewFinderUnifiedExperienceDescription[];
+
 // Title and description for the flag to enable the new transitions in the
 // TabGrid.
 extern const char kTabGridNewTransitionsName[];
