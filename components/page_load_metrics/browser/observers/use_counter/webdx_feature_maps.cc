@@ -272,6 +272,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kLongAnimationFrames},
           {WebFeature::kVisibilityStateObserver,
            WebDXFeature::kPageVisibilityState},
+          {WebFeature::kFedCm, WebDXFeature::kFedcm},
+          {WebFeature::kWebOTP, WebDXFeature::kWebOtp},
       }};
 
   return *kMap;
