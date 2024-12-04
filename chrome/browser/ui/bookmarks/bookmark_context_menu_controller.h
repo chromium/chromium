@@ -20,6 +20,7 @@ class Browser;
 class Profile;
 
 class BookmarkMergedSurfaceService;
+struct BookmarkParentFolder;
 
 // An interface implemented by an object that performs actions on the actual
 // menu for the controller.
@@ -75,7 +76,7 @@ class BookmarkContextMenuController
   // Returns the parent for newly created folders/bookmarks. If `selection` has
   // one element and it is a folder, `selection[0]` is returned, otherwise
   // `selection[0]->parent` is returned.
-  static const bookmarks::BookmarkNode* GetParentForNewNodes(
+  static std::unique_ptr<BookmarkParentFolder> GetParentForNewNodes(
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
                                 VectorExperimental>>& selection);
 
@@ -116,7 +117,7 @@ class BookmarkContextMenuController
       selection_;
   const raw_ptr<BookmarkMergedSurfaceService> bookmark_service_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
-  const raw_ptr<const bookmarks::BookmarkNode> new_nodes_parent_;
+  const std::unique_ptr<BookmarkParentFolder> new_nodes_parent_;
   // Used to detect deletion of |this| executing a command.
   base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_{this};
 };

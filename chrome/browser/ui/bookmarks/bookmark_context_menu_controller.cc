@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -116,6 +118,22 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
   }
 }
 
+// Returns true if `selection` represents a permanent bookmark folder.
+bool IsSelectionPermanentBookmarkFolder(
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection) {
+  if (selection.size() == 1) {
+    return selection[0]->is_permanent_node();
+  }
+
+  if (selection.size() == 2) {
+    return selection[0]->is_permanent_node() &&
+           selection[1]->is_permanent_node() &&
+           selection[0]->type() == selection[1]->type();
+  }
+  return false;
+}
+
 }  // namespace
 
 BookmarkContextMenuController::BookmarkContextMenuController(
@@ -148,31 +166,47 @@ BookmarkContextMenuController::~BookmarkContextMenuController() {
 }
 
 // static
-const bookmarks::BookmarkNode*
+std::unique_ptr<BookmarkParentFolder>
 BookmarkContextMenuController::GetParentForNewNodes(
-    const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                              VectorExperimental>>& selection) {
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection) {
   if (selection.empty()) {
     return nullptr;
   }
 
-  // If context menu is showing for a folder, new bookmarks will be added within
-  // this folder.
-  return (selection.size() == 1 && selection[0]->is_folder())
-             ? selection[0].get()
-             : selection[0]->parent();
+  // Check valid node selection.
+  CHECK(base::ranges::all_of(selection,
+                             [](const BookmarkNode* node) { return node; }));
+
+  const BookmarkNode* parent = nullptr;
+  if (IsSelectionPermanentBookmarkFolder(selection)) {
+    // Context menu is showing for a
+    // `BookmarkParentFolder::PermanentFolderType`.
+    parent = selection[0];
+  } else if (selection.size() == 1 && selection[0]->is_folder()) {
+    // If context menu is showing for a folder, new bookmarks will be added
+    // within this folder.
+    parent = selection[0];
+  } else {
+    parent = selection[0]->parent();
+  }
+
+  CHECK(!parent->is_root());
+  return std::make_unique<BookmarkParentFolder>(
+      BookmarkParentFolder::FromFolderNode(parent));
 }
 
 size_t BookmarkContextMenuController::GetIndexForNewNodes() const {
   // Add the node after the item for which the context menu is showing.
   if (selection_.size() == 1 && selection_[0]->is_url()) {
-    CHECK_EQ(new_nodes_parent_, selection_[0]->parent());
+    CHECK(*new_nodes_parent_ ==
+          BookmarkParentFolder::FromFolderNode(selection_[0]->parent()));
     std::optional<size_t> selection_index =
-        new_nodes_parent_->GetIndexOf(selection_[0]);
+        bookmark_service_->GetIndexOf(selection_[0]);
     CHECK(selection_index.has_value());
     return selection_index.value() + 1;
   }
-  return new_nodes_parent_->children().size();
+  return bookmark_service_->GetChildrenCount(*new_nodes_parent_);
 }
 
 void BookmarkContextMenuController::BuildMenu() {
@@ -203,7 +237,8 @@ void BookmarkContextMenuController::BuildMenu() {
   }
 
   AddSeparator();
-  if (selection_.size() == 1 && selection_[0]->is_folder()) {
+  if ((selection_.size() == 1 && selection_[0]->is_folder()) ||
+      IsSelectionPermanentBookmarkFolder(selection_)) {
     AddItem(IDC_BOOKMARK_BAR_RENAME_FOLDER, IDS_BOOKMARK_BAR_RENAME_FOLDER);
   } else {
     AddItem(IDC_BOOKMARK_BAR_EDIT, IDS_BOOKMARK_BAR_EDIT);
@@ -370,11 +405,13 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
         break;
       }
       CHECK(new_nodes_parent_);
-      BookmarkEditor::Show(
-          parent_window_, profile_,
-          BookmarkEditor::EditDetails::AddNodeInFolder(
-              new_nodes_parent_, GetIndexForNewNodes(), url, title),
-          BookmarkEditor::SHOW_TREE);
+      BookmarkEditor::Show(parent_window_, profile_,
+                           BookmarkEditor::EditDetails::AddNodeInFolder(
+                               BookmarkUIOperationsHelperMergedSurfaces(
+                                   bookmark_service_, new_nodes_parent_.get())
+                                   .GetDefaultParentForNonMergedSurfaces(),
+                               GetIndexForNewNodes(), url, title),
+                           BookmarkEditor::SHOW_TREE);
       break;
     }
 
@@ -385,7 +422,10 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       CHECK(new_nodes_parent_);
       BookmarkEditor::Show(parent_window_, profile_,
                            BookmarkEditor::EditDetails::AddFolder(
-                               new_nodes_parent_, GetIndexForNewNodes()),
+                               BookmarkUIOperationsHelperMergedSurfaces(
+                                   bookmark_service_, new_nodes_parent_.get())
+                                   .GetDefaultParentForNonMergedSurfaces(),
+                               GetIndexForNewNodes()),
                            BookmarkEditor::SHOW_TREE);
       break;
     }
@@ -422,12 +462,14 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_BOOKMARK_MANAGER: {
-      if (selection_.size() != 1) {
-        chrome::ShowBookmarkManager(browser_);
-      } else if (selection_[0]->is_folder()) {
-        chrome::ShowBookmarkManagerForNode(browser_, selection_[0]->id());
-      } else if (new_nodes_parent_) {
-        chrome::ShowBookmarkManagerForNode(browser_, new_nodes_parent_->id());
+      if (selection_.size() == 1 ||
+          IsSelectionPermanentBookmarkFolder(selection_)) {
+        CHECK(new_nodes_parent_);
+        chrome::ShowBookmarkManagerForNode(
+            browser_, BookmarkUIOperationsHelperMergedSurfaces(
+                          bookmark_service_, new_nodes_parent_.get())
+                          .GetDefaultParentForNonMergedSurfaces()
+                          ->id());
       } else {
         chrome::ShowBookmarkManager(browser_);
       }
@@ -453,11 +495,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
         return;
       }
 
-      // TODO(crbug.com/369304373): Use
-      // `BookmarkUIOperationsHelperMergedSurfaces` once
-      // `GetParentForNewNodes()` is migrated to return `BookmarkParentFolder`.
-      BookmarkUIOperationsHelperNonMergedSurfaces(
-          bookmark_service_->bookmark_model(), new_nodes_parent_)
+      BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
+                                               new_nodes_parent_.get())
           .PasteFromClipboard(GetIndexForNewNodes());
       break;
     }
@@ -525,7 +564,7 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
 
-  bool is_root_node = base::ranges::any_of(
+  bool is_any_node_permanent = base::ranges::any_of(
       selection_,
       [](const BookmarkNode* node) { return node->is_permanent_node(); });
   bool can_edit =
@@ -533,6 +572,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
       base::ranges::all_of(selection_, [&](const BookmarkNode* node) {
         return !bookmark_service_->IsNodeManaged(node);
       });
+
   policy::IncognitoModeAvailability incognito_avail =
       IncognitoModePrefs::GetAvailability(prefs);
 
@@ -554,7 +594,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
 
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:
     case IDC_BOOKMARK_BAR_EDIT:
-      return selection_.size() == 1 && !is_root_node && can_edit;
+      return selection_.size() == 1 && !is_any_node_permanent && can_edit;
 
     case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR:
       for (const bookmarks::BookmarkNode* node : selection_) {
@@ -563,7 +603,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
           return false;
         }
       }
-      return can_edit && !bookmark_service_->IsNodeManaged(new_nodes_parent_);
+      return can_edit;
     case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR:
       for (const bookmarks::BookmarkNode* node : selection_) {
         if (node->is_permanent_node() ||
@@ -571,7 +611,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
           return false;
         }
       }
-      return can_edit && !bookmark_service_->IsNodeManaged(new_nodes_parent_);
+      return can_edit;
 
     case IDC_BOOKMARK_BAR_UNDO:
       return can_edit && BookmarkUndoServiceFactory::GetForProfile(profile_)
@@ -584,12 +624,11 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
                                  ->redo_count() > 0;
 
     case IDC_BOOKMARK_BAR_REMOVE:
-      return !selection_.empty() && !is_root_node && can_edit;
+      return !selection_.empty() && !is_any_node_permanent && can_edit;
 
     case IDC_BOOKMARK_BAR_NEW_FOLDER:
     case IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK:
-      return can_edit && !bookmark_service_->IsNodeManaged(new_nodes_parent_) &&
-             new_nodes_parent_;
+      return can_edit && new_nodes_parent_;
 
     case IDC_BOOKMARK_BAR_ALWAYS_SHOW:
       return !prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar);
@@ -600,17 +639,13 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
 
     case IDC_COPY:
     case IDC_CUT:
-      return !selection_.empty() && !is_root_node &&
+      return !selection_.empty() && !is_any_node_permanent &&
              (command_id == IDC_COPY || can_edit);
 
     case IDC_PASTE:
-      // TODO(crbug.com/369304373): Use
-      // `BookmarkUIOperationsHelperMergedSurfaces` once
-      // `GetParentForNewNodes()` is migrated to return `BookmarkParentFolder`.
-      return can_edit &&
-             BookmarkUIOperationsHelperNonMergedSurfaces(
-                 bookmark_service_->bookmark_model(), new_nodes_parent_)
-                 .CanPasteFromClipboard();
+      return can_edit && BookmarkUIOperationsHelperMergedSurfaces(
+                             bookmark_service_, new_nodes_parent_.get())
+                             .CanPasteFromClipboard();
   }
   return true;
 }
