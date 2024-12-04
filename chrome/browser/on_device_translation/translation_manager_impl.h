@@ -53,6 +53,8 @@ class TranslationManagerImpl
       mojo::PendingRemote<
           blink::mojom::TranslationManagerCreateTranslatorClient> client,
       blink::mojom::TranslatorCreateOptionsPtr options) override;
+  void GetTranslatorAvailabilityInfo(
+      GetTranslatorAvailabilityInfoCallback callback) override;
 
   static bool PassAcceptLanguagesCheck(const std::string& accept_languages_str,
                                        const std::string& source_lang,

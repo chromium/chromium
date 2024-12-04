@@ -114,6 +114,29 @@ ScriptPromise<AITranslator> AITranslatorFactory::create(
   return resolver->Promise();
 }
 
+ScriptPromise<AITranslatorCapabilities> AITranslatorFactory::capabilities(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is not valid.");
+    return ScriptPromise<AITranslatorCapabilities>();
+  }
+  ScriptPromiseResolver<AITranslatorCapabilities>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<AITranslatorCapabilities>>(
+          script_state);
+  ScriptPromise<AITranslatorCapabilities> promise = resolver->Promise();
+
+  GetTranslationManagerRemote()->GetTranslatorAvailabilityInfo(WTF::BindOnce(
+      [](ScriptPromiseResolver<AITranslatorCapabilities>* resolver,
+         mojom::blink::TranslatorAvailabilityInfoPtr info) {
+        resolver->Resolve(
+            MakeGarbageCollected<AITranslatorCapabilities>(std::move(info)));
+      },
+      WrapPersistent(resolver)));
+  return promise;
+}
+
 HeapMojoRemote<mojom::blink::TranslationManager>&
 AITranslatorFactory::GetTranslationManagerRemote() {
   if (!translation_manager_remote_.is_bound()) {

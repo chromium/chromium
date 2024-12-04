@@ -124,6 +124,18 @@ void TestCanTranslate(Browser* browser,
                       const std::string_view targetLang,
                       const std::string_view result);
 
+// Tests that the AITranslatorCapabilities.available returns the expected
+// result.
+void TestTranslatorCapabilitiesAvailable(Browser* browser,
+                                         const std::string_view result);
+
+// Tests that the AITranslatorCapabilities.languagePairAvailable() returns the
+// expected result.
+void TestLanguagePairAvailable(Browser* browser,
+                               const std::string_view sourceLang,
+                               const std::string_view targetLang,
+                               const std::string_view result);
+
 }  // namespace on_device_translation
 
 #endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_TEST_TEST_UTIL_H_

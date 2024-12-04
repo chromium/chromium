@@ -112,6 +112,32 @@ struct TranslatorCreateOptions {
   string target_lang;
 };
 
+// The availability of a translation.
+enum TranslationAvailability {
+  kNo,
+  kReadily,
+  kAfterDownload,
+};
+
+// The information of a translator availability.
+struct TranslatorAvailabilityInfo {
+  // The language categories for the availability matrix.
+  // Each language string is the ISO 639 language code which is supported by
+  // the Translator API's implementation library.
+  // Note: `preferred` means that the language is in the user's accept language.
+  array<array<string>> language_categories;
+
+  // The availability matrix for each language category. The availability matrix
+  // is a 2D array, where the first dimension represents the source language
+  // category, and the second dimension represents the target language category.
+  // The size of the availability matrix must be len(language_categories) *
+  // len(language_categories).
+  array<array<TranslationAvailability>> language_availability_matrix;
+
+  // The availability of the translation service.
+  TranslationAvailability availability;
+};
+
 // The manager for on-device translation.
 interface TranslationManager {
   // Returns if it is supported to create a translator that could translate
@@ -133,4 +159,7 @@ interface TranslationManager {
   CreateTranslator(
     pending_remote<TranslationManagerCreateTranslatorClient> client,
     TranslatorCreateOptions options);
+
+  // Get the necessary information to calculate translator availability.
+  GetTranslatorAvailabilityInfo() => (TranslatorAvailabilityInfo info);
 };

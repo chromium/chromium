@@ -21,6 +21,9 @@ extern const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck;
 // createTranslator() to 3.
 extern const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount;
 
+// Returns the number of additionally installable language packs.
+size_t GetInstallablePackageCount(size_t installed_package_count);
+
 // The duration that the OnDeviceTranslation service can remain idle before it
 // is terminated.
 extern const base::FeatureParam<base::TimeDelta>

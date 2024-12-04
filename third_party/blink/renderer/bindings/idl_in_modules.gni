@@ -33,6 +33,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector_capabilities.idl",
   "//third_party/blink/renderer/modules/ai/on_device_translation/ai_translator.idl",
   "//third_party/blink/renderer/modules/ai/on_device_translation/ai_translator_factory.idl",
+  "//third_party/blink/renderer/modules/ai/on_device_translation/ai_translator_capabilities.idl",
   "//third_party/blink/renderer/modules/ai/window_or_worker_global_scope_ai.idl",
   "//third_party/blink/renderer/modules/animationworklet/animation_worklet_global_scope.idl",
   "//third_party/blink/renderer/modules/animationworklet/css_animation_worklet.idl",
