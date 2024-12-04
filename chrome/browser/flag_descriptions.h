@@ -98,9 +98,6 @@ extern const char kAndroidExtendedKeyboardShortcutsDescription[];
 extern const char kAndroidBrowserControlsInVizName[];
 extern const char kAndroidBrowserControlsInVizDescription[];
 
-extern const char kAnimatedImageResumeName[];
-extern const char kAnimatedImageResumeDescription[];
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kAnnotatorModeName[];
 extern const char kAnnotatorModeDescription[];

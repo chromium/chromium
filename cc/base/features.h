@@ -15,7 +15,6 @@
 namespace features {
 
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAlignSurfaceLayerImplToPixelGrid);
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAnimatedImageResume);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 
 // Sets raster tree priority to NEW_CONTENT_TAKES_PRIORITY when performing a

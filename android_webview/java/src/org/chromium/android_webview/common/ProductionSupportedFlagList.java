@@ -80,8 +80,6 @@ public final class ProductionSupportedFlagList {
                 "Renders a border around compositor layers to help debug and study layer "
                         + "compositing."),
         Flag.commandLine(
-                CcSwitches.ANIMATED_IMAGE_RESUME, "Resumes animated images from where they were."),
-        Flag.commandLine(
                 AwSwitches.FINCH_SEED_EXPIRATION_AGE,
                 "Forces all variations seeds to be considered stale.",
                 "0"),

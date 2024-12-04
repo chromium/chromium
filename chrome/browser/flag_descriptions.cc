@@ -123,11 +123,6 @@ const char kAndroidBrowserControlsInVizDescription[] =
     "Let viz move browser controls when scrolling. For now, this applies only "
     "to top controls.";
 
-const char kAnimatedImageResumeName[] = "Use animated image resume behavior";
-const char kAnimatedImageResumeDescription[] =
-    "Resumes animated images from the last frame drawn rather than attempt "
-    "to catch up to the frame that should be drawn based on current time.";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAnnotatorModeName[] = "Enable annotator tool";
 const char kAnnotatorModeDescription[] =
