@@ -70,11 +70,7 @@ void GraphTestHarnessWithMockDiscarder::SetUp() {
   DCHECK(policies::PageDiscardingHelper::GetFromGraph(graph()));
 
   // Create a PageNode and make it discardable.
-  process_node_ = CreateNode<performance_manager::ProcessNodeImpl>();
-  page_node_ = CreateNode<performance_manager::PageNodeImpl>();
-  main_frame_node_ =
-      CreateFrameNodeAutoId(process_node_.get(), page_node_.get());
-  MakePageNodeDiscardable(page_node(), task_env());
+  RecreateNodes();
 }
 
 void GraphTestHarnessWithMockDiscarder::TearDown() {
@@ -85,13 +81,26 @@ void GraphTestHarnessWithMockDiscarder::TearDown() {
   GraphTestHarness::TearDown();
 }
 
+void GraphTestHarnessWithMockDiscarder::RecreateNodes() {
+  main_frame_node_.reset();
+  page_node_.reset();
+  process_node_.reset();
+
+  process_node_ = CreateNode<performance_manager::ProcessNodeImpl>();
+  page_node_ = CreateNode<performance_manager::PageNodeImpl>();
+  main_frame_node_ =
+      CreateFrameNodeAutoId(process_node_.get(), page_node_.get());
+  MakePageNodeDiscardable(page_node(), task_env());
+}
+
 void MakePageNodeDiscardable(PageNodeImpl* page_node,
                              content::BrowserTaskEnvironment& task_env) {
-  using CanDiscardResult = policies::PageDiscardingHelper::CanDiscardResult;
+  using CanDiscardResult = policies::CanDiscardResult;
   using DiscardReason = policies::PageDiscardingHelper::DiscardReason;
 
   page_node->SetIsVisible(false);
   page_node->SetIsAudible(false);
+  page_node->SetType(PageType::kTab);
   const auto kUrl = GURL("https://foo.com");
   page_node->OnMainFrameNavigationCommitted(
       false, base::TimeTicks::Now(), 42, kUrl, "text/html",

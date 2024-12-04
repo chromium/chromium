@@ -48,48 +48,60 @@ constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
 // Time during which a tab cannot be discarded after having played audio.
 constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
 
+// Whether a page can be discarded.
+enum class CanDiscardResult {
+  // The page can be discarded. The user should experience minimal disruption
+  // from discarding.
+  kEligible,
+  // The page can be discarded. The user will likely find discarding disruptive.
+  kProtected,
+  // The page cannot be discarded.
+  kDisallowed,
+};
+
 // Caches page node properties to facilitate sorting.
 class PageNodeSortProxy {
  public:
   PageNodeSortProxy(const PageNode* page_node,
-                    bool is_marked,
+                    CanDiscardResult can_discard_result,
                     bool is_visible,
-                    bool is_protected,
                     bool is_focused,
                     base::TimeDelta last_visible)
       : page_node_(page_node),
-        is_marked_(is_marked),
+        can_discard_result_(can_discard_result),
         is_visible_(is_visible),
-        is_protected_(is_protected),
         is_focused_(is_focused),
         last_visible_(last_visible) {}
 
   const PageNode* page_node() const { return page_node_; }
-  bool is_marked() const { return is_marked_; }
-  bool is_protected() const { return is_protected_; }
+  bool is_disallowed() const {
+    return can_discard_result_ == CanDiscardResult::kDisallowed;
+  }
+  bool is_protected() const {
+    return can_discard_result_ == CanDiscardResult::kProtected;
+  }
   bool is_visible() const { return is_visible_; }
   bool is_focused() const { return is_focused_; }
   base::TimeDelta last_visible() const { return last_visible_; }
 
   // Returns true if the rhs is more important.
   bool operator<(const PageNodeSortProxy& rhs) const {
-    if (is_marked_ != rhs.is_marked_) {
-      return rhs.is_marked_;
+    if (is_disallowed() != rhs.is_disallowed()) {
+      return rhs.is_disallowed();
     }
     if (is_visible_ != rhs.is_visible_) {
       return rhs.is_visible_;
     }
-    if (is_protected_ != rhs.is_protected_) {
-      return rhs.is_protected_;
+    if (is_protected() != rhs.is_protected()) {
+      return rhs.is_protected();
     }
     return last_visible_ > rhs.last_visible_;
   }
 
  private:
   raw_ptr<const PageNode> page_node_;
-  bool is_marked_;
+  CanDiscardResult can_discard_result_;
   bool is_visible_;
-  bool is_protected_;
   bool is_focused_;
   // Delta between current time and last visibility change time.
   base::TimeDelta last_visible_;
@@ -103,15 +115,6 @@ class PageDiscardingHelper
     : public GraphOwnedAndRegistered<PageDiscardingHelper>,
       public NodeDataDescriberDefaultImpl {
  public:
-  enum class CanDiscardResult {
-    // Discarding eligible nodes is hard to notice for user.
-    kEligible,
-    // Discarding protected nodes is noticeable to user.
-    kProtected,
-    // Marked nodes can never be discarded.
-    kMarked,
-  };
-
   // Export discard reason in the public interface.
   using DiscardReason = ::mojom::LifecycleUnitDiscardReason;
   // DiscardCallback passes the time of first discarding is done.
