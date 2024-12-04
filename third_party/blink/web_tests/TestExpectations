@@ -3240,7 +3240,6 @@ crbug.com/332933144 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wp
 crbug.com/332933144 [ Win11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
 crbug.com/332741532 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/332741532 [ Mac15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
-crbug.com/332572646 external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html [ Timeout ]
 crbug.com/332572643 external/wpt/css/css-transforms/transform-iframe-scroll-position.html [ Failure ]
 crbug.com/332572643 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-iframe-scroll-position.html [ Failure ]
 crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
@@ -6919,11 +6918,12 @@ crbug.com/328129675 virtual/fedcm-button-and-other-account/external/wpt/fedcm/fe
 crbug.com/1373766 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/* [ Pass ]
 
 # WebAssembly ESM integration is not yet implemented.
-crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Crash Failure Pass Timeout ]
-crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Crash Failure Pass Timeout ]
-crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Crash Failure Pass Timeout ]
-crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Crash Failure Pass Timeout ]
-crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Crash Failure Pass Timeout ]
+crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
+crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
+crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Timeout ]
+crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Timeout ]
+crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html [ Timeout ]
+crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Timeout ]
 
 # Sheriff 2022-10-19
 crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.html [ Failure ]
