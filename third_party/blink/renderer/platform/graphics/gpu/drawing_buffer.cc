@@ -647,11 +647,13 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     *out_resource = viz::TransferableResource::MakeGpu(
         color_buffer_for_mailbox->shared_image,
         color_buffer_for_mailbox->shared_image->GetTextureTarget(),
-        color_buffer_for_mailbox->produce_sync_token, size_,
-        color_buffer_for_mailbox->format,
+        color_buffer_for_mailbox->produce_sync_token,
+        color_buffer_for_mailbox->shared_image->size(),
+        color_buffer_for_mailbox->shared_image->format(),
         color_buffer_for_mailbox->is_overlay_candidate,
         viz::TransferableResource::ResourceSource::kDrawingBuffer);
-    out_resource->color_space = color_buffer_for_mailbox->color_space;
+    out_resource->color_space =
+        color_buffer_for_mailbox->shared_image->color_space();
     out_resource->hdr_metadata = hdr_metadata_;
     out_resource->origin =
         color_buffer_for_mailbox->shared_image->surface_origin();
