@@ -24,6 +24,7 @@
 #include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -706,10 +707,30 @@ TEST(SpanTest, FromCString) {
     EXPECT_EQ(s[4u], 'o');
     EXPECT_EQ(s.size(), 5u);
   }
-  // Includes the terminating null, size known at compile time.
+  // No terminating null, size not known at compile time. cstring_view loses
+  // the size, and the null-terminator.
+  {
+    auto s = span(base::cstring_view("hello"));
+    static_assert(std::same_as<decltype(s), span<const char>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s.size(), 5u);
+  }  // Includes the terminating null, size known at compile time.
   {
     auto s = span_with_nul_from_cstring("hello");
     static_assert(std::same_as<decltype(s), span<const char, 6u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s[5u], '\0');
+  }
+
+  // Includes the terminating null, from a basic_cstring_view.
+  {
+    cstring_view str = "hello";
+    auto s = span_with_nul_from_cstring_view(str);
+    static_assert(std::same_as<decltype(s), span<const char>>);
     EXPECT_EQ(s[0u], 'h');
     EXPECT_EQ(s[1u], 'e');
     EXPECT_EQ(s[4u], 'o');
@@ -730,6 +751,17 @@ TEST(SpanTest, FromCString) {
   {
     auto s = byte_span_with_nul_from_cstring("hello");
     static_assert(std::same_as<decltype(s), span<const uint8_t, 6u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s[5u], '\0');
+  }
+  // Includes the terminating null, from a basic_cstring_view. Converted to a
+  // span of uint8_t bytes.
+  {
+    cstring_view str = "hello";
+    auto s = byte_span_with_nul_from_cstring_view(str);
+    static_assert(std::same_as<decltype(s), span<const uint8_t>>);
     EXPECT_EQ(s[0u], 'h');
     EXPECT_EQ(s[1u], 'e');
     EXPECT_EQ(s[4u], 'o');
