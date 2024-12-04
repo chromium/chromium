@@ -133,6 +133,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Redirected"/>
   <int value="4" label="Received afer redirect"/>
   <int value="5" label="Failed after redirect"/>
+  <int value="6" label="Dropped"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/attribution_src_request_status.h:AttributionSrcRequestStatus) -->
