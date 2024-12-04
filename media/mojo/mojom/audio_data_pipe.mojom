@@ -6,9 +6,8 @@ module media.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
 
-// Used by audio streams for realtime-ish data transfer. ReadWriteAudioDataPipe
-// is used for output streams and ReadOnlyAudioDataPipe is used for input
-// streams, see AudioDeviceThread, AudioSyncReader, and AudioInputSyncWriter.
+// Used by audio streams for realtime-ish data transfer, see AudioDeviceThread,
+// AudioSyncReader, and AudioInputSyncWriter.
 // |socket| is a base::SyncSocket used for signaling and |shared_memory| is used
 // for the actual audio data.
 //
@@ -27,10 +26,5 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 // consumer.
 struct ReadWriteAudioDataPipe {
   mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory;
-  handle<platform> socket;
-};
-
-struct ReadOnlyAudioDataPipe {
-  mojo_base.mojom.ReadOnlySharedMemoryRegion shared_memory;
   handle<platform> socket;
 };

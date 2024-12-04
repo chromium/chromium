@@ -69,7 +69,7 @@ class MockRendererAudioInputStreamFactoryClient
       mojo::PendingRemote<media::mojom::AudioInputStream> input_stream,
       mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
           client_receiver,
-      media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe,
       bool initially_muted,
       const std::optional<base::UnguessableToken>& stream_id) override {
     EXPECT_TRUE(stream_id.has_value());
@@ -223,8 +223,7 @@ TEST(AudioInputStreamBrokerTest, StreamCreationSuccess_Propagates) {
   base::SyncSocket socket1, socket2;
   base::SyncSocket::CreatePair(&socket1, &socket2);
   std::move(stream_request_data.created_callback)
-      .Run({std::in_place,
-            base::ReadOnlySharedMemoryRegion::Create(shmem_size).region,
+      .Run({std::in_place, base::UnsafeSharedMemoryRegion::Create(shmem_size),
             mojo::PlatformHandle(socket1.Take())},
            kInitiallyMuted, base::UnguessableToken::Create());
 

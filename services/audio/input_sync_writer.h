@@ -41,7 +41,7 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // and should be strongly preferred over calling the constructor directly!
   InputSyncWriter(
       base::RepeatingCallback<void(const std::string&)> log_callback,
-      base::MappedReadOnlyRegion shared_memory,
+      base::UnsafeSharedMemoryRegion shared_memory,
       std::unique_ptr<base::CancelableSyncSocket> socket,
       uint32_t shared_memory_segment_count,
       const media::AudioParameters& params,
@@ -60,7 +60,7 @@ class InputSyncWriter final : public InputController::SyncWriter {
 
   // Transfers shared memory region ownership to a caller. It shouldn't be
   // called more than once.
-  base::ReadOnlySharedMemoryRegion TakeSharedMemoryRegion();
+  base::UnsafeSharedMemoryRegion TakeSharedMemoryRegion();
 
   size_t shared_memory_segment_count() const { return audio_buses_.size(); }
 
@@ -108,7 +108,7 @@ class InputSyncWriter final : public InputController::SyncWriter {
   const std::unique_ptr<base::CancelableSyncSocket> socket_;
 
   // Shared memory for audio data and associated metadata.
-  base::ReadOnlySharedMemoryRegion shared_memory_region_;
+  base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
 
   // The size in bytes of a single audio segment in the shared memory.

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
@@ -109,9 +109,10 @@ class AudioInputDeviceTest
     const uint32_t memory_size =
         ComputeAudioInputBufferSize(params, kMemorySegmentCount);
 
-    shared_memory_ = base::ReadOnlySharedMemoryRegion::Create(memory_size);
+    shared_memory_ = base::UnsafeSharedMemoryRegion::Create(memory_size);
+    shared_memory_mapping_ = shared_memory_.Map();
     ASSERT_TRUE(shared_memory_.IsValid());
-    memset(shared_memory_.mapping.memory(), 0xff, memory_size);
+    memset(shared_memory_mapping_.memory(), 0xff, memory_size);
 
     ASSERT_TRUE(
         CancelableSyncSocket::CreatePair(&browser_socket_, &renderer_socket_));
@@ -127,8 +128,7 @@ class AudioInputDeviceTest
 
     EXPECT_CALL(*input_ipc, CreateStream(_, _, _, _))
         .WillOnce(InvokeWithoutArgs([&]() {
-          auto duplicated_shared_memory_region =
-              shared_memory_.region.Duplicate();
+          auto duplicated_shared_memory_region = shared_memory_.Duplicate();
           CHECK(duplicated_shared_memory_region.IsValid());
           static_cast<AudioInputIPCDelegate*>(device_.get())
               ->OnStreamCreated(std::move(duplicated_shared_memory_region),
@@ -138,7 +138,7 @@ class AudioInputDeviceTest
     EXPECT_CALL(*capture_callback_, OnCaptureStarted());
     EXPECT_CALL(*input_ipc, CloseStream());
 
-    uint8_t* ptr = static_cast<uint8_t*>(shared_memory_.mapping.memory());
+    uint8_t* ptr = static_cast<uint8_t*>(shared_memory_mapping_.memory());
     AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(ptr);
     buffer->params.id = 0;
     buffer->params.capture_time_us =
@@ -147,7 +147,8 @@ class AudioInputDeviceTest
     buffer->params.glitch_count = glitch_info_.count;
   }
 
-  base::MappedReadOnlyRegion shared_memory_;
+  base::UnsafeSharedMemoryRegion shared_memory_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
   CancelableSyncSocket browser_socket_;
   CancelableSyncSocket renderer_socket_;
   std::optional<AssertingCaptureCallback> capture_callback_;

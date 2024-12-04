@@ -190,7 +190,7 @@ class AudioServiceInputStreamTest : public testing::Test {
 
   MockLog& log() { return log_; }
 
-  void OnCreated(media::mojom::ReadOnlyAudioDataPipePtr ptr,
+  void OnCreated(media::mojom::ReadWriteAudioDataPipePtr ptr,
                  bool initially_muted,
                  const std::optional<base::UnguessableToken>& stream_id) {
     EXPECT_EQ(stream_id.has_value(), !!ptr);

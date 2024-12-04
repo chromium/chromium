@@ -71,7 +71,7 @@ class AudioInputDevice::AudioThreadCallback
     : public AudioDeviceThread::Callback {
  public:
   AudioThreadCallback(const AudioParameters& audio_parameters,
-                      base::ReadOnlySharedMemoryRegion shared_memory_region,
+                      base::UnsafeSharedMemoryRegion shared_memory_region,
                       uint32_t total_segments,
                       bool enable_uma,
                       CaptureCallback* capture_callback,
@@ -91,8 +91,8 @@ class AudioInputDevice::AudioThreadCallback
 
  private:
   const bool enable_uma_;
-  base::ReadOnlySharedMemoryRegion shared_memory_region_;
-  base::ReadOnlySharedMemoryMapping shared_memory_mapping_;
+  base::UnsafeSharedMemoryRegion shared_memory_region_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
   const base::TimeTicks start_time_;
   size_t current_segment_id_;
   uint32_t last_buffer_id_;
@@ -231,7 +231,7 @@ void AudioInputDevice::SetOutputDeviceForAec(
 }
 
 void AudioInputDevice::OnStreamCreated(
-    base::ReadOnlySharedMemoryRegion shared_memory_region,
+    base::UnsafeSharedMemoryRegion shared_memory_region,
     base::SyncSocket::ScopedHandle socket_handle,
     bool initially_muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -376,7 +376,7 @@ void AudioInputDevice::DetectedDeadInputStream() {
 // AudioInputDevice::AudioThreadCallback
 AudioInputDevice::AudioThreadCallback::AudioThreadCallback(
     const AudioParameters& audio_parameters,
-    base::ReadOnlySharedMemoryRegion shared_memory_region,
+    base::UnsafeSharedMemoryRegion shared_memory_region,
     uint32_t total_segments,
     bool enable_uma,
     CaptureCallback* capture_callback,

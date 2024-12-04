@@ -52,13 +52,13 @@ int32_t PepperAudioInputHost::OnResourceMessageReceived(
 }
 
 void PepperAudioInputHost::StreamCreated(
-    base::ReadOnlySharedMemoryRegion shared_memory_region,
+    base::UnsafeSharedMemoryRegion shared_memory_region,
     base::SyncSocket::ScopedHandle socket) {
   OnOpenComplete(PP_OK, std::move(shared_memory_region), std::move(socket));
 }
 
 void PepperAudioInputHost::StreamCreationFailed() {
-  OnOpenComplete(PP_ERROR_FAILED, base::ReadOnlySharedMemoryRegion(),
+  OnOpenComplete(PP_ERROR_FAILED, base::UnsafeSharedMemoryRegion(),
                  base::SyncSocket::ScopedHandle());
 }
 
@@ -112,7 +112,7 @@ int32_t PepperAudioInputHost::OnClose(
 
 void PepperAudioInputHost::OnOpenComplete(
     int32_t result,
-    base::ReadOnlySharedMemoryRegion shared_memory_region,
+    base::UnsafeSharedMemoryRegion shared_memory_region,
     base::SyncSocket::ScopedHandle socket_handle) {
   // Make sure the handles are cleaned up.
   base::SyncSocket scoped_socket(std::move(socket_handle));
@@ -129,13 +129,13 @@ void PepperAudioInputHost::OnOpenComplete(
   if (result == PP_OK) {
     IPC::PlatformFileForTransit temp_socket =
         IPC::InvalidPlatformFileForTransit();
-    base::ReadOnlySharedMemoryRegion temp_shmem;
+    base::UnsafeSharedMemoryRegion temp_shmem;
     result = GetRemoteHandles(scoped_socket, shared_memory_region, &temp_socket,
                               &temp_shmem);
 
     serialized_socket_handle.set_socket(temp_socket);
     serialized_shared_memory_handle.set_shmem_region(
-        base::ReadOnlySharedMemoryRegion::TakeHandleForSerialization(
+        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
             std::move(temp_shmem)));
   }
 
@@ -151,16 +151,16 @@ void PepperAudioInputHost::OnOpenComplete(
 
 int32_t PepperAudioInputHost::GetRemoteHandles(
     const base::SyncSocket& socket,
-    const base::ReadOnlySharedMemoryRegion& shared_memory_region,
+    const base::UnsafeSharedMemoryRegion& shared_memory_region,
     IPC::PlatformFileForTransit* remote_socket_handle,
-    base::ReadOnlySharedMemoryRegion* remote_shared_memory_region) {
+    base::UnsafeSharedMemoryRegion* remote_shared_memory_region) {
   *remote_socket_handle =
       renderer_ppapi_host_->ShareHandleWithRemote(socket.handle(), false);
   if (*remote_socket_handle == IPC::InvalidPlatformFileForTransit())
     return PP_ERROR_FAILED;
 
   *remote_shared_memory_region =
-      renderer_ppapi_host_->ShareReadOnlySharedMemoryRegionWithRemote(
+      renderer_ppapi_host_->ShareUnsafeSharedMemoryRegionWithRemote(
           shared_memory_region);
   if (!remote_shared_memory_region->IsValid())
     return PP_ERROR_FAILED;

@@ -370,7 +370,7 @@ class CastMirroringServiceHostBrowserTest
       mojo::PendingRemote<media::mojom::AudioInputStream> stream,
       mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
           client_receiver,
-      media::mojom::ReadOnlyAudioDataPipePtr data_pipe) override {
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe) override {
     EXPECT_TRUE(stream);
     EXPECT_TRUE(client_receiver);
     EXPECT_TRUE(data_pipe);

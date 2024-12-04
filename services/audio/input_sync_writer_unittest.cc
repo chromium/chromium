@@ -20,7 +20,7 @@
 #include "base/containers/span_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -131,7 +131,7 @@ class InputSyncWriterTest : public testing::Test {
     const uint32_t data_size =
         ComputeAudioInputBufferSize(audio_params, kSegments);
 
-    auto shared_memory = base::ReadOnlySharedMemoryRegion::Create(data_size);
+    auto shared_memory = base::UnsafeSharedMemoryRegion::Create(data_size);
     EXPECT_TRUE(shared_memory.IsValid());
 
     auto socket = std::make_unique<MockCancelableSyncSocket>(kSegments);

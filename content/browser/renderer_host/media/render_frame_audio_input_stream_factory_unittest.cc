@@ -138,7 +138,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         mojo::PendingRemote<media::mojom::AudioInputStream> stream,
         mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
             client_receiver,
-        media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+        media::mojom::ReadWriteAudioDataPipePtr data_pipe,
         bool initially_muted,
         const std::optional<base::UnguessableToken>& stream_id) override {}
   };

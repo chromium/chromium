@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
@@ -53,7 +53,7 @@ class MockRendererAudioInputStreamFactoryClient
       mojo::PendingRemote<media::mojom::AudioInputStream> input_stream,
       mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
           client_receiver,
-      media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe,
       bool initially_muted,
       const std::optional<base::UnguessableToken>& stream_id) override {
     EXPECT_TRUE(stream_id.has_value());
@@ -99,8 +99,7 @@ class AudioInputStreamHandleTest : public Test {
     EXPECT_TRUE(event_handler_);
 
     const size_t kSize = 1234;
-    shared_memory_region_ =
-        base::ReadOnlySharedMemoryRegion::Create(kSize).region;
+    shared_memory_region_ = base::UnsafeSharedMemoryRegion::Create(kSize);
     EXPECT_TRUE(shared_memory_region_.IsValid());
     EXPECT_TRUE(
         base::CancelableSyncSocket::CreatePair(local_.get(), remote_.get()));
@@ -142,7 +141,7 @@ class AudioInputStreamHandleTest : public Test {
   std::unique_ptr<AudioInputStreamHandle> handle_;
   raw_ptr<media::AudioInputDelegate::EventHandler> event_handler_ = nullptr;
 
-  base::ReadOnlySharedMemoryRegion shared_memory_region_;
+  base::UnsafeSharedMemoryRegion shared_memory_region_;
   std::unique_ptr<base::CancelableSyncSocket> local_;
   std::unique_ptr<base::CancelableSyncSocket> remote_;
 };

@@ -129,7 +129,7 @@ void AudioInputStreamBroker::DidStartRecording() {
 
 void AudioInputStreamBroker::StreamCreated(
     mojo::PendingRemote<media::mojom::AudioInputStream> stream,
-    media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+    media::mojom::ReadWriteAudioDataPipePtr data_pipe,
     bool initially_muted,
     const std::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

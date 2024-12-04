@@ -55,15 +55,15 @@ InputSyncWriter::OverflowData& InputSyncWriter::OverflowData::operator=(
 
 InputSyncWriter::InputSyncWriter(
     base::RepeatingCallback<void(const std::string&)> log_callback,
-    base::MappedReadOnlyRegion shared_memory,
+    base::UnsafeSharedMemoryRegion shared_memory,
     std::unique_ptr<base::CancelableSyncSocket> socket,
     uint32_t shared_memory_segment_count,
     const media::AudioParameters& params,
     std::unique_ptr<InputGlitchCounter> glitch_counter)
     : log_callback_(std::move(log_callback)),
       socket_(std::move(socket)),
-      shared_memory_region_(std::move(shared_memory.region)),
-      shared_memory_mapping_(std::move(shared_memory.mapping)),
+      shared_memory_region_(std::move(shared_memory)),
+      shared_memory_mapping_(shared_memory_region_.Map()),
       shared_memory_segment_size_([&]() {
         CHECK(shared_memory_segment_count > 0);
         return shared_memory_mapping_.size() / shared_memory_segment_count;
@@ -120,8 +120,7 @@ std::unique_ptr<InputSyncWriter> InputSyncWriter::Create(
   if (!requested_memory_size.IsValid())
     return nullptr;
 
-  // Make sure we can share the memory read-only with the client.
-  auto shared_memory = base::ReadOnlySharedMemoryRegion::Create(
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(
       requested_memory_size.ValueOrDie());
   if (!shared_memory.IsValid())
     return nullptr;
@@ -138,7 +137,7 @@ std::unique_ptr<InputSyncWriter> InputSyncWriter::Create(
       shared_memory_segment_count, params, std::move(glitch_counter));
 }
 
-base::ReadOnlySharedMemoryRegion InputSyncWriter::TakeSharedMemoryRegion() {
+base::UnsafeSharedMemoryRegion InputSyncWriter::TakeSharedMemoryRegion() {
   DCHECK(shared_memory_region_.IsValid());
   return std::move(shared_memory_region_);
 }

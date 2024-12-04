@@ -105,7 +105,7 @@ void AudioLoopbackStreamBroker::DidStartRecording() {
 
 void AudioLoopbackStreamBroker::StreamCreated(
     mojo::PendingRemote<media::mojom::AudioInputStream> stream,
-    media::mojom::ReadOnlyAudioDataPipePtr data_pipe) {
+    media::mojom::ReadWriteAudioDataPipePtr data_pipe) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!data_pipe) {
