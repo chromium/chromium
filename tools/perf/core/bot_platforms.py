@@ -620,6 +620,11 @@ _WIN_ARM64_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('system_health.common_desktop', abridged=True),
 ])
+_WIN_ARM64_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(200),
+    _components_perftests(125),
+    _views_perftests(),
+])
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
     _GetBenchmarkConfig('system_health.common_mobile'),
@@ -877,16 +882,17 @@ WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
     _WIN_ARM64_BENCHMARK_CONFIGS,
     1,
     'win',
-    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_BENCHMARKS_ALL,
     is_fyi=True)
 WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     'win-arm64-snapdragon-elite-perf',
     'Windows Dell Snapdragon Elite',
-    PerfSuite([_GetBenchmarkConfig('speedometer3')]),
+    _WIN_ARM64_BENCHMARK_CONFIGS,
     1,
     'win',
-    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL,
     is_fyi=True)
 
 # Android

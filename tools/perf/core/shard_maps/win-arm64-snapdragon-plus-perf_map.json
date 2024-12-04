@@ -34,13 +34,6 @@
                 ],
                 "path": "components_perftests"
             },
-            "dawn_perf_tests": {
-                "arguments": [
-                    "--test-launcher-jobs=1",
-                    "--test-launcher-retry-limit=0"
-                ],
-                "path": "dawn_perf_tests"
-            },
             "views_perftests": {
                 "arguments": [
                     "--xvfb"
@@ -64,11 +57,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 35,
-        "predicted_min_shard_time": 2016.0,
+        "num_stories": 34,
+        "predicted_min_shard_time": 1212,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 2016.0,
+        "predicted_max_shard_time": 1212,
         "predicted_max_shard_index": 0,
-        "shard #0": 2016.0
+        "shard #0": 1212
     }
 }
