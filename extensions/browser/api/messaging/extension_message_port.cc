@@ -29,6 +29,7 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/message_tracker.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
@@ -251,14 +252,18 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
     receiver.Bind(std::move(message_port));
     receiver.set_disconnect_handler(base::BindOnce(&ExtensionMessagePort::Prune,
                                                    base::Unretained(port.get()),
-                                                   endpoint.port_context()));
+                                                   endpoint.port_context(),
+                                                   // Unused for endpoints.
+                                                   base::UnguessableToken()));
   } else {
     port->frame_tracker_->TrackExtensionProcessFrames();
     auto& receiver = port->service_workers_[endpoint.GetWorkerId()];
     receiver.Bind(std::move(message_port));
     receiver.set_disconnect_handler(base::BindOnce(&ExtensionMessagePort::Prune,
                                                    base::Unretained(port.get()),
-                                                   endpoint.port_context()));
+                                                   endpoint.port_context(),
+                                                   // Unused for endpoints.
+                                                   base::UnguessableToken()));
   }
   port->AddReceiver(std::move(message_port_host), endpoint.render_process_id(),
                     endpoint.port_context());
@@ -275,9 +280,28 @@ ExtensionMessagePort::ExtensionMessagePort(
       extension_id_(extension_id),
       browser_context_(browser_context) {}
 
-ExtensionMessagePort::~ExtensionMessagePort() = default;
+ExtensionMessagePort::~ExtensionMessagePort() {
+  // We aren't interested in metrics when the browser is shutting down.
+  ExtensionsBrowserClient* browser_client = ExtensionsBrowserClient::Get();
+  if (!browser_client || !browser_client->IsValidContext(browser_context_)) {
+    return;
+  }
 
-void ExtensionMessagePort::Prune(const PortContext& port_context) {
+  // Emit per connect dispatch IPC metric before class is destroyed.
+  auto* message_tracker = MessageTracker::Get(browser_context_);
+  for (const auto& tracking_id :
+       pending_open_channel_connect_dispatch_tracking_ids_) {
+    message_tracker->StopTrackingMessagingStage(
+        tracking_id, MessageTracker::OpenChannelMessagePipelineResult::
+                         kOpenChannelClosedBeforeResponse);
+  }
+
+  pending_open_channel_connect_dispatch_tracking_ids_.clear();
+}
+
+void ExtensionMessagePort::Prune(
+    const PortContext& port_context,
+    const base::UnguessableToken& connect_dispatch_tracking_id) {
   std::vector<content::GlobalRenderFrameHostToken> frames_to_unregister;
 
   // Channel metrics tracking.
@@ -288,6 +312,14 @@ void ExtensionMessagePort::Prune(const PortContext& port_context) {
   if (pending_contexts_to_respond_.empty() && !port_was_created_) {
     ReportOpenChannelResult(MessageTracker::OpenChannelMessagePipelineResult::
                                 kOpenChannelDispatchNoReceivers);
+  }
+
+  // Per channel open connect IPC dispatch metrics tracking.
+  if (!connect_dispatch_tracking_id.is_empty()) {
+    ReportOpenChannelConnectDispatchResult(
+        connect_dispatch_tracking_id,
+        MessageTracker::OpenChannelMessagePipelineResult::
+            kOpenChannelPortDisconnectedBeforeResponse);
   }
 
   for (auto& frame : frames_) {
@@ -316,14 +348,29 @@ void ExtensionMessagePort::Prune(const PortContext& port_context) {
 
 void ExtensionMessagePort::ReportOpenChannelResult(
     MessageTracker::OpenChannelMessagePipelineResult emit_value) {
+  // TODO(crbug.com/371011217): Cache this as a member var to avoid fetching it
+  // in so many places.
   auto* message_tracker = MessageTracker::Get(browser_context_);
+
   // MessageTracker ensures the metrics can only emit once (e.g. if
-  // OnConnectResponse() is called after this)
+  // another method calls this method again after this).
   for (const auto& tracking_id : pending_open_channel_tracking_ids_) {
     message_tracker->StopTrackingMessagingStage(tracking_id, emit_value);
   }
 
   pending_open_channel_tracking_ids_.clear();
+}
+
+void ExtensionMessagePort::ReportOpenChannelConnectDispatchResult(
+    const base::UnguessableToken& tracking_id,
+    MessageTracker::OpenChannelMessagePipelineResult emit_value) {
+  auto* message_tracker = MessageTracker::Get(browser_context_);
+
+  // MessageTracker ensures the metrics can only emit once (e.g. if
+  // another method calls this method again after this).
+  message_tracker->StopTrackingMessagingStage(tracking_id, emit_value);
+
+  pending_open_channel_connect_dispatch_tracking_ids_.erase(tracking_id);
 }
 
 void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
@@ -437,11 +484,24 @@ void ExtensionMessagePort::DispatchOnConnect(
     mojo::PendingAssociatedReceiver<mojom::MessagePort> message_port;
     mojo::PendingAssociatedRemote<mojom::MessagePortHost> message_port_host;
 
+    // Per channel open connect IPC dispatch metrics to frame.
+    base::UnguessableToken open_channel_dispatch_for_frame_tracking_id(
+        base::UnguessableToken::Create());
+    pending_open_channel_connect_dispatch_tracking_ids_.insert(
+        open_channel_dispatch_for_frame_tracking_id);
+    auto* message_tracker = MessageTracker::Get(browser_context_);
+    message_tracker->StartTrackingMessagingStage(
+        open_channel_dispatch_for_frame_tracking_id,
+        "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus."
+        "ForFrame",
+        channel_type);
+
     PortContext port_context = PortContext::ForFrame(frame->GetRoutingID());
     auto& receiver = frames_[frame_token];
     receiver.Bind(message_port.InitWithNewEndpointAndPassRemote());
     receiver.set_disconnect_handler(base::BindOnce(
-        &ExtensionMessagePort::Prune, base::Unretained(this), port_context));
+        &ExtensionMessagePort::Prune, base::Unretained(this), port_context,
+        open_channel_dispatch_for_frame_tracking_id));
     AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
                 frame->GetProcess()->GetID(), port_context);
 
@@ -454,7 +514,8 @@ void ExtensionMessagePort::DispatchOnConnect(
             port_id_, channel_type, channel_name, source.Clone(), info.Clone(),
             std::move(message_port), std::move(message_port_host),
             base::BindOnce(&ExtensionMessagePort::OnConnectResponse,
-                           weak_ptr_factory_.GetWeakPtr(), port_context));
+                           weak_ptr_factory_.GetWeakPtr(), port_context,
+                           open_channel_dispatch_for_frame_tracking_id));
   }
   for (const auto& worker : pending_service_workers_) {
     auto* host = ServiceWorkerHost::GetWorkerFor(worker);
@@ -466,13 +527,26 @@ void ExtensionMessagePort::DispatchOnConnect(
       mojo::PendingAssociatedReceiver<mojom::MessagePort> message_port;
       mojo::PendingAssociatedRemote<mojom::MessagePortHost> message_port_host;
 
+      // Per channel open connect IPC dispatch metrics to worker.
+      base::UnguessableToken open_channel_dispatch_for_worker_tracking_id(
+          base::UnguessableToken::Create());
+      pending_open_channel_connect_dispatch_tracking_ids_.insert(
+          open_channel_dispatch_for_worker_tracking_id);
+      auto* message_tracker = MessageTracker::Get(browser_context_);
+      message_tracker->StartTrackingMessagingStage(
+          open_channel_dispatch_for_worker_tracking_id,
+          "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus."
+          "ForWorker",
+          channel_type);
+
       PortContext port_context =
           PortContext::ForWorker(worker.thread_id, worker.version_id,
                                  worker.render_process_id, worker.extension_id);
       auto& receiver = service_workers_[worker];
       receiver.Bind(message_port.InitWithNewEndpointAndPassRemote());
       receiver.set_disconnect_handler(base::BindOnce(
-          &ExtensionMessagePort::Prune, base::Unretained(this), port_context));
+          &ExtensionMessagePort::Prune, base::Unretained(this), port_context,
+          open_channel_dispatch_for_worker_tracking_id));
       AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
                   worker.render_process_id, port_context);
 
@@ -482,22 +556,25 @@ void ExtensionMessagePort::DispatchOnConnect(
           port_id_, channel_type, channel_name, source.Clone(), info.Clone(),
           std::move(message_port), std::move(message_port_host),
           base::BindOnce(&ExtensionMessagePort::OnConnectResponse,
-                         weak_ptr_factory_.GetWeakPtr(), port_context));
+                         weak_ptr_factory_.GetWeakPtr(), port_context,
+                         open_channel_dispatch_for_worker_tracking_id));
     }
   }
   pending_frames_.clear();
   pending_service_workers_.clear();
 }
 
-void ExtensionMessagePort::OnConnectResponse(const PortContext& port_context,
-                                             bool success) {
+void ExtensionMessagePort::OnConnectResponse(
+    const PortContext& port_context,
+    const base::UnguessableToken& connect_dispatch_tracking_id,
+    bool success) {
   // For the unsuccessful case the port will be cleaned up in `Prune` when
   // the mojo channels are disconnected.
   if (success) {
     port_was_created_ = true;
   }
 
-  // Channel open metrics tracking
+  // Overall channel open metrics tracking
   pending_contexts_to_respond_.erase(port_context);
 
   // Channel is considered opened if one response indicated that the port was
@@ -511,6 +588,12 @@ void ExtensionMessagePort::OnConnectResponse(const PortContext& port_context,
             : MessageTracker::OpenChannelMessagePipelineResult::
                   kOpenChannelDispatchNoReceivers);
   }
+
+  // Per channel open connect IPC dispatch metrics tracking.
+  ReportOpenChannelConnectDispatchResult(
+      connect_dispatch_tracking_id,
+      MessageTracker::OpenChannelMessagePipelineResult::kOpenChannelAcked);
+
   // We'll continue tracking the messaging pipeline in MessageService where
   // we'll track each dispatched message for this (now open) channel.
 }

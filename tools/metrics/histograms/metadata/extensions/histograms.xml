@@ -3937,6 +3937,29 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
+    name="Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus{DispatchTarget}{ChannelType}"
+    enum="OpenChannelMessagePipelineResult" expires_after="2025-04-25">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks that for every IPC we dispatch to create a port for a messaging
+    channel in the renderer whether it responded, or if the channel or port
+    closed before the ack could be received.
+
+    Emitted each time a (LocalFrame::|ServiceWorker::)DispatchOnConnect IPC is
+    dispatched to a {DispatchTarget}. This occurs once for every available frame
+    and worker in the extension when a channel is opened to an extension.
+
+    It is permuted by channel type (message type). {ChannelType}.
+  </summary>
+  <token key="DispatchTarget">
+    <variant name="ForFrame" summary="frame"/>
+    <variant name="ForWorker" summary="worker"/>
+  </token>
+  <token key="ChannelType" variants="ChannelType"/>
+</histogram>
+
+<histogram
     name="Extensions.MessagePipeline.OpenChannelStatus{WorkerStatus}{ChannelType}"
     enum="OpenChannelMessagePipelineResult" expires_after="2025-04-25">
   <owner>jlulejian@chromium.org</owner>

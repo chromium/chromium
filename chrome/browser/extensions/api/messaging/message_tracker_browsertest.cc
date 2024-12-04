@@ -69,6 +69,7 @@ IN_PROC_BROWSER_TEST_F(MessageTrackerMessagingTest, SendMessageToWorker) {
 
   EXPECT_TRUE(reply_listener.WaitUntilSatisfied());
 
+  // Overall channel open metrics expectations.
   histogram_tester.ExpectTotalCount(
       "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*expected_count=*/1);
@@ -87,7 +88,23 @@ IN_PROC_BROWSER_TEST_F(MessageTrackerMessagingTest, SendMessageToWorker) {
       "Extensions.MessagePipeline.OpenChannelWorkerWakeUpStatus."
       "SendMessageChannel",
       /*expected_count=*/1);
+  // Per connect IPC dispatch metrics expectations.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForWorker",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForWorker."
+      "SendMessageChannel",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForFrame",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForFrame."
+      "SendMessageChannel",
+      /*expected_count=*/0);
 
+  // Overall channel open metrics expectations.
   histogram_tester.ExpectBucketCount(
       "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*sample=*/MessageTracker::OpenChannelMessagePipelineResult::kOpened,
@@ -107,6 +124,18 @@ IN_PROC_BROWSER_TEST_F(MessageTrackerMessagingTest, SendMessageToWorker) {
       "SendMessageChannel",
       /*sample=*/
       MessageTracker::OpenChannelMessagePipelineResult::kWorkerStarted,
+      /*expected_count=*/1);
+  // Per connect IPC dispatch metrics expectations.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForWorker",
+      /*sample=*/
+      MessageTracker::OpenChannelMessagePipelineResult::kOpenChannelAcked,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForWorker."
+      "SendMessageChannel",
+      /*sample=*/
+      MessageTracker::OpenChannelMessagePipelineResult::kOpenChannelAcked,
       /*expected_count=*/1);
 }
 
@@ -185,6 +214,7 @@ IN_PROC_BROWSER_TEST_P(MessageTrackerMessagingTestNonWorker,
 
   EXPECT_TRUE(reply_listener.WaitUntilSatisfied());
 
+  // Overall channel open metrics expectations.
   histogram_tester.ExpectTotalCount(
       "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*expected_count=*/1);
@@ -211,7 +241,23 @@ IN_PROC_BROWSER_TEST_P(MessageTrackerMessagingTestNonWorker,
       "Extensions.MessagePipeline.OpenChannelWorkerWakeUpStatus."
       "SendMessageChannel",
       /*expected_count=*/0);
+  // Per connect IPC dispatch metrics expectations.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForWorker",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForWorker."
+      "SendMessageChannel",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForFrame",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForFrame."
+      "SendMessageChannel",
+      /*expected_count=*/1);
 
+  // Overall channel open metrics expectations.
   histogram_tester.ExpectBucketCount(
       "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*sample=*/MessageTracker::OpenChannelMessagePipelineResult::kOpened,
@@ -220,6 +266,18 @@ IN_PROC_BROWSER_TEST_P(MessageTrackerMessagingTestNonWorker,
       "Extensions.MessagePipeline.OpenChannelStatusWithNoWorker."
       "SendMessageChannel",
       /*sample=*/MessageTracker::OpenChannelMessagePipelineResult::kOpened,
+      /*expected_count=*/1);
+  // Per connect IPC dispatch metrics expectations.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForFrame",
+      /*sample=*/
+      MessageTracker::OpenChannelMessagePipelineResult::kOpenChannelAcked,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForFrame."
+      "SendMessageChannel",
+      /*sample=*/
+      MessageTracker::OpenChannelMessagePipelineResult::kOpenChannelAcked,
       /*expected_count=*/1);
 }
 
@@ -330,6 +388,7 @@ IN_PROC_BROWSER_TEST_F(MessageTrackerMessagingTest, SendMessageToTabAndWorker) {
   ASSERT_TRUE(reply_listener.WaitUntilSatisfied());
   ASSERT_TRUE(ext_tab_listener_fired.WaitUntilSatisfied());
 
+  // Overall channel open metrics expectations.
   histogram_tester.ExpectTotalCount(
       "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*expected_count=*/1);
@@ -348,7 +407,23 @@ IN_PROC_BROWSER_TEST_F(MessageTrackerMessagingTest, SendMessageToTabAndWorker) {
       "Extensions.MessagePipeline.OpenChannelWorkerWakeUpStatus."
       "SendMessageChannel",
       /*expected_count=*/1);
+  // Per connect IPC dispatch metrics expectations.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForWorker",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForWorker."
+      "SendMessageChannel",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForFrame",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus.ForFrame."
+      "SendMessageChannel",
+      /*expected_count=*/1);
 
+  // Overall channel open metrics expectations.
   histogram_tester.ExpectBucketCount(
       "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*sample=*/MessageTracker::OpenChannelMessagePipelineResult::kOpened,
@@ -369,6 +444,9 @@ IN_PROC_BROWSER_TEST_F(MessageTrackerMessagingTest, SendMessageToTabAndWorker) {
       /*sample=*/
       MessageTracker::OpenChannelMessagePipelineResult::kWorkerStarted,
       /*expected_count=*/1);
+  // Per connect IPC dispatch metrics expectations cannot be specified in this
+  // test because the channel will be closed by the first port responder to the
+  // IPC and that will can change the value emitted for the other port.
 }
 
 // TODO(crbug.com/371011217): Once we start tracking message dispatch metrics

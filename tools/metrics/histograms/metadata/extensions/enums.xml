@@ -3386,6 +3386,9 @@ Called by update_extension_permission.py.-->
   <int value="8" label="Channel not opened (receiver port isn't valid)"/>
   <int value="9"
       label="Channel not opened (dispatched connect, but no port created)"/>
+  <int value="10" label="Open channel acked"/>
+  <int value="11" label="Port disconnected before response"/>
+  <int value="12" label="Channel closed before response"/>
 </enum>
 
 <enum name="ReadDynamicRulesJSONStatus">

@@ -147,10 +147,18 @@ class ExtensionMessagePort : public MessagePort {
 
   bool ShouldSkipFrameForBFCache(content::RenderFrameHost* render_frame_host);
 
-  void OnConnectResponse(const PortContext& port_context, bool success);
-  void Prune(const PortContext& port_context);
+  void OnConnectResponse(
+      const PortContext& port_context,
+      const base::UnguessableToken& connect_dispatch_tracking_id,
+      bool success);
+  void Prune(const PortContext& port_context,
+             const base::UnguessableToken& connect_dispatch_tracking_id);
 
   void ReportOpenChannelResult(
+      MessageTracker::OpenChannelMessagePipelineResult emit_value);
+
+  void ReportOpenChannelConnectDispatchResult(
+      const base::UnguessableToken& tracking_id,
       MessageTracker::OpenChannelMessagePipelineResult emit_value);
 
   ExtensionId extension_id_;
@@ -206,6 +214,10 @@ class ExtensionMessagePort : public MessagePort {
   // Tracking ID to every metric to emit once the result of the channel opening
   // is determined.
   std::set<base::UnguessableToken> pending_open_channel_tracking_ids_;
+  // Tracking ID to every metric to emit if the channel (this class) closes
+  // (destructs) before each port has responded to DispatchOnConnect IPC.
+  std::set<base::UnguessableToken>
+      pending_open_channel_connect_dispatch_tracking_ids_;
 
   base::WeakPtrFactory<ExtensionMessagePort> weak_ptr_factory_{this};
 };
