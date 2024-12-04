@@ -57,7 +57,7 @@ class FFmpegAACBitstreamConverterTest : public testing::Test {
   uint8_t extradata_header_[2];
 };
 
-TEST_F(FFmpegAACBitstreamConverterTest, ConversionSuccess) {
+TEST_F(FFmpegAACBitstreamConverterTest, Conversion_Success) {
   FFmpegAACBitstreamConverter converter(&test_parameters_);
 
   uint8_t dummy_packet[1000];
@@ -86,7 +86,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, ConversionSuccess) {
       sizeof(dummy_packet)), 0);
 }
 
-TEST_F(FFmpegAACBitstreamConverterTest, ConversionFailureNullParams) {
+TEST_F(FFmpegAACBitstreamConverterTest, Conversion_FailureNullParams) {
   // Set up AVCConfigurationRecord to represent NULL data.
   AVCodecParameters dummy_parameters;
   dummy_parameters.extradata = nullptr;
@@ -106,7 +106,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, ConversionFailureNullParams) {
   EXPECT_FALSE(converter.ConvertPacket(test_packet.get()));
 }
 
-TEST_F(FFmpegAACBitstreamConverterTest, ConversionAudioProfileType) {
+TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   FFmpegAACBitstreamConverter converter(&test_parameters_);
 
   uint8_t dummy_packet[1000] = {};
@@ -145,7 +145,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, ConversionAudioProfileType) {
   EXPECT_FALSE(converter_eld.ConvertPacket(test_packet.get()));
 }
 
-TEST_F(FFmpegAACBitstreamConverterTest, ConversionMultipleLength) {
+TEST_F(FFmpegAACBitstreamConverterTest, Conversion_MultipleLength) {
   FFmpegAACBitstreamConverter converter(&test_parameters_);
 
   uint8_t dummy_packet[1000];
