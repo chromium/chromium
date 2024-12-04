@@ -17,10 +17,12 @@
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
@@ -43,6 +45,7 @@
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
+#include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -107,19 +110,18 @@ std::string ProcessHistogramName(std::string_view base_name,
   }
 }
 
-double GetChannelProbability(version_info::Channel channel,
-                             const HeapProfilerParameters& params) {
+double GetChannelProbability(version_info::Channel channel) {
   switch (channel) {
     case version_info::Channel::STABLE:
     case version_info::Channel::UNKNOWN:
       // If the channel can't be determined, treat it as `stable` for safety.
       // Don't disable heap profiling completely so that developers can still
       // enable it with --enable-feature flags.
-      return params.stable_probability;
+      return kStableProbability.Get();
     case version_info::Channel::BETA:
     case version_info::Channel::DEV:
     case version_info::Channel::CANARY:
-      return params.nonstable_probability;
+      return kNonStableProbability.Get();
   }
   NOTREACHED();
 }
@@ -140,15 +142,19 @@ std::pair<bool, std::optional<std::string>> DecideIfCollectionIsEnabled(
     return {is_enabled, std::nullopt};
   }
 
-  // Randomly determine whether profiling is enabled.
-  HeapProfilerParameters params =
-      GetHeapProfilerParametersForProcess(process_type);
-  if (!params.is_supported) {
+  // Never profile during benchmarking.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarking)) {
     return {false, std::nullopt};
   }
 
+  if (!base::FeatureList::IsEnabled(kHeapProfilerReporting)) {
+    return {false, std::nullopt};
+  }
+
+  // Randomly determine whether profiling is enabled.
   const double seed = base::RandDouble();
-  const double probability = GetChannelProbability(channel, params);
+  const double probability = GetChannelProbability(channel);
   if (seed < probability) {
     return {true, "Enabled"};
   }
@@ -257,13 +263,9 @@ bool HeapProfilerController::StartIfEnabled() {
   if (!profiling_enabled_) {
     return false;
   }
-  HeapProfilerParameters profiler_params =
-      GetHeapProfilerParametersForProcess(process_type_);
-  // DecideIfCollectionIsEnabled() should return false if not supported.
-  DCHECK(profiler_params.is_supported);
-  if (profiler_params.sampling_rate_bytes > 0) {
-    base::SamplingHeapProfiler::Get()->SetSamplingInterval(
-        profiler_params.sampling_rate_bytes);
+  const size_t sampling_rate_bytes = GetSamplingRateForProcess(process_type_);
+  if (sampling_rate_bytes > 0) {
+    base::SamplingHeapProfiler::Get()->SetSamplingInterval(sampling_rate_bytes);
   }
   base::SamplingHeapProfiler::Get()->Start();
 
@@ -272,9 +274,10 @@ bool HeapProfilerController::StartIfEnabled() {
     return true;
   }
 
-  DCHECK(profiler_params.collection_interval.is_positive());
+  const base::TimeDelta collection_interval = kCollectionInterval.Get();
+  CHECK(collection_interval.is_positive());
   SnapshotParams params(
-      profiler_params.collection_interval,
+      collection_interval,
       /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_,
       process_type_, creation_time_, std::move(on_first_snapshot_callback_));
   params.trigger_child_process_snapshot_closure = base::BindRepeating(
@@ -368,7 +371,7 @@ void HeapProfilerController::AppendCommandLineSwitchInternal(
     BrowserProcessSnapshotController* snapshot_controller) {
   CHECK_NE(child_process_type, ProcessType::kBrowser);
   if (snapshot_controller &&
-      GetHeapProfilerParametersForProcess(child_process_type).is_supported) {
+      GetSnapshotProbabilityForProcess(child_process_type) > 0) {
     command_line->AppendSwitch(switches::kSubprocessHeapProfiling);
     snapshot_controller->BindRemoteForChildProcess(child_process_id,
                                                    child_process_type);

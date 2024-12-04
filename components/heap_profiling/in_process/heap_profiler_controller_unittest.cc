@@ -11,6 +11,7 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -19,16 +20,12 @@
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
-#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
@@ -46,7 +43,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "components/heap_profiling/in_process/browser_process_snapshot_controller.h"
 #include "components/heap_profiling/in_process/child_process_snapshot_controller.h"
@@ -75,10 +71,11 @@
 #include "third_party/metrics_proto/execution_context.pb.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
+// Test printers. These need to be in the same namespace as the types to print
+// so GTest can find them.
+
 namespace metrics {
 
-// Test printer for SampledProfile. This needs to be in the metrics namespace so
-// GTest can find it.
 void PrintTo(const SampledProfile& profile, std::ostream* os) {
   *os << "process:" << profile.process() << ",samples";
   if (profile.call_stack_profile().stack_sample_size() == 0) {
@@ -108,6 +105,36 @@ void PrintTo(const SampledProfile& profile, std::ostream* os) {
 
 }  // namespace metrics
 
+namespace sampling_profiler {
+
+void PrintTo(const ProfilerProcessType& process_type, std::ostream* os) {
+  switch (process_type) {
+    case ProfilerProcessType::kUnknown:
+      *os << "unknown";
+      return;
+    case ProfilerProcessType::kBrowser:
+      *os << "browser";
+      return;
+    case ProfilerProcessType::kGpu:
+      *os << "gpu";
+      return;
+    case ProfilerProcessType::kNetworkService:
+      *os << "network";
+      return;
+    case ProfilerProcessType::kRenderer:
+      *os << "renderer";
+      return;
+    case ProfilerProcessType::kUtility:
+      *os << "utility";
+      return;
+    default:
+      *os << "unsupported (" << static_cast<int>(process_type) << ")";
+      return;
+  }
+}
+
+}  // namespace sampling_profiler
+
 namespace heap_profiling {
 
 namespace {
@@ -118,23 +145,15 @@ namespace {
 #define ENABLE_MULTIPROCESS_TESTS 1
 #endif
 
-using FeatureRef = base::test::FeatureRef;
-using FeatureRefAndParams = base::test::FeatureRefAndParams;
-using ProcessType = sampling_profiler::ProfilerProcessType;
-using ProcessTypeSet =
-    base::EnumSet<ProcessType, ProcessType::kUnknown, ProcessType::kMax>;
-using ProfileCollectorCallback =
-    base::RepeatingCallback<void(base::TimeTicks, metrics::SampledProfile)>;
 using base::allocator::dispatcher::AllocationNotificationData;
 using base::allocator::dispatcher::AllocationSubsystem;
 using base::allocator::dispatcher::FreeNotificationData;
-using ScopedMuteHookedSamplesForTesting =
-    base::PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting;
-using ScopedSuppressRandomnessForTesting =
-    base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting;
-
+using base::test::FeatureRef;
+using base::test::FeatureRefAndParams;
+using sampling_profiler::ProfilerProcessType;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Combine;
 using ::testing::Conditional;
 using ::testing::ElementsAre;
 using ::testing::Ge;
@@ -144,6 +163,15 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::UnorderedElementsAreArray;
+using ::testing::Values;
+using ::testing::ValuesIn;
+
+using ProfileCollectorCallback =
+    base::RepeatingCallback<void(base::TimeTicks, metrics::SampledProfile)>;
+using ScopedMuteHookedSamplesForTesting =
+    base::PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting;
+using ScopedSuppressRandomnessForTesting =
+    base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting;
 
 constexpr size_t kSamplingRate = 1024;
 constexpr size_t kAllocationSize = 42 * kSamplingRate;
@@ -400,8 +428,9 @@ class MultiprocessTestChild final : public mojom::TestConnector,
 
     // Start the heap profiler and wait for TakeSnapshot() messages from the
     // parent.
-    HeapProfilerController controller(version_info::Channel::STABLE,
-                                      static_cast<ProcessType>(process_type));
+    HeapProfilerController controller(
+        version_info::Channel::STABLE,
+        static_cast<ProfilerProcessType>(process_type));
     controller.SuppressRandomnessForTesting();
     ASSERT_TRUE(controller.IsEnabled());
     controller.StartIfEnabled();
@@ -523,7 +552,7 @@ class MultiprocessTestParent {
   // `should_profile` is false, simulate the embedder refusing to profile the
   // child process.
   void LaunchTestChild(HeapProfilerController* controller,
-                       ProcessType process_type,
+                       ProfilerProcessType process_type,
                        int num_allocations,
                        bool should_profile) {
     // `should_profile` will apply during next call to BindTestConnector().
@@ -605,7 +634,8 @@ struct FeatureTestParams {
   };
   // Whether HeapProfilerReporting is enabled.
   bool feature_enabled = true;
-  const ProcessTypeSet supported_processes;
+  // Parameters for different channels. Test suites that only cover one channel
+  // will use the `stable` params.
   ChannelParams stable;
   ChannelParams nonstable;
   // Probabilities for snapshotting child processes.
@@ -623,58 +653,32 @@ struct FeatureTestParams {
 // Converts the test params to field trial parameters for the
 // HeapProfilerReporting feature.
 base::FieldTrialParams FeatureTestParams::ToFieldTrialParams() const {
-  base::FieldTrialParams field_trial_params{
-      {"gpu-prob-pct", base::NumberToString(gpu_snapshot_prob)},
-      {"network-prob-pct", base::NumberToString(network_snapshot_prob)},
-      {"renderer-prob-pct", base::NumberToString(renderer_snapshot_prob)},
-      {"utility-prob-pct", base::NumberToString(utility_snapshot_prob)},
-  };
+  base::FieldTrialParams field_trial_params;
 
-  // Add the default params.
-  base::Value::Dict dict;
-  if (!supported_processes.empty()) {
-    // Explicitly disable profiling by default, so that only the processes
-    // given in `supported_processes` will be enabled.
-    dict.Set("is-supported", false);
-  }
-  dict.Set("stable-probability", stable.probability);
-  dict.Set("nonstable-probability", nonstable.probability);
-  dict.Set("sampling-rate-bytes", static_cast<int>(kSamplingRate));
-  std::string param_string;
-  base::JSONWriter::WriteWithOptions(
-      dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &param_string);
-  field_trial_params["default-params"] = param_string;
+  // Global parameters.
+  field_trial_params["stable-probability"] =
+      base::NumberToString(stable.probability);
+  field_trial_params["nonstable-probability"] =
+      base::NumberToString(nonstable.probability);
 
-  // Add a field trial param that enables each process type in
-  // `supported_processes`.
-  base::Value::Dict is_supported_dict;
-  is_supported_dict.Set("is-supported", true);
-  std::string is_supported_string;
-  base::JSONWriter::WriteWithOptions(is_supported_dict,
-                                     base::JSONWriter::OPTIONS_PRETTY_PRINT,
-                                     &is_supported_string);
-
-  for (ProcessType process_type : supported_processes) {
-    switch (process_type) {
-      case ProcessType::kBrowser:
-        field_trial_params["browser-process-params"] = is_supported_string;
-        break;
-      case ProcessType::kRenderer:
-        field_trial_params["renderer-process-params"] = is_supported_string;
-        break;
-      case ProcessType::kGpu:
-        field_trial_params["gpu-process-params"] = is_supported_string;
-        break;
-      case ProcessType::kUtility:
-        field_trial_params["utility-process-params"] = is_supported_string;
-        break;
-      case ProcessType::kNetworkService:
-        field_trial_params["network-process-params"] = is_supported_string;
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
+  // Per-process parameters.
+  field_trial_params["browser-sampling-rate-bytes"] =
+      base::NumberToString(kSamplingRate);
+  field_trial_params["gpu-sampling-rate-bytes"] =
+      base::NumberToString(kSamplingRate);
+  field_trial_params["gpu-prob-pct"] = base::NumberToString(gpu_snapshot_prob);
+  field_trial_params["network-sampling-rate-bytes"] =
+      base::NumberToString(kSamplingRate);
+  field_trial_params["network-prob-pct"] =
+      base::NumberToString(network_snapshot_prob);
+  field_trial_params["renderer-sampling-rate-bytes"] =
+      base::NumberToString(kSamplingRate);
+  field_trial_params["renderer-prob-pct"] =
+      base::NumberToString(renderer_snapshot_prob);
+  field_trial_params["utility-sampling-rate-bytes"] =
+      base::NumberToString(kSamplingRate);
+  field_trial_params["utility-prob-pct"] =
+      base::NumberToString(utility_snapshot_prob);
 
   return field_trial_params;
 }
@@ -715,8 +719,13 @@ std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
   return os;
 }
 
+// Generic parameterized test suite. Subsets of the tests will alias this to
+// create test suites with different parameter lists. The ProfilerProcessType
+// parameter is a type of child process to launch, or kUnknown for tests that
+// don't launch child processes.
 class HeapProfilerControllerTest
-    : public ::testing::TestWithParam<FeatureTestParams>,
+    : public ::testing::TestWithParam<
+          std::tuple<FeatureTestParams, ProfilerProcessType>>,
       public ProfilerSetUpMixin {
  public:
   // Sets `sample_received_` to true if any sample is received. This will work
@@ -739,8 +748,8 @@ class HeapProfilerControllerTest
 
  protected:
   HeapProfilerControllerTest()
-      : ProfilerSetUpMixin(GetParam().GetEnabledFeatures(),
-                           GetParam().GetDisabledFeatures()) {}
+      : ProfilerSetUpMixin(feature_params().GetEnabledFeatures(),
+                           feature_params().GetDisabledFeatures()) {}
 
   ~HeapProfilerControllerTest() override {
     // Remove any collectors that were set in StartHeapProfiling.
@@ -748,6 +757,14 @@ class HeapProfilerControllerTest
         base::DoNothing());
     metrics::CallStackProfileBuilder::
         ResetChildCallStackProfileCollectorForTesting();
+  }
+
+  const FeatureTestParams& feature_params() const {
+    return std::get<0>(GetParam());
+  }
+
+  const ProfilerProcessType& child_process_type() const {
+    return std::get<1>(GetParam());
   }
 
   // Creates a HeapProfilerController to mock profiling a process of type
@@ -762,31 +779,38 @@ class HeapProfilerControllerTest
   // The test must call StartIfEnabled() after this to start profiling.
   void CreateHeapProfiler(
       version_info::Channel channel,
-      ProcessType process_type,
+      ProfilerProcessType process_type,
       bool expect_enabled,
       base::OnceClosure first_snapshot_callback = base::DoNothing(),
       ProfileCollectorCallback collector_callback = base::DoNothing()) {
     ASSERT_FALSE(controller_) << "CreateHeapProfiler called twice";
-    switch (process_type) {
-      case ProcessType::kBrowser:
-        expected_process_ = metrics::Process::BROWSER_PROCESS;
-        metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-            std::move(collector_callback));
-        break;
-      case ProcessType::kUtility:
-        expected_process_ = metrics::Process::UTILITY_PROCESS;
-        metrics::CallStackProfileBuilder::
-            SetParentProfileCollectorForChildProcess(
-                AddTestProfileCollector(std::move(collector_callback)));
-        break;
-      default:
-        // Connect up the profile collector even though we expect the heap
-        // profiler not to start, so that the test environment is complete.
-        expected_process_ = metrics::Process::UNKNOWN_PROCESS;
-        metrics::CallStackProfileBuilder::
-            SetParentProfileCollectorForChildProcess(
-                AddTestProfileCollector(std::move(collector_callback)));
-        break;
+    if (process_type == ProfilerProcessType::kBrowser) {
+      expected_process_ = metrics::Process::BROWSER_PROCESS;
+      metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
+          std::move(collector_callback));
+    } else {
+      switch (process_type) {
+        case ProfilerProcessType::kGpu:
+          expected_process_ = metrics::Process::GPU_PROCESS;
+          break;
+        case ProfilerProcessType::kNetworkService:
+          expected_process_ = metrics::Process::NETWORK_SERVICE_PROCESS;
+          break;
+        case ProfilerProcessType::kRenderer:
+          expected_process_ = metrics::Process::RENDERER_PROCESS;
+          break;
+        case ProfilerProcessType::kUtility:
+          expected_process_ = metrics::Process::UTILITY_PROCESS;
+          break;
+        default:
+          // Connect up the profile collector even though we expect the heap
+          // profiler not to start, so that the test environment is complete.
+          expected_process_ = metrics::Process::UNKNOWN_PROCESS;
+          break;
+      }
+      metrics::CallStackProfileBuilder::
+          SetParentProfileCollectorForChildProcess(
+              AddTestProfileCollector(std::move(collector_callback)));
     }
 
     ASSERT_FALSE(HeapProfilerController::GetInstance());
@@ -805,7 +829,7 @@ class HeapProfilerControllerTest
   // profiling.
   void StartHeapProfiling(
       version_info::Channel channel,
-      ProcessType process_type,
+      ProfilerProcessType process_type,
       bool expect_enabled,
       base::OnceClosure first_snapshot_callback = base::DoNothing(),
       ProfileCollectorCallback collector_callback = base::DoNothing()) {
@@ -816,6 +840,8 @@ class HeapProfilerControllerTest
   }
 
   void AddOneSampleAndWait() {
+    // Do nothing if the test has already failed, to avoid timeouts.
+    ASSERT_FALSE(HasFailure());
     auto* sampler = base::PoissonAllocationSampler::Get();
     sampler->OnAllocation(AllocationNotificationData(
         reinterpret_cast<void*>(0x1337), kAllocationSize, nullptr,
@@ -877,7 +903,9 @@ class HeapProfilerControllerTest
 // Basic tests only use the default feature params.
 INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerTest,
-                         ::testing::Values(FeatureTestParams{}));
+                         Combine(Values(FeatureTestParams{}),
+                                 // No child process.
+                                 Values(ProfilerProcessType::kUnknown)));
 
 // Sampling profiler is not capable of unwinding stack on Android under tests.
 #if !BUILDFLAG(IS_ANDROID)
@@ -907,7 +935,8 @@ TEST_P(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
     ++profile_count;
   };
 
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
+  StartHeapProfiling(version_info::Channel::STABLE,
+                     ProfilerProcessType::kBrowser,
                      /*expect_enabled=*/true,
                      /*first_snapshot_callback=*/base::DoNothing(),
                      base::BindLambdaForTesting(check_profile));
@@ -937,7 +966,8 @@ TEST_P(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
 TEST_P(HeapProfilerControllerTest, UnhandledProcess) {
   // Starting the heap profiler in an unhandled process type should safely do
   // nothing.
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUnknown,
+  StartHeapProfiling(version_info::Channel::STABLE,
+                     ProfilerProcessType::kUnknown,
                      /*expect_enabled=*/false);
   // The Enabled summary histogram should not be logged for unsupported
   // processes, because they're not included in the per-process histograms that
@@ -949,10 +979,10 @@ TEST_P(HeapProfilerControllerTest, EmptyProfile) {
   // Should save an empty profile even though no memory is allocated.
   ScopedCallbacks callbacks = CreateScopedCallbacks(
       /*expect_take_snapshot=*/true, /*expect_sampled_profile=*/true);
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
-                     /*expect_enabled=*/true,
-                     callbacks.first_snapshot_callback(),
-                     callbacks.collector_callback());
+  StartHeapProfiling(
+      version_info::Channel::STABLE, ProfilerProcessType::kBrowser,
+      /*expect_enabled=*/true, callbacks.first_snapshot_callback(),
+      callbacks.collector_callback());
   task_env().RunUntilQuit();
   EXPECT_TRUE(sample_received_);
 }
@@ -995,81 +1025,100 @@ using HeapProfilerControllerChannelTest = HeapProfilerControllerTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerChannelTest,
-                         ::testing::ValuesIn(kChannelConfigs));
+                         Combine(ValuesIn(kChannelConfigs),
+                                 // No child process.
+                                 Values(ProfilerProcessType::kUnknown)));
 
 TEST_P(HeapProfilerControllerChannelTest, StableChannel) {
-  const bool profiling_enabled =
-      GetParam().feature_enabled && GetParam().stable.probability > 0.0;
+  const bool profiling_enabled = feature_params().feature_enabled &&
+                                 feature_params().stable.probability > 0.0;
   ScopedCallbacks callbacks = CreateScopedCallbacks(
       /*expect_take_snapshot=*/profiling_enabled,
-      GetParam().stable.expect_browser_sample);
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
-                     profiling_enabled, callbacks.first_snapshot_callback(),
+      feature_params().stable.expect_browser_sample);
+  StartHeapProfiling(version_info::Channel::STABLE,
+                     ProfilerProcessType::kBrowser, profiling_enabled,
+                     callbacks.first_snapshot_callback(),
                      callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser", profiling_enabled, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
                                        profiling_enabled, 1);
   AddOneSampleAndWait();
-  EXPECT_EQ(sample_received_, GetParam().stable.expect_browser_sample);
+  EXPECT_EQ(sample_received_, feature_params().stable.expect_browser_sample);
 }
 
 TEST_P(HeapProfilerControllerChannelTest, CanaryChannel) {
-  const bool profiling_enabled =
-      GetParam().feature_enabled && GetParam().nonstable.probability > 0.0;
+  const bool profiling_enabled = feature_params().feature_enabled &&
+                                 feature_params().nonstable.probability > 0.0;
   ScopedCallbacks callbacks = CreateScopedCallbacks(
       /*expect_take_snapshot=*/profiling_enabled,
-      GetParam().nonstable.expect_browser_sample);
-  StartHeapProfiling(version_info::Channel::CANARY, ProcessType::kBrowser,
-                     profiling_enabled, callbacks.first_snapshot_callback(),
+      feature_params().nonstable.expect_browser_sample);
+  StartHeapProfiling(version_info::Channel::CANARY,
+                     ProfilerProcessType::kBrowser, profiling_enabled,
+                     callbacks.first_snapshot_callback(),
                      callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser", profiling_enabled, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
                                        profiling_enabled, 1);
   AddOneSampleAndWait();
-  EXPECT_EQ(sample_received_, GetParam().nonstable.expect_browser_sample);
+  EXPECT_EQ(sample_received_, feature_params().nonstable.expect_browser_sample);
 }
 
 TEST_P(HeapProfilerControllerChannelTest, UnknownChannel) {
   // An unknown channel should be treated like stable, in case a large
   // population doesn't have the channel set.
-  const bool profiling_enabled =
-      GetParam().feature_enabled && GetParam().stable.probability > 0.0;
+  const bool profiling_enabled = feature_params().feature_enabled &&
+                                 feature_params().stable.probability > 0.0;
   ScopedCallbacks callbacks = CreateScopedCallbacks(
       /*expect_take_snapshot=*/profiling_enabled,
-      GetParam().stable.expect_browser_sample);
-  StartHeapProfiling(version_info::Channel::UNKNOWN, ProcessType::kBrowser,
-                     profiling_enabled, callbacks.first_snapshot_callback(),
+      feature_params().stable.expect_browser_sample);
+  StartHeapProfiling(version_info::Channel::UNKNOWN,
+                     ProfilerProcessType::kBrowser, profiling_enabled,
+                     callbacks.first_snapshot_callback(),
                      callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser", profiling_enabled, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
                                        profiling_enabled, 1);
   AddOneSampleAndWait();
-  EXPECT_EQ(sample_received_, GetParam().stable.expect_browser_sample);
+  EXPECT_EQ(sample_received_, feature_params().stable.expect_browser_sample);
 }
 
 // Test the feature in various processes on the stable channel.
 constexpr FeatureTestParams kProcessConfigs[] = {
     // Enabled in parent process only.
     {
-        .supported_processes = {ProcessType::kBrowser},
-        .stable = {.expect_browser_sample = true, .expect_child_sample = false},
+        .stable = {.probability = 1.0,
+                   .expect_browser_sample = true,
+                   .expect_child_sample = false},
+        .gpu_snapshot_prob = 0,
+        .network_snapshot_prob = 0,
+        .renderer_snapshot_prob = 0,
+        .utility_snapshot_prob = 0,
     },
     // Enabled in child process only.
     // Central control only samples child processes when the browser process is
     // sampled, so no samples are expected even though sampling is supported in
     // the child process.
     {
-        .supported_processes = {ProcessType::kUtility},
-        .stable = {.expect_browser_sample = false,
+        .stable = {.probability = 0.0,
+                   .expect_browser_sample = false,
                    .expect_child_sample = false},
+        .gpu_snapshot_prob = 100,
+        .network_snapshot_prob = 100,
+        .renderer_snapshot_prob = 100,
+        .utility_snapshot_prob = 100,
     },
     // Enabled in parent and child processes.
     {
-        .supported_processes = {ProcessType::kBrowser, ProcessType::kUtility},
-        .stable = {.expect_browser_sample = true, .expect_child_sample = true},
+        .stable = {.probability = 1.0,
+                   .expect_browser_sample = true,
+                   .expect_child_sample = true},
+        .gpu_snapshot_prob = 100,
+        .network_snapshot_prob = 100,
+        .renderer_snapshot_prob = 100,
+        .utility_snapshot_prob = 100,
     },
 };
 
@@ -1077,24 +1126,31 @@ using HeapProfilerControllerProcessTest = HeapProfilerControllerTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerProcessTest,
-                         ::testing::ValuesIn(kProcessConfigs));
+                         Combine(ValuesIn(kProcessConfigs),
+                                 Values(ProfilerProcessType::kGpu,
+                                        ProfilerProcessType::kNetworkService,
+                                        ProfilerProcessType::kRenderer,
+                                        ProfilerProcessType::kUtility,
+                                        // Include unsupported process types.
+                                        ProfilerProcessType::kUnknown)));
 
 TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
-  const bool profiling_enabled =
-      base::Contains(GetParam().supported_processes, ProcessType::kBrowser);
+  const bool profiling_enabled = feature_params().stable.expect_browser_sample;
   ScopedCallbacks callbacks = CreateScopedCallbacks(
       /*expect_take_snapshot=*/profiling_enabled,
-      GetParam().stable.expect_browser_sample,
-      /*use_other_process_callback=*/GetParam().stable.expect_child_sample);
+      /*expect_sampled_profile=*/profiling_enabled,
+      /*use_other_process_callback=*/
+      feature_params().stable.expect_child_sample &&
+          child_process_type() != ProfilerProcessType::kUnknown);
 
-  // Mock the child end of the SnapshotController mojo pipe. (Only used when
-  // central control is enabled.)
+  // Mock the child end of the SnapshotController mojo pipe.
   MockSnapshotController mock_child_snapshot_controller;
   mojo::Receiver<mojom::SnapshotController> mock_receiver(
       &mock_child_snapshot_controller);
 
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
-                     profiling_enabled, callbacks.first_snapshot_callback(),
+  StartHeapProfiling(version_info::Channel::STABLE,
+                     ProfilerProcessType::kBrowser, profiling_enabled,
+                     callbacks.first_snapshot_callback(),
                      callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser", profiling_enabled, 1);
@@ -1112,6 +1168,9 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
         ->SetBindRemoteForChildProcessCallback(base::BindLambdaForTesting(
             [&](int child_process_id,
                 mojo::PendingReceiver<mojom::SnapshotController> receiver) {
+              // Should not be called if profiling is unsupported in the child.
+              ASSERT_TRUE(feature_params().stable.expect_child_sample);
+              ASSERT_NE(child_process_type(), ProfilerProcessType::kUnknown);
               EXPECT_EQ(child_process_id, kTestChildProcessId);
               mock_receiver.Bind(std::move(receiver));
             }));
@@ -1125,9 +1184,10 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
   // child end to `mock_child_snapshot_controller`.
   base::CommandLine child_command_line(base::CommandLine::NO_PROGRAM);
   controller_->AppendCommandLineSwitchForChildProcess(
-      &child_command_line, ProcessType::kUtility, kTestChildProcessId);
+      &child_command_line, child_process_type(), kTestChildProcessId);
 
-  if (GetParam().stable.expect_child_sample) {
+  if (feature_params().stable.expect_child_sample &&
+      child_process_type() != ProfilerProcessType::kUnknown) {
     EXPECT_CALL(mock_child_snapshot_controller, TakeSnapshot(100, 0))
         .WillOnce([&] {
           // Record that BrowserProcessSnapshotController triggered a fake
@@ -1139,17 +1199,23 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
   }
 
   AddOneSampleAndWait();
-  EXPECT_EQ(sample_received_, GetParam().stable.expect_browser_sample);
+  EXPECT_EQ(sample_received_, feature_params().stable.expect_browser_sample);
 }
 
 TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
-  const bool profiling_enabled =
-      base::Contains(GetParam().supported_processes, ProcessType::kUtility);
   // TakeSnapshot() is only called in the child process when the browser process
-  // triggers it.
+  // triggers it. Nothing to test if sampling in the browser process is
+  // disabled.
+  if (!feature_params().stable.expect_browser_sample) {
+    return;
+  }
+  const bool profiling_enabled =
+      feature_params().stable.expect_child_sample &&
+      child_process_type() != ProfilerProcessType::kUnknown;
+
   ScopedCallbacks callbacks = CreateScopedCallbacks(
-      /*expect_take_snapshot=*/GetParam().stable.expect_child_sample,
-      /*expect_sampled_profile=*/GetParam().stable.expect_child_sample,
+      /*expect_take_snapshot=*/profiling_enabled,
+      /*expect_sampled_profile=*/profiling_enabled,
       /*use_other_process_callback=*/true);
 
   // Simulate the browser side of child process launching.
@@ -1166,6 +1232,9 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
       base::BindLambdaForTesting(
           [&](int child_process_id,
               mojo::PendingReceiver<mojom::SnapshotController> receiver) {
+            // Should not be called if profiling is unsupported in the child.
+            ASSERT_TRUE(feature_params().stable.expect_child_sample);
+            ASSERT_NE(child_process_type(), ProfilerProcessType::kUnknown);
             EXPECT_EQ(child_process_id, kTestChildProcessId);
             ChildProcessSnapshotController::CreateSelfOwnedReceiver(
                 std::move(receiver));
@@ -1173,30 +1242,50 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
 
   base::test::ScopedCommandLine scoped_command_line;
   HeapProfilerController::AppendCommandLineSwitchForTesting(
-      scoped_command_line.GetProcessCommandLine(), ProcessType::kUtility,
+      scoped_command_line.GetProcessCommandLine(), child_process_type(),
       kTestChildProcessId, fake_browser_snapshot_controller.get());
 
-  // Simulate the browser process taking a sample after a delay. If profiling
-  // isn't enabled in the browser process, just quit waiting after the delay.
-  base::OnceClosure browser_snapshot_callback = base::DoNothing();
-  if (base::Contains(GetParam().supported_processes, ProcessType::kBrowser)) {
-    browser_snapshot_callback = base::BindOnce(
-        &BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence,
-        std::move(fake_browser_snapshot_controller));
-  }
+  // Simulate the browser process taking a sample after a delay.
   snapshot_task_runner->PostDelayedTask(
       FROM_HERE,
-      std::move(browser_snapshot_callback)
+      base::BindOnce(
+          &BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence,
+          std::move(fake_browser_snapshot_controller))
           .Then(callbacks.other_process_callback()),
       TestTimeouts::action_timeout());
 
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUtility,
+  StartHeapProfiling(version_info::Channel::STABLE, child_process_type(),
                      profiling_enabled, callbacks.first_snapshot_callback(),
                      callbacks.collector_callback());
-  histogram_tester_.ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled.Utility", profiling_enabled, 1);
-  histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
-                                       profiling_enabled, 1);
+
+  // If the child process is unknown, no histograms are logged. If it's known
+  // but disabled, 0 is logged.
+  if (child_process_type() != ProfilerProcessType::kUnknown) {
+    switch (child_process_type()) {
+      case ProfilerProcessType::kGpu:
+        histogram_tester_.ExpectUniqueSample(
+            "HeapProfiling.InProcess.Enabled.GPU", profiling_enabled, 1);
+        break;
+      case ProfilerProcessType::kNetworkService:
+        histogram_tester_.ExpectUniqueSample(
+            "HeapProfiling.InProcess.Enabled.NetworkService", profiling_enabled,
+            1);
+        break;
+      case ProfilerProcessType::kRenderer:
+        histogram_tester_.ExpectUniqueSample(
+            "HeapProfiling.InProcess.Enabled.Renderer", profiling_enabled, 1);
+        break;
+      case ProfilerProcessType::kUtility:
+        histogram_tester_.ExpectUniqueSample(
+            "HeapProfiling.InProcess.Enabled.Utility", profiling_enabled, 1);
+        break;
+      default:
+        FAIL() << "Unexpected processs type "
+               << static_cast<int>(child_process_type());
+    }
+    histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
+                                         profiling_enabled, 1);
+  }
 
   // The child process HeapProfilerController should never have a
   // BrowserProcessSnapshotController. (`fake_browser_snapshot_controller`
@@ -1204,7 +1293,7 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
   EXPECT_EQ(controller_->GetBrowserProcessSnapshotController(), nullptr);
 
   AddOneSampleAndWait();
-  EXPECT_EQ(sample_received_, GetParam().stable.expect_child_sample);
+  EXPECT_EQ(sample_received_, profiling_enabled);
 }
 
 #if ENABLE_MULTIPROCESS_TESTS
@@ -1235,8 +1324,8 @@ auto GetProfileMetadataFunc(std::string_view name) {
 // End-to-end test with multiple child processes.
 constexpr FeatureTestParams kMultipleChildConfigs[] = {
     {
-        .supported_processes = {ProcessType::kBrowser, ProcessType::kGpu,
-                                ProcessType::kUtility, ProcessType::kRenderer},
+        .gpu_snapshot_prob = 100,
+        .network_snapshot_prob = 100,
         .renderer_snapshot_prob = 66,
         .utility_snapshot_prob = 50,
     },
@@ -1246,7 +1335,9 @@ using HeapProfilerControllerMultipleChildTest = HeapProfilerControllerTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerMultipleChildTest,
-                         ::testing::ValuesIn(kMultipleChildConfigs));
+                         Combine(ValuesIn(kMultipleChildConfigs),
+                                 // Children are manually specified.
+                                 Values(ProfilerProcessType::kUnknown)));
 
 MULTIPROCESS_TEST_MAIN(HeapProfilerControllerChildMain) {
   MultiprocessTestChild child(kMultipleChildConfigs[0].GetEnabledFeatures(),
@@ -1263,19 +1354,19 @@ TEST_P(HeapProfilerControllerMultipleChildTest, EndToEnd) {
 
   // Process types to test. Each will make a different
   // number of memory allocations so their reports are all different.
-  const std::vector<std::pair<ProcessType, size_t>> kProcessesToTest{
-      {ProcessType::kBrowser, 0},
-      {ProcessType::kGpu, 1},
+  const std::vector<std::pair<ProfilerProcessType, size_t>> kProcessesToTest{
+      {ProfilerProcessType::kBrowser, 0},
+      {ProfilerProcessType::kGpu, 1},
       // 2 utility processes.
-      {ProcessType::kUtility, 2},
-      {ProcessType::kUtility, 3},
+      {ProfilerProcessType::kUtility, 2},
+      {ProfilerProcessType::kUtility, 3},
       // 5 renderer processes including one with no samples. The first one will
       // be ignored to simulate the embedder refusing to profile it.
-      {ProcessType::kRenderer, 10},
-      {ProcessType::kRenderer, 0},
-      {ProcessType::kRenderer, 4},
-      {ProcessType::kRenderer, 5},
-      {ProcessType::kRenderer, 6},
+      {ProfilerProcessType::kRenderer, 10},
+      {ProfilerProcessType::kRenderer, 0},
+      {ProfilerProcessType::kRenderer, 4},
+      {ProfilerProcessType::kRenderer, 5},
+      {ProfilerProcessType::kRenderer, 6},
   };
 
   // Expect only 1 utility process and 3 renderer processes to be sampled due
@@ -1303,10 +1394,10 @@ TEST_P(HeapProfilerControllerMultipleChildTest, EndToEnd) {
             task_runner->DeleteSoon(FROM_HERE, controller_.release());
           }));
 
-  CreateHeapProfiler(version_info::Channel::STABLE, ProcessType::kBrowser,
-                     /*expect_enabled=*/true,
-                     std::move(stop_after_first_snapshot_callback),
-                     callbacks.collector_callback());
+  CreateHeapProfiler(
+      version_info::Channel::STABLE, ProfilerProcessType::kBrowser,
+      /*expect_enabled=*/true, std::move(stop_after_first_snapshot_callback),
+      callbacks.collector_callback());
   ASSERT_TRUE(controller_);
 
   // Start all processes in `kProcessesToTest` except the browser.
@@ -1332,10 +1423,11 @@ TEST_P(HeapProfilerControllerMultipleChildTest, EndToEnd) {
 
   bool renderer_was_skipped = false;
   for (const auto [process_type, num_allocations] : kProcessesToTest) {
-    if (process_type != ProcessType::kBrowser) {
+    if (process_type != ProfilerProcessType::kBrowser) {
       // Skip the first renderer.
       bool should_profile = true;
-      if (process_type == ProcessType::kRenderer && !renderer_was_skipped) {
+      if (process_type == ProfilerProcessType::kRenderer &&
+          !renderer_was_skipped) {
         should_profile = false;
         renderer_was_skipped = true;
       }
