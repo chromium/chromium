@@ -91,7 +91,7 @@ std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings() {
   return settings;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::optional<std::string> ConnectorsServiceBase::GetProfileDmToken() const {
   policy::CloudPolicyManager* policy_manager =
       GetManagedUserCloudPolicyManager();

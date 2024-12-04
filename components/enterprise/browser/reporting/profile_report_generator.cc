@@ -9,7 +9,6 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/policy_info.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/report_util.h"
@@ -70,7 +69,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
 
   delegate_->GetSigninUserInfo(report_.get());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   delegate_->GetAffiliationInfo(report_.get());
 #endif
 
@@ -112,10 +111,10 @@ void ProfileReportGenerator::GetExtensionPolicyInfo() {
 }
 
 void ProfileReportGenerator::GetPolicyFetchTimestampInfo() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   AppendCloudPolicyFetchTimestamp(
       report_.get(), delegate_->GetCloudPolicyManager(is_machine_scope_));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace enterprise_reporting

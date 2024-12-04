@@ -9,7 +9,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
