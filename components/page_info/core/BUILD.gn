@@ -6,7 +6,7 @@ if (is_android) {
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "proto/about_this_site_metadata.proto", "proto/merchant_trust_metadata.proto" ]
+  sources = [ "proto/about_this_site_metadata.proto"]
 
   deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }
@@ -43,6 +43,7 @@ static_library("core") {
   deps = [
     ":proto",
     "//base",
+    "//components/commerce/core:proto",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
@@ -76,6 +77,7 @@ source_set("unit_tests") {
     ":proto",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:proto",
     "//components/history/core/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",

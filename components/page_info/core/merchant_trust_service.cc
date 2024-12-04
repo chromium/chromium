@@ -7,11 +7,11 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/page_info_types.h"
-#include "components/page_info/core/proto/merchant_trust_metadata.pb.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -42,7 +42,7 @@ MerchantTrustService::MerchantTrustService(
       prefs_(prefs) {
   if (optimization_guide_decider_) {
     optimization_guide_decider_->RegisterOptimizationTypes(
-        {optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V3});
+        {optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2});
   }
 }
 
@@ -57,12 +57,12 @@ MerchantTrustService::GetMerchantTrustInfo(const GURL& url,
     return std::nullopt;
   }
 
-  std::optional<proto::MerchantTrustSignalsV3> merchant_trust_metadata;
+  std::optional<commerce::MerchantTrustSignalsV2> merchant_trust_metadata;
   optimization_guide::OptimizationGuideDecision decision;
   optimization_guide::OptimizationMetadata metadata;
   decision = CanApplyOptimization(url, &metadata);
   merchant_trust_metadata =
-      metadata.ParsedMetadata<proto::MerchantTrustSignalsV3>();
+      metadata.ParsedMetadata<commerce::MerchantTrustSignalsV2>();
 
   if (decision != optimization_guide::OptimizationGuideDecision::kUnknown) {
     // TODO(tommasin): Add and log validation for
@@ -92,41 +92,40 @@ MerchantTrustService::CanApplyOptimization(
     return optimization_guide::OptimizationGuideDecision::kUnknown;
   }
   return optimization_guide_decider_->CanApplyOptimization(
-      url, optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V3,
+      url, optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
       optimization_metadata);
 }
 
 std::optional<page_info::MerchantData>
 MerchantTrustService::GetMerchantDataFromProto(
-    const std::optional<proto::MerchantTrustSignalsV3>& metadata) const {
+    const std::optional<commerce::MerchantTrustSignalsV2>& metadata) const {
   if (!metadata.has_value()) {
     return std::nullopt;
   }
 
   std::optional<page_info::MerchantData> merchant_data;
 
-  page_info::proto::MerchantTrustSignalsV3 merchant_proto = metadata.value();
+  commerce::MerchantTrustSignalsV2 merchant_proto = metadata.value();
   if (metadata.has_value() && merchant_proto.IsInitialized()) {
     merchant_data.emplace();
 
-    if (merchant_proto.has_star_rating()) {
-      merchant_data->star_rating = merchant_proto.star_rating();
+    if (merchant_proto.has_merchant_star_rating()) {
+      merchant_data->star_rating = merchant_proto.merchant_star_rating();
     }
 
-    if (merchant_proto.has_count_rating()) {
-      merchant_data->count_rating = merchant_proto.count_rating();
+    if (merchant_proto.has_merchant_count_rating()) {
+      merchant_data->count_rating = merchant_proto.merchant_count_rating();
     }
 
-    if (merchant_proto.has_page_url()) {
-      GURL page_url = GURL(merchant_proto.page_url());
+    if (merchant_proto.has_merchant_details_page_url()) {
+      GURL page_url = GURL(merchant_proto.merchant_details_page_url());
       if (page_url.is_valid()) {
         merchant_data->page_url = page_url;
       }
     }
 
-    if (merchant_proto.has_overall_summary()) {
-      merchant_data->reviews_summary = merchant_proto.overall_summary();
-    }
+    // TODO(crbug.com/378819357): Add reviews summary once it is added to the
+    // proto.
   }
 
   return merchant_data;
