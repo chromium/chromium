@@ -15,8 +15,8 @@ namespace lens {
 namespace prefs {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  // This pref is deprecated and GenAiLensOverlaySettingsPolicyValue should be
-  // used instead. This pref is kept around for backwards compatibility.
+  // There are ongoing discussions about which policy we should use, so both
+  // policies are registered just in case.
   registry->RegisterIntegerPref(
       kLensOverlaySettings,
       static_cast<int>(LensOverlaySettingsPolicyValue::kEnabled));
