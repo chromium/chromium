@@ -42,6 +42,7 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -1443,14 +1444,12 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   //     Insert a single element constructed as T(args...) to the back. The
   //     element is constructed directly on the backing buffer with placement
   //     new.
-  // Append(buffer, size)
   // AppendVector(vector)
   // AppendRange(begin, end)
   // AppendSpan(span)
-  //     Insert multiple elements represented by (1) |buffer| and |size|
-  //     (for append), (2) |vector| (for AppendVector), (3) a pair of
-  //     iterators (for AppendRange), or (4) |span| (for AppendSpan) to the
-  //     back. The elements will be copied.
+  //     Insert multiple elements represented by (1) `vector` (for
+  //     AppendVector), (2) a pair of iterators (for AppendRange), or (3)
+  //     `span` (for AppendSpan) to the back. The elements will be copied.
   // UncheckedAppend(value)
   //     Insert a single element like push_back(), but this function assumes
   //     the vector has enough capacity such that it can store the new element
@@ -1464,8 +1463,6 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
     Grow(size_ + 1);
     return back();
   }
-  template <typename U>
-  void Append(const U*, wtf_size_t);
   template <typename U, wtf_size_t otherCapacity, typename V>
   void AppendVector(const Vector<U, otherCapacity, V>&);
   template <typename Iterator>
@@ -2178,21 +2175,23 @@ ALWAYS_INLINE T& Vector<T, InlineCapacity, Allocator>::emplace_back(
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename U>
-void Vector<T, InlineCapacity, Allocator>::Append(const U* data,
-                                                  wtf_size_t data_size) {
+template <typename U, size_t N, typename Ptr>
+void Vector<T, InlineCapacity, Allocator>::AppendSpan(
+    base::span<U, N, Ptr> span) {
   DCHECK(Allocator::IsAllocationAllowed());
-  wtf_size_t new_size = size_ + data_size;
+  U* data = span.data();
+  base::CheckedNumeric<wtf_size_t> data_size = span.size();
+  data_size += size_;
+  wtf_size_t new_size = data_size.ValueOrDie();
   if (new_size > capacity()) {
     data = ExpandCapacity(new_size, data);
     DCHECK(this->data());
   }
-  CHECK_GE(new_size, size_);
   T* dest = DataEnd();
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, this->data(), capacity(), size_,
                                      new_size);
   TypeOperations::UninitializedCopy(
-      data, &data[data_size], dest,
+      data, &data[span.size()], dest,
       VectorOperationOrigin::kRegularModification);
   size_ = new_size;
 }
@@ -2218,7 +2217,7 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
 inline void Vector<T, InlineCapacity, Allocator>::AppendVector(
     const Vector<U, otherCapacity, OtherAllocator>& val) {
-  Append(val.data(), val.size());
+  AppendSpan(base::span(val));
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -2227,13 +2226,6 @@ void Vector<T, InlineCapacity, Allocator>::AppendRange(Iterator begin,
                                                        Iterator end) {
   for (Iterator it = begin; it != end; ++it)
     push_back(*it);
-}
-
-template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename U, size_t N, typename Ptr>
-void Vector<T, InlineCapacity, Allocator>::AppendSpan(
-    base::span<U, N, Ptr> data) {
-  Append(data.data(), base::checked_cast<wtf_size_t>(data.size()));
 }
 
 // This version of append saves a branch in the case where you know that the
