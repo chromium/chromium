@@ -654,11 +654,8 @@ static_library("test_support") {
     sources += [
       "../public/test/test_synchronous_compositor_android.cc",
       "../public/test/test_synchronous_compositor_android.h",
-      "test_view_android_delegate.cc",
-      "test_view_android_delegate.h",
     ]
     deps += [
-      ":content_unittests_jni_headers",
       "//content/shell:android_shell_descriptors",
       "//mojo/public/java/system:native_support",
       "//testing/android/native_test:native_browser_test_support",
@@ -1374,18 +1371,12 @@ if (is_android) {
     output = content_browsertests_manifest
   }
 
-  generate_jni("content_browsertests_jni_headers") {
-    testonly = true
-    sources = [ "//content/public/android/javatests/src/org/chromium/content/browser/fakes/TestViewAndroidDelegate.java" ]
-  }
-
   android_library("content_browsertests_java") {
     testonly = true
     resources_package = "org.chromium.content_browsertests_apk"
     sources = [
       "../shell/android/browsertests_apk/src/org/chromium/content_browsertests_apk/ContentBrowserTestsActivity.java",
       "../shell/android/browsertests_apk/src/org/chromium/content_browsertests_apk/ContentBrowserTestsApplication.java",
-      "//content/public/android/javatests/src/org/chromium/content/browser/fakes/TestViewAndroidDelegate.java",
     ]
     deps = [
       ":content_browsertests_resources",
@@ -1398,7 +1389,6 @@ if (is_android) {
       "//content/public/test/android:content_java_test_support",
       "//content/shell/android:content_shell_browsertests_java",
       "//testing/android/native_test:native_browser_test_java",
-      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
     ]
   }
@@ -2185,7 +2175,6 @@ test("content_browsertests") {
     deps += [
       ":android_test_message_pump_support",
       ":content_browsertests_java",
-      ":content_browsertests_jni_headers",
       "//content/shell:content_shell_app",
       "//content/shell/android:content_shell_assets",
       "//content/shell/android:content_shell_jni_headers",
@@ -3466,6 +3455,8 @@ test("content_unittests") {
       "//third_party/blink/public/common",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//ui/android:android",
+      "//ui/android:test_support",
+      "//ui/android:ui_java_test_support",
     ]
 
     if (enable_chrome_android_internal) {
@@ -3665,10 +3656,7 @@ group("test_buildbucket_api_gpu_use_cases") {
 }
 
 if (is_android) {
-  content_java_sources_needing_jni = [
-    "//content/public/android/javatests/src/org/chromium/content/browser/sms/SmsProviderFakes.java",
-    "//content/public/android/javatests/src/org/chromium/content/browser/fakes/TestViewAndroidDelegate.java",
-  ]
+  content_java_sources_needing_jni = [ "//content/public/android/javatests/src/org/chromium/content/browser/sms/SmsProviderFakes.java" ]
 
   generate_jni("content_unittests_jni_headers") {
     testonly = true

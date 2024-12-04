@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser.fakes;
+package org.chromium.ui.test.util;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -10,10 +10,10 @@ import org.jni_zero.JNINamespace;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
 /**
- * Mimics the Chrome TestViewAndroidDelegate in chrome/browser/tab for use in tests,
- * driven by the {@code RenderWidgetHostViewAndroidTest}.
+ * Mimics the Chrome TestViewAndroidDelegate in chrome/browser/tab for use in tests, driven by the
+ * {@code RenderWidgetHostViewAndroidTest}.
  */
-@JNINamespace("content")
+@JNINamespace("ui")
 class TestViewAndroidDelegate extends ViewAndroidDelegate {
     /** Stores the Visual Viewport bottom inset when under test, just like the real one. */
     private int mApplicationViewportInsetBottomPx;
@@ -25,6 +25,7 @@ class TestViewAndroidDelegate extends ViewAndroidDelegate {
 
     /**
      * Creates an instance that's similar in behavior to the other various ViewAndroidDelegates.
+     *
      * @return A fake {@link TestViewAndroidDelegate} to be used in a native test.
      */
     @CalledByNative
@@ -34,6 +35,7 @@ class TestViewAndroidDelegate extends ViewAndroidDelegate {
 
     /**
      * Insets the Visual Viewport bottom, just like the real {@code TestViewAndroidDelegate} does.
+     *
      * @param viewportInsetBottomPx Amount to inset.
      */
     @CalledByNative

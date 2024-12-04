@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_TEST_TEST_VIEW_ANDROID_DELEGATE_H_
-#define CONTENT_TEST_TEST_VIEW_ANDROID_DELEGATE_H_
+#ifndef UI_ANDROID_TEST_VIEW_ANDROID_DELEGATE_H_
+#define UI_ANDROID_TEST_VIEW_ANDROID_DELEGATE_H_
 
 #include "base/android/jni_android.h"
 
 namespace ui {
-class ViewAndroid;
-}
 
-namespace content {
+class ViewAndroid;
 
 // Provides a test version of the ViewAndroidDelegate with a native interface
 // that connects to the Java TestViewAndroidDelegate, used to test insetting on
@@ -36,6 +34,6 @@ class TestViewAndroidDelegate {
   base::android::ScopedJavaLocalRef<jobject> j_delegate_;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_TEST_TEST_VIEW_ANDROID_DELEGATE_H_
+#endif  // UI_ANDROID_TEST_VIEW_ANDROID_DELEGATE_H_
