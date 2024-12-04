@@ -314,7 +314,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
       CHECK(AreBankAccountsSupported());
       pending_masked_bank_accounts_query_ = 0;
     } else if (h == pending_payment_instruments_query_) {
-      CHECK(ArePaymentInsrumentsSupported());
+      CHECK(ArePaymentInstrumentsSupported());
       pending_payment_instruments_query_ = 0;
     }
   } else {
@@ -391,7 +391,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
         OnMaskedBankAccountsRefreshed();
         break;
       case PAYMENT_INSTRUMENT_RESULT: {
-        CHECK(ArePaymentInsrumentsSupported());
+        CHECK(ArePaymentInstrumentsSupported());
         DCHECK_EQ(h, pending_payment_instruments_query_)
             << "received payment instruments from invalid request.";
         std::vector<sync_pb::PaymentInstrument> payment_instruments;
@@ -469,7 +469,7 @@ void PaymentsDataManager::Refresh() {
   if (AreBankAccountsSupported()) {
     LoadMaskedBankAccounts();
   }
-  if (ArePaymentInsrumentsSupported()) {
+  if (ArePaymentInstrumentsSupported()) {
     LoadPaymentInstruments();
   }
   LoadPaymentsCustomerData();
@@ -1703,7 +1703,7 @@ void PaymentsDataManager::CancelPendingServerQueries() {
   if (AreBankAccountsSupported()) {
     CancelPendingServerQuery(&pending_masked_bank_accounts_query_);
   }
-  if (ArePaymentInsrumentsSupported()) {
+  if (ArePaymentInstrumentsSupported()) {
     CancelPendingServerQuery(&pending_payment_instruments_query_);
   }
 }
@@ -1968,7 +1968,7 @@ bool PaymentsDataManager::HasPendingPaymentQueries() const {
          pending_local_ibans_query_ != 0 || pending_server_ibans_query_ != 0 ||
          (AreBankAccountsSupported() &&
           pending_masked_bank_accounts_query_ != 0) ||
-         (ArePaymentInsrumentsSupported() &&
+         (ArePaymentInstrumentsSupported() &&
           pending_payment_instruments_query_ != 0);
 }
 
@@ -1989,7 +1989,7 @@ bool PaymentsDataManager::AreEwalletAccountsSupported() const {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-bool PaymentsDataManager::ArePaymentInsrumentsSupported() const {
+bool PaymentsDataManager::ArePaymentInstrumentsSupported() const {
   // Currently only eWallet accounts are using generic payment instrument proto
   // for read from table.
   return AreEwalletAccountsSupported();

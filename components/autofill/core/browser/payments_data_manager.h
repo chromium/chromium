@@ -645,7 +645,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool AreEwalletAccountsSupported() const;
 
   // Whether generic payment instruments are supported.
-  bool ArePaymentInsrumentsSupported() const;
+  bool ArePaymentInstrumentsSupported() const;
 
   // Monitors the `kAutofillPaymentCardBenefits` preference for changes and
   // controls the clearing/loading of credit card benefits into
