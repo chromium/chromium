@@ -940,13 +940,13 @@
 <translation id="5499648645977734083">管理支付方式…</translation>
 <translation id="5501346139932663133">Google 应用</translation>
 <translation id="5506763544823940561">将图片保存到…</translation>
-<translation id="5511959326926949696">可选的浏览器极端保护措施。除非您认为自己可能会受到高度复杂的网络攻击，否则不应使用此选项。</translation>
+<translation id="5511959326926949696">这是一种可选的浏览器保护措施，较为极端。除非您认为自己可能会遭受极其复杂的网络攻击，否则不建议使用此选项。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="5532545557415295622">空闲超时对话框</translation>
-<translation id="5548760955356983418">借助 Handoff 功能，您在此设备上浏览网站时，可轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
+<translation id="5548760955356983418">借助 Handoff，您可以先在此设备上浏览网站，然后轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
 
-另外，您必须在“设置”的“常规”部分启用 Handoff 功能，并且您的设备必须使用同一个 iCloud 账号。</translation>
+另外，您必须在“设置”的“常规”部分启用 Handoff，并且您的设备必须使用同一个 iCloud 账号。</translation>
 <translation id="5551825465462320939">随时掌握您感兴趣的新闻、体育赛事等资讯。</translation>
 <translation id="5555008247722361784">目前登录的账号是 <ph name="USER_EMAIL" />，Google 账号错误，打开账号菜单。</translation>
 <translation id="5556459405103347317">重新加载</translation>
@@ -1774,7 +1774,7 @@
 <translation id="9094033019050270033">更新密码</translation>
 <translation id="9097506547406246598">无法取消关注。出了点问题。</translation>
 <translation id="9098541895599151034">删除 <ph name="NUMBER_OF_ACCOUNTS" /> 个密码？</translation>
-<translation id="9099233023029360602">每次都询问我要使用哪个账号</translation>
+<translation id="9099233023029360602">每次都询问要使用哪个账号</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="9106655997975673326">来自“<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>

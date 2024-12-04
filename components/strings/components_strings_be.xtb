@@ -383,7 +383,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Каб выкарыстоўваць Менеджар пароляў са звязкам ключоў macOS, перазапусціце Chromium і дайце адпаведны доступ. Пасля перазапуску ўкладкі будуць адкрыты паўторна.</translation>
 <translation id="1652887625750064647">Найлепшае супадзенне ад AI</translation>
-<translation id="1656024727720460136">Chrome спрасціў гэту старонку для больш зручнага чытання. Ён атрымаў зыходную старонку па бяспечным падключэнні.</translation>
+<translation id="1656024727720460136">Chrome спрасціў гэту старонку для больш зручнага чытання. Ён атрымаў зыходную старонку па абароненым падключэнні.</translation>
 <translation id="1656489000284462475">Прыняцце</translation>
 <translation id="1658111267661135323">ТБ і відэа</translation>
 <translation id="1658918301167915956">прылады Bluetooth</translation>
@@ -3245,7 +3245,7 @@
 <translation id="6880941331070119097">Дарагі варыянт</translation>
 <translation id="6881240511396774766">Хутка стварыць новы дакумент Google</translation>
 <translation id="6882210908253838664">Калі сайт не працуе, можна паспрабаваць даць яму часовы дазвол выкарыстоўваць староннія файлы cookie. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
-<translation id="6882418526420053414"><ph name="SITE" /> не падтрымлівае бяспечнае падключэнне</translation>
+<translation id="6882418526420053414"><ph name="SITE" /> не падтрымлівае абароненае падключэнне</translation>
 <translation id="6883221904761970440">Аркуш аўтэнтыфікацыі ўліковых даных для бяспечных плацяжоў закрыты</translation>
 <translation id="6884662655240309489">Памер 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>

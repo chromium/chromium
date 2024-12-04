@@ -128,7 +128,7 @@
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
 <translation id="1554477036522844996">Новое окно</translation>
 <translation id="1571780780926010134">Вкладки инкогнито</translation>
-<translation id="1580715474678097352">Защита от опасных сайтов</translation>
+<translation id="1580715474678097352">Защищает от опасных сайтов</translation>
 <translation id="1580783302095112590">Сообщение отправлено.</translation>
 <translation id="1582732959743469162">Скачивание файлов будет приостановлено.</translation>
 <translation id="1594034544529347967">Начало</translation>
@@ -543,7 +543,7 @@
 <translation id="3572607909481582402">В аккаунте Google</translation>
 <translation id="3575234738189584619">Искать с помощью Объектива</translation>
 <translation id="3575426792457739946">В списке указаны все загруженные профили.</translation>
-<translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
+<translation id="3581564640715911333">Предлагать перевести страницы на других языках</translation>
 <translation id="3582976576569261467">Ваш любимый браузер теперь на iPadOS</translation>
 <translation id="3587885837929752825">Ваша организация ограничила данные, которые можно сохранять в аккаунте Google.</translation>
 <translation id="3588820906588687999">Открыть в новой вкладке</translation>
@@ -699,7 +699,7 @@
 <translation id="4331177082088332784">Изменить выбор можно в BEGIN_LINKНастройках контентаEND_LINK.</translation>
 <translation id="4334428914252001502">1 непрочитанная статья.</translation>
 <translation id="4338258232580025606">Не удается войти</translation>
-<translation id="4338650699862464074">Отправлять URL страниц, которые вы посещаете, в Google.</translation>
+<translation id="4338650699862464074">Отправлять URL посещаемых страниц в Google</translation>
 <translation id="4342054591427973606">{count,plural, =1{Адрес будет удален с этого и других устройств, на которых выполнен вход в аккаунт.}one{Адреса будут удалены с этого и других устройств, на которых выполнен вход в аккаунт.}few{Адреса будут удалены с этого и других устройств, на которых выполнен вход в аккаунт.}many{Адреса будут удалены с этого и других устройств, на которых выполнен вход в аккаунт.}other{Адреса будут удалены с этого и других устройств, на которых выполнен вход в аккаунт.}}</translation>
 <translation id="4342946437867096381">Для этого сайта уже сохранен пароль в аккаунте. Google может выбрать последний использованный пароль.</translation>
 <translation id="4365121137632832185">Группа вкладок. Развернута.</translation>
@@ -804,7 +804,7 @@
 <translation id="4824480232751123840">Громкость</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и ещё 1 вкладка}one{{domain} и ещё {count} вкладка}few{{domain} и ещё {count} вкладки}many{{domain} и ещё {count} вкладок}other{{domain} и ещё {count} вкладки}}</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
-<translation id="4833786495304741580">Автоматически отправлять в Google статистику использования и отчеты о сбоях.</translation>
+<translation id="4833786495304741580">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="483689884442613745">Сохранить…</translation>
 <translation id="4840495572919996524">Ваши закладки, пароли, история и другие данные больше не будут синхронизироваться с аккаунтом Google.</translation>
 <translation id="484280513275854557">Вы вышли из аккаунта, а данные о работе в браузере были удалены.</translation>
@@ -860,7 +860,7 @@
 <translation id="5083464117946352670">Не установлен размер файла</translation>
 <translation id="5085558938118581974">Поиск вкладок на синхронизированных устройствах</translation>
 <translation id="5090832849094901128">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />.</translation>
-<translation id="5118462200606189584">Добавить аккаунт</translation>
+<translation id="5118462200606189584">Добавить аккаунт…</translation>
 <translation id="5118713593561876160">Интересы</translation>
 <translation id="5118764316110575523">ВЫКЛ</translation>
 <translation id="5121618895923301719">Вы уже отслеживаете этот товар. Эта страница добавлена в папку <ph name="BEGIN_LINK" />Закладки на мобильном устройстве<ph name="END_LINK" />.</translation>
@@ -1299,7 +1299,7 @@
 <translation id="6998989275928107238">На</translation>
 <translation id="7004032350256606903">Согласно правилам вашей организации, использовать режим инкогнито обязательно.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="7005768247344091502">Настроить</translation>
+<translation id="7005768247344091502">Перейти в настройки</translation>
 <translation id="7015418667643980944">Режим Split View</translation>
 <translation id="7016070607649558507">У вас есть простой пароль. Устраните проблему.</translation>
 <translation id="7016958933495968912">Параметры рекомендаций</translation>
@@ -1428,7 +1428,7 @@
 <translation id="7640669552036055091">Вкладки из Android</translation>
 <translation id="7646263789464975852">Меню → Настройки → Проверка безопасности</translation>
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
-<translation id="764827086632467055">Найдите раздел, где выбирается браузер по умолчанию.</translation>
+<translation id="764827086632467055">Нажмите "Приложение браузера по умолчанию".</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7662316065255305764">Информация о сайте</translation>
@@ -1603,7 +1603,7 @@
 <translation id="8402673309244746971">Перейти к подпискам</translation>
 <translation id="8407669440184693619">Паролей для этого сайта не найдено</translation>
 <translation id="8407831512155324054">Нет простых паролей</translation>
-<translation id="842523302461531262">Сделать браузером по умолчанию в настройках</translation>
+<translation id="842523302461531262">Перейти в настройки</translation>
 <translation id="8428045167754449968">Город</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">ОК</translation>
