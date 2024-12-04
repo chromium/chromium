@@ -4,18 +4,13 @@
 
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 
-#import <memory>
-
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "components/data_sharing/internal/data_sharing_service_impl.h"
 #import "components/data_sharing/internal/empty_data_sharing_service.h"
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/public/features.h"
-#import "components/keyed_service/core/keyed_service_export.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync/model/data_type_store_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
@@ -44,7 +39,7 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
   DCHECK(profile);
 
   return std::make_unique<DataSharingServiceImpl>(
-      browser_state->GetStatePath(), browser_state->GetSharedURLLoaderFactory(),
+      profile->GetStatePath(), profile->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       ::GetChannel(), /* sdk_delegate = */ nullptr,
@@ -56,8 +51,8 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
 // static
 DataSharingService* DataSharingServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<DataSharingService*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+  return GetInstance()->GetServiceForProfileAs<DataSharingService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -67,9 +62,8 @@ DataSharingServiceFactory* DataSharingServiceFactory::GetInstance() {
 }
 
 DataSharingServiceFactory::DataSharingServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "DataSharingService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("DataSharingService",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -86,11 +80,6 @@ std::unique_ptr<KeyedService>
 DataSharingServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
   return BuildDataSharingService(browser_state);
-}
-
-web::BrowserState* DataSharingServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* browser_state) const {
-  return GetBrowserStateOwnInstanceInIncognito(browser_state);
 }
 
 }  // namespace data_sharing
