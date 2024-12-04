@@ -1471,10 +1471,34 @@ media::EncoderStatus RTCVideoEncoder::Impl::FillGenericFrameInfo(
     webrtc::CodecSpecificInfo& info,
     const media::BitstreamBufferMetadata& metadata) {
   CHECK(svc_controller_);
-  CHECK(metadata.svc_generic.has_value());
 
-  const media::SVCGenericMetadata& md_generic = metadata.svc_generic.value();
-  if (!md_generic.follow_svc_spec) {
+  auto config = svc_controller_->StreamConfig();
+
+  // For L1T1 we don't care what reference structure the encoder has produced.
+  const bool is_l1t1 =
+      config.num_spatial_layers == 1 && config.num_temporal_layers == 1;
+
+  std::vector<webrtc::ScalableVideoController::LayerFrameConfig> layer_frames =
+      svc_controller_->NextFrameConfig(metadata.key_frame);
+
+  DCHECK_EQ(config.num_spatial_layers, 1);
+  if (layer_frames.size() != 1ull /*num_of_spatial_layers*/) {
+    return {media::EncoderStatus::Codes::kEncoderFailedEncode,
+            "Invalid number of layer frames: " +
+                base::NumberToString(layer_frames.size())};
+  }
+
+  webrtc::GenericFrameInfo generic =
+      svc_controller_->OnEncodeDone(layer_frames[0]);
+
+  // VEA can skip svc_generic only for L1T1.
+  CHECK(metadata.svc_generic.has_value() || is_l1t1);
+
+  if (!is_l1t1 && !metadata.svc_generic->follow_svc_spec) {
+    const media::SVCGenericMetadata& md_generic = metadata.svc_generic.value();
+    // Some codecs, like H.265, may produce output bitstream that does not
+    // follow SVC spec and there is no parsing on the bitstream to get the
+    // reference structure.
     if (!md_generic.reference_flags || !md_generic.refresh_flags) {
       return {media::EncoderStatus::Codes::kEncoderFailedEncode,
               "Missing reference flags or refresh flags"};
@@ -1484,25 +1508,15 @@ media::EncoderStatus RTCVideoEncoder::Impl::FillGenericFrameInfo(
               "Invalid refreshed encode buffer flags: " +
                   base::NumberToString(*md_generic.refresh_flags)};
     }
-  }
 
-  std::vector<webrtc::ScalableVideoController::LayerFrameConfig> layer_frames =
-      svc_controller_->NextFrameConfig(metadata.key_frame);
-  if (layer_frames.size() != 1ull /*num_of_spatial_layers*/) {
-    return {media::EncoderStatus::Codes::kEncoderFailedEncode,
-            "Invalid number of layer frames: " +
-                base::NumberToString(layer_frames.size())};
-  }
-  if (layer_frames[0].TemporalId() != md_generic.temporal_idx) {
-    return {media::EncoderStatus::Codes::kEncoderFailedEncode,
-            "Invalid temporal id: " +
-                base::NumberToString(md_generic.temporal_idx) + " expected: " +
-                base::NumberToString(layer_frames[0].TemporalId())};
-  }
+    if (layer_frames[0].TemporalId() != md_generic.temporal_idx) {
+      return {media::EncoderStatus::Codes::kEncoderFailedEncode,
+              "Invalid temporal id: " +
+                  base::NumberToString(md_generic.temporal_idx) +
+                  " expected: " +
+                  base::NumberToString(layer_frames[0].TemporalId())};
+    }
 
-  webrtc::GenericFrameInfo generic =
-      svc_controller_->OnEncodeDone(layer_frames[0]);
-  if (!md_generic.follow_svc_spec) {
     generic.encoder_buffers.clear();
     if (encode_buffers_tid_.size() == 0) {
       encode_buffers_tid_.resize(webrtc::kMaxEncoderBuffers);
@@ -1876,11 +1890,10 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 #if BUILDFLAG(RTC_USE_H265)
     case webrtc::kVideoCodecH265:
 #endif  // BUILDFLAG(RTC_USE_H265)
-      if (metadata.svc_generic && svc_controller_) {
+      if (svc_controller_) {
         media::EncoderStatus status = FillGenericFrameInfo(info, metadata);
         if (!status.is_ok()) {
           NotifyErrorStatus(status);
-          svc_controller_.reset();
         }
       }
       break;
