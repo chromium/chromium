@@ -613,12 +613,15 @@ void ChromePasswordManagerClient::
           TouchToFillControllerAutofillDelegate::ShowHybridOption(
               should_show_hybrid_option));
 
-  const bool shown = GetOrCreateTouchToFillController()->Show(
+  TouchToFillController* ttf_controller = GetOrCreateTouchToFillController();
+  ttf_controller->InitData(
       credential_cache_
           .GetCredentialStore(URLToOrigin(driver->GetLastCommittedURL()))
           .GetCredentials(),
-      passkeys, std::move(ttf_controller_autofill_delegate),
-      GetWebAuthnCredManDelegateForDriver(driver), driver->AsWeakPtrImpl());
+      std::move(passkeys), driver->AsWeakPtrImpl());
+  const bool shown =
+      ttf_controller->Show(std::move(ttf_controller_autofill_delegate),
+                           GetWebAuthnCredManDelegateForDriver(driver));
   std::move(shown_cb).Run(shown);
 }
 #endif
@@ -1694,7 +1697,8 @@ TouchToFillController*
 ChromePasswordManagerClient::GetOrCreateTouchToFillController() {
   if (!touch_to_fill_controller_) {
     touch_to_fill_controller_ = std::make_unique<TouchToFillController>(
-        profile_, GetOrCreateKeyboardReplacingSurfaceVisibilityController());
+        profile_, GetOrCreateKeyboardReplacingSurfaceVisibilityController(),
+        std::make_unique<AcknowledgeGroupedCredentialSheetController>());
   }
   return touch_to_fill_controller_.get();
 }

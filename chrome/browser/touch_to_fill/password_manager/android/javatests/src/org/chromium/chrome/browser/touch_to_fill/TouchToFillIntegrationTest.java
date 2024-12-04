@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -40,7 +39,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
@@ -310,7 +311,8 @@ public class TouchToFillIntegrationTest {
     @Test
     @MediumTest
     @SuppressLint("SetTextI18n")
-    public void testDismissedIfUnableToShow() throws Exception {
+    @Features.EnableFeatures(ChromeFeatureList.PASSWORD_FORM_GROUPED_AFFILIATIONS)
+    public void testShowsAfterPreviousSheetDismissal() throws Exception {
         BottomSheetContent otherBottomSheetContent =
                 runOnUiThreadBlocking(
                         () -> {
@@ -377,6 +379,7 @@ public class TouchToFillIntegrationTest {
         pollUiThread(() -> getBottomSheetState() == SheetState.PEEK);
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
+        // Show TTF.
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFill.showCredentials(
@@ -389,16 +392,20 @@ public class TouchToFillIntegrationTest {
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
-        waitForEvent(mMockBridge).onDismissed();
-        verify(mMockBridge, never()).onCredentialSelected(any());
+        // Other sheet content is still displayed.
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
+        // Hide other bottom sheet content.
         runOnUiThreadBlocking(
-                () -> {
-                    mBottomSheetController.hideContent(
-                            otherBottomSheetContent, /* animate= */ false);
-                });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
+                () ->
+                        mBottomSheetController.hideContent(
+                                otherBottomSheetContent, /* animate= */ false));
+
+        // Wait for TTF to open.
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // Click on the credential and verify that the credential was selected.
+        TouchCommon.singleClickView(getCredentials().getChildAt(1));
+        waitForEvent(mMockBridge).onCredentialSelected(sAna);
     }
 
     @Test

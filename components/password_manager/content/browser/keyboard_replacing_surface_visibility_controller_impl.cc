@@ -9,7 +9,7 @@
 
 namespace password_manager {
 
-using State = KeyboardReplacingSurfaceVisibilityController::State;
+using State = KeyboardReplacingSurfaceVisibilityControllerImpl::State;
 
 KeyboardReplacingSurfaceVisibilityControllerImpl::
     KeyboardReplacingSurfaceVisibilityControllerImpl() = default;
@@ -17,7 +17,7 @@ KeyboardReplacingSurfaceVisibilityControllerImpl::
     ~KeyboardReplacingSurfaceVisibilityControllerImpl() = default;
 
 bool KeyboardReplacingSurfaceVisibilityControllerImpl::CanBeShown() const {
-  return state_ == State::kNotShownYet;
+  return state_ == State::kCanBeShown;
 }
 
 bool KeyboardReplacingSurfaceVisibilityControllerImpl::IsVisible() const {
@@ -48,8 +48,12 @@ void KeyboardReplacingSurfaceVisibilityControllerImpl::SetShown() {
   state_ = State::kShownBefore;
 }
 
+void KeyboardReplacingSurfaceVisibilityControllerImpl::SetCanBeShown() {
+  state_ = State::kCanBeShown;
+}
+
 void KeyboardReplacingSurfaceVisibilityControllerImpl::Reset() {
-  state_ = State::kNotShownYet;
+  state_ = State::kCanBeShown;
   if (!suppress_callback_.is_null() && frame_driver_) {
     frame_driver_->render_frame_host()
         ->GetRenderWidgetHost()

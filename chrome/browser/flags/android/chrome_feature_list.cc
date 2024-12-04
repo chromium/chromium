@@ -351,6 +351,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &page_info::kPageInfoAboutThisSiteMoreLangs,
     &password_manager::features::kBiometricAuthIdentityCheck,
     &password_manager::features::kBiometricTouchToFill,
+    &password_manager::features::kPasswordFormGroupedAffiliations,
     &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
     &password_manager::features::

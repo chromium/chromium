@@ -7,7 +7,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
@@ -49,17 +52,28 @@ TouchToFillController::TouchToFillController(
     Profile* profile,
     base::WeakPtr<
         password_manager::KeyboardReplacingSurfaceVisibilityController>
-        visibility_controller)
-    : profile_(profile), visibility_controller_(visibility_controller) {}
+        visibility_controller,
+    std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+        grouped_credential_sheet_controller)
+    : profile_(profile),
+      visibility_controller_(visibility_controller),
+      grouped_credential_sheet_controller_(
+          std::move(grouped_credential_sheet_controller)) {}
 TouchToFillController::~TouchToFillController() = default;
 
-bool TouchToFillController::Show(
-    base::span<const UiCredential> credentials,
-    base::span<PasskeyCredential> passkey_credentials,
-    std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
-    webauthn::WebAuthnCredManDelegate* cred_man_delegate,
+void TouchToFillController::InitData(
+    base::span<const password_manager::UiCredential> credentials,
+    std::vector<password_manager::PasskeyCredential> passkey_credentials,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver>
         frame_driver) {
+  credentials_ = std::vector(credentials.begin(), credentials.end());
+  passkey_credentials_ = std::move(passkey_credentials);
+  frame_driver_ = frame_driver;
+}
+
+bool TouchToFillController::Show(
+    std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
+    webauthn::WebAuthnCredManDelegate* cred_man_delegate) {
   if (!ttf_delegate->ShouldShowTouchToFill()) {
     return false;
   }
@@ -68,15 +82,15 @@ bool TouchToFillController::Show(
   ttf_delegate_ = std::move(ttf_delegate);
 
   cred_man_delegate_ = cred_man_delegate;
-  visibility_controller_->SetVisible(std::move(frame_driver));
+  visibility_controller_->SetVisible(frame_driver_);
 
-  ttf_delegate_->OnShow(credentials, passkey_credentials);
+  ttf_delegate_->OnShow(credentials_, passkey_credentials_);
   GURL url = ttf_delegate_->GetFrameUrl();
   // If the render frame host has been destroyed already, the url will be empty
   // in which case Show() should never be called.
   CHECK(!url.is_empty());
 
-  switch (GetResponsibleDisplayTarget(credentials, passkey_credentials)) {
+  switch (GetResponsibleDisplayTarget(credentials_, passkey_credentials_)) {
     case DisplayTarget::kNone:
       // Ideally this should never happen. However, in case we do end up
       // invoking Show() without credentials, we should not show Touch To Fill
@@ -134,7 +148,7 @@ bool TouchToFillController::Show(
                          TouchToFillView::IsOriginSecure(
                              network::IsOriginPotentiallyTrustworthy(
                                  url::Origin::Create(url))),
-                         SortCredentials(credentials), passkey_credentials,
+                         SortCredentials(credentials_), passkey_credentials_,
                          flags);
   }
 }
@@ -142,10 +156,49 @@ bool TouchToFillController::Show(
 void TouchToFillController::OnCredentialSelected(
     const UiCredential& credential) {
   view_.reset();
+
+  if (credential.match_type() ==
+      password_manager_util::GetLoginMatchType::kGrouped) {
+    std::string current_origin =
+        GetDisplayOrigin(url::Origin::Create(ttf_delegate_->GetFrameUrl()));
+    // Use `cred->display_name()` instead of origin here to correctly display
+    // credentials saved for android apps.
+    grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
+        std::move(current_origin), credential.display_name(),
+        GetNativeView()->GetWindowAndroid(),
+        base::BindOnce(
+            &TouchToFillController::OnAcknowledgementBeforeFillingReceived,
+            // Using `base::Unretained` is safe here because the
+            // `grouped_credential_sheet_controller_` is owned by this.
+            weak_ptr_factory_.GetWeakPtr(), credential));
+    return;
+  }
+
   // Unretained is safe here because TouchToFillController owns the delegate.
   ttf_delegate_->OnCredentialSelected(
       credential, base::BindOnce(&TouchToFillController::ActionCompleted,
                                  base::Unretained(this)));
+}
+
+void TouchToFillController::OnAcknowledgementBeforeFillingReceived(
+    const password_manager::UiCredential& credential,
+    AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
+  switch (dismiss_reason) {
+    case AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept:
+      // Unretained is safe here because TouchToFillController owns the
+      // delegate.
+      ttf_delegate_->OnCredentialSelected(
+          credential, base::BindOnce(&TouchToFillController::ActionCompleted,
+                                     weak_ptr_factory_.GetWeakPtr()));
+      break;
+    case AcknowledgeGroupedCredentialSheetBridge::DismissReason::kBack:
+      visibility_controller_->SetCanBeShown();
+      Show(std::move(ttf_delegate_), cred_man_delegate_);
+      break;
+    case AcknowledgeGroupedCredentialSheetBridge::DismissReason::kIgnore:
+      // Do nothing here.
+      break;
+  }
 }
 
 void TouchToFillController::OnPasskeyCredentialSelected(
@@ -221,6 +274,8 @@ void TouchToFillController::Reset() {
     Close();
   }
   visibility_controller_->Reset();
+  credentials_.clear();
+  passkey_credentials_.clear();
 }
 
 void TouchToFillController::ActionCompleted() {

@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MorePasskeysProperties;
@@ -68,7 +69,10 @@ class TouchToFillViewBinder {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == VISIBLE) {
             boolean visibilityChangeSuccessful = view.setVisible(model.get(VISIBLE));
-            if (!visibilityChangeSuccessful && model.get(VISIBLE)) {
+            if (!visibilityChangeSuccessful
+                    && model.get(VISIBLE)
+                    && !ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PASSWORD_FORM_GROUPED_AFFILIATIONS)) {
                 assert (model.get(DISMISS_HANDLER) != null);
                 model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
             }
