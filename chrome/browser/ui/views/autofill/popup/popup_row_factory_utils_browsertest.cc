@@ -214,7 +214,7 @@ class CreatePopupRowViewTest : public BaseCreatePopupRowViewTest {
 };
 
 // TODO(crbug.com/40261456): Re-enable failing test on Windows.
-#if defined(IS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SuggestionRowUiTest DISABLED_SuggestionRowUiTest
 #else
 #define MAYBE_SuggestionRowUiTest SuggestionRowUiTest
