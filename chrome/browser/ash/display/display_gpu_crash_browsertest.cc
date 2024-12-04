@@ -123,7 +123,9 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInMirror) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInUnified) {
+// TODO(crbug.com/368538284): Debug build prints too many error messages while
+// waiting for GPU restart, which causes test failure on bots.
+IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInUnified) {
   auto* display_manager = GetDisplayManager();
   display_manager->SetUnifiedDesktopEnabled(true);
 
