@@ -1,8 +1,17 @@
+// Logging to diagnose crbug.com/40273519
+function log(msg) {
+  if(window.console)
+    window.console.log(msg);
+}
+
 async function testScrollThumbNonScrolls(params) {
+  log("Entering testScrollThumbNonScrolls");
+  log("await waitForCompositorCommit");
   await waitForCompositorCommit();
   resetScrollOffset(params.scroller);
 
   const scrollRect = scroller.getBoundingClientRect();
+  log("scrollRect.left: " + scrollRect.left + " scrollRect.right: " + scrollRect.right);
 
   // Direction: rtl changes the x-wise position of the vertical scrollbar
   const rtl = params.scroller.style.direction === "rtl";
@@ -12,23 +21,34 @@ async function testScrollThumbNonScrolls(params) {
   const y = scrollRect.top + params.BUTTON_WIDTH + 2;
 
   await mouseMoveTo(x, y);
+  log("mouseMoveTo(" + x + "," + y + ")");
+
   await mouseDownAt(x, y);
+  log("mouseDownAt(" + x + "," + y + ")");
+
   assert_equals(params.scroller.scrollTop, 0, "Mousedown on vertical scrollbar thumb is not expected to scroll.");
 
   await mouseMoveTo(x, y - 10, Buttons.LEFT);
+  log("mouseMoveTo(" + x + "," + (y - 10) + ")");
   assert_equals(params.scroller.scrollTop, 0, "Vertical thumb drag beyond the track should not cause a scroll.");
 
   await mouseMoveTo(x, y, Buttons.LEFT);
+  log("mouseMoveTo(" + x + "," + y + ")");
   assert_equals(params.scroller.scrollTop, 0, "Vertical thumb drag beyond the track and back should not cause a scroll.");
 
   await mouseUpAt(x, y);
+  log("mouseUpAt(" + x + "," + y + ")");
+  log("Exiting testScrollThumbNonScrolls");
 }
 
 async function testThumbScrolls(params) {
+  log("Entering testThumbScrolls");
+  log("await waitForCompositorCommit");
   await waitForCompositorCommit();
   resetScrollOffset(params.scroller);
 
   const scrollRect = scroller.getBoundingClientRect();
+  log("scrollRect.left: " + scrollRect.left + " scrollRect.right: " + scrollRect.right);
 
   // Direction: rtl changes the x-wise position of the vertical scrollbar
   const rtl = params.scroller.style.direction === "rtl";
@@ -56,12 +76,16 @@ async function testThumbScrolls(params) {
   }[params.platform];
 
   await mouseMoveTo(x, y);
+  log("mouseMoveTo(" + x + "," + y + ")");
+
   await mouseDownAt(x, y);
+  log("mouseDownAt(" + x + "," + y + ")");
 
   // Scroll down
   for (var i = 0; i < 5; i++) {
     y += asc_increments[i];
     await mouseMoveTo(x, y, Buttons.LEFT);
+    log("mouseMoveTo(" + x + "," + y + ")");
     // TODO(crbug.com/1009892): Sometimes there is 1px difference in threaded scrollbar scrolling mode.
     // Change assert_approx_equals(..., 1, ...) to assert_equals(...) when the bug is fixed.
     let expected_offset = internals.runtimeFlags.fluentScrollbarsEnabled ?
@@ -77,6 +101,7 @@ async function testThumbScrolls(params) {
   for (var i = 0; i < 5; i++) {
     y -= desc_increments[i];
     await mouseMoveTo(x, y, Buttons.LEFT);
+    log("mouseMoveTo(" + x + "," + y + ")");
     // TODO(crbug.com/1009892): Ditto.
     let expected_offset = internals.runtimeFlags.fluentScrollbarsEnabled ?
         desc_offsets_fluent[i] :
@@ -88,6 +113,7 @@ async function testThumbScrolls(params) {
   };
 
   await mouseUpAt(x, y);
+  log("mouseUpAt(" + x + "," + y + ")");
   assert_equals(params.scroller.scrollTop, 0, "Mouseup on vertical scrollbar thumb is not expected to scroll.");
 
   // Since the horizontal scrolling is essentially the same codepath as vertical,
