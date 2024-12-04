@@ -11,7 +11,6 @@ source_set("thread_linux") {
   defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//dbus",
   ]
 }
