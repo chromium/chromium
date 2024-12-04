@@ -261,6 +261,7 @@ const int kExpectedExitAnimationCount = 2;
   if (Browser* browser = self.browser) {
     [browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   }
+  [self destroyLensUI:NO reason:lens::LensOverlayDismissalSource::kTabClosed];
 
   [super stop];
 }
