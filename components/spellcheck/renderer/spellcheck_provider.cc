@@ -444,8 +444,8 @@ bool SpellCheckProvider::SatisfyRequestFromCache(
       if (start <= text_length && end <= text_length)
         ++result_size;
     }
-    blink::WebVector<blink::WebTextCheckingResult> results(last_results_.data(),
-                                                           result_size);
+    blink::WebVector<blink::WebTextCheckingResult> results(
+        base::span(last_results_).first(result_size));
     completion->DidFinishCheckingText(results);
     return true;
   }
