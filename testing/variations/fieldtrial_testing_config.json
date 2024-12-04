@@ -4008,24 +4008,6 @@
             ]
         }
     ],
-    "CbdTimeframeRequired": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CbdTimeframeRequired"
-                    ]
-                }
-            ]
-        }
-    ],
     "CctClientDataHeader": [
         {
             "platforms": [

@@ -1279,14 +1279,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "cbd-timeframe-required",
-    "owners": [
-      "rainhard@chromium.org",
-      "msramek@chromium.org",
-      "chrome-privacy-controls@google.com"],
-    "expiry_milestone": 132
-  },
-  {
     "name": "CCO",
     "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
     "expiry_milestone": 136

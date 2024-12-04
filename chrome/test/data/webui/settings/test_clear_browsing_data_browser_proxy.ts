@@ -4,7 +4,7 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {ClearBrowsingDataBrowserProxy, ClearBrowsingDataResult, TimePeriodExperiment, UpdateSyncStateEvent} from 'chrome://settings/lazy_load.js';
+import type {ClearBrowsingDataBrowserProxy, ClearBrowsingDataResult, TimePeriod, UpdateSyncStateEvent} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -64,14 +64,13 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
     return Promise.resolve();
   }
 
-  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(
-      bucket: TimePeriodExperiment) {
+  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(bucket: TimePeriod) {
     this.methodCalled(
         'recordSettingsClearBrowsingDataBasicTimePeriodHistogram', bucket);
   }
 
-  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
-      bucket: TimePeriodExperiment) {
+  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(bucket:
+                                                                 TimePeriod) {
     this.methodCalled(
         'recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram', bucket);
   }

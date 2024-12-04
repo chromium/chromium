@@ -25,22 +25,6 @@ export enum TimePeriod {
   TIME_PERIOD_LAST = ALL_TIME
 }
 
-// TODO(crbug.com/40283307): Remove this after CbdTimeframeRequired finishes.
-// Keep in sync with the respective enum in
-// components/browsing_data/core/browsing_data_utils.h, and leave out values
-// that are not available on Desktop.
-export enum TimePeriodExperiment {
-  NOT_SELECTED = -1,
-  LAST_HOUR = 0,
-  LAST_DAY = 1,
-  LAST_WEEK = 2,
-  FOUR_WEEKS = 3,
-  ALL_TIME = 4,
-  // OLDER_THAN_30_DAYS = 5 is not used on Desktop.
-  LAST_15_MINUTES = 6,
-  TIME_PERIOD_LAST = LAST_15_MINUTES
-}
-
 /**
  * ClearBrowsingDataResult contains any possible follow-up notices that should
  * be shown to the user.
@@ -91,11 +75,11 @@ export interface ClearBrowsingDataBrowserProxy {
    */
   restartCounters(isBasic: boolean, timePeriod: number): void;
 
-  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(
-      bucket: TimePeriodExperiment): void;
+  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(bucket: TimePeriod):
+      void;
 
   recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
-      bucket: TimePeriodExperiment): void;
+      bucket: TimePeriod): void;
 }
 
 export class ClearBrowsingDataBrowserProxyImpl implements
@@ -116,21 +100,20 @@ export class ClearBrowsingDataBrowserProxyImpl implements
     chrome.send('restartClearBrowsingDataCounters', [isBasic, timePeriod]);
   }
 
-  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(
-      bucket: TimePeriodExperiment) {
+  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(bucket: TimePeriod) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.ClearBrowsingData.Basic.TimePeriod',
       bucket,
-      TimePeriodExperiment.TIME_PERIOD_LAST,
+      TimePeriod.TIME_PERIOD_LAST,
     ]);
   }
 
-  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
-      bucket: TimePeriodExperiment) {
+  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(bucket:
+                                                                 TimePeriod) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.ClearBrowsingData.Advanced.TimePeriod',
       bucket,
-      TimePeriodExperiment.TIME_PERIOD_LAST,
+      TimePeriod.TIME_PERIOD_LAST,
     ]);
   }
 

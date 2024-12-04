@@ -9084,11 +9084,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrintPreviewCrosPrimary)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"cbd-timeframe-required", flag_descriptions::kCbdTimeframeRequiredName,
-     flag_descriptions::kCbdTimeframeRequiredDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCbdTimeframeRequired)},
-#endif
 
     {"prerender2", flag_descriptions::kPrerender2Name,
      flag_descriptions::kPrerender2Description, kOsAll,

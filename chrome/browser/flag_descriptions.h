@@ -1802,9 +1802,6 @@ extern const char kPreloadingOnPerformancePageDescription[];
 extern const char kPrerender2Name[];
 extern const char kPrerender2Description[];
 
-extern const char kCbdTimeframeRequiredName[];
-extern const char kCbdTimeframeRequiredDescription[];
-
 extern const char kPriceChangeModuleName[];
 extern const char kPriceChangeModuleDescription[];
 

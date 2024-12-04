@@ -178,8 +178,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records the time period that users cleared from the Clear Browsing Data
-    dialog advanced tab. Users in the CbdTimeframeRequired experiment record
-    this only for the first deletion.
+    dialog advanced tab.
   </summary>
 </histogram>
 
@@ -190,8 +189,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records the time period that users cleared from the Clear Browsing Data
-    dialog basic tab. Users in the CbdTimeframeRequired experiment record this
-    only for the first deletion.
+    dialog basic tab.
   </summary>
 </histogram>
 
