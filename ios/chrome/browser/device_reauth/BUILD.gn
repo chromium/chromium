@@ -12,10 +12,8 @@ source_set("device_reauth") {
 
   deps = [
     "//components/device_reauth:device_reauth",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base:base",
   ]
