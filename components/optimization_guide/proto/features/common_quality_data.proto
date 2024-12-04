@@ -208,7 +208,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 9
+// Next ID: 10
 message ContentAttributes {
   // The IDs of the DOM nodes whose content is represented by this ContentNode.
   // This is used to map the results of the receiver's action back to the
@@ -236,6 +236,10 @@ message ContentAttributes {
 
   // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE.
   TableData table_data = 8;
+
+  // Provides metadata about the iframe if this ContentNode is of type
+  // CONTENT_ATTRIBUTE_IFRAME.
+  IframeData iframe_data = 9;
 }
 
 // The geometry of the content, in the page coordinate system.
@@ -286,11 +290,15 @@ message TextStyle {
 }
 
 // Information about the image. In the future, this may include a pixmap.
-// Next ID: 3
+// Next ID: 4
 message ImageInfo {
   BoundingRect image_bounding_box = 1;
 
   string image_caption = 2;
+
+  // Provides the URL for this image if available. For example, data: URLs for
+  // inline images will be skipped.
+  string source_url = 3;
 }
 
 message FormData {
@@ -373,6 +381,15 @@ message TableRow {
 
 message TableCell {
   repeated ContentNode cell_content = 3;
+}
+
+message IframeData {
+  // The URL of the iframe.
+  string url = 1;
+
+  // Indicates whether the iframe is likely to be an ad frame. This is set for
+  // both the root ad frame and its descendants.
+  bool likely_ad_frame = 2;
 }
 
 message UserAnnotationsEntry {
