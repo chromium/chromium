@@ -22,6 +22,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/media_switches.h"
 #include "services/audio/input_glitch_counter.h"
 
 namespace audio {
@@ -71,6 +72,8 @@ InputSyncWriter::InputSyncWriter(
       creation_time_(base::TimeTicks::Now()),
       audio_bus_memory_size_(media::AudioBus::CalculateMemorySize(params)),
       glitch_counter_(std::move(glitch_counter)),
+      confirm_reads_via_shmem_(
+          base::FeatureList::IsEnabled(media::kAudioInputConfirmReadsViaShmem)),
       dropped_buffer_glitch_{.duration = params.GetBufferDuration(),
                              .count = 1} {
   // We use CHECKs since this class is used for IPC.
@@ -156,24 +159,7 @@ void InputSyncWriter::Write(const media::AudioBus* data,
 
   pending_glitch_info_ += glitch_info;
 
-  // Check that the renderer side has read data so that we don't overwrite data
-  // that hasn't been read yet. The renderer side sends a signal over the socket
-  // each time it has read data. Here, we read those verifications before
-  // writing. We verify that each buffer index is in sequence.
-  size_t number_of_indices_available = socket_->Peek() / sizeof(uint32_t);
-  if (number_of_indices_available > 0) {
-    auto indices =
-        base::HeapArray<uint32_t>::WithSize(number_of_indices_available);
-    size_t bytes_received =
-        socket_->Receive(base::as_writable_bytes(indices.as_span()));
-    CHECK_EQ(number_of_indices_available * sizeof(indices[0]), bytes_received);
-    for (size_t i = 0; i < number_of_indices_available; ++i) {
-      ++next_read_buffer_index_;
-      CHECK_EQ(indices[i], next_read_buffer_index_);
-      CHECK_GT(number_of_filled_segments_, 0u);
-      --number_of_filled_segments_;
-    }
-  }
+  ReceiveReadConfirmationsFromConsumer();
 
   const size_t segment_count = audio_buses_.size();
   // If the shared memory is full, then we consider the deadline to be missed.
@@ -264,6 +250,61 @@ void InputSyncWriter::CheckTimeSinceLastWrite() {
 #endif
 }
 
+void InputSyncWriter::ReceiveReadConfirmationsFromConsumer() {
+  // This function confirms how much data the consumer has read, in order to
+  // update how much available space we have in shared memory. It does either by
+  // reading confirmations in shared memory or by reading confirmations from the
+  // socket, depending on the value of `confirm_reads_via_shmem_`.
+
+  if (confirm_reads_via_shmem_) {
+    // Experimental read confirmation mechanism.
+    // When the InputSyncWriter has written an audio buffer to a segment in
+    // shared memory, it sets an atomic flag `has_unread_data` in that segment
+    // to 1. When the consumer side has read the data, it resets
+    // `has_unread_data` back to 0 as a read confirmation.
+
+    // We loop forward until we meet the first segment with unread audio, or
+    // until we know that the consumer side has read all segments that we have
+    // written to.
+    while (next_read_buffer_index_ < next_buffer_id_) {
+      // The next buffer we expect to read a confirmation from.
+      media::AudioInputBuffer* buffer =
+          GetSharedInputBuffer(next_read_buffer_index_ % audio_buses_.size());
+      // If this buffer has been read by the consumer side, it will have set the
+      // `has_unread_data` flag to 0.
+      if (base::subtle::NoBarrier_Load(&(buffer->params.has_unread_data))) {
+        break;
+      }
+      ++next_read_buffer_index_;
+      CHECK_GT(number_of_filled_segments_, 0u);
+      --number_of_filled_segments_;
+    }
+    return;
+  }
+  // Old read confirmation mechanism.
+  // When the InputSyncWriter has written an audio buffer to a segment in
+  // shared memory, it sends the index of that audio buffer over the socket.
+  // When the consumer side has read the data, it sends the index of the next
+  // buffer it wants to write back over the socket as a read confirmation.
+
+  // Read as many confirmations from the socket as are available, assert that
+  // they are in order, and update the number of filled segments.
+  size_t number_of_indices_available = socket_->Peek() / sizeof(uint32_t);
+  if (number_of_indices_available > 0) {
+    auto indices =
+        base::HeapArray<uint32_t>::WithSize(number_of_indices_available);
+    size_t bytes_received =
+        socket_->Receive(base::as_writable_bytes(indices.as_span()));
+    CHECK_EQ(number_of_indices_available * sizeof(indices[0]), bytes_received);
+    for (size_t i = 0; i < number_of_indices_available; ++i) {
+      ++next_read_buffer_index_;
+      CHECK_EQ(indices[i], next_read_buffer_index_);
+      CHECK_GT(number_of_filled_segments_, 0u);
+      --number_of_filled_segments_;
+    }
+  }
+}
+
 bool InputSyncWriter::PushDataToFifo(
     const media::AudioBus& data,
     double volume,
@@ -333,6 +374,13 @@ bool InputSyncWriter::WriteDataToCurrentSegment(
   buffer->params.id = next_buffer_id_;
   buffer->params.glitch_duration_us = glitch_info.duration.InMicroseconds();
   buffer->params.glitch_count = glitch_info.count;
+
+  if (confirm_reads_via_shmem_) {
+    // Part of the experimental synchronization mechanism. We will not write
+    // more data to this buffer until the consumer side has set this flag back
+    // to 0.
+    base::subtle::NoBarrier_Store(&(buffer->params.has_unread_data), 1);
+  }
 
   // Copy data into shared memory using pre-allocated audio buses.
   data.CopyTo(audio_buses_[current_segment_id_].get());

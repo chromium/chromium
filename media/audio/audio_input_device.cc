@@ -10,10 +10,12 @@
 #include "media/audio/audio_input_device.h"
 
 #include <stdint.h>
+
 #include <utility>
 #include <vector>
 
 #include "audio_device_stats_reporter.h"
+#include "base/atomicops.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -28,6 +30,7 @@
 #include "build/build_config.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/base/audio_bus.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -89,6 +92,8 @@ class AudioInputDevice::AudioThreadCallback
 
   void OnSocketError() override;
 
+  bool WillConfirmReadsViaShmem() const override;
+
  private:
   const bool enable_uma_;
   base::UnsafeSharedMemoryRegion shared_memory_region_;
@@ -108,6 +113,7 @@ class AudioInputDevice::AudioThreadCallback
   base::RepeatingClosure got_data_callback_;
 
   AudioDeviceStatsReporter stats_reporter_;
+  const bool confirm_reads_via_shmem_;
 };
 
 AudioInputDevice::AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,
@@ -395,8 +401,9 @@ AudioInputDevice::AudioThreadCallback::AudioThreadCallback(
                                             audio_parameters.sample_rate()),
       frames_since_last_got_data_callback_(0),
       got_data_callback_(std::move(got_data_callback_)),
-      stats_reporter_(audio_parameters,
-                      AudioDeviceStatsReporter::Type::kInput) {
+      stats_reporter_(audio_parameters, AudioDeviceStatsReporter::Type::kInput),
+      confirm_reads_via_shmem_(
+          base::FeatureList::IsEnabled(kAudioInputConfirmReadsViaShmem)) {
   // CHECK that the shared memory is large enough. The memory allocated must
   // be at least as large as expected.
   CHECK_LE(memory_length_, shared_memory_region_.GetSize());
@@ -435,11 +442,9 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   // The shared memory represents parameters, size of the data buffer and the
   // actual data buffer containing audio data. Map the memory into this
   // structure and parse out parameters and the data area.
-  const uint8_t* ptr =
-      static_cast<const uint8_t*>(shared_memory_mapping_.memory());
+  uint8_t* ptr = static_cast<uint8_t*>(shared_memory_mapping_.memory());
   ptr += current_segment_id_ * segment_length_;
-  const AudioInputBuffer* buffer =
-      reinterpret_cast<const AudioInputBuffer*>(ptr);
+  AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(ptr);
 
   // Usually this will be equal but in the case of low sample rate (e.g. 8kHz,
   // the buffer may be bigger (on mac at least)).
@@ -492,6 +497,13 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
 
   capture_callback_->Capture(audio_bus, capture_time, glitch_info,
                              buffer->params.volume);
+  if (confirm_reads_via_shmem_) {
+    // Use Release_Store to create a memory barrier that ensures that
+    // callback_capture_->Capture() doesn't get moved to after has_unread_data
+    // has been changed, which would risk that the other side overwrites the
+    // memory while being used in Capture().
+    base::subtle::Release_Store(&(buffer->params.has_unread_data), 0);
+  }
 
   if (++current_segment_id_ >= total_segments_)
     current_segment_id_ = 0u;
@@ -506,6 +518,10 @@ void AudioInputDevice::AudioThreadCallback::OnSocketError() {
   capture_callback_->OnCaptureError(
       AudioCapturerSource::ErrorCode::kSocketError,
       "Socket closed unexpectedly");
+}
+
+bool AudioInputDevice::AudioThreadCallback::WillConfirmReadsViaShmem() const {
+  return confirm_reads_via_shmem_;
 }
 
 }  // namespace media

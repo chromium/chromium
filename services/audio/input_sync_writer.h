@@ -79,6 +79,10 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // threshold logs info about that.
   void CheckTimeSinceLastWrite();
 
+  // Called by Write(). Checks how much data has been read from shared memory by
+  // the consumer side, and updates how much space is left in shared memory.
+  void ReceiveReadConfirmationsFromConsumer();
+
   // Push |data| and metadata to |audio_buffer_fifo_|. Returns true if
   // successful. Logs error and returns false if the fifo already reached the
   // maximum size.
@@ -126,13 +130,16 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // Size in bytes of each audio bus.
   const int audio_bus_memory_size_;
 
-  // Increasing ID used for checking audio buffers are in correct sequence at
-  // read side.
+  // The id for the next buffer that we will write into shared memory. Starts at
+  // 0 and increases by one for each buffer written into shared memory.
   uint32_t next_buffer_id_ = 0;
 
-  // Next expected audio buffer index to have been read at the other side. We
-  // will get the index read at the other side over the socket. Note that this
-  // index does not correspond to |next_buffer_id_|, it's two separate counters.
+  // The index of the next audio buffer to be read on the consumer side, as far
+  // as the InputSyncWriter currently knows. Starts at 0 and increases by one
+  // for each buffer that the consumer side has read from the shared memory.
+  //
+  // If `confirm_reads_via_shmem_` is true, this is the index of the next buffer
+  // to be released by the consumer via resetting its `has_unread_data` flag.
   uint32_t next_read_buffer_index_ = 0;
 
   // Keeps track of number of filled buffer segments in the ring buffer to
@@ -181,6 +188,10 @@ class InputSyncWriter final : public InputController::SyncWriter {
 
   // Glitch info that has yet to be successfully communicated to the renderer.
   media::AudioGlitchInfo pending_glitch_info_;
+
+  // Enables an experimental synchronization model where consumer side puts read
+  // confirmations in shared memory instead of sending socket messages.
+  const bool confirm_reads_via_shmem_;
 
   // Represents the glitch info of one dropped buffer.
   const media::AudioGlitchInfo dropped_buffer_glitch_;
