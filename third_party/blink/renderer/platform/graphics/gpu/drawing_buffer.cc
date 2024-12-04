@@ -818,10 +818,10 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
 
   resource.set_mailbox(color_buffer->shared_image->mailbox());
   resource.set_texture_target(color_buffer->shared_image->GetTextureTarget());
-  resource.size = color_buffer->size;
-  resource.format = color_buffer->format;
+  resource.size = color_buffer->shared_image->size();
+  resource.format = color_buffer->shared_image->format();
   resource.is_overlay_candidate = color_buffer->is_overlay_candidate;
-  resource.color_space = color_buffer->color_space;
+  resource.color_space = color_buffer->shared_image->color_space();
   resource.origin = color_buffer->shared_image->surface_origin();
   resource.hdr_metadata = hdr_metadata_;
   resource.resource_source =
