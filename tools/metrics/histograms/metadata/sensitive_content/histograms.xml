@@ -34,6 +34,20 @@ chromium-metrics-reviews@google.com.
   <variant name="RegularTabSwitcherPane" summary="regular tab switcher pane"/>
 </variants>
 
+<histogram name="SensitiveContent.SensitiveTabSwitchingAnimations"
+    enum="TabSwitchingAnimation" expires_after="2025-05-04">
+  <owner>theocristea@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records how many times each tab switching animation is marked as sensitive.
+    Emitted every time a tab switching animation occurs and is marked as
+    sensitive. A tab switching animation is marked as sensitive if it offers a
+    preview of a sensitive tab. Each bucket of this histogram represents one
+    type of tab switching animation.
+  </summary>
+</histogram>
+
 <histogram
     name="SensitiveContent.TabSwitching.{TabSwitchingSurface}.Sensitivity"
     enum="TabSwitchingSurfaceContentSensitivity" expires_after="2025-05-04">

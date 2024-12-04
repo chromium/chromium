@@ -405,6 +405,7 @@ public class SensitiveContentTest {
         histogramWatcher.assertExpected();
     }
 
+    // This test also tests if metrics are recorded properly.
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
@@ -424,6 +425,15 @@ public class SensitiveContentTest {
         pollUiThread(() -> thirdTab.getTabHasSensitiveContent());
         // Open a fourth tab.
         page.openNewTabFast();
+
+        final String histogram = "SensitiveContent.SensitiveTabSwitchingAnimations";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                histogram,
+                                SensitiveContentClient.TabSwitchingAnimation.TOP_TOOLBAR_SWIPE,
+                                /* times= */ 2)
+                        .build();
 
         // Swiping from a not sensitive tab to a sensitive one should mark the content container as
         // sensitive.
@@ -445,15 +455,23 @@ public class SensitiveContentTest {
         // Even after the swipe ends, the content container should not be sensitive.
         assertEquals(
                 contentContainer.getContentSensitivity(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+
+        histogramWatcher.assertExpected();
     }
 
     // The tested animation occurs for example when a link is opened in a new tab or in a new tab in
-    // group.
+    // group. This test also tests if metrics are recorded properly.
     @Test
     @MediumTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     @Restriction(DeviceFormFactor.PHONE)
     public void testSimpleAnimationLayoutHasSensitiveContent() throws TimeoutException {
+        final String histogram = "SensitiveContent.SensitiveTabSwitchingAnimations";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogram,
+                        SensitiveContentClient.TabSwitchingAnimation.NEW_TAB_IN_BACKGROUND);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     initializeLayoutManagerPhone(
@@ -530,6 +548,8 @@ public class SensitiveContentTest {
         assertEquals(
                 mLayoutManagerChromePhone.getContentContainer().getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test

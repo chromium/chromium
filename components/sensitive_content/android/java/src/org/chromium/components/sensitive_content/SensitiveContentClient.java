@@ -8,6 +8,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -19,6 +20,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.Optional;
 
@@ -39,6 +42,20 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
          * @param contentIsSensitive The new content sensitivity.
          */
         void setContentSensitivity(View containerView, boolean contentIsSensitive);
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        TabSwitchingAnimation.NEW_TAB_IN_BACKGROUND,
+        TabSwitchingAnimation.TOP_TOOLBAR_SWIPE,
+        TabSwitchingAnimation.COUNT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabSwitchingAnimation {
+        int NEW_TAB_IN_BACKGROUND = 0;
+        int TOP_TOOLBAR_SWIPE = 1;
+        int COUNT = 2;
     }
 
     /** Caches the current content sensitivity of the {@link WebContents}. */
