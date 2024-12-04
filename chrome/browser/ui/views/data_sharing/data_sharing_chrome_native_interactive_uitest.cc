@@ -140,10 +140,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
                 }));
 }
 
-// TODO (368057577) This test was disabled after moving to TabGroupSyncService.
-// Re-enable this test.
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
-                       DISABLED_ShowManageBubble) {
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
   auto* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           browser()->profile());
@@ -185,10 +182,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
       }));
 }
 
-// TODO (368057577) This test was disabled after moving to TabGroupSyncService.
-// Re-enable this test.
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
-                       DISABLED_GenerateWebUIUrl) {
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::string fake_collab_id = "fake_collab_id";
   std::string fake_access_token = "fake_access_token";

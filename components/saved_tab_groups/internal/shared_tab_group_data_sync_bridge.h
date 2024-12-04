@@ -182,6 +182,9 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // `store_write_batch_on_destroy` is true.
   void DestroyOngoingWriteBatch(bool store_write_batch_on_destroy);
 
+  // Returns true of the bridge is ready to sync and accept new local changes.
+  bool IsReadyToSync() const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.

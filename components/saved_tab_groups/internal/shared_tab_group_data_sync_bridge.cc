@@ -845,7 +845,7 @@ bool SharedTabGroupDataSyncBridge::IsEntityDataValid(
 void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!store_ || !model_wrapper_->IsInitialized()) {
+  if (!IsReadyToSync()) {
     // Ignore any changes before the model is successfully initialized.
     DVLOG(2) << "SavedTabGroupAddedLocally called while not initialized";
     return;
@@ -895,7 +895,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!store_ || !model_wrapper_->IsInitialized()) {
+  if (!IsReadyToSync()) {
     // Ignore any changes before the model is successfully initialized.
     DVLOG(2) << "SavedTabGroupUpdatedLocally called while not initialized";
     return;
@@ -931,7 +931,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
 void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
     const SavedTabGroup& removed_group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!store_ || !model_wrapper_->IsInitialized()) {
+  if (!IsReadyToSync()) {
     // Ignore any changes before the model is successfully initialized.
     DVLOG(2) << "SavedTabGroupRemovedLocally called while not initialized";
     return;
@@ -957,7 +957,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
 void SharedTabGroupDataSyncBridge::ProcessTabGroupLocalIdChanged(
     const base::Uuid& group_guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!store_ || !model_wrapper_->IsInitialized()) {
+  if (!IsReadyToSync()) {
     // Ignore any changes before the model is successfully initialized.
     DVLOG(2) << "SavedTabGroupLocalIdChanged called while not initialized";
     return;
@@ -1364,6 +1364,11 @@ void SharedTabGroupDataSyncBridge::DestroyOngoingWriteBatch(
                        weak_ptr_factory_.GetWeakPtr()));
   }
   ongoing_write_batch_ = nullptr;
+}
+
+bool SharedTabGroupDataSyncBridge::IsReadyToSync() const {
+  return model_wrapper_->IsInitialized() &&
+         change_processor()->IsTrackingMetadata();
 }
 
 }  // namespace tab_groups
