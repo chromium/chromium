@@ -235,13 +235,12 @@ bool AppBrowserController::HasTitlebarMenuButton() const {
 }
 
 bool AppBrowserController::HasTitlebarAppOriginText() const {
-  bool hide = base::FeatureList::IsEnabled(features::kHideWebAppOriginText);
 #if BUILDFLAG(IS_CHROMEOS)
   // Do not show origin text for System Apps.
   if (system_app())
-    hide = true;
+    return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return !hide;
+  return true;
 }
 
 bool AppBrowserController::HasTitlebarContentSettings() const {

@@ -1950,21 +1950,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopeHttpUrlsDisplayAppTitle) {
   EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
 }
 
-class WebAppBrowserTest_HideOrigin : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_HideOrigin() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kHideWebAppOriginText};
-};
-
-// WebApps should not have origin text with this feature on.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_HideOrigin, OriginTextRemoved) {
+// WebApps should have origin text.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OriginTextRemoved) {
   const GURL app_url = GetInstallableAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
-  EXPECT_FALSE(app_browser->app_controller()->HasTitlebarAppOriginText());
+  EXPECT_TRUE(app_browser->app_controller()->HasTitlebarAppOriginText());
 }
 
 // Check that a subframe on a regular web page can navigate to a URL that
