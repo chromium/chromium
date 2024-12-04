@@ -296,9 +296,6 @@ enum OptimizationType {
   TEXT_CLASSIFIER_ENTITY_DETECTION = 74;
   // Provides information for what to show in the debug icon view.
   OPTIMIZATION_GUIDE_ICON_VIEW = 76;
-  // This optimization provides information about whether a merchant is
-  // opted-out of Visa virtual cards for a URL.
-  MERCHANT_TRUST_SIGNALS_V3 = 77;
 }
 
 // Presents semantics for how page load URLs should be matched.
