@@ -19315,6 +19315,7 @@ from previous Chrome versions.
   <int value="-413286115"
       label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
+  <int value="-411616193" label="TabStripGroupReorderAndroid:enabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>
   <int value="-410456165" label="AiSettingsPageRefresh:enabled"/>
   <int value="-408800711"
@@ -19759,6 +19760,7 @@ from previous Chrome versions.
       label="CompressionDictionaryTransportOverHttp2:enabled"/>
   <int value="-239616243" label="HighDynamicRange:enabled"/>
   <int value="-239176328" label="BluetoothAggressiveAppearanceFilter:enabled"/>
+  <int value="-238925706" label="TabStripGroupReorderAndroid:disabled"/>
   <int value="-238717837" label="CellularUseSecondEuicc:disabled"/>
   <int value="-238415226" label="GlobalVaapiLock:disabled"/>
   <int value="-238175256" label="EarlyExitOnNoopClassOrStyleChange:enabled"/>

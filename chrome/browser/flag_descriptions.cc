@@ -4895,6 +4895,11 @@ const char kTabStripGroupContextMenuAndroidDescription[] =
     "titles, allowing user to assign colors and names to tab groups, open new "
     "tab within the group, ungroup, and close group";
 
+const char kTabStripGroupReorderAndroidName[] = "Tab Strip Group Reorder";
+const char kTabStripGroupReorderAndroidDescription[] =
+    "Enables long-pressing on tab strip tab group indicators to enter reorder "
+    "mode. Users will then be able to drag the tab group to reorder it.";
+
 const char kTabStripIncognitoMigrationName[] =
     "Tab Strip Incognito switcher migration to toolbar";
 const char kTabStripIncognitoMigrationDescription[] =
