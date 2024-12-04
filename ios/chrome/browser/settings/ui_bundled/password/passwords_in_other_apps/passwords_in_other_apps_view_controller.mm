@@ -652,7 +652,8 @@ CGFloat const kContentOptimalWidth = 327;
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
   [self didTapActionButton];
-  return YES;
+  // Return NO as the app is handling the opening of the settings page.
+  return NO;
 }
 
 #pragma mark - Private
