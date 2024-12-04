@@ -205,7 +205,7 @@ class NET_EXPORT SchemefulSite {
   // Returns the host of the underlying `origin`, which will usually be the
   // registrable domain. This is private because if it were public, it would
   // trivially allow circumvention of the "Schemeful"-ness of this class.
-  std::string registrable_domain_or_host() const {
+  const std::string& registrable_domain_or_host() const {
     return site_as_origin_.host();
   }
 
