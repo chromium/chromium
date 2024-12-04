@@ -489,11 +489,6 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     return nullptr;
   }
 
-  Canvas2DLayerBridge* bridge = canvas()->GetOrCreateCanvas2DLayerBridge();
-  if (bridge == nullptr) [[unlikely]] {
-    return nullptr;
-  }
-
   CanvasResourceProvider* provider = ResourceProvider();
   if (provider != nullptr) [[likely]] {
     // If we already had a provider, we can check whether it recorded ops passed
