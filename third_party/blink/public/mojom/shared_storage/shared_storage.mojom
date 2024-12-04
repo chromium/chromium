@@ -131,4 +131,14 @@ interface SharedStorageDocumentService {
   // failure.
   SharedStorageUpdate(network.mojom.SharedStorageModifierMethodWithOptions method_with_options)
       => (string error_message);
+
+  // Handle each modifier method within `methods_with_options`. If `with_lock`
+  // is provided, the methods within the batch will be executed with a lock
+  // acquired on the resource with name `with_lock`. Return an empty
+  // `error_message` on success, and return an non-empty `error_message` on
+  // failure.
+  SharedStorageBatchUpdate(
+    array<network.mojom.SharedStorageModifierMethodWithOptions> methods_with_options,
+    string? with_lock)
+      => (string error_message);
 };

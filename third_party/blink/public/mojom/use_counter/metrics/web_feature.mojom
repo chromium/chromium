@@ -4581,6 +4581,7 @@ enum WebFeature {
   kCanvas2DIsPointInStroke = 5207,
   kCanvas2DGetImageData = 5208,
   kV8ExtendingNonExtensibleWithPrivate = 5209,
+  kSharedStorageAPI_BatchUpdate_Method = 5210,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -293,6 +293,42 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
   std::move(callback).Run(/*error_message=*/{});
 }
 
+void SharedStorageDocumentServiceImpl::SharedStorageBatchUpdate(
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
+    const std::optional<std::string>& with_lock,
+    SharedStorageBatchUpdateCallback callback) {
+  if (render_frame_host().GetLastCommittedOrigin().opaque()) {
+    receiver_.ReportBadMessage(
+        "Attempted to call SharedStorageBatchUpdate() from an opaque origin "
+        "context.");
+    return;
+  }
+
+  if (!CheckSecureContext(render_frame_host())) {
+    std::move(callback).Run(
+        /*error_message=*/kSharedStorageMethodFromInsecureContextMessage);
+
+    // TODO(crbug.com/40068897): Invoke receiver_.ReportBadMessage here when
+    // we can be sure honest renderers won't hit this path.
+    return;
+  }
+
+  std::string debug_message;
+  if (!IsSharedStorageAllowed(&debug_message)) {
+    std::move(callback).Run(GetSharedStorageErrorMessage(
+        debug_message, kSharedStorageDisabledMessage));
+    return;
+  }
+
+  GetSharedStorageRuntimeManager()->lock_manager().SharedStorageBatchUpdate(
+      std::move(methods_with_options), with_lock,
+      /*shared_storage_origin=*/render_frame_host().GetLastCommittedOrigin(),
+      AccessScope::kWindow, main_frame_id(), base::DoNothing());
+
+  std::move(callback).Run(/*error_message=*/{});
+}
+
 base::WeakPtr<SharedStorageDocumentServiceImpl>
 SharedStorageDocumentServiceImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

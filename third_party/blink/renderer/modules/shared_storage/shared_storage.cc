@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_modifier_method.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_modifier_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
@@ -70,6 +71,7 @@ enum class SharedStorageSetterMethod {
   kAppend = 1,
   kDelete = 2,
   kClear = 3,
+  kBatchUpdate = 4,
 };
 
 void LogTimingHistogramForSetterMethod(SharedStorageSetterMethod method,
@@ -97,6 +99,10 @@ void LogTimingHistogramForSetterMethod(SharedStorageSetterMethod method,
     case SharedStorageSetterMethod::kClear:
       base::UmaHistogramMediumTimes(
           base::StrCat({histogram_prefix, "Timing.Clear"}), elapsed_time);
+      break;
+    case SharedStorageSetterMethod::kBatchUpdate:
+      base::UmaHistogramMediumTimes(
+          base::StrCat({histogram_prefix, "Timing.BatchUpdate"}), elapsed_time);
       break;
     default:
       NOTREACHED();
@@ -573,6 +579,75 @@ ScriptPromise<IDLAny> SharedStorage::clear(
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kClear,
+                          GlobalScope::kSharedStorageWorklet, start_time));
+  }
+
+  return promise;
+}
+
+ScriptPromise<IDLAny> SharedStorage::batchUpdate(
+    ScriptState* script_state,
+    const HeapVector<Member<SharedStorageModifierMethod>>& methods,
+    ExceptionState& exception_state) {
+  return batchUpdate(script_state, methods,
+                     SharedStorageModifierMethodOptions::Create(),
+                     exception_state);
+}
+
+ScriptPromise<IDLAny> SharedStorage::batchUpdate(
+    ScriptState* script_state,
+    const HeapVector<Member<SharedStorageModifierMethod>>& methods,
+    const SharedStorageModifierMethodOptions* options,
+    ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  CHECK(execution_context->IsWindow() ||
+        execution_context->IsSharedStorageWorkletGlobalScope());
+
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  if (execution_context->IsWindow() &&
+      execution_context->GetSecurityOrigin()->IsOpaque()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      kOpaqueContextOriginCheckErrorMessage);
+    return promise;
+  }
+
+  if (!CheckSharedStoragePermissionsPolicy(*execution_context,
+                                           exception_state)) {
+    return promise;
+  }
+
+  Vector<network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>
+      mojom_methods;
+  for (auto& method : methods) {
+    mojom_methods.push_back(method->CloneMojomMethod());
+  }
+
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
+  if (execution_context->IsWindow()) {
+    GetSharedStorageDocumentService(execution_context)
+        ->SharedStorageBatchUpdate(
+            std::move(mojom_methods), with_lock,
+            WTF::BindOnce(&OnSharedStorageUpdateFinished,
+                          WrapPersistent(resolver), WrapPersistent(this),
+                          SharedStorageSetterMethod::kBatchUpdate,
+                          GlobalScope::kWindow, start_time));
+  } else {
+    GetSharedStorageWorkletServiceClient(execution_context)
+        ->SharedStorageBatchUpdate(
+            std::move(mojom_methods), with_lock,
+            WTF::BindOnce(&OnSharedStorageUpdateFinished,
+                          WrapPersistent(resolver), WrapPersistent(this),
+                          SharedStorageSetterMethod::kBatchUpdate,
                           GlobalScope::kSharedStorageWorklet, start_time));
   }
 

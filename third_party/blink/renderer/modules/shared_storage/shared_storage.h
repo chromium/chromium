@@ -22,6 +22,7 @@ class ScriptState;
 class SharedStorageWorklet;
 class SharedStorageSetMethodOptions;
 class SharedStorageModifierMethodOptions;
+class SharedStorageModifierMethod;
 class SharedStorageRunOperationMethodOptions;
 class SharedStorageUrlWithMetadata;
 class SharedStorageWorklet;
@@ -68,6 +69,15 @@ class MODULES_EXPORT SharedStorage final
   ScriptPromise<IDLAny> clear(ScriptState*,
                               const SharedStorageModifierMethodOptions*,
                               ExceptionState&);
+  ScriptPromise<IDLAny> batchUpdate(
+      ScriptState*,
+      const HeapVector<Member<SharedStorageModifierMethod>>& methods,
+      ExceptionState&);
+  ScriptPromise<IDLAny> batchUpdate(
+      ScriptState*,
+      const HeapVector<Member<SharedStorageModifierMethod>>& methods,
+      const SharedStorageModifierMethodOptions*,
+      ExceptionState&);
   ScriptPromise<IDLString> get(ScriptState*,
                                const String& key,
                                ExceptionState&);
