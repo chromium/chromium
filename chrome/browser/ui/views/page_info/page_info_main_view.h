@@ -49,6 +49,8 @@ class PageInfoMainView : public views::View,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainLayoutElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionsElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMerchantTrustElementId);
+
   // Container view that fills the bubble width for button rows. Supports
   // updating the layout.
   class ContainerView : public views::View {

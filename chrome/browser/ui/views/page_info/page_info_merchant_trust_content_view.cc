@@ -11,7 +11,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
+                                      kElementIdForTesting);
+
 PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
+  SetProperty(views::kElementIdentifierKey, kElementIdForTesting);
   SetOrientation(views::LayoutOrientation::kVertical);
   // TODO(crbug.com/378854730): Set up layout.
 

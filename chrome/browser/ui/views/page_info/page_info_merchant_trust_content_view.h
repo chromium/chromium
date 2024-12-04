@@ -12,6 +12,8 @@
 // in page info.
 class PageInfoMerchantTrustContentView : public views::FlexLayoutView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementIdForTesting);
+
   PageInfoMerchantTrustContentView();
   ~PageInfoMerchantTrustContentView() override;
 

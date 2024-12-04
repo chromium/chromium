@@ -73,6 +73,8 @@ int GetSeparatorPadding() {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kCookieButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kMainLayoutElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kPermissionsElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
+                                      kMerchantTrustElementId);
 
 PageInfoMainView::ContainerView::ContainerView() {
   auto box_layout = std::make_unique<views::BoxLayout>(
@@ -672,6 +674,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton() {
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   merchant_trust_button->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
+  merchant_trust_button->SetProperty(views::kElementIdentifierKey,
+                                     kMerchantTrustElementId);
   // TODO(crbug.com/381215331): Add custom subtitle with a star rating.
   return merchant_trust_button;
 }
