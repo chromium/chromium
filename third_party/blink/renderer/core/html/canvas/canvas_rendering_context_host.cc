@@ -155,9 +155,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
           : nullptr;
 
   std::unique_ptr<CanvasResourceProvider> provider;
-  const SkImageInfo resource_info =
-      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        GetRenderingContextSkColorInfo());
+  const SkColorInfo resource_info = GetRenderingContextSkColorInfo();
   // Do not initialize the CRP using Skia. The CRP can have bottom left origin
   // in which case Skia Graphite won't be able to render into it, and WebGL is
   // responsible for clearing the CRP when it renders anyway and we have clear
@@ -250,9 +248,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
           : nullptr;
 
   std::unique_ptr<CanvasResourceProvider> provider;
-  const SkImageInfo resource_info =
-      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        GetRenderingContextSkColorInfo());
+  const SkColorInfo resource_info = GetRenderingContextSkColorInfo();
   const bool use_gpu =
       hint == RasterModeHint::kPreferGPU && ShouldAccelerate2dContext();
   constexpr auto kShouldInitialize =
