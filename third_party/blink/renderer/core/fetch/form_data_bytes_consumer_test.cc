@@ -5,13 +5,20 @@
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_test_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -22,6 +29,8 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
+#include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -40,16 +49,66 @@ using testing::Return;
 using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
 using MockBytesConsumer = BytesConsumerTestUtil::MockBytesConsumer;
 
-class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
+class DataPipeGetterImpl : public network::mojom::blink::DataPipeGetter {
+ public:
+  explicit DataPipeGetterImpl(
+      mojo::PendingReceiver<network::mojom::blink::DataPipeGetter> receiver) {
+    receivers_.set_disconnect_handler(WTF::BindRepeating(
+        &DataPipeGetterImpl::OnMojoDisconnect, WTF::Unretained(this)));
+    receivers_.Add(this, std::move(receiver));
+  }
+  DataPipeGetterImpl(const DataPipeGetterImpl&) = delete;
+  DataPipeGetterImpl& operator=(const DataPipeGetterImpl&) = delete;
+  ~DataPipeGetterImpl() override = default;
+
+  // network::mojom::DataPipeGetter implementation:
+  void Read(mojo::ScopedDataPipeProducerHandle handle,
+            ReadCallback callback) override {
+    handle_ = std::move(handle);
+    callback_ = std::move(callback);
+    if (read_callback_) {
+      std::move(read_callback_).Run();
+    }
+  }
+
+  void SetReadCallback(base::OnceCallback<void()> read_callback) {
+    read_callback_ = std::move(read_callback);
+  }
+
+  void Write(String str) {
+    bool result = mojo::BlockingCopyFromString(str.Utf8(), handle_);
+    ASSERT_TRUE(result);
+  }
+
+  void Done(int status, uint64_t size) {
+    handle_.reset();
+    std::move(callback_).Run(status, size);
+  }
+
+  void Clone(mojo::PendingReceiver<network::mojom::blink::DataPipeGetter>
+                 receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  void OnMojoDisconnect() {
+    if (receivers_.empty()) {
+      delete this;
+    }
+  }
+
+ private:
+  mojo::ReceiverSet<network::mojom::blink::DataPipeGetter> receivers_;
+  mojo::ScopedDataPipeProducerHandle handle_;
+  ReadCallback callback_;
+  base::OnceCallback<void()> read_callback_;
+};
+
+class SimpleDataPipeGetter : public DataPipeGetterImpl {
  public:
   SimpleDataPipeGetter(
       const String& str,
       mojo::PendingReceiver<network::mojom::blink::DataPipeGetter> receiver)
-      : str_(str) {
-    receivers_.set_disconnect_handler(WTF::BindRepeating(
-        &SimpleDataPipeGetter::OnMojoDisconnect, WTF::Unretained(this)));
-    receivers_.Add(this, std::move(receiver));
-  }
+      : DataPipeGetterImpl(std::move(receiver)), str_(str) {}
   SimpleDataPipeGetter(const SimpleDataPipeGetter&) = delete;
   SimpleDataPipeGetter& operator=(const SimpleDataPipeGetter&) = delete;
   ~SimpleDataPipeGetter() override = default;
@@ -62,18 +121,8 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
     std::move(callback).Run(0 /* OK */, str_.length());
   }
 
-  void Clone(mojo::PendingReceiver<network::mojom::blink::DataPipeGetter> receiver) override {
-    receivers_.Add(this, std::move(receiver));
-  }
-
-  void OnMojoDisconnect() {
-    if (receivers_.empty())
-      delete this;
-  }
-
  private:
   String str_;
-  mojo::ReceiverSet<network::mojom::blink::DataPipeGetter> receivers_;
 };
 
 scoped_refptr<EncodedFormData> ComplexFormData() {
@@ -132,18 +181,69 @@ class NoopClient final : public GarbageCollected<NoopClient>,
   String DebugName() const override { return "NoopClient"; }
 };
 
+class FileUtilitiesHostImpl : public blink::mojom::FileUtilitiesHost {
+ public:
+  static void Bind(mojo::ScopedMessagePipeHandle handle) {
+    mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver(
+        std::move(handle));
+    mojo::MakeSelfOwnedReceiver(std::make_unique<FileUtilitiesHostImpl>(),
+                                std::move(receiver));
+  }
+
+  void GetFileInfo(const base::FilePath& path,
+                   GetFileInfoCallback callback) override {
+    base::File::Info info;
+    if (base::GetFileInfo(path, &info)) {
+      std::move(callback).Run(info);
+    } else {
+      std::move(callback).Run(std::nullopt);
+    }
+  }
+};
+
 class FormDataBytesConsumerTest : public PageTestBase {
  public:
   void SetUp() override {
     PageTestBase::SetUp(gfx::Size());
     file_factory_helper_ = std::make_unique<FileBackedBlobFactoryTestHelper>(
         GetFrame().GetDocument()->GetExecutionContext());
+
+    GetFrame()
+        .GetDocument()
+        ->GetExecutionContext()
+        ->GetBrowserInterfaceBroker()
+        .SetBinderForTesting(mojom::FileUtilitiesHost::Name_,
+                             base::BindRepeating(&FileUtilitiesHostImpl::Bind));
+
+    auto fake_blob_registry = std::make_unique<FakeBlobRegistry>();
+    fake_blob_registry->support_binary_blob_bodies_ = true;
+    mojo::MakeSelfOwnedReceiver(
+        std::move(fake_blob_registry),
+        blob_registry_remote_.BindNewPipeAndPassReceiver());
+    BlobDataHandle::SetBlobRegistryForTesting(blob_registry_remote_.get());
+
+    CHECK(scoped_temp_dir_.CreateUniqueTempDir());
+  }
+  void TearDown() override {
+    BlobDataHandle::SetBlobRegistryForTesting(nullptr);
+  }
+
+  void AppendFile(scoped_refptr<EncodedFormData> data,
+                  const std::string& content) {
+    base::FilePath file_path;
+    CHECK(
+        base::CreateTemporaryFileInDir(scoped_temp_dir_.GetPath(), &file_path));
+    CHECK(base::WriteFile(file_path, content));
+    String file_name = String::FromUTF8(file_path.AsUTF8Unsafe());
+    data->AppendFile(file_name, std::nullopt);
   }
 
   String DrainAsString(scoped_refptr<EncodedFormData> input_form_data) {
     auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
         GetFrame().DomWindow(), input_form_data);
     auto* reader = MakeGarbageCollected<BytesConsumerTestReader>(consumer);
+    // Force to read in small chunk to test Begin/EndRead().
+    reader->set_max_chunk_size(2u);
     std::pair<BytesConsumer::Result, Vector<char>> result = reader->Run();
     EXPECT_EQ(Result::kDone, result.first);
     return String(result.second);
@@ -166,6 +266,8 @@ class FormDataBytesConsumerTest : public PageTestBase {
 
  private:
   std::unique_ptr<FileBackedBlobFactoryTestHelper> file_factory_helper_;
+  mojo::Remote<mojom::blink::BlobRegistry> blob_registry_remote_;
+  base::ScopedTempDir scoped_temp_dir_;
 };
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromString) {
@@ -544,44 +646,89 @@ scoped_refptr<BlobDataHandle> CreateBlobHandle(const String& content) {
   return BlobDataHandle::Create(std::move(blob_data), size);
 }
 
-scoped_refptr<EncodedFormData> CreateDataPipeData() {
+scoped_refptr<EncodedFormData> CreateDataWithBoundary() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
   Vector<char> boundary;
   boundary.push_back('\0');
   data->SetBoundary(boundary);
-
-  data->AppendData(base::span_from_cstring("foo"));
-  AppendDataPipe(data, " hello world");
   return data;
+}
+
+void AppendData(scoped_refptr<EncodedFormData> data, const String& content) {
+  FormDataElement element;
+  element.data_.AppendSpan(content.RawByteSpan());
+  data->MutableElements().push_back(element);
+}
+
+TEST_F(FormDataBytesConsumerTest, Data2) {
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  AppendData(data, "foo");
+  AppendData(data, " bar");
+  EXPECT_EQ("foo bar", DrainAsString(data));
+}
+
+TEST_F(FormDataBytesConsumerTest, DataAndFile) {
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  data->AppendData(base::span_from_cstring("foo"));
+  AppendFile(data, " hello world");
+  EXPECT_EQ("foo hello world", DrainAsString(data));
+}
+
+TEST_F(FormDataBytesConsumerTest, DataFileAndBlob) {
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  data->AppendData(base::span_from_cstring("foo"));
+  AppendFile(data, " bar");
+  data->AppendBlob(CreateBlobHandle(" baz"));
+  EXPECT_EQ("foo bar baz", DrainAsString(data));
+}
+
+TEST_F(FormDataBytesConsumerTest, DataAndDataPipe) {
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  AppendData(data, "foo");
+  AppendData(data, " bar");
+  AppendDataPipe(data, " hello");
+  AppendDataPipe(data, " world");
+  EXPECT_EQ("foo bar hello world", DrainAsString(data));
+}
+
+TEST_F(FormDataBytesConsumerTest, DataAndDataPipeAsync) {
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  data->AppendData(base::span_from_cstring("foo"));
+  mojo::PendingRemote<network::mojom::blink::DataPipeGetter> data_pipe_getter;
+  // Object deletes itself.
+  DataPipeGetterImpl* data_pipe =
+      new DataPipeGetterImpl(data_pipe_getter.InitWithNewPipeAndPassReceiver());
+  auto wrapped =
+      base::MakeRefCounted<WrappedDataPipeGetter>(std::move(data_pipe_getter));
+  data->AppendDataPipe(std::move(wrapped));
+
+  data_pipe->SetReadCallback(base::BindLambdaForTesting([&]() {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          data_pipe->Write(" hello");
+          data_pipe->Write(" world");
+          data_pipe->Done(0 /* OK */, 12u);
+        }));
+  }));
+
+  EXPECT_EQ("foo hello world", DrainAsString(data));
 }
 
 TEST_F(FormDataBytesConsumerTest, InvalidType1) {
-  const String kExpected = "foo hello world";
-  ASSERT_EQ(kExpected, DrainAsString(CreateDataPipeData()));
-
-  scoped_refptr<EncodedFormData> data = CreateDataPipeData();
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  data->AppendData(base::span_from_cstring("foo"));
+  AppendDataPipe(data, " hello world");
   data->AppendBlob(CreateBlobHandle("bar"));
   ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
 
-  // sizeof("foo" + "bar") ignoring the mid "hello world" datapipe.
-  // TODO(crbug.com/374124998): Unfortunately BytesConsumerTestReader can not
-  // work with blob to drain string. We should fix it.
-  EXPECT_EQ(6u, DrainAsBlobDataHandle(data)->size());
-}
-
-scoped_refptr<EncodedFormData> CreateBlobData() {
-  scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
-  Vector<char> boundary;
-  boundary.push_back('\0');
-  data->SetBoundary(boundary);
-
-  data->AppendData(base::span_from_cstring("foo"));
-  data->AppendBlob(CreateBlobHandle("bar"));
-  return data;
+  // The mid "hello world" datapipe is ignored.
+  EXPECT_EQ("foobar", DrainAsString(data));
 }
 
 TEST_F(FormDataBytesConsumerTest, InvalidType2) {
-  scoped_refptr<EncodedFormData> data = CreateBlobData();
+  scoped_refptr<EncodedFormData> data = CreateDataWithBoundary();
+  data->AppendData(base::span_from_cstring("foo"));
+  data->AppendBlob(CreateBlobHandle("blob"));
   AppendDataPipe(data, " datapipe");
   ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
 

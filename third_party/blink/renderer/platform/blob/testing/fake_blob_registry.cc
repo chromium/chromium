@@ -4,10 +4,38 @@
 
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 
+#include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
+
+namespace {
+class DataPipeReader : public mojo::DataPipeDrainer::Client {
+ public:
+  DataPipeReader(Vector<uint8_t>* data_out, base::OnceClosure done_callback)
+      : data_out_(data_out), done_callback_(std::move(done_callback)) {}
+
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    data_out_->AppendSpan(data);
+  }
+
+  void OnDataComplete() override { std::move(done_callback_).Run(); }
+
+ private:
+  raw_ptr<Vector<uint8_t>> data_out_;
+  base::OnceClosure done_callback_;
+};
+
+Vector<uint8_t> ReadDataPipe(mojo::ScopedDataPipeConsumerHandle pipe) {
+  base::RunLoop loop;
+  Vector<uint8_t> data;
+  DataPipeReader reader(&data, loop.QuitClosure());
+  mojo::DataPipeDrainer drainer(&reader, std::move(pipe));
+  loop.Run();
+  return data;
+}
+}  // namespace
 
 namespace blink {
 
@@ -52,11 +80,33 @@ void FakeBlobRegistry::Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
   if (support_binary_blob_bodies_) {
     // Copy the blob's body from `elements`.
     for (const mojom::blink::DataElementPtr& element : elements) {
-      // The blob body must contain binary data only.
-      CHECK(element->is_bytes());
-
-      const mojom::blink::DataElementBytesPtr& bytes = element->get_bytes();
-      blob_body_bytes.AppendVector(*bytes->embedded_data);
+      switch (element->which()) {
+        case mojom::blink::DataElement::Tag::kBytes: {
+          const mojom::blink::DataElementBytesPtr& bytes = element->get_bytes();
+          blob_body_bytes.AppendVector(*bytes->embedded_data);
+          break;
+        }
+        case mojom::blink::DataElement::Tag::kFile: {
+          NOTIMPLEMENTED();
+          break;
+        }
+        case mojom::blink::DataElement::Tag::kBlob: {
+          auto& blob_element = element->get_blob();
+          mojo::Remote<mojom::blink::Blob> blob_remote(
+              std::move(blob_element->blob));
+          mojo::ScopedDataPipeProducerHandle data_pipe_producer;
+          mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
+          CHECK_EQ(MOJO_RESULT_OK,
+                   mojo::CreateDataPipe(nullptr, data_pipe_producer,
+                                        data_pipe_consumer));
+          blob_remote->ReadAll(std::move(data_pipe_producer),
+                               mojo::NullRemote());
+          Vector<uint8_t> received =
+              ReadDataPipe(std::move(data_pipe_consumer));
+          blob_body_bytes.AppendVector(received);
+          break;
+        }
+      }
     }
   }
 
