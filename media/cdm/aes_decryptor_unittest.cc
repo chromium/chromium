@@ -534,7 +534,7 @@ TEST_P(AesDecryptorTest, CreateSessionWithEmptyInitData) {
       std::vector<uint8_t>(), CreateSessionPromise(REJECTED));
 }
 
-TEST_P(AesDecryptorTest, CreateSessionWithVariousLengthInitDataWebM) {
+TEST_P(AesDecryptorTest, CreateSessionWithVariousLengthInitData_WebM) {
   std::vector<uint8_t> init_data;
   init_data.resize(1);
   EXPECT_CALL(cdm_client_, OnSessionMessage(NotEmpty(), _, IsJSONDictionary()));
