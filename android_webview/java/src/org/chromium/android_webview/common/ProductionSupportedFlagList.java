@@ -732,6 +732,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "UseAAudioInput",
                 "Enables the use of AAudio for capturing audio input. (Android Q+ only)"),
+        Flag.baseFeature(
+                "AudioInputConfirmReadsViaShmem",
+                "Enables an audio input optimization that uses shared memory instead of"
+                        + " socket messages for audio IPC read confirmations."),
         Flag.baseFeature("UseRustJsonParser"),
         Flag.baseFeature("V8BaselineBatchCompilation"),
         Flag.baseFeature("V8ConcurrentSparkplug"),
