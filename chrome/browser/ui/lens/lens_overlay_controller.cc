@@ -1937,9 +1937,9 @@ void LensOverlayController::InitializeOverlayUI(
   // data to the overlay web UI in a single message.
   page_->ThemeReceived(CreateTheme(init_data.color_palette_));
 
-  bool should_show_contextual_search_box =
+  contextual_searchbox_shown_in_session_ =
       !init_data.page_content_bytes_.empty();
-  if (should_show_contextual_search_box) {
+  if (contextual_searchbox_shown_in_session_) {
     contextual_searchbox_focused_in_session_ = false;
     // Reset metric booleans in case they were set to true previously and the
     // overlay was reopened.
@@ -1950,7 +1950,7 @@ void LensOverlayController::InitializeOverlayUI(
   initial_page_content_type_ = init_data.page_content_type_;
   initial_document_type_ =
       StringMimeTypeToDocumentType(tab_->GetContents()->GetContentsMimeType());
-  page_->ShouldShowContextualSearchBox(should_show_contextual_search_box);
+  page_->ShouldShowContextualSearchBox(contextual_searchbox_shown_in_session_);
 
   page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
   if (!init_data.objects_.empty()) {
@@ -1963,13 +1963,8 @@ void LensOverlayController::InitializeOverlayUI(
     page_->SetPostRegionSelection(pending_region_->Clone());
   }
 
-  // Record the UMA and UKM for whether the contextual search box was shown.
-  ukm::SourceId source_id =
-      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  // Record the UMA for lens overlay invocation.
   lens::RecordInvocation(invocation_source_, initial_document_type_);
-  MaybeRecordContextualSearchBoxShown(source_id,
-                                      should_show_contextual_search_box,
-                                      init_data.page_content_type_);
 }
 
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
@@ -2793,12 +2788,11 @@ void LensOverlayController::RecordEndOfSessionMetrics(
 
   // UMA and UKM end of session metrics for the CSB. Only recorded if CSB is
   // shown in session.
-  if (contextual_searchbox_focused_in_session_.has_value()) {
-    lens::RecordContextualSearchboxSessionEndMetrics(
-        source_id, contextual_searchbox_focused_in_session_.value(),
-        contextual_zps_shown_in_session_, contextual_zps_used_in_session_,
-        contextual_query_issued_in_session_, initial_page_content_type_);
-  }
+  lens::RecordContextualSearchboxSessionEndMetrics(
+      source_id, contextual_searchbox_shown_in_session_,
+      contextual_searchbox_focused_in_session_,
+      contextual_zps_shown_in_session_, contextual_zps_used_in_session_,
+      contextual_query_issued_in_session_, initial_page_content_type_);
 }
 
 void LensOverlayController::RecordDocumentMetrics(

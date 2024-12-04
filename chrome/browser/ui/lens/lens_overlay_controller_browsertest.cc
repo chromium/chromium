@@ -4451,10 +4451,12 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(fake_controller);
   EXPECT_FALSE(fake_controller->fake_overlay_page_
                    .last_received_should_show_contextual_searchbox_);
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
 
   // Verify the histogram recorded the searchbox was not shown.
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.Shown",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.ShownInSession",
       /*sample*/ false,
       /*expected_bucket_count=*/1);
 }
@@ -4477,14 +4479,18 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
   histogram_tester.ExpectUniqueSample("Lens.Overlay.ByDocumentType.Pdf.Invoked",
                                       /*sample*/ true,
                                       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample("Lens.Overlay.ContextualSearchBox.Shown",
-                                      /*sample*/ true,
-                                      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.Shown",
+      "Lens.Overlay.ContextualSearchBox.ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.ShownInSession",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
@@ -4496,16 +4502,19 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Verify UKM metrics were recorded.
   auto entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kEntryName);
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kEntryName);
   EXPECT_EQ(1u, entries.size());
   auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
       entry,
-      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kWasShownName,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kWasShownName,
       true);
   test_ukm_recorder.ExpectEntryMetric(
       entry,
-      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kDocumentTypeName,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kPageContentTypeName,
       static_cast<int64_t>(lens::MimeType::kPdf));
 }
 
@@ -4957,15 +4966,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.ByDocumentType.Html.Invoked",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample("Lens.Overlay.ContextualSearchBox.Shown",
-                                      /*sample*/ true,
-                                      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText.Shown",
+      "Lens.Overlay.ContextualSearchBox.ShownInSession",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "ShownInSession",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
@@ -4977,16 +4991,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify UKM metrics were recorded.
   auto entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kEntryName);
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kEntryName);
   EXPECT_EQ(1u, entries.size());
   auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
       entry,
-      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kWasShownName,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kWasShownName,
       true);
   test_ukm_recorder.ExpectEntryMetric(
       entry,
-      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kDocumentTypeName,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
+          kPageContentTypeName,
       static_cast<int64_t>(lens::MimeType::kPlainText));
 }
 
@@ -5663,9 +5680,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextEnabledSmallByteLimitTest,
   EXPECT_FALSE(fake_controller->fake_overlay_page_
                    .last_received_should_show_contextual_searchbox_);
 
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
   // Verify the histogram recorded the searchbox was not shown.
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText.Shown",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "ShownInSession",
       /*sample*/ false,
       /*expected_bucket_count=*/1);
 }

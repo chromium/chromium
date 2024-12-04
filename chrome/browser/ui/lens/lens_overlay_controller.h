@@ -1132,7 +1132,10 @@ class LensOverlayController : public LensSearchboxClient,
   // session. Used to record interaction rate, defined by whether or not a
   // user focused the contextual searchbox in sessions in which it was shown.
   // Set if contextual searchbox is shown.
-  std::optional<bool> contextual_searchbox_focused_in_session_;
+  bool contextual_searchbox_focused_in_session_ = false;
+
+  // Whether the contextual searchbox should be shown in the session.
+  bool contextual_searchbox_shown_in_session_ = false;
 
   // The type of the page content extracted from the page when the lens overlay
   // was initialized. This is used when recording contextual searchbox metrics

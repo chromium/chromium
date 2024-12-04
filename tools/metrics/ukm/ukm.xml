@@ -11659,16 +11659,16 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Lens.Overlay.ContextualSearchBox.Shown">
+<event name="Lens.Overlay.ContextualSearchBox.ShownInSession">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
-    Recorded once when the contextual searchbox is shown to the user. Measures
-    if it was shown and the document type it was shown on.
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the contextual searchbox was shown in the session.
   </summary>
-  <metric name="DocumentType" enum="MimeType">
+  <metric name="PageContentType" enum="MimeType">
     <summary>
-      The type of document the contextual searchbox was shown on.
+      The page content type the contextual searchbox was shown on.
     </summary>
     <aggregation>
       <history>

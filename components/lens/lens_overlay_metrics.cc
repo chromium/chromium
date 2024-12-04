@@ -132,11 +132,43 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
 
 void RecordContextualSearchboxSessionEndMetrics(
     ukm::SourceId source_id,
+    bool contextual_searchbox_shown_in_session,
     bool contextual_searchbox_focused_in_session,
     bool contextual_zps_shown_in_session,
     bool contextual_zps_used_in_session,
     bool contextual_query_issued_in_session,
     lens::MimeType page_content_type) {
+  // Only record if the contextual search box feature is enabled.
+  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    return;
+  }
+
+  // UMA contextual searchbox shown in session.
+  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.ShownInSession",
+                            contextual_searchbox_shown_in_session);
+
+  // UMA contextual searchbox shown in session sliced by document type.
+  const auto sliced_invoked_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".ShownInSession";
+  base::UmaHistogramBoolean(sliced_invoked_histogram_name,
+                            contextual_searchbox_shown_in_session);
+
+  // Record UKM for contextual search box shown in session.
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession event(
+        source_id);
+    event.SetWasShown(contextual_searchbox_shown_in_session)
+        .SetPageContentType(static_cast<int64_t>(page_content_type))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  // Don't record the rest of the contextual searchbox metrics if it was not
+  // shown in the session.
+  if (!contextual_searchbox_shown_in_session) {
+    return;
+  }
+
   // UMA contextual searchbox focused in session.
   base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.FocusedInSession",
                             contextual_searchbox_focused_in_session);
@@ -381,28 +413,6 @@ void RecordUKMSessionEndMetrics(
 
 void RecordLensResponseTime(base::TimeDelta response_time) {
   base::UmaHistogramTimes("Lens.Overlay.LensResponseTime", response_time);
-}
-
-void MaybeRecordContextualSearchBoxShown(ukm::SourceId source_id,
-                                         bool shown,
-                                         lens::MimeType page_content_type) {
-  // Only record if the contextual search box feature is enabled.
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
-    return;
-  }
-  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.Shown", shown);
-
-  // UMA Invocation sliced by document type.
-  const auto sliced_invoked_histogram_name =
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
-      MimeTypeToMetricString(page_content_type) + ".Shown";
-  base::UmaHistogramBoolean(sliced_invoked_histogram_name, shown);
-
-  // Record UKM for contextual search box shown.
-  ukm::builders::Lens_Overlay_ContextualSearchBox_Shown event(source_id);
-  event.SetWasShown(shown)
-      .SetDocumentType(static_cast<int64_t>(page_content_type))
-      .Record(ukm::UkmRecorder::Get());
 }
 
 void RecordContextualSearchboxTimeToInteractionAfterNavigation(
