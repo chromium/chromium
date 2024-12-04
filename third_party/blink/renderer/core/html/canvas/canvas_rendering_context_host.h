@@ -104,6 +104,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   // Returns an SkColorInfo that best represents the canvas rendering context's
   // contents.
   SkColorInfo GetRenderingContextSkColorInfo() const;
+  SkAlphaType GetRenderingContextAlphaType() const;
 
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
