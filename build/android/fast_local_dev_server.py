@@ -422,7 +422,6 @@ class Task:
     This method should only be run once per task. Avoid modifying the task so
     that this method does not need locking."""
 
-    TaskStats.complete_task(build_id=self.build_id)
     delete_stamp = False
     status_string = 'FINISHED'
     if self._terminated:
@@ -447,7 +446,10 @@ class Task:
       if self.remote_print:
         # Add emoji to show that output is from the build server.
         preamble = [f'⏩ {line}' for line in preamble]
-        self.tty.write('\n'.join(preamble + [stdout]))
+        remote_message = '\n'.join(preamble + [stdout])
+        # Add a new line at start of message to clearly delineate from previous
+        # output/text already on the remote tty we are printing to.
+        self.tty.write(f'\n{remote_message}')
         self.tty.flush()
     set_status(f'{status_string} {self.name}',
                quiet=self.options.quiet,
@@ -463,6 +465,7 @@ class Task:
       # about the mtime that is recorded in its database at the time the
       # original action finished.
       pass
+    TaskStats.complete_task(build_id=self.build_id)
 
 
 def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task], options):
