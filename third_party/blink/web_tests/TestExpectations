@@ -2690,6 +2690,7 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webdriver/tests/classic/perform_actions/pointer_mouse.py [ Failure Timeout ]
 crbug.com/381940803 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?3-4 [ Crash ]
 crbug.com/381940803 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?3-4 [ Crash ]
 crbug.com/381945825 [ Mac13 ] external/wpt/webaudio/the-audio-api/the-audiobuffersourcenode-interface/active-processing.https.html [ Crash ]
@@ -2791,9 +2792,7 @@ crbug.com/379418921 [ Mac13 ] external/wpt/webrtc/RTCRtpSender-setParameters.htm
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCRtpSender-setParameters.html [ Timeout ]
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCSctpTransport-constructor.html [ Timeout ]
 crbug.com/379418921 [ Mac14 ] external/wpt/webrtc/protocol/sctp-format.html [ Timeout ]
-crbug.com/379519388 [ Mac12 ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
-crbug.com/379519388 [ Win10.20h2 ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
-crbug.com/379519388 [ Mac15 ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
+crbug.com/379519388 external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure Pass ]
 crbug.com/379414142 [ Mac14 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-audio.https.html [ Timeout ]
 crbug.com/379414142 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-audio.https.html [ Timeout ]
 crbug.com/379414142 [ Mac15 ] external/wpt/webrtc-identity/RTCPeerConnection-getIdentityAssertion.sub.https.html [ Timeout ]
@@ -4232,6 +4231,8 @@ crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-b
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-byte-streams/respond-after-enqueue.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-byte-streams/tee.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-byte-streams/tee.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
+crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-byte-streams/templated.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
+crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-byte-streams/templated.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-streams/async-iterator.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-streams/async-iterator.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/readable-streams/bad-strategies.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
