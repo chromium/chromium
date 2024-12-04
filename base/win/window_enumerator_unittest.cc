@@ -20,7 +20,7 @@ TEST(WindowEnumeratorTest, EnumerateTopLevelWindows) {
         const std::wstring window_class = GetWindowClass(hwnd);
         EXPECT_EQ(window_class, [&] {
           constexpr int kMaxWindowClassNameLength = 256;
-          wchar_t buffer[kMaxWindowClassNameLength + 1] = {0};
+          wchar_t buffer[kMaxWindowClassNameLength + 1] = {};
           const int name_len = ::GetClassName(hwnd, buffer, std::size(buffer));
           if (name_len <= 0 || name_len > kMaxWindowClassNameLength) {
             return std::wstring();

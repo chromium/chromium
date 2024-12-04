@@ -91,8 +91,8 @@ class SymbolMap {
     raw_ptr<const void> addr = nullptr;
     std::array<Segment, kMaxSegmentCount> segments;
     size_t segment_count = 0;
-    char name[ZX_MAX_NAME_LEN + 1] = {0};
-    char build_id[kMaxBuildIdStringLength + 1] = {0};
+    char name[ZX_MAX_NAME_LEN + 1] = {};
+    char build_id[kMaxBuildIdStringLength + 1] = {};
   };
 
   SymbolMap();

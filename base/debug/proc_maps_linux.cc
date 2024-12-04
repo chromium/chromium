@@ -115,7 +115,7 @@ bool ParseProcMaps(const std::string& input,
 
     MappedMemoryRegion region;
     const char* line = lines[i].c_str();
-    char permissions[5] = {'\0'};  // Ensure NUL-terminated string.
+    char permissions[5] = {};  // Ensure NUL-terminated string.
     uint8_t dev_major = 0;
     uint8_t dev_minor = 0;
     long inode = 0;

@@ -101,7 +101,7 @@ class LeakySingleton {
     __cpp_lib_atomic_value_initialization < 201911L
   alignas(T) uint8_t instance_buffer_[sizeof(T)];
 #else
-  alignas(T) uint8_t instance_buffer_[sizeof(T)] = {0};
+  alignas(T) uint8_t instance_buffer_[sizeof(T)] = {};
 #endif
   std::atomic<bool> initialization_lock_;
 };
