@@ -108,7 +108,7 @@ TEST_F(AmplitudePeakDetectorTest, Constructor) {
           FROM_HERE, "Callback should not be run by default"));
 }
 
-TEST_F(AmplitudePeakDetectorTest, NoPeaksSilent) {
+TEST_F(AmplitudePeakDetectorTest, NoPeaks_Silent) {
   CreateDetector(base::MakeExpectedNotRunClosure(
       FROM_HERE, "No peaks should be detected for silent data"));
 
@@ -116,21 +116,21 @@ TEST_F(AmplitudePeakDetectorTest, NoPeaksSilent) {
   peak_detector_->FindPeak(bus.get());
 }
 
-TEST_F(AmplitudePeakDetectorTest, NoPeaksQuietValue) {
+TEST_F(AmplitudePeakDetectorTest, NoPeaks_QuietValue) {
   RunSimpleDetectionTest(kQuietSample, /*expect_peak=*/false,
                          "No peaks should be detected for positive quiet data");
   RunSimpleDetectionTest(-kQuietSample, /*expect_peak=*/false,
                          "No peaks should be detected for negative quiet data");
 }
 
-TEST_F(AmplitudePeakDetectorTest, PeaksLoudValue) {
+TEST_F(AmplitudePeakDetectorTest, Peaks_LoudValue) {
   RunSimpleDetectionTest(kLoudSample, /*expect_peak=*/true,
                          "Peaks should be detected for positive loud data");
   RunSimpleDetectionTest(-kLoudSample, /*expect_peak=*/true,
                          "Peaks should be detected for negative loud data");
 }
 
-TEST_F(AmplitudePeakDetectorTest, SequenceSilenceAndQuiet) {
+TEST_F(AmplitudePeakDetectorTest, Sequence_SilenceAndQuiet) {
   auto silent_bus = GetSilentAudioBus();
   auto quiet_bus = GetAudioBusWithSetValue(kQuietSample, {0, 0});
 
@@ -146,7 +146,7 @@ TEST_F(AmplitudePeakDetectorTest, SequenceSilenceAndQuiet) {
   EXPECT_EQ(peak_count, 0);
 }
 
-TEST_F(AmplitudePeakDetectorTest, SequenceShortPeak) {
+TEST_F(AmplitudePeakDetectorTest, Sequence_ShortPeak) {
   auto silent_bus = GetSilentAudioBus();
   auto loud_bus = GetAudioBusWithLoudValue();
 
@@ -169,7 +169,7 @@ TEST_F(AmplitudePeakDetectorTest, SequenceShortPeak) {
   EXPECT_EQ(peak_count, 2);
 }
 
-TEST_F(AmplitudePeakDetectorTest, SequenceLongPeak) {
+TEST_F(AmplitudePeakDetectorTest, Sequence_LongPeak) {
   auto silent_bus = GetSilentAudioBus();
   auto loud_bus = GetAudioBusWithLoudValue();
 
@@ -255,7 +255,7 @@ class FixedSampleAmplitudePeakDetector : public AmplitudePeakDetectorTest {
   }
 };
 
-TEST_P(FixedSampleAmplitudePeakDetector, NoPeaksSilent) {
+TEST_P(FixedSampleAmplitudePeakDetector, NoPeaks_Silent) {
   switch (bytes_per_samples()) {
     case 1:
       VerifyNoPeaksFoundInSilence<uint8_t>();
@@ -269,7 +269,7 @@ TEST_P(FixedSampleAmplitudePeakDetector, NoPeaksSilent) {
   }
 }
 
-TEST_P(FixedSampleAmplitudePeakDetector, NoPeaksQuiet) {
+TEST_P(FixedSampleAmplitudePeakDetector, NoPeaks_Quiet) {
   constexpr char message[] = "No peaks detected from quiet values";
 
   switch (bytes_per_samples()) {
@@ -288,7 +288,7 @@ TEST_P(FixedSampleAmplitudePeakDetector, NoPeaksQuiet) {
   }
 }
 
-TEST_P(FixedSampleAmplitudePeakDetector, PeaksLoud) {
+TEST_P(FixedSampleAmplitudePeakDetector, Peaks_Loud) {
   constexpr char message[] = "Peaks detected in loud values";
 
   switch (bytes_per_samples()) {
@@ -307,7 +307,7 @@ TEST_P(FixedSampleAmplitudePeakDetector, PeaksLoud) {
   }
 }
 
-TEST_F(FixedSampleAmplitudePeakDetector, SequenceSilenceAndQuiet) {
+TEST_F(FixedSampleAmplitudePeakDetector, Sequence_SilenceAndQuiet) {
   constexpr int kBytesPerSample = 4;
   std::vector<uint32_t> silent_data(
       kFrames, SignedInt32SampleTypeTraits::kZeroPointValue);
@@ -326,7 +326,7 @@ TEST_F(FixedSampleAmplitudePeakDetector, SequenceSilenceAndQuiet) {
   EXPECT_EQ(peak_count, 0);
 }
 
-TEST_F(FixedSampleAmplitudePeakDetector, SequenceShortPeak) {
+TEST_F(FixedSampleAmplitudePeakDetector, Sequence_ShortPeak) {
   constexpr int kBytesPerSample = 4;
   std::vector<uint32_t> silent_data(
       kFrames, SignedInt32SampleTypeTraits::kZeroPointValue);
@@ -352,7 +352,7 @@ TEST_F(FixedSampleAmplitudePeakDetector, SequenceShortPeak) {
   EXPECT_EQ(peak_count, 2);
 }
 
-TEST_P(FixedSampleAmplitudePeakDetector, SequenceLongPeak) {
+TEST_P(FixedSampleAmplitudePeakDetector, Sequence_LongPeak) {
   constexpr int kBytesPerSample = 4;
   std::vector<uint32_t> silent_data(
       kFrames, SignedInt32SampleTypeTraits::kZeroPointValue);

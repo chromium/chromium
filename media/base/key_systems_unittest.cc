@@ -479,7 +479,7 @@ TEST_F(KeySystemsTest, ClearKeyWithInitDataType) {
 }
 
 // The key system is not registered and therefore is unrecognized.
-TEST_F(KeySystemsTest, BasicUnrecognizedKeySystem) {
+TEST_F(KeySystemsTest, Basic_UnrecognizedKeySystem) {
   static const char* const kUnrecognized = "x-org.example.unrecognized";
 
   EXPECT_FALSE(IsSupportedKeySystem(kUnrecognized));
@@ -488,7 +488,7 @@ TEST_F(KeySystemsTest, BasicUnrecognizedKeySystem) {
   EXPECT_FALSE(key_systems()->CanUseAesDecryptor(kUnrecognized));
 }
 
-TEST_F(KeySystemsTest, BasicUsesAesDecryptor) {
+TEST_F(KeySystemsTest, Basic_UsesAesDecryptor) {
   EXPECT_TRUE(IsSupportedKeySystem(kUsesAes));
   EXPECT_TRUE(
       IsSupportedKeySystemWithMediaMimeType(kVideoWebM, no_codecs(), kUsesAes));
@@ -548,7 +548,7 @@ TEST_F(KeySystemsTest,
       kAudioWebM, fooaudio_codec(), kUsesAes));
 }
 
-TEST_F(KeySystemsTest, IsSupportedKeySystemInvalidVariants) {
+TEST_F(KeySystemsTest, IsSupportedKeySystem_InvalidVariants) {
   // Case sensitive.
   EXPECT_FALSE(IsSupportedKeySystem("x-org.example.ClEaR"));
 
@@ -573,7 +573,7 @@ TEST_F(KeySystemsTest, IsSupportedKeySystemInvalidVariants) {
   EXPECT_FALSE(IsSupportedKeySystem("x-org.example.clear.foo"));
 }
 
-TEST_F(KeySystemsTest, IsSupportedKeySystemWithMediaMimeTypeNoType) {
+TEST_F(KeySystemsTest, IsSupportedKeySystemWithMediaMimeType_NoType) {
   EXPECT_FALSE(IsSupportedKeySystemWithMediaMimeType(std::string(), no_codecs(),
                                                      kUsesAes));
 
@@ -648,7 +648,7 @@ TEST_F(KeySystemsTest,
 // Non-AesDecryptor-based key system.
 //
 
-TEST_F(KeySystemsTest, BasicExternalDecryptor) {
+TEST_F(KeySystemsTest, Basic_ExternalDecryptor) {
   EXPECT_TRUE(IsSupportedKeySystem(kExternal));
   EXPECT_TRUE(IsSupportedKeySystemWithMediaMimeType(kVideoWebM, no_codecs(),
                                                     kExternal));

@@ -17,7 +17,7 @@
 
 namespace media {
 
-TEST(AudioParameters, ConstructorDefault) {
+TEST(AudioParameters, Constructor_Default) {
   AudioParameters::Format expected_format = AudioParameters::AUDIO_PCM_LINEAR;
   int expected_channels = 0;
   ChannelLayout expected_channel_layout = CHANNEL_LAYOUT_NONE;
@@ -38,7 +38,7 @@ TEST(AudioParameters, ConstructorDefault) {
   EXPECT_EQ(expected_mic_positions, params.mic_positions());
 }
 
-TEST(AudioParameters, ConstructorParameterValues) {
+TEST(AudioParameters, Constructor_ParameterValues) {
   AudioParameters::Format expected_format =
       AudioParameters::AUDIO_PCM_LOW_LATENCY;
   int expected_channels = 6;
@@ -59,7 +59,7 @@ TEST(AudioParameters, ConstructorParameterValues) {
   EXPECT_FALSE(params.RequireEncapsulation());
 }
 
-TEST(AudioParameters, ConstructorParameterValuesPlusHardwareCapabilities) {
+TEST(AudioParameters, Constructor_ParameterValuesPlusHardwareCapabilities) {
   AudioParameters::Format expected_format =
       AudioParameters::AUDIO_PCM_LOW_LATENCY;
   int expected_channels = 6;
@@ -152,7 +152,7 @@ TEST(AudioParameters, Compare) {
   }
 }
 
-TEST(AudioParameters, ConstructorValidChannelCounts) {
+TEST(AudioParameters, Constructor_ValidChannelCounts) {
   int expected_channels = 8;
   ChannelLayout expected_layout = CHANNEL_LAYOUT_DISCRETE;
   ChannelLayoutConfig channel_layout_config(CHANNEL_LAYOUT_DISCRETE,
@@ -165,7 +165,7 @@ TEST(AudioParameters, ConstructorValidChannelCounts) {
   EXPECT_TRUE(params.IsValid());
 }
 
-TEST(AudioParameters, ConstructorValidChannelCountsFor514Downmix) {
+TEST(AudioParameters, Constructor_ValidChannelCountsFor514Downmix) {
   int expected_channels = 7;
   constexpr ChannelLayout expected_layout = CHANNEL_LAYOUT_5_1_4_DOWNMIX;
   ChannelLayoutConfig channel_layout_config(expected_layout, expected_channels);
@@ -184,7 +184,7 @@ TEST(AudioParameters, ConstructorValidChannelCountsFor514Downmix) {
   EXPECT_TRUE(params.IsValid());
 }
 
-TEST(AudioParameters, ConstructorCopyChannelLayoutConfig) {
+TEST(AudioParameters, Constructor_CopyChannelLayoutConfig) {
   int expected_channels = 8;
   ChannelLayout expected_layout = CHANNEL_LAYOUT_DISCRETE;
   ChannelLayoutConfig channel_layout_config(CHANNEL_LAYOUT_DISCRETE,
@@ -208,13 +208,13 @@ TEST(AudioParameters, ShouldCheckDiscreteWithNoChannels) {
       "");
 }
 
-TEST(AudioParameters, ChannelLayoutConfigGuess) {
+TEST(AudioParameters, ChannelLayoutConfig_Guess) {
   ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Guess(2);
   EXPECT_EQ(CHANNEL_LAYOUT_STEREO, channel_layout_config.channel_layout());
   EXPECT_EQ(2, channel_layout_config.channels());
 }
 
-TEST(AudioParameters, ChannelLayoutConfigGuessUnsupported) {
+TEST(AudioParameters, ChannelLayoutConfig_GuessUnsupported) {
   ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Guess(100);
   EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED, channel_layout_config.channel_layout());
   EXPECT_EQ(0, channel_layout_config.channels());

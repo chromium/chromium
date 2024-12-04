@@ -110,7 +110,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
-TEST(DecoderBufferTest, FromPlatformSharedMemoryRegionUnaligned) {
+TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   const uint8_t kData[] = "XXXhello";
   const size_t kDataSize = std::size(kData);
   const size_t kDataOffset = 3;
@@ -129,7 +129,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegionUnaligned) {
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
-TEST(DecoderBufferTest, FromPlatformSharedMemoryRegionZeroSize) {
+TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_ZeroSize) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 
@@ -160,7 +160,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
-TEST(DecoderBufferTest, FromSharedMemoryRegionUnaligned) {
+TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
   const uint8_t kData[] = "XXXhello";
   const size_t kDataSize = std::size(kData);
   const size_t kDataOffset = 3;
@@ -179,7 +179,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegionUnaligned) {
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
-TEST(DecoderBufferTest, FromSharedMemoryRegionZeroSize) {
+TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 

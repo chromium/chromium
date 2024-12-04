@@ -532,7 +532,7 @@ TEST_F(PipelineImplTest, AudioVideoStream) {
   EXPECT_TRUE(metadata_.has_video);
 }
 
-TEST_F(PipelineImplTest, EncryptedStreamSetCdmBeforeStart) {
+TEST_F(PipelineImplTest, EncryptedStream_SetCdmBeforeStart) {
   CreateEncryptedVideoStream();
   SetDemuxerExpectations();
 
@@ -540,7 +540,7 @@ TEST_F(PipelineImplTest, EncryptedStreamSetCdmBeforeStart) {
   StartPipelineAndExpect(PIPELINE_OK);
 }
 
-TEST_F(PipelineImplTest, EncryptedStreamSetCdmAfterStart) {
+TEST_F(PipelineImplTest, EncryptedStream_SetCdmAfterStart) {
   CreateEncryptedVideoStream();
   SetDemuxerExpectations();
 

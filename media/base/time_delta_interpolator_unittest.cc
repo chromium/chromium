@@ -29,7 +29,7 @@ TEST_F(TimeDeltaInterpolatorTest, Created) {
   EXPECT_EQ(kExpected, interpolator_.GetInterpolatedTime());
 }
 
-TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingNormalSpeed) {
+TEST_F(TimeDeltaInterpolatorTest, StartInterpolating_NormalSpeed) {
   const base::TimeDelta kZero;
   const base::TimeDelta kTimeToAdvance = base::Seconds(2);
 
@@ -38,7 +38,7 @@ TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingNormalSpeed) {
   EXPECT_EQ(kTimeToAdvance, interpolator_.GetInterpolatedTime());
 }
 
-TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingDoubleSpeed) {
+TEST_F(TimeDeltaInterpolatorTest, StartInterpolating_DoubleSpeed) {
   const base::TimeDelta kZero;
   const base::TimeDelta kTimeToAdvance = base::Seconds(5);
 
@@ -48,7 +48,7 @@ TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingDoubleSpeed) {
   EXPECT_EQ(2 * kTimeToAdvance, interpolator_.GetInterpolatedTime());
 }
 
-TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingHalfSpeed) {
+TEST_F(TimeDeltaInterpolatorTest, StartInterpolating_HalfSpeed) {
   const base::TimeDelta kZero;
   const base::TimeDelta kTimeToAdvance = base::Seconds(4);
 
@@ -58,7 +58,7 @@ TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingHalfSpeed) {
   EXPECT_EQ(kTimeToAdvance / 2, interpolator_.GetInterpolatedTime());
 }
 
-TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingZeroSpeed) {
+TEST_F(TimeDeltaInterpolatorTest, StartInterpolating_ZeroSpeed) {
   // We'll play for 2 seconds at normal speed, 4 seconds at zero speed, and 8
   // seconds at normal speed.
   const base::TimeDelta kZero;
@@ -78,7 +78,7 @@ TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingZeroSpeed) {
   EXPECT_EQ(kExpected, interpolator_.GetInterpolatedTime());
 }
 
-TEST_F(TimeDeltaInterpolatorTest, StartInterpolatingMultiSpeed) {
+TEST_F(TimeDeltaInterpolatorTest, StartInterpolating_MultiSpeed) {
   // We'll play for 2 seconds at half speed, 4 seconds at normal speed, and 8
   // seconds at double speed.
   const base::TimeDelta kZero;
@@ -124,7 +124,7 @@ TEST_F(TimeDeltaInterpolatorTest, StopInterpolating) {
   EXPECT_EQ(kExpectedSecondPause, interpolator_.GetInterpolatedTime());
 }
 
-TEST_F(TimeDeltaInterpolatorTest, SetBoundsStopped) {
+TEST_F(TimeDeltaInterpolatorTest, SetBounds_Stopped) {
   const base::TimeDelta kFirstTime = base::Seconds(4);
   const base::TimeDelta kSecondTime = base::Seconds(16);
   const base::TimeDelta kArbitraryMaxTime = base::Seconds(100);
@@ -137,7 +137,7 @@ TEST_F(TimeDeltaInterpolatorTest, SetBoundsStopped) {
   EXPECT_EQ(kSecondTime, interpolator_.GetInterpolatedTime());
 }
 
-TEST_F(TimeDeltaInterpolatorTest, SetBoundsStarted) {
+TEST_F(TimeDeltaInterpolatorTest, SetBounds_Started) {
   // We'll play for 4 seconds, then set the time to 12, then play for 4 more
   // seconds.
   const base::TimeDelta kZero;
@@ -172,7 +172,7 @@ TEST_F(TimeDeltaInterpolatorTest, SetUpperBound) {
   EXPECT_EQ(kMaxTime, interpolator_.GetInterpolatedTime());
 }
 
-TEST_F(TimeDeltaInterpolatorTest, SetUpperBoundMultipleTimes) {
+TEST_F(TimeDeltaInterpolatorTest, SetUpperBound_MultipleTimes) {
   const base::TimeDelta kZero;
   const base::TimeDelta kTimeInterval = base::Seconds(4);
   const base::TimeDelta kMaxTime0 = base::Seconds(120);

@@ -76,7 +76,7 @@ TEST_F(MediaServiceThrottlerTest, BaseCase) {
 }
 
 // Makes sure we can "burst" schedule clients.
-TEST_F(MediaServiceThrottlerTest, NoCrashUnderBurstThresholdShouldNotDelay) {
+TEST_F(MediaServiceThrottlerTest, NoCrash_UnderBurstThreshold_ShouldNotDelay) {
   int number_burst_client_scheduled = 0;
 
   while (base::TimeDelta() == throttler_->GetDelayForClientCreation())
@@ -87,7 +87,7 @@ TEST_F(MediaServiceThrottlerTest, NoCrashUnderBurstThresholdShouldNotDelay) {
 
 // Makes sure that, when burst scheduling a client, we schedule it from
 // last scheduled burst client (vs scheduling it |base_delay_| from now).
-TEST_F(MediaServiceThrottlerTest, NoCrashOverBurstThresholdShouldDelay) {
+TEST_F(MediaServiceThrottlerTest, NoCrash_OverBurstThreshold_ShouldDelay) {
   // Schedule clients until the next one would be over burst threshold.
   SimulateClientCreations(kMaxBurstClients);
 
@@ -141,7 +141,7 @@ TEST_F(MediaServiceThrottlerTest,
 
 // Makes sure that after a certain amount of inactivity, the scheduling clock is
 // reset.
-TEST_F(MediaServiceThrottlerTest, NoCrashLongInactivityShouldReset) {
+TEST_F(MediaServiceThrottlerTest, NoCrash_LongInactivity_ShouldReset) {
   // Schedule two minutes' worth of clients.
   SimulateClientCreations(base::ClampFloor(base::Minutes(2) / base_delay_));
 
@@ -153,7 +153,7 @@ TEST_F(MediaServiceThrottlerTest, NoCrashLongInactivityShouldReset) {
 }
 
 // Makes sure that crashes increase the scheduling delay.
-TEST_F(MediaServiceThrottlerTest, WithCrashBaseCaseDelayShouldIncrease) {
+TEST_F(MediaServiceThrottlerTest, WithCrash_BaseCase_DelayShouldIncrease) {
   // Schedule clients until the next one would be over burst threshold.
   SimulateClientCreations(kMaxBurstClients);
 
@@ -182,7 +182,7 @@ TEST_F(MediaServiceThrottlerTest,
 }
 
 // Makes sure that more than 1 crash per minute causes increased delays.
-TEST_F(MediaServiceThrottlerTest, WithCrashManyCrashesDelayShouldIncrease) {
+TEST_F(MediaServiceThrottlerTest, WithCrash_ManyCrashes_DelayShouldIncrease) {
   // Schedule clients until the next one would be over burst threshold.
   SimulateClientCreations(kMaxBurstClients);
 
@@ -210,7 +210,7 @@ TEST_F(MediaServiceThrottlerTest,
 }
 
 // Makes sure that crashes affect the number of burst clients we can schedule.
-TEST_F(MediaServiceThrottlerTest, WithCrashShouldAllowFewerBurstClients) {
+TEST_F(MediaServiceThrottlerTest, WithCrash_ShouldAllowFewerBurstClients) {
   int number_burst_client_scheduled = 0;
 
   SimulateCrashes(1);
@@ -222,7 +222,7 @@ TEST_F(MediaServiceThrottlerTest, WithCrashShouldAllowFewerBurstClients) {
 }
 
 // Makes sure delays are capped to a certain maximal value.
-TEST_F(MediaServiceThrottlerTest, WithCrashManyCrashesDelayShouldMaxOut) {
+TEST_F(MediaServiceThrottlerTest, WithCrash_ManyCrashes_DelayShouldMaxOut) {
   // Schedule clients until the next one would be over burst threshold.
   SimulateClientCreations(kMaxBurstClients);
 
@@ -235,7 +235,7 @@ TEST_F(MediaServiceThrottlerTest, WithCrashManyCrashesDelayShouldMaxOut) {
 }
 
 // Makes sure a minute without crashes resets the crash counter.
-TEST_F(MediaServiceThrottlerTest, WithCrashNoCrashesForAMinuteShouldReset) {
+TEST_F(MediaServiceThrottlerTest, WithCrash_NoCrashesForAMinute_ShouldReset) {
   SimulateCrashes(10);
 
   // The effective server crash count should be reset because it has been over
@@ -248,7 +248,7 @@ TEST_F(MediaServiceThrottlerTest, WithCrashNoCrashesForAMinuteShouldReset) {
 }
 
 // Makes sure a steady crashes do not resets the crash counter.
-TEST_F(MediaServiceThrottlerTest, WithCrashConstantCrashesShouldNotReset) {
+TEST_F(MediaServiceThrottlerTest, WithCrash_ConstantCrashes_ShouldNotReset) {
   SimulateCrashes(9);
 
   // The effective server crash count should not be reset.
@@ -263,7 +263,7 @@ TEST_F(MediaServiceThrottlerTest, WithCrashConstantCrashesShouldNotReset) {
 
 // Makes sure the crash listener shuts down after a minute of not having
 // received any client creation request.
-TEST_F(MediaServiceThrottlerTest, CrashListenerNoRequestsShouldShutDown) {
+TEST_F(MediaServiceThrottlerTest, CrashListener_NoRequests_ShouldShutDown) {
   // Schedule many minutes worth of clients. This is to prove that the
   // MediaServerCrashListener's clean up happens after lack of requests, as
   // opposed to lack of actually scheduled clients.
