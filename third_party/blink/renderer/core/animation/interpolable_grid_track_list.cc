@@ -36,8 +36,7 @@ InterpolableGridTrackList* InterpolableGridTrackList::MaybeCreate(
 
     const NGGridTrackRepeater repeater(
         track_list.RepeatIndex(i), track_list.RepeatSize(i),
-        track_list.RepeatCount(i, 0), track_list.LineNameIndicesCount(i),
-        track_list.RepeatType(i));
+        track_list.RepeatCount(i, 0), track_list.RepeatType(i));
     InterpolableGridTrackRepeater* result =
         InterpolableGridTrackRepeater::Create(repeater, repeater_track_sizes,
                                               property, zoom);

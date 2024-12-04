@@ -27,7 +27,6 @@ struct NGGridTrackRepeater {
   NGGridTrackRepeater(wtf_size_t repeat_index,
                       wtf_size_t repeat_size,
                       wtf_size_t repeat_count,
-                      wtf_size_t line_name_indices_count,
                       RepeatType repeat_type);
   String ToString() const;
   bool operator==(const NGGridTrackRepeater& o) const;
@@ -36,17 +35,12 @@ struct NGGridTrackRepeater {
   // consecutively in a single vector for all repeaters; this index specifies
   // the position of the first track size that belongs to this repeater.
   wtf_size_t repeat_index;
-  // Amount of tracks to be repeated.
+  // Amount of tracks to be repeated. For standalone axis, this is the number of
+  // track definitions. For subgrids, this is the indices containing named line
+  // definitions (e.g. `repeat(auto-fit, [a b], [c d])` would have a size of 2).
   wtf_size_t repeat_size;
   // Amount of times the group of tracks are repeated.
   wtf_size_t repeat_count;
-  // Count of line name indices defined in this repeater. This is different than
-  // the count of line names. for instance, a definition of
-  // `repeat(auto-fit, [a b], [c d])` would have a line name count of 4, but the
-  // line name indices count would be 2 (0 and 1). This is necessary for round
-  // tripping repeaters, as we need to know how many indices have line names.
-  // TODO(kschmi): Merge this with `repeat_size`.
-  wtf_size_t line_name_indices_count;
   // Type of repetition.
   RepeatType repeat_type;
 };
@@ -66,8 +60,6 @@ class CORE_EXPORT NGGridTrackList {
   wtf_size_t RepeatIndex(wtf_size_t index) const;
   // Returns the number of tracks in the repeater at `index`.
   wtf_size_t RepeatSize(wtf_size_t index) const;
-  // Returns the number line name indices defined at a given repeater `index`.
-  wtf_size_t LineNameIndicesCount(wtf_size_t index) const;
   // Returns the repeat type of the repeater at `index`.
   NGGridTrackRepeater::RepeatType RepeatType(wtf_size_t index) const;
   // Returns the size of the `n`-th specified track of the repeater at `index`.
@@ -90,8 +82,7 @@ class CORE_EXPORT NGGridTrackList {
                    NGGridTrackRepeater::RepeatType repeat_type =
                        NGGridTrackRepeater::RepeatType::kNoRepeat,
                    wtf_size_t repeat_count = 1u,
-                   wtf_size_t repeat_number_of_lines = 1u,
-                   wtf_size_t line_name_indices_count = 0u);
+                   wtf_size_t repeat_number_of_lines = 1u);
   // Returns true if this list contains an auto repeater.
   bool HasAutoRepeater() const;
   // Returns true if this is a subgridded track list.
