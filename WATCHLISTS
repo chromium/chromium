@@ -1611,8 +1611,8 @@
     },
     'nearby': {
       'filepath': 'chrome/browser/nearby_sharing/|'\
-                  'chrome/browser/resources/nearby_internals/|'\
-                  'chrome/browser/resources/nearby_share/|'\
+                  'chrome/browser/resources/chromeos/nearby_internals/|'\
+                  'chrome/browser/resources/chromeos/nearby_share/|'\
                   'chrome/browser/resources/ash/settings/nearby_share_page/|'\
                   'chrome/browser/ui/webui/nearby_internals/|'\
                   'chrome/browser/ui/webui/nearby_share/|'\
