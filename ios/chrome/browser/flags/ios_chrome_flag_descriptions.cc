@@ -349,12 +349,6 @@ const char kDefaultBrowserBannerPromoDescription[] =
     "When enabled, the default browser banner promo will show when conditions "
     "are met.";
 
-const char kDefaultBrowserIntentsShowSettingsName[] =
-    "Default Browser Intents show settings";
-const char kDefaultBrowserIntentsShowSettingsDescription[] =
-    "When enabled, external apps can trigger the settings screen showing "
-    "default browser tutorial.";
-
 const char kDefaultBrowserTriggerCriteriaExperimentName[] =
     "Show default browser promo trigger criteria experiment";
 const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =

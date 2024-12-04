@@ -204,9 +204,6 @@ extern const char kModernTabStripInactiveTabsHighContrast[];
 extern const char kModernTabStripHighContrastNTB[];
 extern const char kModernTabStripDetachedTabs[];
 
-// Feature flag that allows external apps to show default browser settings.
-BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
-
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 

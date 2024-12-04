@@ -1318,8 +1318,7 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
 // the value in the shared application group.
 - (void)saveFieldTrialValuesForGroupApp {
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
-  NSNumber* supportsShowDefaultBrowserPromo =
-      @(base::FeatureList::IsEnabled(kDefaultBrowserIntentsShowSettings));
+  NSNumber* supportsShowDefaultBrowserPromo = @YES;
 
   NSDictionary* capabilities = @{
     app_group::

@@ -1580,10 +1580,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::
              kSegmentationPlatformIosModuleRankerSplitBySurface)},
-    {"default-browser-intents-show-settings",
-     flag_descriptions::kDefaultBrowserIntentsShowSettingsName,
-     flag_descriptions::kDefaultBrowserIntentsShowSettingsDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserIntentsShowSettings)},
     {"ios-password-bottom-sheet-autofocus",
      flag_descriptions::kIOSPasswordBottomSheetAutofocusName,
      flag_descriptions::kIOSPasswordBottomSheetAutofocusDescription,

@@ -225,10 +225,6 @@ extern const char kModernTabStripHighContrastNTB[] =
 extern const char kModernTabStripDetachedTabs[] =
     "modern-tab-strip-detached-tabs";
 
-BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
-             "DefaultBrowserIntentsShowSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              "IOSBrowserEditMenuMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
