@@ -9,8 +9,20 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
 
 namespace webnn::ort {
+
+#define ORT_ABORT_ON_ERROR(g_ort, expr)                             \
+  do {                                                       \
+    OrtStatus* onnx_status = (expr);                         \
+    if (onnx_status != NULL) {                               \
+      const char* msg = g_ort->GetErrorMessage(onnx_status); \
+      fprintf(stderr, "%s\n", msg);                          \
+      g_ort->ReleaseStatus(onnx_status);                     \
+      abort();                                               \
+    }                                                        \
+  } while (0);
 
 // `ContextImplOrt` is created by `WebNNContextProviderImpl` and responsible
 // for creating a `GraphImplOrt` which uses ORT for inference.
@@ -30,6 +42,9 @@ class ContextImplOrt final : public WebNNContextImpl {
 
   static ContextProperties GetContextProperties();
 
+  static const OrtApi* GetGlobalOrt();
+  static OrtEnv* GetEnv(const OrtApi* g_ort);
+
  private:
   void CreateGraphImpl(
       mojom::GraphInfoPtr graph_info,
@@ -44,6 +59,8 @@ class ContextImplOrt final : public WebNNContextImpl {
       CreateTensorImplCallback callback) override;
 
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
+  static OrtEnv* env_;
+  static const OrtApi* g_ort_;
 };
 
 }  // namespace webnn::ort

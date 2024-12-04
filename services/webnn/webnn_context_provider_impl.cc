@@ -29,6 +29,7 @@
 #include "services/webnn/dml/context_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/ort/context_impl_ort.h"
+#include "services/webnn/ort/platform_functions_ort.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -259,10 +260,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     switch (options->device) {
       case mojom::CreateContextOptions::Device::kCpu:
         NOTREACHED();
-      case mojom::CreateContextOptions::Device::kGpu:
+      case mojom::CreateContextOptions::Device::kGpu: {
         adapter_creation_result =
             GetDmlGpuAdapter(shared_context_state_.get(), gpu_feature_info_);
         break;
+      }
       case mojom::CreateContextOptions::Device::kNpu:
         adapter_creation_result =
             dml::Adapter::GetNpuInstance(gpu_feature_info_, gpu_info_);

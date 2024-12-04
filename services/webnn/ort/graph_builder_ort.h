@@ -60,12 +60,15 @@ class GraphBuilderOrt {
 
     [[nodiscard]] const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
 
+    [[nodiscard]] const std::map<uint64_t, OperandInfo>&
+    id_to_operand_info_map() const;
+
     const base::FilePath working_directory;
     std::map<uint64_t, OperandInfo> operand_infos;
   };
 
   // Factory method that creates a GraphBuilderOrt, builds and serializes the
-  // ONNZ model to the `working_directory`. This expects the
+  // ONNX model to the `working_directory`. This expects the
   // `working_directory` to be an empty directory.
   //
   // Returns unexpected if it fails.
@@ -96,10 +99,11 @@ class GraphBuilderOrt {
   void AddOutput(uint64_t output_id);
   void AddInitializer(uint64_t constant_id);
 
-  template<typename T>
+  template <typename T>
   void AddUnaryOperation(const T& operation, std::string op_type);
 
-  void AddElementWiseUnaryOperation(const mojom::ElementWiseUnary& element_wise_unary);
+  void AddElementWiseUnaryOperation(
+      const mojom::ElementWiseUnary& element_wise_unary);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
 

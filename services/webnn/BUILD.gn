@@ -84,6 +84,10 @@ component("webnn_service") {
       "ort/context_impl_ort.h",
       "ort/graph_builder_ort.cc",
       "ort/graph_builder_ort.h",
+      "ort/graph_impl_ort.cc",
+      "ort/graph_impl_ort.h",
+      "ort/platform_functions_ort.cc",
+      "ort/platform_functions_ort.h",
     ]
     deps += [
       "//third_party/fp16",

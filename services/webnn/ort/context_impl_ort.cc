@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/notimplemented.h"
 #include "services/webnn/ort/graph_builder_ort.h"
+#include "services/webnn/ort/graph_impl_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -16,6 +17,7 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/ort/platform_functions_ort.h"
 
 namespace webnn::ort {
 
@@ -138,6 +140,52 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*where_value=*/{}});
 }
 
+OrtEnv* ContextImplOrt::env_ = nullptr;
+const OrtApi* ContextImplOrt::g_ort_ = nullptr;
+
+// static
+const OrtApi* ContextImplOrt::GetGlobalOrt() {
+  if (g_ort_) {
+    return g_ort_;
+  }
+
+  PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
+  auto ort_get_api_base_proc = platform_functions->ort_get_api_base_proc();
+
+  // currently, win11 inside onnxruntime.dll version is 1.10.1 and can support
+  // IR_VERSION_2021_7_30.
+  const char* version = ort_get_api_base_proc()->GetVersionString();
+  LOG(ERROR) << "onnxruntime dll version is " << version;
+
+  const OrtApi* g_ort = ort_get_api_base_proc()->GetApi(onnx::Version::IR_VERSION_2019_9_19);
+
+  int num_providers = 0;
+  char** providers;
+  ORT_ABORT_ON_ERROR(g_ort, g_ort->GetAvailableProviders(&providers, &num_providers));
+  LOG(ERROR) << "num_providers " << num_providers;
+  // num_providers = 2
+  for (int i = 0; i < num_providers; i++) {
+    LOG(ERROR) << "provider: " << providers[i];
+  }
+  // provider[0]: DmlExecutionProvider
+  // provider[1]: CPUExecutionProvider
+  g_ort->ReleaseAvailableProviders(providers, num_providers);
+
+  return g_ort;
+}
+
+// static
+OrtEnv* ContextImplOrt::GetEnv(const OrtApi* g_ort) {
+  if (env_) {
+    return env_;
+  }
+
+  OrtEnv* env;
+  ORT_ABORT_ON_ERROR(g_ort, g_ort->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "test", &env));
+
+  return env;
+}
+
 base::WeakPtr<WebNNContextImpl> ContextImplOrt::AsWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
@@ -149,22 +197,9 @@ void ContextImplOrt::CreateGraphImpl(
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     CreateGraphImplCallback callback) {
-  base::ScopedTempDir model_file_dir;
-  if (!model_file_dir.CreateUniqueTempDir()) {
-    std::move(callback).Run(base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Model allocation error.")));
-    return;
-  }
-  auto create_builder_result = GraphBuilderOrt::CreateAndBuild(
-      *graph_info, GetContextProperties(), std::move(constant_operands),
-      model_file_dir.GetPath());
-  if (!create_builder_result.has_value()) {
-    std::move(callback).Run(base::unexpected(std::move(create_builder_result.error())));
-    return;
-  }
-
-  std::move(callback).Run(base::unexpected(mojom::Error::New(
-      mojom::Error::Code::kUnknownError, "Not implemented.")));
+  std::move(callback).Run(GraphImplOrt::CreateAndBuild(
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), this));
 }
 
 void ContextImplOrt::CreateTensorImpl(

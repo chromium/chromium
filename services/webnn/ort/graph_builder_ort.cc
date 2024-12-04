@@ -114,6 +114,11 @@ const GraphBuilderOrt::OperandInfo& GraphBuilderOrt::Result::GetOperandInfo(
   return it->second;
 }
 
+const std::map<uint64_t, GraphBuilderOrt::OperandInfo>&
+GraphBuilderOrt::Result::id_to_operand_info_map() const {
+  return operand_infos;
+}
+
 // static
 base::expected<std::unique_ptr<GraphBuilderOrt::Result>, mojom::ErrorPtr>
 GraphBuilderOrt::CreateAndBuild(
@@ -157,7 +162,8 @@ std::string GraphBuilderOrt::GetOperandName(uint64_t operand_id) {
       return base::JoinString({"input", operand.name.value()}, "_");
     }
     case mojom::Operand::Kind::kConstant: {
-      // It's okay to use operand id as name directly since operand id is guaranteed to be unique.
+      // It's okay to use operand id as name directly since operand id is
+      // guaranteed to be unique.
       return base::NumberToString(operand_id);
     }
     case mojom::Operand::Kind::kOutput: {
@@ -189,7 +195,8 @@ void GraphBuilderOrt::AddInput(uint64_t input_id) {
     shape.add_dim()->set_dim_value(static_cast<int64_t>(dim));
   }
 
-  CHECK(result_->operand_infos.try_emplace(input_id, std::move(operand_info)).second);
+  CHECK(result_->operand_infos.try_emplace(input_id, std::move(operand_info))
+            .second);
 }
 
 void GraphBuilderOrt::AddOutput(uint64_t output_id) {
@@ -211,7 +218,8 @@ void GraphBuilderOrt::AddOutput(uint64_t output_id) {
     shape.add_dim()->set_dim_value(static_cast<int64_t>(dim));
   }
 
-  CHECK(result_->operand_infos.try_emplace(output_id, std::move(operand_info)).second);
+  CHECK(result_->operand_infos.try_emplace(output_id, std::move(operand_info))
+            .second);
 }
 
 void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
@@ -233,24 +241,26 @@ void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
       reinterpret_cast<const char*>(operand.ByteSpan().data()),
       operand.ByteSpan().size());
 
-  CHECK(
-      result_->operand_infos.try_emplace(constant_id, std::move(operand_info)).second);
+  CHECK(result_->operand_infos.try_emplace(constant_id, std::move(operand_info))
+            .second);
 }
 
-template<typename T>
-void GraphBuilderOrt::AddUnaryOperation(const T& operation, std::string op_type) {
+template <typename T>
+void GraphBuilderOrt::AddUnaryOperation(const T& operation,
+                                        std::string op_type) {
   onnx::NodeProto& node = *(model_.mutable_graph()->add_node());
   node.set_name(operation.label);
   node.set_op_type(op_type);
   node.add_input(GetOperandName(operation.input_operand_id));
   node.add_output(GetOperandName(operation.output_operand_id));
 
-
-  // CHECK(result_->operand_infos.try_emplace(operation.output_operand_id, std::move(operand_info)).second);
+  // CHECK(result_->operand_infos.try_emplace(operation.output_operand_id,
+  // std::move(operand_info)).second);
 }
 
-void GraphBuilderOrt::AddElementWiseUnaryOperation(const mojom::ElementWiseUnary& element_wise_unary) {
-  switch(element_wise_unary.kind) {
+void GraphBuilderOrt::AddElementWiseUnaryOperation(
+    const mojom::ElementWiseUnary& element_wise_unary) {
+  switch (element_wise_unary.kind) {
     case mojom::ElementWiseUnary::Kind::kAbs:
       AddUnaryOperation(element_wise_unary, kOpTypeAbs);
       break;
@@ -311,17 +321,20 @@ void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
 
   onnx::AttributeProto& attribute = *node.add_attribute();
   attribute.set_name("to");
-  attribute.set_type(onnx::AttributeProto::AttributeType::AttributeProto_AttributeType_INT);
+  attribute.set_type(
+      onnx::AttributeProto::AttributeType::AttributeProto_AttributeType_INT);
 
   const mojom::Operand& output_operand = GetOperand(cast.output_operand_id);
-  const OperandDataType output_data_type = output_operand.descriptor.data_type();
-  attribute.set_i(static_cast<int64_t>(OperandTypeToOnnxDataType(output_data_type)));
+  const OperandDataType output_data_type =
+      output_operand.descriptor.data_type();
+  attribute.set_i(
+      static_cast<int64_t>(OperandTypeToOnnxDataType(output_data_type)));
 }
 
-void GraphBuilderOrt::AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not) {
+void GraphBuilderOrt::AddLogicalNotOperation(
+    const mojom::ElementWiseUnary& logical_not) {
   onnx::NodeProto& node = *(model_.mutable_graph()->add_node());
   // Add cast
-
 
   node.set_name(logical_not.label);
   node.set_op_type(kOpTypeLogicalNot);
@@ -337,7 +350,7 @@ GraphBuilderOrt::BuildModel() {
   // IR VERSION 10 published on March 25, 2024
   // Added UINT4, INT4.
   // use the newest ir version to support uint4/int4.
-  model_.set_ir_version(onnx::Version::IR_VERSION_2024_3_25);
+  model_.set_ir_version(onnx::Version::IR_VERSION_2019_9_19);
 
   //
   onnx::OperatorSetIdProto& operator_set_id = *model_.add_opset_import();
@@ -450,11 +463,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderOrt::SerializeModel() {
     return NewUnknownError(kBuildGraphError);
   }
 
-
   // result = model_.SerializeToFileDescriptor(
   //     reinterpret_cast<intptr_t>(model_file.GetPlatformFile()));
 
-  return NewUnknownError(kBuildGraphError);
+  // return NewUnknownError(kBuildGraphError);
+  return base::ok();
 }
 
 }  // namespace ort
