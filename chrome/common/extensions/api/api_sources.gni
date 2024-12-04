@@ -22,6 +22,16 @@ uncompiled_sources_ = [
   "extension.json",
 ]
 
+# Some APIs (e.g. cookies) rely on types and headers from other APIs.
+types_only_schema_sources_ = []
+
+if (enable_desktop_android_extensions) {
+  types_only_schema_sources_ += [
+    "tabs.json",
+    "windows.json",
+  ]
+}
+
 if (enable_extensions) {
   schema_sources_ += [
     "accessibility_features.json",
@@ -170,6 +180,9 @@ if (enable_extensions) {
 }
 
 chrome_extensions_api_schema_sources = get_path_info(schema_sources_, "abspath")
+
+chrome_extensions_types_only_schema_sources =
+    get_path_info(types_only_schema_sources_, "abspath")
 
 chrome_extensions_manifest_only_schema_sources =
     get_path_info([
