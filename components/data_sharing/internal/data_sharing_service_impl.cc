@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version_info/channel.h"
+#include "components/data_sharing/internal/avatar_fetcher.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/internal/data_sharing_network_loader_impl.h"
 #include "components/data_sharing/internal/group_data_proto_utils.h"
@@ -102,7 +103,8 @@ DataSharingServiceImpl::DataSharingServiceImpl(
       preview_server_proxy_(
           std::make_unique<PreviewServerProxy>(identity_manager,
                                                url_loader_factory,
-                                               channel)) {
+                                               channel)),
+      avatar_fetcher_(std::make_unique<AvatarFetcher>()) {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COLLABORATION_GROUP,
@@ -577,6 +579,14 @@ void DataSharingServiceImpl::GetSharedEntitiesPreview(
   preview_server_proxy_->GetSharedDataPreview(
       group_token, syncer::DataType::SHARED_TAB_GROUP_DATA,
       std::move(callback));
+}
+
+void DataSharingServiceImpl::GetAvatarImageForURL(
+    const GURL& avatar_url,
+    int size,
+    base::OnceCallback<void(const gfx::Image&)> callback,
+    image_fetcher::ImageFetcher* image_fetcher) {
+  avatar_fetcher_->Fetch(avatar_url, size, std::move(callback), image_fetcher);
 }
 
 void DataSharingServiceImpl::SetSDKDelegate(

@@ -27,6 +27,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace image_fetcher {
+class ImageFetcher;
+}  // namespace image_fetcher
+
 namespace data_sharing_pb {
 
 class AddAccessTokenResult;
@@ -40,6 +44,7 @@ class LookupGaiaIdByEmailResult;
 namespace data_sharing {
 class DataSharingNetworkLoader;
 class PreviewServerProxy;
+class AvatarFetcher;
 
 // The internal implementation of the DataSharingService.
 class DataSharingServiceImpl : public DataSharingService,
@@ -117,6 +122,11 @@ class DataSharingServiceImpl : public DataSharingService,
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) override;
+  void GetAvatarImageForURL(
+      const GURL& avatar_url,
+      int size,
+      base::OnceCallback<void(const gfx::Image&)> callback,
+      image_fetcher::ImageFetcher* image_fetcher) override;
   void SetSDKDelegate(
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
   void SetUIDelegate(
@@ -190,6 +200,7 @@ class DataSharingServiceImpl : public DataSharingService,
 
   base::ObserverList<DataSharingService::Observer> observers_;
   std::unique_ptr<PreviewServerProxy> preview_server_proxy_;
+  std::unique_ptr<AvatarFetcher> avatar_fetcher_;
 
   base::WeakPtrFactory<DataSharingServiceImpl> weak_ptr_factory_{this};
 };

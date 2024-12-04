@@ -23,6 +23,14 @@
 #include "base/android/jni_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
+namespace image_fetcher {
+class ImageFetcher;
+}  // namespace image_fetcher
+
 namespace data_sharing {
 class DataSharingNetworkLoader;
 class DataSharingSDKDelegate;
@@ -231,6 +239,15 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) = 0;
+
+  // Gets avatar image for the given `avatar_url. It's by default cropped into a
+  // circle where the diameter will be set to the `size`.
+  // TODO(crbug.com/382127659): Shouldn't force UI to pass in an image_fetcher.
+  virtual void GetAvatarImageForURL(
+      const GURL& avatar_url,
+      int size,
+      base::OnceCallback<void(const gfx::Image&)> callback,
+      image_fetcher::ImageFetcher* image_fetcher) = 0;
 
   // Sets the current DataSharingSDKDelegate instance.
   virtual void SetSDKDelegate(

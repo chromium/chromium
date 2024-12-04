@@ -118,6 +118,12 @@ void EmptyDataSharingService::GetSharedEntitiesPreview(
     base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
         callback) {}
 
+void EmptyDataSharingService::GetAvatarImageForURL(
+    const GURL& avatar_url,
+    int size,
+    base::OnceCallback<void(const gfx::Image&)> callback,
+    image_fetcher::ImageFetcher* image_fetcher) {}
+
 void EmptyDataSharingService::SetSDKDelegate(
     std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) {}
 

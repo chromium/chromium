@@ -76,6 +76,11 @@ class EmptyDataSharingService : public DataSharingService {
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) override;
+  void GetAvatarImageForURL(
+      const GURL& avatar_url,
+      int size,
+      base::OnceCallback<void(const gfx::Image&)> callback,
+      image_fetcher::ImageFetcher* image_fetcher) override;
   void SetSDKDelegate(
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
   void SetUIDelegate(
