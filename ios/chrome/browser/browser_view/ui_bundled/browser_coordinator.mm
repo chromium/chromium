@@ -228,7 +228,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
-#import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
@@ -543,9 +542,6 @@ enum class ToolbarKind {
 
 // Coordinator for presenting SKStoreProductViewController.
 @property(nonatomic, strong) StoreKitCoordinator* storeKitCoordinator;
-
-// The coordinator used for the Text Fragments feature.
-@property(nonatomic, strong) TextFragmentsCoordinator* textFragmentsCoordinator;
 
 // Coordinator for Text Zoom.
 @property(nonatomic, strong) TextZoomCoordinator* textZoomCoordinator;
@@ -1352,11 +1348,6 @@ enum class ToolbarKind {
                          browser:self.browser];
   [self.safeBrowsingCoordinator start];
 
-  self.textFragmentsCoordinator = [[TextFragmentsCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.textFragmentsCoordinator start];
-
   // TODO(crbug.com/40228065): Refactor this coordinator so it doesn't directly
   // access the BVC's view.
   self.formInputAccessoryCoordinator = [[FormInputAccessoryCoordinator alloc]
@@ -1499,9 +1490,6 @@ enum class ToolbarKind {
 
   [self.infobarModalOverlayContainerCoordinator stop];
   self.infobarModalOverlayContainerCoordinator = nil;
-
-  [self.textFragmentsCoordinator stop];
-  self.textFragmentsCoordinator = nil;
 
   [self.nonModalPromoCoordinator stop];
   self.nonModalPromoCoordinator = nil;

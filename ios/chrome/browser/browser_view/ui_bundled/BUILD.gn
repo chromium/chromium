@@ -223,7 +223,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/tabs/ui_bundled:constants",
     "//ios/chrome/browser/tabs/ui_bundled:coordinator",
     "//ios/chrome/browser/tabs/ui_bundled/requirements",
-    "//ios/chrome/browser/text_fragments/ui_bundled",
     "//ios/chrome/browser/text_zoom/ui_bundled:coordinator",
     "//ios/chrome/browser/text_zoom/ui_bundled:ui",
     "//ios/chrome/browser/tips_manager/model:factory",

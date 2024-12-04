@@ -123,7 +123,6 @@ source_set("java_script_feature_util") {
     "//ios/web/navigation:navigation_feature",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
-    "//ios/web/text_fragments",
     "//ios/web/webui",
   ]
 

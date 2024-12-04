@@ -86,7 +86,6 @@ include_rules = [
   "+ios/chrome/browser/tab_switcher/ui_bundled",
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
   "+ios/chrome/browser/tabs/ui_bundled",
-  "+ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h",
   "+ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h",
   "+ios/chrome/browser/tips_manager/model",
   "+ios/chrome/browser/tips_notifications/coordinator",
