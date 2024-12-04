@@ -130,7 +130,7 @@
 <translation id="1391102559483454063">Увімкнено</translation>
 <translation id="1394698770495054737">Максимальне розмиття</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 день тому}one{# день тому}few{# дні тому}many{# днів тому}other{# дня тому}}</translation>
-<translation id="1404963891829069586">Звуки для концентрації уваги</translation>
+<translation id="1404963891829069586">Звуки для зосередження</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Використовуйте клавіші зі стрілками, щоб переходити між датами.</translation>
 <translation id="141170878022560212">Середня кнопка</translation>
@@ -541,7 +541,7 @@
 <translation id="2935225303485967257">Керувати профілями</translation>
 <translation id="2941112035454246133">Низький</translation>
 <translation id="2942350706960889382">Закріплена лупа</translation>
-<translation id="2942516765047364088">Розташування полиці</translation>
+<translation id="2942516765047364088">Розташування панелі запуску</translation>
 <translation id="2946119680249604491">Додати з’єднання</translation>
 <translation id="2947835478872237115">Поточний рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />%, до повного заряду: <ph name="TIME" /></translation>
 <translation id="2949420361496057765">Натисніть <ph name="MODIFIER" />, а потім – посилання</translation>
@@ -1791,7 +1791,7 @@
 <translation id="7068360136237591149">Відкрий файли</translation>
 <translation id="7076293881109082629">Вхід</translation>
 <translation id="7076878155205969899">Вимикає звук</translation>
-<translation id="7083848064787091821">Режим концентрації уваги</translation>
+<translation id="7083848064787091821">Зосередження</translation>
 <translation id="7084678090004350185">Увімкнути або вимкнути точку доступу. Точку доступу ввімкнено. Кількість підключених пристроїв: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7086931198345821656">Для оновлення потрібно виконати Powerwash на пристрої <ph name="DEVICE_TYPE" />. Усі дані буде видалено. Докладніше про останнє оновлення <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Кнопковий доступ</translation>
@@ -1866,7 +1866,7 @@
 <translation id="7386767620098596324">Увімкнути або вимкнути з’єднання з мережею. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Це завжди можна зробити пізніше в Налаштуваннях.</translation>
 <translation id="7401222354741467707">Зробити знімок усього екрана або почати запис відео з нього</translation>
-<translation id="7401788553834047908">Не турбувати в режимі концентрації уваги</translation>
+<translation id="7401788553834047908">Не турбувати в режимі зосередження</translation>
 <translation id="7405710164030118432">Щоб розблокувати пристрій, введіть код доступу батьків із Family Link</translation>
 <translation id="7406608787870898861">Завершіть налаштування мобільної мережі</translation>
 <translation id="7406854842098869085">Утримуючи клавішу <ph name="MODIFIER_1" />, натискайте клавішу <ph name="KEY" />, доки не перейдете в потрібне вікно, а тоді відпустіть</translation>
