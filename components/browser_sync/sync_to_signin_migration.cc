@@ -189,7 +189,7 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
 
   // Mark the user as syncing again.
   pref_service->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   pref_service->SetBoolean(
       syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
 #endif
@@ -399,7 +399,7 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   // Also clear the "InitialSyncFeatureSetup" pref. It's not needed
   // post-migration, and that pref being true without ConsentLevel::kSync would
   // be an inconsistent state.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   pref_service->ClearPref(
       syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 #endif
@@ -485,7 +485,7 @@ SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
     const PrefService* pref_service,
     syncer::DataType type,
     const char* type_enabled_pref) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In ChromeOS-Ash, the "initial-setup-complete" pref doesn't exist.
   bool initial_setup_complete = true;
 #else
