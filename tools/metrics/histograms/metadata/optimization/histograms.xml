@@ -264,6 +264,9 @@ chromium-metrics-reviews@google.com.
       summary="Returns price insights data for shopping websites"/>
   <variant name="PriceTracking"
       summary="Returns price related data for shopping websites"/>
+  <variant name="PrivacyPolicyAnnotation"
+      summary="Provides information about whether a URL is a privacy policy
+               page."/>
   <variant name="SalientImage"
       summary="Provides information about images for a URL."/>
   <variant name="SavedTabGroup"

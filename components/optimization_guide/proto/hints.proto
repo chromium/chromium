@@ -296,6 +296,9 @@ enum OptimizationType {
   TEXT_CLASSIFIER_ENTITY_DETECTION = 74;
   // Provides information for what to show in the debug icon view.
   OPTIMIZATION_GUIDE_ICON_VIEW = 76;
+  // This optimization provides information about whether a page is a privacy
+  // policy page.
+  PRIVACY_POLICY_ANNOTATION = 77;
 }
 
 // Presents semantics for how page load URLs should be matched.
