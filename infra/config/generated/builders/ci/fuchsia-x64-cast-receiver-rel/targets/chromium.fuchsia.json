@@ -1397,7 +1397,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--jobs=1"
         ],
@@ -1405,7 +1405,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "context_lost_validating_tests",
+        "name": "context_lost_passthrough_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1429,19 +1429,19 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
+          "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}",
           "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "expected_color_pixel_validating_test",
+        "name": "expected_color_pixel_passthrough_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -1534,19 +1534,19 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
+          "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}",
           "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "pixel_skia_gold_validating_test",
+        "name": "pixel_skia_gold_passthrough_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -1575,7 +1575,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--jobs=1"
@@ -1584,7 +1584,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "screenshot_sync_validating_tests",
+        "name": "screenshot_sync_passthrough_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

@@ -4089,42 +4089,6 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
-          "--enforce-browser-version",
-          "--jobs=4"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "context_lost_passthrough_graphite_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "containment_type": "AUTO",
-          "dimensions": {
-            "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
-          },
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "context_lost",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--jobs=4"
@@ -4133,51 +4097,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "context_lost_passthrough_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "containment_type": "AUTO",
-          "dimensions": {
-            "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
-          },
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "expected_color",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
-          "--enforce-browser-version",
-          "--git-revision=${got_revision}",
-          "--dont-restore-color-profile-after-test",
-          "--test-machine-name",
-          "${buildername}",
-          "--jobs=4"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "expected_color_pixel_passthrough_graphite_test",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4393,51 +4312,6 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
-          "--enforce-browser-version",
-          "--git-revision=${got_revision}",
-          "--dont-restore-color-profile-after-test",
-          "--test-machine-name",
-          "${buildername}",
-          "--jobs=4"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "pixel_skia_gold_passthrough_graphite_test",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "containment_type": "AUTO",
-          "dimensions": {
-            "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
-          },
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "pixel",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
@@ -4455,43 +4329,6 @@
           "--gerrit-patchset=${patch_set}",
           "--buildbucket-id=${buildbucket_build_id}"
         ],
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "containment_type": "AUTO",
-          "dimensions": {
-            "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
-          },
-          "hard_timeout": 1800,
-          "idempotent": false,
-          "io_timeout": 1800,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "screenshot_sync",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
-          "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test",
-          "--jobs=4"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "screenshot_sync_passthrough_graphite_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

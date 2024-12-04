@@ -267,6 +267,10 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 # Fuchsia devices timeout due to this test drawing 300 frames before completion.
 [ fuchsia ] Pixel_Canvas2DBlitText [ Skip ]
 
+# This test specifies to use GL for the ANGLE backend, which conflicts with
+# Graphite since Metal is required for that on Mac.
+[ mac graphite-enabled ] Pixel_OffscreenCanvasIBRCWorkerAngleGL [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

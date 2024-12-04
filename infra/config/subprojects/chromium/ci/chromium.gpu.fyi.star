@@ -2817,10 +2817,34 @@ ci.thin_tester(
             "win10_nvidia_gtx_1660_stable",
         ],
         per_test_modifications = {
+            # TODO(b/297347572): Re-enable these tests once the driver version
+            # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
+            # on certain drivers due to this blocklist entry.
+            # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = [
+                    "Graphite does not currently work properly on Win/NVIDIA ",
+                ],
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = [
+                    "Graphite does not currently work properly on Win/NVIDIA ",
+                ],
+            ),
             "media_foundation_browser_tests": targets.remove(
                 reason = [
                     "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
                     "gpu bots once the Windows OS supports HW secure decryption.",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = [
+                    "Graphite does not currently work properly on Win/NVIDIA ",
+                ],
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = [
+                    "Graphite does not currently work properly on Win/NVIDIA ",
                 ],
             ),
         },
@@ -2942,10 +2966,34 @@ ci.thin_tester(
             "win10_nvidia_gtx_1660_stable",
         ],
         per_test_modifications = {
+            # TODO(b/297347572): Re-enable these tests once the driver version
+            # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
+            # on certain drivers due to this blocklist entry.
+            # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = [
+                    "Graphite does not currently work properly on Win/NVIDIA ",
+                ],
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = [
+                    "Graphite does not currently work properly on Win/NVIDIA ",
+                ],
+            ),
             "media_foundation_browser_tests": targets.remove(
                 reason = [
                     "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
                     "gpu bots once the Windows OS supports HW secure decryption.",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = [
+                    "Graphite does not currently work properly on Win/NVIDIA ",
+                ],
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = [
+                    "Graphite does not currently work properly on Win/NVIDIA ",
                 ],
             ),
         },
