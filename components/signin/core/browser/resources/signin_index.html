@@ -10,10 +10,7 @@
     <div class="section" jsselect="signin_info">
       <h2 jscontent="title"></h2>
       <table class="signin-details">
-        <tr jsselect="data"
-            jsvalues="class:setClassFromValue($this.value)"
-            jseval="highlightIfChanged(this,
-                      this.children[1].innerText, value)">
+        <tr jsselect="data">
           <td jscontent="label"></td>
           <td jscontent="status"></td>
           <td jscontent="time" jsdisplay="time"></td>
@@ -34,11 +31,7 @@
           <td>Request Status</td>
         </tr>
         <tr jsselect="data"
-            jsvalues="class:setClassFromValue($this.status)"
-            jseval="highlightIfAnyChanged(this,
-                      [[this.children[1].innerText, scopes],
-                      [this.children[2].innerText, request_time],
-                      [this.children[3].innerText, status]])">
+            jsvalues="class:setClassFromValue($this.status)">
           <td jscontent="service"></td>
           <td jsvalues=".textContent: scopes"></td>
           <td jscontent="request_time"></td>

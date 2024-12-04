@@ -12,7 +12,7 @@ build_webui("build") {
     "signin_index.html",
   ]
 
-  non_web_component_files = [ "signin_internals.js" ]
+  non_web_component_files = [ "signin_internals.ts" ]
 
   ts_deps = [
     "//third_party/jstemplate:library",
