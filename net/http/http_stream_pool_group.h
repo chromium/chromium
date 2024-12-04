@@ -78,12 +78,9 @@ class HttpStreamPool::Group {
   // properly manage the lifetime of the Job, even when StartJob() synchronously
   // calls one of the delegate's methods.
   std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
-                                 RespectLimits respect_limits,
-                                 bool enable_ip_based_pooling,
-                                 bool enable_alternative_services,
+                                 quic::ParsedQuicVersion quic_version,
                                  NextProto expected_protocol,
-                                 bool is_http1_allowed,
-                                 ProxyInfo proxy_info);
+                                 const NetLogWithSource& net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once

@@ -105,17 +105,12 @@ HttpStreamPool::Group::~Group() {
 
 std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
-    RespectLimits respect_limits,
-    bool enable_ip_based_pooling,
-    bool enable_alternative_services,
+    quic::ParsedQuicVersion quic_version,
     NextProto expected_protocol,
-    bool is_http1_allowed,
-    ProxyInfo proxy_info) {
+    const NetLogWithSource& net_log) {
   EnsureAttemptManager();
-  return std::make_unique<Job>(delegate, attempt_manager_.get(), respect_limits,
-                               enable_ip_based_pooling,
-                               enable_alternative_services, expected_protocol,
-                               is_http1_allowed, std::move(proxy_info));
+  return std::make_unique<Job>(delegate, attempt_manager_.get(), quic_version,
+                               expected_protocol, net_log);
 }
 
 int HttpStreamPool::Group::Preconnect(size_t num_streams,

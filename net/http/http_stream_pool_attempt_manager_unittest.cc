@@ -483,15 +483,10 @@ class TestJobDelegate : public Job::Delegate {
 
   void CreateAndStartJob(HttpStreamPool& pool) {
     CHECK(!job_);
-    job_ =
-        pool.GetOrCreateGroupForTesting(GetStreamKey())
-            .CreateJob(this, HttpStreamPool::RespectLimits::kRespect,
-                       /*enable_ip_based_pooling=*/true,
-                       /*enable_alternative_services=*/true, expected_protocol_,
-                       /*is_http1_allowed=*/true, ProxyInfo::Direct());
-
-    job_->Start(RequestPriority::DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                quic_version_, NetLogWithSource());
+    job_ = pool.GetOrCreateGroupForTesting(GetStreamKey())
+               .CreateJob(this, quic_version_, expected_protocol_,
+                          NetLogWithSource());
+    job_->Start();
   }
 
   int GetResult() { return result_future_.Get(); }
@@ -502,6 +497,27 @@ class TestJobDelegate : public Job::Delegate {
     negotiated_protocol_ = negotiated_protocol;
     SetResult(OK);
   }
+
+  RequestPriority priority() const override {
+    return RequestPriority::DEFAULT_PRIORITY;
+  }
+
+  HttpStreamPool::RespectLimits respect_limits() const override {
+    return HttpStreamPool::RespectLimits::kRespect;
+  }
+
+  const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()
+      const override {
+    return allowed_bad_certs_;
+  }
+
+  bool enable_ip_based_pooling() const override { return true; }
+
+  bool enable_alternative_services() const override { return true; }
+
+  bool is_http1_allowed() const override { return true; }
+
+  const ProxyInfo& proxy_info() const override { return proxy_info_; }
 
   void OnStreamFailed(Job* job,
                       int status,
@@ -530,6 +546,8 @@ class TestJobDelegate : public Job::Delegate {
   NextProto expected_protocol_ = NextProto::kProtoUnknown;
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
+  std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
+  ProxyInfo proxy_info_ = ProxyInfo::Direct();
 
   std::unique_ptr<Job> job_;
 

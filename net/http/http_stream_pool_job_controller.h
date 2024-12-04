@@ -39,6 +39,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
  public:
   JobController(HttpStreamPool* pool,
                 HttpStreamPoolRequestInfo request_info,
+                RequestPriority priority,
+                std::vector<SSLConfig::CertAndStatus> allowed_bad_certs,
                 bool enable_ip_based_pooling,
                 bool enable_alternative_services);
 
@@ -50,8 +52,6 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   // Creates an HttpStreamRequest and starts Job(s) to handle it.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
-      RequestPriority priority,
-      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       const NetLogWithSource& net_log);
 
   // Requests that enough connections/sessions for `num_streams` be opened.
@@ -59,6 +59,14 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   int Preconnect(size_t num_streams, CompletionOnceCallback callback);
 
   // HttpStreamPool::Job::Delegate implementation:
+  RequestPriority priority() const override;
+  RespectLimits respect_limits() const override;
+  const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()
+      const override;
+  bool enable_ip_based_pooling() const override;
+  bool enable_alternative_services() const override;
+  bool is_http1_allowed() const override;
+  const ProxyInfo& proxy_info() const override;
   void OnStreamReady(Job* job,
                      std::unique_ptr<HttpStream> stream,
                      NextProto negotiated_protocol) override;
@@ -140,6 +148,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   void MaybeMarkAlternativeServiceBroken();
 
   const raw_ptr<HttpStreamPool> pool_;
+  const RequestPriority priority_;
+  const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   const bool enable_ip_based_pooling_;
   const bool enable_alternative_services_;
   const RespectLimits respect_limits_;
