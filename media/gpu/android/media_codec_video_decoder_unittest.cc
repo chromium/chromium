@@ -916,7 +916,7 @@ TEST_P(MediaCodecVideoDecoderTest, CdmIsSetEvenForClearStream) {
   ASSERT_TRUE(codec_allocator_->most_recent_config->media_crypto);
 }
 
-TEST_P(MediaCodecVideoDecoderTest, NoMediaCryptoContextClearStream) {
+TEST_P(MediaCodecVideoDecoderTest, NoMediaCryptoContext_ClearStream) {
   // Make sure that MCVD initializes for clear stream when MediaCryptoContext
   // is not available.
   CreateCdm(false, false);
@@ -931,7 +931,7 @@ TEST_P(MediaCodecVideoDecoderTest, NoMediaCryptoContextClearStream) {
   ASSERT_FALSE(codec_allocator_->most_recent_config->media_crypto);
 }
 
-TEST_P(MediaCodecVideoDecoderTest, NoMediaCryptoContextEncryptedStream) {
+TEST_P(MediaCodecVideoDecoderTest, NoMediaCryptoContext_EncryptedStream) {
   // Make sure that MCVD fails to initialize for encrypted stream when
   // MediaCryptoContext is not available.
   CreateCdm(false, false);
