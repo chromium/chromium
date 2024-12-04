@@ -1618,4 +1618,4 @@ void glWindowRectanglesEXTFn(GLenum mode,
                              GLsizei n,
                              const GLint* box) override {}
 
-#endif  //  UI_GL_GL_STUB_AUTOGEN_GL_H_
+#endif  // UI_GL_GL_STUB_AUTOGEN_GL_H_

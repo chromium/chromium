@@ -22,14 +22,6 @@
 namespace gl {
 
 void DriverGL::InitializeStaticBindings() {
-#if DCHECK_IS_ON()
-  // Ensure struct has been zero-initialized.
-  auto bytes = base::byte_span_from_ref(*this);
-  for (auto byte : bytes) {
-    DCHECK_EQ(0, byte);
-  };
-#endif
-
   fn.glActiveTextureFn = reinterpret_cast<glActiveTextureProc>(
       GetGLProcAddress("glActiveTexture"));
   fn.glAttachShaderFn =
@@ -2566,8 +2558,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
 }
 
 void DriverGL::ClearBindings() {
-  auto bytes = base::byte_span_from_ref(*this);
-  std::ranges::fill(bytes, 0);
+  *this = {};
 }
 
 void GLApiBase::glAcquireTexturesANGLEFn(GLuint numTextures,
