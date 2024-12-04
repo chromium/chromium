@@ -540,7 +540,6 @@ bool ui::IsNSRange(id value) {
       {NSAccessibilityMinValueAttribute, @"minValue"},
       {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
       {NSAccessibilityOrientationAttribute, @"orientation"},
-      {NSAccessibilityParentAttribute, @"parent"},
       {NSAccessibilityPositionAttribute, @"position"},
       {NSAccessibilityRoleAttribute, @"role"},
       {NSAccessibilityRowHeaderUIElementsAttribute, @"rowHeaders"},
@@ -978,9 +977,10 @@ bool ui::IsNSRange(id value) {
   return nil;
 }
 
-- (id)parent {
-  if (![self instanceActive])
+- (id)accessibilityParent {
+  if (![self instanceActive]) {
     return nil;
+  }
   if (_owner->PlatformGetParent()) {
     id unignored_parent = NSAccessibilityUnignoredAncestor(
         _owner->PlatformGetParent()->GetNativeViewAccessible());
