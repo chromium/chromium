@@ -4103,6 +4103,11 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
     SiteInstanceImpl* old_instance,
     SiteInstanceImpl* new_instance,
     bool recovering_without_early_commit) {
+  TRACE_EVENT("navigation",
+              "RenderFrameHostManager::CreateSpeculativeRenderFrameHost",
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
+              ChromeTrackEvent::kSiteInstance, old_instance,
+              ChromeTrackEvent::kSiteInstance, new_instance);
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.CreateSpeculativeRFH");
   CHECK(new_instance);
