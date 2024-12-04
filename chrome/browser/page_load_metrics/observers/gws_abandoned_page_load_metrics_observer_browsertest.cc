@@ -1093,8 +1093,14 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
 // Test that if a navigation was abandoned by hiding multiple times, only the
 // first hiding will be logged.
+// TODO(crbug.com/372878281): flaky on Mac builds
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SearchTabHiddenMultipleTimes DISABLED_SearchTabHiddenMultipleTimes
+#else
+#define MAYBE_SearchTabHiddenMultipleTimes SearchTabHiddenMultipleTimes
+#endif
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       SearchTabHiddenMultipleTimes) {
+                       MAYBE_SearchTabHiddenMultipleTimes) {
   // Make sure the WebContents is currently shown, before hiding it later.
   web_contents()->WasShown();
 
