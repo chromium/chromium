@@ -8,14 +8,12 @@
 
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
-#include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/test/gtest_tags.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
@@ -31,14 +29,11 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -54,9 +49,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/accelerators/accelerator.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -97,36 +89,13 @@ Browser* OpenNewBrowser(Browser* initial_kiosk_browser, bool is_popup_browser) {
   return new_browser;
 }
 
-// Disables the Gaia screen offline message. Leaving this enable may interfere
-// with checks done in offline Kiosk launch tests, since it influences the
-// screens `WizardController` shows.
-void DisableGaiaOfflineScreen() {
-  LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->GetHandler<GaiaScreenHandler>()
-      ->set_offline_timeout_for_testing(base::TimeDelta::Max());
-}
-
 void WaitNetworkScreen() {
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-}
-
-void WaitSplashScreen() {
-  OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
-}
-
-bool PressNetworkAccelerator() {
-  return LoginScreenTestApi::PressAccelerator(
-      ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
 }
 
 void ExpectNetworkScreenContinueButtonShown(bool is_shown) {
   test::OobeJS().ExpectPathDisplayed(is_shown,
                                      kNetworkConfigureScreenContinueButton);
-}
-
-void ClickNetworkScreenContinueButton() {
-  test::OobeJS().ClickOnPath(kNetworkConfigureScreenContinueButton);
 }
 
 [[nodiscard]] std::optional<base::AutoReset<bool>> BlockKioskLaunch() {
@@ -162,63 +131,6 @@ class WebKioskTest : public MixinBasedInProcessBrowserTest {
                                 {KioskMixin::SimpleWebAppOption()}}};
 };
 
-// Runs the kiosk app without a network connection, waits till network wait
-// times out. Network configure dialog appears. Afterwards, it configures
-// network and closes network configure dialog. Launch proceeds.
-IN_PROC_BROWSER_TEST_F(WebKioskTest, NetworkTimeout) {
-  network_state_.SimulateOffline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskWebApp()));
-
-  WaitNetworkScreen();
-  ExpectNetworkScreenContinueButtonShown(/*is_shown=*/false);
-
-  network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
-  ASSERT_TRUE((IsWebAppInstalled(TheKioskWebApp())));
-}
-
-// Presses a network configure dialog accelerator during app launch which will
-// interrupt the startup.
-IN_PROC_BROWSER_TEST_F(WebKioskTest, NetworkShortcutWorks) {
-  network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskWebApp()));
-
-  // Block launch so the test has time to press the network accelerator.
-  auto block_launch_override = BlockKioskLaunch();
-  WaitSplashScreen();
-  ASSERT_TRUE(PressNetworkAccelerator());
-  WaitNetworkScreen();
-  ExpectNetworkScreenContinueButtonShown(/*is_shown=*/true);
-
-  block_launch_override.reset();
-  ClickNetworkScreenContinueButton();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
-  ASSERT_TRUE((IsWebAppInstalled(TheKioskWebApp())));
-}
-
-IN_PROC_BROWSER_TEST_F(WebKioskTest, PRE_NetworkShortcutWorksOffline) {
-  network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskWebApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
-  ASSERT_TRUE((IsWebAppInstalled(TheKioskWebApp())));
-}
-
-IN_PROC_BROWSER_TEST_F(WebKioskTest, NetworkShortcutWorksOffline) {
-  network_state_.SimulateOffline();
-  DisableGaiaOfflineScreen();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskWebApp()));
-
-  auto block_launch_override = BlockKioskLaunch();
-  WaitSplashScreen();
-  ASSERT_TRUE(PressNetworkAccelerator());
-  WaitNetworkScreen();
-  ExpectNetworkScreenContinueButtonShown(/*is_shown=*/true);
-
-  block_launch_override.reset();
-  ClickNetworkScreenContinueButton();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
-  ASSERT_TRUE((IsWebAppInstalled(TheKioskWebApp())));
-}
 IN_PROC_BROWSER_TEST_F(WebKioskTest, KeyboardConfigPolicy) {
   network_state_.SimulateOnline();
   ASSERT_TRUE(kiosk_.LaunchManually(TheKioskWebApp()));

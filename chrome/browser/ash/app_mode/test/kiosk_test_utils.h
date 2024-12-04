@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_TEST_UTILS_H_
 #define CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_TEST_UTILS_H_
 
+#include <optional>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -28,6 +30,13 @@ namespace ash::kiosk::test {
 // exactly one app.
 [[nodiscard]] KioskApp TheKioskApp();
 
+// Tells `KioskLaunchController` to block kiosk launch until the `AutoReset` is
+// destroyed.
+//
+// This returns an optional as a convenience, so tests can call `.reset()` to
+// allow the launch to proceed. The optional is never `nullopt`.
+[[nodiscard]] std::optional<base::AutoReset<bool>> BlockKioskLaunch();
+
 // Returns true if the Chrome `app` is installed in the given `profile`.
 [[nodiscard]] bool IsChromeAppInstalled(Profile& profile, const KioskApp& app);
 [[nodiscard]] bool IsChromeAppInstalled(Profile& profile,
@@ -42,6 +51,16 @@ namespace ash::kiosk::test {
 
 // Returns the current profile. Makes sense to be called after Kiosk launch.
 [[nodiscard]] Profile& CurrentProfile();
+
+// Waits for the Kiosk splash screen to appear.
+void WaitSplashScreen();
+
+// Waits for the Kiosk network dialog in the splash screen to appear.
+void WaitNetworkScreen();
+
+// Presses the accelerator to display the network dialog in the splash screen.
+// Returns true if the accelerator was processed.
+[[nodiscard]] bool PressNetworkAccelerator();
 
 // Closes the window of the given `app`.
 void CloseAppWindow(const KioskApp& app);

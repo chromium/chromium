@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "apps/test/app_window_waiter.h"
+#include "ash/public/cpp/login_screen_test_api.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -16,15 +19,22 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "url/gurl.h"
 
 namespace ash::kiosk::test {
@@ -51,6 +61,10 @@ KioskApp TheKioskWebApp() {
   auto app = TheKioskApp();
   CHECK_EQ(app.id().type, KioskAppType::kWebApp);
   return app;
+}
+
+std::optional<base::AutoReset<bool>> BlockKioskLaunch() {
+  return {KioskTestHelper::BlockAppLaunch()};
 }
 
 bool IsChromeAppInstalled(Profile& profile, const KioskApp& app) {
@@ -90,6 +104,19 @@ bool IsAppInstalled(Profile& profile, const KioskApp& app) {
 
 Profile& CurrentProfile() {
   return CHECK_DEREF(ProfileManager::GetPrimaryUserProfile());
+}
+
+void WaitSplashScreen() {
+  OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
+}
+
+void WaitNetworkScreen() {
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+}
+
+bool PressNetworkAccelerator() {
+  return LoginScreenTestApi::PressAccelerator(
+      ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
 }
 
 void CloseAppWindow(const KioskApp& app) {

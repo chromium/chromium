@@ -9,7 +9,10 @@ assert(is_chromeos_ash)
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "kiosk_browsertest.cc" ]
+  sources = [
+    "kiosk_browsertest.cc",
+    "splash_screen_browsertest.cc",
+  ]
   deps = [
     ":test_support",
     "//chrome/browser",

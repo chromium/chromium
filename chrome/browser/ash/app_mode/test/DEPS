@@ -5,4 +5,8 @@
 include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/ui/test",
+  "+chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/error_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/gaia_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/oobe_ui.h",
 ]
