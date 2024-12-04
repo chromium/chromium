@@ -1874,6 +1874,19 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getInReorderModeForTesting());
     }
 
+    private void setupForContextMenu() {
+        // Set up tabModel and menu coordinator.
+        Drawable mockDrawable = mock(Drawable.class);
+        when(mTabGroupContextMenuCoordinator.getMenuBackground(any(), anyBoolean()))
+                .thenReturn(mockDrawable);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
+        tabModel.setActive(true);
+        mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
+                mTabGroupContextMenuCoordinator);
+    }
+
     @Test
     @Feature("Tab Group Context Menu")
     @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
@@ -1883,17 +1896,7 @@ public class StripLayoutHelperTest {
         groupTabs(0, 1);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-        Drawable mockDrawable = mock(Drawable.class);
-        when(mTabGroupContextMenuCoordinator.getMenuBackground(any(), anyBoolean()))
-                .thenReturn(mockDrawable);
-
-        // Set up tabModel and menu coordinator.
-        MockTabModel tabModel = new MockTabModel(mProfile, null);
-        when(mProfile.isOffTheRecord()).thenReturn(true);
-        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
-        tabModel.setActive(true);
-        mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
-                mTabGroupContextMenuCoordinator);
+        setupForContextMenu();
 
         // Long press on group title.
         mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
@@ -1912,6 +1915,39 @@ public class StripLayoutHelperTest {
         titleView.getPaddedBoundsPx(expectedRect);
         Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
         assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
+    }
+
+    @Test
+    @Feature("Tab Group Context Menu")
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
+    public void testDragToScroll_WithoutContextMenu() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        groupTabs(0, 1);
+        setupForContextMenu();
+
+        // Verify drag without context menu starts a scroll.
+        mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 10f, /* y= */ 10f, /* deltaX= */ 10f);
+        assertTrue(
+                "Scroll should be in progress.",
+                mStripLayoutHelper.getIsStripScrollInProgressForTesting());
+    }
+
+    @Test
+    @Feature("Tab Group Context Menu")
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
+    public void testDragToScroll_WithContextMenu() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        groupTabs(0, 1);
+        setupForContextMenu();
+
+        // Long press on group title and verify drag with context menu does not start a scroll.
+        when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
+        mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 10f, /* y= */ 10f, /* deltaX= */ 10f);
+        assertFalse(
+                "Scroll should not be in progress.",
+                mStripLayoutHelper.getIsStripScrollInProgressForTesting());
     }
 
     @Test
@@ -3734,6 +3770,43 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Unexpected scroll offset.",
                 expectedOffset,
+                mStripLayoutHelper.getScrollOffset(),
+                0.0);
+    }
+
+    @Test
+    @Feature("Tab Group Context Menu")
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
+    public void testFling_WithContextMenu() {
+        // Arrange
+        initializeTest(false, false, 10, 11);
+        groupTabs(0, 1);
+        setupForContextMenu();
+        when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
+        // Disable the padding as changing the visible width change the existing expected fling
+        // distance.
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, 0, 0);
+        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
+        // invoked. That also affects the scrollOffset value. So we call updateLayout before
+        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Set initial scroll offset.
+        float initialScrollOffset = -150;
+        mStripLayoutHelper.setScrollOffsetForTesting(initialScrollOffset);
+
+        // Act: Perform a fling and update layout.
+        float velocity = 5000f;
+        // The velocityX value is used to calculate the scroller.finalX value.
+        mStripLayoutHelper.fling(TIMESTAMP, 0, 0, velocity, 0);
+        // This will use the scroller.finalX value to update the scrollOffset. The timestamp
+        // value here will determine the fling duration and affects the final offset value.
+        mStripLayoutHelper.updateLayout(TIMESTAMP + 20);
+
+        // Assert: Final scrollOffset. Should not have moved as context menu is showing.
+        assertEquals(
+                "Unexpected scroll offset.",
+                initialScrollOffset,
                 mStripLayoutHelper.getScrollOffset(),
                 0.0);
     }

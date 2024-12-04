@@ -251,7 +251,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      * Show the context menu of the tab group.
      *
      * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
-     *     coordinates..
+     *     coordinates.
      * @param rootId The root id of the interacting tab group.
      */
     protected void showMenu(RectProvider anchorViewRectProvider, int rootId) {
@@ -266,6 +266,11 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 mWindowAndroid.getActivity().get());
         mIsMenuShowing = true;
         recordUserAction("Shown");
+    }
+
+    /** Returns {@code true} if the menu is currently showing, {@code false} otherwise. */
+    protected boolean isMenuShowing() {
+        return mIsMenuShowing;
     }
 
     @Override
@@ -389,7 +394,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      * ListView behaves like a LinearLayout and relies on the ScrollView for proper scrolling to
      * ensure scrolling for the custom views.
      */
-    public void setListViewHeightBasedOnChildren() {
+    private void setListViewHeightBasedOnChildren() {
         assert mContentView != null : "Menu view should not be null";
 
         ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);

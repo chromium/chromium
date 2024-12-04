@@ -1847,8 +1847,8 @@ public class StripLayoutHelper
                             mStripViews, mStripGroupTitles, mStripTabs, accumulatedDeltaX);
                 }
             }
-        } else {
-            // 3.b. Handle scroll.
+        } else if (!isTabGroupContextMenuShowing()) {
+            // 3.b. Handle scroll if the tab group context menu is not showing.
             if (!mIsStripScrollInProgress) {
                 mIsStripScrollInProgress = true;
                 RecordUserAction.record("MobileToolbarSlideTabs");
@@ -1892,8 +1892,9 @@ public class StripLayoutHelper
     public void fling(long time, float x, float y, float velocityX, float velocityY) {
         resetResizeTimeout(false);
 
-        // 1. If we're currently in reorder mode, don't allow the user to fling.
-        if (mReorderDelegate.getInReorderMode()) return;
+        // 1. If we're currently in reorder mode or the context menu is showing, don't allow the
+        // user to fling.
+        if (mReorderDelegate.getInReorderMode() || isTabGroupContextMenuShowing()) return;
 
         // 2. Begin scrolling.
         mScrollDelegate.fling(
@@ -1958,6 +1959,11 @@ public class StripLayoutHelper
         } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)) {
             showTabGroupContextMenu((StripLayoutGroupTitle) stripView);
         }
+    }
+
+    private boolean isTabGroupContextMenuShowing() {
+        return mTabGroupContextMenuCoordinator != null
+                && mTabGroupContextMenuCoordinator.isMenuShowing();
     }
 
     private void showTabGroupContextMenu(StripLayoutGroupTitle groupTitle) {
@@ -4328,6 +4334,10 @@ public class StripLayoutHelper
 
     void finishScrollForTesting() {
         mScrollDelegate.finishScrollForTesting();
+    }
+
+    boolean getIsStripScrollInProgressForTesting() {
+        return mIsStripScrollInProgress;
     }
 
     private void setAccessibilityDescription(StripLayoutTab stripTab, Tab tab) {
