@@ -10,8 +10,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -29,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowRoleManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -69,6 +72,8 @@ public class DefaultBrowserPromoUtilsTest {
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
 
+    private ShadowRoleManager mShadowRoleManager;
+
     DefaultBrowserPromoUtils mUtils;
 
     @Before
@@ -84,6 +89,11 @@ public class DefaultBrowserPromoUtilsTest {
         TrackerFactory.setTrackerForTests(mMockTracker);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMockMessageDispatcher);
         SearchEngineChoiceService.setInstanceForTests(mMockSearchEngineChoiceService);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mShadowRoleManager = shadowOf(mActivity.getSystemService(RoleManager.class));
+            mShadowRoleManager.addAvailableRole(RoleManager.ROLE_BROWSER);
+        }
 
         mUtils = new DefaultBrowserPromoUtils(mCounter, mProvider);
         setDepsMockWithDefaultValues();
@@ -101,8 +111,8 @@ public class DefaultBrowserPromoUtilsTest {
     public void testBasicPromo() {
         Assert.assertTrue(
                 "Should promo disambiguation sheet on Q.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     // --- Q above ---
@@ -110,8 +120,8 @@ public class DefaultBrowserPromoUtilsTest {
     public void testPromo_Q_No_Default() {
         Assert.assertTrue(
                 "Should promo role manager when there is no default browser on Q+.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -120,18 +130,34 @@ public class DefaultBrowserPromoUtilsTest {
                 .thenReturn(createResolveInfo("android", 1));
         Assert.assertTrue(
                 "Should promo role manager when there is another default browser on Q+.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
+    }
+
+    @Test
+    public void testPromo_Q_RoleHeld() {
+        mShadowRoleManager.addHeldRole(RoleManager.ROLE_BROWSER);
+        Assert.assertFalse(
+                "Should Not show role manager promo when Role already held on Q+.",
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
+    }
+
+    @Test
+    public void testPromo_Q_RoleNotAvailable() {
+        mShadowRoleManager.removeAvailableRole(RoleManager.ROLE_BROWSER);
+        Assert.assertFalse(
+                "Should Not show role manager promo when Role is not available on Q+.",
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     // --- P below ---
     @Test
     @Config(sdk = Build.VERSION_CODES.P)
     public void testNoPromo_P() {
-        when(mProvider.isRoleAvailable(any())).thenCallRealMethod();
-        Assert.assertFalse(
-                "Should not promo on P-.", mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(null));
+        Assert.assertFalse("Should not promo on P-.", mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     // --- prerequisites ---
@@ -141,8 +167,8 @@ public class DefaultBrowserPromoUtilsTest {
         when(mCounter.getPromoCount()).thenReturn(99);
         Assert.assertTrue(
                 "Should promo when promo count does not reach the upper limit.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -151,19 +177,8 @@ public class DefaultBrowserPromoUtilsTest {
         when(mCounter.getMaxPromoCount()).thenReturn(1);
         Assert.assertFalse(
                 "Should not promo when promo count reaches the upper limit.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(null));
-    }
-
-    @Test
-    public void testPromo_ignoreMaxCount() {
-        when(mCounter.getPromoCount()).thenReturn(1);
-        when(mCounter.getMaxPromoCount()).thenReturn(1);
-        // when(mCounter.getSessionCount()).thenReturn(1);
-        // when(mCounter.getMinSessionCount()).thenReturn(3);
-        Assert.assertTrue(
-                "Should promo when ignore max count is enabled.",
-                mUtils.shouldShowRoleManagerPromo(null, true));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -171,8 +186,8 @@ public class DefaultBrowserPromoUtilsTest {
     public void testNoPromo_featureDisabled() {
         Assert.assertFalse(
                 "Should not promo when the feature is disabled.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -181,8 +196,8 @@ public class DefaultBrowserPromoUtilsTest {
         when(mCounter.getMinSessionCount()).thenReturn(3);
         Assert.assertFalse(
                 "Should not promo when session count has not reached the required amount.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -194,8 +209,8 @@ public class DefaultBrowserPromoUtilsTest {
         when(mProvider.isCurrentDefaultBrowserChrome(any())).thenCallRealMethod();
         Assert.assertFalse(
                 "Should not promo when another chrome channel browser has been default.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -206,8 +221,8 @@ public class DefaultBrowserPromoUtilsTest {
                                 ContextUtils.getApplicationContext().getPackageName(), 1));
         Assert.assertFalse(
                 "Should not promo when chrome has been default.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -215,8 +230,8 @@ public class DefaultBrowserPromoUtilsTest {
         when(mProvider.getDefaultWebBrowserActivityResolveInfo()).thenReturn(null);
         Assert.assertFalse(
                 "Should not promo when web browser activity does not exist.",
-                mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
+                mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -242,7 +257,7 @@ public class DefaultBrowserPromoUtilsTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testNoMessagePromo_shouldShowRoleManagerPromo() {
-        Assert.assertTrue(mUtils.shouldShowRoleManagerPromo(mActivity, false));
+        Assert.assertTrue(mUtils.shouldShowRoleManagerPromo(mActivity));
         Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
         mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
         verify(mMockMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
@@ -251,10 +266,10 @@ public class DefaultBrowserPromoUtilsTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testNoMessagePromo_featureEngagementBlocker() {
-        when(mProvider.isRoleAvailable(any())).thenReturn(false);
+        mShadowRoleManager.removeAvailableRole(RoleManager.ROLE_BROWSER);
         when(mMockTracker.shouldTriggerHelpUi(any())).thenReturn(false);
 
-        Assert.assertFalse(mUtils.shouldShowRoleManagerPromo(mActivity, false));
+        Assert.assertFalse(mUtils.shouldShowRoleManagerPromo(mActivity));
         Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
 
         mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
@@ -265,10 +280,10 @@ public class DefaultBrowserPromoUtilsTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testShowMessagePromo() {
-        when(mProvider.isRoleAvailable(any())).thenReturn(false);
+        mShadowRoleManager.removeAvailableRole(RoleManager.ROLE_BROWSER);
         when(mMockTracker.shouldTriggerHelpUi(any())).thenReturn(true);
 
-        Assert.assertFalse(mUtils.shouldShowRoleManagerPromo(mActivity, false));
+        Assert.assertFalse(mUtils.shouldShowRoleManagerPromo(mActivity));
         Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
 
         mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
@@ -323,7 +338,6 @@ public class DefaultBrowserPromoUtilsTest {
         when(mProvider.isChromeStable()).thenReturn(false);
         when(mProvider.isChromePreStableInstalled()).thenReturn(false);
         when(mProvider.isCurrentDefaultBrowserChrome(any())).thenReturn(false);
-        when(mProvider.isRoleAvailable(any())).thenReturn(true);
         // No Default
         when(mProvider.getDefaultWebBrowserActivityResolveInfo())
                 .thenReturn(createResolveInfo("android", 0));
