@@ -360,6 +360,7 @@ int HttpStreamPool::JobController::RestartTunnelWithProxyAuth() {
 }
 
 void HttpStreamPool::JobController::SetPriority(RequestPriority priority) {
+  priority_ = priority;
   if (origin_job_) {
     origin_job_->SetPriority(priority);
   }

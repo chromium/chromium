@@ -213,6 +213,8 @@ void HttpStreamPool::AttemptManager::StartJob(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  CHECK(!is_failing_);
+
   MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB, [&] {
@@ -256,14 +258,6 @@ void HttpStreamPool::AttemptManager::StartJob(
       /*is_websocket=*/false, net_log));
 
   jobs_.Insert(job, priority);
-
-  if (is_failing_) {
-    // `this` is failing, notify the failure.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfFailure,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
 
   RestrictAllowedProtocols(job->allowed_alpns());
 

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -46,12 +47,12 @@ NextProtoSet CalculateAllowedAlpns(NextProto expected_protocol,
 }  // namespace
 
 HttpStreamPool::Job::Job(Delegate* delegate,
-                         AttemptManager* attempt_manager,
+                         Group* group,
                          quic::ParsedQuicVersion quic_version,
                          NextProto expected_protocol,
                          const NetLogWithSource& net_log)
     : delegate_(delegate),
-      attempt_manager_(attempt_manager),
+      group_(group),
       quic_version_(quic_version),
       allowed_alpns_(CalculateAllowedAlpns(expected_protocol,
                                            delegate_->is_http1_allowed())),
@@ -61,14 +62,20 @@ HttpStreamPool::Job::Job(Delegate* delegate,
 }
 
 HttpStreamPool::Job::~Job() {
-  CHECK(attempt_manager_);
-  // `attempt_manager_` may be deleted after this call.
-  attempt_manager_.ExtractAsDangling()->OnJobComplete(this);
+  CHECK(group_);
+  // `group_` may be deleted after this call.
+  group_.ExtractAsDangling()->OnJobComplete(this);
 }
 
 void HttpStreamPool::Job::Start() {
-  const url::SchemeHostPort& destination =
-      attempt_manager_->group()->stream_key().destination();
+  CHECK(group_);
+
+  if (!group_->CanStartJob(this)) {
+    return;
+  }
+
+  CHECK(attempt_manager());
+  const url::SchemeHostPort& destination = group_->stream_key().destination();
   if (!IsPortAllowedForScheme(destination.port(), destination.scheme())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -77,18 +84,21 @@ void HttpStreamPool::Job::Start() {
     return;
   }
 
-  attempt_manager_->StartJob(this, priority(), delegate_->allowed_bad_certs(),
-                             quic_version_, net_log_);
+  attempt_manager()->StartJob(this, priority(), delegate_->allowed_bad_certs(),
+                              quic_version_, net_log_);
 }
 
 LoadState HttpStreamPool::Job::GetLoadState() const {
-  CHECK(attempt_manager_);
-  return attempt_manager_->GetLoadState();
+  if (!attempt_manager()) {
+    return LOAD_STATE_IDLE;
+  }
+  return attempt_manager()->GetLoadState();
 }
 
 void HttpStreamPool::Job::SetPriority(RequestPriority priority) {
-  CHECK(attempt_manager_);
-  attempt_manager_->SetJobPriority(this, priority);
+  if (attempt_manager()) {
+    attempt_manager()->SetJobPriority(this, priority);
+  }
 }
 
 void HttpStreamPool::Job::AddConnectionAttempts(
@@ -119,10 +129,8 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
     return;
   }
 
-  attempt_manager_->group()
-      ->http_network_session()
-      ->proxy_resolution_service()
-      ->ReportSuccess(delegate_->proxy_info());
+  group_->http_network_session()->proxy_resolution_service()->ReportSuccess(
+      delegate_->proxy_info());
   delegate_->OnStreamReady(this, std::move(stream), negotiated_protocol);
 }
 
@@ -144,6 +152,11 @@ void HttpStreamPool::Job::OnCertificateError(int status,
 void HttpStreamPool::Job::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   CHECK(delegate_);
   delegate_->OnNeedsClientAuth(this, cert_info);
+}
+
+HttpStreamPool::AttemptManager* HttpStreamPool::Job::attempt_manager() const {
+  CHECK(group_);
+  return group_->attempt_manager();
 }
 
 }  // namespace net

@@ -69,6 +69,10 @@ class HttpStreamPool::AttemptManager
     return service_endpoint_request_.get();
   }
 
+  bool is_failing() const { return is_failing_; }
+
+  int error_to_notify() const { return error_to_notify_; }
+
   bool is_service_endpoint_request_finished() const {
     return service_endpoint_request_finished_;
   }

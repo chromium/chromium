@@ -3537,34 +3537,42 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   success_data->set_connect_data(MockConnect(ASYNC, OK));
   socket_factory()->AddSocketDataProvider(success_data.get());
 
-  StreamRequester requester1;
-  requester1.set_destination(kDestination).RequestStream(pool());
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination(kDestination).Build();
 
-  RunUntilIdle();
+  StreamRequester requester1(stream_key);
+  requester1.RequestStream(pool());
+
+  requester1.WaitForResult();
   EXPECT_THAT(requester1.result(), Optional(IsError(ERR_CONNECTION_RESET)));
 
   // The first request isn't destroyed yet so the failing attempt manager is
   // still alive. A request that comes during a failure also fails.
-  StreamRequester requester2;
-  requester2.set_destination(kDestination).RequestStream(pool());
-  RunUntilIdle();
+  StreamRequester requester2(stream_key);
+  requester2.RequestStream(pool());
+  requester2.WaitForResult();
   EXPECT_THAT(requester2.result(), Optional(IsError(ERR_CONNECTION_RESET)));
+  EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(), 1u);
 
   // Preconnect fails too.
   Preconnector preconnector1(kDestination);
   EXPECT_THAT(preconnector1.Preconnect(pool()), IsError(ERR_CONNECTION_RESET));
 
-  // Destroy failed requests. This should destroy the failing attempt manager.
+  // Destroy failed requests. This should destroy the failing attempt manager
+  // and the group.
   requester1.ResetRequest();
   requester2.ResetRequest();
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
 
   // Request a stream again. This time server is happy to accept the connection.
-  StreamRequester requester3;
-  requester3.set_destination(kDestination).RequestStream(pool());
+  StreamRequester requester3(stream_key);
+  requester3.RequestStream(pool());
 
-  RunUntilIdle();
+  requester3.WaitForResult();
   EXPECT_THAT(requester3.result(), Optional(IsOk()));
 
+  // Preconnect should also succeed.
   Preconnector preconnector2(kDestination);
   EXPECT_THAT(preconnector2.Preconnect(pool()), IsOk());
 }

@@ -80,7 +80,7 @@ class HttpStreamPool::Job {
 
   // `delegate` must outlive `this`.
   Job(Delegate* delegate,
-      AttemptManager* attempt_manager,
+      Group* group,
       quic::ParsedQuicVersion quic_version,
       NextProto expected_protocol,
       const NetLogWithSource& net_log);
@@ -139,8 +139,10 @@ class HttpStreamPool::Job {
   }
 
  private:
+  AttemptManager* attempt_manager() const;
+
   const raw_ptr<Delegate> delegate_;
-  raw_ptr<AttemptManager> attempt_manager_;
+  raw_ptr<Group> group_;
   const quic::ParsedQuicVersion quic_version_;
   const NextProtoSet allowed_alpns_;
   const NetLogWithSource net_log_;

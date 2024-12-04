@@ -108,9 +108,34 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     quic::ParsedQuicVersion quic_version,
     NextProto expected_protocol,
     const NetLogWithSource& net_log) {
+  return std::make_unique<Job>(delegate, this, quic_version, expected_protocol,
+                               net_log);
+}
+
+bool HttpStreamPool::Group::CanStartJob(Job* job) {
+  if (IsFailing()) {
+    auto [_, inserted] = paused_jobs_.emplace(job);
+    CHECK(inserted);
+    // TODO(crbug.com/381742472): Resume `job` after this recovers from the
+    // failing state. Currently just fail with an error.
+    job->OnStreamFailed(attempt_manager_->error_to_notify(), NetErrorDetails(),
+                        ResolveErrorInfo());
+    return false;
+  }
+
   EnsureAttemptManager();
-  return std::make_unique<Job>(delegate, attempt_manager_.get(), quic_version,
-                               expected_protocol, net_log);
+  return true;
+}
+
+void HttpStreamPool::Group::OnJobComplete(Job* job) {
+  paused_jobs_.erase(job);
+
+  if (attempt_manager_) {
+    attempt_manager_->OnJobComplete(job);
+    // `this` may be deleted.
+  } else {
+    MaybeComplete();
+  }
 }
 
 int HttpStreamPool::Group::Preconnect(size_t num_streams,
@@ -120,6 +145,8 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
     return OK;
   }
 
+  // TODO(crbug.com/381742472): Have this preconnect paused if the
+  // existing attempts are failing.
   EnsureAttemptManager();
   return attempt_manager_->Preconnect(num_streams, quic_version,
                                       std::move(callback));
@@ -299,6 +326,8 @@ void HttpStreamPool::Group::FlushWithError(
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
                                     StreamCloseReason cancel_reason) {
+  // TODO(crbug.com/381742472): Should we do anything for paused
+  // jobs/preconnects?
   ++generation_;
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
   if (attempt_manager_) {
@@ -319,12 +348,18 @@ void HttpStreamPool::Group::CloseIdleStreams(
 }
 
 void HttpStreamPool::Group::CancelJobs(int error) {
+  // TODO(crbug.com/381742472): Cancel jobs in `paused_jobs_`. Also cancel
+  // paused preconnects when we support paused preconnects.
   if (attempt_manager_) {
     attempt_manager_->CancelJobs(error);
   }
 }
 
 void HttpStreamPool::Group::OnRequiredHttp11() {
+  // This method is called from the upper layer to fall back HTTP/1.1 for
+  // on-going jobs/preconnects (not for paused ones). No need to handle
+  // paused jobs/preconnects.
+  // TODO(crbug.com/381742472): Confirm the above is correct.
   if (attempt_manager_) {
     attempt_manager_->OnRequiredHttp11();
   }
@@ -333,6 +368,9 @@ void HttpStreamPool::Group::OnRequiredHttp11() {
 void HttpStreamPool::Group::OnAttemptManagerComplete() {
   CHECK(attempt_manager_);
   attempt_manager_.reset();
+
+  // TODO(crbug.com/381742472): Handle paused jobs/preconnects if exist.
+
   MaybeComplete();
 }
 
@@ -342,6 +380,8 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
   dict.Set("idle_socket_count", static_cast<int>(IdleStreamSocketCount()));
   dict.Set("handed_out_socket_count",
            static_cast<int>(HandedOutStreamSocketCount()));
+  dict.Set("paused_job_count", static_cast<int>(PausedJobCount()));
+  dict.Set("attempt_manager_alive", !!attempt_manager_);
   if (attempt_manager_) {
     dict.Set("attempt_state", attempt_manager_->GetInfoAsValue());
   }
@@ -350,6 +390,13 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
+}
+
+bool HttpStreamPool::Group::IsFailing() const {
+  // If we don't have an AttemptManager the group is not considered as failing
+  // because we destroy an AttemptManager after all in-flight attempts are
+  // completed (There are only handed out streams and/or idle streams).
+  return attempt_manager_ && attempt_manager_->is_failing();
 }
 
 void HttpStreamPool::Group::CleanupIdleStreamSockets(
@@ -384,7 +431,10 @@ void HttpStreamPool::Group::EnsureAttemptManager() {
 }
 
 bool HttpStreamPool::Group::CanComplete() const {
-  return ActiveStreamSocketCount() == 0 && !attempt_manager_;
+  // TODO(crbug.com/381742472): Check paused preconnects once we support
+  // paused preconnects.
+  return ActiveStreamSocketCount() == 0 && PausedJobCount() == 0 &&
+         !attempt_manager_;
 }
 
 void HttpStreamPool::Group::MaybeComplete() {

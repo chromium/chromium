@@ -148,7 +148,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   void MaybeMarkAlternativeServiceBroken();
 
   const raw_ptr<HttpStreamPool> pool_;
-  const RequestPriority priority_;
+  RequestPriority priority_;
   const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   const bool enable_ip_based_pooling_;
   const bool enable_alternative_services_;
