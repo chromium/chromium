@@ -481,16 +481,6 @@ class WTF_EXPORT StringImpl {
                 wtf_size_t start = 0,
                 wtf_size_t length = UINT_MAX) const;
 
-  // Prepend characters from this string into a buffer. Expects the buffer to
-  // have the methods:
-  //    prepend(const UChar*, wtf_size_t length);
-  //    prepend(const LChar*, wtf_size_t length);
-  // Vector conforms to this protocol.
-  template <typename BufferType>
-  void PrependTo(BufferType&,
-                 wtf_size_t start = 0,
-                 wtf_size_t length = UINT_MAX) const;
-
 #if BUILDFLAG(IS_APPLE)
   base::apple::ScopedCFTypeRef<CFStringRef> CreateCFString();
 #endif
@@ -933,19 +923,6 @@ inline void StringImpl::AppendTo(BufferType& result,
     result.AppendSpan(Span8().subspan(start, number_of_characters_to_copy));
   else
     result.AppendSpan(Span16().subspan(start, number_of_characters_to_copy));
-}
-
-template <typename BufferType>
-inline void StringImpl::PrependTo(BufferType& result,
-                                  wtf_size_t start,
-                                  wtf_size_t length) const {
-  wtf_size_t number_of_characters_to_copy = std::min(length, length_ - start);
-  if (!number_of_characters_to_copy)
-    return;
-  if (Is8Bit())
-    result.Prepend(Characters8() + start, number_of_characters_to_copy);
-  else
-    result.Prepend(Characters16() + start, number_of_characters_to_copy);
 }
 
 template <typename T>
