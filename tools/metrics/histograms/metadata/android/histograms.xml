@@ -1460,11 +1460,25 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the tab drag and drop results, including successful drops and failed
-    drops with varies reasons. For failed drops, it is recorded during
+    drops with varied reasons. For failed drops, it is recorded during
     ACTION_DROP. For successful drops, it is recored during ACTION_DRAG_ENDED.
     Note that the successful drops count can be recorded more often than
     Android.DragDrop.Tab.Type, such as reorder within strip or tabs being
     consumed as text by EditText in native pages.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.Tab.FromStrip.Result.DesktopWindow"
+    enum="DragDropTabResult" expires_after="2025-05-04">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the tab drag and drop results in desktop windowing mode, including
+    successful drops and failed drops with varied reasons. For failed drops, it
+    is recorded during ACTION_DROP. For successful drops, it is recored during
+    ACTION_DRAG_ENDED. Note that the successful drops count can be recorded more
+    often than Android.DragDrop.Tab.Type.DesktopWindow, such as reorder within
+    strip or tabs being consumed as text by EditText in native pages.
   </summary>
 </histogram>
 
@@ -1511,6 +1525,16 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the drag source and drop target when a tab is dropped successfully.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.Tab.Type.DesktopWindow" enum="DragDropType"
+    expires_after="2025-05-04">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the drag source and drop target when a tab is dropped successfully
+    in desktop windowing mode.
   </summary>
 </histogram>
 

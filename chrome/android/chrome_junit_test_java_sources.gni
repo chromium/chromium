@@ -219,6 +219,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiTest.java",
   "junit/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegateUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/dragdrop/ChromeDragDropUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/dragdrop/ChromeDropDataAndroidTest.java",
   "junit/src/org/chromium/chrome/browser/dragdrop/ChromeTabbedOnDragListenerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/dragdrop/DragAndDropLauncherActivityUnitTest.java",
