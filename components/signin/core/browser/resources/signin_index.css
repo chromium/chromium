@@ -47,33 +47,3 @@ tr:nth-child(odd) {
 table.signin-details tr:nth-child(odd).ok {
   background: rgb(204, 243, 204);
 }
-
-@-webkit-keyframes highlight1 {
-  0% {
-    background: rgb(255, 255, 0);
-  }
-  100% {
-    background: rgb(255, 255, 255);
-  }
-}
-
-@-webkit-keyframes highlight2 {
-  0% {
-    background: rgb(155, 158, 166);
-  }
-  100% {
-    background: rgb(239, 243, 255);
-  }
-}
-
-tr[highlighted] {
-  -webkit-animation-duration: 3s;
-  -webkit-animation-name: highlight1;
-  -webkit-animation-timing-function: linear;
-}
-
-tr[highlighted]:nth-child(odd) {
-  -webkit-animation-duration: 3s;
-  -webkit-animation-name: highlight2;
-  -webkit-animation-timing-function: linear;
-}
