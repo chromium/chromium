@@ -119,7 +119,7 @@ bool CookiePartitionKey::operator<(const CookiePartitionKey& other) const {
 
 // static
 base::expected<CookiePartitionKey::SerializedCookiePartitionKey, std::string>
-CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in) {
+CookiePartitionKey::Serialize(base::optional_ref<const CookiePartitionKey> in) {
   if (!in) {
     return base::ok(SerializedCookiePartitionKey(
         base::PassKey<CookiePartitionKey>(), kEmptyCookiePartitionKey, true));
@@ -180,11 +180,12 @@ std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
 std::optional<CookiePartitionKey> CookiePartitionKey::FromStorageKeyComponents(
     const SchemefulSite& site,
     AncestorChainBit ancestor_chain_bit,
-    const std::optional<base::UnguessableToken>& nonce) {
+    base::optional_ref<const base::UnguessableToken> nonce) {
   if (cookie_util::PartitionedCookiesDisabledByCommandLine()) {
     return std::nullopt;
   }
-  return CookiePartitionKey::FromWire(site, ancestor_chain_bit, nonce);
+  return CookiePartitionKey::FromWire(site, ancestor_chain_bit,
+                                      nonce.CopyAsOptional());
 }
 
 // static
