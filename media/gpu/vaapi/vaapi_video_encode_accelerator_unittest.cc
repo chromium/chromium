@@ -141,8 +141,8 @@ MATCHER_P2(MatchesEncoderInfo,
     }
   }
   return arg.implementation_name == "VaapiVideoEncodeAccelerator" &&
-         arg.supports_native_handle && !arg.has_trusted_rate_controller &&
-         arg.is_hardware_accelerated && !arg.supports_simulcast;
+         arg.supports_native_handle && arg.is_hardware_accelerated &&
+         !arg.supports_simulcast;
 }
 
 MATCHER(ContainsTooManyEncoderInstances, "") {

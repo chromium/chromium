@@ -182,14 +182,18 @@ class VP9Validator : public DecoderBufferValidator {
 
 class AV1Validator : public DecoderBufferValidator {
  public:
-  // TODO(greenjustin): Add support for more than 1 spatial and temporal layer
-  // if we need it.
-  explicit AV1Validator(const gfx::Rect& visible_rect);
+  // TODO(greenjustin): Add support for more than 1 spatial layer if we need it.
+  explicit AV1Validator(const gfx::Rect& visible_rect,
+                        size_t num_temporal_layers);
   ~AV1Validator() override = default;
 
  private:
   bool Validate(const DecoderBuffer* buffer,
                 const BitstreamBufferMetadata& metadata) override;
+  // Validate DecoderBuffer for a temporal layer stream.
+  bool ValidateTemporalSVCStream(const DecoderBuffer& buffer,
+                                 const BitstreamBufferMetadata& metadata,
+                                 const libgav1::ObuFrameHeader& header);
 
   libgav1::InternalFrameBufferList buffer_list_;
   libgav1::BufferPool buffer_pool_;

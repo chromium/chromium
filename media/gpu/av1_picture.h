@@ -7,6 +7,7 @@
 
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/video/video_encode_accelerator.h"
 #include "third_party/libgav1/src/src/utils/types.h"
 
 namespace media {
@@ -25,6 +26,8 @@ class MEDIA_GPU_EXPORT AV1Picture : public CodecPicture {
   scoped_refptr<AV1Picture> Duplicate();
 
   libgav1::ObuFrameHeader frame_header = {};
+
+  std::optional<SVCGenericMetadata> svc_generic;
 
  protected:
   ~AV1Picture() override;

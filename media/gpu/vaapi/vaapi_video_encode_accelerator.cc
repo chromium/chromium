@@ -155,7 +155,7 @@ VaapiVideoEncodeAccelerator::VaapiVideoEncodeAccelerator()
 
   // The default value of VideoEncoderInfo of VaapiVideoEncodeAccelerator.
   encoder_info_.implementation_name = "VaapiVideoEncodeAccelerator";
-  DCHECK(!encoder_info_.has_trusted_rate_controller);
+  encoder_info_.has_trusted_rate_controller = true;
   DCHECK(encoder_info_.is_hardware_accelerated);
   DCHECK(encoder_info_.supports_native_handle);
   DCHECK(!encoder_info_.supports_simulcast);
@@ -374,6 +374,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
             VaapiWrapper::GetImplementationType() ==
                 VAImplementation::kIntelIHD) {
           encoder_info_.reports_average_qp = false;
+          encoder_info_.has_trusted_rate_controller = false;
         }
       }
       break;

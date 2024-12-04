@@ -144,6 +144,9 @@ void BitstreamFileWriter::ProcessBitstream(
       temporal_idx = bitstream->metadata.vp8->temporal_idx;
     else if (bitstream->metadata.vp9)
       temporal_idx = bitstream->metadata.vp9->temporal_idx;
+    else if (bitstream->metadata.svc_generic) {
+      temporal_idx = bitstream->metadata.svc_generic->temporal_idx;
+    }
 
     CHECK_NE(temporal_idx, 255) << "No metadata about temporal idx";
 

@@ -423,6 +423,14 @@ void VideoEncoderClient::BitstreamBufferReady(
         current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
         current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
             metadata.payload_size_bytes;
+      } else if (metadata.svc_generic.has_value()) {
+        uint8_t temporal_id = metadata.svc_generic->temporal_idx;
+        uint8_t spatial_id = metadata.svc_generic->spatial_idx;
+        ASSERT_LT(spatial_id, current_stats_.num_spatial_layers);
+        ASSERT_LT(temporal_id, current_stats_.num_temporal_layers);
+        current_stats_.num_encoded_frames_per_layer[spatial_id][temporal_id]++;
+        current_stats_.encoded_frames_size_per_layer[spatial_id][temporal_id] +=
+            metadata.payload_size_bytes;
       }
     }
   }
