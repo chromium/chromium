@@ -8,7 +8,6 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
-load("//lib/html.star", "linkify_builder")
 load("//lib/targets.star", "targets")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
@@ -305,6 +304,8 @@ try_.builder(
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 3,
     tryjob = try_.job(
         location_filters = [
             "sandbox/win/.+",
@@ -314,19 +315,7 @@ try_.builder(
     use_clang_coverage = True,
 )
 
-try_.compilator_builder(
-    name = "win-arm64-rel-compilator",
-    branch_selector = branches.selector.WINDOWS_BRANCHES,
-    description_html = (
-        "Compilator for {}."
-    ).format(linkify_builder("ci", "win-arm64-rel")),
-    cores = 32 if settings.is_main else 16,
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    grace_period = 3 * time.minute,
-    main_list_view = "try",
-)
-
-try_.orchestrator_builder(
+try_.builder(
     name = "win-arm64-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = (
@@ -346,10 +335,13 @@ try_.orchestrator_builder(
             "enable_dangling_raw_ptr_feature_flag",
         ],
     ),
-    compilator = "win-arm64-rel-compilator",
+    builderless = True,
+    os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 3,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,

@@ -20,7 +20,6 @@ try/win-arm64-clobber-rel
 try/win-arm64-compile-dbg
 try/win-arm64-dbg
 try/win-arm64-rel
-try/win-arm64-rel-compilator
 try/win-clobber-rel
 try/win11-rel
 try/win32-clobber-rel
