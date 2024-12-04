@@ -3174,6 +3174,27 @@ TEST_F(BrowserAutofillManagerTest,
               testing::Optional(filled_card.instrument_id()));
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       OnCreditCardFetchedSuccessfully_CardInfoRetrievalEnrolledCard) {
+  CreditCard filled_card = test::WithCvc(test::GetFullServerCard());
+  filled_card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  using Options = FilledCardInformationBubbleOptions;
+  EXPECT_CALL(
+      payments_client(),
+      OnCardDataAvailable(
+          AllOf(Field(&Options::masked_card_name,
+                      filled_card.CardNameForAutofillDisplay()),
+                Field(&Options::masked_card_number_last_four,
+                      filled_card.ObfuscatedNumberWithVisibleLastFourDigits()),
+                Field(&Options::cvc, filled_card.cvc()),
+                Field(&Options::filled_card, filled_card))));
+
+  manager().OnCreditCardFetchedSuccessfully(filled_card);
+  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
+              testing::Optional(filled_card.instrument_id()));
+}
+
 // Test that the importing logic is called on form submit.
 TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();

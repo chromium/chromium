@@ -2481,9 +2481,15 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
 void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     const CreditCard& credit_card) {
   votes_uploader_->last_unlocked_credit_card_cvc_ = credit_card.cvc();
-  // If the synced down card is a virtual card, let the client know so that it
-  // can show the UI to help user to manually fill the form, if needed.
-  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
+  // If the synced down card is a virtual card or a server card enrolled in
+  // runtime retrieval, let the client know so that it can show the UI to help
+  // user to manually fill the form, if needed.
+  // Masked server card was set to kFullServerCard before filling as the filling
+  // process sets its full card number which converts it to a full server card.
+  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard ||
+      (credit_card.record_type() == CreditCard::RecordType::kFullServerCard &&
+       credit_card.card_info_retrieval_enrollment_state() ==
+           CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled)) {
     DCHECK(!credit_card.cvc().empty());
     client().GetFormDataImporter()->CacheFetchedVirtualCard(
         credit_card.LastFourDigits());
