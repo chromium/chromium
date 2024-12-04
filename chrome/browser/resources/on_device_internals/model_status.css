@@ -12,6 +12,20 @@
  * #include=cr-page-host-style-lit cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+th,
+td {
+  border-color: #666;
+  border-style: solid;
+  border-width: 1px;
+  padding: 1px 4px;
+}
 
 .card {
   background-color: var(--cr-card-background-color);

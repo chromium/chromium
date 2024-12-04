@@ -7,14 +7,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './model_status.css.js';
 import {getHtml} from './model_status.html.js';
-
-export class PageData {
-  baseModelReady: boolean;
-
-  constructor(baseModelReady: boolean) {
-    this.baseModelReady = baseModelReady;
-  }
-}
+import type {OnDeviceInternalsData} from './on_device_internals_page.mojom-webui.js';
 
 export class OnDeviceInternalsModelStatusElement extends CrLitElement {
   constructor() {
@@ -34,22 +27,18 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      pageData_: {type: PageData},
-    };
-  }
-
-  protected pageData_: PageData = {
+  protected pageData_: OnDeviceInternalsData = {
     baseModelReady: false,
+    modelState: 'NO STATE',
+    registrationCriteria: {},
+    suppModels: [],
   };
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
 
   private async getOnDeviceInternalsData_() {
-    this.pageData_.baseModelReady =
-        (await this.proxy_.handler.getOnDeviceInternalsData())
-            .pageData.baseModelReady;
+    this.pageData_ =
+        (await this.proxy_.handler.getOnDeviceInternalsData()).pageData;
     this.requestUpdate();
   }
 }

@@ -86,6 +86,9 @@ class ModelExecutionManager
       ModelBasedCapabilityKey feature,
       const std::optional<SessionConfigParams>& config_params);
 
+  // Whether the supplementary on-device models are registered.
+  bool IsSupplementaryModelRegistered();
+
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget target,
                       base::optional_ref<const ModelInfo> model_info) override;

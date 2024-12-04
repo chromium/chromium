@@ -440,14 +440,6 @@ OptimizationGuideKeyedService::GetHintsManager() {
   return hints_manager_.get();
 }
 
-mojom::OnDeviceInternalsDataPtr
-OptimizationGuideKeyedService::GetOnDeviceInternalsModelData() {
-  auto data = mojom::OnDeviceInternalsData::New();
-  data->base_model_ready =
-      on_device_component_manager_->IsInstallerRegistered();
-  return data;
-}
-
 void OptimizationGuideKeyedService::OnNavigationStartOrRedirect(
     OptimizationGuideNavigationData* navigation_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

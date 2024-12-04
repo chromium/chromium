@@ -7,7 +7,9 @@
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/prediction_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
@@ -138,6 +140,73 @@ void OnDeviceInternalsPageHandler::OnLogMessageAdded(
 
 void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
     OnDeviceInternalsPageHandler::GetOnDeviceInternalsDataCallback callback) {
-  std::move(callback).Run(
-      optimization_guide_keyed_service_->GetOnDeviceInternalsModelData());
+  auto data = mojom::OnDeviceInternalsData::New();
+  auto* component_manager =
+      optimization_guide_keyed_service_->GetComponentManager();
+  data->base_model_ready = component_manager->IsInstallerRegistered();
+
+  // Populate model state.
+  std::string state_string;
+  switch (component_manager->GetOnDeviceModelStatus()) {
+    case optimization_guide::OnDeviceModelStatus::kReady:
+      state_string = "Ready";
+      break;
+    case optimization_guide::OnDeviceModelStatus::kNotEligible:
+      state_string = "Not Eligible";
+      break;
+    case optimization_guide::OnDeviceModelStatus::kInstallNotComplete:
+      state_string = "Install Not Complete";
+      break;
+    case optimization_guide::OnDeviceModelStatus::
+        kModelInstallerNotRegisteredForUnknownReason:
+      state_string = "Model Installer Not Registered For Unknown Reason";
+      break;
+    case optimization_guide::OnDeviceModelStatus::kModelInstalledTooLate:
+      state_string = "Model Installed Too Late";
+      break;
+    case optimization_guide::OnDeviceModelStatus::kNotReadyForUnknownReason:
+      state_string = "Not Ready For Unknown Reason";
+      break;
+    case optimization_guide::OnDeviceModelStatus::kInsufficientDiskSpace:
+      state_string = "Insufficient Disk Space";
+      break;
+    case optimization_guide::OnDeviceModelStatus::kNoOnDeviceFeatureUsed:
+      state_string = "No On-device Feature Used";
+      break;
+  }
+  data->model_state = state_string;
+
+  // Populate criteria.
+  base::flat_map<bool, std::string> bool_strings = {{true, "true"},
+                                                    {false, "false"}};
+  auto criteria = component_manager->GetRegistrationCriteria();
+  base::flat_map<std::string, std::string> mojom_criteria;
+  mojom_criteria["disk_space_available"] =
+      bool_strings[criteria.disk_space_available];
+  mojom_criteria["device_capable"] = bool_strings[criteria.device_capable];
+  mojom_criteria["on_device_feature_recently_used"] =
+      bool_strings[criteria.on_device_feature_recently_used];
+  mojom_criteria["enabled_by_feature"] =
+      bool_strings[criteria.enabled_by_feature];
+  mojom_criteria["enabled_by_enterprise_policy"] =
+      bool_strings[criteria.enabled_by_enterprise_policy];
+  mojom_criteria["running_out_of_disk_space"] =
+      bool_strings[criteria.running_out_of_disk_space];
+  mojom_criteria["out_of_retention"] = bool_strings[criteria.out_of_retention];
+  mojom_criteria["is_already_installing"] =
+      bool_strings[criteria.is_already_installing];
+  data->registration_criteria = mojom_criteria;
+
+  // Populate status for supplementary models.
+  base::flat_map<std::string, bool> supp_models =
+      optimization_guide_keyed_service_->GetPredictionManager()
+          ->GetOnDeviceSupplementaryModelsInfoForWebUI();
+  for (const auto& it : supp_models) {
+    auto supp_model_mojom = mojom::OnDeviceSupplementaryModelInfo::New();
+    supp_model_mojom->supp_model_name = it.first;
+    supp_model_mojom->is_ready = it.second;
+    data->supp_models.push_back(std::move(supp_model_mojom));
+  }
+
+  std::move(callback).Run(std::move(data));
 }
