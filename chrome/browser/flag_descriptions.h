@@ -4499,6 +4499,15 @@ extern const char kCrOSSystemVoiceIsolationOptionDescription[];
 
 extern const char kShowSpatialAudioToggleName[];
 extern const char kShowSpatialAudioToggleDescription[];
+
+extern const char kSingleCaCertVerificationPhase0Name[];
+extern const char kSingleCaCertVerificationPhase0Description[];
+
+extern const char kSingleCaCertVerificationPhase1Name[];
+extern const char kSingleCaCertVerificationPhase1Description[];
+
+extern const char kSingleCaCertVerificationPhase2Name[];
+extern const char kSingleCaCertVerificationPhase2Description[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

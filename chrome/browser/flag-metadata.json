@@ -8084,6 +8084,21 @@
     "expiry_milestone": 138
   },
   {
+    "name": "single-ca-cert-verification-phase-0",
+    "owners": ["olsa@chromium.com", "chromeos-commercial-networking@google.com"],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "single-ca-cert-verification-phase-1",
+    "owners": ["olsa@chromium.org", "chromeos-commercial-networking@google.com"],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "single-ca-cert-verification-phase-2",
+    "owners": ["olsa@chromium.org", "chromeos-commercial-networking@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "site-instance-groups-for-data-urls",
     "owners": [ "yangsharon@chromium.org", "site-isolation-dev@chromium.org" ],
     "expiry_milestone": 140
@@ -8123,9 +8138,7 @@
   {
     "name": "smooth-scrolling",
     "owners": [ "bokan@chromium.org", "input-dev@chromium.org" ],
-    // This flag is needed for debugging scrolling issues. However, it can be
-    // removed if and when we add it as a UI setting (crbug.com/817814).
-    "expiry_milestone": -1
+    "expiry_milestone": 160
   },
   {
     "name": "sparky",

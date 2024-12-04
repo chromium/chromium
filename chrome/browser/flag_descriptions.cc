@@ -7648,9 +7648,25 @@ const char kCrOSSystemVoiceIsolationOptionDescription[] =
     "Enable the options of setting system voice isolation per stream.";
 
 const char kShowSpatialAudioToggleName[] =
-    "Enable a setting toggle for spatial audio.";
+    "Enable a setting toggle for spatial audio";
 const char kShowSpatialAudioToggleDescription[] =
     "Enable a setting toggle for spatial audio.";
+
+const char kSingleCaCertVerificationPhase0Name[] =
+    "Use single CA cert for EAP networks if provided phase 0";
+const char kSingleCaCertVerificationPhase0Description[] =
+    "Only collect data for server certificate verification failure.";
+
+const char kSingleCaCertVerificationPhase1Name[] =
+    "Use single CA cert for EAP networks if provided phase 1";
+const char kSingleCaCertVerificationPhase1Description[] =
+    "Use a single CA cert for server's cert verification with fallback to"
+    "the old config.";
+
+const char kSingleCaCertVerificationPhase2Name[] =
+    "Use single CA cert for EAP networks if provided phase 2";
+const char kSingleCaCertVerificationPhase2Description[] =
+    "Use a single CA cert for server's cert verification, no fallback.";
 
 const char kCrosMallName[] = "ChromeOS App Mall";
 const char kCrosMallDescription[] =
