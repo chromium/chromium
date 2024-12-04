@@ -72,6 +72,34 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
         // There is no cached value and this is the first request, spin up a thread to query the
         // device.
+        getDeviceEnterpriseInfoInBackground();
+    }
+
+    @Override
+    public OwnedState getDeviceEnterpriseInfoSync() {
+        if (mOwnedState != null) {
+            return mOwnedState;
+        }
+
+        // Add a placeholder callback to avoid multiple background tasks from
+        // getDeviceEnterpriseInfoSync or getDeviceEnterpriseInfo.
+        mCallbackList.add(result -> {});
+        if (mCallbackList.size() > 1) {
+            return null;
+        }
+
+        // Skip querying the device if we're testing.
+        if (mSkipAsyncCheckForTesting) {
+            return null;
+        }
+
+        // There is no cached value and this is the first request, spin up a thread to query the
+        // device.
+        getDeviceEnterpriseInfoInBackground();
+        return null;
+    }
+
+    private void getDeviceEnterpriseInfoInBackground() {
         try {
             new AsyncTask<OwnedState>() {
                 // TODO: Unit test this function. https://crbug.com/1099262

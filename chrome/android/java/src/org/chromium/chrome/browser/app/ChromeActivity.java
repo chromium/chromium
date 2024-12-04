@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.dom_distiller.DomDistillerUiUtils;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.firstrun.ForcedSigninProcessor;
@@ -1458,7 +1459,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             outContent.setWebUri(Uri.parse(tab.getUrl().getSpec()));
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_PDF_ASSIST_CONTENT)
                     && tab.getNativePage() instanceof PdfPage pdfPage) {
-                String structuredData = pdfPage.requestAssistContent();
+                EnterpriseInfo.OwnedState state =
+                        EnterpriseInfo.getInstance().getDeviceEnterpriseInfoSync();
+                if (state == null) return;
+                String structuredData = pdfPage.requestAssistContent(state.mProfileOwned);
                 if (structuredData != null) {
                     outContent.setStructuredData(structuredData);
                 }
