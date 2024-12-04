@@ -1241,7 +1241,7 @@ MATCHER_P(JsonMatches, ref, "") {
       base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS;
   auto ref_json =
       base::JSONReader::ReadAndReturnValueWithError(ref, json_parsing_options);
-  return ref_json.has_value() && (ref_json.value() == arg);
+  return ref_json.has_value() && (ref_json.value() == arg.ToValue());
 }
 
 // Test that a Verifiable Credential can be requested via the navigator.identity
@@ -1277,7 +1277,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   // JSON comparison in IsJson below.
   base::RemoveChars(request, "\n ", &json);
 
-  EXPECT_CALL(*digital_identity_provider, Request(_, _, JsonMatches(json), _))
+  EXPECT_CALL(*digital_identity_provider, Get(_, _, JsonMatches(json), _))
       .WillOnce(WithArg<3>(
           [kIdentityProviderResponse](
               DigitalIdentityProvider::DigitalIdentityCallback callback) {
@@ -1320,7 +1320,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   // JSON comparison in IsJson below.
   base::RemoveChars(request, "\n ", &json);
 
-  EXPECT_CALL(*digital_identity_provider, Request(_, _, JsonMatches(json), _))
+  EXPECT_CALL(*digital_identity_provider, Get(_, _, JsonMatches(json), _))
       .WillOnce(WithArg<3>(
           [kIdentityProviderResponse](
               DigitalIdentityProvider::DigitalIdentityCallback callback) {
@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
-  EXPECT_CALL(*digital_identity_provider, Request)
+  EXPECT_CALL(*digital_identity_provider, Get)
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             EXPECT_EQ(
@@ -1365,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
-  EXPECT_CALL(*digital_identity_provider, Request)
+  EXPECT_CALL(*digital_identity_provider, Get)
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(base::unexpected(
@@ -1388,7 +1388,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
-  EXPECT_CALL(*digital_identity_provider, Request)
+  EXPECT_CALL(*digital_identity_provider, Get)
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run("test-mdoc");

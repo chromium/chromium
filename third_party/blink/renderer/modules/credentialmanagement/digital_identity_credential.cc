@@ -219,9 +219,9 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
 
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
-  request->Request(std::move(providers),
-                   WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
-                                 std::move(scoped_abort_state)));
+  request->Get(std::move(providers),
+               WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
+                             std::move(scoped_abort_state)));
 }
 
 void CreateDigitalIdentityCredentialInExternalSource(

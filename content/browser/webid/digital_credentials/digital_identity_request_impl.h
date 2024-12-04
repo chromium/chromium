@@ -54,9 +54,9 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   ~DigitalIdentityRequestImpl() override;
 
   // blink::mojom::DigitalIdentityRequest:
-  void Request(std::vector<blink::mojom::DigitalCredentialProviderPtr>
-                   digital_credential_providers,
-               RequestCallback) override;
+  void Get(std::vector<blink::mojom::DigitalCredentialProviderPtr>
+               digital_credential_providers,
+           GetCallback) override;
 
   void Create(
       blink::mojom::DigitalCredentialRequestPtr digital_credential_request,
@@ -115,7 +115,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
           response);
 
   std::unique_ptr<DigitalIdentityProvider> provider_;
-  RequestCallback callback_;
+  GetCallback callback_;
 
   // Callback which updates interstitial to inform user that the credential
   // request has been aborted.

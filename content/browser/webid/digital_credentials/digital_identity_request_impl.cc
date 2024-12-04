@@ -316,10 +316,10 @@ base::Value BuildCreateRequest(
   return base::Value(std::move(result));
 }
 
-void DigitalIdentityRequestImpl::Request(
+void DigitalIdentityRequestImpl::Get(
     std::vector<blink::mojom::DigitalCredentialProviderPtr>
         digital_credential_providers,
-    RequestCallback callback) {
+    GetCallback callback) {
   if (!IsWebIdentityDigitalCredentialsEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
                             /*protocol=*/std::nullopt, /*token=*/std::nullopt);
@@ -559,9 +559,9 @@ void DigitalIdentityRequestImpl::OnInterstitialDone(
     return;
   }
 
-  provider_->Request(
+  provider_->Get(
       WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-      std::move(request_to_send),
+      request_to_send,
       base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                      weak_ptr_factory_.GetWeakPtr(), std::move(protocol)));
 }

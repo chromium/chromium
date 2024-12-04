@@ -28,10 +28,10 @@ StubDigitalIdentityProvider::ShowDigitalIdentityInterstitial(
   return base::OnceClosure();
 }
 
-void StubDigitalIdentityProvider::Request(WebContents*,
-                                          const url::Origin& origin,
-                                          base::Value request,
-                                          DigitalIdentityCallback) {}
+void StubDigitalIdentityProvider::Get(WebContents*,
+                                      const url::Origin& origin,
+                                      base::ValueView request,
+                                      DigitalIdentityCallback) {}
 
 void StubDigitalIdentityProvider::Create(WebContents*,
                                          const url::Origin& origin,

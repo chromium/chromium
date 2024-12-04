@@ -74,10 +74,10 @@ DigitalIdentityProviderAndroid::ShowDigitalIdentityInterstitial(
                      std::move(callback)));
 }
 
-void DigitalIdentityProviderAndroid::Request(content::WebContents* web_contents,
-                                             const url::Origin& origin,
-                                             const base::Value request,
-                                             DigitalIdentityCallback callback) {
+void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,
+                                         const url::Origin& origin,
+                                         base::ValueView request,
+                                         DigitalIdentityCallback callback) {
   callback_ = std::move(callback);
 
   std::optional<std::string> request_str = base::WriteJson(request);

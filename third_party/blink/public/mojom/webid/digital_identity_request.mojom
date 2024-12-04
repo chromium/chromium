@@ -45,7 +45,7 @@ interface DigitalIdentityRequest {
   //
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
-  Request(array<DigitalCredentialProvider> digital_credential_providers) =>
+  Get(array<DigitalCredentialProvider> digital_credential_providers) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
       string? token);

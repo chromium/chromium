@@ -47,9 +47,8 @@ class MockDigitalIdentityRequest : public mojom::DigitalIdentityRequest {
     receiver_.Bind(std::move(receiver));
   }
 
-  void Request(
-      std::vector<blink::mojom::DigitalCredentialProviderPtr> providers,
-      RequestCallback callback) override {
+  void Get(std::vector<blink::mojom::DigitalCredentialProviderPtr> providers,
+           GetCallback callback) override {
     std::move(callback).Run(mojom::RequestDigitalIdentityStatus::kSuccess,
                             "protocol", "token");
   }

@@ -73,10 +73,10 @@ class CONTENT_EXPORT DigitalIdentityProvider {
 
   // Coordinates the call to present a digital credential between the web and
   // native apps.
-  virtual void Request(WebContents* web_contents,
-                       const url::Origin& origin,
-                       base::Value request,
-                       DigitalIdentityCallback callback) = 0;
+  virtual void Get(WebContents* web_contents,
+                   const url::Origin& origin,
+                   base::ValueView request,
+                   DigitalIdentityCallback callback) = 0;
 
   // Coordinates the call to issue a digital credential between the web and
   // native apps.

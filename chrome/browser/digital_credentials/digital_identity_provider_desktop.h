@@ -34,10 +34,10 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
       const url::Origin& origin,
       content::DigitalIdentityInterstitialType interstitial_type,
       DigitalIdentityInterstitialCallback callback) override;
-  void Request(content::WebContents* web_contents,
-               const url::Origin& rp_origin,
-               base::Value request,
-               DigitalIdentityCallback callback) override;
+  void Get(content::WebContents* web_contents,
+           const url::Origin& rp_origin,
+           base::ValueView request,
+           DigitalIdentityCallback callback) override;
   void Create(content::WebContents* web_contents,
               const url::Origin& rp_origin,
               base::ValueView request,
