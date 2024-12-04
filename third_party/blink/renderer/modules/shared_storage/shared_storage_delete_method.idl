@@ -5,7 +5,7 @@
 [
   RuntimeEnabled=SharedStorageWebLocks,
   Exposed=(Window, SharedStorageWorklet)
-] interface SharedStorageDeleteMethod {
+] interface SharedStorageDeleteMethod : SharedStorageModifierMethod {
   [
     CallWith=ScriptState,
     RaisesException

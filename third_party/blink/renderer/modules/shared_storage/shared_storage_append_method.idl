@@ -5,7 +5,7 @@
 [
   RuntimeEnabled=SharedStorageWebLocks,
   Exposed=(Window, SharedStorageWorklet)
-] interface SharedStorageAppendMethod {
+] interface SharedStorageAppendMethod : SharedStorageModifierMethod {
   [
     CallWith=ScriptState,
     RaisesException

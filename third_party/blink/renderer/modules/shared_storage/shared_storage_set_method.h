@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_SET_METHOD_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_SET_METHOD_H_
 
-#include "services/network/public/mojom/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_modifier_method.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -16,7 +16,8 @@ namespace blink {
 class ExceptionState;
 class SharedStorageSetMethodOptions;
 
-class MODULES_EXPORT SharedStorageSetMethod : public ScriptWrappable {
+class MODULES_EXPORT SharedStorageSetMethod
+    : public SharedStorageModifierMethod {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -36,15 +37,7 @@ class MODULES_EXPORT SharedStorageSetMethod : public ScriptWrappable {
                          const SharedStorageSetMethodOptions*,
                          ExceptionState&);
 
-  // Returns std::move(method_with_options_).
-  network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
-  TakeMojomMethod();
-
   void Trace(Visitor*) const override;
-
- private:
-  network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
-      method_with_options_;
 };
 
 }  // namespace blink
