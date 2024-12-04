@@ -660,7 +660,7 @@ AppNavigationResult::AppNavigationResult(
       debug_value_(std::move(debug_value)) {
   debug_value_.Set("redirection_info", redirection_info_.ToDebugData());
   debug_value_.Set(
-      "result",
+      "initial_navigation_result",
       base::Value::Dict()
           .Set("capturing_feature_enabled", capturing_feature_enabled_)
           .Set("browser_tab_override",
@@ -672,7 +672,8 @@ AppNavigationResult::AppNavigationResult(
                              .Set("tab", std::get<int>(*browser_tab_override_)))
                    : base::Value("<none>"))
           .Set("perform_app_handling_tasks_in_web_contents",
-               perform_app_handling_tasks_in_web_contents_));
+               perform_app_handling_tasks_in_web_contents_)
+          .Set("creation_time", base::ToString(base::Time::Now())));
 }
 
 base::Value::Dict AppNavigationResult::TakeDebugData() {
