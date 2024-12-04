@@ -9307,24 +9307,6 @@
             ]
         }
     ],
-    "EnterprisePasswordReuseUiRefresh": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnterprisePasswordReuseUiRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "EsbAiStringUpdate": [
         {
             "platforms": [
