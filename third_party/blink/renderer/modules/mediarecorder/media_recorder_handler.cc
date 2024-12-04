@@ -393,14 +393,11 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
       // `hvc1` for HLS.
       // https://developer.apple.com/documentation/http-live-streaming/hls-authoring-specification-for-apple-devices#2969487
       if (codec_string.StartsWith("hvc1", kTextCaseASCIIInsensitive)) {
-        const bool is_legacy_type = codec == "hvc1";
         match =
             // If the profile can be parsed, ensure it must be HEVC main
-            // profile, otherwise ensure codec strictly equals to `hvc1`.
-            ((parsed_result &&
-              parsed_result->profile ==
-                  media::VideoCodecProfile::HEVCPROFILE_MAIN) ||
-             is_legacy_type) &&
+            // profile.
+            (parsed_result && parsed_result->profile ==
+                                  media::VideoCodecProfile::HEVCPROFILE_MAIN) &&
             // Only if the feature is enabled.
             base::FeatureList::IsEnabled(media::kMediaRecorderHEVCSupport) &&
             // Only `mkv` and `mp4` are supported, `webm` is not supported.
