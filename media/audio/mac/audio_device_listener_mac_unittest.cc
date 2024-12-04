@@ -147,7 +147,7 @@ class AudioDeviceListenerMacTest : public testing::Test {
 };
 
 // Simulate a device change event and ensure we get the right callback.
-TEST_F(AudioDeviceListenerMacTest, EventsDeviceMonitoring) {
+TEST_F(AudioDeviceListenerMacTest, Events_DeviceMonitoring) {
   auto device_listener = AudioDeviceListenerMac::Create(
       base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
                           base::Unretained(this)),
@@ -178,7 +178,7 @@ TEST_F(AudioDeviceListenerMacTest, EventsDeviceMonitoring) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(AudioDeviceListenerMacTest, EventsDefaultOutput) {
+TEST_F(AudioDeviceListenerMacTest, Events_DefaultOutput) {
   auto device_listener = AudioDeviceListenerMac::Create(
       base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
                           base::Unretained(this)),

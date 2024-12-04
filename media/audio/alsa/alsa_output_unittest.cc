@@ -379,7 +379,7 @@ TEST_F(AlsaPcmOutputStreamTest, StartStop) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, WritePacketFinishedPacket) {
+TEST_F(AlsaPcmOutputStreamTest, WritePacket_FinishedPacket) {
   AlsaPcmOutputStream* test_stream = CreateStream(kTestChannelLayout);
   InitBuffer(test_stream);
   test_stream->TransitionTo(AlsaPcmOutputStream::kIsOpened);
@@ -394,7 +394,7 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketFinishedPacket) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, WritePacketNormalPacket) {
+TEST_F(AlsaPcmOutputStreamTest, WritePacket_NormalPacket) {
   // We need to open the stream before writing data to ALSA.
   EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, _, _, _))
       .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
@@ -443,7 +443,7 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketNormalPacket) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, WritePacketWriteFails) {
+TEST_F(AlsaPcmOutputStreamTest, WritePacket_WriteFails) {
   // We need to open the stream before writing data to ALSA.
   EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, _, _, _))
       .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
@@ -491,7 +491,7 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketWriteFails) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, WritePacketStopStream) {
+TEST_F(AlsaPcmOutputStreamTest, WritePacket_StopStream) {
   AlsaPcmOutputStream* test_stream = CreateStream(kTestChannelLayout);
   InitBuffer(test_stream);
   test_stream->TransitionTo(AlsaPcmOutputStream::kIsOpened);
@@ -536,7 +536,7 @@ TEST_F(AlsaPcmOutputStreamTest, BufferPacket) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, BufferPacketNegative) {
+TEST_F(AlsaPcmOutputStreamTest, BufferPacket_Negative) {
   AlsaPcmOutputStream* test_stream = CreateStream(kTestChannelLayout);
   base::SimpleTestTickClock tick_clock;
   tick_clock.SetNowTicks(base::TimeTicks::Now());
@@ -567,7 +567,7 @@ TEST_F(AlsaPcmOutputStreamTest, BufferPacketNegative) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, BufferPacketUnderrun) {
+TEST_F(AlsaPcmOutputStreamTest, BufferPacket_Underrun) {
   AlsaPcmOutputStream* test_stream = CreateStream(kTestChannelLayout);
   base::SimpleTestTickClock tick_clock;
   tick_clock.SetNowTicks(base::TimeTicks::Now());
@@ -596,7 +596,7 @@ TEST_F(AlsaPcmOutputStreamTest, BufferPacketUnderrun) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, BufferPacketFullBuffer) {
+TEST_F(AlsaPcmOutputStreamTest, BufferPacket_FullBuffer) {
   AlsaPcmOutputStream* test_stream = CreateStream(kTestChannelLayout);
   InitBuffer(test_stream);
   // No expectations set on the strict mock because nothing should be called.
@@ -624,7 +624,7 @@ void** GetFakeHints() {
       reinterpret_cast<const void** const>(std::data(kFakeHints)));
 }
 
-TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceDeviceSelect) {
+TEST_F(AlsaPcmOutputStreamTest, AutoSelectDevice_DeviceSelect) {
   // Try channels from 1 -> 9. and see that we get the more specific surroundXX
   // device opened for channels 4-8.  For all other channels, the device should
   // default to |AlsaPcmOutputStream::kDefaultDevice|.  We should also not
@@ -684,7 +684,7 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceDeviceSelect) {
   }
 }
 
-TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceFallbackDevices) {
+TEST_F(AlsaPcmOutputStreamTest, AutoSelectDevice_FallbackDevices) {
   // If there are problems opening a multi-channel device, it the fallbacks
   // operations should be as follows.  Assume the multi-channel device name is
   // surround50:
@@ -730,7 +730,7 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceFallbackDevices) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceHintFail) {
+TEST_F(AlsaPcmOutputStreamTest, AutoSelectDevice_HintFail) {
   // Should get |kDefaultDevice|, and force a 2-channel downmix on a failure to
   // enumerate devices.
   EXPECT_CALL(mock_alsa_wrapper_, DeviceNameHint(_, _, _))
@@ -750,7 +750,7 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceHintFail) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, BufferPacketStopStream) {
+TEST_F(AlsaPcmOutputStreamTest, BufferPacket_StopStream) {
   AlsaPcmOutputStream* test_stream = CreateStream(kTestChannelLayout);
   InitBuffer(test_stream);
   test_stream->stop_stream_ = true;
@@ -785,7 +785,7 @@ TEST_F(AlsaPcmOutputStreamTest, ScheduleNextWrite) {
   test_stream->Close();
 }
 
-TEST_F(AlsaPcmOutputStreamTest, ScheduleNextWriteStopStream) {
+TEST_F(AlsaPcmOutputStreamTest, ScheduleNextWrite_StopStream) {
   AlsaPcmOutputStream* test_stream = CreateStream(kTestChannelLayout);
   test_stream->TransitionTo(AlsaPcmOutputStream::kIsOpened);
   test_stream->TransitionTo(AlsaPcmOutputStream::kIsPlaying);

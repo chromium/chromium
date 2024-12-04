@@ -354,7 +354,7 @@ TEST_F(AudioOutputDeviceTest,
   StopAudioDevice();
 }
 
-TEST_F(AudioOutputDeviceTest, AuthorizationFailsBeforeInitializeNoError) {
+TEST_F(AudioOutputDeviceTest, AuthorizationFailsBeforeInitialize_NoError) {
   // Clear audio device set by fixture.
   StopAudioDevice();
   audio_device_ = new AudioOutputDevice(
@@ -398,7 +398,7 @@ TEST_F(AudioOutputDeviceTest, AuthorizationTimedOut) {
   task_env_.FastForwardBy(base::TimeDelta());
 }
 
-TEST_F(AudioOutputDeviceTest, GetOutputDeviceInfoAsyncError) {
+TEST_F(AudioOutputDeviceTest, GetOutputDeviceInfoAsync_Error) {
   CreateDevice(kUnauthorizedDeviceId, base::TimeDelta());
   EXPECT_CALL(
       *audio_output_ipc(),
@@ -425,7 +425,7 @@ TEST_F(AudioOutputDeviceTest, GetOutputDeviceInfoAsyncError) {
   task_env_.FastForwardBy(base::TimeDelta());
 }
 
-TEST_F(AudioOutputDeviceTest, GetOutputDeviceInfoAsyncOkay) {
+TEST_F(AudioOutputDeviceTest, GetOutputDeviceInfoAsync_Okay) {
   CreateDevice(kDefaultDeviceId, base::TimeDelta());
   EXPECT_CALL(
       *audio_output_ipc(),
