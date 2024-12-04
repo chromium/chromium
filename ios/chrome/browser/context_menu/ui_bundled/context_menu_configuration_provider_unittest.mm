@@ -183,9 +183,6 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
 // Test that the "Save Image in Google Photos" action is added to the context
 // menu if enough conditions are met.
 TEST_F(ContextMenuConfigurationProviderTest, HasSaveImageToPhotosMenuElement) {
-  // Enable the Save to Photos feature flag.
-  base::test::ScopedFeatureList feature_list(kIOSSaveToPhotos);
-
   // The action is only available if the user is signed-in.
   SignIn();
 
