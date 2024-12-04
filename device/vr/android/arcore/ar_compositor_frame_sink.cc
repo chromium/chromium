@@ -90,8 +90,6 @@ ArCompositorFrameSink::ArCompositorFrameSink(
       on_compositor_received_frame_(on_compositor_received_frame),
       on_rendering_finished_(on_rendering_finished),
       on_can_issue_new_frame_(on_can_issue_new_frame) {
-  DCHECK(ArImageTransport::UseSharedBuffer())
-      << "ArCompositorFrameSink only works with Shared Buffers";
   DCHECK(gl_thread_task_runner_);
 }
 

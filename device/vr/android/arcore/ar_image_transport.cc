@@ -38,7 +38,6 @@ WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
   DCHECK(IsOnGlThread());
-  DCHECK(UseSharedBuffer());
 
   if (!webxr->GetAnimatingFrame()->camera_image_shared_buffer) {
     webxr->GetAnimatingFrame()->camera_image_shared_buffer = CreateBuffer();

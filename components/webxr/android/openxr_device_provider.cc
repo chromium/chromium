@@ -41,32 +41,26 @@ void OpenXrDeviceProvider::Initialize(
     content::WebContents* initializing_web_contents) {
   CHECK(!initialized_);
 
-  // TODO(crbug.com/40917172): Support non-shared buffer rendering path.
-  if (device::XrImageTransportBase::UseSharedBuffer()) {
-    openxr_platform_helper_ = std::make_unique<OpenXrPlatformHelperAndroid>();
+  openxr_platform_helper_ = std::make_unique<OpenXrPlatformHelperAndroid>();
 
-    if (openxr_platform_helper_->EnsureInitialized() &&
-        openxr_platform_helper_->CheckHardwareSupport(
-            initializing_web_contents)) {
-      DVLOG(2) << __func__ << ": OpenXr is supported, creating device";
-      // Unretained is safe since we own the device this callback is being
-      // passed to and we ensure that it does not outlive us. The device is
-      // expected to wind down any threads that it spins up as well (for e.g.
-      // rendering), so this destruction is also safe. The OpenXrDevice passes
-      // this off to different render loops as it creates them, so we can't just
-      // use a WeakPtr of ourselves here, since it would technically end up
-      // dereferenced on different threads (albeit all children).
-      openxr_device_ = std::make_unique<device::OpenXrDevice>(
-          base::BindRepeating(&OpenXrDeviceProvider::CreateContextProviderAsync,
-                              base::Unretained(this)),
-          openxr_platform_helper_.get());
+  if (openxr_platform_helper_->EnsureInitialized() &&
+      openxr_platform_helper_->CheckHardwareSupport(
+          initializing_web_contents)) {
+    DVLOG(2) << __func__ << ": OpenXr is supported, creating device";
+    // Unretained is safe since we own the device this callback is being
+    // passed to and we ensure that it does not outlive us. The device is
+    // expected to wind down any threads that it spins up as well (for e.g.
+    // rendering), so this destruction is also safe. The OpenXrDevice passes
+    // this off to different render loops as it creates them, so we can't just
+    // use a WeakPtr of ourselves here, since it would technically end up
+    // dereferenced on different threads (albeit all children).
+    openxr_device_ = std::make_unique<device::OpenXrDevice>(
+        base::BindRepeating(&OpenXrDeviceProvider::CreateContextProviderAsync,
+                            base::Unretained(this)),
+        openxr_platform_helper_.get());
 
-      client->AddRuntime(openxr_device_->GetId(),
-                         openxr_device_->GetDeviceData(),
-                         openxr_device_->BindXRRuntime());
-    } else {
-      DVLOG(2) << __func__ << ": No OpenXR Hardware found.";
-    }
+    client->AddRuntime(openxr_device_->GetId(), openxr_device_->GetDeviceData(),
+                       openxr_device_->BindXRRuntime());
   }
 
   initialized_ = true;

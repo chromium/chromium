@@ -239,20 +239,9 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
       device::mojom::XRPresentationTransportOptions::New();
   transport_options->wait_for_gpu_fence = true;
 
-  if (CardboardImageTransport::UseSharedBuffer()) {
-    DVLOG(2) << __func__
-             << ": UseSharedBuffer()=true, DRAW_INTO_TEXTURE_MAILBOX";
-    transport_options->transport_method =
-        device::mojom::XRPresentationTransportMethod::DRAW_INTO_TEXTURE_MAILBOX;
-  } else {
-    DVLOG(2) << __func__
-             << ": UseSharedBuffer()=false, SUBMIT_AS_MAILBOX_HOLDER";
-    transport_options->transport_method =
-        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_MAILBOX_HOLDER;
-    transport_options->wait_for_transfer_notification = true;
-    cardboard_image_transport_->SetFrameAvailableCallback(base::BindRepeating(
-        &CardboardRenderLoop::RenderFrame, weak_ptr_factory_.GetWeakPtr()));
-  }
+  DVLOG(2) << __func__ << ": UseSharedBuffer()=true, DRAW_INTO_TEXTURE_MAILBOX";
+  transport_options->transport_method =
+      device::mojom::XRPresentationTransportMethod::DRAW_INTO_TEXTURE_MAILBOX;
 
   mojom::XRRuntimeSessionResultPtr result =
       device::mojom::XRRuntimeSessionResult::New();
@@ -357,16 +346,13 @@ void CardboardRenderLoop::GetFrameData(
   xr_frame->bounds_left = left_bounds_;
   xr_frame->bounds_right = right_bounds_;
 
-  if (CardboardImageTransport::UseSharedBuffer()) {
-    // We aren't modifying the texture that we give to the page, so we just pass
-    // in identity for the uv_transform.
-    WebXrSharedBuffer* shared_buffer =
-        cardboard_image_transport_->TransferFrame(webxr_.get(), texture_size_,
-                                                  gfx::Transform());
-    CHECK(shared_buffer);
-    frame_data->buffer_shared_image = shared_buffer->shared_image->Export();
-    frame_data->buffer_sync_token = shared_buffer->sync_token;
-  }
+  // We aren't modifying the texture that we give to the page, so we just pass
+  // in identity for the uv_transform.
+  WebXrSharedBuffer* shared_buffer = cardboard_image_transport_->TransferFrame(
+      webxr_.get(), texture_size_, gfx::Transform());
+  CHECK(shared_buffer);
+  frame_data->buffer_shared_image = shared_buffer->shared_image->Export();
+  frame_data->buffer_sync_token = shared_buffer->sync_token;
 
   // Get the head pose
   int64_t timestamp_ns = GetBootTimeNano() + kPredictionTimeWithoutVsyncNanos;
@@ -463,39 +449,7 @@ void CardboardRenderLoop::SubmitFrameMissing(int16_t frame_index,
 void CardboardRenderLoop::SubmitFrame(int16_t frame_index,
                                       const gpu::MailboxHolder& mailbox,
                                       base::TimeDelta time_waited) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
-  DVLOG(2) << __func__ << ": frame=" << frame_index;
-  CHECK(!CardboardImageTransport::UseSharedBuffer());
-
-  if (!IsSubmitFrameExpected(frame_index)) {
-    return;
-  }
-
-  webxr_->ProcessOrDefer(
-      base::BindOnce(&CardboardRenderLoop::ProcessFrameFromMailbox,
-                     weak_ptr_factory_.GetWeakPtr(), frame_index, mailbox));
-}
-
-void CardboardRenderLoop::ProcessFrameFromMailbox(
-    int16_t frame_index,
-    const gpu::MailboxHolder& mailbox) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
-  DVLOG(2) << __func__ << ": frame=" << frame_index;
-  CHECK(webxr_->HaveProcessingFrame());
-  CHECK(!CardboardImageTransport::UseSharedBuffer());
-
-  // We aren't modifying the texture that we've received from the page, so we
-  // just pass in identity.
-  cardboard_image_transport_->CopyMailboxToSurfaceAndSwap(
-      texture_size_, mailbox, gfx::Transform());
-
-  // Notify the client that we're done with the mailbox so that the underlying
-  // image is eligible for destruction.
-  submit_client_->OnSubmitFrameTransferred(true);
-
-  // Now wait for cardboard_image_transport_ to call RenderFrame indicating that
-  // the image drawn onto the Surface is ready for consumption from the
-  // SurfaceTexture.
+  NOTREACHED();
 }
 
 void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
@@ -504,7 +458,6 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
     base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", __func__, "frame", frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
-  CHECK(CardboardImageTransport::UseSharedBuffer());
 
   if (!IsSubmitFrameExpected(frame_index)) {
     return;

@@ -43,10 +43,6 @@ using XrInitStatusCallback = base::OnceCallback<void(bool success)>;
 // purposes.
 class XrImageTransportBase {
  public:
-  // If true, use shared buffer transport aka DRAW_INTO_TEXTURE_MAILBOX.
-  // If false, use Surface transport aka SUBMIT_AS_MAILBOX_HOLDER.
-  static bool UseSharedBuffer();
-
   explicit XrImageTransportBase(
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
 
@@ -128,10 +124,6 @@ class XrImageTransportBase {
 
   bool webgpu_session_ = false;
 
-  // Used for Surface transport (Android N)
-  //
-  // samplerExternalOES texture data for WebXR content image.
-  LocalTexture transport_texture_;
   gfx::Size surface_size_;
   scoped_refptr<gl::SurfaceTexture> transport_surface_texture_;
   gfx::Transform transport_surface_texture_uv_transform_;

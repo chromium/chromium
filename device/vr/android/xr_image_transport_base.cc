@@ -25,15 +25,6 @@
 
 namespace device {
 
-bool XrImageTransportBase::UseSharedBuffer() {
-  // When available (Android O and up), use AHardwareBuffer-based shared
-  // images for frame transport, unless disabled due to bugs or by the user.
-  static bool support_shared_buffer =
-      base::FeatureList::IsEnabled(features::kWebXrSharedBuffers) &&
-      base::AndroidHardwareBufferCompat::IsSupportAvailable();
-  return support_shared_buffer;
-}
-
 XrImageTransportBase::XrImageTransportBase(
     std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
     : mailbox_bridge_(std::move(mailbox_bridge)),
@@ -48,7 +39,7 @@ void XrImageTransportBase::DestroySharedBuffers(WebXrPresentationState* webxr) {
   DVLOG(2) << __func__;
   CHECK(IsOnGlThread());
 
-  if (!webxr || !UseSharedBuffer()) {
+  if (!webxr) {
     return;
   }
 
@@ -75,25 +66,7 @@ void XrImageTransportBase::Initialize(WebXrPresentationState* webxr,
 
   webgpu_session_ = webgpu_session;
 
-  DoRuntimeInitialization(UseSharedBuffer() ? GL_TEXTURE_2D
-                                            : GL_TEXTURE_EXTERNAL_OES);
-
-  if (UseSharedBuffer()) {
-    DVLOG(2) << __func__ << ": UseSharedBuffer()=true";
-  } else {
-    DVLOG(2) << __func__ << ": UseSharedBuffer()=false, setting up surface";
-    glGenTextures(1, &transport_texture_.id);
-
-    // Transport Texture is bound to SurfaceTexture and must be TEXTURE_EXTERNAL
-    transport_texture_.target = GL_TEXTURE_EXTERNAL_OES;
-    transport_surface_texture_ =
-        gl::SurfaceTexture::Create(transport_texture_.id);
-    surface_size_ = {0, 0};
-    mailbox_bridge_->CreateSurface(transport_surface_texture_.get());
-    transport_surface_texture_->SetFrameAvailableCallback(
-        base::BindRepeating(&XrImageTransportBase::OnFrameAvailable,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  DoRuntimeInitialization(GL_TEXTURE_2D);
 
   mailbox_bridge_->CreateAndBindContextProvider(
       base::BindOnce(&XrImageTransportBase::OnMailboxBridgeReady,
@@ -248,7 +221,6 @@ WebXrSharedBuffer* XrImageTransportBase::TransferFrame(
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
   CHECK(IsOnGlThread());
-  CHECK(UseSharedBuffer());
 
   if (!webxr->GetAnimatingFrame()->shared_buffer) {
     webxr->GetAnimatingFrame()->shared_buffer = CreateBuffer();
@@ -300,11 +272,7 @@ void XrImageTransportBase::ServerWaitForGpuFence(
 LocalTexture XrImageTransportBase::GetRenderingTexture(
     WebXrPresentationState* webxr) {
   CHECK(IsOnGlThread());
-  if (UseSharedBuffer()) {
-    return webxr->GetRenderingFrame()->shared_buffer->local_texture;
-  } else {
-    return transport_texture_;
-  }
+  return webxr->GetRenderingFrame()->shared_buffer->local_texture;
 }
 
 void XrImageTransportBase::CopyMailboxToSurfaceAndSwap(
