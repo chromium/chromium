@@ -1279,15 +1279,19 @@ void OnListFamilyMembersResponse(
 // domain of the foreground tab and the tab count. Assumes the scene is
 // visible. Will return nil if there are no tabs.
 - (NSString*)displayTitleForAppSwitcher {
-  DCHECK(self.currentInterface.browser);
-  web::WebState* webState =
-      self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
+  Browser* browser = self.currentInterface.browser;
+  DCHECK(browser);
+
+  if (browser->GetProfile()->IsOffTheRecord()) {
+    return nil;
+  }
+  web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
   if (!webState) {
     return nil;
   }
 
   // At this point there is at least one tab.
-  int numberOfTabs = self.currentInterface.browser->GetWebStateList()->count();
+  int numberOfTabs = browser->GetWebStateList()->count();
   DCHECK(numberOfTabs > 0);
   GURL url = webState->GetVisibleURL();
   std::u16string urlText = url_formatter::FormatUrl(
