@@ -595,6 +595,8 @@ specifies the result type and how to determine success or failure:
       - if a launch command was provided via the installer API, the command will
         be launched and the updater UI will exit silently. Otherwise, the
         updater will show an install success dialog.
+  *   4, and the installer exits with a zero exit code - SUCCESS
+      Same as `0 - SUCCESS` above.
   *   All the error installer results below are treated the same.
       - if an installer error was not provided via the installer API or the exit
         code, generic error `kErrorApplicationInstallerFailed` will be reported.
@@ -604,7 +606,8 @@ specifies the result type and how to determine success or failure:
       *   1 - FAILED\_CUSTOM\_ERROR
       *   2 - FAILED\_MSI\_ERROR
       *   3 - FAILED\_SYSTEM\_ERROR
-      *   4 - FAILED\_EXIT\_CODE (default)
+      *   4 - FAILED\_EXIT\_CODE, where the installer exits with a non-zero exit
+              code.
 * `InstallerError` : Installer error, or 0 for success.
 * `InstallerExtraCode1` : Optional extra code.
 * `InstallerResultUIString` : A string to be displayed to the user, if

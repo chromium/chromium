@@ -410,9 +410,13 @@ Installer::Result MakeInstallerResult(
   InstallerOutcome outcome;
   if (installer_outcome && installer_outcome->installer_result) {
     outcome = *installer_outcome;
+    if (*outcome.installer_result == InstallerApiResult::kExitCode &&
+        !exit_code) {
+      outcome.installer_result = InstallerApiResult::kSuccess;
+    }
   } else {
     // Set the installer result based on whether this is a success or an error.
-    if (exit_code == 0) {
+    if (!exit_code) {
       outcome.installer_result = InstallerApiResult::kSuccess;
     } else {
       outcome.installer_result = InstallerApiResult::kExitCode;
