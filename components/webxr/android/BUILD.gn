@@ -99,7 +99,7 @@ source_set("android") {
     if (enable_openxr) {
       deps += [
         "//device/vr",
-        "//third_party/openxr:openxr_headers",
+        "//third_party/openxr:openxr",
       ]
 
       public_configs = [ "//third_party/openxr:config" ]

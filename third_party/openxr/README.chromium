@@ -17,7 +17,9 @@ Local Modifications:
 No modifications to upstream files. BUILD.gn contains all of the configurations
 needed to build the OpenXR loader in Chromium, along with its dependencies. The
 readme was expanded with information about transitive dependencies that are
-copied directly into the OpenXR SDK repository.
+copied directly into the OpenXR SDK repository. An openxr.def file works around
+the fact that attributes aren't exposed by default for the compiler we use on
+windows in component builds.
 
 Added dev/xr_android.h for prototyping xr_android extensions that are currently
 under active development and not in any openxr release at present. This file is
