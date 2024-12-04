@@ -292,11 +292,6 @@ void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
     return;
   }
   CHECK(event.isTrusted());
-  auto& document = target_node.GetDocument();
-  if (document.AllOpenDialogs().empty()) {
-    return;
-  }
-
   const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
   if (!pointer_event) {
     return;
@@ -305,6 +300,13 @@ void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
   // the event.
   CHECK(!event.HasEventPath());
   CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
+
+  // If there aren't any open dialogs, there's nothing to light dismiss.
+  auto& document = target_node.GetDocument();
+  if (document.AllOpenDialogs().empty()) {
+    return;
+  }
+
   const AtomicString& event_type = event.type();
   const HTMLDialogElement* ancestor_dialog =
       FindNearestDialog(target_node, *pointer_event);
@@ -318,14 +320,12 @@ void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
     if (!same_target) {
       return;
     }
-    // Make a copy of the list, because closed dialogs will be removed as we go.
-    VectorOf<HTMLDialogElement> dialog_list{document.AllOpenDialogs()};
-    for (auto index = dialog_list.size(); index-- != 0;) {
-      auto& dialog = dialog_list.at(index);
-      if (dialog != ancestor_dialog &&
-          dialog->ClosedBy() == ClosedByState::kAny) {
-        dialog->requestClose(String(), ASSERT_NO_EXCEPTION);
-      }
+    HTMLDialogElement* topmost_dialog = document.AllOpenDialogs().back();
+    if (ancestor_dialog == topmost_dialog) {
+      return;
+    }
+    if (topmost_dialog->ClosedBy() == ClosedByState::kAny) {
+      topmost_dialog->requestClose(String(), ASSERT_NO_EXCEPTION);
     }
   }
 }
