@@ -5228,6 +5228,8 @@ static_library("ui") {
 
     if (enable_glic) {
       sources += [
+        "views/glic/border/border_view.cc",
+        "views/glic/border/border_view.h",
         "views/glic/glic_view.cc",
         "views/glic/glic_view.h",
         "views/glic/glic_web_view.cc",
