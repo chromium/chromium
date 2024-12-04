@@ -90,9 +90,15 @@ bool RenderInputRouterSupportAndroid::TransformPointToCoordSpaceForView(
 
 void RenderInputRouterSupportAndroid::TransformPointToRootSurface(
     gfx::PointF* point) {
-  // TODO(365995153): Add BrowserControl's top control height to
-  // CompositorFrameMetaData.
-  NOTREACHED();
+  auto* metadata = delegate()->GetLastActivatedFrameMetadata(GetFrameSinkId());
+  // Adjust the point's y-coordinate to account for the height of the top
+  // controls bar. In general, Viz should have the updated top controls height
+  // when transform is called and if it isn't updated, the toolbar isn't visible
+  // and thus the |point| is already "transformed".
+  if (metadata) {
+    *point +=
+        gfx::Vector2d(0, metadata->top_controls_visible_height.value_or(0.f));
+  }
 }
 
 blink::mojom::InputEventResultState

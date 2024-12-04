@@ -91,6 +91,8 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
   RenderInputRouterSupportBase* GetRootRenderInputRouterSupport(
       const FrameSinkId& frame_sink_id) override;
+  const CompositorFrameMetadata* GetLastActivatedFrameMetadata(
+      const FrameSinkId& frame_sink_id) override;
 
 #if BUILDFLAG(IS_ANDROID)
   // AndroidInputCallbackClient implementation.

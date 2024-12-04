@@ -295,6 +295,15 @@ RenderInputRouterSupportBase* InputManager::GetRootRenderInputRouterSupport(
   return nullptr;
 }
 
+const CompositorFrameMetadata* InputManager::GetLastActivatedFrameMetadata(
+    const FrameSinkId& frame_sink_id) {
+  auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
+  if (!IsFrameMetadataAvailable(support)) {
+    return nullptr;
+  }
+  return support->GetLastActivatedFrameMetadata();
+}
+
 std::unique_ptr<input::RenderInputRouterIterator>
 InputManager::GetEmbeddedRenderInputRouters(const FrameSinkId& id) {
   auto rirs = std::make_unique<RenderInputRouterIteratorImpl>(
