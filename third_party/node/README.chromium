@@ -80,7 +80,7 @@ Local Modifications:
 Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
-Version: 4.6.3
+Version: 5.7.2
 License: Apache 2.0
 Security Critical: no
 Shipped: no
@@ -158,7 +158,7 @@ Local Modifications:
 Name: Type Definition for W3C Image Capture
 Short Name: @types/w3c-image-capture
 URL: https://www.npmjs.com/package/@types/w3c-image-capture
-Version: 1.0.4
+Version: 1.0.10
 License: MIT
 Security Critical: no
 Shipped: no
@@ -177,7 +177,7 @@ Local Modifications:
 Name: Type Definition for webrtc
 Short Name: @types/webrtc
 URL: https://www.npmjs.com/package/@types/webrtc
-Version: 0.0.31
+Version: 0.0.44
 License: MIT
 Security Critical: no
 Shipped: no
@@ -406,7 +406,7 @@ Chromium.
 Name: Type Definition for WebCodecs
 Short Name: @types/dom-webcodecs
 URL: https://www.npmjs.com/package/@types/dom-webcodecs
-Version: 0.1.5
+Version: 0.1.13
 License: MIT
 Security Critical: no
 Shipped: no
@@ -425,7 +425,7 @@ Local Modifications:
 Name: Type Definition for MediaStreamTrack Processing
 Short Name: @types/dom-mediacapture-transform
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-transform
-Version: 0.1.4
+Version: 0.1.10
 License: MIT
 Security Critical: no
 Shipped: no
