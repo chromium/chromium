@@ -635,13 +635,6 @@ BASE_FEATURE(kLegacyTechReportEnableCookieIssueReports,
              "LegacyTechReportEnableCookieIssueReports",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Configures whether Blink on Windows 8.0 and below should use out of process
-// API font fallback calls to retrieve a fallback font family name as opposed to
-// using a hard-coded font lookup table.
-BASE_FEATURE(kLegacyWindowsDWriteFontFallback,
-             "LegacyWindowsDWriteFontFallback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLogJsConsoleMessages,
              "LogJsConsoleMessages",
 #if BUILDFLAG(IS_ANDROID)

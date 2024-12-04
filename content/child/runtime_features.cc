@@ -386,8 +386,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"FontationsFontBackend",
            raw_ref(blink::features::kFontationsFontBackend)},
           {"FontSrcLocalMatching", raw_ref(features::kFontSrcLocalMatching)},
-          {"LegacyWindowsDWriteFontFallback",
-           raw_ref(features::kLegacyWindowsDWriteFontFallback)},
           {"MachineLearningNeuralNetwork",
            raw_ref(webnn::mojom::features::kWebMachineLearningNeuralNetwork),
            kSetOnlyIfOverridden},

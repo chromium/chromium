@@ -2556,11 +2556,6 @@
       public: true,
       status: "stable",
     },
-    {
-      name: "LegacyWindowsDWriteFontFallback",
-      // Enabled by features::kLegacyWindowsDWriteFontFallback;
-      base_feature: "none",
-    },
      {
       name: "LimitThirdPartyCookies",
       origin_trial_feature_name: "LimitThirdPartyCookies",
