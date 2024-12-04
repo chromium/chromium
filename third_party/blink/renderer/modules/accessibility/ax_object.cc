@@ -117,7 +117,7 @@
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlight_type.h"
@@ -709,19 +709,16 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
     }
     ancestor->SetHasDirtyDescendants(true);
   }
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   // Walk up the tree looking for dirty bits that failed to be set. If any
   // are found, this is a bug.
-  bool fail = false;
   for (auto* obj = ParentObject(); obj; obj = obj->ParentObject()) {
     if (obj->CachedIsIncludedInTree() && !obj->has_dirty_descendants_) {
-      fail = true;
-      break;
+      NOTREACHED() << "Failed to set dirty bits on some ancestors:\n"
+                   << ParentChainToStringHelper(this);
     }
   }
-  DCHECK(!fail) << "Failed to set dirty bits on some ancestors:\n"
-                << ParentChainToStringHelper(this);
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
 }
 
 void AXObject::Init(AXObject* parent) {
@@ -1168,7 +1165,7 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
   return cache.Get(parent_node);
 }
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 std::string AXObject::GetAXTreeForThis() const {
   return TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(), this);
 }
@@ -3708,8 +3705,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     OnInheritedCachedValuesChanged();
   }
 
-#if DCHECK_IS_ON()
-  DCHECK(!NeedsToUpdateCachedValues())
+#if defined(AX_FAIL_FAST_BUILD)
+  CHECK(!NeedsToUpdateCachedValues())
       << "While recomputing cached values, they were invalidated again.";
   if (included_in_tree_changed) {
     AXObjectCache().UpdateIncludedNodeCount(this);

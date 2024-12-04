@@ -46,7 +46,7 @@ void AXRelationCache::Init() {
     DoInitialDocumentScan(*popup_doc);
   }
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   is_initialized_ = true;
 #endif
 }
@@ -79,10 +79,10 @@ void AXRelationCache::DoInitialDocumentScan(Document& document) {
 void AXRelationCache::CacheRelations(Element& element) {
   DOMNodeId node_id = element.GetDomNodeId();
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   // Register that the relations for this element have been cached, to
   // help enforce that relations are never missed.
-  DCHECK(node_id);
+  CHECK(node_id);
   processed_elements_.insert(node_id);
 #endif
 
@@ -110,7 +110,7 @@ void AXRelationCache::CacheRelations(Element& element) {
   UpdateReverseOtherRelations(element);
 }
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 void AXRelationCache::CheckRelationsCached(Element& element) {
   if (!is_initialized_) {
     return;
@@ -123,7 +123,7 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
   GetRelationTargets(element, html_names::kAriaOwnsAttr, owns_ids,
                      owns_elements);
   for (const auto& owns_id : owns_ids) {
-    DCHECK(aria_owns_id_map_.Contains(owns_id))
+    CHECK(aria_owns_id_map_.Contains(owns_id))
         << element << " with aria-owns=" << owns_id
         << " and DOMNodeId=" << DOMNodeIds::ExistingIdForNode(&element)
         << " should already be in cache.";
@@ -131,7 +131,7 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
   for (const Member<Element>& owns_element : owns_elements) {
     DOMNodeId owns_dom_node_id =
         DOMNodeIds::ExistingIdForNode(owns_element.Get());
-    DCHECK(owns_dom_node_id && aria_owns_node_map_.Contains(owns_dom_node_id))
+    CHECK(owns_dom_node_id && aria_owns_node_map_.Contains(owns_dom_node_id))
         << element << " with ariaOwnsElements including " << owns_element
         << " and DOMNodeId=" << DOMNodeIds::ExistingIdForNode(&element)
         << " should already be in cache.";
@@ -143,7 +143,7 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
   if (IsA<HTMLLabelElement>(element)) {
     const auto& for_id = element.FastGetAttribute(html_names::kForAttr);
     if (!for_id.empty()) {
-      DCHECK(all_previously_seen_label_target_ids_.Contains(for_id))
+      CHECK(all_previously_seen_label_target_ids_.Contains(for_id))
           << element << " <label for=" << for_id
           << " with DOMNodeId=" << DOMNodeIds::ExistingIdForNode(&element)
           << " should already be in cache.";
@@ -158,7 +158,7 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
                        text_relation_elements);
 
     for (const auto& text_relation_id : text_relation_ids) {
-      DCHECK(aria_text_relations_id_map_.Contains(text_relation_id))
+      CHECK(aria_text_relations_id_map_.Contains(text_relation_id))
           << element << " with " << attribute << "=" << text_relation_id
           << " and DOMNodeId=" << DOMNodeIds::ExistingIdForNode(&element)
           << " should already be in cache.";
@@ -167,8 +167,8 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
          text_relation_elements) {
       DOMNodeId text_relation_dom_node_id =
           DOMNodeIds::ExistingIdForNode(text_relation_element.Get());
-      DCHECK(text_relation_dom_node_id &&
-             aria_text_relations_node_map_.Contains(text_relation_dom_node_id))
+      CHECK(text_relation_dom_node_id &&
+            aria_text_relations_node_map_.Contains(text_relation_dom_node_id))
           << element << " with " << attribute
           << "-associated elements including " << text_relation_element
           << " and DOMNodeId=" << DOMNodeIds::ExistingIdForNode(&element)
@@ -181,7 +181,7 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
       AXObject::AriaAttribute(element, html_names::kAriaActivedescendantAttr);
 
   if (!activedescendant_id.empty()) {
-    DCHECK(aria_activedescendant_id_map_.Contains(activedescendant_id))
+    CHECK(aria_activedescendant_id_map_.Contains(activedescendant_id))
         << element << " with aria-activedescendant=" << activedescendant_id
         << " and DOMNodeId=" << DOMNodeIds::ExistingIdForNode(&element)
         << " should already be in cache.";
@@ -194,9 +194,9 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
       Member<Element>& active_descendant_element = activedescendant_elements[0];
       DOMNodeId active_descendant_dom_node_id =
           DOMNodeIds::ExistingIdForNode(active_descendant_element);
-      DCHECK(active_descendant_dom_node_id &&
-             aria_activedescendant_node_map_.Contains(
-                 active_descendant_dom_node_id))
+      CHECK(active_descendant_dom_node_id &&
+            aria_activedescendant_node_map_.Contains(
+                active_descendant_dom_node_id))
           << element << " with ariaActiveDescendantElement "
           << active_descendant_element
           << " and DOMNodeId=" << DOMNodeIds::ExistingIdForNode(&element)
@@ -247,7 +247,7 @@ void AXRelationCache::CheckElementWasProcessed(Element& element) {
               ? obj->ParentObjectIncludedInTree()->GetAXTreeForThis()
               : "");
 }
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
 
 void AXRelationCache::ProcessUpdatesWithCleanLayout() {
   HashSet<DOMNodeId> old_owner_axids_to_update;

@@ -130,7 +130,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom-blink.h"
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h"
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
 
@@ -1471,7 +1471,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   new_obj->Init(parent);
   MaybeDisallowImplicitSelectionWithCleanLayout(new_obj);
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   Element* element = DynamicTo<Element>(node);
   if (element && !element->IsPseudoElement()) {
     // Ensure that the relation cache is properly initialized with information
@@ -1601,7 +1601,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
   if (!obj)
     return;
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   if (obj->CachedIsIncludedInTree()) {
     --included_node_count_;
   }
@@ -2891,7 +2891,7 @@ void AXObjectCacheImpl::CheckStyleIsComplete(Document& document) const {
 void AXObjectCacheImpl::CheckTreeIsFinalized() {
   CHECK(!Root()->NeedsToUpdateCachedValues());
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 
   // Skip check if document load is not complete.
   if (!GetDocument().IsLoadCompleted()) {
@@ -2909,13 +2909,7 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
 
   // The following checks can make tests flaky if the tree being checked
   // is quite large. Therefore cap the number of objects we check.
-  constexpr int kMaxObjectsToCheckAfterTreeUpdate = 5000;
-  if (objects_.size() > kMaxObjectsToCheckAfterTreeUpdate) {
-    DLOG(INFO)
-        << "AXObjectCacheImpl::CheckTreeIsFinalized: Only checking first "
-        << kMaxObjectsToCheckAfterTreeUpdate
-        << " items in objects_ (size: " << objects_.size() << ")";
-  }
+  constexpr int kMaxObjectsToCheckAfterTreeUpdate = 1000;
 
   // First loop checks that tree structure is consistent.
   int count = 0;
@@ -2925,20 +2919,20 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
     }
 
     const AXObject* object = entry.value;
-    DCHECK(!object->IsDetached());
-    DCHECK(object->GetDocument());
-    DCHECK(object->GetDocument()->GetFrame())
+    CHECK(!object->IsDetached());
+    CHECK(object->GetDocument());
+    CHECK(object->GetDocument()->GetFrame())
         << "An object in a closed document should have been removed:"
         << "\n* Object: " << object;
-    DCHECK(!object->IsMissingParent())
+    CHECK(!object->IsMissingParent())
         << "No object should be missing its parent: " << "\n* Object: "
         << object << "\n* Computed parent: " << object->ComputeParent();
     // Check whether cached values need an update before using any getters that
     // will update them.
-    DCHECK(!object->NeedsToUpdateCachedValues())
+    CHECK(!object->NeedsToUpdateCachedValues())
         << "No cached values should require an update: " << "\n* Object: "
         << object;
-    DCHECK(!object->ChildrenNeedToUpdateCachedValues())
+    CHECK(!object->ChildrenNeedToUpdateCachedValues())
         << "Cached values for children should not require an update: "
         << "\n* Object: " << object;
     if (object->IsIncludedInTree()) {
@@ -2954,10 +2948,9 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
         CHECK(included_parent);
         const HeapVector<Member<AXObject>>& siblings =
             included_parent->CachedChildrenIncludingIgnored();
-        DCHECK(siblings.Contains(object))
+        CHECK(siblings.Contains(object))
             << "Object was not included in its parent: " << "\n* Object: "
-            << object
-            << "\n* Included parent: " << included_parent;
+            << object << "\n* Included parent: " << included_parent;
       }
     }
     count++;
@@ -2982,7 +2975,7 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
       if (!included_parent) {
         included_parent = Root();
       }
-      DCHECK(!ancestor->HasDirtyDescendants())
+      CHECK(!ancestor->HasDirtyDescendants())
           << "No subtrees should be flagged as needing updates at this point:"
           << "\n* Object: " << ancestor
           << "\n* Included parent: " << included_parent->GetAXTreeForThis();
@@ -2991,14 +2984,14 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
     if (!included_parent) {
       included_parent = Root();
     }
-    DCHECK(!object->NeedsToUpdateChildren())
+    CHECK(!object->NeedsToUpdateChildren())
         << "No children in the tree should require an update at this point: "
         << "\n* Object: " << object
         << "\n* Included parent: " << included_parent;
 
     count++;
   }
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
 }
 
 int AXObjectCacheImpl::GetDeferredEventsDelay() const {
@@ -3628,7 +3621,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
     return;
   }
 
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+  CHECK(!ax_object->IsMissingParent(), base::NotFatalUntil::M140)
       << tree_update->ToString() << " on " << ax_object;
 
   // Update cached attributes for all changed nodes before serialization,
@@ -3701,7 +3694,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     return;
   }
 
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+  CHECK(!ax_object->IsMissingParent(), base::NotFatalUntil::M140)
       << tree_update->ToString() << " on " << ax_object;
 
   base::AutoReset<ax::mojom::blink::EventFrom> event_from_resetter(
@@ -5679,7 +5672,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     //          << ObjectFromAXID(event.id);
   }
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   // Always compute this state.
   UpdatePluginIncludedNodeCount();
 
@@ -5692,10 +5685,10 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
   }
   updates.back().tree_checks->node_count =
       GetIncludedNodeCount() + GetPluginIncludedNodeCount();
-#endif  // DCHECK_IS_ON()
+#endif  // defined(AX_FAIL_FAST_BUILD)
 }
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 void AXObjectCacheImpl::UpdateIncludedNodeCount(const AXObject* obj) {
   if (obj->IsIncludedInTree()) {
     ++included_node_count_;
@@ -5737,7 +5730,7 @@ bool AXObjectCacheImpl::IsInternalUICheckerOn(const AXObject& obj) const {
   // used for complex form controls built into the browser.
   return obj.GetNode() && obj.GetNode()->IsInUserAgentShadowRoot();
 }
-#endif  // DCHECK_IS_ON()
+#endif  // defined(AX_FAIL_FAST_BUILD)
 
 void AXObjectCacheImpl::GetImagesToAnnotate(
     ui::AXTreeUpdate& update,

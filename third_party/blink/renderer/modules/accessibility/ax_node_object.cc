@@ -6011,12 +6011,9 @@ void AXNodeObject::InsertChild(AXObject* child,
     int new_index = index;
     for (wtf_size_t i = 0; i < length; ++i) {
       if (children[i]->IsDetached()) {
-        // TODO(accessibility) Restore to CHECK().
-#if defined(AX_FAIL_FAST_BUILD)
-        SANITIZER_NOTREACHED()
+        NOTREACHED(base::NotFatalUntil::M140)
             << "Cannot add a detached child: " << "\n* Child: " << children[i]
             << "\n* Parent: " << child << "\n* Grandparent: " << this;
-#endif
         continue;
       }
       // If the child was owned, it will be added elsewhere as a direct
