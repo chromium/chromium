@@ -28,7 +28,7 @@ bool ShortcutIsEmpty(const std::string& policy_name,
   }
 
   errors->AddError(policy_name,
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY);
+                   IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_IS_EMPTY);
   return true;
 }
 
@@ -39,7 +39,7 @@ bool NameIsEmpty(const std::string& policy_name,
     return false;
   }
 
-  errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY);
+  errors->AddError(policy_name, IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY);
   return true;
 }
 
@@ -50,7 +50,7 @@ bool UrlIsEmpty(const std::string& policy_name,
     return false;
   }
 
-  errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY);
+  errors->AddError(policy_name, IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY);
   return true;
 }
 
@@ -62,7 +62,7 @@ bool ShortcutHasWhitespace(const std::string& policy_name,
   }
 
   errors->AddError(policy_name,
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE,
+                   IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_CONTAINS_SPACE,
                    shortcut);
   return true;
 }
@@ -75,7 +75,7 @@ bool ShortcutStartsWithAtSymbol(const std::string& policy_name,
   }
 
   errors->AddError(policy_name,
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT,
+                   IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_STARTS_WITH_AT,
                    shortcut);
   return true;
 }
@@ -97,7 +97,7 @@ bool ShortcutEqualsDefaultSearchProviderKeyword(const std::string& policy_name,
   }
 
   errors->AddError(policy_name,
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
+                   IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
                    shortcut);
   return true;
 }
@@ -114,7 +114,7 @@ bool ReplacementStringIsMissingFromUrl(const std::string& policy_name,
 
   errors->AddError(
       policy_name,
-      IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT, url);
+      IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT, url);
   return true;
 }
 

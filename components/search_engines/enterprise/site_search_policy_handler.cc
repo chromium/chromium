@@ -80,7 +80,7 @@ void WarnIfNonHttpsUrl(const std::string& policy_name,
                        PolicyErrorMap* errors) {
   GURL gurl(url);
   if (!gurl.SchemeIs(url::kHttpsScheme)) {
-    errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+    errors->AddError(policy_name, IDS_SEARCH_POLICY_SETTINGS_URL_NOT_HTTPS,
                      url);
   }
 }
@@ -206,7 +206,7 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   }
 
   errors->AddError(policy_name(),
-                   IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER);
+                   IDS_SEARCH_POLICY_SETTINGS_NO_VALID_PROVIDER);
   return false;
 }
 
