@@ -1192,7 +1192,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   // Added 08/2023.
-  invalidation::InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(prefs);
   invalidation::PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(prefs);
   invalidation::FCMInvalidationService::ClearDeprecatedPrefs(prefs);
 
