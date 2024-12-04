@@ -11,12 +11,12 @@ import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
 import {prefToString} from '/shared/settings/prefs/pref_util.js';
-import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
+import {CrRippleMixinPolymer} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin_polymer.js';
 
 import {getTemplate} from './controlled_radio_button.html.js';
 
 const ControlledRadioButtonElementBase =
-    PaperRippleMixin(CrRadioButtonMixin(PrefControlMixin(PolymerElement)));
+    CrRippleMixinPolymer(CrRadioButtonMixin(PrefControlMixin(PolymerElement)));
 
 export class ControlledRadioButtonElement extends
     ControlledRadioButtonElementBase {
@@ -39,12 +39,10 @@ export class ControlledRadioButtonElement extends
     return this.getRipple();
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
-    const ripple = super._createRipple();
-    ripple.id = 'ink';
+  // Overridden from CrRippleMixinPolymer
+  override createRipple() {
+    this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
+    const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle');
     return ripple;

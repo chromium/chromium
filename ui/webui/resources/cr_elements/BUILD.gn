@@ -45,6 +45,7 @@ build_webui("build") {
       "cr_icon/iconset_map.ts",
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
+      "cr_ripple/cr_ripple_mixin_polymer.ts",
       "cr_scroll_observer_mixin.ts",
       "cr_scroll_observer_mixin_lit.ts",
       "cr_search_field/cr_search_field_mixin.ts",
