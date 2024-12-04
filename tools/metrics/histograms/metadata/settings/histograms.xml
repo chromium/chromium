@@ -759,6 +759,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.AutorevokeUnusedSitePermissions.StateOnStartup"
+    enum="BooleanEnabled" expires_after="2025-04-06">
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures whether auto-revocation is enabled for unused site permissions.
+    Recorded when the SafetyHubFetchService is created on browser start up.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.Dashboard.Interactions"
     enum="SafetyHubDashboardInteractions" expires_after="2025-04-06">
   <owner>rubindl@google.com</owner>
@@ -843,6 +855,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Captures Safety Hub page visits and three dot menu clicks for any Safety Hub
     module.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.MagicStack.StateOnStartup"
+    enum="BooleanEnabled" expires_after="2025-04-06">
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures whether the Safety Hub Magic Stack module is enabled. Recorded when
+    the SafetyHubMagicStackBuilder is created on browser start up. Android-only.
   </summary>
 </histogram>
 
