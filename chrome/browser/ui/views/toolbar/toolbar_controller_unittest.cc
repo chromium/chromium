@@ -6,7 +6,10 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
@@ -97,6 +100,49 @@ class TestDelegate : public ToolbarController::PinnedActionsDelegate {
       kIdToItemMap_;
   base::flat_map<actions::ActionId, bool> kIdToOverflowedMap_;
   raw_ptr<views::View> container_view_;
+};
+
+class TestDelegateFromModel : public ToolbarController::PinnedActionsDelegate {
+ public:
+  MOCK_METHOD(void,
+              DummyAction,
+              (actions::ActionItem*, actions::ActionInvocationContext));
+  explicit TestDelegateFromModel(PinnedToolbarActionsModel* model) {
+    model_ = model;
+  }
+  ~TestDelegateFromModel() override = default;
+
+  actions::ActionItem* GetActionItemFor(const actions::ActionId& id) override {
+    for (const auto& action_item : action_items_) {
+      if (action_item->GetActionId() == id) {
+        return action_item.get();
+      }
+    }
+    action_items_.push_back(
+        actions::ActionItem::ActionItemBuilder(
+            base::BindRepeating(&TestDelegateFromModel::DummyAction,
+                                base::Unretained(this)))
+            .SetActionId(id)
+            .SetImage(
+                ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon))
+            .SetProperty(kActionItemUnderlineIndicatorKey, true)
+            .SetText(base::StrCat({u"DummyAction", base::NumberToString16(id)}))
+            .Build());
+    return action_items_.back().get();
+  }
+  bool IsOverflowed(const actions::ActionId& id) override { return false; }
+  views::View* GetContainerView() override { return &container_view_; }
+  bool ShouldAnyButtonsOverflow(gfx::Size available_size) const override {
+    return false;
+  }
+  const std::vector<actions::ActionId>& PinnedActionIds() const override {
+    return model_->PinnedActionIds();
+  }
+
+ private:
+  raw_ptr<PinnedToolbarActionsModel> model_;
+  views::View container_view_;
+  std::vector<std::unique_ptr<actions::ActionItem>> action_items_;
 };
 
 class MockToolbarController : public ToolbarController {
@@ -868,6 +914,44 @@ TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreOrdered) {
             absl::get<ActionId>(action0.overflow_id));
   EXPECT_EQ(absl::get<ActionId>(elements[5].overflow_id),
             absl::get<ActionId>(action2.overflow_id));
+}
+
+TEST_F(ToolbarControllerUnitTest, ResponsiveActionsRemainOrdered) {
+  using ResponsiveElementInfo = ToolbarController::ResponsiveElementInfo;
+  using ActionId = actions::ActionId;
+
+  ResponsiveElementInfo action0(0);
+  ResponsiveElementInfo action1(1);
+  PinnedToolbarActionsModel* model = GetPinnedToolbarActionsModel();
+  model->UpdatePinnedState(absl::get<ActionId>(action0.overflow_id), true);
+  model->UpdatePinnedState(absl::get<ActionId>(action1.overflow_id), true);
+  auto delegate = std::make_unique<TestDelegateFromModel>(model);
+
+  // Create the controller with the ActionIds in the reversed order
+  // (action1, action0) with respect to delegate.PinnedActionIds().
+  // They should be sorted in responsive_elements right after the controller
+  // is instantiated.
+  auto controller = ToolbarController(
+      std::vector<ResponsiveElementInfo>({action1, action0}),
+      std::vector<ui::ElementIdentifier>({kDummyButton1}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      const_cast<OverflowButton*>(overflow_button()), delegate.get(), model);
+  std::vector<ResponsiveElementInfo> elements =
+      GetResponsiveElements(&controller);
+  EXPECT_EQ(int(elements.size()), 2);
+  EXPECT_EQ(absl::get<ActionId>(elements[0].overflow_id),
+            absl::get<ActionId>(action0.overflow_id));
+  EXPECT_EQ(absl::get<ActionId>(elements[1].overflow_id),
+            absl::get<ActionId>(action1.overflow_id));
+
+  // Move action1 to the first index. responsive_elements should be reordered.
+  model->MovePinnedAction(absl::get<ActionId>(action1.overflow_id), 0);
+  elements = GetResponsiveElements(&controller);
+  EXPECT_EQ(int(elements.size()), 2);
+  EXPECT_EQ(absl::get<ActionId>(elements[0].overflow_id),
+            absl::get<ActionId>(action1.overflow_id));
+  EXPECT_EQ(absl::get<ActionId>(elements[1].overflow_id),
+            absl::get<ActionId>(action0.overflow_id));
 }
 
 TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreNotOrdered) {

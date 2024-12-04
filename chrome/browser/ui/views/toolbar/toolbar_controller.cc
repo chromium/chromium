@@ -131,7 +131,8 @@ ToolbarController::ToolbarController(
       element_flex_order_start_(element_flex_order_start),
       toolbar_container_view_(toolbar_container_view),
       overflow_button_(overflow_button),
-      pinned_actions_delegate_(pinned_actions_delegate) {
+      pinned_actions_delegate_(pinned_actions_delegate),
+      pinned_actions_model_(pinned_actions_model) {
   if (ToolbarControllerUtil::PreventOverflow()) {
     return;
   }
@@ -199,10 +200,14 @@ ToolbarController::ToolbarController(
             }},
         overflow_id);
   }
+
+  responsive_elements_ = GetResponsiveElementsWithOrderedActions();
+  pinned_actions_model_->AddObserver(this);
 }
 
 ToolbarController::~ToolbarController() {
   CloseMenu();
+  pinned_actions_model_->RemoveObserver(this);
 }
 
 std::vector<ToolbarController::ResponsiveElementInfo>
@@ -554,6 +559,10 @@ bool ToolbarController::IsOverflowed(
                                       : toolbar_element->GetVisible());
                        }},
       element.overflow_id);
+}
+
+void ToolbarController::OnActionsChanged() {
+  responsive_elements_ = GetResponsiveElementsWithOrderedActions();
 }
 
 // This function returns responsive_elements_ but with some portions reordered.
