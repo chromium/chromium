@@ -96,6 +96,8 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   // ui::CompositorObserver implementation.
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
+  void OnFirstSurfaceActivation(ui::Compositor* compositor,
+                                const viz::SurfaceInfo& surface_info) override;
 
   void ClearFallbackSurfaceForCommitPending();
   void ResetFallbackToFirstNavigationSurface();

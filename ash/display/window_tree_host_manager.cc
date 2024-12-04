@@ -856,6 +856,12 @@ void WindowTreeHostManager::OnHostResized(aura::WindowTreeHost* host) {
   }
 }
 
+void WindowTreeHostManager::OnLocalSurfaceIdChanged(
+    aura::WindowTreeHost* host,
+    const viz::LocalSurfaceId& id) {
+  mirror_window_controller_->UpdateWindow();
+}
+
 void WindowTreeHostManager::OnDisplaySecurityMaybeChanged(int64_t display_id,
                                                           bool secure) {
   AshWindowTreeHost* host = GetAshWindowTreeHostForDisplayId(display_id);

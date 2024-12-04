@@ -81,6 +81,10 @@ class ASH_EXPORT MirrorWindowController : public aura::WindowTreeHostObserver,
     return current_event_targeter_src_host_;
   }
 
+  // Returns the mirroring window created to mirror the `display_id`'s root
+  // window.
+  const aura::Window* GetMirrorWindowForDisplayIdForTest(int64_t display_id);
+
  private:
   friend class MirrorWindowTestApi;
 

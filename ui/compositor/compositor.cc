@@ -106,7 +106,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   DCHECK(context_factory_);
   auto* host_frame_sink_manager = context_factory_->GetHostFrameSinkManager();
   host_frame_sink_manager->RegisterFrameSinkId(
-      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
+      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kYes);
   host_frame_sink_manager->SetFrameSinkDebugLabel(frame_sink_id_, "Compositor");
   root_web_layer_ = cc::Layer::Create();
 
@@ -849,7 +849,8 @@ void Compositor::FrameSinksToThrottleUpdated(
 
 void Compositor::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
-  NOTREACHED();
+  observer_list_.Notify(&CompositorObserver::OnFirstSurfaceActivation, this,
+                        surface_info);
 }
 
 void Compositor::OnFrameTokenChanged(uint32_t frame_token,
