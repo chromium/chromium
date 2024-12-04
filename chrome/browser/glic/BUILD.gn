@@ -4,6 +4,7 @@
 
 source_set("glic") {
   sources = [
+    "glic_focused_tab_manager.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
     "glic_page_context_fetcher.h",
@@ -14,6 +15,8 @@ source_set("glic") {
     "//base",
     "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/webui/glic:mojo_bindings",
     "//content/public/browser",
     "//ui/views:views",
@@ -22,6 +25,7 @@ source_set("glic") {
 
 source_set("impl") {
   sources = [
+    "glic_focused_tab_manager.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_page_context_fetcher.cc",

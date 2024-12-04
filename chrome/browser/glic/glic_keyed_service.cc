@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/glic_keyed_service.h"
 
+#include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +21,8 @@
 namespace glic {
 
 GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+    : browser_context_(browser_context),
+      focused_tab_manager_(Profile::FromBrowserContext(browser_context)) {}
 
 GlicKeyedService::~GlicKeyedService() = default;
 
@@ -71,7 +73,8 @@ void GlicKeyedService::GetContextFromFocusedTab(
     bool include_inner_text,
     bool include_viewport_screenshot,
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
-  content::WebContents* web_contents = GetWebContentsForContext();
+  content::WebContents* web_contents =
+      focused_tab_manager_.GetWebContentsForFocusedTab();
   if (!web_contents) {
     // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
     LOG(ERROR) << "GetContextFromFocusedTab: No web contents";
@@ -96,33 +99,6 @@ void GlicKeyedService::GetContextFromFocusedTab(
             std::move(callback).Run(std::move(tab_context_result));
           },
           std::move(fetcher), std::move(callback)));
-}
-
-content::WebContents* GlicKeyedService::GetWebContentsForContext() {
-  // TODO(harringtond): This is a placeholder implementation.
-  // It returns the active tab, unless that tab is a chrome: tab,
-  // in which case it returns the next tab or the previous tab if the next tab
-  // doesn't exist.
-  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
-  if (!last_active_browser) {
-    return nullptr;
-  }
-  TabStripModel* tab_strip_model = last_active_browser->GetTabStripModel();
-  const int index_options[3] = {tab_strip_model->active_index(),
-                                tab_strip_model->active_index() + 1,
-                                tab_strip_model->active_index() - 1};
-
-  for (int index : index_options) {
-    if (index < tab_strip_model->count()) {
-      content::WebContents* web_contents =
-          tab_strip_model->GetWebContentsAt(index);
-      if (web_contents &&
-          !web_contents->GetURL().SchemeIs(content::kChromeUIScheme)) {
-        return web_contents;
-      }
-    }
-  }
-  return nullptr;
 }
 
 }  // namespace glic
