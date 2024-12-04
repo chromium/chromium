@@ -3203,6 +3203,11 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     BrowsingContextGroupSwap browsing_context_group_swap,
     bool was_server_redirect,
     std::string* reason) {
+  TRACE_EVENT("navigation",
+              "RenderFrameHostManager::DetermineSiteInstanceForURL",
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_, "url",
+              dest_url_info.url);
+
   // Note that this function should return a SiteInstanceDescriptor with
   // SiteInstanceRelation::UNRELATED or
   // SiteInstanceRelation::RELATED_IN_COOP_GROUP relations to `current_instance`
@@ -4578,6 +4583,11 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
     IsSameSiteGetter& is_same_site,
     BrowsingContextGroupSwap* browsing_context_group_swap,
     std::string* reason) {
+  TRACE_EVENT("navigation",
+              "RenderFrameHostManager::GetSiteInstanceForNavigationRequest",
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
+              "navigation_request", request);
+
   SiteInstanceImpl* current_site_instance =
       render_frame_host_->GetSiteInstance();
 
