@@ -63,8 +63,6 @@ export class DiceWebSigninInterceptAppElement extends
     primaryAccount: {pictureUrl: '', avatarBadge: ''},
     useV2Design: false,
     showManagedDisclaimer: false,
-    interceptedProfileBadgeColor: '',
-    primaryProfileBadgeColor: '',
   };
   protected acceptButtonClicked_: boolean = false;
   private diceWebSigninInterceptBrowserProxy_:
@@ -105,10 +103,6 @@ export class DiceWebSigninInterceptAppElement extends
     this.style.setProperty(
         '--primary-profile-color', parameters.primaryProfileColor);
     this.style.setProperty('--header-text-color', parameters.headerTextColor);
-    this.style.setProperty(
-      '--intercepted-profile-avatar-badge-color', parameters.interceptedProfileBadgeColor);
-    this.style.setProperty(
-      '--primary-profile-avatar-badge-color', parameters.primaryProfileBadgeColor);
   }
 
   protected sanitizeInnerHtml_(text: string): TrustedHTML {
