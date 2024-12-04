@@ -94,9 +94,10 @@ LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
     return node.GetDocument().GetLayoutView();
   }
   const Node* search_start_node = &node;
-  // Parent of ::scroll-marker-group should be layout parent of its
-  // originating element.
-  if (node.IsScrollMarkerGroupPseudoElement()) {
+  // Parent of ::scroll-marker-group and ::scroll-button() should be layout
+  // parent of its originating element.
+  if (node.IsScrollMarkerGroupPseudoElement() ||
+      node.IsScrollButtonPseudoElement()) {
     search_start_node = node.parentNode();
   }
   ContainerNode* parent =
