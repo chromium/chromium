@@ -442,6 +442,8 @@ class ServiceWorkerDatabase {
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest, FetchHandlerType);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest,
                            RouterRulesLegacyPathname);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest,
+                           EnsureNetworkAndFetchHandlerSet);
 };
 
 }  // namespace storage
