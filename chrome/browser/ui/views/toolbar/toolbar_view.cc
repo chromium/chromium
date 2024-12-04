@@ -1167,8 +1167,9 @@ views::View* ToolbarView::GetAnchorView(
     std::optional<PageActionIconType> type) {
   if (features::IsToolbarPinningEnabled()) {
     if (pinned_toolbar_actions_container_ && type.has_value()) {
+      PageActionIconView* icon_view = GetPageActionIconView(type.value());
       const std::optional<actions::ActionId> action_id =
-          GetPageActionIconView(type.value())->action_id();
+          icon_view ? icon_view->action_id() : std::nullopt;
       if (action_id.has_value() &&
           pinned_toolbar_actions_container_->IsActionPinnedOrPoppedOut(
               action_id.value())) {
