@@ -502,8 +502,9 @@ const PrintableSubEntry kU017E[] = {
 // Table mapping unshifted characters to PrintableSubEntry tables.
 struct PrintableMultiEntry {
   char16_t plain_character;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
+  // This field is not a raw_ptr<> because its only instantiation is `kMultiMap`
+  // below, which only ever points at statically-allocated memory which is never
+  // freed.
   RAW_PTR_EXCLUSION const PrintableSubEntry* subtable;
   size_t subtable_size;
 };
