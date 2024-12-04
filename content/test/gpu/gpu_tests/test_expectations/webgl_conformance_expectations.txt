@@ -583,22 +583,21 @@ crbug.com/365680832 [ angle-swiftshader graphite-enabled oop-c passthrough rende
 
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 
-crbug.com/328102507 [ amd-0x7340 angle-opengl asan graphite-disabled mac-x86_64 oop-c release sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-crbug.com/328102507 [ amd-0x7340 angle-opengl debug graphite-disabled mac-x86_64 no-asan oop-c sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-
 ## Mac AMD failures ##
-
-crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
-crbug.com/1230781 [ mac amd angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
-crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
+crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
+crbug.com/1230781 [ mac amd angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
+crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
+crbug.com/328102507 [ amd-0x7340 angle-opengl asan graphite-disabled mac-x86_64 oop-c release sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/328102507 [ amd-0x7340 angle-opengl debug graphite-disabled mac-x86_64 no-asan oop-c sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
+crbug.com/382090956 [ mac amd angle-metal ] deqp/data/gles2/shaders/conversions_vector_to_vector.html [ RetryOnFailure ]
 
 ## Mac Retina NVidia failures / flakes ##
 
