@@ -70,7 +70,7 @@ TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   EXPECT_EQ(input, output);
 }
 
-TEST(VideoBitrateAllocationStructTraitTest, ConstantBitrateRoundTrip) {
+TEST(VideoBitrateAllocationStructTraitTest, ConstantBitrate_RoundTrip) {
   ::media::VideoBitrateAllocation input_allocation;
   ASSERT_TRUE(input_allocation.SetBitrate(0, 0, 1000u));
   ASSERT_TRUE(input_allocation.SetBitrate(1, 0, 3500u));
@@ -213,7 +213,7 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
   EXPECT_EQ(input_config, output_config);
 }
 
-TEST(VariableBitrateStructTraitTest, PeakZeroBpsRejected) {
+TEST(VariableBitrateStructTraitTest, PeakZeroBps_Rejected) {
   mojom::VariableBitratePtr mojom_variable_bitrate =
       mojom::VariableBitrate::New();
   mojom_variable_bitrate->target_bps = 0u;
@@ -225,7 +225,7 @@ TEST(VariableBitrateStructTraitTest, PeakZeroBpsRejected) {
   EXPECT_FALSE(result);
 }
 
-TEST(VariableBitrateStructTraitTest, PeakLessThanTargetRejected) {
+TEST(VariableBitrateStructTraitTest, PeakLessThanTarget_Rejected) {
   mojom::VariableBitratePtr mojom_variable_bitrate =
       mojom::VariableBitrate::New();
   mojom_variable_bitrate->target_bps = 6000u;
