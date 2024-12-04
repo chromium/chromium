@@ -212,7 +212,8 @@ TabSearchContainer::TabSearchContainer(
     View* locked_expansion_view,
     BrowserWindowInterface* browser_window_interface,
     tabs::TabDeclutterController* tab_declutter_controller,
-    views::View* anchor_view)
+    views::View* anchor_view,
+    TabStrip* tab_strip)
     : AnimationDelegateViews(this),
       locked_expansion_view_(locked_expansion_view),
       tab_declutter_controller_(tab_declutter_controller),
@@ -235,7 +236,7 @@ TabSearchContainer::TabSearchContainer(
     tab_search_button = std::make_unique<TabSearchButton>(
         tab_strip_controller, browser_window_interface,
         base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft, Edge::kNone,
-        anchor_view ? anchor_view : this);
+        anchor_view ? anchor_view : this, tab_strip);
     tab_search_button->SetFlatEdgeFactor(1);
   } else {
     // Edge adjacent to new tab button should be rounded and opposite edge
@@ -243,7 +244,7 @@ TabSearchContainer::TabSearchContainer(
     tab_search_button = std::make_unique<TabSearchButton>(
         tab_strip_controller, browser_window_interface, Edge::kNone,
         GetFlatEdge(true, tab_search_before_chips),
-        anchor_view ? anchor_view : this);
+        anchor_view ? anchor_view : this, tab_strip);
   }
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);

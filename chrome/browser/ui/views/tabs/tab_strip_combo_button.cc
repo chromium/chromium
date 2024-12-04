@@ -58,7 +58,8 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
   std::unique_ptr<TabSearchContainer> tab_search_container =
       std::make_unique<TabSearchContainer>(
           tab_strip->controller(), browser->GetTabStripModel(), true, this,
-          browser, browser->GetFeatures().tab_declutter_controller(), this);
+          browser, browser->GetFeatures().tab_declutter_controller(), this,
+          tab_strip);
   tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
 

@@ -111,6 +111,8 @@ class TabStrip : public views::View,
   // doesn't close.
   bool IsTabStripCloseable() const;
 
+  base::WeakPtr<TabStrip> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
   // Returns true if the tab strip is editable. Returns false if the tab strip
   // is being dragged or animated to prevent extensions from messing things up
   // while that's happening.
@@ -276,8 +278,8 @@ class TabStrip : public views::View,
       const tab_groups::TabGroupId group,
       ToggleTabGroupCollapsedStateOrigin origin =
           ToggleTabGroupCollapsedStateOrigin::kMenuAction) override;
-  void NotifyTabGroupEditorBubbleOpened() override;
-  void NotifyTabGroupEditorBubbleClosed() override;
+  void NotifyTabstripBubbleOpened() override;
+  void NotifyTabstripBubbleClosed() override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::mojom::MenuSourceType source_type) override;
@@ -508,6 +510,8 @@ class TabStrip : public views::View,
                               base::Unretained(this)));
 
   TabContextMenuController context_menu_controller_{this};
+
+  base::WeakPtrFactory<TabStrip> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_H_

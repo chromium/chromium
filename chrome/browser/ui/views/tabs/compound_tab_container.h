@@ -61,8 +61,8 @@ class CompoundTabContainer : public TabContainer,
                       bool is_collapsing,
                       ToggleTabGroupCollapsedStateOrigin origin) override;
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) override;
-  void NotifyTabGroupEditorBubbleOpened() override;
-  void NotifyTabGroupEditorBubbleClosed() override;
+  void NotifyTabstripBubbleOpened() override;
+  void NotifyTabstripBubbleClosed() override;
   std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const override;
   Tab* GetTabAtModelIndex(int index) const override;

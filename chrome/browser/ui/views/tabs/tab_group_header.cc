@@ -715,7 +715,7 @@ void TabGroupHeader::EditorBubbleTracker::Opened(views::Widget* bubble_widget) {
   widget_ = bubble_widget;
   is_open_ = true;
   bubble_widget->AddObserver(this);
-  tab_slot_controller_->NotifyTabGroupEditorBubbleOpened();
+  tab_slot_controller_->NotifyTabstripBubbleOpened();
 }
 
 void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroying(
@@ -724,5 +724,5 @@ void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroying(
   is_open_ = false;
   widget_->RemoveObserver(this);
   widget_ = nullptr;
-  tab_slot_controller_->NotifyTabGroupEditorBubbleClosed();
+  tab_slot_controller_->NotifyTabstripBubbleClosed();
 }

@@ -462,12 +462,12 @@ void TabContainerImpl::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
   }
 }
 
-void TabContainerImpl::NotifyTabGroupEditorBubbleOpened() {
+void TabContainerImpl::NotifyTabstripBubbleOpened() {
   // Suppress the mouse watching behavior of tab closing mode.
   RemoveMessageLoopObserver();
 }
 
-void TabContainerImpl::NotifyTabGroupEditorBubbleClosed() {
+void TabContainerImpl::NotifyTabstripBubbleClosed() {
   // Restore the mouse watching behavior of tab closing mode.
   if (in_tab_close_) {
     AddMessageLoopObserver();

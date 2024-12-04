@@ -88,8 +88,8 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
                               ToggleTabGroupCollapsedStateOrigin origin) = 0;
   virtual void OnGroupClosed(const tab_groups::TabGroupId& group) = 0;
   virtual void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) = 0;
-  virtual void NotifyTabGroupEditorBubbleOpened() = 0;
-  virtual void NotifyTabGroupEditorBubbleClosed() = 0;
+  virtual void NotifyTabstripBubbleOpened() = 0;
+  virtual void NotifyTabstripBubbleClosed() = 0;
 
   virtual std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const = 0;

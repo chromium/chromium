@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_CONTAINER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -25,6 +27,7 @@ class TabOrganizationButton;
 class TabOrganizationService;
 class TabSearchButton;
 class TabStripController;
+class TabStrip;
 
 enum class LockedExpansionMode {
   kNone = 0,
@@ -113,14 +116,16 @@ class TabSearchContainer : public views::View,
   };
 
   // If `anchor_view` is nullptr, use `this` as the `anchor_view` for the bubble
-  // host.
+  // host. TODO(382097906): Pull tabslotcontroller out of tabstrip and pass
+  // that instead.
   TabSearchContainer(TabStripController* tab_strip_controller,
                      TabStripModel* tab_strip_model,
                      bool tab_search_before_chips,
                      View* locked_expansion_view,
                      BrowserWindowInterface* browser_window_interface,
                      tabs::TabDeclutterController* tab_declutter_controller,
-                     views::View* anchor_view);
+                     views::View* anchor_view,
+                     TabStrip* tab_strip);
   TabSearchContainer(const TabSearchContainer&) = delete;
   TabSearchContainer& operator=(const TabSearchContainer&) = delete;
   ~TabSearchContainer() override;

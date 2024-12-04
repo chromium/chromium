@@ -31,7 +31,8 @@ TabSearchButton::TabSearchButton(
     BrowserWindowInterface* browser_window_interface,
     Edge fixed_flat_edge,
     Edge animated_flat_edge,
-    views::View* anchor_view)
+    views::View* anchor_view,
+    TabStrip* tab_strip)
     : TabStripControlButton(tab_strip_controller,
                             PressedCallback(),
                             vector_icons::kExpandMoreIcon,
@@ -40,7 +41,8 @@ TabSearchButton::TabSearchButton(
       tab_search_bubble_host_(
           std::make_unique<TabSearchBubbleHost>(this,
                                                 browser_window_interface,
-                                                anchor_view)) {
+                                                anchor_view,
+                                                tab_strip->AsWeakPtr())) {
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
