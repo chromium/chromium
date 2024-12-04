@@ -7061,12 +7061,6 @@ const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";
 
-const char kMeteredShowToggleName[] = "Show Metered Toggle";
-const char kMeteredShowToggleDescription[] =
-    "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "
-    "The toggle allows users to set whether a network should be considered "
-    "metered for purposes of bandwith usage (e.g. for automatic updates).";
-
 const char kMicrophoneMuteSwitchDeviceName[] = "Microphone Mute Switch Device";
 const char kMicrophoneMuteSwitchDeviceDescription[] =
     "Support for detecting the state of hardware microphone mute toggle. Only "

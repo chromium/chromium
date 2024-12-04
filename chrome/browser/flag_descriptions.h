@@ -4097,9 +4097,6 @@ extern const char kMahiDebuggingDescription[];
 extern const char kMediaAppPdfMahiName[];
 extern const char kMediaAppPdfMahiDescription[];
 
-extern const char kMeteredShowToggleName[];
-extern const char kMeteredShowToggleDescription[];
-
 extern const char kMicrophoneMuteSwitchDeviceName[];
 extern const char kMicrophoneMuteSwitchDeviceDescription[];
 

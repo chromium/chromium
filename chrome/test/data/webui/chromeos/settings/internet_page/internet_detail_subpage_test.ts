@@ -208,7 +208,6 @@ suite('<settings-internet-detail-subpage>', () => {
       internetAddWiFi: 'internetAddWiFi',
       internetDetailPageTitle: 'internetDetailPageTitle',
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
-      showMeteredToggle: true,
     });
 
     mojoApi.resetForTest();
