@@ -1221,7 +1221,8 @@ bool IsPseudoClassValidAfterPseudoElement(
       // TODO(crbug.com/40824273): User action pseudos should be allowed more
       // generally after pseudo elements.
       return pseudo_class == CSSSelector::kPseudoFocus ||
-             pseudo_class == CSSSelector::kPseudoDisabled;
+             pseudo_class == CSSSelector::kPseudoDisabled ||
+             pseudo_class == CSSSelector::kPseudoEnabled;
     default:
       return false;
   }
