@@ -133,13 +133,14 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
           ByteVectorToString(kSymmetricTestInfoBytes));
 
   EXPECT_TRUE(key_proof);
+  auto hmac = base::as_byte_span(*key_proof)
+                  .to_fixed_extent<crypto::hash::kSha256Size>();
 
   // Verify the key proof which should be of the form:
   //     HMAC(HKDF(|key|, |salt|, |info|), |payload|)
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  EXPECT_TRUE(
-      hmac.Init(ByteVectorToString(kExpectedDerivedSymmetricKey32Bytes)));
-  EXPECT_TRUE(hmac.Verify(kTestPayload, *key_proof));
+  EXPECT_TRUE(crypto::hmac::VerifySha256(kExpectedDerivedSymmetricKey32Bytes,
+                                         base::as_byte_span(kTestPayload),
+                                         *hmac));
 }
 
 TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
@@ -152,11 +153,12 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
           key, kTestPayload, ByteVectorToString(kSymmetricTestSaltBytes),
           ByteVectorToString(kSymmetricTestInfoBytes));
   EXPECT_TRUE(key_proof);
+  auto hmac = base::as_byte_span(*key_proof)
+                  .to_fixed_extent<crypto::hash::kSha256Size>();
 
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  EXPECT_TRUE(
-      hmac.Init(ByteVectorToString(kExpectedDerivedSymmetricKey16Bytes)));
-  EXPECT_TRUE(hmac.Verify(kTestPayload, *key_proof));
+  EXPECT_TRUE(crypto::hmac::VerifySha256(kExpectedDerivedSymmetricKey16Bytes,
+                                         base::as_byte_span(kTestPayload),
+                                         *hmac));
 }
 
 TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,

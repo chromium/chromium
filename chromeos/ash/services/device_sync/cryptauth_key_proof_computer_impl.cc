@@ -92,19 +92,9 @@ CryptAuthKeyProofComputerImpl::ComputeSymmetricKeyProof(
       crypto::HkdfSha256(symmetric_key.symmetric_key(), salt, info,
                          NumBytesForSymmetricKeyType(symmetric_key.type()));
 
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  std::vector<unsigned char> signed_payload(hmac.DigestLength());
-  bool success =
-      hmac.Init(derived_symmetric_key_material) &&
-      hmac.Sign(payload, signed_payload.data(), signed_payload.size());
-
-  if (!success) {
-    PA_LOG(ERROR) << "Failed to compute symmetric key proof for key handle "
-                  << symmetric_key.handle();
-    return std::nullopt;
-  }
-
-  return std::string(signed_payload.begin(), signed_payload.end());
+  return std::string(base::as_string_view(crypto::hmac::SignSha256(
+      base::as_byte_span(derived_symmetric_key_material),
+      base::as_byte_span(payload))));
 }
 
 std::optional<std::string>
