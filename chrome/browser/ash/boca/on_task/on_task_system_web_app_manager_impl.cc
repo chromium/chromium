@@ -24,6 +24,8 @@
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 namespace ash::boca {
@@ -43,6 +45,14 @@ Browser* GetBrowserWindowWithID(SessionID window_id) {
 
   // No window found with specified ID.
   return nullptr;
+}
+
+void MakeWindowResizable(const BrowserWindow* window) {
+  views::Widget* const widget =
+      views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
+  if (widget) {
+    widget->widget_delegate()->SetCanResize(true);
+  }
 }
 }  // namespace
 
@@ -207,6 +217,7 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   // downstream components (especially UI controls) are setup for locked mode
   // transitions.
   browser->SetLockedForOnTask(true);
+  MakeWindowResizable(browser->window());
 
   // Remove all tabs with pre-existing content. This is to de-dupe content and
   // ensure that the tabs are set up for locked mode.

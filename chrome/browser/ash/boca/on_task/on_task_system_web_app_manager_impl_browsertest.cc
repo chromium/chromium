@@ -26,6 +26,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 using ::boca::LockedNavigationOptions;
@@ -286,6 +288,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
       boca_app_browser->session_id());
   EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(
+      boca_app_browser->window()->GetNativeWindow());
+  // TODO (b/382277303): Verify if resize is disabled in locked fullscreen mode.
+  EXPECT_TRUE(widget->widget_delegate()->CanResize());
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
 }
 
