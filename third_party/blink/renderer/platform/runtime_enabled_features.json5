@@ -4727,6 +4727,10 @@
     },
     {
       name: "WebCryptoCurve25519",
+      status: "stable",
+    },
+    {
+      name: "WebCryptoEd25519",
       status: "experimental",
     },
     {
