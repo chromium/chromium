@@ -67,7 +67,7 @@ bool ContentWebFrame::IsMainFrame() const {
   return render_frame_host_->IsInPrimaryMainFrame();
 }
 
-GURL ContentWebFrame::GetSecurityOrigin() const {
+GURL ContentWebFrame::GetSecurityOriginDeprecated() const {
   // TODO(crbug.com/40260077):  Once GetSecurityOrigin is changed to return an
   // Origin instead of a URL, this should use GetLastCommittedOrigin().
   return render_frame_host_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
