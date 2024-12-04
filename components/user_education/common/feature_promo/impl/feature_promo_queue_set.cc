@@ -104,10 +104,9 @@ bool FeaturePromoQueueSet::Cancel(const base::Feature& iph_feature) {
   return false;
 }
 
-std::optional<std::pair<const base::Feature*, FeaturePromoQueueSet::Priority>>
+std::optional<FeaturePromoQueueSet::PromoInfo>
 FeaturePromoQueueSet::UpdateAndIdentifyNextEligiblePromo() {
-  std::optional<std::pair<const base::Feature*, FeaturePromoQueueSet::Priority>>
-      result;
+  std::optional<PromoInfo> result;
 
   // Check queues from higher to lower priority. If an eligible promo is found,
   // or a promo remains waiting in a higher-priority queue, do not check lower-
@@ -119,7 +118,7 @@ FeaturePromoQueueSet::UpdateAndIdentifyNextEligiblePromo() {
     } else {
       auto* const feature = queue.UpdateAndIdentifyNextEligiblePromo();
       if (feature) {
-        result = std::make_pair(feature, pri);
+        result = std::make_pair(raw_ref(*feature), pri);
       }
       higher_priority_promo_found = result.has_value() || !queue.is_empty();
     }
@@ -127,23 +126,17 @@ FeaturePromoQueueSet::UpdateAndIdentifyNextEligiblePromo() {
   return result;
 }
 
-std::optional<EligibleFeaturePromo>
-FeaturePromoQueueSet::UpdateAndGetNextEligiblePromo() {
-  std::optional<EligibleFeaturePromo> result;
+EligibleFeaturePromo FeaturePromoQueueSet::UnqueueEligiblePromo(
+    const PromoInfo& to_unqueue) {
+  auto* const queue = base::FindOrNull(queues_, to_unqueue.second);
+  CHECK(queue);
+  return queue->UnqueueEligiblePromo(*to_unqueue.first);
+}
 
-  // Check queues from higher to lower priority. If an eligible promo is found,
-  // or a promo remains waiting in a higher-priority queue, do not check lower-
-  // priority queues; instead just evict ineligible promos.
-  bool higher_priority_promo_found = false;
+void FeaturePromoQueueSet::RemoveIneligiblePromos() {
   for (auto& [pri, queue] : queues_) {
-    if (higher_priority_promo_found) {
-      queue.RemoveIneligiblePromos();
-    } else {
-      result = queue.UpdateAndGetNextEligiblePromo();
-      higher_priority_promo_found = result.has_value() || !queue.is_empty();
-    }
+    queue.RemoveIneligiblePromos();
   }
-  return result;
 }
 
 void FeaturePromoQueueSet::FailAll(FeaturePromoResult::Failure failure_reason) {

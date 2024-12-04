@@ -84,11 +84,14 @@ class LifecyclePrecondition : public FeaturePromoPreconditionBase {
  public:
   DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(std::unique_ptr<FeaturePromoLifecycle>,
                                        kLifecycle);
-  explicit LifecyclePrecondition(std::unique_ptr<FeaturePromoLifecycle>);
+  LifecyclePrecondition(std::unique_ptr<FeaturePromoLifecycle>, bool for_demo);
   ~LifecyclePrecondition() override;
 
   // FeaturePromoPrecondition:
   FeaturePromoResult CheckPrecondition() const override;
+
+ private:
+  const bool for_demo_;
 };
 
 }  // namespace user_education

@@ -22,6 +22,7 @@ namespace user_education::internal {
 class FeaturePromoQueueSet {
  public:
   using Priority = FeaturePromoPriorityProvider::PromoPriority;
+  using PromoInfo = std::pair<raw_ref<const base::Feature>, Priority>;
 
   FeaturePromoQueueSet(const FeaturePromoPriorityProvider& priority_provider,
                        const UserEducationTimeProvider& time_provider);
@@ -75,14 +76,16 @@ class FeaturePromoQueueSet {
   // nullopt if there is none.
   //
   // Does not remove the found entry (if any) from the queue.
-  std::optional<std::pair<const base::Feature*, Priority>>
-  UpdateAndIdentifyNextEligiblePromo();
+  std::optional<PromoInfo> UpdateAndIdentifyNextEligiblePromo();
 
-  // Removes any ineligible promos from the queue and then returns the next
-  // entry that is eligible to show, or null if none is found.
-  //
-  // Entries that are returned are removed from the queue.
-  std::optional<EligibleFeaturePromo> UpdateAndGetNextEligiblePromo();
+  // Pops and returns the promo `to_unqueue` from the queue (which must be
+  // present). Call `UpdateAndIdentifyNextEligiblePromo()` to get the promo info
+  // to unqueue.
+  EligibleFeaturePromo UnqueueEligiblePromo(const PromoInfo& to_unqueue);
+
+  // Clear ineligible promos out of the queues, sending appropriate failure
+  // messages.
+  void RemoveIneligiblePromos();
 
   // Fails all promos in the queue with the given `failure_reason`.
   void FailAll(FeaturePromoResult::Failure failure_reason);

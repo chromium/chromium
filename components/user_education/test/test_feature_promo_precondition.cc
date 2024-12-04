@@ -106,11 +106,13 @@ void TestPreconditionListProvider::SetForFeature(
 }
 
 FeaturePromoPreconditionList TestPreconditionListProvider::GetPreconditions(
-    const FeaturePromoSpecification& spec) const {
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& params) const {
   if (next_query_spec_.has_value()) {
     EXPECT_EQ(*next_query_spec_, &spec);
     next_query_spec_ = nullptr;
   }
+  EXPECT_EQ(spec.feature(), &params.feature.get());
   FeaturePromoPreconditionList result;
   for (const auto& entry : data_) {
     result.AddPrecondition(

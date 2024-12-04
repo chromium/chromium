@@ -214,11 +214,18 @@ class FeaturePromoQueueSetTest : public testing::Test {
     task_environment_.FastForwardBy(amount);
   }
 
+  static std::optional<EligibleFeaturePromo> UpdateAndGetNextEligiblePromo(
+      FeaturePromoQueueSet& queue_set) {
+    const auto key = queue_set.UpdateAndIdentifyNextEligiblePromo();
+    return key ? std::make_optional(queue_set.UnqueueEligiblePromo(*key))
+               : std::nullopt;
+  }
+
   // Retrieves the next promo and checks it against the feature at the given
   // index, or verifies there isn't one if the index is null.
   void GetAndCheckNextPromo(FeaturePromoQueueSet& queue_set,
                             std::optional<int> index) const {
-    const auto result = queue_set.UpdateAndGetNextEligiblePromo();
+    const auto result = UpdateAndGetNextEligiblePromo(queue_set);
     if (index) {
       ASSERT_TRUE(result.has_value());
       const base::Feature* const expected = promo_specs_[*index].feature();
@@ -236,9 +243,10 @@ class FeaturePromoQueueSetTest : public testing::Test {
     if (index) {
       ASSERT_TRUE(result.has_value());
       const base::Feature* const expected = promo_specs_[*index].feature();
-      const base::Feature* const actual = result->first;
-      EXPECT_EQ(expected, actual) << "Expected feature " << expected->name
-                                  << " but got " << actual->name;
+      const auto actual = result->first;
+      EXPECT_EQ(expected, &actual.get())
+          << "Expected feature " << expected->name << " but got "
+          << actual->name;
       switch (*index) {
         case 0:
         case 1:
@@ -538,6 +546,41 @@ TEST_F(FeaturePromoQueueSetTest, RequiredPreconditionsFail) {
   GetAndCheckNextPromo(queue, std::nullopt);
 }
 
+TEST_F(FeaturePromoQueueSetTest, RemoveIneligiblePromos) {
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback1);
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback2);
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback3);
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback4);
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback5);
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback6);
+  auto queue = CreateDefaultQueueSet();
+  TryToQueue(queue, 0, callback1.Get());
+  TryToQueue(queue, 1, callback2.Get());
+  TryToQueue(queue, 2, callback3.Get());
+  TryToQueue(queue, 3, callback4.Get());
+  TryToQueue(queue, 4, callback5.Get());
+  TryToQueue(queue, 5, callback6.Get());
+
+  // A blocking condition for the medium priority promos becomes false.
+  // These promos are evicted on the next call to the queue.
+  SetPrecondition(2, false);
+  EXPECT_ASYNC_CALLS_IN_SCOPE_2(callback3, Run(FeaturePromoResult(kFailure3)),
+                                callback4, Run(FeaturePromoResult(kFailure3)),
+                                queue.RemoveIneligiblePromos());
+
+  // Set wait-for conditions for both high priority features to false.
+  SetPreconditionFor(kTestFeature5, 1, false);
+  SetPreconditionFor(kTestFeature6, 1, false);
+
+  // Fast forward longer than the high-priority timeout. This should evict both
+  // high-priority timeouts with the failure reason associated with
+  // precondition 1.
+  FastForward(kHighPriorityTimeout + base::Seconds(1));
+  EXPECT_ASYNC_CALLS_IN_SCOPE_2(callback5, Run(FeaturePromoResult(kFailure2)),
+                                callback6, Run(FeaturePromoResult(kFailure2)),
+                                queue.RemoveIneligiblePromos());
+}
+
 TEST_F(FeaturePromoQueueSetTest,
        UpdateAndIdentifyNextEligiblePromo_BlockAndUnblockAtSamePriority) {
   auto queue = CreateDefaultQueueSet();
@@ -689,14 +732,16 @@ TEST_F(FeaturePromoQueueSetCachedDataTest, ExtractsCachedData) {
   test::MockPreconditionListProvider low_priority_wait_for_preconditions;
 
   EXPECT_CALL(high_priority_required_preconditions, GetPreconditions)
-      .WillRepeatedly([](const FeaturePromoSpecification&) {
+      .WillRepeatedly([](const FeaturePromoSpecification&,
+                         const FeaturePromoParams&) {
         FeaturePromoPreconditionList list;
         list.AddPrecondition(CreatePrecondition(
             kPrecond1, kFailure1, kPrecond1Name, kIntegerValue, 2));
         return list;
       });
   EXPECT_CALL(high_priority_wait_for_preconditions, GetPreconditions)
-      .WillRepeatedly([](const FeaturePromoSpecification&) {
+      .WillRepeatedly([](const FeaturePromoSpecification&,
+                         const FeaturePromoParams&) {
         FeaturePromoPreconditionList list;
         list.AddPrecondition(CreatePrecondition(
             kPrecond2, kFailure2, kPrecond2Name, kStringValue, "foo"));
@@ -704,14 +749,16 @@ TEST_F(FeaturePromoQueueSetCachedDataTest, ExtractsCachedData) {
       });
 
   EXPECT_CALL(medium_priority_required_preconditions, GetPreconditions)
-      .WillRepeatedly([](const FeaturePromoSpecification&) {
+      .WillRepeatedly([](const FeaturePromoSpecification&,
+                         const FeaturePromoParams&) {
         FeaturePromoPreconditionList list;
         list.AddPrecondition(CreatePrecondition(
             kPrecond3, kFailure3, kPrecond3Name, kIntegerValue, 3));
         return list;
       });
   EXPECT_CALL(medium_priority_wait_for_preconditions, GetPreconditions)
-      .WillRepeatedly([](const FeaturePromoSpecification&) {
+      .WillRepeatedly([](const FeaturePromoSpecification&,
+                         const FeaturePromoParams&) {
         FeaturePromoPreconditionList list;
         list.AddPrecondition(CreatePrecondition(
             kPrecond4, kFailure4, kPrecond4Name, kStringValue, "bar"));
@@ -719,14 +766,16 @@ TEST_F(FeaturePromoQueueSetCachedDataTest, ExtractsCachedData) {
       });
 
   EXPECT_CALL(low_priority_required_preconditions, GetPreconditions)
-      .WillRepeatedly([](const FeaturePromoSpecification&) {
+      .WillRepeatedly([](const FeaturePromoSpecification&,
+                         const FeaturePromoParams&) {
         FeaturePromoPreconditionList list;
         list.AddPrecondition(CreatePrecondition(
             kPrecond5, kFailure5, kPrecond5Name, kIntegerValue, 4));
         return list;
       });
   EXPECT_CALL(low_priority_wait_for_preconditions, GetPreconditions)
-      .WillRepeatedly([](const FeaturePromoSpecification&) {
+      .WillRepeatedly([](const FeaturePromoSpecification&,
+                         const FeaturePromoParams&) {
         FeaturePromoPreconditionList list;
         list.AddPrecondition(CreatePrecondition(
             kPrecond6, kFailure6, kPrecond6Name, kStringValue, "baz"));
@@ -747,25 +796,25 @@ TEST_F(FeaturePromoQueueSetCachedDataTest, ExtractsCachedData) {
   set.TryToQueue(promo_spec(0), {kTestFeature1});
   set.TryToQueue(promo_spec(2), {kTestFeature3});
   set.TryToQueue(promo_spec(4), {kTestFeature5});
-  auto result = set.UpdateAndGetNextEligiblePromo();
+  auto result = UpdateAndGetNextEligiblePromo(set);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(&kTestFeature5, &*result->promo_params.feature);
   EXPECT_EQ(2, *PreconditionData::Get(result->cached_data, kIntegerValue));
   EXPECT_EQ("foo", *PreconditionData::Get(result->cached_data, kStringValue));
 
-  result = set.UpdateAndGetNextEligiblePromo();
+  result = UpdateAndGetNextEligiblePromo(set);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(&kTestFeature3, &*result->promo_params.feature);
   EXPECT_EQ(3, *PreconditionData::Get(result->cached_data, kIntegerValue));
   EXPECT_EQ("bar", *PreconditionData::Get(result->cached_data, kStringValue));
 
-  result = set.UpdateAndGetNextEligiblePromo();
+  result = UpdateAndGetNextEligiblePromo(set);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(&kTestFeature1, &*result->promo_params.feature);
   EXPECT_EQ(4, *PreconditionData::Get(result->cached_data, kIntegerValue));
   EXPECT_EQ("baz", *PreconditionData::Get(result->cached_data, kStringValue));
 
-  EXPECT_FALSE(set.UpdateAndGetNextEligiblePromo().has_value());
+  EXPECT_FALSE(UpdateAndGetNextEligiblePromo(set).has_value());
 }
 
 }  // namespace user_education::internal

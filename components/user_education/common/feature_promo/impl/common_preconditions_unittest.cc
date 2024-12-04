@@ -174,7 +174,7 @@ TEST(CommonPreconditionsTest, LifecyclePrecondition) {
       FeaturePromoLifecycle::PromoType::kToast,
       FeaturePromoLifecycle::PromoSubtype::kNormal, 0);
 
-  LifecyclePrecondition precond(std::move(lifecycle_ptr));
+  LifecyclePrecondition precond(std::move(lifecycle_ptr), /*for_demo=*/false);
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 
   FeaturePromoData data;
@@ -184,6 +184,25 @@ TEST(CommonPreconditionsTest, LifecyclePrecondition) {
 
   EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed,
             precond.CheckPrecondition());
+}
+
+TEST(CommonPreconditionsTest, LifecyclePreconditionForDemo) {
+  test::TestUserEducationStorageService storage_service;
+
+  auto lifecycle_ptr = std::make_unique<FeaturePromoLifecycle>(
+      &storage_service, "", &kTestFeature,
+      FeaturePromoLifecycle::PromoType::kToast,
+      FeaturePromoLifecycle::PromoSubtype::kNormal, 0);
+
+  LifecyclePrecondition precond(std::move(lifecycle_ptr), /*for_demo=*/true);
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
+
+  FeaturePromoData data;
+  data.is_dismissed = true;
+  data.show_count = 1;
+  storage_service.SavePromoData(kTestFeature, data);
+
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 }
 
 }  // namespace user_education

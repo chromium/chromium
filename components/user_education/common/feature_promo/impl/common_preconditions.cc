@@ -108,8 +108,10 @@ DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(LifecyclePrecondition,
                                     kLifecycle);
 
 LifecyclePrecondition::LifecyclePrecondition(
-    std::unique_ptr<FeaturePromoLifecycle> lifecycle)
-    : FeaturePromoPreconditionBase(kLifecyclePrecondition, "Lifecycle Check") {
+    std::unique_ptr<FeaturePromoLifecycle> lifecycle,
+    bool for_demo)
+    : FeaturePromoPreconditionBase(kLifecyclePrecondition, "Lifecycle Check"),
+      for_demo_(for_demo) {
   InitCache(kLifecycle);
   GetCachedData(kLifecycle) = std::move(lifecycle);
 }
@@ -117,7 +119,8 @@ LifecyclePrecondition::LifecyclePrecondition(
 LifecyclePrecondition::~LifecyclePrecondition() = default;
 
 FeaturePromoResult LifecyclePrecondition::CheckPrecondition() const {
-  return GetCachedData(kLifecycle)->CanShow();
+  return for_demo_ ? FeaturePromoResult::Success()
+                   : GetCachedData(kLifecycle)->CanShow();
 }
 
 }  // namespace user_education
