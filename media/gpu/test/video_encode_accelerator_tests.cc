@@ -475,7 +475,7 @@ TEST_F(VideoEncoderTest, ForceTheFirstAndSecondKeyFrames) {
 
 // Encode video from start to end. Multiple buffer encodes will be queued in the
 // encoder, without waiting for the result of the previous encode requests.
-TEST_F(VideoEncoderTest, FlushAtEndOfStreamMultipleOutstandingEncodes) {
+TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleOutstandingEncodes) {
   if (g_env->SpatialLayers().size() > 1)
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
 
@@ -492,7 +492,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStreamMultipleOutstandingEncodes) {
 }
 
 // Encode multiple videos simultaneously from start to finish.
-TEST_F(VideoEncoderTest, FlushAtEndOfStreamMultipleConcurrentEncodes) {
+TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleConcurrentEncodes) {
   if (g_env->SpatialLayers().size() > 1)
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
 
