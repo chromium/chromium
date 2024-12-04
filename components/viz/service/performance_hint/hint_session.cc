@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -315,20 +314,10 @@ bool IsAdpfEnabled() {
     return false;
   }
 
-  std::string allowlist_param = features::kADPFSocManufacturerAllowlist.Get();
-  std::vector<std::string_view> allowlist = base::SplitStringPiece(
-      allowlist_param, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::string blocklist_param = features::kADPFSocManufacturerBlocklist.Get();
-  std::vector<std::string_view> blocklist = base::SplitStringPiece(
-      blocklist_param, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::string soc_allowlist = features::kADPFSocManufacturerAllowlist.Get();
+  std::string soc_blocklist = features::kADPFSocManufacturerBlocklist.Get();
   std::string soc = base::SysInfo::SocManufacturer();
-  // If there's no allowlist, soc must be absent from the blocklist.
-  if (allowlist.empty()) {
-    return !base::Contains(blocklist, soc);
-  }
-  // If there's an allowlist, soc must be in the allowlist.
-  // Blocklist is ignored in this case.
-  return base::Contains(allowlist, soc);
+  return features::ShouldUseAdpfForSoc(soc_allowlist, soc_blocklist, soc);
 }
 
 }  // namespace

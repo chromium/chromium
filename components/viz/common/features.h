@@ -73,6 +73,10 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewVulkanIntermediateBuffer);
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSurfaceLayerForVideoDefault);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPF);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kWebViewADPFSocManufacturerAllowlist;
+VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kWebViewADPFSocManufacturerBlocklist;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPFRendererMain);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPFGpuMain);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewFrameRateHints);
@@ -181,6 +185,13 @@ VIZ_COMMON_EXPORT bool IsCrosContentAdjustedRefreshRateEnabled();
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool IsBcivBottomControlsEnabled();
 VIZ_COMMON_EXPORT bool IsBrowserControlsInVizEnabled();
+
+// If the allowlist is non-empty, the soc must be in the allowlist. Blocklist
+// is ignored in this case.
+// If the allowlist is empty, soc must be absent from the blocklist.
+VIZ_COMMON_EXPORT bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
+                                           std::string_view soc_blocklist,
+                                           std::string_view soc);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
