@@ -178,13 +178,12 @@ void SecretPortalKeyProvider::OnRetrieveSecret(
     }
   }
 
+  // Though it is documented in the spec, xdg-desktop-portal does not currently
+  // implement returning a token.
   auto* token = results->GetAs<DbusString>("token");
   if (token) {
     local_state_->SetString(kOsCryptTokenPrefName, token->value());
   }
-
-  // TODO(https://crbug.com/40086962): Investigate if a token should be
-  // required to continue.
   base::UmaHistogramBoolean(kUmaGotTokenBoolean, token);
 }
 
