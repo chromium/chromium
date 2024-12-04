@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_OPTIMIZATION_GUIDE_ON_DEVICE_MODEL_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_OPTIMIZATION_GUIDE_ON_DEVICE_MODEL_INSTALLER_H_
 
-#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/component_updater/component_installer.h"
 
 namespace optimization_guide {
@@ -17,8 +17,11 @@ namespace component_updater {
 class OptimizationGuideOnDeviceModelInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
+  // `state_manager` has the lifetime till all profiles are closed. It could
+  // slightly vary from lifetime of `this` which runs in separate task runner,
+  // and could get destroyed slightly later than `state_manager`.
   explicit OptimizationGuideOnDeviceModelInstallerPolicy(
-      scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
           state_manager);
   ~OptimizationGuideOnDeviceModelInstallerPolicy() override;
 
@@ -45,18 +48,18 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
 
  private:
   // The on-device state manager should be accessed in the UI thread.
-  scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
+  base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
       state_manager_;
 };
 
 void RegisterOptimizationGuideOnDeviceModelComponent(
     ComponentUpdateService* cus,
-    scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
+    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
         state_manager,
     bool is_already_installing);
 
 void UninstallOptimizationGuideOnDeviceModelComponent(
-    scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
+    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
         state_manager);
 
 }  // namespace component_updater

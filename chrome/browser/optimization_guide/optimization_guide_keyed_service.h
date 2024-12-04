@@ -249,6 +249,8 @@ class OptimizationGuideKeyedService
   // Initializes |this|.
   void Initialize();
 
+  void InitializeModelExecution(Profile* profile);
+
   // Virtualized for testing.
   virtual optimization_guide::ChromeHintsManager* GetHintsManager();
 
