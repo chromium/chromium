@@ -98,7 +98,7 @@ BASE_FEATURE(kFewerUpdateConfirmations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
 // This feature controls whether the user can be shown the Chrome for iOS promo
 // when saving or updating passwords.
 BASE_FEATURE(kIOSPromoRefreshedPasswordBubble,
@@ -130,7 +130,7 @@ const base::FeatureParam<std::string> kIOSPromoPaymentBubbleQRCodeURL{
     &kIOSPromoPaymentBubble, "payment_promo_qr_code_url",
     "https://www.google.com/chrome/go-mobile/"
     "?ios-campaign=desktop-chr-payment&android-campaign=desktop-chr-payment"};
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Controls whether we use a different UX for simple extensions overriding

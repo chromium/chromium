@@ -7,7 +7,6 @@
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/common/pref_names.h"
@@ -989,7 +988,6 @@ TEST_F(IOSPromoOnDesktopTest,
                                   1);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Tests getting the correct password promo Feature Engagement Tracker
 // feature.
 TEST_F(IOSPromoOnDesktopTest, GetIOSDesktopPromoFeatureEngagementPasswords) {
@@ -1006,7 +1004,6 @@ TEST_F(IOSPromoOnDesktopTest, GetIOSDesktopPromoFeatureEngagementAddress) {
 
   ASSERT_EQ(&feature, &feature_engagement::kIPHiOSAddressPromoDesktopFeature);
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Tests that ShouldShowIOSDesktopPromo returns true when the correct datatypes
 // are syncing.

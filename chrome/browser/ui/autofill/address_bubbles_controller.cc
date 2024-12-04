@@ -195,14 +195,11 @@ void AddressBubblesController::OnUserDecision(
     MaybeShowSignInPromo(profile);
   }
 
-// TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING flag.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if ((decision == AutofillClient::AddressPromptUserDecision::kAccepted ||
        decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) &&
       base::FeatureList::IsEnabled(::features::kIOSPromoAddressBubble)) {
     MaybeShowIOSDektopAddressPromo();
   }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void AddressBubblesController::OnBubbleClosed() {
@@ -295,8 +292,6 @@ void AddressBubblesController::SetUpAndShowBubble(
 }
 
 void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
-  // TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING flag.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   // Verify if user is eligible for iOS promo, and attempt showing if they are.
@@ -304,7 +299,6 @@ void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
       IOSPromoType::kAddress, browser->profile(),
       BrowserView::GetBrowserViewForBrowser(browser)
           ->toolbar_button_provider());
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void AddressBubblesController::MaybeShowSignInPromo(

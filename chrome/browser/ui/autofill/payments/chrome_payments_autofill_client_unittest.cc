@@ -604,8 +604,6 @@ TEST_F(ChromePaymentsAutofillClientTest, RiskDataCaching_DataCached) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING buildflag.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class ChromePaymentsAutofillIOSPromoClientTest
     : public ChromePaymentsAutofillClientTest {
  public:
@@ -635,7 +633,6 @@ TEST_F(ChromePaymentsAutofillIOSPromoClientTest,
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::nullopt);
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

@@ -390,8 +390,6 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
   }
   if (SaveCardBubbleControllerImpl* controller =
           SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
-// TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING buildflag.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Only attempt to show the iOS payment promo if the card was successfully
     // uploaded and there is no VCN enroll flow callback, and still fallback to
     // normal confirmation bubble if showing the promo fails.
@@ -421,7 +419,6 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
 
       return;
     }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     controller->ShowConfirmationBubbleView(
         card_saved, std::move(on_confirmation_closed_callback));

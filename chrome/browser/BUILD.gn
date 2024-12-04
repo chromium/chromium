@@ -4218,6 +4218,8 @@ static_library("browser") {
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/promos:impl",
+      "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:impl",
@@ -4408,6 +4410,7 @@ static_library("browser") {
       "//chrome/browser/ui/tabs:tab_model_impl",
       "//chrome/browser/ui/tabs:tab_strip_impl",
       "//chrome/browser/ui/bookmarks:impl",
+      "//chrome/browser/ui/promos:impl",
     ]
 
     #!is_android
@@ -4529,15 +4532,6 @@ static_library("browser") {
       sources += [
         "component_updater/hyphenation_component_installer.cc",
         "component_updater/hyphenation_component_installer.h",
-      ]
-    }
-
-    if (is_chrome_branded) {
-      allow_circular_includes_from += [ "//chrome/browser/ui/promos:impl" ]
-
-      deps += [
-        "//chrome/browser/ui/promos:impl",
-        "//chrome/browser/ui/promos:utils",
       ]
     }
   }

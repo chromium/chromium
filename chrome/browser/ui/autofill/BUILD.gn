@@ -203,6 +203,7 @@ source_set("impl") {
       "//chrome/browser/promos:utils",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/toasts:toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
@@ -214,10 +215,7 @@ source_set("impl") {
     ]
 
     if (is_chrome_branded) {
-      deps += [
-        "//chrome/browser/ui/promos:utils",
-        "//components/plus_addresses/resources:vector_icons",
-      ]
+      deps += [ "//components/plus_addresses/resources:vector_icons" ]
     }
   }
 

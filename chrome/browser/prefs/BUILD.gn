@@ -256,7 +256,6 @@ source_set("impl") {
       "//chrome/browser/notifications",
       "//chrome/browser/notifications:notifications_java_enum_srcjar",
       "//chrome/browser/password_manager/android:utils",
-      "//chrome/browser/promos:utils",
       "//chrome/browser/readaloud/android:native",
       "//chrome/browser/search_engines",
     ]
