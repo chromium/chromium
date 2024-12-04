@@ -108,6 +108,13 @@ struct SupplementalPubKeysResponse {
   array<array<uint8>> signatures;
 };
 
+// The `payment` extension response.
+struct AuthenticationExtensionsPaymentResponse {
+  // The signatures of the browser bound key corresponding to public keys in the
+  // payment portion of the clientDataJson.
+  array<array<uint8>> browser_bound_signatures;
+};
+
 // The public key and attestation returned by Authenticator::MakeCredential.
 struct MakeCredentialAuthenticatorResponse {
   CommonCredentialInfo info;
@@ -230,6 +237,9 @@ struct AuthenticationExtensionsClientOutputs {
   array<uint8>? get_cred_blob;
 
   SupplementalPubKeysResponse? supplemental_pub_keys;
+
+  // The response for the payment extension.
+  AuthenticationExtensionsPaymentResponse? payment;
 };
 
 // Information about the relying party. These fields take arbitrary input.
