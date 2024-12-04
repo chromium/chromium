@@ -129,12 +129,6 @@
 
 namespace {
 
-// Deprecated 09/2023.
-// Synced boolean that indicates if a user has manually toggled the settings
-// associated with the PrivacySandboxSettings feature.
-inline constexpr char kPrivacySandboxManuallyControlled[] =
-    "privacy_sandbox.manually_controlled";
-
 // Deprecated 10/2023.
 // Boolean whether has requested sync to be enabled. This is set early in the
 // sync setup flow, after the user has pressed "turn on sync" but before they
@@ -982,7 +976,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kIosParcelTrackingOptInPromptSwipedDown,
                                 false);
 
-  registry->RegisterBooleanPref(kPrivacySandboxManuallyControlled, false);
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
   history_sync::RegisterProfilePrefs(registry);
 
@@ -1202,9 +1195,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   invalidation::InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(prefs);
   invalidation::PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(prefs);
   invalidation::FCMInvalidationService::ClearDeprecatedPrefs(prefs);
-
-  // Added 09/2023.
-  prefs->ClearPref(kPrivacySandboxManuallyControlled);
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   // Added 09/2023.
