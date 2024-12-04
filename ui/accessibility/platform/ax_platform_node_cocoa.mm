@@ -2105,7 +2105,15 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 // Misc attributes.
 
 - (NSString*)AXPlaceholderValue {
-  return [self accessibilityPlaceholderValue];
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  if (_node->GetNameFrom() == ax::mojom::NameFrom::kPlaceholder) {
+    return [self getName];
+  }
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::kPlaceholder];
 }
 
 - (NSString*)AXMenuItemMarkChar {

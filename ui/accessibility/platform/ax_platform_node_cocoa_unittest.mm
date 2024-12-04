@@ -9,6 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gtest_mac.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -867,6 +868,37 @@ TEST_P(AXPlatformNodeCocoaTest, SupportsNewAccessibilityAPIMethod) {
   EXPECT_EQ([node internalRole], ax::mojom::Role::kHeading);
   EXPECT_TRUE(
       [node supportsNewAccessibilityAPIMethod:@"isAccessibilityFocused"]);
+}
+
+// `accessibilityPlaceholderValue` on a text field with the name-from not set.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityPlaceholderValueOnTextField) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.SetNameChecked("foo-name");
+  root.AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
+                          "foo-placeholder");
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  EXPECT_NSEQ([node accessibilityLabel], @"foo-name");
+  EXPECT_NSEQ([node accessibilityPlaceholderValue], @"foo-placeholder");
+}
+
+// `accessibilityPlaceholderValue` on a text field with the name-from set to
+// placeholder.
+TEST_P(AXPlatformNodeCocoaTest,
+       AccessibilityPlaceholderValueOnTextFieldNameFromPlaceholder) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.SetNameChecked("foo-name");
+  root.AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
+                          "foo-placeholder");
+  root.SetNameFrom(ax::mojom::NameFrom::kPlaceholder);
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  EXPECT_NSEQ([node accessibilityLabel], @"");
+  EXPECT_NSEQ([node accessibilityPlaceholderValue], @"foo-name");
 }
 
 }  // namespace ui
