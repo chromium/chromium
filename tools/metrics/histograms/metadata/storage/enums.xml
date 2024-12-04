@@ -559,6 +559,118 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="SqliteResultCode">
+  <summary>
+    Result codes as reported by the sqlite library. See also
+    sql/sqlite_result_code_values.h and https://www.sqlite.org/rescode.html
+  </summary>
+  <int value="0" label="kOk"/>
+  <int value="1" label="kError"/>
+  <int value="2" label="kInternal"/>
+  <int value="3" label="kPermission"/>
+  <int value="4" label="kAbort"/>
+  <int value="5" label="kBusy"/>
+  <int value="6" label="kLocked"/>
+  <int value="7" label="kNoMemory"/>
+  <int value="8" label="kReadOnly"/>
+  <int value="9" label="kInterrupt"/>
+  <int value="10" label="kIo"/>
+  <int value="11" label="kCorrupt"/>
+  <int value="12" label="kNotFound"/>
+  <int value="13" label="kFullDisk"/>
+  <int value="14" label="kCantOpen"/>
+  <int value="15" label="kLockingProtocol"/>
+  <int value="16" label="kEmpty"/>
+  <int value="17" label="kSchemaChanged"/>
+  <int value="18" label="kTooBig"/>
+  <int value="19" label="kConstraint"/>
+  <int value="20" label="kTypeMismatch"/>
+  <int value="21" label="kApiMisuse"/>
+  <int value="22" label="kNoLargeFileSupport"/>
+  <int value="23" label="kUnauthorized"/>
+  <int value="24" label="kFormat"/>
+  <int value="25" label="kIndexRange"/>
+  <int value="26" label="kNotADatabase"/>
+  <int value="27" label="kLoggingNotice"/>
+  <int value="28" label="kLoggingWarning"/>
+  <int value="100" label="kRow"/>
+  <int value="101" label="kDone"/>
+  <int value="256" label="kLoadPermanently"/>
+  <int value="257" label="kMissingCollatingSequence"/>
+  <int value="261" label="kBusyRecovery"/>
+  <int value="262" label="kLockedSharedCache"/>
+  <int value="264" label="kReadOnlyRecovery"/>
+  <int value="266" label="kIoRead"/>
+  <int value="267" label="kCorruptVirtualTable"/>
+  <int value="270" label="kCantOpenNoTemporaryDirectory"/>
+  <int value="275" label="kConstraintCheck"/>
+  <int value="279" label="kUnauthorizedUser"/>
+  <int value="283" label="kLoggingNoticeRecoverWal"/>
+  <int value="284" label="kLoggingWarningAutoIndex"/>
+  <int value="513" label="kRetryPreparedStatement"/>
+  <int value="516" label="kAbortRollback"/>
+  <int value="517" label="kBusySnapshot"/>
+  <int value="518" label="kLockedVirtualTable"/>
+  <int value="520" label="kReadOnlyCantLock"/>
+  <int value="522" label="kIoShortRead"/>
+  <int value="523" label="kCorruptSequence"/>
+  <int value="526" label="kCantOpenIsDir"/>
+  <int value="531" label="kConstraintCommitHook"/>
+  <int value="539" label="kLoggingNoticeRecoverRollback"/>
+  <int value="769" label="kErrorSnapshot"/>
+  <int value="773" label="kBusyTimeout"/>
+  <int value="776" label="kReadOnlyRollback"/>
+  <int value="778" label="kIoWrite"/>
+  <int value="779" label="kCorruptIndex"/>
+  <int value="782" label="kCantOpenFullPath"/>
+  <int value="787" label="kConstraintForeignKey"/>
+  <int value="1032" label="kReadOnlyDbMoved"/>
+  <int value="1034" label="kIoFsync"/>
+  <int value="1038" label="kCantOpenConvertPath"/>
+  <int value="1043" label="kConstraintFunction"/>
+  <int value="1288" label="kReadOnlyCantInit"/>
+  <int value="1290" label="kIoDirFsync"/>
+  <int value="1294" label="kCantOpenDirtyWal"/>
+  <int value="1299" label="kConstraintNotNull"/>
+  <int value="1544" label="kReadOnlyDirectory"/>
+  <int value="1546" label="kIoTruncate"/>
+  <int value="1550" label="kCantOpenSymlink"/>
+  <int value="1555" label="kConstraintPrimaryKey"/>
+  <int value="1802" label="kIoFstat"/>
+  <int value="1811" label="kConstraintTrigger"/>
+  <int value="2058" label="kIoUnlock"/>
+  <int value="2067" label="kConstraintUnique"/>
+  <int value="2314" label="kIoReadLock"/>
+  <int value="2323" label="kConstraintVirtualTable"/>
+  <int value="2570" label="kIoDelete"/>
+  <int value="2579" label="kConstraintRowId"/>
+  <int value="2826" label="kIoBlocked"/>
+  <int value="2835" label="kConstraintPinned"/>
+  <int value="3082" label="kIoNoMemory"/>
+  <int value="3091" label="kConstraintDataType"/>
+  <int value="3338" label="kIoAccess"/>
+  <int value="3594" label="kIoCheckReservedLock"/>
+  <int value="3850" label="kIoLock"/>
+  <int value="4106" label="kIoClose"/>
+  <int value="4362" label="kIoDirClose"/>
+  <int value="4618" label="kIoSharedMemoryOpen"/>
+  <int value="4874" label="kIoSharedMemorySize"/>
+  <int value="5130" label="kIoSharedMemoryLock"/>
+  <int value="5386" label="kIoSharedMemoryMap"/>
+  <int value="5642" label="kIoSeek"/>
+  <int value="5898" label="kIoDeleteNoEntry"/>
+  <int value="6154" label="kIoMemoryMapping"/>
+  <int value="6410" label="kIoGetTemporaryPath"/>
+  <int value="6666" label="kIoConvertPath"/>
+  <int value="6922" label="kIoVfsNode"/>
+  <int value="7178" label="kIoUnauthorized"/>
+  <int value="7434" label="kIoBeginAtomic"/>
+  <int value="7690" label="kIoCommitAtomic"/>
+  <int value="7946" label="kIoRollbackAtomic"/>
+  <int value="8202" label="kIoData"/>
+  <int value="8458" label="kIoCorruptFileSystem"/>
+</enum>
+
 <enum name="SqlRecoveryResult">
   <summary>
     Outcome of attempting to recover a database with sql::Recovery. See

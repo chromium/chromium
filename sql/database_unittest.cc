@@ -43,6 +43,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -440,6 +441,7 @@ TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
 
   {
+    base::HistogramTester tester;
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
@@ -447,6 +449,8 @@ TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
     ASSERT_FALSE(db_->DoesTableExist("foo"));
     ASSERT_FALSE(db_->DoesColumnExist("foo", "id"));
     ASSERT_TRUE(expecter.SawExpectedErrors());
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.NoTag",
+                              SqliteResultCode::kCorrupt, 1);
   }
 }
 
@@ -1248,8 +1252,11 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   // fail with SQLITE_CORRUPT, as will this PRAGMA.
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.NoTag",
+                              SqliteResultCode::kCorrupt, 1);
     ASSERT_FALSE(db_->Execute("PRAGMA auto_vacuum"));
     db_->Close();
     ASSERT_TRUE(expecter.SawExpectedErrors());
@@ -2362,8 +2369,11 @@ TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.NoTag",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
 }
@@ -2395,6 +2405,7 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
 
     {
       sql::test::ScopedErrorExpecter expecter;
+      base::HistogramTester tester;
       expecter.ExpectError(SQLITE_CORRUPT);
 
       // When `corrupt_after_recovery` is true, `Database::Open()` will return
@@ -2403,6 +2414,12 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
       // thus `Database::Open()`'s second attempt at opening the database will
       // succeed.
       ASSERT_EQ(db_->Open(db_path_), !corrupt_after_recovery);
+      tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.NoTag",
+                                SqliteResultCode::kCorrupt, 1);
+      if (corrupt_after_recovery) {
+        tester.ExpectUniqueSample("Sql.Database.Open.SecondAttempt.Error.NoTag",
+                                  SqliteResultCode::kCorrupt, 1);
+      }
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
     EXPECT_EQ(error_count, 1u);
@@ -2421,8 +2438,11 @@ TEST_P(SQLDatabaseTest, ExecuteFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.NoTag",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::Open() did not encounter SQLITE_CORRUPT";
   }
@@ -2445,8 +2465,11 @@ TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.NoTag",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::Open() did not encounter SQLITE_CORRUPT";
   }
