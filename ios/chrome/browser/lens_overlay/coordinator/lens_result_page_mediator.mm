@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_error_handler.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -124,6 +125,10 @@ float IntervalMap(float value,
   CHECK_LE(value, in_max);
   return out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min);
 }
+
+// Value of the progress bar when lens request is delayed because of low
+// network.
+const CGFloat kProgressBarLensRequestPendingNetwork = 0.5f;
 
 // Value of the progress bar when lens request starts.
 const CGFloat kProgressBarLensRequestStarted = 0.15f;
@@ -271,6 +276,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)handleSearchRequestErrored {
   _lastCommitedProgress = kProgressBarFull;
   [_consumer setLoadingProgress:kProgressBarFull];
+  [self.errorHandler showNoInternetAlert];
+}
+
+- (void)handleSlowRequestHasStarted {
+  [_consumer setLoadingProgress:kProgressBarLensRequestPendingNetwork];
 }
 
 #pragma mark - CRWWebStatePolicyDecider

@@ -91,6 +91,9 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   /// Whether the web view should be hidden.
   BOOL _webViewHidden;
   NSLayoutConstraint* _omniboxLeadingConstraint;
+  /// When set, the omnibox tap target continues to "eat" the touches, but they
+  /// are ignored, effectively preventing omnibox interaction.
+  BOOL _ignoreOmniboxTaps;
 }
 
 - (instancetype)init {
@@ -357,7 +360,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 }
 
 - (void)updateProgressBarVisibilityForProgress:(float)progress {
-  BOOL isLoading = progress != kProgressBarFull;
+  BOOL isLoading = (progress != kProgressBarFull);
   BOOL shouldShowProgressBar = isLoading && _progressBar.hidden;
   BOOL shouldHideProgressBar = !isLoading && !_progressBar.hidden;
 
@@ -415,10 +418,17 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   [self updateBackButtonVisibilityAnimated:YES];
 }
 
+- (void)setOmniboxEnabled:(BOOL)enabled {
+  _ignoreOmniboxTaps = !enabled;
+}
+
 #pragma mark - Private
 
 /// Handles omnibox tap target taps.
 - (void)didTapOmniboxTapTarget:(UIView*)view {
+  if (_ignoreOmniboxTaps) {
+    return;
+  }
   [self.toolbarMutator focusOmnibox];
 }
 
