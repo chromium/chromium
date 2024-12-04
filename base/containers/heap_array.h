@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
@@ -125,21 +126,27 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   iterator end() LIFETIME_BOUND { return as_span().end(); }
   const_iterator end() const LIFETIME_BOUND { return as_span().end(); }
 
-  T& operator[](size_t idx) LIFETIME_BOUND { return as_span()[idx]; }
-  const T& operator[](size_t idx) const LIFETIME_BOUND {
-    return as_span()[idx];
+  ALWAYS_INLINE T& operator[](size_t idx) LIFETIME_BOUND {
+    CHECK_LT(idx, size_);
+    // SAFETY: bounds checked above.
+    return UNSAFE_BUFFERS(data_.get()[idx]);
+  }
+  ALWAYS_INLINE const T& operator[](size_t idx) const LIFETIME_BOUND {
+    CHECK_LT(idx, size_);
+    // SAFETY: bounds checked above.
+    return UNSAFE_BUFFERS(data_.get()[idx]);
   }
 
   // Access the HeapArray via spans. Note that span<T> is implicilty
   // constructible from HeapArray<T>, so an explicit call to .as_span() is
   // most useful, say, when the compiler can't deduce a template
   // argument type.
-  base::span<T> as_span() LIFETIME_BOUND {
+  ALWAYS_INLINE base::span<T> as_span() LIFETIME_BOUND {
     // SAFETY: `size_` is the number of elements in the `data_` allocation` at
     // all times.
     return UNSAFE_BUFFERS(base::span<T>(data_.get(), size_));
   }
-  base::span<const T> as_span() const LIFETIME_BOUND {
+  ALWAYS_INLINE base::span<const T> as_span() const LIFETIME_BOUND {
     // SAFETY: `size_` is the number of elements in the `data_` allocation` at
     // all times.
     return UNSAFE_BUFFERS(base::span<const T>(data_.get(), size_));
