@@ -139,14 +139,6 @@ public class KeySystemTest extends AwParameterizedTest {
     public void testSupportPlatformKeySystem() throws Throwable {
         Assert.assertEquals(
                 getPlatformKeySystemExpectations(),
-                isKeySystemSupported("x-com.oem.test-keysystem"));
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    public void testSupportPlatformKeySystemNoPrefix() throws Throwable {
-        Assert.assertEquals(
-                "\"NotSupportedError\"", isKeySystemSupported("com.oem.test-keysystem"));
+                isKeySystemSupported("com.oem.test-keysystem"));
     }
 }
