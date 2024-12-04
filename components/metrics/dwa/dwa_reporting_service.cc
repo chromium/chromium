@@ -11,9 +11,9 @@
 
 #include "components/metrics/dwa/dwa_pref_names.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/server_urls.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/metrics/unsent_log_store_metrics.h"
-#include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace metrics::dwa {
@@ -50,7 +50,7 @@ metrics::LogStore* DwaReportingService::log_store() {
 }
 
 GURL DwaReportingService::GetUploadUrl() const {
-  return GURL(metrics::kDefaultDwaServerUrl);
+  return metrics::GetDwaServerUrl();
 }
 
 GURL DwaReportingService::GetInsecureUploadUrl() const {
@@ -59,7 +59,7 @@ GURL DwaReportingService::GetInsecureUploadUrl() const {
 }
 
 std::string_view DwaReportingService::upload_mime_type() const {
-  return kDefaultMetricsMimeType;
+  return kMetricsMimeType;
 }
 
 metrics::MetricsLogUploader::MetricServiceType
