@@ -35,6 +35,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/video/video_encode_accelerator.h"
 
 using base::apple::CFToNSPtrCast;
@@ -321,8 +322,9 @@ bool CanCreateHardwareCompressionSession(VideoCodec codec) {
   return can_create_hardware_session;
 }
 
-VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
-                                     VideoCodecProfile profile) {
+VideoEncoderInfo GetVideoEncoderInfo(
+    VTSessionRef compression_session,
+    const VTVideoEncodeAccelerator::Config& config) {
   VideoEncoderInfo info;
   info.implementation_name = "VideoToolbox";
   info.is_hardware_accelerated = IsHardwareEncoder(compression_session);
@@ -355,7 +357,7 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
     info.frame_delay = 0;
     info.input_capacity = 10;
   } else {
-    info.frame_delay = profile == H264PROFILE_BASELINE ? 0 : 13;
+    info.frame_delay = config.output_profile == H264PROFILE_BASELINE ? 0 : 13;
     info.input_capacity = info.frame_delay.value() + 4;
   }
   if (max_frame_delay_property.has_value()) {
@@ -363,6 +365,18 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
         std::min(info.frame_delay.value(), max_frame_delay_property.value());
     info.input_capacity =
         std::min(info.input_capacity.value(), max_frame_delay_property.value());
+  }
+  if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
+    CHECK(!config.spatial_layers.empty());
+    for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
+      // Only L1T1, L1T2 are supported.
+      CHECK_LE(config.spatial_layers[i].num_of_temporal_layers, 2);
+      info.fps_allocation[i] =
+          GetFpsAllocation(config.spatial_layers[i].num_of_temporal_layers);
+    }
+  } else {
+    constexpr uint8_t kFullFramerate = 255;
+    info.fps_allocation[0] = {kFullFramerate};
   }
 
   return info;
@@ -547,7 +561,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  auto encoder_info = GetVideoEncoderInfo(compression_session_.get(), profile_);
+  auto encoder_info = GetVideoEncoderInfo(compression_session_.get(), config);
 
   // Report whether hardware encode is being used.
   if (!encoder_info.is_hardware_accelerated) {
@@ -871,9 +885,17 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
     case VideoCodec::kH264:
       md.h264.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
       break;
-    case VideoCodec::kHEVC:
-      md.svc_generic.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
+    case VideoCodec::kHEVC: {
+      SVCGenericMetadata& svc = md.svc_generic.emplace();
+      svc.temporal_idx = belongs_to_base_layer ? 0 : 1;
+      svc.spatial_idx = 0;
+      // We get the temporal id based on `IsDependedOnByOthers` property,
+      // so we are not able to provide the reference flags and refresh
+      // flags for HEVC, if the |follow_svc_spec| flag is false, RTC
+      // will not send dependency descriptor RTP extension.
+      svc.follow_svc_spec = encoder_produces_svc_spec_compliant_bitstream_;
       break;
+    }
     default:
       NOTREACHED();
   }
@@ -998,6 +1020,22 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
       NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
                          "Setting BaseLayerFrameRate property failed"});
       return false;
+    }
+  }
+
+  if (@available(macOS 13.0, iOS 16.0, *)) {
+    // Configuring the number of reference frames to 1, which will produce
+    // bitstream that follows WebRTC SVC spec for L1T2.
+    if (session_property_setter.IsSupported(
+            kVTCompressionPropertyKey_ReferenceBufferCount)) {
+      if (!session_property_setter.Set(
+              kVTCompressionPropertyKey_ReferenceBufferCount, 1)) {
+        DLOG(WARNING) << "Setting ReferenceBufferCount property failed";
+      } else {
+        encoder_produces_svc_spec_compliant_bitstream_ = true;
+      }
+    } else {
+      DLOG(WARNING) << "ReferenceBufferCount is not supported";
     }
   }
 
