@@ -37,7 +37,7 @@ class AILanguageModel : public AIContextBoundObject,
 
   // The minimum version of the model execution config for prompt API that
   // starts using proto instead of string value for the request.
-  static const uint32_t kMinVersionUsingProto = 2;
+  static constexpr uint32_t kMinVersionUsingProto = 2;
 
   // The Context class manages the history of prompt input and output, which are
   // used to build the context when performing the next execution. Context is
@@ -167,6 +167,11 @@ class AILanguageModel : public AIContextBoundObject,
   // It's safe to store a `raw_ref` here since `this` is owned by
   // `context_bound_object_set_`.
   base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
+
+  bool is_streaming_chunk_by_chunk_;
+  // The accumulated current response to simulate the old streaming behavior
+  // that always returns all the response generated so far.
+  std::string current_response_;
 
   mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote_;
   mojo::Receiver<blink::mojom::AILanguageModel> receiver_;

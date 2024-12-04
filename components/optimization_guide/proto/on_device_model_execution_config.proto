@@ -90,6 +90,20 @@ message OnDeviceModelExecutionInputConfig {
   optional uint32 max_execute_tokens = 6;
 }
 
+enum ResponseStreamingMode {
+  // In each of the streaming response, the session will return all the
+  // response generated so far. e.g.
+  // - This is
+  // - This is a test
+  // - This is a test response.
+  STREAMING_MODE_CURRENT_RESPONSE = 0;
+  // The session will only pass the newly generated chunk. e.g.
+  // - This is
+  // - a test
+  // - response.
+  STREAMING_MODE_CHUNK_BY_CHUNK = 1;
+}
+
 message OnDeviceModelExecutionOutputConfig {
   // The proto type to use for the response metadata.
   optional string proto_type = 1;
@@ -108,6 +122,9 @@ message OnDeviceModelExecutionOutputConfig {
 
   // The maximum number of tokens that can be generated as output.
   optional uint32 max_output_tokens = 6;
+
+  // The mode controls the session's streaming behavior.
+  optional ResponseStreamingMode response_streaming_mode = 7;
 }
 
 message TextSafetyFallbackConfig {

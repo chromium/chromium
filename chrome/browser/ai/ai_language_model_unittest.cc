@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
 
 using testing::_;
+using testing::ReturnRef;
 using testing::Test;
 using Role = blink::mojom::AILanguageModelInitialPromptRole;
 
@@ -132,18 +134,33 @@ std::string ToString(const google::protobuf::MessageLite& request_metadata) {
   return "unexpected type";
 }
 
-const optimization_guide::proto::Any& GetPromptApiMetadata() {
-  static base::NoDestructor<optimization_guide::proto::Any> data([]() {
-    optimization_guide::proto::PromptApiMetadata metadata;
-    metadata.set_version(AILanguageModel::kMinVersionUsingProto);
-    return optimization_guide::AnyWrapProto(metadata);
-  }());
-  return *data;
+const optimization_guide::proto::Any& GetPromptApiMetadata(
+    bool use_prompt_api_proto,
+    bool is_streaming_chunk_by_chunk) {
+  static base::NoDestructor<
+      std::map<std::pair<bool, bool>, optimization_guide::proto::Any>>
+      metadata_map;
+  auto key = std::make_pair(use_prompt_api_proto, is_streaming_chunk_by_chunk);
+
+  if (metadata_map->find(key) == metadata_map->end()) {
+    metadata_map->emplace(key, [use_prompt_api_proto,
+                                is_streaming_chunk_by_chunk]() {
+      optimization_guide::proto::PromptApiMetadata metadata;
+      metadata.set_version(
+          use_prompt_api_proto ? AILanguageModel::kMinVersionUsingProto : 0);
+      metadata.set_is_streaming_chunk_by_chunk(is_streaming_chunk_by_chunk);
+      return optimization_guide::AnyWrapProto(metadata);
+    }());
+  }
+
+  return metadata_map->at(key);
 }
 
 }  // namespace
 
-class AILanguageModelTest : public AITestUtils::AITestBase {
+class AILanguageModelTest : public AITestUtils::AITestBase,
+                            public testing::WithParamInterface<
+                                /*is_model_streaming_chunk_by_chunk=*/bool> {
  public:
   struct Options {
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params = nullptr;
@@ -168,6 +185,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   }
 
  protected:
+  bool IsModelStreamingChunkByChunk() { return GetParam(); }
+
   // The helper function that creates a `AILanguageModel` and executes the
   // prompt.
   void RunPromptTest(Options options) {
@@ -194,7 +213,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                   config_params) {
             auto session = std::make_unique<
                 testing::NiceMock<optimization_guide::MockSession>>();
-            SetUpMockSession(*session, options.use_prompt_api_proto);
+            SetUpMockSession(*session, options.use_prompt_api_proto,
+                             IsModelStreamingChunkByChunk());
             ON_CALL(*session, GetSamplingParams())
                 .WillByDefault(
                     [&]() -> const optimization_guide::SamplingParams {
@@ -220,7 +240,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                       sampling_params_copy->temperature);
           }
 
-          SetUpMockSession(*session, options.use_prompt_api_proto);
+          SetUpMockSession(*session, options.use_prompt_api_proto,
+                           IsModelStreamingChunkByChunk());
 
           ON_CALL(*session, GetContextSizeInTokens(_, _))
               .WillByDefault(
@@ -260,7 +281,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
           auto session = std::make_unique<
               testing::NiceMock<optimization_guide::MockSession>>();
 
-          SetUpMockSession(*session, options.use_prompt_api_proto);
+          SetUpMockSession(*session, options.use_prompt_api_proto,
+                           IsModelStreamingChunkByChunk());
 
           ON_CALL(*session, AddContext(_))
               .WillByDefault(
@@ -369,13 +391,14 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
 
   void SetUpMockSession(
       testing::NiceMock<optimization_guide::MockSession>& session,
-      bool use_prompt_api_proto) {
+      bool use_prompt_api_proto,
+      bool is_streaming_chunk_by_chunk) {
     ON_CALL(session, GetTokenLimits())
         .WillByDefault(AITestUtils::GetFakeTokenLimits);
+
     ON_CALL(session, GetOnDeviceFeatureMetadata())
-        .WillByDefault(use_prompt_api_proto
-                           ? GetPromptApiMetadata
-                           : AITestUtils::GetFakeFeatureMetadata);
+        .WillByDefault(ReturnRef(GetPromptApiMetadata(
+            use_prompt_api_proto, is_streaming_chunk_by_chunk)));
     ON_CALL(session, GetSamplingParams()).WillByDefault([]() {
       // We don't need to use these value, so just mock it with defaults.
       return optimization_guide::SamplingParams{
@@ -428,14 +451,23 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AILanguageModelTest, PromptDefaultSession) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         AILanguageModelTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "IsModelStreamingChunkByChunk"
+                                      : "IsModelStreamingWithCurrentResponse";
+                         });
+
+TEST_P(AILanguageModelTest, PromptDefaultSession) {
   RunPromptTest(AILanguageModelTest::Options{
       .prompt_input = kTestPrompt,
       .expected_prompt = kExpectedFormattedTestPrompt,
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithSamplingParams) {
+TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams) {
   RunPromptTest(AILanguageModelTest::Options{
       .sampling_params = blink::mojom::AILanguageModelSamplingParams::New(
           /*top_k=*/kOverrideMaxTopK - 1, /*temperature=*/0.6),
@@ -444,7 +476,7 @@ TEST_F(AILanguageModelTest, PromptSessionWithSamplingParams) {
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithSamplingParams_ExceedMaxTopK) {
+TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams_ExceedMaxTopK) {
   RunPromptTest(AILanguageModelTest::Options{
       .sampling_params = blink::mojom::AILanguageModelSamplingParams::New(
           /*top_k=*/kOverrideMaxTopK + 1, /*temperature=*/0.6),
@@ -453,7 +485,7 @@ TEST_F(AILanguageModelTest, PromptSessionWithSamplingParams_ExceedMaxTopK) {
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithSystemPrompt) {
+TEST_P(AILanguageModelTest, PromptSessionWithSystemPrompt) {
   RunPromptTest(AILanguageModelTest::Options{
       .system_prompt = kTestSystemPrompts,
       .prompt_input = kTestPrompt,
@@ -465,7 +497,7 @@ TEST_F(AILanguageModelTest, PromptSessionWithSystemPrompt) {
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithInitialPrompts) {
+TEST_P(AILanguageModelTest, PromptSessionWithInitialPrompts) {
   RunPromptTest(AILanguageModelTest::Options{
       .initial_prompts = GetTestInitialPrompts(),
       .prompt_input = kTestPrompt,
@@ -477,7 +509,7 @@ TEST_F(AILanguageModelTest, PromptSessionWithInitialPrompts) {
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithSystemPromptAndInitialPrompts) {
+TEST_P(AILanguageModelTest, PromptSessionWithSystemPromptAndInitialPrompts) {
   RunPromptTest(AILanguageModelTest::Options{
       .system_prompt = kTestSystemPrompts,
       .initial_prompts = GetTestInitialPrompts(),
@@ -490,7 +522,7 @@ TEST_F(AILanguageModelTest, PromptSessionWithSystemPromptAndInitialPrompts) {
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
+TEST_P(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
   RunPromptTest(AILanguageModelTest::Options{
       .system_prompt = "Test system prompt",
       .initial_prompts = GetTestInitialPrompts(),
@@ -510,7 +542,7 @@ TEST_F(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
   });
 }
 
-TEST_F(AILanguageModelTest, PromptSessionWithContextOverflow) {
+TEST_P(AILanguageModelTest, PromptSessionWithContextOverflow) {
   RunPromptTest({.prompt_input = kTestPrompt,
                  .expected_prompt = kExpectedFormattedTestPrompt,
                  .should_overflow_context = true});

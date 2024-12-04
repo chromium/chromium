@@ -45,8 +45,11 @@ class OnDeviceModelFeatureAdapter final
 
   // Converts model response into this feature's expected response type.
   // Replies with std::nullopt on error.
+  // The `previous_response_pos` might be used by the parser to determine which
+  // part of the response to return to the responder.
   void ParseResponse(const google::protobuf::MessageLite& request,
                      const std::string& model_response,
+                     size_t previous_response_pos,
                      ResponseParser::ResultCallback callback) const;
 
   // Constructs the request for text safety server fallback.
@@ -78,6 +81,7 @@ class OnDeviceModelFeatureAdapter final
   proto::OnDeviceModelExecutionFeatureConfig config_;
   TokenLimits token_limits_;
   Redactor redactor_;
+  proto::ResponseStreamingMode response_streaming_mode_;
   std::unique_ptr<ResponseParser> parser_;
 };
 

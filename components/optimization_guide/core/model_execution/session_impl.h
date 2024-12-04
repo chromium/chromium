@@ -260,6 +260,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     };
     // The longest response that has passed the raw output text safety check.
     SafeRawOutput latest_safe_raw_output;
+    // The last position in the response that has been streamed to the
+    // responder.
+    size_t latest_response_pos = 0;
 
     // Whether the model response is complete.
     bool model_response_complete = false;

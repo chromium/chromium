@@ -149,7 +149,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_NoOutputConfig) {
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
   ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "output",
+  adapter->ParseResponse(base::test::TestMessage(), "output", 0u,
                          response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
@@ -166,7 +166,57 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_DefaultSimple) {
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
   ParseResponseFuture response_future;
+  adapter->ParseResponse(base::test::TestMessage(), "output", 0u,
+                         response_future.GetCallback());
+  auto maybe_metadata = response_future.Get();
+
+  ASSERT_TRUE(maybe_metadata.has_value());
+  EXPECT_EQ(
+      "output",
+      ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
+}
+
+TEST(OnDeviceModelFeatureAdapterTest,
+     ConstructOutputMetadata_DefaultSimple_ChunkByChunkWithStartingPos) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto* oc = config.mutable_output_config();
+  oc->set_proto_type("optimization_guide.proto.ComposeResponse");
+  oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
+  oc->set_response_streaming_mode(
+      proto::ResponseStreamingMode::STREAMING_MODE_CHUNK_BY_CHUNK);
+  auto adapter =
+      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
+
+  // For `STREAMING_MODE_CHUNK_BY_CHUNK`, the response will start after the
+  // `previous_response_pos`.
+  ParseResponseFuture response_future;
   adapter->ParseResponse(base::test::TestMessage(), "output",
+                         /*previous_response_pos=*/3u,
+                         response_future.GetCallback());
+  auto maybe_metadata = response_future.Get();
+
+  ASSERT_TRUE(maybe_metadata.has_value());
+  EXPECT_EQ(
+      "put",
+      ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
+}
+
+TEST(OnDeviceModelFeatureAdapterTest,
+     ConstructOutputMetadata_DefaultSimple_CurrentResponseWithStartingPos) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto* oc = config.mutable_output_config();
+  oc->set_proto_type("optimization_guide.proto.ComposeResponse");
+  oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
+  oc->set_response_streaming_mode(
+      proto::ResponseStreamingMode::STREAMING_MODE_CURRENT_RESPONSE);
+  auto adapter =
+      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
+
+  // For `STREAMING_MODE_CURRENT_RESPONSE`, even if the `previous_response_pos`
+  // is set, it will parse from the beginning.
+  ParseResponseFuture response_future;
+  adapter->ParseResponse(base::test::TestMessage(), "output",
+                         /*previous_response_pos=*/3u,
                          response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
@@ -187,7 +237,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_JSON) {
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
   ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "{\"output\": \"abc\"}",
+  adapter->ParseResponse(base::test::TestMessage(), "{\"output\": \"abc\"}", 0u,
                          response_future.GetCallback());
   auto maybe_metadata = response_future.Get();
 
