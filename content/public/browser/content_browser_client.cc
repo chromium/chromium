@@ -1797,7 +1797,7 @@ void ContentBrowserClient::BindAIManager(
     BrowserContext* browser_context,
     base::SupportsUserData* context_user_data,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  EchoAIManagerImpl::Create(*context_user_data, std::move(receiver));
+  EchoAIManagerImpl::Create(std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -6,8 +6,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
-#include "chrome/browser/ai/ai_manager_keyed_service.h"
-#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -132,9 +131,7 @@ TEST_F(AISummarizerUnitTest, CreateSummarizerWithoutService) {
   base::RunLoop run_loop;
 
   SetupNullOptimizationGuideKeyedService();
-  AIManagerKeyedService* ai_manager =
-      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-          main_rfh()->GetBrowserContext());
+  AIManager ai_manager = AIManager(main_rfh()->GetBrowserContext());
   base::MockCallback<blink::mojom::AIManager::CanCreateSummarizerCallback>
       callback;
   EXPECT_CALL(callback, Run(testing::_))
@@ -146,7 +143,7 @@ TEST_F(AISummarizerUnitTest, CreateSummarizerWithoutService) {
             blink::mojom::ModelAvailabilityCheckResult::kNoServiceNotRunning);
         run_loop.Quit();
       }));
-  ai_manager->CanCreateSummarizer(callback.Get());
+  ai_manager.CanCreateSummarizer(callback.Get());
   run_loop.Run();
 
   // The callback may still be pending, delete the WebContents and destroy the
@@ -199,10 +196,7 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
           SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_MEDIUM,
           "Test output"));
 
-  base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
-      AIContextBoundObjectSet::GetFromContext(mock_host())
-          ->GetWeakPtrForTesting();
-  ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   MockCreateSummarizerClient create_client;
@@ -216,7 +210,7 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
   MockStreamingResponder responder;
   summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
@@ -226,9 +220,8 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   EXPECT_EQ(responder.result(), "Test output");
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
-    return context_bound_objects->GetSizeForTesting() == 1u;
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
 }
 
 TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
@@ -237,10 +230,7 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   // for the response.
   SetupMockOptimizationGuideKeyedService();
 
-  base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
-      AIContextBoundObjectSet::GetFromContext(mock_host())
-          ->GetWeakPtrForTesting();
-  ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   MockCreateSummarizerClient create_client;
@@ -254,25 +244,21 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
   MockStreamingResponder responder;
   summarizer->Summarize("Test input", /*context=*/"",
                         responder.BindNewPipeAndPassRemote());
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
-    return context_bound_objects->GetSizeForTesting() == 1u;
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
 }
 
 TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   SetupMockOptimizationGuideKeyedService();
 
-  base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
-      AIContextBoundObjectSet::GetFromContext(mock_host())
-          ->GetWeakPtrForTesting();
-  ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
@@ -293,7 +279,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
   {
     MockStreamingResponder responder;
@@ -323,7 +309,6 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   }
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
-    return context_bound_objects->GetSizeForTesting() == 1u;
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
 }

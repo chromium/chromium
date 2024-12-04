@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AI_AI_MANAGER_KEYED_SERVICE_H_
-#define CHROME_BROWSER_AI_AI_MANAGER_KEYED_SERVICE_H_
+#ifndef CHROME_BROWSER_AI_AI_MANAGER_H_
+#define CHROME_BROWSER_AI_AI_MANAGER_H_
 
 #include <optional>
 
@@ -15,7 +15,6 @@
 #include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_on_device_model_component_observer.h"
 #include "chrome/browser/ai/ai_summarizer.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -28,22 +27,21 @@ namespace base {
 class SupportsUserData;
 }  // namespace base
 
-// The browser-side implementation of `blink::mojom::AIManager`. There should
-// be one shared AIManagerKeyedService per BrowserContext.
-class AIManagerKeyedService : public KeyedService,
-                              public blink::mojom::AIManager {
+// Owned by the host of the document / service worker via `SupportUserData`.
+// The browser-side implementation of `blink::mojom::AIManager`.
+class AIManager : public base::SupportsUserData::Data,
+                  public blink::mojom::AIManager {
  public:
   using AILanguageModelOrCreationError =
       base::expected<std::unique_ptr<AILanguageModel>,
                      blink::mojom::AIManagerCreateLanguageModelError>;
-  explicit AIManagerKeyedService(content::BrowserContext* browser_context);
-  AIManagerKeyedService(const AIManagerKeyedService&) = delete;
-  AIManagerKeyedService& operator=(const AIManagerKeyedService&) = delete;
+  explicit AIManager(content::BrowserContext* browser_context);
+  AIManager(const AIManager&) = delete;
+  AIManager& operator=(const AIManager&) = delete;
 
-  ~AIManagerKeyedService() override;
+  ~AIManager() override;
 
-  void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-                   base::SupportsUserData& context_user_data);
+  void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
   void CreateLanguageModelForCloning(
       base::PassKey<AILanguageModel> pass_key,
       blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
@@ -52,7 +50,10 @@ class AIManagerKeyedService : public KeyedService,
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote);
 
-  size_t GetReceiversSizeForTesting() { return receivers_.size(); }
+  size_t GetContextBoundObjectSetSizeForTesting() {
+    return context_bound_object_set_.GetSizeForTesting();
+  }
+
   size_t GetDownloadProgressObserversSizeForTesting() {
     return download_progress_observers_.size();
   }
@@ -74,8 +75,7 @@ class AIManagerKeyedService : public KeyedService,
   optimization_guide::SamplingParams GetLanguageModelDefaultSamplingParams();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
-                           NoUAFWithInvalidOnDeviceModelPath);
+  FRIEND_TEST_ALL_PREFIXES(AIManagerTest, NoUAFWithInvalidOnDeviceModelPath);
   FRIEND_TEST_ALL_PREFIXES(AISummarizerUnitTest,
                            CreateSummarizerWithoutService);
 
@@ -106,8 +106,6 @@ class AIManagerKeyedService : public KeyedService,
   void CanCreateSession(optimization_guide::ModelBasedCapabilityKey capability,
                         CanCreateLanguageModelCallback callback);
 
-  void RemoveReceiver(mojo::ReceiverId receiver_id);
-
   // Creates an `AILanguageModel`, either as a new session, or as a clone of
   // an existing session with its context copied. When this method is called
   // during the session cloning, the optional `context` variable should be set
@@ -126,11 +124,7 @@ class AIManagerKeyedService : public KeyedService,
   void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
                                   uint64_t total_bytes);
 
-  // A `KeyedService` should never outlive the `BrowserContext`.
-  raw_ptr<content::BrowserContext> browser_context_;
-
-  mojo::ReceiverSet<blink::mojom::AIManager, base::SupportsUserData*>
-      receivers_;
+  mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;
   std::unique_ptr<AIOnDeviceModelComponentObserver> component_observer_;
@@ -140,7 +134,10 @@ class AIManagerKeyedService : public KeyedService,
   std::optional<optimization_guide::SamplingParams>
       default_language_model_sampling_params_;
 
-  base::WeakPtrFactory<AIManagerKeyedService> weak_factory_{this};
+  AIContextBoundObjectSet context_bound_object_set_;
+  raw_ptr<content::BrowserContext> browser_context_;
+
+  base::WeakPtrFactory<AIManager> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_AI_AI_MANAGER_KEYED_SERVICE_H_
+#endif  // CHROME_BROWSER_AI_AI_MANAGER_H_

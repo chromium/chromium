@@ -8,7 +8,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -282,44 +281,6 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
 
   // RemoveOnDeviceModelAvailabilityChangeObserver should be called.
   run_loop_for_remove_observer.Run();
-}
-
-TEST_F(AIWriterTest, ContextDestroyed) {
-  SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
-            return std::make_unique<optimization_guide::MockSession>();
-          }));
-
-  mojo::Remote<blink::mojom::AIWriter> writer_remote;
-  {
-    MockCreateWriterClient mock_create_writer_client;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_create_writer_client, OnResult(_))
-        .WillOnce(testing::Invoke(
-            [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
-              EXPECT_TRUE(writer);
-              writer_remote =
-                  mojo::Remote<blink::mojom::AIWriter>(std::move(writer));
-              run_loop.Quit();
-            }));
-
-    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-    ai_manager->CreateWriter(
-        mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
-    run_loop.Run();
-  }
-
-  // Resetting mock host must delete the AIWriter.
-  base::RunLoop run_loop;
-  writer_remote.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  ResetMockHost();
-  run_loop.Run();
 }
 
 TEST_F(AIWriterTest, SimpleWrite) {

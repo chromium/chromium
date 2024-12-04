@@ -6,8 +6,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
-#include "chrome/browser/ai/ai_manager_keyed_service.h"
-#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/ai/built_in_ai_logger.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -155,6 +154,7 @@ void CreateOnDeviceSessionTask::SetState(State state) {
 }
 
 CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
+    AIManager& ai_manager,
     AIContextBoundObjectSet& context_bound_object_set,
     content::BrowserContext* browser_context,
     const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
@@ -167,15 +167,13 @@ CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
           browser_context,
           optimization_guide::ModelBasedCapabilityKey::kPromptApi),
       completion_callback_(std::move(completion_callback)) {
-  AIManagerKeyedService* service =
-      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(browser_context);
   if (sampling_params) {
     sampling_params_ = optimization_guide::SamplingParams{
         .top_k = std::min(sampling_params->top_k,
-                          service->GetLanguageModelMaxTopK()),
+                          ai_manager.GetLanguageModelMaxTopK()),
         .temperature = sampling_params->temperature};
   } else {
-    sampling_params_ = service->GetLanguageModelDefaultSamplingParams();
+    sampling_params_ = ai_manager.GetLanguageModelDefaultSamplingParams();
   }
 }
 

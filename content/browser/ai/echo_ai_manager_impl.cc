@@ -33,7 +33,6 @@ EchoAIManagerImpl::~EchoAIManagerImpl() = default;
 
 // static
 void EchoAIManagerImpl::Create(
-    base::SupportsUserData& context_user_data,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   static base::NoDestructor<EchoAIManagerImpl> ai;
   ai->receivers_.Add(ai.get(), std::move(receiver));

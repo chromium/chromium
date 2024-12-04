@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_AI_AI_TEST_UTILS_H_
 
 #include "base/supports_user_data.h"
-#include "chrome/browser/ai/ai_manager_keyed_service.h"
+#include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,8 +20,6 @@
 
 class AITestUtils {
  public:
-  class MockSupportsUserData : public base::SupportsUserData {};
-
   class MockModelStreamingResponder
       : public blink::mojom::ModelStreamingResponder {
    public:
@@ -114,9 +112,7 @@ class AITestUtils {
     void SetupNullOptimizationGuideKeyedService();
 
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
-    MockSupportsUserData& mock_host() { return *mock_host_.get(); }
-    void ResetMockHost();
-    size_t GetAIManagerReceiversSize();
+    size_t GetAIManagerContextBoundObjectSetSize();
     size_t GetAIManagerDownloadProgressObserversSize();
     void MockDownloadProgressUpdate(uint64_t downloaded_bytes,
                                     uint64_t total_bytes);
@@ -125,8 +121,7 @@ class AITestUtils {
         mock_optimization_guide_keyed_service_;
 
    private:
-    AIManagerKeyedService* GetAIManager();
-    std::unique_ptr<MockSupportsUserData> mock_host_;
+    std::unique_ptr<AIManager> ai_manager_;
   };
 
   static const optimization_guide::TokenLimits& GetFakeTokenLimits();
