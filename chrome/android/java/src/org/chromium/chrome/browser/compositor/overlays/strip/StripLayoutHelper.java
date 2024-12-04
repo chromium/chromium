@@ -172,6 +172,10 @@ public class StripLayoutHelper
     private static final long TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL =
             DateUtils.MINUTE_IN_MILLIS;
 
+    // Reorder Drag Threshold Constants
+    // TODO(crbug.com/382122020): Revisit and update if needed.
+    private static final float INITIATE_REORDER_DRAG_THRESHOLD = 30.f;
+
     // Histogram Constants
     private static final String PLACEHOLDER_LEFTOVER_TABS_HISTOGRAM_NAME =
             "Android.TabStrip.PlaceholderStripLeftoverTabsCount";
@@ -436,9 +440,17 @@ public class StripLayoutHelper
     private int mTabsCreatedDuringRestore;
     private int mPlaceholdersNeededDuringRestore;
 
-    // View initially clicked at the start of a mouse drag. Used to allow mouse drags to start
-    // reorder without first long-pressing.
-    private StripLayoutView mInitialMouseClickedView;
+    // View initially interacted with at the start of a motion event that does not immediately, but
+    // may eventually, trigger reorder mode. The first case is dragging a tab with the mouse,
+    // without first long-pressing. The second case is a long-press triggering a view's context
+    // menu, where we'll delay reorder (and dismissing the context menu) until a drag threshold has
+    // been reached.
+    private StripLayoutView mDelayedReorderView;
+
+    // X-position of the initial interaction with the view above. If the user drags a certain
+    // distance away from this initial position, the context menu (if any) will be dismissed, and
+    // we'll enter reorder mode.
+    private float mDelayedReorderInitialX;
 
     // Tab Drag and Drop state to hold clicked tab being dragged.
     private final View mToolbarContainerView;
@@ -1811,15 +1823,26 @@ public class StripLayoutHelper
         // 1. Reset the button state.
         mNewTabButton.drag(x, y);
 
-        // 2. If a tab was pressed in onDown and is now dragged, start tab drag/reorder.
-        // This is to enable tab drag with BUTTON_PRIMARY (mouse / trackpad) via onDown.
-        // Tab drags for touch events are handled via onLongPress.
-        if (mInitialMouseClickedView != null && !mReorderDelegate.getInReorderMode()) {
-            startDragOrReorder(x, y, mInitialMouseClickedView);
+        // 2. Enter reorder mode either if a. the view was initially clicked by a mouse or b. the
+        // view was long-pressed, but we suppressed reorder mode to instead show the view's context
+        // menu. For case 2.b., dismiss the aforementioned context menu.
+        boolean shouldTriggerReorder =
+                !mReorderDelegate.getInReorderMode()
+                        && (Math.abs(x - mDelayedReorderInitialX) > INITIATE_REORDER_DRAG_THRESHOLD
+                                || !isViewContextMenuShowing());
+        if (mDelayedReorderView != null && shouldTriggerReorder) {
+            if (!(mDelayedReorderView instanceof StripLayoutGroupTitle)
+                    || ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER)) {
+                if (isViewContextMenuShowing()) mTabGroupContextMenuCoordinator.dismiss();
+                // Intentionally start the reorder at the initial long-press x. The difference from
+                // the current event (accumulatedDeltaX in step 3) will then "snap" the interacting
+                // view to its expected position.
+                startDragOrReorder(mDelayedReorderInitialX, y, mDelayedReorderView);
+            }
         }
 
         if (mReorderDelegate.getInReorderMode()) {
-            // 3.a. Handle reordering tabs.
+            // 3.a. Handle reordering.
             // This isn't the accumulated delta since the beginning of the drag.  It accumulates
             // the delta X until a threshold is crossed and then the event gets processed.
             float accumulatedDeltaX = x - mReorderDelegate.getLastReorderX();
@@ -1847,7 +1870,7 @@ public class StripLayoutHelper
                             mStripViews, mStripGroupTitles, mStripTabs, accumulatedDeltaX);
                 }
             }
-        } else if (!isTabGroupContextMenuShowing()) {
+        } else if (!isViewContextMenuShowing()) {
             // 3.b. Handle scroll if the tab group context menu is not showing.
             if (!mIsStripScrollInProgress) {
                 mIsStripScrollInProgress = true;
@@ -1894,7 +1917,7 @@ public class StripLayoutHelper
 
         // 1. If we're currently in reorder mode or the context menu is showing, don't allow the
         // user to fling.
-        if (mReorderDelegate.getInReorderMode() || isTabGroupContextMenuShowing()) return;
+        if (mReorderDelegate.getInReorderMode() || isViewContextMenuShowing()) return;
 
         // 2. Begin scrolling.
         mScrollDelegate.fling(
@@ -1930,7 +1953,8 @@ public class StripLayoutHelper
             clickedTab.setClosePressed(/* closePressed= */ true, fromMouse);
             mRenderHost.requestRender();
         } else if (MotionEventUtils.isPrimaryButton(buttons)) {
-            mInitialMouseClickedView = clickedView;
+            mDelayedReorderView = clickedView;
+            mDelayedReorderInitialX = x;
         }
 
         if (!mScrollDelegate.isFinished()) mScrollDelegate.stopScroll();
@@ -1956,12 +1980,26 @@ public class StripLayoutHelper
 
                 startDragOrReorder(x, y, clickedTab);
             }
-        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)) {
-            showTabGroupContextMenu((StripLayoutGroupTitle) stripView);
+        } else {
+            StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)) {
+                showTabGroupContextMenu(groupTitle);
+                mDelayedReorderView = groupTitle;
+                mDelayedReorderInitialX = x;
+            } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER)) {
+                // Should be obsolete, since context menu has launched. Code path will be
+                // unreachable, then removed once the context menu flag has been cleaned up.
+                startDragOrReorder(x, y, groupTitle);
+            }
         }
     }
 
-    private boolean isTabGroupContextMenuShowing() {
+    /**
+     * Returns {@code true} if a context menu triggered from long-pressing a view is showing. Does
+     * not include the context menu from long-pressing the
+     */
+    private boolean isViewContextMenuShowing() {
+        // TODO(crbug.com/382293975): Include tab context menu when implemented.
         return mTabGroupContextMenuCoordinator != null
                 && mTabGroupContextMenuCoordinator.isMenuShowing();
     }
@@ -2464,6 +2502,7 @@ public class StripLayoutHelper
             mTabCreator.launchNtp();
         }
         mIsStripScrollInProgress = false;
+        mDelayedReorderView = null;
     }
 
     /** Handle view click * */
@@ -4302,10 +4341,10 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return The view clicked by the mouse in {@link #onDown}.
+     * @return The view that we'll delay enter reorder mode for.
      */
-    StripLayoutView getInitialMouseClickedView() {
-        return mInitialMouseClickedView;
+    StripLayoutView getDelayedReorderView() {
+        return mDelayedReorderView;
     }
 
     Animator getRunningAnimatorForTesting() {

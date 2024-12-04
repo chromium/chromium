@@ -213,7 +213,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         R.id.leave_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 
-        mMenuCoordinator.dismissForTesting();
+        mMenuCoordinator.dismiss();
     }
 
     @Test
@@ -239,7 +239,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         R.id.delete_shared_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 
-        mMenuCoordinator.dismissForTesting();
+        mMenuCoordinator.dismiss();
     }
 
     private void assertListMenuItemsAre(ModelList modelList, List<Integer> menuIds) {

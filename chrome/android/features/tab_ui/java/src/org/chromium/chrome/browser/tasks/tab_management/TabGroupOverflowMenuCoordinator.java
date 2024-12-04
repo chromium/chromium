@@ -333,6 +333,16 @@ public abstract class TabGroupOverflowMenuCoordinator {
         }
     }
 
+    /**
+     * Dismisses the menu. No-op if the menu holder is {@code null}, and therefore the menu is not
+     * already showing.
+     */
+    public void dismiss() {
+        if (mMenuHolder != null) {
+            mMenuHolder.dismiss();
+        }
+    }
+
     protected void onMenuDismissed() {}
 
     private void onDismiss(OverflowMenuHolder menuHolder) {
@@ -361,9 +371,5 @@ public abstract class TabGroupOverflowMenuCoordinator {
             return TabShareUtils.getCollaborationIdOrNull(
                     tabId, mTabModelSupplier.get(), mTabGroupSyncService);
         }
-    }
-
-    void dismissForTesting() {
-        mMenuHolder.dismiss();
     }
 }
