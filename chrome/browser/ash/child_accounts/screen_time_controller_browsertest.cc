@@ -549,9 +549,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DefaultDailyLimit) {
 }
 
 // Tests that the bedtime locks an active session when it is reached.
-// TODO(crbug.com/334319436): Flaky test.
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
-                       DISABLED_ActiveSessionBedtime) {
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, ActiveSessionBedtime) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
   system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
