@@ -649,4 +649,11 @@ const base::FeatureParam<base::TimeDelta>
         /*name=*/"SimpleCachePrioritizedCachingPrioritizationPeriod",
         /*default_value=*/base::Days(1)};
 
+#if BUILDFLAG(USE_NSS_CERTS)
+// TODO(crbug.com/40928765): Remove this flag after a few milestones.
+BASE_FEATURE(kNewClientCertPathBuilding,
+             "NewClientCertPathBuilding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(USE_NSS_CERTS)
+
 }  // namespace net::features

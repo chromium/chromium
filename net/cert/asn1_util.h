@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "net/base/net_export.h"
 
 namespace net::asn1 {
@@ -17,6 +18,15 @@ namespace net::asn1 {
 NET_EXPORT_PRIVATE bool ExtractSubjectFromDERCert(
     std::string_view cert,
     std::string_view* subject_out);
+
+// ExtractIssuerAndSubjectFromDERCert parses the DER encoded certificate in
+// |cert| and extracts the bytes of the X.501 Issuer and Subject. On successful
+// return, |issuer_out| is set to the Issuer and |subject_out| is set to
+// contain the Subject, pointing into |cert|.
+NET_EXPORT_PRIVATE bool ExtractIssuerAndSubjectFromDERCert(
+    base::span<const uint8_t> cert,
+    base::span<const uint8_t>* issuer_out,
+    base::span<const uint8_t>* subject_out);
 
 // ExtractSPKIFromDERCert parses the DER encoded certificate in |cert| and
 // extracts the bytes of the SubjectPublicKeyInfo. On successful return,
@@ -71,4 +81,4 @@ NET_EXPORT bool ExtractExtensionFromDERCert(std::string_view cert,
 
 }  // namespace net::asn1
 
-#endif // NET_CERT_ASN1_UTIL_H_
+#endif  // NET_CERT_ASN1_UTIL_H_

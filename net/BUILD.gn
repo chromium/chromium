@@ -1011,6 +1011,8 @@ component("net") {
     "ssl/cert_compression.h",
     "ssl/client_cert_identity.cc",
     "ssl/client_cert_identity.h",
+    "ssl/client_cert_matcher.cc",
+    "ssl/client_cert_matcher.h",
     "ssl/client_cert_store.h",
     "ssl/openssl_private_key.cc",
     "ssl/openssl_private_key.h",
