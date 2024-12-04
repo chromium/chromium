@@ -9,7 +9,7 @@
   page.navigate('resources/simple-prerender.html');
 
   const event = await dp.Preload.oncePrerenderStatusUpdated();
-  testRunner.log(event, null, ['loaderId', 'sessionId']);
+  testRunner.log(event);
 
   testRunner.completeTest();
 });
