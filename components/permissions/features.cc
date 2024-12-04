@@ -99,12 +99,6 @@ BASE_FEATURE(kAllowMultipleOriginsForWebKioskPermissions,
 
 #if BUILDFLAG(IS_ANDROID)
 
-// When enabled, blocks notifications permission prompt when Chrome doesn't
-// have app level Notification permission.
-BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
-             "BlockNotificationPromptsIfDisabledOnAppLevel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
              "PermissionDedicatedCpssSettingAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);

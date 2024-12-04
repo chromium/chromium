@@ -200,9 +200,7 @@ void PermissionRequestManager::AddRequest(
         "Permissions.Prompt.Notifications.EnabledAppLevel",
         app_level_settings_allow_site_notifications);
 
-    if (!app_level_settings_allow_site_notifications &&
-        base::FeatureList::IsEnabled(
-            features::kBlockNotificationPromptsIfDisabledOnAppLevel)) {
+    if (!app_level_settings_allow_site_notifications) {
       // Automatically cancel site Notification requests when Chrome is not able
       // to send notifications in an app level.
       request->Cancelled();
