@@ -2457,11 +2457,6 @@ BASE_FEATURE(kProjectorRedirectToPwa,
 // Controls whether projector V2 is enabled.
 BASE_FEATURE(kProjectorV2, "ProjectorV2", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the transcript chapter title feature is enabled.
-BASE_FEATURE(kProjectorTranscriptChapterTitle,
-             "ProjectorTranscriptChapterTitle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to use USM for serverside speech recognition for projector.
 BASE_FEATURE(kProjectorUseUSMForS3,
              "ProjectorUseUSMForS3",
@@ -4365,10 +4360,6 @@ bool IsProjectorRedirectToPwaEnabled() {
 
 bool IsProjectorV2Enabled() {
   return base::FeatureList::IsEnabled(kProjectorV2);
-}
-
-bool IsProjectorTranscriptChapterTitleEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorTranscriptChapterTitle);
 }
 
 bool IsProjectorUseUSMForS3Enabled() {
