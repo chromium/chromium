@@ -47,6 +47,8 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -75,6 +77,7 @@ public class TabDragSource implements View.OnDragListener {
     private final BrowserControlsStateProvider mBrowserControlStateProvider;
     private final float mPxToDp;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final DesktopWindowStateManager mDesktopWindowStateManager;
 
     /** Handler and runnable to post/cancel an #onDragExit when the drag starts. */
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -117,6 +120,8 @@ public class TabDragSource implements View.OnDragListener {
      *     dimens.
      * @param windowAndroid WindowAndroid to access activity.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance to determine
+     *     desktop windowing mode state.
      */
     public TabDragSource(
             @NonNull Context context,
@@ -128,7 +133,8 @@ public class TabDragSource implements View.OnDragListener {
             @NonNull DragAndDropDelegate dragAndDropDelegate,
             @NonNull BrowserControlsStateProvider browserControlStateProvider,
             @NonNull WindowAndroid windowAndroid,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mPxToDp = 1.f / context.getResources().getDisplayMetrics().density;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mStripLayoutHelperSupplier = stripLayoutHelperSupplier;
@@ -139,6 +145,7 @@ public class TabDragSource implements View.OnDragListener {
         mDragAndDropDelegate = dragAndDropDelegate;
         mBrowserControlStateProvider = browserControlStateProvider;
         mWindowAndroid = windowAndroid;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
             mAppIcon = context.getPackageManager().getApplicationIcon(context.getApplicationInfo());
         }
@@ -291,7 +298,9 @@ public class TabDragSource implements View.OnDragListener {
                 if (didOccurInTabStrip(dragEvent.getY())) {
                     res = onDrop(dragEvent);
                 } else {
-                    DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.IGNORED_TOOLBAR);
+                    DragDropMetricUtils.recordTabDragDropResult(
+                            DragDropTabResult.IGNORED_TOOLBAR,
+                            AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
                     res = false;
                 }
                 break;
@@ -413,7 +422,9 @@ public class TabDragSource implements View.OnDragListener {
             helper.mergeToGroupForTabDropIfNeeded(
                     destinationTabId, tabBeingDragged.getId(), tabIndex);
         }
-        DragDropMetricUtils.recordTabDragDropType(DragDropType.TAB_STRIP_TO_TAB_STRIP);
+        DragDropMetricUtils.recordTabDragDropType(
+                DragDropType.TAB_STRIP_TO_TAB_STRIP,
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
         mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         return true;
     }
@@ -474,7 +485,9 @@ public class TabDragSource implements View.OnDragListener {
 
         // Only record for source strip to avoid duplicate.
         if (dropHandled) {
-            DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.SUCCESS);
+            DragDropMetricUtils.recordTabDragDropResult(
+                    DragDropTabResult.SUCCESS,
+                    AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
             DragDropMetricUtils.recordTabDragDropClosedWindow(didCloseWindow);
         } else if (MultiWindowUtils.getInstanceCount() == MultiWindowUtils.getMaxInstances()) {
             Toast.makeText(
@@ -483,7 +496,9 @@ public class TabDragSource implements View.OnDragListener {
                             Toast.LENGTH_LONG)
                     .show();
             ChromeDragDropUtils.recordTabDragToCreateInstanceFailureCount();
-            DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.IGNORED_MAX_INSTANCES);
+            DragDropMetricUtils.recordTabDragDropResult(
+                    DragDropTabResult.IGNORED_MAX_INSTANCES,
+                    AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager));
         }
 
         return true;

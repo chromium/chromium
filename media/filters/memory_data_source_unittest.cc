@@ -83,18 +83,18 @@ TEST_F(MemoryDataSourceTest, ReadData) {
   ReadAndExpect(128, 0, 0);
 }
 
-TEST_F(MemoryDataSourceTest, ReadDataInvalidPosition) {
+TEST_F(MemoryDataSourceTest, ReadData_InvalidPosition) {
   Initialize(128);
   ReadAndExpect(-7, 64, DataSource::kReadError);
   ReadAndExpect(129, 64, DataSource::kReadError);
 }
 
-TEST_F(MemoryDataSourceTest, ReadDataInvalidSize) {
+TEST_F(MemoryDataSourceTest, ReadData_InvalidSize) {
   Initialize(128);
   ReadAndExpect(0, -12, DataSource::kReadError);
 }
 
-TEST_F(MemoryDataSourceTest, ReadDataPartialRead) {
+TEST_F(MemoryDataSourceTest, ReadData_PartialRead) {
   Initialize(128);
   ReadAndExpect(0, 129, 128);
   ReadAndExpect(96, 100, 32);

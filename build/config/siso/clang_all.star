@@ -24,7 +24,6 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": [
                 "__*",
-                "gross_hack.h",
             ],
         },
 

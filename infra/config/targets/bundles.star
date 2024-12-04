@@ -2659,6 +2659,63 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "fuchsia_standard_passthrough_tests",
+    targets = [
+        "gpu_passthrough_telemetry_tests",
+        "fuchsia_gtests",
+        targets.bundle(
+            targets = "fuchsia_isolated_scripts",
+            mixins = "expand-as-isolated-script",
+        ),
+    ],
+    mixins = [
+        "upload_inv_extended_properties",
+    ],
+    per_test_modifications = {
+        "blink_web_tests": [
+            # TODO(crbug.com/337058844): uploading invocations is not supported
+            # by blink_web_tests yet.
+            "has_native_resultdb_integration",
+        ],
+        "blink_wpt_tests": [
+            # TODO(crbug.com/337058844): uploading invocations is not supported
+            # by blink_wpt_tests yet.
+            "has_native_resultdb_integration",
+        ],
+        "context_lost_passthrough_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "expected_color_pixel_passthrough_test": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "gpu_process_launch_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "hardware_accelerated_feature_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "pixel_skia_gold_passthrough_test": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "screenshot_sync_passthrough_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+    },
+)
+
+targets.bundle(
     name = "fuchsia_standard_tests",
     targets = [
         "gpu_validating_telemetry_tests",
@@ -6293,12 +6350,16 @@ targets.bundle(
                 "WIN10_NVIDIA_GTX_1660_STABLE",
             ],
         ),
-        targets.bundle(
-            targets = "gpu_passthrough_graphite_telemetry_tests",
-            variants = [
-                "WIN10_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
+        # TODO(b/297347572): Re-enable these tests once the driver version
+        # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
+        # on certain drivers due to this blocklist entry.
+        # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
+        # targets.bundle(
+        #     targets = "gpu_passthrough_graphite_telemetry_tests",
+        #     variants = [
+        #         "WIN10_NVIDIA_GTX_1660_STABLE",
+        #     ],
+        # ),
         targets.bundle(
             targets = "gpu_webcodecs_telemetry_test",
             variants = [

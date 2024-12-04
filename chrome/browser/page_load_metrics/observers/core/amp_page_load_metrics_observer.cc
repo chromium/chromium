@@ -106,9 +106,9 @@ bool IsInPrerenderingBeforeActivation(
          page_load_metrics::PrerenderingState::kInPrerendering;
 }
 
-AMPPageLoadMetricsObserver::AMPPageLoadMetricsObserver() {}
+AMPPageLoadMetricsObserver::AMPPageLoadMetricsObserver() = default;
 
-AMPPageLoadMetricsObserver::~AMPPageLoadMetricsObserver() {}
+AMPPageLoadMetricsObserver::~AMPPageLoadMetricsObserver() = default;
 
 AMPPageLoadMetricsObserver::SubFrameInfo::SubFrameInfo() = default;
 AMPPageLoadMetricsObserver::SubFrameInfo::~SubFrameInfo() = default;

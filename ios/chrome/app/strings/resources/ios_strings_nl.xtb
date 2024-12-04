@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Meldingen van Veiligheidscheck aanzetten…</translation>
 <translation id="1652333207707886577">Je menu aanpassen</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Resterende tijd: {TIME} seconden}=1{Resterende tijd: {TIME} seconde}other{Resterende tijd: {TIME} seconden}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} opgeslagen wachtwoord beschikbaar boven je toetsenbord.}other{{count} opgeslagen wachtwoorden beschikbaar boven je toetsenbord.}}</translation>
 <translation id="1654232554734641711">Microfoontoegang toegestaan</translation>
 <translation id="16554782717487656">Eenheden waarnemen</translation>
 <translation id="1657011748321897393">Delen is mislukt omdat je niet verbonden bent met het netwerk.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Open het tabbladraster</translation>
 <translation id="20485545164632846">nieuw item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> accounts gebruiken hetzelfde wachtwoord</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} opgeslagen betaalmethode beschikbaar boven je toetsenbord.}other{{count} opgeslagen betaalmethoden beschikbaar boven je toetsenbord.}}</translation>
 <translation id="2059166748188874810">Gemeente</translation>
 <translation id="20638360198452347">Kiezer voor type eenheid</translation>
 <translation id="2067852168641682340">Altijd opslaan in dit account</translation>
@@ -329,7 +327,6 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2390457533592708044"><ph name="MODULE_NAME" /> verbergen</translation>
 <translation id="2403129868389095715">Je pakket kan niet worden bezorgd</translation>
 <translation id="2410754283952462441">Een account selecteren</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} opgeslagen adres beschikbaar boven je toetsenbord.}other{{count} opgeslagen adressen beschikbaar boven je toetsenbord.}}</translation>
 <translation id="2424805048070062787">Doorgaan met dit tabblad</translation>
 <translation id="2426805022920575512">Een ander account kiezen</translation>
 <translation id="243275146591958220">Download annuleren</translation>
@@ -757,7 +754,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4525629404718770519">Linkvoorbeelden bekijken</translation>
 <translation id="452750746583162491">Je gesynchroniseerde gegevens controleren</translation>
 <translation id="4532845899244822526">Map kiezen</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} opgeslagen suggestie voor automatische aanvulling beschikbaar boven je toetsenbord.}other{{count} opgeslagen suggesties voor automatisch aanvullen beschikbaar boven je toetsenbord.}}</translation>
 <translation id="4547181496285029457">Terug naar recent tabblad</translation>
 <translation id="4552042254369397518">Kopiëren…</translation>
 <translation id="4564893319561643483"><ph name="TITLE" /> verbergen</translation>
@@ -770,6 +766,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4597892826846980979">Meldingen voor tabbladen krijgen</translation>
 <translation id="4601095002996233687">Uitgebreide scans voor verdachte downloads.</translation>
 <translation id="4606247758155004938">Je browser wordt beheerd door je organisatie.</translation>
+<translation id="4607887340472970274">Prijzen volgen</translation>
 <translation id="4611811151908969241"><ph name="DOMAIN_NAME" /> niet meer volgen verbergen</translation>
 <translation id="461440297010471931">Zoeken met Google</translation>
 <translation id="4619564267100705184">Bevestigen dat jij het bent</translation>
@@ -1274,7 +1271,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6710079714193676716">Beheerd door je organisatie. Sommige functies zijn mogelijk niet beschikbaar. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Naar feed</translation>
 <translation id="6713676799463473249">Aangepast: <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Prijs volgen</translation>
 <translation id="6722623263381062480">Verkregen tabbladen</translation>
 <translation id="6723740634201835758">In je Google-account</translation>
 <translation id="672735642903863329">Gebruik je bookmarks, wachtwoorden en meer op al je apparaten.</translation>
@@ -1440,7 +1436,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="75362970626182391">Nieuwe tabbladgroep</translation>
 <translation id="7537586195939242955">Je pas kan momenteel niet worden geïnstalleerd in Passbook.</translation>
 <translation id="754655535278952384">Gecheckt: <ph name="TIME" /></translation>
-<translation id="755255281989213264">Menu aanpassen</translation>
 <translation id="7553234618121028547">Open <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> en ga naar Wachtwoordopties om dit uit te zetten.</translation>
 <translation id="7557508262441527045">Uitgelogd</translation>
 <translation id="7561196759112975576">Altijd</translation>

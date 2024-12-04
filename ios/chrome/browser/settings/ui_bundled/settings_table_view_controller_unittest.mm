@@ -591,7 +591,6 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
 // supported, then there is a Downloads Settings item in the expected section.
 TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kIOSSaveToPhotos);
 
   CreateController();
   CheckController();

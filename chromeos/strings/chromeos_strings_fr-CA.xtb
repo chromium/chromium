@@ -1365,6 +1365,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7425037327577270384">Aide à la rédaction</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de retirer ce nom de point d'accès. Assurez-vous que les noms de points d'accès <ph name="ATTACH" /> activés sont désactivés ou retirés.</translation>
+<translation id="7453118953486228603">Cliquer pour résumer le texte sélectionné</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7481312909269577407">Suivant</translation>
@@ -1723,6 +1724,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="9133772297793293778">Appuyez sur les modificateurs 1 à 4 et sur 1 autre touche de votre clavier. Pour quitter le mode de modification, appuyez sur alt+esc.</translation>
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9138630967333032450">Majuscule gauche</translation>
+<translation id="9147928237330776930">Trop peu de mots pour résumer</translation>
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
 <translation id="9159524746324788320">hamburgers</translation>
 <translation id="9161276708550942948">espace</translation>

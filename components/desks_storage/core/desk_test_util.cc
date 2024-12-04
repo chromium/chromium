@@ -43,8 +43,6 @@ void PopulateAppRegistryCache(AccountId account_id,
       MakeApp(kTestSwaAppId, "Test System Web App 1", apps::AppType::kWeb));
   deltas.push_back(MakeApp(kTestUnsupportedAppId, "Test Supported App 1",
                            apps::AppType::kPluginVm));
-  deltas.push_back(MakeApp(kTestLacrosChromeAppId, "Test Chrome App",
-                           apps::AppType::kStandaloneBrowserChromeApp));
 
   cache->OnAppsForTesting(std::move(deltas), apps::AppType::kUnknown,
                           /*should_notify_initialized=*/false);

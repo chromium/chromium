@@ -164,7 +164,7 @@ class SyncSocketClientListener : public IPC::Listener {
     // the SyncSocketServerListener object.
     EXPECT_EQ(socket_->Peek(), expected_bytes_to_receive);
     base::FixedArray<char> buf(expected_bytes_to_receive);
-    socket_->Receive(base::as_writable_bytes(base::make_span(buf)));
+    socket_->Receive(base::as_writable_byte_span(buf));
     EXPECT_EQ(strcmp(str.c_str(), buf.data()), 0);
     // After receiving from the socket there should be no bytes left.
     EXPECT_EQ(0U, socket_->Peek());
@@ -244,13 +244,12 @@ TEST_F(SyncSocketTest, DisconnectTest) {
   char buf[0xff];
   size_t received = 1U;  // Initialize to an unexpected value.
   worker.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BlockingRead, &pair[0],
-                     base::as_writable_bytes(base::make_span(buf)), &received));
+      FROM_HERE, base::BindOnce(&BlockingRead, &pair[0],
+                                base::as_writable_byte_span(buf), &received));
 
   // Wait for the worker thread to say hello.
   char hello[kHelloStringLength] = {0};
-  pair[1].Receive(base::as_writable_bytes(base::make_span(hello)));
+  pair[1].Receive(base::as_writable_byte_span(hello));
   EXPECT_EQ(strcmp(hello, kHelloString), 0);
   // Give the worker a chance to start Receive().
   base::PlatformThread::YieldCurrentThread();
@@ -276,13 +275,12 @@ TEST_F(SyncSocketTest, BlockingReceiveTest) {
   char buf[kHelloStringLength] = {0};
   size_t received = 1U;  // Initialize to an unexpected value.
   worker.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BlockingRead, &pair[0],
-                     base::as_writable_bytes(base::make_span(buf)), &received));
+      FROM_HERE, base::BindOnce(&BlockingRead, &pair[0],
+                                base::as_writable_byte_span(buf), &received));
 
   // Wait for the worker thread to say hello.
   char hello[kHelloStringLength] = {0};
-  pair[1].Receive(base::as_writable_bytes(base::make_span(hello)));
+  pair[1].Receive(base::as_writable_byte_span(hello));
   EXPECT_EQ(0, strcmp(hello, kHelloString));
   // Give the worker a chance to start Receive().
   base::PlatformThread::YieldCurrentThread();
@@ -321,7 +319,7 @@ TEST_F(SyncSocketTest, NonBlockingWriteTest) {
 
   // Read from another socket to free some space for a new write.
   char hello[kHelloStringLength] = {0};
-  pair[1].Receive(base::as_writable_bytes(base::make_span(hello)));
+  pair[1].Receive(base::as_writable_byte_span(hello));
 
   // Should be able to write more data to the buffer now.
   EXPECT_EQ(pair[0].Send(bytes_to_send), bytes_to_send.size());

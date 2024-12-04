@@ -120,7 +120,7 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // this class).
   std::optional<syncer::ModelError> AddGroupToLocalStorage(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
-      const CollaborationId& collaboration_id,
+      const syncer::CollaborationMetadata& collaboration_metadata,
       base::Time creation_time,
       syncer::MetadataChangeList* metadata_change_list,
       syncer::DataTypeStore::WriteBatch& write_batch);
@@ -129,7 +129,7 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
       syncer::MetadataChangeList* metadata_change_list,
       syncer::DataTypeStore::WriteBatch& write_batch,
       const std::set<base::Uuid>& tab_ids_with_pending_model_update,
-      const CollaborationId& collaboration_id,
+      const syncer::CollaborationMetadata& collaboration_metadata,
       base::Time creation_time);
 
   // Removes all data assigned to `storage_key` from local storage
@@ -141,7 +141,7 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Inform the processor of a new or updated Shared Tab Group or Tab.
   void SendToSync(sync_pb::SharedTabGroupDataSpecifics specific,
-                  const CollaborationId& collaboration_id,
+                  syncer::CollaborationMetadata collaboration_metadata,
                   base::Time creation_time,
                   syncer::MetadataChangeList* metadata_change_list);
 
@@ -181,6 +181,9 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // Destroys the ongoing write batch and commits it to the store if
   // `store_write_batch_on_destroy` is true.
   void DestroyOngoingWriteBatch(bool store_write_batch_on_destroy);
+
+  // Returns true of the bridge is ready to sync and accept new local changes.
+  bool IsReadyToSync() const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

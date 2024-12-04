@@ -102,7 +102,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthEncrypt(
                         EVP_HPKE_CTX_max_overhead(sender_context.get()));
 
   base::span<uint8_t> ciphertext =
-      base::make_span(encrypted_data).subspan(encapsulated_shared_secret_len);
+      base::span(encrypted_data).subspan(encapsulated_shared_secret_len);
   size_t ciphertext_len;
 
   if (!EVP_HPKE_CTX_seal(

@@ -4076,6 +4076,15 @@ Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
 <translation id="4030152268425532846">Automatisch inloggen voortijdig afbreken niet toestaan</translation>
 <translation id="4043796890723386527">Voorkomen dat gebruikers secundaire profielen maken en gebruiken of dat ze de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
+<translation id="4047633048700722778">Als je dit beleid instelt, wordt de toepassing van het SafeSites URL-filter beheerd. Dit filter gebruikt de Google Safe Search API om URL's al dan niet te classificeren als pornografisch.
+
+Als dit beleid is ingesteld op:
+
+* Sites niet filteren op content voor volwassenen (of als het niet is ingesteld), worden de sites niet gefilterd
+
+* Sites filteren op content voor volwassenen, worden de sites gefilterd die zijn geclassificeerd als pornografisch
+
+Het beleid is van toepassing op zowel de URL waar de gebruiker naartoe navigeert als op iframes. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> heeft voorrang op dit beleid en kan worden gebruikt om beoordelingen van de Google Safe Search API te overschrijven.</translation>
 <translation id="4051723201852944592">Occlusie van vensters aanzetten</translation>
 <translation id="4052529125939620019">De componentextensie CryptoToken laden bij opstarten</translation>
 <translation id="4053157306171963473">Rapportage voor tijd van apparaatactiviteit uitzetten</translation>
@@ -8397,6 +8406,15 @@ Belangrijke opmerking: De planningen die door dit beleid zijn ingesteld, worden 
        Chrome Remote Desktop-host is geïnstalleerd.</translation>
 <translation id="7202925763179776247">Downloadbeperkingen toestaan</translation>
 <translation id="7203243973351251622">Recorder (ondersteund vanaf versie 130)</translation>
+<translation id="7205989349935313324">Met Lensoverlay kunnen gebruikers Google-zoekopdrachten uitvoeren door interactie met een screenshot van de huidige pagina dat over de daadwerkelijke webcontent wordt weergegeven. Daarnaast kunnen gebruikers Google-zoekopdrachten uitvoeren die contextafhankelijk zijn van de huidige pagina. Om contextuele antwoorden te geven, stuurt Lensoverlay paginacontent naar Google om de query van de gebruiker te beantwoorden met de context van de pagina waarop de gebruiker zich bevindt.
+
+Er is geen gebruikersinstelling om deze functie te beheren. De functie wordt over het algemeen beschikbaar gemaakt voor alle gebruikers die Google als standaard zoekmachine hebben, tenzij uitgezet op basis van dit beleid.
+
+0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = De functie uitzetten.</translation>
 <translation id="7207095846245296855">Google SafeSearch afdwingen</translation>
 <translation id="7211368186050418507">Tijdzone nooit automatisch detecteren</translation>
 <translation id="721617466745658461">Gebruikers toestaan het binaire bestand voor de <ph name="LACROS_NAME" />-browser te selecteren</translation>
@@ -9561,6 +9579,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
       Als je het beleid niet toepast of niet instelt, worden er geen pakketten gestuurd.</translation>
 <translation id="8168359201203671567">Regenboogachtergrondverlichting van toetsenbord</translation>
 <translation id="8169452762291746260">Controle van apparaatstatus uitzetten</translation>
+<translation id="8170359860920320269">Sites filteren op content voor volwassenen</translation>
 <translation id="8171262216089271568">Grote cursor op het inlogscherm aanzetten</translation>
 <translation id="8171924760436219650">De rechtermuisknop instellen als de primaire muisknop op het inlogscherm</translation>
 <translation id="81724933026241365">Gebruikers toestaan het apparaat uit te zetten met het icoon Uitzetten of de aan/uit-knop</translation>

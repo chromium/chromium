@@ -74,6 +74,8 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
        IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_MODEL_UNAVAILABLE},
       {"historyEmbeddingsAnswererErrorTryAgain",
        IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN},
+      {"historyEmbeddingsMatch", IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULT},
+      {"historyEmbeddingsMatches", IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULTS},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",

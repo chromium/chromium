@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">បើកការជូន​ដំណឹង​អំពី​ការពិនិត្យ​សុវត្ថិភាព…</translation>
 <translation id="1652333207707886577">ប្ដូរ​ម៉ឺនុយ​របស់អ្នក​តាមបំណង</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{រយៈពេលនៅសល់៖ {TIME} វិនាទី}=1{រយៈពេលនៅសល់៖ {TIME} វិនាទី}other{រយៈពេលនៅសល់៖ {TIME} វិនាទី}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{មាន​ពាក្យសម្ងាត់​ដែល​បាន​រក្សាទុក​ {count} នៅ​លើ​ក្ដារចុច​របស់​អ្នក។}other{មាន​ពាក្យសម្ងាត់​ដែល​បាន​រក្សាទុក​ {count} នៅ​លើ​ក្ដារចុច​របស់​អ្នក។}}</translation>
 <translation id="1654232554734641711">បានអនុញ្ញាតសិទ្ធិចូលប្រើមីក្រូហ្វូន</translation>
 <translation id="16554782717487656">ចាប់ដឹងឯកតា</translation>
 <translation id="1657011748321897393">ការចែករំលែកបានបរាជ័យ ពីព្រោះអ្នកមិនបានភ្ជាប់ទៅនឹងបណ្តាញទេ។</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">បើកក្រឡាផ្ទាំង</translation>
 <translation id="20485545164632846">ធាតុ​ថ្មី</translation>
 <translation id="2049727122989709386">គណនី <ph name="COUNT" /> កំពុងប្រើប្រាស់ពាក្យសម្ងាត់ដូចគ្នា</translation>
-<translation id="2050196510205866090">{count,plural, =1{មាន​វិធីបង់ប្រាក់​ដែល​បាន​រក្សាទុក {count} នៅ​លើ​ក្ដារចុច​របស់​អ្នក។}other{មាន​វិធីបង់ប្រាក់​ដែល​បាន​រក្សាទុក {count} នៅ​លើ​ក្ដារចុច​របស់​អ្នក។}}</translation>
 <translation id="2059166748188874810">ក្រុង</translation>
 <translation id="20638360198452347">ផ្ទាំងជ្រើសរើសប្រភេទឯកតា</translation>
 <translation id="2067852168641682340">រក្សាទុកទៅក្នុងគណនីនេះរាល់ពេល</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">លាក់ "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">មិនអាច​ដឹកជញ្ជូន​កញ្ចប់របស់អ្នក​បានទេ</translation>
 <translation id="2410754283952462441">ជ្រើសរើស​គណនី</translation>
-<translation id="2411749908844615428">{count,plural, =1{មាន​​អាសយដ្ឋាន​ដែល​បាន​រក្សាទុក {count} នៅលើ​ក្ដារចុច​របស់​អ្នក។}other{មាន​​អាសយដ្ឋាន​ដែល​បាន​រក្សាទុក {count} នៅលើ​ក្ដារចុច​របស់​អ្នក។}}</translation>
 <translation id="2424805048070062787">បន្ត​ជាមួយ​ផ្ទាំងនេះ</translation>
 <translation id="2426805022920575512">ជ្រើសរើស​គណនី​ផ្សេងទៀត</translation>
 <translation id="243275146591958220">បោះបង់​ការ​ទាញ​យក</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">បង្ហាញការមើលតំណសាកល្បង</translation>
 <translation id="452750746583162491">ពិនិត្យមើល​ទិន្នន័យ​ដែលបានធ្វើសមកាលកម្មរបស់អ្នក</translation>
 <translation id="4532845899244822526">ជ្រើសរើសថតឯកសារ</translation>
-<translation id="4539187448429948815">{count,plural, =1{មានការណែនាំ​ឱ្យបំពេញ​ស្វ័យប្រវត្តិដែលបានរក្សាទុក {count} នៅ​លើ​ក្ដារចុច​របស់​អ្នក។}other{មានការណែនាំ​ឱ្យបំពេញ​ស្វ័យប្រវត្តិដែលបានរក្សាទុក {count} នៅ​លើ​ក្ដារចុច​របស់​អ្នក។}}</translation>
 <translation id="4547181496285029457">ត្រឡប់ទៅផ្ទាំងថ្មីៗវិញ</translation>
 <translation id="4552042254369397518">កំពុងចម្លង…</translation>
 <translation id="4564893319561643483">លាក់ "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">ទទួល​ការជូនដំណឹង​អំពី​ផ្ទាំង</translation>
 <translation id="4601095002996233687">ការស្កេន​ស៊ីជម្រៅ ដើម្បីរក​មើលការទាញយក​គួរឱ្យសង្ស័យ។</translation>
 <translation id="4606247758155004938">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ស្ថិតក្រោមការគ្រប់គ្រង​របស់​ស្ថាប័នអ្នក។</translation>
+<translation id="4607887340472970274">ការតាម​ដានតម្លៃ</translation>
 <translation id="4611811151908969241">លាក់ "ឈប់តាមដាន <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">ស្វែងរក​ដោយប្រើ Google</translation>
 <translation id="4619564267100705184">ផ្ទៀងផ្ទាត់ថា​ជាអ្នក</translation>
@@ -1274,7 +1271,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6710079714193676716">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក​។ មុខងារមួយចំនួន​ប្រហែលជាមិន​អាចប្រើ​បានទេ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">ចូលទៅកាន់​ព័ត៌មាន</translation>
 <translation id="6713676799463473249">បានកែប្រែ​នៅថ្ងៃទី <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">តាម​ដាន​តម្លៃ</translation>
 <translation id="6722623263381062480">ផ្ទាំងដែលបានទទួល</translation>
 <translation id="6723740634201835758">នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="672735642903863329">ទទួលបាន​ចំណាំ ពាក្យសម្ងាត់ និងអ្វីៗជាច្រើនទៀត​របស់អ្នក​នៅលើឧបករណ៍ទាំងអស់​របស់អ្នក។</translation>
@@ -1440,7 +1436,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="75362970626182391">ក្រុមផ្ទាំងថ្មី</translation>
 <translation id="7537586195939242955">សូមទោស Pass របស់អ្នកមិនអាចដំឡើងទៅកាន់ Passbook បានទេនៅពេលនេះ។</translation>
 <translation id="754655535278952384">បានពិនិត្យមើល <ph name="TIME" /></translation>
-<translation id="755255281989213264">ប្ដូរម៉ឺនុយតាម​បំណង</translation>
 <translation id="7553234618121028547">ដើម្បីបិទ សូមបើក​<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" /> និង​ចូលទៅ "ជម្រើស​ពាក្យសម្ងាត់"។</translation>
 <translation id="7557508262441527045">បានចេញពីគណនី</translation>
 <translation id="7561196759112975576">ជានិច្ច</translation>

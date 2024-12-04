@@ -184,7 +184,7 @@ TEST_F(MediaFoundationCdmTest, SetServerCertificate) {
       certificate, std::make_unique<MockCdmPromise>(/*expect_success=*/true));
 }
 
-TEST_F(MediaFoundationCdmTest, SetServerCertificateFailure) {
+TEST_F(MediaFoundationCdmTest, SetServerCertificate_Failure) {
   Initialize();
 
   std::vector<uint8_t> certificate = StringToVector("certificate");
@@ -198,7 +198,7 @@ TEST_F(MediaFoundationCdmTest, SetServerCertificateFailure) {
 
 // HardwareContextReset during SetServerCertificate() will cause the the promise
 // rejected.
-TEST_F(MediaFoundationCdmTest, SetServerCertificateHardwareContextReset) {
+TEST_F(MediaFoundationCdmTest, SetServerCertificate_HardwareContextReset) {
   Initialize();
 
   std::vector<uint8_t> certificate = StringToVector("certificate");
@@ -210,7 +210,7 @@ TEST_F(MediaFoundationCdmTest, SetServerCertificateHardwareContextReset) {
       certificate, std::make_unique<MockCdmPromise>(/*expect_success=*/false));
 }
 
-TEST_F(MediaFoundationCdmTest, GetStatusForPolicyHdcpNoneKeyStatusUsable) {
+TEST_F(MediaFoundationCdmTest, GetStatusForPolicy_HdcpNone_KeyStatusUsable) {
   Initialize();
   CdmKeyInformation::KeyStatus key_status;
   cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersionNone,
@@ -219,7 +219,7 @@ TEST_F(MediaFoundationCdmTest, GetStatusForPolicyHdcpNoneKeyStatusUsable) {
   EXPECT_EQ(CdmKeyInformation::KeyStatus::USABLE, key_status);
 }
 
-TEST_F(MediaFoundationCdmTest, GetStatusForPolicyHdcpV11KeyStatusUsable) {
+TEST_F(MediaFoundationCdmTest, GetStatusForPolicy_HdcpV1_1_KeyStatusUsable) {
   Initialize();
   EXPECT_CALL(is_type_supported_cb_,
               Run("video/mp4;codecs=\"avc1\";features=\"hdcp=1\"", _))
@@ -258,7 +258,7 @@ TEST_F(MediaFoundationCdmTest, CreateSessionAndGenerateRequest) {
 }
 
 // Tests the case where two sessions are being created in parallel.
-TEST_F(MediaFoundationCdmTest, CreateSessionAndGenerateRequestParallel) {
+TEST_F(MediaFoundationCdmTest, CreateSessionAndGenerateRequest_Parallel) {
   Initialize();
 
   std::vector<uint8_t> init_data = StringToVector("init_data");
@@ -479,7 +479,7 @@ TEST_F(MediaFoundationCdmTest, UpdateSession) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmTest, UpdateSessionInvalidSessionId) {
+TEST_F(MediaFoundationCdmTest, UpdateSession_InvalidSessionId) {
   Initialize();
   CreateSessionAndGenerateRequest();
 
@@ -490,7 +490,7 @@ TEST_F(MediaFoundationCdmTest, UpdateSessionInvalidSessionId) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmTest, UpdateSessionFailure) {
+TEST_F(MediaFoundationCdmTest, UpdateSession_Failure) {
   Initialize();
   CreateSessionAndGenerateRequest();
 
@@ -504,7 +504,7 @@ TEST_F(MediaFoundationCdmTest, UpdateSessionFailure) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmTest, UpdateSessionHardwareContextReset) {
+TEST_F(MediaFoundationCdmTest, UpdateSession_HardwareContextReset) {
   Initialize();
   CreateSessionAndGenerateRequest();
 
@@ -537,7 +537,7 @@ TEST_F(MediaFoundationCdmTest, CloseSession) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmTest, CloseSessionFailure) {
+TEST_F(MediaFoundationCdmTest, CloseSession_Failure) {
   Initialize();
   CreateSessionAndGenerateRequest();
 
@@ -549,7 +549,7 @@ TEST_F(MediaFoundationCdmTest, CloseSessionFailure) {
 }
 
 // DRM_E_TEE_INVALID_HWDRM_STATE not handled for CloseSession yet.
-TEST_F(MediaFoundationCdmTest, CloseSessionHardwareContextReset) {
+TEST_F(MediaFoundationCdmTest, CloseSession_HardwareContextReset) {
   Initialize();
   CreateSessionAndGenerateRequest();
 
@@ -575,7 +575,7 @@ TEST_F(MediaFoundationCdmTest, RemoveSession) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmTest, RemoveSessionFailure) {
+TEST_F(MediaFoundationCdmTest, RemoveSession_Failure) {
   Initialize();
   CreateSessionAndGenerateRequest();
 
@@ -586,7 +586,7 @@ TEST_F(MediaFoundationCdmTest, RemoveSessionFailure) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(MediaFoundationCdmTest, RemoveSessionHardwareContextReset) {
+TEST_F(MediaFoundationCdmTest, RemoveSession_HardwareContextReset) {
   Initialize();
   CreateSessionAndGenerateRequest();
 
@@ -625,7 +625,7 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset) {
   CreateSessionAndGenerateRequest();
 }
 
-TEST_F(MediaFoundationCdmTest, HardwareContextResetInitializeFailure) {
+TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
   Initialize();
   CreateSessionAndGenerateRequest();
 

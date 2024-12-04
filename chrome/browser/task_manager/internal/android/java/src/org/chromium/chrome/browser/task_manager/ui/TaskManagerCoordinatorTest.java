@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.task_manager.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.ALL_COLUMN_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.HEADER_PROPERTY_KEYS;
@@ -21,10 +23,13 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
@@ -44,6 +49,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class TaskManagerCoordinatorTest {
@@ -91,29 +98,38 @@ public class TaskManagerCoordinatorTest {
     @Test
     @SmallTest
     public void testTaskProperties() {
-        mTasksModel.add(
-                new ListItem(
-                        RowType.TASK,
-                        new PropertyModel.Builder(mTaskModelKeys)
-                                .with(TASK_ID, 1)
-                                .with(TASK_NAME, "foo")
-                                .with(MEMORY_FOOTPRINT, 1_000_000)
-                                .with(CPU, 0.5F)
-                                .with(PROCESS_ID, 1234)
-                                .with(IS_SELECTED, false)
-                                .build()));
+        PropertyModel task =
+                new PropertyModel.Builder(mTaskModelKeys)
+                        .with(TASK_ID, 1)
+                        .with(TASK_NAME, "foo")
+                        .with(MEMORY_FOOTPRINT, 1024_000)
+                        .with(CPU, 0.5F)
+                        .with(PROCESS_ID, 1234)
+                        .with(IS_SELECTED, false)
+                        .build();
+        mTasksModel.add(new ListItem(RowType.TASK, task));
 
         mRecyclerView.layout(0, 0, 1024, 640); // let the items render
 
         assertNotNull(mHeaderView.findViewById(R.id.task_name));
 
-        TextView taskName =
-                mRecyclerView
-                        .findViewHolderForAdapterPosition(0)
-                        .itemView
-                        .findViewById(R.id.task_name);
+        View taskView = mRecyclerView.findViewHolderForAdapterPosition(0).itemView;
+
+        TextView taskName = taskView.findViewById(R.id.task_name);
+        TextView memoryFootprint = taskView.findViewById(R.id.memory_footprint);
+        TextView cpu = taskView.findViewById(R.id.cpu);
+        TextView processId = taskView.findViewById(R.id.process_id);
+
         assertEquals("foo", taskName.getText().toString());
-        // TODO(crbug.com/380188424): Test other properties on customizing stringification per type.
+        assertEquals("1,000K", memoryFootprint.getText().toString());
+        assertEquals("0.5", cpu.getText().toString());
+        assertEquals("1234", processId.getText().toString());
+
+        task.set(MEMORY_FOOTPRINT, -1);
+        task.set(CPU, Float.NaN);
+
+        assertEquals("–", memoryFootprint.getText().toString());
+        assertEquals("–", cpu.getText().toString());
     }
 
     @Test
@@ -159,5 +175,26 @@ public class TaskManagerCoordinatorTest {
 
         mHeaderModel.set(SORT_DESCRIPTOR, new SortDescriptor(TASK_NAME, false));
         assertNotEquals(defaultText, taskNameHeader.getText().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnCreateContextMenu() {
+        mHeaderModel.set(COLUMNS, new PropertyKey[] {TASK_NAME, CPU});
+
+        // Get a real Menu instance.
+        Menu menu = new PopupMenu(mActivity, null).getMenu();
+
+        mCoordinator.onCreateContextMenuImpl(menu);
+
+        assertEquals(ALL_COLUMN_KEYS.length, menu.size());
+
+        MenuItem taskNameItem = menu.getItem(List.of(ALL_COLUMN_KEYS).indexOf(TASK_NAME));
+        assertNotEquals("", taskNameItem.getTitle());
+        assertTrue(taskNameItem.isCheckable());
+        assertTrue(taskNameItem.isChecked());
+
+        MenuItem processIdItem = menu.getItem(List.of(ALL_COLUMN_KEYS).indexOf(PROCESS_ID));
+        assertFalse(processIdItem.isChecked());
     }
 }

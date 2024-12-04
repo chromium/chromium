@@ -367,7 +367,7 @@ UDIFParser::UDIFParser(ReadStream* stream)
       blocks_(),
       block_size_(kSectorSize) {}
 
-UDIFParser::~UDIFParser() {}
+UDIFParser::~UDIFParser() = default;
 
 bool UDIFParser::Parse() {
   if (!ParseBlkx())
@@ -623,7 +623,7 @@ UDIFPartitionReadStream::UDIFPartitionReadStream(
       chunk_stream_() {
 }
 
-UDIFPartitionReadStream::~UDIFPartitionReadStream() {}
+UDIFPartitionReadStream::~UDIFPartitionReadStream() = default;
 
 bool UDIFPartitionReadStream::Read(base::span<uint8_t> buf,
                                    size_t* bytes_read) {

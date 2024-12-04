@@ -4,6 +4,7 @@
 
 # List of files in //base/tracing/stdlib/chrome and subdirectories.
 chrome_stdlib_sql_files = [
+  "android_input.sql",
   "chrome_scrolls.sql",
   "cpu_powerups.sql",
   "event_latency.sql",

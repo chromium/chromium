@@ -93,8 +93,7 @@ quiche::ObliviousHttpRequest CreateOHttpRequest(
   size_t request_body_size = desired_size - kOhttpHeaderSize;
   request_body.resize(request_body_size, 0x00);
 
-  base::SpanWriter writer(
-      base::as_writable_bytes(base::make_span(request_body)));
+  base::SpanWriter writer(base::as_writable_byte_span(request_body));
 
   // TODO(crbug.com/337917489): Add encryption here for compression scheme, CBOR
   // string length and CBOR string later.
@@ -106,7 +105,7 @@ quiche::ObliviousHttpRequest CreateOHttpRequest(
       base::checked_cast<uint32_t>(maybe_cbor_bytes->size()));
 
   // Add CBOR string.
-  writer.Write(base::as_bytes(base::make_span(*maybe_cbor_bytes)));
+  writer.Write(base::as_byte_span(*maybe_cbor_bytes));
 
   // Add encryption for request body.
   auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(

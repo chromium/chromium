@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_ui.h"
 
 #include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_message_handler.h"
@@ -30,9 +25,7 @@ HealthdInternalsUI::HealthdInternalsUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIHealthdInternalsHost);
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kHealthdInternalsResources,
-                                              kHealthdInternalsResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kHealthdInternalsResources,
                               IDR_HEALTHD_INTERNALS_HEALTHD_INTERNALS_HTML);
 }
 

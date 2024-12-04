@@ -1,0 +1,12 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+include_rules = [
+  "+chrome/browser/signin",
+  "+chrome/browser/ui/test",
+  "+chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/error_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/gaia_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/oobe_ui.h",
+]

@@ -50,8 +50,7 @@ component("system_media_controls") {
     ]
     deps += [
       "//build:branding_buildflags",
-      "//components/dbus/properties",
-      "//components/dbus/thread_linux",
+      "//components/dbus",
       "//dbus",
     ]
   } else if (is_mac) {
@@ -93,7 +92,7 @@ source_set("unit_tests") {
       ":system_media_controls",
       "//base",
       "//base/test:test_support",
-      "//components/dbus/thread_linux",
+      "//components/dbus",
       "//dbus",
       "//dbus:test_support",
       "//testing/gmock",

@@ -542,6 +542,7 @@ CSSTransitionData::TransitionProperty CSSToStyleMap::MapAnimationProperty(
 }
 
 scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
+    const CSSLengthResolver& length_resolver,
     const CSSValue& value) {
   // FIXME: We should probably only call into this function with a valid
   // single timing function value which isn't initial or inherit. We can
@@ -589,14 +590,15 @@ scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
 
   const auto& steps_timing_function =
       To<cssvalue::CSSStepsTimingFunctionValue>(value);
-  return StepsTimingFunction::Create(steps_timing_function.NumberOfSteps(),
-                                     steps_timing_function.GetStepPosition());
+  return StepsTimingFunction::Create(
+      steps_timing_function.NumberOfSteps()->ComputeInteger(length_resolver),
+      steps_timing_function.GetStepPosition());
 }
 
 scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
     StyleResolverState& state,
     const CSSValue& value) {
-  return MapAnimationTimingFunction(value);
+  return MapAnimationTimingFunction(state.CssToLengthConversionData(), value);
 }
 
 void CSSToStyleMap::MapNinePieceImage(StyleResolverState& state,

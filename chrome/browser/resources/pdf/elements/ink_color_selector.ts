@@ -20,6 +20,7 @@ interface ColorOption {
 }
 
 const HIGHLIGHTER_COLORS: ColorOption[] = [
+  // LINT.IfChange(HighlighterColors)
   // Row 1:
   {name: 'highlighterColorLightRed', color: '#f28b82'},
   {name: 'highlighterColorLightYellow', color: '#fdd663'},
@@ -32,9 +33,12 @@ const HIGHLIGHTER_COLORS: ColorOption[] = [
   {name: 'highlighterColorGreen', color: '#25e387'},
   {name: 'highlighterColorBlue', color: '#5379ff'},
   {name: 'highlighterColorOrange', color: '#ff630c'},
+  // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:HighlighterColors)
+
 ];
 
 const PEN_COLORS: ColorOption[] = [
+  // LINT.IfChange(PenColors)
   // Row 1:
   {name: 'penColorBlack', color: '#000000'},
   {name: 'penColorDarkGrey2', color: '#5f6368'},
@@ -59,6 +63,7 @@ const PEN_COLORS: ColorOption[] = [
   {name: 'penColorGreen3', color: '#188038'},
   {name: 'penColorBlue3', color: '#1967d2'},
   {name: 'penColorTan3', color: '#885945'},
+  // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:PenColors)
 ];
 
 /**

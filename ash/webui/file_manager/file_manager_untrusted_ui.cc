@@ -34,8 +34,7 @@ FileManagerUntrustedUI::FileManagerUntrustedUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           kChromeUIFileManagerUntrustedURL);
 
-  untrusted_source->AddResourcePaths(base::make_span(
-      kFileManagerUntrustedResources, kFileManagerUntrustedResourcesSize));
+  untrusted_source->AddResourcePaths(kFileManagerUntrustedResources);
 
   untrusted_source->AddFrameAncestor(GURL(kChromeUIFileManagerURL));
 

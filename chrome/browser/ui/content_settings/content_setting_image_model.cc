@@ -583,7 +583,8 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
 ContentSettingGeolocationImageModel::ContentSettingGeolocationImageModel()
     : ContentSettingImageModel(ImageType::GEOLOCATION, kNotifyAccessibility) {}
 
-ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() {}
+ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() =
+    default;
 
 bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {

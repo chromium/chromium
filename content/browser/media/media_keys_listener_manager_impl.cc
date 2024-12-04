@@ -14,15 +14,15 @@
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/active_media_session_controller.h"
-#include "content/browser/media/system_media_controls_notifier.h"
-#include "content/browser/media/web_app_system_media_controls.h"
+#include "content/browser/media/system_media_controls/system_media_controls_notifier.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls.h"
 #include "content/public/common/content_features.h"
 #include "media/audio/audio_manager.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/idle/idle.h"
 
 #if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
-#include "content/browser/media/web_app_system_media_controls_manager.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls_manager.h"
 #endif  // USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
 
 namespace content {

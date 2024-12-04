@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 
+#include <optional>
+
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -137,8 +139,8 @@ void OmniboxChipButton::SetTheme(OmniboxChipTheme theme) {
   UpdateIconAndColors();
 }
 
-void OmniboxChipButton::SetMessage(std::u16string message) {
-  SetText(message);
+void OmniboxChipButton::SetIcon(const gfx::VectorIcon& icon) {
+  icon_ = &icon;
   UpdateIconAndColors();
 }
 
@@ -170,8 +172,8 @@ void OmniboxChipButton::UpdateIconAndColors() {
   }
   SetEnabledTextColorIds(GetForegroundColorId());
   SetImageModel(views::Button::STATE_NORMAL, GetIconImageModel());
-    ConfigureInkDropForRefresh2023(this, kColorOmniboxChipInkDropHover,
-                                   kColorOmniboxChipInkDropRipple);
+  ConfigureInkDropForRefresh2023(this, kColorOmniboxChipInkDropHover,
+                                 kColorOmniboxChipInkDropRipple);
 }
 
 void OmniboxChipButton::ForceAnimateExpand() {

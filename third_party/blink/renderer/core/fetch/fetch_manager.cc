@@ -437,7 +437,7 @@ class FetchLoaderBase : public GarbageCollectedMixin {
 
   void PerformSchemeFetch(ExceptionState&);
   void PerformNetworkError(
-      const String& message,
+      const String& issue_summary,
       std::optional<base::UnguessableToken> issue_id = std::nullopt);
   void FileIssueAndPerformNetworkError(RendererCorsIssueCode,
                                        int64_t identifier);
@@ -502,16 +502,14 @@ class FetchManager::Loader final
                       FetchManager::Loader* loader,
                       String integrity_metadata,
                       std::optional<IdentityDigest> identity_digest,
-                      const KURL& url,
-                      FetchResponseType response_type)
+                      const KURL& url)
         : body_(body),
           updater_(updater),
           response_(response),
           loader_(loader),
           integrity_metadata_(integrity_metadata),
           identity_digest_(identity_digest),
-          url_(url),
-          response_type_(response_type) {
+          url_(url) {
       // We need to have some kind of integrity metadata to check: either SRI
       // metadata, or an `Identity-Digest` header.
       DCHECK(!integrity_metadata.empty() ||
@@ -555,10 +553,14 @@ class FetchManager::Loader final
           SubresourceIntegrity::ParseIntegrityAttribute(
               integrity_metadata_, metadata_set, &integrity_report);
 
+          const FetchResponseData* data = response_->GetResponse();
+          String raw_headers = data->InternalHeaderList()->GetAsRawString(
+              data->Status(), data->StatusMessage());
           FetchResponseType type =
-              !updater_ ? FetchResponseType::kError : response_type_;
+              !updater_ ? FetchResponseType::kError : data->GetType();
           integrity_failed = !SubresourceIntegrity::CheckSubresourceIntegrity(
-              metadata_set, &buffer_, url_, type, integrity_report);
+              metadata_set, &buffer_, url_, type, raw_headers,
+              integrity_report);
           integrity_report.SendReports(loader_->GetExecutionContext());
         }
         if (!integrity_failed) {
@@ -597,7 +599,6 @@ class FetchManager::Loader final
     String integrity_metadata_;
     std::optional<IdentityDigest> identity_digest_;
     KURL url_;
-    const FetchResponseType response_type_;
     SegmentedBuffer buffer_;
     bool finished_ = false;
   };
@@ -807,8 +808,7 @@ void FetchManager::Loader::DidReceiveResponse(
 
     integrity_verifier_ = MakeGarbageCollected<IntegrityVerifier>(
         underlying, verified, r, this, GetFetchRequestData()->Integrity(),
-        identity_digest, response.CurrentRequestUrl(),
-        r->GetResponse()->GetType());
+        identity_digest, response.CurrentRequestUrl());
   }
 }
 
@@ -917,8 +917,8 @@ void FetchLoaderBase::Start(ExceptionState& exception_state) {
                                   RedirectStatus::kNoRedirect)) {
     // "A network error."
     PerformNetworkError(
-        "Refused to connect to '" + fetch_request_data_->Url().ElidedString() +
-        "' because it violates the document's Content Security Policy.");
+        "Refused to connect because it violates the document's Content "
+        "Security Policy.");
     return;
   }
 
@@ -1063,11 +1063,10 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
           fetch_request_data_->Url().GetString(),
           fetch_request_data_->Origin()->ToString(),
           fetch_request_data_->Url().Protocol(), issue_id);
-      PerformNetworkError(
-          "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
-              ". URL scheme \"" + fetch_request_data_->Url().Protocol() +
-              "\" is not supported.",
-          issue_id);
+      PerformNetworkError("URL scheme \"" +
+                              fetch_request_data_->Url().Protocol() +
+                              "\" is not supported.",
+                          issue_id);
       break;
     }
     case RendererCorsIssueCode::kDisallowedByMode: {
@@ -1077,9 +1076,8 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
                                    fetch_request_data_->Origin()->ToString(),
                                    WTF::g_empty_string, issue_id);
       PerformNetworkError(
-          "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
-              ". Request mode is \"same-origin\" but the URL\'s "
-              "origin is not same as the request origin " +
+          "Request mode is \"same-origin\" but the URL\'s "
+          "origin is not same as the request origin " +
               fetch_request_data_->Origin()->ToString() + ".",
           issue_id);
 
@@ -1092,9 +1090,8 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
                                    fetch_request_data_->Origin()->ToString(),
                                    WTF::g_empty_string, issue_id);
       PerformNetworkError(
-          "Fetch API cannot load " + fetch_request_data_->Url().GetString() +
-              ". Request mode is \"no-cors\" but the redirect mode "
-              "is not \"follow\".",
+          "Request mode is \"no-cors\" but the redirect mode "
+          "is not \"follow\".",
           issue_id);
       break;
     }
@@ -1102,9 +1099,11 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
 }
 
 void FetchLoaderBase::PerformNetworkError(
-    const String& message,
+    const String& issue_summary,
     std::optional<base::UnguessableToken> issue_id) {
-  Failed(message, nullptr, std::nullopt, issue_id);
+  Failed("Fetch API cannot load " + fetch_request_data_->Url().ElidedString() +
+             ". " + issue_summary,
+         nullptr, std::nullopt, issue_id, issue_summary);
 }
 
 void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
@@ -1274,9 +1273,12 @@ bool FetchLoaderBase::AddConsoleMessage(
     std::optional<base::UnguessableToken> issue_id) {
   if (execution_context_->IsContextDestroyed())
     return false;
-  if (!message.empty()) {
+  if (!message.empty() &&
+      !base::FeatureList::IsEnabled(features::kDevToolsImprovedNetworkError)) {
     // CORS issues are reported via network service instrumentation, with the
     // exception of early errors reported in FileIssueAndPerformNetworkError.
+    // We suppress these console messages when the DevToolsImprovedNetworkError
+    // feature is enabled, see http://crbug.com/371523542 for more details.
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kError, message);

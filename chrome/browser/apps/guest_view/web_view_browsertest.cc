@@ -1432,14 +1432,10 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SelectShowHide) {
 #endif
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestChromeExtensionURL) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testChromeExtensionURL", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestChromeExtensionRelativePath) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testChromeExtensionRelativePath",
              "web_view/shim",
              NO_TEST_SERVER);
@@ -1476,8 +1472,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestDisplayBlock) {
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        Shim_TestInlineScriptFromAccessibleResources) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testInlineScriptFromAccessibleResources",
              "web_view/shim",
              NO_TEST_SERVER);
@@ -1649,8 +1643,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestNestedCrossOriginSubframes) {
 #define MAYBE_Shim_TestNestedSubframes Shim_TestNestedSubframes
 #endif
 IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_Shim_TestNestedSubframes) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testNestedSubframes", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -5168,8 +5160,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
 // Tests that a WebView can reload a WebView accessible resource. See
 // https://crbug.com/691941.
 IN_PROC_BROWSER_TEST_P(WebViewTest, ReloadWebviewAccessibleResource) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testReloadWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 
@@ -5218,8 +5208,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, CannotIframeWebviewAccessibleResource) {
 // extension APIs.
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        CallingExtensionAPIsFromWebviewAccessibleResource) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testNavigateGuestToWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NO_TEST_SERVER);
 
@@ -5283,8 +5271,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
 // Tests that a WebView can navigate an iframe to a blob URL that it creates
 // while its main frame is at a WebView accessible resource.
 IN_PROC_BROWSER_TEST_P(WebViewTest, BlobInWebviewAccessibleResource) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testBlobInWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 
@@ -7631,8 +7617,6 @@ IN_PROC_BROWSER_TEST_P(WebViewUsbTest, Shim_TestCannotReuseUsbPairedInTab) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestCannotRequestFonts) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testCannotRequestFonts", "web_view/shim", NEEDS_TEST_SERVER);
 }
 

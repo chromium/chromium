@@ -19,10 +19,6 @@
 
 namespace {
 
-base::span<const uint8_t> ToSpan(std::string_view s) {
-  return base::as_bytes(base::make_span(s));
-}
-
 const trusted_vault_pb::AsymmetricKeyPair* GetKeyPairWithPublicKey(
     const trusted_vault_pb::Vault& vault,
     std::string_view public_key) {
@@ -46,7 +42,8 @@ std::array<uint8_t, 32> HashPIN(std::string_view pin,
   trusted_vault_pb::VaultMetadata metadata;
   CHECK(metadata.ParseFromString(vault.vault_metadata()));
   CHECK_EQ(metadata.hash_type(), trusted_vault_pb::VaultMetadata::SCRYPT);
-  const base::span<const uint8_t> salt = ToSpan(metadata.hash_salt());
+  const base::span<const uint8_t> salt =
+      base::as_byte_span(metadata.hash_salt());
   std::array<uint8_t, 32> hashed;
   CHECK(EVP_PBE_scrypt(pin.data(), pin.size(), salt.data(), salt.size(),
                        metadata.hash_difficulty(), 8, 1,
@@ -116,7 +113,8 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
 
   const std::array<uint8_t, SHA256_DIGEST_LENGTH> pin_hash =
       HashPIN(pin, *vault_it);
-  const auto thm_kf_hash = SHA256Spans(ToSpan("THM_KF_hash"), pin_hash);
+  const auto thm_kf_hash =
+      SHA256Spans(base::byte_span_from_cstring("THM_KF_hash"), pin_hash);
 
   std::string params = "V1 THM_encrypted_recovery_key";
   params += vault_it->vault_parameters().backend_public_key();
@@ -129,12 +127,13 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
           recovery_key_store.endpoint_private_key_bytes());
   const std::vector<uint8_t> encrypted_recovery_key =
       vault_private_key
-          ->Decrypt(thm_kf_hash, ToSpan(params),
-                    ToSpan(vault_it->recovery_key()))
+          ->Decrypt(thm_kf_hash, base::as_byte_span(params),
+                    base::as_byte_span(vault_it->recovery_key()))
           .value();
   const std::vector<uint8_t> recovery_key =
       trusted_vault::SecureBoxSymmetricDecrypt(
-          pin_hash, ToSpan("V1 locally_encrypted_recovery_key"),
+          pin_hash,
+          base::byte_span_from_cstring("V1 locally_encrypted_recovery_key"),
           encrypted_recovery_key)
           .value();
 
@@ -142,11 +141,12 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
       GetKeyPairWithPublicKey(*vault_it, public_key);
   const std::vector<uint8_t> wrapping_key =
       trusted_vault::SecureBoxSymmetricDecrypt(
-          recovery_key, ToSpan("V1 encrypted_application_key"),
-          ToSpan(key_pair->wrapping_key()))
+          recovery_key,
+          base::byte_span_from_cstring("V1 encrypted_application_key"),
+          base::as_byte_span(key_pair->wrapping_key()))
           .value();
-  const std::vector<uint8_t> private_key_contents =
-      Decrypt(wrapping_key, ToSpan(key_pair->wrapped_private_key()));
+  const std::vector<uint8_t> private_key_contents = Decrypt(
+      wrapping_key, base::as_byte_span(key_pair->wrapped_private_key()));
   CHECK_GE(private_key_contents.size(), 32u);
 
   const auto app_private_key =
@@ -160,8 +160,9 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
       membership.keys().at(0);
   const std::vector<uint8_t> security_domain_secret =
       app_private_key
-          ->Decrypt(base::span<const uint8_t>(), ToSpan("V1 shared_key"),
-                    ToSpan(shared_member_key.wrapped_key()))
+          ->Decrypt(base::span<const uint8_t>(),
+                    base::byte_span_from_cstring("V1 shared_key"),
+                    base::as_byte_span(shared_member_key.wrapped_key()))
           .value();
 
   std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_proof;
@@ -172,7 +173,7 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
        expected_proof.data(), &expected_proof_len);
   CHECK_EQ(expected_proof_len, expected_proof.size());
   CHECK(base::span<const uint8_t>(expected_proof) ==
-        ToSpan(shared_member_key.member_proof()));
+        base::as_byte_span(shared_member_key.member_proof()));
 
   return security_domain_secret;
 }

@@ -804,7 +804,7 @@ class InputDataProviderTest : public AshTestBase {
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(InputDataProviderTest, GetConnectedDevicesDeviceInfoMapping) {
+TEST_F(InputDataProviderTest, GetConnectedDevices_DeviceInfoMapping) {
   ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
                          ui::DeviceEvent::ActionType::ADD,
                          base::FilePath("/dev/input/event0"));
@@ -853,7 +853,7 @@ TEST_F(InputDataProviderTest, GetConnectedDevicesDeviceInfoMapping) {
   EXPECT_EQ("Atmel maXTouch Touchscreen", touchscreen->name);
 }
 
-TEST_F(InputDataProviderTest, GetConnectedDevicesHasInternalKeyboard) {
+TEST_F(InputDataProviderTest, GetConnectedDevices_HasInternalKeyboard) {
   // Initialize one internal keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;
   keyboard_devices.push_back(
@@ -882,7 +882,7 @@ TEST_F(InputDataProviderTest, GetConnectedDevicesHasInternalKeyboard) {
   ASSERT_EQ(1ul, keyboards.size());
 }
 
-TEST_F(InputDataProviderTest, GetConnectedDevicesSplitModifierKeyboard) {
+TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
 
@@ -932,7 +932,7 @@ TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboard) {
   ASSERT_EQ(0ul, keyboards.size());
 }
 
-TEST_F(InputDataProviderTest, GetConnectedDevicesAddEventAfterFirstCall) {
+TEST_F(InputDataProviderTest, GetConnectedDevices_AddEventAfterFirstCall) {
   {
     base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
                            std::vector<mojom::TouchDeviceInfoPtr>>
@@ -970,7 +970,7 @@ TEST_F(InputDataProviderTest, GetConnectedDevicesAddEventAfterFirstCall) {
   }
 }
 
-TEST_F(InputDataProviderTest, GetConnectedDevicesAddUnusualDevices) {
+TEST_F(InputDataProviderTest, GetConnectedDevices_AddUnusualDevices) {
   // Add two devices with unusual bus types, and verify connection types.
 
   ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
@@ -1005,7 +1005,7 @@ TEST_F(InputDataProviderTest, GetConnectedDevicesAddUnusualDevices) {
   EXPECT_EQ(ui::kLogitechTouchKeyboardK400.name, keyboard2->name);
 }
 
-TEST_F(InputDataProviderTest, GetConnectedDevicesRemove) {
+TEST_F(InputDataProviderTest, GetConnectedDevices_Remove) {
   ui::DeviceEvent add_touch_event(ui::DeviceEvent::DeviceType::INPUT,
                                   ui::DeviceEvent::ActionType::ADD,
                                   base::FilePath("/dev/input/event1"));
@@ -1056,7 +1056,7 @@ TEST_F(InputDataProviderTest, GetConnectedDevicesRemove) {
   }
 }
 
-TEST_F(InputDataProviderTest, GetConnectedDevicesNoExternalKeyboards) {
+TEST_F(InputDataProviderTest, GetConnectedDevices_NoExternalKeyboards) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kEnableExternalKeyboardsInDiagnostics);
@@ -1197,7 +1197,7 @@ TEST_F(InputDataProviderTest, KeyboardRegionDetection) {
   EXPECT_EQ(std::nullopt, external_keyboard->region_code);
 }
 
-TEST_F(InputDataProviderTest, KeyboardRegionDetectionFailure) {
+TEST_F(InputDataProviderTest, KeyboardRegionDetection_Failure) {
   statistics_provider_.ClearMachineStatistic(system::kRegionKey);
 
   ui::DeviceEvent event_internal(ui::DeviceEvent::DeviceType::INPUT,
@@ -1272,7 +1272,7 @@ TEST_F(InputDataProviderTest, KeyboardNumberPadDetectionInternal) {
             builtin_keyboard->number_pad_present);
 }
 
-TEST_F(InputDataProviderTest, KeyboardTopRightKeyClamshell) {
+TEST_F(InputDataProviderTest, KeyboardTopRightKey_Clamshell) {
   // Devices without a tablet mode switch should be assumed to be clamshells,
   // with a power key in the top-right.
   ui::DeviceEvent event_keyboard(ui::DeviceEvent::DeviceType::INPUT,
@@ -1294,7 +1294,7 @@ TEST_F(InputDataProviderTest, KeyboardTopRightKeyClamshell) {
   EXPECT_EQ(mojom::TopRightKey::kPower, keyboard->top_right_key);
 }
 
-TEST_F(InputDataProviderTest, KeyboardTopRightKeyConvertibleModeSwitchFirst) {
+TEST_F(InputDataProviderTest, KeyboardTopRightKey_Convertible_ModeSwitchFirst) {
   // Devices with a tablet mode switch should be assumed to be convertibles,
   // with a lock key in the top-right.
   ui::DeviceEvent event_mode_switch(ui::DeviceEvent::DeviceType::INPUT,
@@ -1320,7 +1320,7 @@ TEST_F(InputDataProviderTest, KeyboardTopRightKeyConvertibleModeSwitchFirst) {
   EXPECT_EQ(mojom::TopRightKey::kLock, keyboard->top_right_key);
 }
 
-TEST_F(InputDataProviderTest, KeyboardTopRightKeyConvertibleKeyboardFirst) {
+TEST_F(InputDataProviderTest, KeyboardTopRightKey_Convertible_KeyboardFirst) {
   // Devices with a tablet mode switch should be assumed to be convertibles,
   // with a lock key in the top-right, even if we get the tablet mode switch
   // event after the keyboard event.
@@ -1347,7 +1347,7 @@ TEST_F(InputDataProviderTest, KeyboardTopRightKeyConvertibleKeyboardFirst) {
   EXPECT_EQ(mojom::TopRightKey::kLock, keyboard->top_right_key);
 }
 
-TEST_F(InputDataProviderTest, KeyboardTopRightKeyDetachable) {
+TEST_F(InputDataProviderTest, KeyboardTopRightKey_Detachable) {
   // "Internal" keyboards which are connected by USB are actually detachable,
   // and therefore should be assumed to have a lock key in the top-right.
   ui::DeviceEvent event_keyboard(ui::DeviceEvent::DeviceType::INPUT,
@@ -1369,7 +1369,7 @@ TEST_F(InputDataProviderTest, KeyboardTopRightKeyDetachable) {
   EXPECT_EQ(mojom::TopRightKey::kLock, keyboard->top_right_key);
 }
 
-TEST_F(InputDataProviderTest, ObserveConnectedDevicesKeyboards) {
+TEST_F(InputDataProviderTest, ObserveConnectedDevices_Keyboards) {
   FakeConnectedDevicesObserver fake_observer;
   provider_->ObserveConnectedDevices(
       fake_observer.receiver.BindNewPipeAndPassRemote());
@@ -1391,7 +1391,7 @@ TEST_F(InputDataProviderTest, ObserveConnectedDevicesKeyboards) {
   EXPECT_EQ(4u, fake_observer.keyboards_disconnected[0]);
 }
 
-TEST_F(InputDataProviderTest, ObserveConnectedDevicesTouchDevices) {
+TEST_F(InputDataProviderTest, ObserveConnectedDevices_TouchDevices) {
   FakeConnectedDevicesObserver fake_observer;
   provider_->ObserveConnectedDevices(
       fake_observer.receiver.BindNewPipeAndPassRemote());
@@ -1413,7 +1413,7 @@ TEST_F(InputDataProviderTest, ObserveConnectedDevicesTouchDevices) {
   EXPECT_EQ(1u, fake_observer.touch_devices_disconnected[0]);
 }
 
-TEST_F(InputDataProviderTest, ObserveConnectedDevicesNoExternalKeyboards) {
+TEST_F(InputDataProviderTest, ObserveConnectedDevices_NoExternalKeyboards) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kEnableExternalKeyboardsInDiagnostics);
@@ -1468,7 +1468,7 @@ TEST_F(InputDataProviderTest, SillyDeviceDoesNotCrash) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayoutUnknown1) {
+TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayout_Unknown1) {
   statistics_provider_.ClearMachineStatistic(
       system::kKeyboardMechanicalLayoutKey);
 
@@ -1499,7 +1499,7 @@ TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayoutUnknown1) {
   }
 }
 
-TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayoutUnknown2) {
+TEST_F(InputDataProviderTest, GetKeyboardMechanicalLayout_Unknown2) {
   statistics_provider_.SetMachineStatistic(system::kKeyboardMechanicalLayoutKey,
                                            kInvalidMechnicalLayout);
   ui::DeviceEvent add_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,

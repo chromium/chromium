@@ -236,8 +236,8 @@ scoped_refptr<base::SequencedTaskRunner> PerformanceManager::GetTaskRunner() {
 // static
 void PerformanceManager::RecordMemoryMetrics() {
   using QueryScheduler = resource_attribution::internal::QueryScheduler;
-  QueryScheduler::CallWithScheduler(
-      base::BindOnce(&QueryScheduler::RecordMemoryMetrics));
+  QueryScheduler::CallWithScheduler(base::BindOnce(
+      [](QueryScheduler* scheduler) { scheduler->RecordMemoryMetrics(); }));
 }
 
 }  // namespace performance_manager

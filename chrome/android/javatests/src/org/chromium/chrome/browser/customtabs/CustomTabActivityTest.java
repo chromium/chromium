@@ -172,6 +172,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
@@ -708,9 +709,13 @@ public class CustomTabActivityTest {
                 ((ColorDrawable) bottomBar.getBackground()).getColor());
         for (int i = 0; i < numItems; i++) {
             ImageButton button = (ImageButton) bottomBar.getChildAt(i);
+            Assert.assertFalse(button.getDrawable() instanceof TintedDrawable);
             Assert.assertTrue(
                     "Bottom Bar button does not have the correct bitmap.",
                     expectedIcon.sameAs(((BitmapDrawable) button.getDrawable()).getBitmap()));
+            Assert.assertNull(
+                    "Bottom Bar button has color filter.",
+                    ((BitmapDrawable) button.getDrawable()).getColorFilter());
             Assert.assertTrue(
                     "Bottom Bar button is not visible.",
                     button.getVisibility() == View.VISIBLE
@@ -720,6 +725,42 @@ public class CustomTabActivityTest {
                     "Bottom Bar button does not have correct content description",
                     Integer.toString(i + 1),
                     button.getContentDescription());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @DisabledTest(message = "https://crbug.com/382122726")
+    public void testBottomBar_withTint() {
+        final int numItems = 3;
+        final Bitmap expectedIcon = createTestBitmap(48, 24);
+
+        Intent intent = createMinimalCustomTabIntent();
+        ArrayList<Bundle> bundles = new ArrayList<>();
+        for (int i = 1; i <= numItems; i++) {
+            Bundle bundle = makeBottomBarBundle(i, expectedIcon, Integer.toString(i));
+            bundles.add(bundle);
+        }
+        intent.putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, bundles);
+        intent.putExtra(CustomTabsIntent.EXTRA_SECONDARY_TOOLBAR_COLOR, Color.GREEN);
+        // Request tinting.
+        intent.putExtra(CustomTabsIntent.EXTRA_TINT_ACTION_BUTTON, true);
+
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        ViewGroup bottomBar =
+                mCustomTabActivityTestRule
+                        .getActivity()
+                        .findViewById(R.id.custom_tab_bottom_bar_wrapper);
+        for (int i = 0; i < numItems; i++) {
+            ImageButton button = (ImageButton) bottomBar.getChildAt(i);
+            Assert.assertTrue(button.getDrawable() instanceof TintedDrawable);
+            Assert.assertTrue(
+                    "Bottom Bar button does not have the correct bitmap.",
+                    expectedIcon.sameAs(((BitmapDrawable) button.getDrawable()).getBitmap()));
+            Assert.assertNotNull(
+                    "Bottom Bar button does not have color filter.",
+                    ((BitmapDrawable) button.getDrawable()).getColorFilter());
         }
     }
 

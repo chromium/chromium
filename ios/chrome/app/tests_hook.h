@@ -20,6 +20,10 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
+
 namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
@@ -125,6 +129,7 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
 // used if this hook returns null.
 std::unique_ptr<ShareKitService> CreateShareKitService(
     data_sharing::DataSharingService* data_sharing_service,
+    collaboration::CollaborationService* collaboration_service,
     tab_groups::TabGroupSyncService* sync_service);
 
 // Returns a bulk leak check service that should be used when testing. The real

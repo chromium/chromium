@@ -67,7 +67,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
     EXPECT_EQ(expected.relative_bounds, actual.relative_bounds);
   }
 
-  ui::AXNodeData delegate_data() { return delegate_->data(); }
+  const ui::AXNodeData& delegate_data() const { return delegate_->data(); }
 
  protected:
   raw_ptr<Textfield> textfield_ = nullptr;  // Owned by views hierarchy.

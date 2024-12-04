@@ -45,8 +45,8 @@ constexpr char kPhoneNameTwo[] = "Galaxy";
 
 class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
  public:
-  SessionSyncServiceMock() {}
-  ~SessionSyncServiceMock() override {}
+  SessionSyncServiceMock() = default;
+  ~SessionSyncServiceMock() override = default;
 
   MOCK_CONST_METHOD0(GetGlobalIdMapper, syncer::GlobalIdMapper*());
   MOCK_METHOD0(GetOpenTabsUIDelegate, sync_sessions::OpenTabsUIDelegate*());
@@ -60,8 +60,8 @@ class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
 
 class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
  public:
-  OpenTabsUIDelegateMock() {}
-  ~OpenTabsUIDelegateMock() override {}
+  OpenTabsUIDelegateMock() = default;
+  ~OpenTabsUIDelegateMock() override = default;
 
   MOCK_METHOD1(GetAllForeignSessions,
                bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,

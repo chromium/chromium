@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
+#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -354,6 +355,13 @@ PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
 bool MatchScrollButton(const Element& element,
                        const SelectorChecker::SelectorCheckingContext& context,
                        SelectorChecker::MatchResult& result) {
+  // For regular element just set a generic scroll button pseudo style flag,
+  // since we don't know writing mode yet, hence, can not determine the specific
+  // pseudo style flag.
+  if (!element.IsPseudoElement()) {
+    result.dynamic_pseudo = kPseudoIdScrollButton;
+    return true;
+  }
   const ComputedStyle* style = element.ParentComputedStyle();
   CHECK(style);
   PseudoId pseudo_id =
@@ -361,16 +369,7 @@ bool MatchScrollButton(const Element& element,
   // Check that pseudo ids match when checking for pseudo element,
   // but always match if checking for regular element to set the style
   // flag.
-  if ((element.GetPseudoId() == pseudo_id ||
-       (!element.IsPseudoElement() && !context.pseudo_id))) {
-    // Don't set dynamic_pseudo for pseudo element, as it will set
-    // pseudo style flag instead of setting an actual style.
-    if (!element.IsPseudoElement()) {
-      result.dynamic_pseudo = pseudo_id;
-    }
-    return true;
-  }
-  return false;
+  return element.GetPseudoId() == pseudo_id;
 }
 
 bool NeedsScopeActivation(
@@ -1861,6 +1860,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return false;
       }
+      if (auto* scroll_button = DynamicTo<ScrollButtonPseudoElement>(element)) {
+        return scroll_button->IsEnabled();
+      }
       return element.MatchesEnabledPseudoClass();
     }
     case CSSSelector::kPseudoFullPageMedia:
@@ -1877,6 +1879,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                               &force_pseudo_state);
       if (force_pseudo_state) {
         return false;
+      }
+      if (auto* scroll_button = DynamicTo<ScrollButtonPseudoElement>(element)) {
+        return !scroll_button->IsEnabled();
       }
       if (auto* fieldset = DynamicTo<HTMLFieldSetElement>(element)) {
         // <fieldset> should never be considered disabled, but should still

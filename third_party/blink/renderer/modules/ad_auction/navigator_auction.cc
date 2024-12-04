@@ -872,10 +872,11 @@ bool CopyMaxTrustedBiddingSignalsURLLengthFromIdlToMojo(
   }
 
   if (input.maxTrustedBiddingSignalsURLLength() < 0) {
-    exception_state.ThrowTypeError(String::Format(
-        "maxTrustedBiddingSignalsURLLength of interest group "
-        "'%s' is less than 0 which is '%d'.",
-        input.name().Characters8(), input.maxTrustedBiddingSignalsURLLength()));
+    exception_state.ThrowTypeError(
+        String::Format("maxTrustedBiddingSignalsURLLength of interest group "
+                       "'%s' is less than 0 which is '%d'.",
+                       input.name().Latin1().c_str(),
+                       input.maxTrustedBiddingSignalsURLLength()));
     return false;
   }
 

@@ -692,12 +692,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
 
   // Since the site is not installable, the diy install dialog shows up for
   // universal install.
-  std::string bubble_name_to_use =
-      base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)
-          ? "WebAppDiyInstallDialog"
-          : "PWAConfirmationBubbleView";
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       bubble_name_to_use);
+                                       "WebAppDiyInstallDialog");
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::test::WidgetDestroyedWaiter destroyed(widget);
@@ -745,41 +741,20 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
                        MLPipelineNoCrashForExistingTracker) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-  bool universal_install_enabled =
-      base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall);
-
-  if (universal_install_enabled) {
-    // Expect the pipeline to trigger both on the first and second url.
-    ExpectClasificationCallReturnResult(
-        /*site_url=*/GetInstallableAppURL(),
-        /*manifest_id=*/GetInstallableAppURL(),
-        MLInstallabilityPromoter::kShowInstallPromptLabel,
-        TrainingRequestId(1ll), web_contents());
-    ExpectClasificationCallReturnResult(
-        /*site_url=*/GetUrlOuterApp(),
-        /*manifest_id=*/GetUrlOuterApp(),
-        MLInstallabilityPromoter::kShowInstallPromptLabel,
-        TrainingRequestId(2ll), web_contents());
-
-  } else {
-    // This assertion is still needed on CI trybots that do not enable the field
-    // trial configs.
-    ExpectClasificationCallReturnResult(
-        /*site_url=*/GetInstallableAppURL(),
-        /*manifest_id=*/GetInstallableAppURL(),
-        MLInstallabilityPromoter::kShowInstallPromptLabel,
-        TrainingRequestId(1ll), web_contents());
-    ExpectClasificationCallReturnResult(
-        /*site_url=*/GetUrlOuterApp(),
-        /*manifest_id=*/GetUrlOuterApp(),
-        MLInstallabilityPromoter::kShowInstallPromptLabel,
-        TrainingRequestId(2ll), web_contents());
-  }
+  // Expect the pipeline to trigger both on the first and second url.
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
+      web_contents());
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetUrlOuterApp(),
+      /*manifest_id=*/GetUrlOuterApp(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(2ll),
+      web_contents());
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       universal_install_enabled
-                                           ? "WebAppSimpleInstallDialog"
-                                           : "PWAConfirmationBubbleView");
+                                       "WebAppSimpleInstallDialog");
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   EXPECT_TRUE(widget != nullptr);
@@ -850,12 +825,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTestNestedPromptBlocking,
       MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(2ll),
       web_contents());
 
-  std::string bubble_name_to_use =
-      base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)
-          ? "WebAppSimpleInstallDialog"
-          : "PWAConfirmationBubbleView";
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       bubble_name_to_use);
+                                       "WebAppSimpleInstallDialog");
   task_runner_->RunPendingTasks();
   ExpectTrainingResult(TrainingRequestId(2ll), MlInstallResponse::kAccepted);
 
@@ -885,7 +856,7 @@ class MLPromotionInstallDialogBrowserTest
   const std::string GetDialogName() {
     switch (GetParam()) {
       case InstallDialogState::kSimpleInstallDialog:
-        return GetSimpleInstallDialogNameBasedOnUniversalInstall();
+        return "WebAppSimpleInstallDialog";
       case InstallDialogState::kDetailedInstallDialog:
         return "WebAppDetailedInstallDialog";
       case InstallDialogState::kCreateShortcutDialog:
@@ -933,14 +904,6 @@ class MLPromotionInstallDialogBrowserTest
 
   bool IsCurrentTestStateShortcutDialog() {
     return GetParam() == InstallDialogState::kCreateShortcutDialog;
-  }
-
- private:
-  const std::string GetSimpleInstallDialogNameBasedOnUniversalInstall() {
-    if (base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)) {
-      return "WebAppSimpleInstallDialog";
-    }
-    return "PWAConfirmationBubbleView";
   }
 };
 

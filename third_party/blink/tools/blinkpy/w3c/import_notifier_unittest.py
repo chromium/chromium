@@ -56,7 +56,7 @@ class ImportNotifierTest(unittest.TestCase):
         self.host.filesystem.write_text_file(
             self.finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps({
-                'version': 8,
+                'version': 9,
                 'items': {
                     'testharness': {
                         'foo': {

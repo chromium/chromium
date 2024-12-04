@@ -429,7 +429,7 @@ ScopedUserProfile::ScopedUserProfile(const std::wstring& sid,
     token_.Close();
 }
 
-ScopedUserProfile::~ScopedUserProfile() {}
+ScopedUserProfile::~ScopedUserProfile() = default;
 
 bool ScopedUserProfile::IsValid() {
   return token_.IsValid();
@@ -611,7 +611,7 @@ HRESULT ScopedUserProfile::SaveAccountInfo(
   return S_OK;
 }
 
-ScopedUserProfile::ScopedUserProfile() {}
+ScopedUserProfile::ScopedUserProfile() = default;
 
 bool ScopedUserProfile::WaitForProfileCreation(const std::wstring& sid) {
   LOGFN(VERBOSE);

@@ -256,8 +256,7 @@ void SandboxedUnpackerClient::ShouldComputeHashesForOffWebstoreExtension(
 
 void SandboxedUnpackerClient::GetContentVerifierKey(
     base::OnceCallback<void(ContentVerifierKey)> callback) {
-  std::move(callback).Run(ContentVerifierKey(kWebstoreSignaturesPublicKey,
-                                             kWebstoreSignaturesPublicKeySize));
+  std::move(callback).Run(kWebstoreSignaturesPublicKey);
 }
 
 SandboxedUnpacker::ScopedVerifierFormatOverrideForTest::

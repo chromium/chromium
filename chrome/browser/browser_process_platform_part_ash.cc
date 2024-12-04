@@ -40,6 +40,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
@@ -286,8 +287,12 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
         primary_profile);
   }
 
+  // The current sesison may be guest session, where the Profile is
+  // an OTR one. Take the original profile for the case.
+  auto* user = user_manager::UserManager::Get()->FindUserAndModify(CHECK_DEREF(
+      ash::AnnotatedAccountId::Get(primary_profile->GetOriginalProfile())));
   secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
-      g_browser_process->local_state(), primary_profile->GetPrefs(),
+      g_browser_process->local_state(), CHECK_DEREF(user),
       primary_profile->GetProfilePolicyConnector()->IsManaged());
 }
 

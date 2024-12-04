@@ -20,10 +20,12 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -1176,4 +1178,53 @@ TEST_F(TabContainerTest, TabGroupHeaderAccessibleProperties) {
 
   group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kTabList);
+}
+
+TEST_F(TabContainerTest, TabGroupHeaderTooltipText) {
+  auto group = tab_groups::TabGroupId::GenerateNew();
+  AddTab(0, std::nullopt, TabActive::kActive);
+  AddTab(1, group);
+
+  TabGroupHeader* const group_header =
+      tab_container_->GetGroupViews(group)->header();
+
+  group_header->title_->SetText(u"Non empty title text");
+  EXPECT_EQ(
+      group_header->GetTooltipText(gfx::Point()),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, group_header->title_->GetText(),
+          group_header->tab_slot_controller_->GetGroupContentString(
+              group_header->group().value())));
+
+  group_header->title_->SetText(std::u16string());
+  EXPECT_EQ(group_header->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
+                group_header->tab_slot_controller_->GetGroupContentString(
+                    group_header->group().value())));
+}
+
+TEST_F(TabContainerTest, TabGroupHeaderTooltipTextAccessibility) {
+  auto group = tab_groups::TabGroupId::GenerateNew();
+  AddTab(0, std::nullopt, TabActive::kActive);
+  AddTab(1, group);
+
+  TabGroupHeader* const group_header =
+      tab_container_->GetGroupViews(group)->header();
+
+  group_header->title_->SetText(u"Non empty title text");
+  EXPECT_EQ(
+      group_header->GetTooltipText(gfx::Point()),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, group_header->title_->GetText(),
+          group_header->tab_slot_controller_->GetGroupContentString(
+              group_header->group().value())));
+
+  ui::AXNodeData data;
+
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            group_header->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            group_header->GetTooltipText(gfx::Point()));
 }

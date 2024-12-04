@@ -199,10 +199,9 @@ class ProtocolV2 : public ProtocolV1 {
         GetAESSubKey(*shared_key.to_fixed_extent<kSharedKeyLength>());
 
     std::vector<uint8_t> result(AES_BLOCK_SIZE + plaintext.size());
-    const base::span<uint8_t> iv =
-        base::make_span(result).first<AES_BLOCK_SIZE>();
+    const base::span<uint8_t> iv = base::span(result).first<AES_BLOCK_SIZE>();
     const base::span<uint8_t> ciphertext =
-        base::make_span(result).subspan<AES_BLOCK_SIZE>();
+        base::span(result).subspan<AES_BLOCK_SIZE>();
 
     crypto::RandBytes(iv);
 
@@ -285,13 +284,11 @@ class ProtocolV2 : public ProtocolV1 {
   }
 
   static void* KDF(const void* in, size_t in_len, void* out, size_t* out_len) {
-    static_assert(kSharedKeyLength == 2 * SHA256_DIGEST_LENGTH, "");
-    DCHECK_GE(*out_len, static_cast<size_t>(kSharedKeyLength));
-    auto hmac_key_out = base::make_span(
-        static_cast<uint8_t*>(out), static_cast<size_t>(SHA256_DIGEST_LENGTH));
-    auto aes_key_out =
-        base::make_span(static_cast<uint8_t*>(out) + SHA256_DIGEST_LENGTH,
-                        static_cast<size_t>(SHA256_DIGEST_LENGTH));
+    static_assert(kSharedKeyLength == 2 * SHA256_DIGEST_LENGTH);
+    DCHECK_GE(*out_len, kSharedKeyLength);
+    const auto [hmac_key_out, aes_key_out] =
+        base::span(static_cast<uint8_t*>(out), kSharedKeyLength)
+            .split_at<SHA256_DIGEST_LENGTH>();
 
     constexpr uint8_t kHMACKeyInfo[] = "CTAP2 HMAC key";
     constexpr uint8_t kAESKeyInfo[] = "CTAP2 AES key";

@@ -2749,7 +2749,7 @@ TEST_F(CalendarViewWithUpNextViewTest,
 // - Scroll down a couple of months
 // - Up next view should be invisible after scrolling
 // - Scroll back to today's month, and the up next view should remain invisible.
-TEST_F(CalendarViewWithUpNextViewTest, ShouldNotShowUpNextViewAfterScrolling) {
+TEST_F(CalendarViewWithUpNextViewTest, ShouldNotShowUpNextView_AfterScrolling) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   // Set time override.

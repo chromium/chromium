@@ -269,8 +269,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
   viz::TransferableResource resource;
   auto frame_resource = std::make_unique<FrameResource>();
 
-  bool nearest_neighbor =
-      canvas_resource->FilterQuality() == cc::PaintFlags::FilterQuality::kNone;
+  // This property will be overridden by the embedding SurfaceLayer, so this
+  // value will have no effect.
+  const bool nearest_neighbor = false;
 
   canvas_resource->PrepareTransferableResource(
       &resource, &frame_resource->release_callback,
@@ -458,12 +459,6 @@ void CanvasResourceDispatcher::DidDeleteSharedBitmap(
     const viz::SharedBitmapId& id) {
   if (sink_)
     sink_->DidDeleteSharedBitmap(id);
-}
-
-void CanvasResourceDispatcher::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (Client())
-    Client()->SetFilterQualityInResource(filter_quality);
 }
 
 void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(

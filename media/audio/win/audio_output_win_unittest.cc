@@ -522,7 +522,7 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
       const size_t span_size =
           static_cast<size_t>(packet_size_) / sizeof(decltype(*data_.get()));
       uint32_t size = socket_->Receive(
-          base::as_writable_bytes(base::make_span(data_.get(), span_size)));
+          base::as_writable_bytes(base::span(data_.get(), span_size)));
       ++current_packet_count_;
 
       DCHECK_EQ(static_cast<size_t>(size) % sizeof(*audio_bus_->channel(0)),
@@ -603,7 +603,7 @@ DWORD __stdcall SyncSocketThread(void* context) {
 
     // Send the audio data to the Audio Stream.
     // SAFETY: `data`'s allocation has size `ctx.packet_size_bytes`.
-    ctx.socket->Send(UNSAFE_BUFFERS(base::make_span(
+    ctx.socket->Send(UNSAFE_BUFFERS(base::span(
         reinterpret_cast<uint8_t*>(data.get()), ctx.packet_size_bytes)));
   }
 

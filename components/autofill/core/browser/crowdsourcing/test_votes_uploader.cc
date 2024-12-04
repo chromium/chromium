@@ -14,7 +14,7 @@ TestVotesUploader::TestVotesUploader(BrowserAutofillManager* owner)
     : VotesUploader(owner) {}
 TestVotesUploader::~TestVotesUploader() = default;
 
-void TestVotesUploader::UploadVotesAndLogQuality(
+void TestVotesUploader::UploadVote(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
@@ -53,16 +53,13 @@ void TestVotesUploader::UploadVotesAndLogQuality(
     }
   }
 
-  VotesUploader::UploadVotesAndLogQuality(std::move(submitted_form),
-                                          interaction_time, submission_time,
-                                          observed_submission, source_id);
+  VotesUploader::UploadVote(std::move(submitted_form), interaction_time,
+                            submission_time, observed_submission, source_id);
 }
 
-void TestVotesUploader::StoreUploadVotesAndLogQualityCallback(
-    FormSignature form_signature,
-    base::OnceClosure callback) {
-  VotesUploader::StoreUploadVotesAndLogQualityCallback(form_signature,
-                                                       std::move(callback));
+void TestVotesUploader::QueueVote(FormSignature form_signature,
+                                  base::OnceClosure callback) {
+  VotesUploader::QueueVote(form_signature, std::move(callback));
   run_loop_->Quit();
 }
 

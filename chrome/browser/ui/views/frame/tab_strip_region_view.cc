@@ -128,7 +128,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   std::unique_ptr<TabStripComboButton> tab_strip_combo_button;
   std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<GlicButton> glic_button;
+  std::unique_ptr<glic::GlicButton> glic_button;
 #endif  // BUILDFLAG(ENABLE_GLIC)
   if (browser &&
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
@@ -140,7 +140,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       tab_search_container = std::make_unique<TabSearchContainer>(
           tab_strip_->controller(), browser->GetTabStripModel(),
           render_tab_search_before_tab_strip_, this, browser,
-          browser->GetFeatures().tab_declutter_controller());
+          browser->GetFeatures().tab_declutter_controller(),
+          /*anchor_view=*/nullptr, tab_strip_);
       tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                         views::LayoutAlignment::kCenter);
     }
@@ -157,7 +158,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
 #if BUILDFLAG(ENABLE_GLIC)
     if (GlicEnabling::IsEnabledByFlags()) {
-      glic_button = std::make_unique<GlicButton>(tab_strip_->controller());
+      glic_button =
+          std::make_unique<glic::GlicButton>(tab_strip_->controller());
       glic_button->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kCenter);
       glic_button->SetProperty(

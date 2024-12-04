@@ -19,6 +19,8 @@ TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES = [
     '_android_monochrome',
     '_android_monochrome_bundle',
     '_android_webview',
+    '_android_trichrome_chrome_bundle',
+    '_android_trichrome_chrome_64_32_bundle',
 ]
 
 if os.path.exists(_CLANK_LIST_FILEPATH):

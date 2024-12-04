@@ -295,13 +295,15 @@ void OAuthMultiloginHelper::StartSettingCookies(
       // Permit it to set a SameSite cookie if it wants to.
       options.set_same_site_cookie_context(
           net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+      net::CookieInclusionStatus cookie_inclusion_status;
+      cookie_inclusion_status.AddExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
       cookie_manager->SetCanonicalCookie(
           cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
           options,
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               std::move(callback),
-              net::CookieAccessResult(net::CookieInclusionStatus(
-                  net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
+              net::CookieAccessResult(cookie_inclusion_status)));
     } else {
       LOG(ERROR) << "Duplicate cookie found: " << cookie.Name() << " "
                  << cookie.Domain();

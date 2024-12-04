@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 
 #include <algorithm>
@@ -216,9 +211,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddString("declutterBody",
                     l10n_util::GetStringFUTF16(IDS_DECLUTTER_BODY, u"7"));
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
-      IDR_TAB_SEARCH_TAB_SEARCH_HTML);
+  webui::SetupWebUIDataSource(source, kTabSearchResources,
+                              IDR_TAB_SEARCH_TAB_SEARCH_HTML);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

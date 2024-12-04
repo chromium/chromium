@@ -350,7 +350,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoCheckMark)
     DEFINE_STRING_MAPPING(PseudoBefore)
     DEFINE_STRING_MAPPING(PseudoAfter)
-    DEFINE_STRING_MAPPING(PseudoSelectArrow)
+    DEFINE_STRING_MAPPING(PseudoPickerIcon)
     DEFINE_STRING_MAPPING(PseudoMarker)
     DEFINE_STRING_MAPPING(PseudoBackdrop)
     DEFINE_STRING_MAPPING(PseudoLang)
@@ -856,6 +856,7 @@ const char kScrollbarChanged[] = "Scrollbar changed";
 const char kDisplayLock[] = "Display lock";
 const char kDevtools[] = "Inspected by devtools";
 const char kAnchorPositioning[] = "Anchor positioning";
+const char kScrollMarkersChanged[] = "::scroll-markers changed";
 }  // namespace layout_invalidation_reason
 
 void inspector_layout_invalidation_tracking_event::Data(

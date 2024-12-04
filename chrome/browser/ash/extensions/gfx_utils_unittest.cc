@@ -31,7 +31,7 @@ constexpr char kKeepExtensionId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 
 class DualBadgeMapTest : public ExtensionServiceTestBase {
  public:
-  DualBadgeMapTest() {}
+  DualBadgeMapTest() = default;
 
   DualBadgeMapTest(const DualBadgeMapTest&) = delete;
   DualBadgeMapTest& operator=(const DualBadgeMapTest&) = delete;

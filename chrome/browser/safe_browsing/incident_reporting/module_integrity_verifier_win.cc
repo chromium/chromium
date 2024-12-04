@@ -314,10 +314,10 @@ bool GetCodeSpans(const base::win::PEImage& mem_peimage,
                               mem_code_header->SizeOfRawData);
   // SAFETY: `mem_peimage` is the current PEImage loaded in memory. That
   // means its headers have already been validated and can be trusted.
-  mem_code_data = UNSAFE_BUFFERS(base::make_span(
-      reinterpret_cast<uint8_t*>(
-          mem_peimage.RVAToAddr(mem_code_header->VirtualAddress)),
-      code_size));
+  mem_code_data = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<uint8_t*>(
+                     mem_peimage.RVAToAddr(mem_code_header->VirtualAddress)),
+                 code_size));
 
   // Get the address of the code section in the module mapped as data from disk.
   DWORD disk_code_offset = 0;

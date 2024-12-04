@@ -651,8 +651,7 @@ bool FakeDMServer::WriteURLToPipe(base::ScopedFD&& startup_pipe) {
                          server_url.host().c_str(), server_url.port().c_str());
 
   base::File pipe_writer(startup_pipe.release());
-  if (!pipe_writer.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::make_span(server_data)))) {
+  if (!pipe_writer.WriteAtCurrentPosAndCheck(base::as_byte_span(server_data))) {
     LOG(ERROR) << "Failed to write the server url data to the pipe, data: "
                << server_data;
     return false;

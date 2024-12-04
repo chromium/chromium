@@ -261,14 +261,6 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      showMeteredToggle_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('showMeteredToggle') &&
-              loadTimeData.getBoolean('showMeteredToggle');
-        },
-      },
-
       /**
        * Whether to show the Hidden toggle on configured wifi networks (flag).
        */
@@ -2003,8 +1995,7 @@ export class SettingsInternetDetailPageElement extends
 
   private showMetered_(): boolean {
     const managedProperties = this.managedProperties_;
-    return this.showMeteredToggle_ && !!managedProperties &&
-        this.isRemembered_(managedProperties) &&
+    return !!managedProperties && this.isRemembered_(managedProperties) &&
         (managedProperties.type === NetworkType.kCellular ||
          managedProperties.type === NetworkType.kWiFi);
   }

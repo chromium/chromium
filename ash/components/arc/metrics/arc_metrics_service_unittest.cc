@@ -168,7 +168,7 @@ class ArcMetricsServiceTest : public testing::Test {
 };
 
 // Tests that ReportBootProgress() actually records UMA stats.
-TEST_F(ArcMetricsServiceTest, ReportBootProgressFirstBoot) {
+TEST_F(ArcMetricsServiceTest, ReportBootProgress_FirstBoot) {
   // Start the full ARC container at t=10. Also set boot_progress_start to 10,
   // boot_progress_preload_start to 11, and so on.
   constexpr uint64_t kArcStartTimeMs = 10;
@@ -187,7 +187,7 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgressFirstBoot) {
 }
 
 // Does the same but with negative values and FIRST_BOOT_AFTER_UPDATE.
-TEST_F(ArcMetricsServiceTest, ReportBootProgressFirstBootAfterUpdate) {
+TEST_F(ArcMetricsServiceTest, ReportBootProgress_FirstBootAfterUpdate) {
   // Start the full ARC container at t=10. Also set boot_progress_start to 5,
   // boot_progress_preload_start to 7, and so on. This can actually happen
   // because the mini container can finish up to boot_progress_preload_end
@@ -211,7 +211,7 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgressFirstBootAfterUpdate) {
 }
 
 // Does the same but with REGULAR_BOOT.
-TEST_F(ArcMetricsServiceTest, ReportBootProgressRegularBoot) {
+TEST_F(ArcMetricsServiceTest, ReportBootProgress_RegularBoot) {
   constexpr uint64_t kArcStartTimeMs = 10;
   SetArcStartTimeInMs(kArcStartTimeMs);
   std::vector<mojom::BootProgressEventPtr> events(
@@ -225,7 +225,7 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgressRegularBoot) {
 }
 
 // Tests that no UMA is recorded when nothing is reported.
-TEST_F(ArcMetricsServiceTest, ReportBootProgressEmptyResults) {
+TEST_F(ArcMetricsServiceTest, ReportBootProgress_EmptyResults) {
   SetArcStartTimeInMs(100);
   std::vector<mojom::BootProgressEventPtr> events;  // empty
 
@@ -236,7 +236,7 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgressEmptyResults) {
 }
 
 // Tests that no UMA is recorded when BootType is invalid.
-TEST_F(ArcMetricsServiceTest, ReportBootProgressInvalidBootType) {
+TEST_F(ArcMetricsServiceTest, ReportBootProgress_InvalidBootType) {
   SetArcStartTimeInMs(100);
   std::vector<mojom::BootProgressEventPtr> events(
       GetBootProgressEvents(123, 456));
@@ -347,7 +347,7 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents) {
       }));
 }
 
-TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEventsNoArcUpgradedEvent) {
+TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents_NoArcUpgradedEvent) {
   constexpr uint64_t kArcStartTimeMs = 10;
   std::vector<mojom::BootProgressEventPtr> events(
       GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
@@ -395,7 +395,7 @@ TEST_F(ArcMetricsServiceTest, BootTypeObserver) {
   service()->RemoveBootTypeObserver(&observer);
 }
 
-TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStartedNoUsageReported) {
+TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_NoUsageReported) {
   base::HistogramTester tester;
 
   service()->OnArcSessionStopped();
@@ -404,7 +404,7 @@ TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStartedNoUsageReported) {
                             static_cast<base::HistogramBase::Sample>(0), 1);
 }
 
-TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStartedOneUsageReported) {
+TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_OneUsageReported) {
   base::HistogramTester tester;
 
   service()->ReportWebViewProcessStarted();
@@ -414,7 +414,7 @@ TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStartedOneUsageReported) {
                             static_cast<base::HistogramBase::Sample>(1), 1);
 }
 
-TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStartedSomeUsageReported) {
+TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_SomeUsageReported) {
   base::HistogramTester tester;
 
   // 3 sessions with webview reported in 2 sessions.
@@ -432,7 +432,7 @@ TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStartedSomeUsageReported) {
                            static_cast<base::HistogramBase::Sample>(1), 2);
 }
 
-TEST_F(ArcMetricsServiceTest, ReportArcKeyMintErrorSomeErrorReported) {
+TEST_F(ArcMetricsServiceTest, ReportArcKeyMintError_SomeErrorReported) {
   base::HistogramTester tester;
 
   service()->ReportArcKeyMintError(arc::mojom::ArcKeyMintError::kUnknownError);

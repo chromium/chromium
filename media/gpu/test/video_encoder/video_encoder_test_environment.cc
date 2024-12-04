@@ -286,13 +286,15 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   std::vector<base::test::FeatureRef> combined_disabled_features(
       disabled_features);
 #if BUILDFLAG(USE_VAAPI)
-  // TODO(crbug.com/41380519): remove once enabled by default.
-  combined_enabled_features.push_back(media::kVaapiLowPowerEncoderGen9x);
-
   // Disable this feature so that the encoder test can test a resolution
   // which is denied for the sake of performance. See crbug.com/1008491.
   combined_disabled_features.push_back(
       media::kVaapiEnforceVideoMinMaxResolution);
+#endif
+
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+  // TODO(b/378401081): remove once enabled by default.
+  combined_enabled_features.push_back(media::kVaapiAV1TemporalLayerHWEncoding);
 #endif
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)

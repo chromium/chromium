@@ -123,7 +123,7 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
   AdTaggingBrowserTest(const AdTaggingBrowserTest&) = delete;
   AdTaggingBrowserTest& operator=(const AdTaggingBrowserTest&) = delete;
 
-  ~AdTaggingBrowserTest() override {}
+  ~AdTaggingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();

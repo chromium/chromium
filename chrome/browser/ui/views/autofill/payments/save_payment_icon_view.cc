@@ -74,15 +74,12 @@ void SavePaymentIconView::UpdateImpl() {
   bool should_show =
       command_enabled && !delegate()->ShouldHidePageActionIcon(this);
 
-  // TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING buildflag.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Show the icon if the Desktop to iOS payment promo is currently being shown,
   // and check the command_id_ to only show for one of the instances of
   // SavePaymentIconView.
   should_show = should_show ||
                 (command_id_ == IDC_SAVE_CREDIT_CARD_FOR_PAGE &&
                  IOSPromoBubble::IsPromoTypeVisible(IOSPromoType::kPayment));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   SetVisible(should_show);
 

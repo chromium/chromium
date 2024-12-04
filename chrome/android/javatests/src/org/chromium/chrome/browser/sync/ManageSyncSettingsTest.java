@@ -1082,9 +1082,7 @@ public class ManageSyncSettingsTest {
     @DisabledTest(message = "crbug.com/380024812")
     @Feature({"Sync", "RenderTest"})
     public void testSigninSettingsTopAvatarWithNoName() throws Exception {
-        mSyncTestRule
-                .getSigninTestRule()
-                .addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME);
+        mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));

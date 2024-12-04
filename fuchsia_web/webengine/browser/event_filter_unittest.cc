@@ -170,7 +170,7 @@ TEST_F(EventFilterTest, DenyUnknown) {
   EXPECT_TRUE(event2.stopped_propagation());
 }
 
-TEST_F(EventFilterTest, AllowUnknownAllowAllAfterDenyAll) {
+TEST_F(EventFilterTest, AllowUnknown_AllowAllAfterDenyAll) {
   event_filter_.ConfigureInputTypes(fuchsia::web::InputTypes::ALL,
                                     fuchsia::web::AllowInputState::DENY);
   event_filter_.ConfigureInputTypes(fuchsia::web::InputTypes::ALL,
@@ -181,7 +181,7 @@ TEST_F(EventFilterTest, AllowUnknownAllowAllAfterDenyAll) {
   EXPECT_FALSE(event.stopped_propagation());
 }
 
-TEST_F(EventFilterTest, DenyUnknownAllowSomeAfterDenyAll) {
+TEST_F(EventFilterTest, DenyUnknown_AllowSomeAfterDenyAll) {
   event_filter_.ConfigureInputTypes(fuchsia::web::InputTypes::ALL,
                                     fuchsia::web::AllowInputState::DENY);
   event_filter_.ConfigureInputTypes(fuchsia::web::InputTypes::MOUSE_CLICK,

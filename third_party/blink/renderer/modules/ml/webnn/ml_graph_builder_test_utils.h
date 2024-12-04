@@ -27,7 +27,7 @@ MLOperand* BuildInput(ScriptState* script_state,
                       V8MLOperandDataType::Enum data_type,
                       ExceptionState& exception_state);
 
-NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
+MaybeShared<DOMArrayBufferView> CreateDOMArrayBufferView(
     size_t size,
     V8MLOperandDataType::Enum data_type);
 
@@ -37,7 +37,7 @@ MLOperand* BuildConstant(
     const Vector<uint32_t>& dimensions,
     V8MLOperandDataType::Enum data_type,
     ExceptionState& exception_state,
-    std::optional<NotShared<DOMArrayBufferView>> buffer_view = std::nullopt);
+    std::optional<MaybeShared<DOMArrayBufferView>> buffer_view = std::nullopt);
 
 }  // namespace blink
 

@@ -24,13 +24,16 @@
 namespace {
 constexpr int kCRTabSearchCornerRadius = 10;
 constexpr int kCRTabSearchFlatCornerRadius = 4;
+constexpr int kComboButtonFlatCornerRadius = 0;
 }  // namespace
 
 TabSearchButton::TabSearchButton(
     TabStripController* tab_strip_controller,
     BrowserWindowInterface* browser_window_interface,
     Edge fixed_flat_edge,
-    Edge animated_flat_edge)
+    Edge animated_flat_edge,
+    views::View* anchor_view,
+    TabStrip* tab_strip)
     : TabStripControlButton(tab_strip_controller,
                             PressedCallback(),
                             vector_icons::kExpandMoreIcon,
@@ -38,7 +41,9 @@ TabSearchButton::TabSearchButton(
                             animated_flat_edge),
       tab_search_bubble_host_(
           std::make_unique<TabSearchBubbleHost>(this,
-                                                browser_window_interface)) {
+                                                browser_window_interface,
+                                                anchor_view,
+                                                tab_strip->AsWeakPtr())) {
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
@@ -74,7 +79,9 @@ int TabSearchButton::GetCornerRadius() const {
 }
 
 int TabSearchButton::GetFlatCornerRadius() const {
-  return kCRTabSearchFlatCornerRadius;
+  return features::IsTabstripComboButtonEnabled()
+             ? kComboButtonFlatCornerRadius
+             : kCRTabSearchFlatCornerRadius;
 }
 
 BEGIN_METADATA(TabSearchButton)

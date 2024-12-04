@@ -85,6 +85,13 @@ class AccountExtensionTracker : public KeyedService,
   // extension with the given `extension_id` is installed.
   void OnSignInInitiatedFromExtensionPromo(const ExtensionId& extension_id);
 
+  // Whether the given `extension` can be uploaded to/associated with the
+  // current signed in user.
+  bool CanUploadAsAccountExtension(const Extension& extension) const;
+
+  void SetAccountExtensionTypeForTesting(const ExtensionId& extension_id,
+                                         AccountExtensionType type);
+
  private:
   // Sets the extension's AccountExtensionType. Called when the extension is
   // installed (not updated) or when there is incoming sync data for the

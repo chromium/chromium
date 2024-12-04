@@ -398,15 +398,6 @@ public class ShoppingService {
                 .isMerchantViewerEnabled(mNativeShoppingServiceAndroid, this);
     }
 
-    // This is a feature check for the "price tracking", which will return true if the user has the
-    // feature flag enabled or (if applicable) is in an eligible country and locale.
-    public boolean isCommercePriceTrackingEnabled() {
-        if (mNativeShoppingServiceAndroid == 0) return false;
-
-        return ShoppingServiceJni.get()
-                .isCommercePriceTrackingEnabled(mNativeShoppingServiceAndroid, this);
-    }
-
     // This is a feature check for the "price insights", which will return true
     // if the user has the feature flag enabled, has MSBB enabled, and (if
     // applicable) is in an eligible country and locale.
@@ -656,9 +647,6 @@ public class ShoppingService {
         boolean isShoppingListEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
 
         boolean isMerchantViewerEnabled(long nativeShoppingServiceAndroid, ShoppingService caller);
-
-        boolean isCommercePriceTrackingEnabled(
-                long nativeShoppingServiceAndroid, ShoppingService caller);
 
         void getPriceInsightsInfoForUrl(
                 long nativeShoppingServiceAndroid,

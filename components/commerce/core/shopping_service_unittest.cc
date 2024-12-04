@@ -846,9 +846,9 @@ TEST_P(ShoppingServiceTest, TestProductSpecificationsUrlCountMetrics) {
   histogram_tester.ExpectUniqueSample("Commerce.Compare.Table.ColumnCount", 2,
                                       1);
   histogram_tester.ExpectTotalCount(
-      "Commerce.Compare.Table.PercentageValidProducts", 1);
+      "Commerce.Compare.Table.PercentageValidProducts2", 1);
   histogram_tester.ExpectUniqueSample(
-      "Commerce.Compare.Table.PercentageValidProducts", 0.5f, 1);
+      "Commerce.Compare.Table.PercentageValidProducts2", 50, 1);
 
   DidNavigatePrimaryMainFrame(&web1);
   DidNavigatePrimaryMainFrame(&web2);

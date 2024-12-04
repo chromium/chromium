@@ -46,7 +46,7 @@ namespace web_app {
 
 class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
  protected:
-  WebAppProtocolHandlerRegistrationWinTest() {}
+  WebAppProtocolHandlerRegistrationWinTest() = default;
 
   void SetUp() override {
     registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);

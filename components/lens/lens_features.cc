@@ -196,12 +196,6 @@ constexpr base::FeatureParam<int> kLensOverlaySignificantRegionMinArea{
 constexpr base::FeatureParam<int> kLensOverlayMaxSignificantRegions{
     &kLensOverlay, "max-significant-regions", 100};
 
-constexpr base::FeatureParam<int> kLensOverlayLivePageBlurRadiusPixels{
-    &kLensOverlay, "live-page-blur-radius-pixels", 200};
-
-constexpr base::FeatureParam<bool> kLensOverlayUseCustomBlur{
-    &kLensOverlay, "use-custom-blur", true};
-
 constexpr base::FeatureParam<int> kLensOverlayCustomBlurBlurRadiusPixels{
     &kLensOverlay, "custom-blur-blur-radius-pixels", 60};
 
@@ -297,6 +291,10 @@ constexpr base::FeatureParam<bool>
     kShowContextualSearchboxGhostLoaderLoadingState{
         &kLensOverlayContextualSearchbox,
         "show-contextual-searchbox-ghost-loader-loading-state", true};
+
+constexpr base::FeatureParam<base::TimeDelta> kLensSearchboxAutocompleteTimeout{
+    &kLensOverlayContextualSearchbox, "lens-searchbox-autocomplete-timeout",
+    base::Milliseconds(3000)};
 
 constexpr base::FeatureParam<bool> kShowContextualSearchboxSearchSuggest{
     &kLensOverlayContextualSearchbox,
@@ -666,14 +664,6 @@ double GetLensOverlayPostSelectionComparisonThreshold() {
   return kLensOverlayPostSelectionComparisonThreshold.Get();
 }
 
-int GetLensOverlayLivePageBlurRadiusPixels() {
-  return kLensOverlayLivePageBlurRadiusPixels.Get();
-}
-
-bool GetLensOverlayUseCustomBlur() {
-  return kLensOverlayUseCustomBlur.Get();
-}
-
 int GetLensOverlayCustomBlurBlurRadiusPixels() {
   return kLensOverlayCustomBlurBlurRadiusPixels.Get();
 }
@@ -757,6 +747,10 @@ std::string GetLensOverlayTranslateEndpointURL() {
 
 bool ShowContextualSearchboxGhostLoaderLoadingState() {
   return kShowContextualSearchboxGhostLoaderLoadingState.Get();
+}
+
+base::TimeDelta GetLensSearchboxAutocompleteTimeout() {
+  return kLensSearchboxAutocompleteTimeout.Get();
 }
 
 std::string GetLensOverlayTranslateSourceLanguages() {

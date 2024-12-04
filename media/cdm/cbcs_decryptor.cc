@@ -101,8 +101,7 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
     // remain where the pattern is terminated by the byte length of the range
     // BytesOfProtectedData, is left unencrypted."
     if (is_encrypted_blocks) {
-      if (!aes_cbc_crypto.Decrypt(base::make_span(src, bytes_to_process),
-                                  dest)) {
+      if (!aes_cbc_crypto.Decrypt(base::span(src, bytes_to_process), dest)) {
         return false;
       }
     } else {
@@ -182,9 +181,9 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
       auto [dest_cypher, dest_rem] = dest.split_at(subsample.cypher_bytes);
       src = src_rem;
       dest = dest_rem;
-      if (!DecryptWithPattern(
-              key, base::as_bytes(base::make_span(decrypt_config->iv())),
-              pattern, src_cypher, dest_cypher.data())) {
+      if (!DecryptWithPattern(key,
+                              base::as_bytes(base::span(decrypt_config->iv())),
+                              pattern, src_cypher, dest_cypher.data())) {
         return nullptr;
       }
     }

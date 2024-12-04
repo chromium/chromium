@@ -9,7 +9,6 @@
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../ai_page/ai_page.js';
 import '../appearance_page/appearance_page.js';
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';

@@ -117,7 +117,7 @@
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlight_type.h"
@@ -507,7 +507,7 @@ static constexpr uint32_t kMaxStaticTextLength = 3227574;
 
 std::string TruncateString(const String& str,
                            uint32_t max_len = kMaxStringAttributeLength) {
-  auto str_utf8 = str.Utf8(kStrictUTF8Conversion);
+  auto str_utf8 = str.Utf8(Utf8ConversionMode::kStrict);
   if (str_utf8.size() > max_len) {
     std::string truncated;
     base::TruncateUTF8ToByteSize(str_utf8, max_len, &truncated);
@@ -709,19 +709,16 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
     }
     ancestor->SetHasDirtyDescendants(true);
   }
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   // Walk up the tree looking for dirty bits that failed to be set. If any
   // are found, this is a bug.
-  bool fail = false;
   for (auto* obj = ParentObject(); obj; obj = obj->ParentObject()) {
     if (obj->CachedIsIncludedInTree() && !obj->has_dirty_descendants_) {
-      fail = true;
-      break;
+      NOTREACHED() << "Failed to set dirty bits on some ancestors:\n"
+                   << ParentChainToStringHelper(this);
     }
   }
-  DCHECK(!fail) << "Failed to set dirty bits on some ancestors:\n"
-                << ParentChainToStringHelper(this);
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
 }
 
 void AXObject::Init(AXObject* parent) {
@@ -1168,7 +1165,7 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
   return cache.Get(parent_node);
 }
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 std::string AXObject::GetAXTreeForThis() const {
   return TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(), this);
 }
@@ -3708,8 +3705,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     OnInheritedCachedValuesChanged();
   }
 
-#if DCHECK_IS_ON()
-  DCHECK(!NeedsToUpdateCachedValues())
+#if defined(AX_FAIL_FAST_BUILD)
+  CHECK(!NeedsToUpdateCachedValues())
       << "While recomputing cached values, they were invalidated again.";
   if (included_in_tree_changed) {
     AXObjectCache().UpdateIncludedNodeCount(this);
@@ -5726,6 +5723,10 @@ ax::mojom::blink::Role AXObject::DetermineRawAriaRole() const {
 }
 
 ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
+  if (!GetElement()) {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+
   ax::mojom::blink::Role role = DetermineRawAriaRole();
 
   if ((role == ax::mojom::blink::Role::kForm ||
@@ -5751,12 +5752,17 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
   // It also states user agents should ignore the presentational role if
   // the element has global ARIA states and properties.
   if (ui::IsPresentational(role)) {
-    if (IsFrame(GetNode()))
+    if (IsFrame(GetNode())) {
       return ax::mojom::blink::Role::kIframePresentational;
-    if ((GetElement() && GetElement()->SupportsFocus(
-                             Element::UpdateBehavior::kNoneForAccessibility) !=
-                             FocusableState::kNotFocusable) ||
-        ElementHasAnyAriaAttribute(true /* does_undo_role_presentation */)) {
+    }
+    // Focusable nodes can never be presentational.
+    if (GetElement()->SupportsFocus(
+            Element::UpdateBehavior::kNoneForAccessibility) !=
+        FocusableState::kNotFocusable) {
+      return ax::mojom::blink::Role::kUnknown;
+    }
+    // ARIA attributes undoe presentational roles unless its a custom element.
+    if (ElementHasAnyAriaAttribute(true /* does_undo_role_presentation */)) {
       // Must be exposed with a role if focusable or has a global ARIA
       // property that is allowed in this context. See
       // https://w3c.github.io/aria/#presentation for more information about

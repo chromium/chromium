@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
+import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleBuilder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -180,6 +181,7 @@ import org.chromium.chrome.browser.reengagement.ReengagementNotificationControll
 import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
@@ -227,6 +229,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -234,6 +237,7 @@ import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactory;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
@@ -265,6 +269,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
+import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -1884,7 +1889,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     archivedOrchestrator
                             .getTabArchiver()
                             .unarchiveAndRestoreTabs(
-                                    tabModel.getTabCreator(), Arrays.asList(archivedTab), true);
+                                    tabModel.getTabCreator(),
+                                    Arrays.asList(archivedTab),
+                                    /* updateTimestamp= */ true,
+                                    /* areTabsBeingOpened= */ false);
                 } else {
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
                 }
@@ -2093,6 +2101,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         }
         mMultiInstanceManager.moveTabToWindow(this, tab, 0);
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
+        DragDropMetricUtils.recordTabDragDropType(
+                ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
+                AppHeaderUtils.isAppInDesktopWindow(
+                        mRootUiCoordinator.getDesktopWindowStateManager()));
         return true;
     }
 
@@ -2164,7 +2176,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 mHubManagerSupplier,
                 mIntentMetadataOneshotSupplier,
                 mLayoutStateProviderSupplier,
-                this::getLastUserInteractionTime,
                 getBrowserControlsManager(),
                 getWindowAndroid(),
                 getLifecycleDispatcher(),
@@ -2368,7 +2379,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         if (ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled()) {
             AuxiliarySearchModuleBuilder auxiliarySearchModuleBuilder =
-                    new AuxiliarySearchModuleBuilder(this);
+                    new AuxiliarySearchModuleBuilder(
+                            this,
+                            () -> {
+                                SettingsNavigationFactory.createSettingsNavigation()
+                                        .startSettings(this, TabsSettings.class);
+                            });
             moduleRegistry.registerModule(
                     ModuleType.AUXILIARY_SEARCH, auxiliarySearchModuleBuilder);
         }
@@ -2388,6 +2404,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             @Override
             public ObservableSupplier<Profile> getProfileSupplier() {
                 return mTabModelProfileSupplier;
+            }
+
+            @NonNull
+            @Override
+            public TabModelSelector getTabModelSelector() {
+                return mTabModelSelector;
             }
 
             @NonNull

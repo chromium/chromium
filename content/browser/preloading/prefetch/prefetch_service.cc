@@ -1019,17 +1019,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
     return;
   }
 
-  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
-  if (devtools_observer && !prefetch_container->IsDecoy()) {
-    GURL previous_url = prefetch_container->GetPreviousURL();
-    auto redirect_head_info = network::ExtractDevToolsInfo(*redirect_head);
-    std::pair<const GURL&, const network::mojom::URLResponseHeadDevToolsInfo&>
-        redirect_info_for_devtools{previous_url, *redirect_head_info};
-    devtools_observer->OnStartSinglePrefetch(
-        prefetch_container->RequestId(),
-        *prefetch_container->GetResourceRequest(),
-        std::move(redirect_info_for_devtools));
-  }
+  prefetch_container->NotifyPrefetchRequestWillBeSent(&redirect_head);
 
   // If the redirect requires a change in network contexts, then stop the
   // current streaming URL loader and start a new streaming URL loader for the
@@ -1215,12 +1205,8 @@ void PrefetchService::StartSinglePrefetch(
       FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, browser_context_));
   prefetch_container->MakeResourceRequest(additional_headers);
 
-  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
-  if (devtools_observer && !prefetch_container->IsDecoy()) {
-    devtools_observer->OnStartSinglePrefetch(
-        prefetch_container->RequestId(),
-        *prefetch_container->GetResourceRequest(), std::nullopt);
-  }
+  prefetch_container->NotifyPrefetchRequestWillBeSent(
+      /*redirect_head=*/nullptr);
 
   SendPrefetchRequest(prefetch_container);
 
@@ -1402,12 +1388,7 @@ PrefetchService::OnPrefetchResponseStarted(
     head->is_prefetch_with_cross_site_contamination = true;
   }
 
-  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
-  if (devtools_observer) {
-    devtools_observer->OnPrefetchResponseReceived(
-        prefetch_container->GetCurrentURL(), prefetch_container->RequestId(),
-        *head);
-  }
+  prefetch_container->NotifyPrefetchResponseReceived(*head);
 
   if (!head->headers) {
     return PrefetchErrorOnResponseReceived::kFailedInvalidHeaders;

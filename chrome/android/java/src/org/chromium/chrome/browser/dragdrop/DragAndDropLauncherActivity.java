@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -168,18 +169,6 @@ public class DragAndDropLauncherActivity extends Activity {
         ResettersForTesting.register(() -> sDropTimeoutForTesting = null);
     }
 
-    @VisibleForTesting
-    static @DragDropType int getDragDropTypeFromIntent(Intent intent) {
-        switch (intent.getIntExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN)) {
-            case UrlIntentSource.LINK:
-                return DragDropType.LINK_TO_NEW_INSTANCE;
-            case UrlIntentSource.TAB_IN_STRIP:
-                return DragDropType.TAB_STRIP_TO_NEW_INSTANCE;
-            default:
-                return DragDropType.UNKNOWN_TO_NEW_INSTANCE;
-        }
-    }
-
     private static void recordLaunchMetrics(Intent intent) {
         @UrlIntentSource
         int intentSource =
@@ -187,9 +176,12 @@ public class DragAndDropLauncherActivity extends Activity {
                         intent, IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN);
         if (intentSource == UrlIntentSource.LINK) {
             RecordUserAction.record(LAUNCHED_FROM_LINK_USER_ACTION);
+            RecordHistogram.recordEnumeratedHistogram(
+                    DragDropMetricUtils.HISTOGRAM_DRAG_DROP_TAB_TYPE,
+                    DragDropType.LINK_TO_NEW_INSTANCE,
+                    DragDropType.NUM_ENTRIES);
         } else if (intentSource == UrlIntentSource.TAB_IN_STRIP) {
             RecordUserAction.record(LAUNCHED_FROM_TAB_USER_ACTION);
         }
-        DragDropMetricUtils.recordTabDragDropType(getDragDropTypeFromIntent(intent));
     }
 }

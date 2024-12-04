@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeTaggedPrintToPdfCommandBrowserTest,
       base::ReadFileToBytes(print_to_pdf_filename_);
   ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
 
-  auto pdf_span = base::as_bytes(base::make_span(pdf_data.value()));
+  auto pdf_span = base::as_byte_span(pdf_data.value());
 
   int num_pages;
   ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages,

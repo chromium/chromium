@@ -179,6 +179,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 VizFeatures.WEBVIEW_ENABLE_ADPF, "Pass WebView threads to HWUI ADPF session"),
         Flag.baseFeature(
+                VizFeatures.WEBVIEW_ENABLE_ADPF_GPU_MAIN, "Include GPU Main into ADPF session"),
+        Flag.baseFeature(
                 VizFeatures.WEBVIEW_ENABLE_ADPF_RENDERER_MAIN,
                 "Include Renderer Main into ADPF session"),
         Flag.baseFeature(
@@ -750,7 +752,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8GCSpeedUsesCounters"),
         Flag.baseFeature("WebAssemblyTurboshaft"),
         Flag.baseFeature("WebAssemblyTurboshaftInstructionSelection"),
-        Flag.baseFeature("WebAssemblyInlining"),
+        Flag.baseFeature("WebAssemblyDeopt"),
+        Flag.baseFeature("WebAssemblyInliningCallIndirect"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION,
                 "Enable the WebView Media Integrity API as a Blink extension. Only works if"

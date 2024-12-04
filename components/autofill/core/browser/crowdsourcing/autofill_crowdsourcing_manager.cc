@@ -685,11 +685,12 @@ AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(AutofillClient* clien
                               GetAPIKeyForUrl(channel),
                               log_manager) {}
 
-AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(AutofillClient* client,
-                                                 const std::string& api_key,
-                                                 LogManager* log_manager)
+AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(
+    AutofillClient* client,
+    std::string api_key,
+    LogManager* log_manager)
     : client_(client),
-      api_key_(api_key),
+      api_key_(std::move(api_key)),
       log_manager_(log_manager),
       autofill_server_url_(GetAutofillServerURL()),
       throttle_reset_period_(GetThrottleResetPeriod()),
@@ -711,8 +712,9 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
   ScopedCallbackRunner<void(std::optional<QueryResponse>)>
       scoped_callback_runner(std::move(callback), std::nullopt);
 
-  if (!IsEnabled())
+  if (!IsEnabled()) {
     return false;
+  }
 
   // Do not send the request if it contains more fields than the server can
   // accept.

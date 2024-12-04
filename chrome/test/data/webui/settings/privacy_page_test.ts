@@ -928,8 +928,6 @@ suite('NotificationPermissionReview', function() {
         oneElementMockData);
     await flushTasks();
 
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
-
     // Set guest mode back to false.
     loadTimeData.overrideValues({isGuest: false});
     resetPageVisibilityForTesting();
@@ -959,88 +957,6 @@ suite('NotificationPermissionReview', function() {
         oneElementMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, '#safetyHubEntryPoint'));
-  });
-});
-
-// TODO(crbug.com/40267370): Remove the test once Safety Hub has been rolled out.
-suite('NotificationPermissionReviewSafetyHubDisabled', function() {
-  let page: SettingsPrivacyPageElement;
-  let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;
-
-  const oneElementMockData = [{
-    origin: 'www.example.com',
-    notificationInfoString: 'About 4 notifications a day',
-  }];
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-    });
-    resetRouterForTesting();
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
-    siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  function createPage() {
-    page = document.createElement('settings-privacy-page');
-    document.body.appendChild(page);
-    return flushTasks();
-  }
-
-  test('InvisibleWhenGuestMode', async function() {
-    loadTimeData.overrideValues({isGuest: true});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-    await createPage();
-
-    // The UI should remain invisible even when there's an event that the
-    // notification permissions may have changed.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
-
-    // Set guest mode back to false.
-    loadTimeData.overrideValues({isGuest: false});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-  });
-
-  test('VisibilityWithChangingPermissionList', async function() {
-    // The element is not visible when there is nothing to review.
-    await createPage();
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
-
-    // The element becomes visible if the list of permissions is no longer
-    // empty.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'review-notification-permissions'));
-
-    // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'review-notification-permissions'));
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'review-notification-permissions'));
   });
 });
 

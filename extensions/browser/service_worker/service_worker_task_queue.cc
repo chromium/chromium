@@ -164,10 +164,10 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
   // renderer before we execute tasks in the browser process. This will also
   // avoid holding the worker in |worker_state_map_| until deactivation as noted
   // above.
-  DCHECK_NE(BrowserState::kStarted, worker_state->browser_state_)
+  DCHECK_NE(BrowserState::kStarted, worker_state->browser_state())
       << "Worker was already loaded";
   worker_state->SetWorkerId(worker_id, ProcessManager::Get(browser_context_));
-  worker_state->browser_state_ = BrowserState::kStarted;
+  worker_state->SetBrowserState(BrowserState::kStarted);
 
   RunPendingTasksIfWorkerReady(context_id);
 }
@@ -295,7 +295,7 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
   // DCHECK_NE(RendererState::kStarted, worker_state->renderer_state_)
   //    << "Worker already started";
   worker_state->SetWorkerId(worker_id, ProcessManager::Get(browser_context_));
-  worker_state->renderer_state_ = RendererState::kStarted;
+  worker_state->SetRendererState(RendererState::kStarted);
 
   RunPendingTasksIfWorkerReady(context_id);
 }
@@ -322,15 +322,15 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
 
-  if (worker_state->worker_id_ != worker_id) {
+  if (worker_state->worker_id() != worker_id) {
     // We can see DidStopServiceWorkerContext right after DidInitialize and
     // without DidStartServiceWorkerContext.
     return;
   }
 
-  DCHECK_NE(RendererState::kStopped, worker_state->renderer_state_);
-  worker_state->renderer_state_ = RendererState::kStopped;
-  worker_state->worker_id_ = std::nullopt;
+  DCHECK_NE(RendererState::kStopped, worker_state->renderer_state());
+  worker_state->SetRendererState(RendererState::kStopped);
+  worker_state->ResetWorkerId();
 
   if (g_test_observer) {
     g_test_observer->DidStopServiceWorkerContext(extension_id);
@@ -378,7 +378,7 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
                                       *activation_token);
   const WorkerState* worker_state = GetWorkerState(context_id);
 
-  if (!worker_state || !worker_state->worker_id_) {
+  if (!worker_state || !worker_state->worker_id()) {
     // Assume the worker has not been started. It is likely in
     // blink::EmbeddedWorkerStatus::(kStarting|kStopped) status.
     return false;
@@ -386,10 +386,10 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
 
   // We must check both states since the worker could begin stopping and call
   // DidStopServiceWorkerContext after BrowserState::kReady.
-  if (worker_state->browser_state_ != BrowserState::kReady) {
+  if (worker_state->browser_state() != BrowserState::kReady) {
     return false;
   }
-  if (worker_state->renderer_state_ != RendererState::kStarted) {
+  if (worker_state->renderer_state() != RendererState::kStarted) {
     return false;
   }
 
@@ -404,7 +404,7 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
   content::ServiceWorkerContext* sw_context =
       util::GetServiceWorkerContextForExtensionId(extension->id(), context);
   return sw_context->IsLiveRunningServiceWorker(
-      worker_state->worker_id_->version_id);
+      worker_state->worker_id()->version_id);
 }
 
 void ServiceWorkerTaskQueue::AddPendingTask(
@@ -590,7 +590,7 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
   }
 
   WorkerState* worker_state = GetWorkerState(context_id);
-  DCHECK_NE(BrowserState::kStarted, worker_state->browser_state_);
+  DCHECK_NE(BrowserState::kStarted, worker_state->browser_state());
 
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(context_id.extension_id);
@@ -889,7 +889,7 @@ void ServiceWorkerTaskQueue::RunPendingTasksIfWorkerReady(
   // Running the pending tasks below marks the completion of both
   // DidStartWorkerForScope and DidStartWorkerContext, change `browser_ready`
   // state of the worker so that new tasks can be queued up.
-  worker_state->browser_state_ = BrowserState::kReady;
+  worker_state->SetBrowserState(BrowserState::kReady);
   if (g_test_observer) {
     g_test_observer->DidStartWorker(context_id.extension_id);
   }
@@ -897,8 +897,8 @@ void ServiceWorkerTaskQueue::RunPendingTasksIfWorkerReady(
   DCHECK(HasPendingTasks(context_id)) << "Worker ready, but no tasks to run!";
   std::vector<PendingTask> tasks;
   std::swap(GetOrAddPendingTasks(context_id), tasks);
-  DCHECK(worker_state->worker_id_);
-  const auto& worker_id = *worker_state->worker_id_;
+  DCHECK(worker_state->worker_id());
+  const auto& worker_id = *worker_state->worker_id();
   for (auto& task : tasks) {
     auto context_info = std::make_unique<LazyContextTaskQueue::ContextInfo>(
         context_id.extension_id,
@@ -1013,8 +1013,8 @@ void ServiceWorkerTaskQueue::OnStopped(
   WorkerState* worker_state = GetWorkerState(context_id);
   // If the extension is still activated, worker state should still exist.
   CHECK(worker_state);
-  worker_state->browser_state_ = BrowserState::kInitial;
-  worker_state->worker_id_.reset();
+  worker_state->SetBrowserState(BrowserState::kInitial);
+  worker_state->ResetWorkerId();
 }
 
 bool ServiceWorkerTaskQueue::IsWorkerUnregistrationSuccess(

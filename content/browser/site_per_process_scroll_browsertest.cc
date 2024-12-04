@@ -319,7 +319,8 @@ class ScrollObserver : public RenderWidgetHost::InputEventObserver {
   ScrollObserver(const ScrollObserver&) = delete;
   ScrollObserver& operator=(const ScrollObserver&) = delete;
 
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate) {
       blink::WebGestureEvent received_update =
           *static_cast<const blink::WebGestureEvent*>(&event);

@@ -320,6 +320,11 @@ void EventGenerator::SetTouchTilt(float x, float y) {
   touch_pointer_details_.tilt_y = y;
 }
 
+void EventGenerator::SetProperties(
+    std::optional<Event::Properties> properties) {
+  properties_ = std::move(properties);
+}
+
 void EventGenerator::PressTouch(
     const std::optional<gfx::Point>& touch_location_in_screen) {
   PressTouchId(0, touch_location_in_screen);
@@ -597,7 +602,7 @@ void EventGenerator::GestureMultiFingerScroll(int count,
                                               int move_x,
                                               int move_y) {
   const int kMaxTouchPoints = 10;
-  int delays[kMaxTouchPoints] = {0};
+  int delays[kMaxTouchPoints] = {};
   GestureMultiFingerScrollWithDelays(
       count, start, delays, event_separation_time_ms, steps, move_x, move_y);
 }
@@ -718,6 +723,10 @@ void EventGenerator::Dispatch(ui::Event* event) {
     ui::TouchEvent* touch_event = static_cast<ui::TouchEvent*>(event);
     touch_pointer_details_.id = touch_event->pointer_details().id;
     touch_event->SetPointerDetailsForTest(touch_pointer_details_);
+  }
+
+  if (properties_.has_value()) {
+    event->SetProperties(properties_.value());
   }
 
   if (!event->handled()) {

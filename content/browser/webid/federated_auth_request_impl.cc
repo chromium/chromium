@@ -742,8 +742,23 @@ void FederatedAuthRequestImpl::RequestToken(
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                               std::nullopt, "", /*error=*/nullptr,
                               /*is_auto_selected=*/false);
-      // The old request is alive, so set the session ID to the old one.
-      fedcm_metrics_->SetSessionID(old_session_id);
+
+      // Since multiple `get` calls is not yet supported, if one IdP invokes the
+      // API while another request from different IdPs is in-flight, the new API
+      // call will be rejected. The two requests may be from different RFHs so
+      // we should calculate properly.
+      if (old_idp_order.empty()) {
+        fedcm_metrics_->SetSessionID(
+            pending_request->fedcm_metrics_->session_id());
+        fedcm_metrics_->RecordMultipleRequestsFromDifferentIdPs(
+            idp_order_ != pending_request->idp_order_);
+      } else {
+        // The old request is alive, so set the session ID to the old one.
+        fedcm_metrics_->SetSessionID(old_session_id);
+        fedcm_metrics_->RecordMultipleRequestsFromDifferentIdPs(idp_order_ !=
+                                                                old_idp_order);
+      }
+
       idp_order_ = std::move(old_idp_order);
       return;
     }

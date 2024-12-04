@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 256 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [encrypt])
@@ -496,5 +496,20 @@ Found 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
 [FAIL] Invalid key pair: importKey(jwk(private), {name: Ed448}, true, [sign, sign])
   assert_equals: Invalid key pair not supported. expected "DataError" but got "NotSupportedError"
+[FAIL] Invalid 'kty' field: importKey(jwk(private), {name: Ed448}, true, [sign])
+  assert_equals: Invalid 'kty' field not supported. expected "DataError" but got "NotSupportedError"
+[FAIL] Invalid 'kty' field: importKey(jwk (public) , {name: Ed448}, true, [verify])
+  assert_equals: Invalid 'kty' field not supported. expected "DataError" but got "NotSupportedError"
+[FAIL] Import from a non-extractable: importKey(jwk(private), {name: Ed448}, true, [sign])
+  assert_equals: Import from a non-extractable not supported. expected "DataError" but got "NotSupportedError"
+[FAIL] Import from a non-extractable: importKey(jwk (public) , {name: Ed448}, true, [verify])
+  assert_equals: Import from a non-extractable not supported. expected "DataError" but got "NotSupportedError"
+[FAIL] Invalid 'use' field: importKey(jwk(private), {name: Ed448}, true, [sign])
+  assert_equals: Invalid 'use' field not supported. expected "DataError" but got "NotSupportedError"
+[FAIL] Invalid 'use' field: importKey(jwk (public) , {name: Ed448}, true, [verify])
+  assert_equals: Invalid 'use' field not supported. expected "DataError" but got "NotSupportedError"
+[FAIL] Invalid 'crv' field: importKey(jwk(private), {name: Ed448}, true, [sign])
+  assert_equals: Invalid 'crv' field not supported. expected "DataError" but got "NotSupportedError"
+[FAIL] Invalid 'crv' field: importKey(jwk (public) , {name: Ed448}, true, [verify])
+  assert_equals: Invalid 'crv' field not supported. expected "DataError" but got "NotSupportedError"
 Harness: the test ran to completion.
-

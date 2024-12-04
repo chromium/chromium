@@ -104,7 +104,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void OnAccessibilityApiUsage() override;
 
   // content::RenderWidgetHost::InputEventObserver:
-  void OnInputEvent(const blink::WebInputEvent& event) override;
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override;
 
   // The global accessibility mode is automatically enabled based on
   // usage of accessibility APIs. When we detect a significant amount

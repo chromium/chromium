@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 
 #include <memory>
@@ -48,10 +43,8 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   auto* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIPrivacySandboxDialogHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kPrivacySandboxResources, kPrivacySandboxResourcesSize),
-      IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
+  webui::SetupWebUIDataSource(source, kPrivacySandboxResources,
+                              IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
 
   // Allow the chrome-untrusted://privacy-sandbox-dialog/privacy-policy page to
   // load as an iframe in the page.

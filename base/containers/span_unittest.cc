@@ -24,6 +24,7 @@
 #include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -706,10 +707,30 @@ TEST(SpanTest, FromCString) {
     EXPECT_EQ(s[4u], 'o');
     EXPECT_EQ(s.size(), 5u);
   }
-  // Includes the terminating null, size known at compile time.
+  // No terminating null, size not known at compile time. cstring_view loses
+  // the size, and the null-terminator.
+  {
+    auto s = span(base::cstring_view("hello"));
+    static_assert(std::same_as<decltype(s), span<const char>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s.size(), 5u);
+  }  // Includes the terminating null, size known at compile time.
   {
     auto s = span_with_nul_from_cstring("hello");
     static_assert(std::same_as<decltype(s), span<const char, 6u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s[5u], '\0');
+  }
+
+  // Includes the terminating null, from a basic_cstring_view.
+  {
+    cstring_view str = "hello";
+    auto s = span_with_nul_from_cstring_view(str);
+    static_assert(std::same_as<decltype(s), span<const char>>);
     EXPECT_EQ(s[0u], 'h');
     EXPECT_EQ(s[1u], 'e');
     EXPECT_EQ(s[4u], 'o');
@@ -730,6 +751,17 @@ TEST(SpanTest, FromCString) {
   {
     auto s = byte_span_with_nul_from_cstring("hello");
     static_assert(std::same_as<decltype(s), span<const uint8_t, 6u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s[5u], '\0');
+  }
+  // Includes the terminating null, from a basic_cstring_view. Converted to a
+  // span of uint8_t bytes.
+  {
+    cstring_view str = "hello";
+    auto s = byte_span_with_nul_from_cstring_view(str);
+    static_assert(std::same_as<decltype(s), span<const uint8_t>>);
     EXPECT_EQ(s[0u], 'h');
     EXPECT_EQ(s[1u], 'e');
     EXPECT_EQ(s[4u], 'o');
@@ -1853,129 +1885,6 @@ TEST(SpanTest, AsStringView) {
   }
 }
 
-TEST(SpanTest, MakeSpanFromDataAndSize) {
-  int* nullint = nullptr;
-  // SAFETY: zero size is correct when pointer is NULL.
-  auto empty_span = UNSAFE_BUFFERS(make_span(nullint, 0u));
-  EXPECT_TRUE(empty_span.empty());
-  EXPECT_EQ(nullptr, empty_span.data());
-
-  std::vector<int> vector = {1, 1, 2, 3, 5, 8};
-  // SAFETY: vector.size() describes valid portion of vector.data().
-  span<int> UNSAFE_BUFFERS(expected_span(vector.data(), vector.size()));
-  auto made_span = UNSAFE_BUFFERS(make_span(vector.data(), vector.size()));
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent);
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeSpanFromPointerPair) {
-  int* nullint = nullptr;
-  // SAFETY: The empty range between NULL and NULL is valid range.
-  auto empty_span = UNSAFE_BUFFERS(make_span(nullint, nullint));
-  EXPECT_TRUE(empty_span.empty());
-  EXPECT_EQ(nullptr, empty_span.data());
-
-  std::vector<int> vector = {1, 1, 2, 3, 5, 8};
-  // SAFETY: `vector.size()` describes valid portion of `vector.data()`.
-  span<int> UNSAFE_BUFFERS(expected_span(vector.data(), vector.size()));
-  auto made_span =
-      UNSAFE_BUFFERS(make_span(vector.data(), vector.data() + vector.size()));
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent);
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeSpanFromConstexprArray) {
-  static constexpr int kArray[] = {1, 2, 3, 4, 5};
-  constexpr span<const int, 5> expected_span(kArray);
-  constexpr auto made_span = make_span(kArray);
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == 5);
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeSpanFromStdArray) {
-  const std::array<int, 5> kArray = {{1, 2, 3, 4, 5}};
-  span<const int, 5> expected_span(kArray);
-  auto made_span = make_span(kArray);
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == 5);
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeSpanFromConstContainer) {
-  const std::vector<int> vector = {-1, -2, -3, -4, -5};
-  span<const int> expected_span(vector);
-  auto made_span = make_span(vector);
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent);
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeSpanFromContainer) {
-  std::vector<int> vector = {-1, -2, -3, -4, -5};
-  span<int> expected_span(vector);
-  auto made_span = make_span(vector);
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == dynamic_extent);
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeSpanFromDynamicSpan) {
-  static constexpr int kArray[] = {1, 2, 3, 4, 5};
-  constexpr span<const int> expected_span(kArray);
-  constexpr auto made_span = make_span(expected_span);
-  static_assert(std::is_same_v<decltype(expected_span)::element_type,
-                               decltype(made_span)::element_type>,
-                "make_span(span) should have the same element_type as span");
-
-  static_assert(expected_span.data() == made_span.data(),
-                "make_span(span) should have the same data() as span");
-
-  static_assert(expected_span.size() == made_span.size(),
-                "make_span(span) should have the same size() as span");
-
-  static_assert(decltype(made_span)::extent == decltype(expected_span)::extent,
-                "make_span(span) should have the same extent as span");
-
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeSpanFromStaticSpan) {
-  static constexpr int kArray[] = {1, 2, 3, 4, 5};
-  constexpr span<const int, 5> expected_span(kArray);
-  constexpr auto made_span = make_span(expected_span);
-  static_assert(std::is_same_v<decltype(expected_span)::element_type,
-                               decltype(made_span)::element_type>,
-                "make_span(span) should have the same element_type as span");
-
-  static_assert(expected_span.data() == made_span.data(),
-                "make_span(span) should have the same data() as span");
-
-  static_assert(expected_span.size() == made_span.size(),
-                "make_span(span) should have the same size() as span");
-
-  static_assert(decltype(made_span)::extent == decltype(expected_span)::extent,
-                "make_span(span) should have the same extent as span");
-
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
 TEST(SpanTest, EnsureConstexprGoodness) {
   static constexpr std::array<int, 5> kArray = {5, 4, 3, 2, 1};
   constexpr span<const int> constexpr_span(kArray);
@@ -2316,6 +2225,23 @@ TEST(SpanTest, CopyFrom) {
     left.copy_from(left);
     EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
   }
+
+  // Verify that `copy_from()` works in a constexpr context.
+  static constexpr auto s = span_from_cstring("abc");
+  static constexpr auto fixed_c = [] {
+    char arr[3];
+    span<char, 3> arr_s(arr);
+    arr_s.copy_from(s);
+    return arr_s[1];
+  }();
+  static_assert(fixed_c == 'b');
+  static constexpr auto dynamic_c = [] {
+    char arr[3];
+    span<char, dynamic_extent> arr_s(arr);
+    arr_s.copy_from(s);
+    return arr_s[2];
+  }();
+  static_assert(dynamic_c == 'c');
 }
 
 TEST(SpanTest, CopyFromNonoverlapping) {
@@ -2362,6 +2288,23 @@ TEST(SpanTest, CopyFromNonoverlapping) {
     dynamic_span.first(1u).copy_from_nonoverlapping(span(source).last(1u));
     EXPECT_THAT(vec, ElementsAre(9, 9, 6));
   })
+
+  // Verify that `copy_from_nonoverlapping()` works in a constexpr context.
+  static constexpr auto s = span_from_cstring("abc");
+  static constexpr auto fixed_c = [] {
+    char arr[3];
+    span<char, 3> arr_s(arr);
+    arr_s.copy_from_nonoverlapping(s);
+    return arr_s[1];
+  }();
+  static_assert(fixed_c == 'b');
+  static constexpr auto dynamic_c = [] {
+    char arr[3];
+    span<char, dynamic_extent> arr_s(arr);
+    arr_s.copy_from_nonoverlapping(s);
+    return arr_s[2];
+  }();
+  static_assert(dynamic_c == 'c');
 }
 
 TEST(SpanTest, CopyFromConversion) {
@@ -3300,11 +3243,6 @@ TEST(SpanTest, FromStdSpan) {
   }
 
   {
-    auto base_made_span = base::make_span(std_span);
-    EXPECT_EQ(base_made_span.size(), 3u);
-    EXPECT_EQ(base_made_span.data(), kData);
-  }
-  {
     auto base_byte_span = base::as_byte_span(std_span);
     EXPECT_EQ(base_byte_span.size(), sizeof(int) * 3u);
     EXPECT_EQ(base_byte_span.data(), reinterpret_cast<const uint8_t*>(kData));
@@ -3356,5 +3294,5 @@ TEST(SpanTest, ToStdSpan) {
     EXPECT_EQ(std_span.data(), kData);
   }
 
-  // no make_span() or as_byte_span() in std::span.
+  // no as_byte_span() in std::span.
 }

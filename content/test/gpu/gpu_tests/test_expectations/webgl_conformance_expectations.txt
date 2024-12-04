@@ -490,13 +490,11 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 
 # flaky and worth retrying.
-crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/misc/hint.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/functions/functions_073_to_080.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/functions/functions_097_to_104.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/mat/mat_017_to_024.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/mat/mat_041_to_046.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/max/max_001_to_006.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/struct/struct_049_to_056.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/swizzlers/swizzlers_049_to_056.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/swizzlers/swizzlers_097_to_104.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/reading/read-pixels-pack-alignment.html [ RetryOnFailure ]
@@ -508,12 +506,9 @@ crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_blob/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_image_bitmap/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_image/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_image/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/gl-pixelstorei.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
 
 crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] conformance/textures/image_bitmap_from_blob/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
@@ -525,8 +520,6 @@ crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] deqp/data/gles2/shaders/const
 crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] deqp/data/gles2/shaders/reserved_operators.html [ RetryOnFailure ]
 
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_image/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-01.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-04.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-07.html [ RetryOnFailure ]
@@ -753,7 +746,6 @@ crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-
 
 # Failing on chromeos-amd64-generic-rel.
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
-crbug.com/1455026 [ chromeos chromeos-board-amd64-generic ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
 
 ## Jacuzzi ##
 crbug.com/1488973 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]

@@ -41,6 +41,11 @@ namespace speech {
 
 constexpr char kInvalidAudioDataError[] = "Invalid audio data received.";
 
+// The name of the generic biasing model that will be used for enabling
+// recognition context biasing. The model was initially created for the android
+// speech api, but we are allowed by the speech team to reuse it.
+constexpr char kContextInputName[] = "android-speech-api-generic-phrases";
+
 // static
 const char
     SpeechRecognitionRecognizerImpl::kCaptionBubbleVisibleHistogramName[] =
@@ -474,6 +479,16 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
 
     base::UmaHistogramCounts100(kLiveCaptionLanguageCountHistogramName,
                                 config_paths_.size());
+  }
+  if (!options_->recognition_context.is_null()) {
+    auto* context_input =
+        config_msg.mutable_recognition_context()->add_context();
+    context_input->set_name(kContextInputName);
+    for (const auto& phrase : options_->recognition_context->phrases) {
+      auto* p = context_input->mutable_phrases()->add_phrase();
+      p->set_phrase(phrase->phrase);
+      p->set_boost(phrase->boost);
+    }
   }
 
   auto serialized = config_msg.SerializeAsString();

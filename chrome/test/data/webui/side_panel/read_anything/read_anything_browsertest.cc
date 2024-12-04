@@ -262,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, Speech) {
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, DISABLED_Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 

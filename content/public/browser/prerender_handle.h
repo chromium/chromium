@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PRERENDER_HANDLE_H_
 #define CONTENT_PUBLIC_BROWSER_PRERENDER_HANDLE_H_
 
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/preloading_data.h"
 
 namespace content {
@@ -22,6 +23,7 @@ class PrerenderHandle {
   virtual base::WeakPtr<PrerenderHandle> GetWeakPtr() = 0;
   virtual void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) = 0;
+  virtual void SetActivationCallback(base::OnceClosure) = 0;
 };
 
 }  // namespace content

@@ -548,9 +548,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Rejected"/>
 </enum>
 
-<enum name="PasskeysMigration">
+<enum name="PasskeysMigrationStatus">
   <int value="0" label="Passkey created"/>
   <int value="1" label="Passkey updated"/>
+  <int value="2" label="Invalid passkey"/>
 </enum>
 
 <enum name="PasswordAccessLossWarningType">

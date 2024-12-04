@@ -1809,14 +1809,17 @@ export async function openEntryChoosingWindow(
  * @return the entry set by the dialog shown via chooseEntry().
  */
 export async function pollForChosenEntry(caller: string):
-    Promise<null|(Entry | Entry[])> {
+    Promise<Entry|Entry[]|null> {
   await repeatUntil(() => {
     if (window[CHOOSE_ENTRY_PROPERTY] !== undefined) {
       return;
     }
     return pending(caller, 'Waiting for chooseEntry() result');
   });
-  return window[CHOOSE_ENTRY_PROPERTY]!;
+  // The "?? null" is to placate the TS type checker, which doesn't know that a
+  // post-condition of the "await repeatUntil" above finishing is that
+  // window[CHOOSE_ENTRY_PROPERTY] cannot be undefined (but it can be null).
+  return window[CHOOSE_ENTRY_PROPERTY] ?? null;
 }
 
 /** Waits until the MediaApp/Backlight shows up. */

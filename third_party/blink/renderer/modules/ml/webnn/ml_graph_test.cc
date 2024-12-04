@@ -151,7 +151,7 @@ std::pair<String, String> GetErrorNameAndMessage(V8TestingScope* scope,
 
 // Helper function to set the data of an ArrayBufferView from a vector.
 template <typename T>
-void SetArrayBufferViewValues(NotShared<DOMArrayBufferView> array_buffer_view,
+void SetArrayBufferViewValues(MaybeShared<DOMArrayBufferView> array_buffer_view,
                               const Vector<T>& values) {
   DCHECK_EQ(array_buffer_view->byteLength(), values.size() * sizeof(T));
   memcpy(array_buffer_view->BaseAddress(), values.data(),
@@ -159,7 +159,7 @@ void SetArrayBufferViewValues(NotShared<DOMArrayBufferView> array_buffer_view,
 }
 
 // Helper function to create an ArrayBufferView given an operand.
-NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
+MaybeShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand) {
   return CreateDOMArrayBufferView(operand->NumberOfElements(),
                                   operand->dataType().AsEnum());
@@ -168,7 +168,7 @@ NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
 // Overrode helper function to create an ArrayBufferView given an operand and
 // set its data from a vector.
 template <typename T>
-NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
+MaybeShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand,
     const Vector<T>& values) {
   auto array_buffer_view = CreateArrayBufferViewForOperand(operand);
@@ -179,7 +179,7 @@ NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
 // Helper function to get the data of an ArrayBufferView into a vector.
 template <typename T>
 Vector<T> GetArrayBufferViewValues(
-    NotShared<DOMArrayBufferView> array_buffer_view) {
+    MaybeShared<DOMArrayBufferView> array_buffer_view) {
   Vector<T> values(base::checked_cast<wtf_size_t>(
       array_buffer_view->byteLength() / array_buffer_view->TypeSize()));
   memcpy(values.data(), array_buffer_view->BaseAddress(),
@@ -792,7 +792,7 @@ Vector<uint8_t> GetMLTensorValues(V8TestingScope& scope,
   }
   auto* array_buffer = V8ToObject<DOMArrayBuffer>(&scope, tester.Value());
   return GetArrayBufferViewValues<uint8_t>(
-      NotShared<DOMArrayBufferView>(blink::DOMUint8Array::Create(
+      MaybeShared<DOMArrayBufferView>(blink::DOMUint8Array::Create(
           array_buffer, /*byte_offset=*/0, ml_tensor->PackedByteLength())));
 }
 

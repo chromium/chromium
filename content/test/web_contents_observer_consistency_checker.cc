@@ -478,10 +478,12 @@ class WebContentsObserverConsistencyChecker::TestInputEventObserver
       render_widget_host_->RemoveInputEventObserver(this);
   }
 
-  void OnInputEvent(const blink::WebInputEvent&) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent&) override {
     EnsureRenderFrameHostNotPrerendered();
   }
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override {
     EnsureRenderFrameHostNotPrerendered();

@@ -262,6 +262,7 @@
 <translation id="4510853178268397146">Овај додатак није објавио праксе приватности, на пример, како прикупља и користи податке. Chromium препоручује да га уклоните.</translation>
 <translation id="452711251841752011">Добро дошли у Chromium; отворен је нови прозор прегледача</translation>
 <translation id="4531137820806573936">Chromium-у треба дозвола за мапирање окружења и праћење руку</translation>
+<translation id="4534145890176164066">Chromium боље разуме обрасце и може брже аутоматски да их попуњава за вас</translation>
 <translation id="4536805923587466102">Већ сте пријављени као <ph name="USER_EMAIL_ADDRESS" /> на другом Chromium профилу</translation>
 <translation id="4544142686420020088">Chromium се није ажурирао. Дошло је до грешке. <ph name="BEGIN_LINK" />Отклоните проблеме са ажурирањем Chromium-а и неуспела ажурирања.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium може да деактивира ову картицу да би побољшао доживљај прегледања и спречио успоравање.</translation>
@@ -480,6 +481,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7349591376906416160">Администратор система је конфигурисао Chromium да отвара прегледач <ph name="ALTERNATIVE_BROWSER_NAME" /> да би приступао <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium је блокирао ово преузимање јер овај фајл може да нашкоди личним налозима и налозима на друштвеним мрежама, укључујући <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Овај додатак више није подржан. Chromium препоручује да га уклоните.</translation>
+<translation id="7389750180956889333">Chromium боље разуме обрасце и може брже аутоматски да их попуњава за вас. Сазнајте више о <ph name="BEGIN_LINK" />Chrome аутоматском попуњавању<ph name="END_LINK" /></translation>
 <translation id="7398989605938454041">Помоћу Chromium профила можете да раздвојите све Chromium садржаје. На тај начин ћете лакше моћи да раздвојите посао и забаву.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Програмерска верзија Chromium-а</translation>
 <translation id="7450541714075000668">Текст је копиран</translation>

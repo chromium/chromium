@@ -51,10 +51,6 @@ bool AutofillClient::IsOffTheRecord() const {
   return false;
 }
 
-AutofillCrowdsourcingManager* AutofillClient::GetCrowdsourcingManager() {
-  return nullptr;
-}
-
 const PersonalDataManager& AutofillClient::GetPersonalDataManager() const {
   return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
 }

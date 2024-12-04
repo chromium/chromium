@@ -894,8 +894,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(deprecated) CANNOT_DO_WORK"/>
   <int value="2" label="NETWORK_CONNECTION_UNAVAILABLE"/>
   <int value="3" label="NETWORK_IO_ERROR"/>
-  <int value="4" label="SYNC_SERVER_ERROR"/>
-  <int value="5" label="SYNC_AUTH_ERROR"/>
+  <int value="4" label="HTTP_ERROR"/>
+  <int value="5" label="HTTP_AUTH_ERROR"/>
   <int value="6" label="(deprecated) SERVER_RETURN_INVALID_CREDENTIAL"/>
   <int value="7" label="SERVER_RETURN_UNKNOWN_ERROR"/>
   <int value="8" label="SERVER_RETURN_THROTTLED"/>
@@ -904,7 +904,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="(deprecated) SERVER_RETURN_CLEAR_PENDING"/>
   <int value="12" label="SERVER_RETURN_NOT_MY_BIRTHDAY"/>
   <int value="13" label="SERVER_RETURN_CONFLICT"/>
-  <int value="14" label="SERVER_RESPONSE_VALIDATION_FAILED"/>
+  <int value="14" label="PROTOCOL_VIOLATION_ERROR"/>
   <int value="15" label="SERVER_RETURN_DISABLED_BY_ADMIN"/>
   <int value="16" label="(deprecated) SERVER_RETURN_USER_ROLLBACK"/>
   <int value="17" label="(deprecated) SERVER_RETURN_PARTIAL_FAILURE"/>
@@ -913,6 +913,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="(deprecated) DATATYPE_TRIGGERED_RETRY"/>
   <int value="21" label="(deprecated) SERVER_MORE_TO_DOWNLOAD"/>
   <int value="22" label="SYNCER_OK"/>
+  <int value="23" label="SERVER_RETURN_INVALID_MESSAGE"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/engine/syncer.h:SyncerErrorValues) -->

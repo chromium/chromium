@@ -110,7 +110,7 @@ void PerfettoService::ConnectToProducerHost(
   // should always be valid.
   DCHECK(shared_memory.IsValid());
 
-  auto new_producer = std::make_unique<ProducerHost>(&perfetto_task_runner_);
+  auto new_producer = std::make_unique<ProducerHost>();
   uint32_t producer_pid = receivers_.current_context();
   ProducerHost::InitializationResult result = new_producer->Initialize(
       std::move(producer_client), service_.get(),

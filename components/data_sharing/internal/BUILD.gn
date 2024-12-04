@@ -18,6 +18,8 @@ static_library("internal") {
   ]
 
   sources = [
+    "avatar_fetcher.cc",
+    "avatar_fetcher.h",
     "collaboration_group_sync_bridge.cc",
     "collaboration_group_sync_bridge.h",
     "data_sharing_network_loader_impl.cc",
@@ -41,6 +43,7 @@ static_library("internal") {
   deps = [
     "//components/data_sharing/internal/protocol",
     "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/image_fetcher/core:core",
     "//components/signin/public/identity_manager",
     "//components/sqlite_proto",
     "//components/sync/base:base",
@@ -83,6 +86,7 @@ source_set("unit_tests") {
   visibility = [ "//components/data_sharing:unit_tests" ]
 
   sources = [
+    "avatar_fetcher_unittest.cc",
     "collaboration_group_sync_bridge_unittest.cc",
     "data_sharing_network_loader_impl_unittest.cc",
     "data_sharing_service_impl_unittest.cc",
@@ -109,6 +113,8 @@ source_set("unit_tests") {
     "//components/data_sharing:test_support",
     "//components/endpoint_fetcher",
     "//components/endpoint_fetcher:test_support",
+    "//components/image_fetcher/core:core",
+    "//components/image_fetcher/core:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//net/traffic_annotation:test_support",
@@ -116,6 +122,8 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",
+    "//ui/base:base",
+    "//ui/gfx:test_support",
   ]
 
   if (is_android) {

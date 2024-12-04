@@ -675,6 +675,11 @@ NET_EXPORT extern const base::FeatureParam<int>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSimpleCachePrioritizedCachingPrioritizationPeriod;
 
+#if BUILDFLAG(USE_NSS_CERTS)
+// If enabled, use new implementation of client cert path building.
+NET_EXPORT BASE_DECLARE_FEATURE(kNewClientCertPathBuilding);
+#endif  // BUILDFLAG(USE_NSS_CERTS)
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

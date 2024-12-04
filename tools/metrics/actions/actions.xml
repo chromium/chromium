@@ -20135,6 +20135,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManagementBubble_OpenedFromManagementToolbarButton">
+  <obsolete>Deprecated as of 9/2024.</obsolete>
   <owner>ydago@chromium.org</owner>
   <description>
     The management bubble was opened by clicking on the management toolbar
@@ -20384,33 +20385,6 @@ should be able to be added at any place in this file.
     The user tapped on the &quot;Autofill Form&quot; button of a password
     suggestion from the Password Manual Fallback view to fill the current form
     with the suggestion. iOS only.
-  </description>
-</action>
-
-<action name="ManualFallback_PlusAddress_OpenCreatePlusAddress">
-  <owner>vidhanj@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <description>
-    The user tapped on &quot;Create plus address&quot; in the Address/Password
-    Manual Fallback view.
-  </description>
-</action>
-
-<action name="ManualFallback_PlusAddress_OpenManagePlusAddress">
-  <owner>vidhanj@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <description>
-    The user tapped on &quot;Manage plus addresses&quot; in the Address/Password
-    Manual Fallback view.
-  </description>
-</action>
-
-<action name="ManualFallback_PlusAddress_OpenSelectPlusAddress">
-  <owner>vidhanj@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <description>
-    The user tapped on &quot;Select plus addresses&quot; in the Address/Password
-    Manual Fallback view.
   </description>
 </action>
 

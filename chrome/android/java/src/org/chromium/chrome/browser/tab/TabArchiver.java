@@ -12,18 +12,22 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +46,7 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     private final CallbackController mCallbackController = new CallbackController();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final TabModel mArchivedTabModel;
+    private final TabGroupModelFilter mArchivedTabGroupModelFilter;
     private final TabCreator mArchivedTabCreator;
     private final TabWindowManager mTabWindowManager;
     private final TabArchiveSettings mTabArchiveSettings;
@@ -52,19 +56,19 @@ public class TabArchiver implements TabWindowManager.Observer {
     private int mSelectorsQueuedForDeclutter;
 
     /**
-     * @param archivedTabModel The archived {@link TabModel}.
+     * @param archivedTabGroupModelFilter The archived {@link TabGroupModelFilter}.
      * @param archivedTabCreator The {@link TabCreator} for the archived TabModel.
      * @param tabWindowManager The {@link TabWindowManager} used for accessing TabModelSelectors.
      * @param tabArchiveSettings The settings for tab archiving/deletion.
      * @param clock A clock object to get the current time..
      */
     public TabArchiver(
-            TabModel archivedTabModel,
+            TabGroupModelFilter archivedTabGroupModelFilter,
             TabCreator archivedTabCreator,
             TabWindowManager tabWindowManager,
             TabArchiveSettings tabArchiveSettings,
             Clock clock) {
-        mArchivedTabModel = archivedTabModel;
+        mArchivedTabGroupModelFilter = archivedTabGroupModelFilter;
         mArchivedTabCreator = archivedTabCreator;
         mTabWindowManager = tabWindowManager;
         mTabArchiveSettings = tabArchiveSettings;
@@ -130,8 +134,8 @@ public class TabArchiver implements TabWindowManager.Observer {
         if (!mTabArchiveSettings.isAutoDeleteEnabled()) return;
 
         List<Tab> tabs = new ArrayList<>();
-        for (int i = 0; i < mArchivedTabModel.getCount(); i++) {
-            tabs.add(mArchivedTabModel.getTabAt(i));
+        for (int i = 0; i < mArchivedTabGroupModelFilter.getTabModel().getCount(); i++) {
+            tabs.add(mArchivedTabGroupModelFilter.getTabModel().getTabAt(i));
         }
 
         for (Tab tab : tabs) {
@@ -142,7 +146,8 @@ public class TabArchiver implements TabWindowManager.Observer {
                             int tabAgeDays =
                                     timestampMillisToDays(
                                             archivePersistedTabData.getArchivedTimeMs());
-                            mArchivedTabModel
+                            mArchivedTabGroupModelFilter
+                                    .getTabModel()
                                     .getTabRemover()
                                     .closeTabs(
                                             TabClosureParams.closeTab(tab).allowUndo(false).build(),
@@ -163,8 +168,9 @@ public class TabArchiver implements TabWindowManager.Observer {
         ThreadUtils.assertOnUiThread();
         unarchiveAndRestoreTabs(
                 regularTabCreator,
-                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
-                /* updateTimestamp= */ false);
+                TabModelUtils.convertTabListToListOfTabs(mArchivedTabGroupModelFilter),
+                /* updateTimestamp= */ false,
+                /* areTabsBeingOpened= */ false);
         RecordUserAction.record("Tabs.ArchivedTabRescued");
     }
 
@@ -225,9 +231,13 @@ public class TabArchiver implements TabWindowManager.Observer {
      * @param tabCreator The {@link TabCreator} to use when recreating the tabs.
      * @param tabs The {@link Tab}s to unarchive.
      * @param updateTimestamp Whether the Tab's timestamp should be updated.
+     * @param areTabsBeingOpened Whether the restored tab is being opened.
      */
     public void unarchiveAndRestoreTabs(
-            TabCreator tabCreator, List<Tab> tabs, boolean updateTimestamp) {
+            TabCreator tabCreator,
+            List<Tab> tabs,
+            boolean updateTimestamp,
+            boolean areTabsBeingOpened) {
         ThreadUtils.assertOnUiThread();
         for (Tab tab : tabs) {
             // Update the timestamp so that the tab isn't immediately re-archived on the next pass.
@@ -236,12 +246,16 @@ public class TabArchiver implements TabWindowManager.Observer {
             }
 
             TabState tabState = prepareTabState(tab);
-            Tab newTab = tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+            // Restore tab at the "start" of the list.
+            Tab newTab =
+                    tabCreator.createFrozenTab(
+                            tabState, tab.getId(), areTabsBeingOpened ? INVALID_TAB_INDEX : 0);
             newTab.onTabRestoredFromArchivedTabModel();
         }
 
         int tabCount = tabs.size();
-        mArchivedTabModel
+        mArchivedTabGroupModelFilter
+                .getTabModel()
                 .getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeTabs(tabs).allowUndo(false).build(),
@@ -266,22 +280,40 @@ public class TabArchiver implements TabWindowManager.Observer {
         ThreadUtils.postOnUiThread(
                 mCallbackController.makeCancelable(
                         () -> {
-                            TabModel model = selector.getModel(/* isIncognito= */ false);
+                            TabGroupModelFilter regularTabGroupModelFilter =
+                                    selector.getTabGroupModelFilterProvider()
+                                            .getCurrentTabGroupModelFilter();
+                            TabModel model = regularTabGroupModelFilter.getTabModel();
                             int activeTabId = TabModelUtils.getCurrentTabId(model);
                             List<Tab> tabsToClose = new ArrayList<>();
                             List<Tab> tabsToArchive = new ArrayList<>();
+                            HashMap<Token, Boolean> groupIdToArchiveEligibilityMap =
+                                    new HashMap<>();
                             for (int i = 0; i < model.getCount(); i++) {
                                 Tab tab = model.getTabAt(i);
                                 // If there's an existing archived tab for the tab id, then we've
                                 // run into a case where the tab metadata file wasn't updated after
                                 // an archive or restore pass. Remove the tab from the regular tab
                                 // model since the tab was already archived.
-                                Tab archivedTab = mArchivedTabModel.getTabById(tab.getId());
+                                Tab archivedTab =
+                                        mArchivedTabGroupModelFilter
+                                                .getTabModel()
+                                                .getTabById(tab.getId());
                                 if (archivedTab != null) {
                                     tabsToClose.add(tab);
-                                } else if (activeTabId != tab.getId()
-                                        && isTabEligibleForArchive(tab)) {
-                                    tabsToArchive.add(tab);
+                                } else if (activeTabId != tab.getId()) {
+                                    // If the tab is not part of a tab group or the flag is not
+                                    // enabled, bypass this for the original check on a single tab.
+                                    boolean isTabOrGroupTabEligibleForArchive =
+                                            tab.getTabGroupId() != null
+                                                    ? isGroupTabEligibleForArchive(
+                                                            regularTabGroupModelFilter,
+                                                            groupIdToArchiveEligibilityMap,
+                                                            tab)
+                                                    : isTabEligibleForArchive(tab);
+                                    if (isTabOrGroupTabEligibleForArchive) {
+                                        tabsToArchive.add(tab);
+                                    }
                                 }
                             }
                             if (tabsToClose.size() > 0) {
@@ -308,9 +340,43 @@ public class TabArchiver implements TabWindowManager.Observer {
                         }));
     }
 
+    // Check if tab groups are eligible for archive. Only archive a tab group if all tabs in that
+    // group pass archiving eligibility criteria.
+    private boolean isGroupTabEligibleForArchive(
+            TabGroupModelFilter regularTabGroupModelFilter,
+            HashMap<Token, Boolean> groupIdToArchiveEligibilityMap,
+            Tab tab) {
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs.isEnabled()) {
+            // Create a map between group id tokens and their archive eligibility. If a group has
+            // not been checked yet, check all related tabs and assign a status so that tabs with
+            // that group id token can be bypassed in future iterations of this checking cycle.
+            Token tabGroupId = tab.getTabGroupId();
+            if (groupIdToArchiveEligibilityMap.containsKey(tabGroupId)) {
+                return groupIdToArchiveEligibilityMap.get(tabGroupId);
+            } else {
+                boolean isTabGroupEligibleForArchive =
+                        isTabGroupEligibleForArchive(regularTabGroupModelFilter, tab);
+                groupIdToArchiveEligibilityMap.put(tabGroupId, isTabGroupEligibleForArchive);
+                return isTabGroupEligibleForArchive;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isTabGroupEligibleForArchive(
+            TabGroupModelFilter regularTabGroupModelFilter, Tab tab) {
+        List<Tab> relatedTabList =
+                regularTabGroupModelFilter.getRelatedTabListForRootId(tab.getRootId());
+        for (Tab relatedTab : relatedTabList) {
+            if (!isTabEligibleForArchive(relatedTab)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean isTabEligibleForArchive(Tab tab) {
-        // Explicitly prevent grouped tabs from getting archived.
-        if (tab.getTabGroupId() != null) return false;
         TabState tabState = TabStateExtractor.from(tab);
         if (tabState.contentsState == null) return false;
 
@@ -363,8 +429,8 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     @VisibleForTesting
     void ensureArchivedTabsHaveCorrectFields() {
-        for (int i = 0; i < mArchivedTabModel.getCount(); i++) {
-            Tab archivedTab = mArchivedTabModel.getTabAt(i);
+        for (int i = 0; i < mArchivedTabGroupModelFilter.getTabModel().getCount(); i++) {
+            Tab archivedTab = mArchivedTabGroupModelFilter.getTabModel().getTabAt(i);
             // Archived tabs shouldn't have a root id or parent id. It's possible that there's
             // stale data around for clients that have archived tabs prior to crrev.com/c/5750590
             // landing. Fix those fields so that they're corrected in the tab state file.

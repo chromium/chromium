@@ -188,6 +188,8 @@ chromium-metrics-reviews@google.com.
   <int value="9"
       label="HTTP request to a fully typed URL with explicit HTTP scheme."/>
   <int value="10" label="HTTP request to a captive portal login page"/>
+  <int value="11" label="Request was for a single-label hostname"/>
+  <int value="12" label="Request was for a URL with non-default ports"/>
 </enum>
 
 <enum name="NewAcceptedDeviceType">

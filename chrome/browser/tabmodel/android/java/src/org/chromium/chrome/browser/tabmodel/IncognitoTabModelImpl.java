@@ -60,6 +60,18 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
                 }
 
                 @Override
+                public void prepareCloseTabs(
+                        @NonNull TabClosureParams tabClosureParams,
+                        boolean allowDialog,
+                        @Nullable TabModelActionListener listener,
+                        @NonNull Callback<TabClosureParams> onPreparedCallback) {
+                    mDelegateModel
+                            .getTabRemover()
+                            .prepareCloseTabs(
+                                    tabClosureParams, allowDialog, listener, onPreparedCallback);
+                }
+
+                @Override
                 public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
                     mDelegateModel.getTabRemover().forceCloseTabs(tabClosureParams);
                 }

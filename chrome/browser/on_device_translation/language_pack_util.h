@@ -116,6 +116,12 @@ struct LanguagePackComponentConfig {
   const uint8_t public_key_sha[32];
 };
 
+// Converts a LanguagePackKey to a SupportedLanguage which is not English part
+// of the language pair. For example, LanguagePackKey::kEnEs will be converted
+// to SupportedLanguage::kEs.
+SupportedLanguage NonEnglishSupportedLanguageFromLanguagePackKey(
+    LanguagePackKey language_pack_key);
+
 // Returns the pref name of the fully-qualified path to the installed language
 // pack. This pref is populated only when the language pack component is fully
 // initialized and ready for use.

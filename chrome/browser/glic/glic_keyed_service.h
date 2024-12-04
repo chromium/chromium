@@ -16,6 +16,7 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
+namespace glic {
 class GlicWindowController;
 
 class GlicKeyedService : public KeyedService {
@@ -50,4 +51,5 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicWindowController> window_controller_;
 };
 
+}  // namespace glic
 #endif  // CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_

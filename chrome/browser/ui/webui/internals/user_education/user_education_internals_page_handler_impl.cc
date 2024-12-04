@@ -726,7 +726,7 @@ void UserEducationInternalsPageHandlerImpl::GetWhatsNewModules(
   std::vector<WhatsNewModuleDemoPageInfoPtr> info_list;
   if (const auto* registry = GetWhatsNewRegistry()) {
     auto* storage_service = registry->storage_service();
-    for (auto& module : registry->modules()) {
+    for (auto& [key, module] : registry->modules()) {
       if (module.HasFeature()) {
         info_list.emplace_back(WhatsNewModuleDemoPageInfo::New(
             RemovePrefixAndCamelCase(module.GetFeatureName(), ""),
@@ -744,7 +744,7 @@ void UserEducationInternalsPageHandlerImpl::GetWhatsNewEditions(
   std::vector<WhatsNewEditionDemoPageInfoPtr> info_list;
   if (const auto* registry = GetWhatsNewRegistry()) {
     auto* storage_service = registry->storage_service();
-    for (auto& edition : registry->editions()) {
+    for (auto& [key, edition] : registry->editions()) {
       auto used_version =
           storage_service->GetUsedVersion(edition.GetFeatureName());
       info_list.emplace_back(WhatsNewEditionDemoPageInfo::New(

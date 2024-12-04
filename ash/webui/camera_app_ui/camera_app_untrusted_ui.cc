@@ -28,8 +28,7 @@ void CreateAndAddUntrustedCameraAppUIHTMLSource(
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::CreateAndAdd(browser_context,
                                              kChromeUIUntrustedCameraAppURL);
-  untrusted_source->AddResourcePaths(
-      base::make_span(kAshCameraAppResources, kAshCameraAppResourcesSize));
+  untrusted_source->AddResourcePaths(kAshCameraAppResources);
   untrusted_source->AddFrameAncestor(GURL(kChromeUICameraAppURL));
 
   untrusted_source->OverrideContentSecurityPolicy(

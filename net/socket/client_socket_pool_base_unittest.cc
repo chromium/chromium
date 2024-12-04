@@ -1519,7 +1519,7 @@ TEST_F(ClientSocketPoolBaseTest, PendingRequests) {
   EXPECT_EQ(ClientSocketPoolTest::kIndexOutOfBounds, GetOrderOfRequest(9));
 }
 
-TEST_F(ClientSocketPoolBaseTest, PendingRequestsNoKeepAlive) {
+TEST_F(ClientSocketPoolBaseTest, PendingRequests_NoKeepAlive) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
 
   EXPECT_THAT(StartRequest(TestGroupId("a"), DEFAULT_PRIORITY), IsOk());

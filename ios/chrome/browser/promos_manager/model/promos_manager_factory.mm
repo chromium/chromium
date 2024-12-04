@@ -6,20 +6,17 @@
 
 #import "base/no_destructor.h"
 #import "base/time/default_clock.h"
-#import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 PromosManager* PromosManagerFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<PromosManager*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<PromosManager>(profile,
+                                                              /*create=*/true);
 }
 
 // static
@@ -29,9 +26,8 @@ PromosManagerFactory* PromosManagerFactory::GetInstance() {
 }
 
 PromosManagerFactory::PromosManagerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PromosManagerFactory",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PromosManagerFactory",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(feature_engagement::TrackerFactory::GetInstance());
 }
 
@@ -46,9 +42,4 @@ std::unique_ptr<KeyedService> PromosManagerFactory::BuildServiceInstanceFor(
       feature_engagement::TrackerFactory::GetForProfile(profile));
   promos_manager->Init();
   return promos_manager;
-}
-
-web::BrowserState* PromosManagerFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
 }

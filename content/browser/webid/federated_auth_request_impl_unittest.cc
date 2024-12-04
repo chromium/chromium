@@ -5002,9 +5002,54 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
       "MultipleRequestsRpMode",
       static_cast<int>(FedCmMultipleRequestsRpMode::kPassiveThenPassive));
 
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.MultipleRequestsFromDifferentIdPs", 0, 1);
+  ExpectUkmValueInEntry("MultipleRequestsFromDifferentIdPs",
+                        FedCmEntry::kEntryName, false);
+
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
   CheckAllFedCmSessionIDs(2, /*check_request_id_token=*/true);
+}
+
+TEST_F(FederatedAuthRequestImplTest, TooManyRequestsDifferentIdP) {
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kNone;
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_TRUE(did_show_accounts_dialog());
+
+  // Reset the network request manager so we can check that we fetch no
+  // endpoints in the subsequent call.
+  configuration.accounts_dialog_action =
+      AccountsDialogAction::kSelectFirstAccount;
+  SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
+  // The next FedCM request should fail since the initial request has not yet
+  // been finalized.
+  RequestExpectations expectations = {
+      RequestTokenStatus::kErrorTooManyRequests,
+      FederatedAuthRequestResult::kTooManyRequests,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  // Initiates a new API call with a different IdP.
+  RequestParameters request{kDefaultRequestParameters};
+  request.identity_providers[0].provider = kProviderTwoUrlFull;
+  RunAuthTest(request, expectations, configuration);
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  // Check that the appropriate metrics are recorded upon destruction.
+  federated_auth_request_impl_->ResetAndDeleteThis();
+
+  ukm_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.MultipleRequestsFromDifferentIdPs", 1, 1);
+  ExpectUkmValueInEntry("MultipleRequestsFromDifferentIdPs",
+                        FedCmEntry::kEntryName, true);
 }
 
 TEST_F(FederatedAuthRequestImplTest,

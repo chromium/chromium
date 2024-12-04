@@ -495,9 +495,8 @@ class FormForestTestWithMockedTree : public FormForestTest {
       if (f.begin + f.count > source.fields().size()) {
         f.count = base::dynamic_extent;
       }
-      base::ranges::copy(
-          base::make_span(source.fields()).subspan(f.begin, f.count),
-          std::back_inserter(fields));
+      base::ranges::copy(base::span(source.fields()).subspan(f.begin, f.count),
+                         std::back_inserter(fields));
     }
 
     // Copy |mocked_forms_| into |flattened_forms_|, without fields.

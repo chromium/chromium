@@ -156,7 +156,7 @@ DevicePoliciesManager** DevicePoliciesManager::GetInstanceStorage() {
   return &instance_storage;
 }
 
-DevicePoliciesManager::DevicePoliciesManager() {}
+DevicePoliciesManager::DevicePoliciesManager() = default;
 
 DevicePoliciesManager::~DevicePoliciesManager() = default;
 

@@ -13,7 +13,7 @@ extern const CGFloat kTabGroupIndicatorHeight;
 extern const CGFloat kTabGroupIndicatorVerticalMargin;
 // Size of the tab group indicator view colored dot.
 extern const CGFloat kTabGroupIndicatorColoredDotSize;
-// Margin between the tab group indicator view colored dot and label.
+// Margin between the tab group indicator elements.
 extern const CGFloat kTabGroupIndicatorSeparationMargin;
 
 // Top margin for the NTP tab group indicator view.

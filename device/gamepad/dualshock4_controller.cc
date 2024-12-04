@@ -198,7 +198,7 @@ void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
             (j == 0 ? touch_id_0 : touch_id_1) - initial_touch_id.value();
         touch.surface_id = 0;
         // x and y coordinates stored in 3 bytes (12bits each)
-        ReadTouchCoordinates(base::make_span(raw_touch.data, 3u), touch);
+        ReadTouchCoordinates(base::span(raw_touch.data, 3u), touch);
       }
     }
   }
@@ -331,8 +331,8 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
 
   if (is_multitouch_enabled) {
     pad->supports_touch_events_ = true;
-    ProcessTouchData(base::make_span(touches, touches_count),
-                     transform_touch_id_, initial_touch_id_, pad);
+    ProcessTouchData(base::span(touches, touches_count), transform_touch_id_,
+                     initial_touch_id_, pad);
   }
 
   pad->timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();

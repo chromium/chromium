@@ -67,9 +67,8 @@ constexpr base::Time kIntegratedTime = base::Time::FromTimeT(1709113639);
 
 TEST(RekorTest, GetRekorLogEntry) {
   std::string json = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> span = base::make_span(
-      static_cast<uint8_t*>((uint8_t*)json.data()), json.size());
-  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  std::optional<LogEntry> log_entry =
+      GetRekorLogEntry(base::as_byte_span(json));
   EXPECT_TRUE(log_entry.has_value());
   EXPECT_EQ(log_entry->body, kBody);
   EXPECT_EQ(log_entry->integrated_time, kIntegratedTime);
@@ -82,9 +81,8 @@ TEST(RekorTest, GetRekorLogEntry) {
 
 TEST(RekorTest, GetRekorLogEntryNoVerification) {
   std::string json = GetContentsFromFile("logentry_noverification.json");
-  base::span<const uint8_t> span = base::make_span(
-      static_cast<uint8_t*>((uint8_t*)json.data()), json.size());
-  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  std::optional<LogEntry> log_entry =
+      GetRekorLogEntry(base::as_byte_span(json));
   EXPECT_TRUE(log_entry.has_value());
   EXPECT_EQ(log_entry->body, kBody);
   EXPECT_EQ(log_entry->integrated_time, kIntegratedTime);
@@ -95,9 +93,8 @@ TEST(RekorTest, GetRekorLogEntryNoVerification) {
 
 TEST(RekorTest, GetRekorLogEntryBody) {
   std::string json = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> span = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  std::optional<Body> log_entry_body =
+      GetRekorLogEntryBody(base::as_byte_span(json));
   EXPECT_TRUE(log_entry_body.has_value());
   EXPECT_EQ(log_entry_body->api_version, kApiVersion);
   EXPECT_EQ(log_entry_body->kind, kKind);
@@ -115,9 +112,8 @@ TEST(RekorTest, GetRekorLogEntryBody) {
 
 TEST(RekorTest, RekorSignatureBundleFromLogEntryWithVerification) {
   std::string json = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> span = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  std::optional<LogEntry> log_entry =
+      GetRekorLogEntry(base::as_byte_span(json));
   std::optional<RekorSignatureBundle> rekor_signature_bundle =
       GetRekorSignatureBundle(log_entry.value());
   // TODO(livseibert): Once VerifyRekorSignature is implemented, check that this
@@ -127,9 +123,8 @@ TEST(RekorTest, RekorSignatureBundleFromLogEntryWithVerification) {
 
 TEST(RekorTest, RekorSignatureBundleFromLogEntryWithoutVerification) {
   std::string json = GetContentsFromFile("logentry_noverification.json");
-  base::span<const uint8_t> span = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  std::optional<LogEntry> log_entry =
+      GetRekorLogEntry(base::as_byte_span(json));
   std::optional<RekorSignatureBundle> rekor_signature_bundle =
       GetRekorSignatureBundle(log_entry.value());
   EXPECT_FALSE(rekor_signature_bundle.has_value());
@@ -137,9 +132,8 @@ TEST(RekorTest, RekorSignatureBundleFromLogEntryWithoutVerification) {
 
 TEST(RekorTest, RekorSignatureBundleFromLogEntryWithBackslash) {
   std::string json = GetContentsFromFile("logentry_backslash.json");
-  base::span<const uint8_t> span = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  std::optional<LogEntry> log_entry =
+      GetRekorLogEntry(base::as_byte_span(json));
   std::optional<RekorSignatureBundle> rekor_signature_bundle =
       GetRekorSignatureBundle(log_entry.value());
   EXPECT_FALSE(rekor_signature_bundle.has_value());
@@ -149,68 +143,56 @@ TEST(RekorTest, VerifyRekorSignatureSuccess) {
   auto pub_key = ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
   ASSERT_TRUE(pub_key.has_value());
   std::string json = GetContentsFromFile("logentry.json");
-  base::span<const uint8_t> log_entry = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  EXPECT_TRUE(VerifyRekorSignature(log_entry, *pub_key));
+  EXPECT_TRUE(VerifyRekorSignature(base::as_byte_span(json), *pub_key));
 }
 
 TEST(RekorTest, VerifyRekorSignatureFailure) {
   auto pub_key = ConvertPemToRaw(GetContentsFromFile("rekor_pub_key.pem"));
   ASSERT_TRUE(pub_key.has_value());
   std::string json = GetContentsFromFile("logentry_backslash.json");
-  base::span<const uint8_t> log_entry = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  EXPECT_FALSE(VerifyRekorSignature(log_entry, *pub_key));
+  EXPECT_FALSE(VerifyRekorSignature(base::as_byte_span(json), *pub_key));
 }
 
 TEST(RekorTest, VerifyRekorBodySucceeds) {
   std::string json = GetContentsFromFile("logentry.json");
   std::string endorsement = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> span = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  std::optional<Body> log_entry_body =
+      GetRekorLogEntryBody(base::as_byte_span(json));
   EXPECT_TRUE(log_entry_body.has_value());
-  base::span<const uint8_t> content_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
-  EXPECT_TRUE(VerifyRekorBody(log_entry_body.value(), content_span));
+  EXPECT_TRUE(
+      VerifyRekorBody(log_entry_body.value(), base::as_byte_span(endorsement)));
 }
 
 TEST(RekorTest, VerifyRekorBodyWrongSignatureFormatFails) {
   std::string json = GetContentsFromFile("logentry.json");
   std::string endorsement = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> span = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  std::optional<Body> log_entry_body =
+      GetRekorLogEntryBody(base::as_byte_span(json));
   EXPECT_TRUE(log_entry_body.has_value());
   log_entry_body->spec.generic_signature.format = "bad";
-  base::span<const uint8_t> content_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
-  EXPECT_FALSE(VerifyRekorBody(log_entry_body.value(), content_span));
+  EXPECT_FALSE(
+      VerifyRekorBody(log_entry_body.value(), base::as_byte_span(endorsement)));
 }
 
 TEST(RekorTest, VerifyRekorBodyWrongContentFails) {
   std::string json = GetContentsFromFile("logentry.json");
   std::string endorsement = "abcd";
-  base::span<const uint8_t> span = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  std::optional<Body> log_entry_body =
+      GetRekorLogEntryBody(base::as_byte_span(json));
   EXPECT_TRUE(log_entry_body.has_value());
-  base::span<const uint8_t> content_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
-  EXPECT_FALSE(VerifyRekorBody(log_entry_body.value(), content_span));
+  EXPECT_FALSE(
+      VerifyRekorBody(log_entry_body.value(), base::as_byte_span(endorsement)));
 }
 
 TEST(RekorTest, VerifyRekorBodyWrongPublicKeyFails) {
   std::string json = GetContentsFromFile("logentry.json");
   std::string endorsement = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> span = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  std::optional<Body> log_entry_body =
+      GetRekorLogEntryBody(base::as_byte_span(json));
   EXPECT_TRUE(log_entry_body.has_value());
   log_entry_body->spec.generic_signature.public_key.content = "abcd";
-  base::span<const uint8_t> content_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
-  EXPECT_FALSE(VerifyRekorBody(log_entry_body.value(), content_span));
+  EXPECT_FALSE(
+      VerifyRekorBody(log_entry_body.value(), base::as_byte_span(endorsement)));
 }
 
 TEST(RekorTest, VerifyRekorLogEntrySuccess) {
@@ -218,11 +200,8 @@ TEST(RekorTest, VerifyRekorLogEntrySuccess) {
   ASSERT_TRUE(pub_key.has_value());
   std::string json = GetContentsFromFile("logentry.json");
   std::string endorsement = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> log_entry = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  base::span<const uint8_t> endorsement_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
-  EXPECT_TRUE(VerifyRekorLogEntry(log_entry, *pub_key, endorsement_span));
+  EXPECT_TRUE(VerifyRekorLogEntry(base::as_byte_span(json), *pub_key,
+                                  base::as_byte_span(endorsement)));
 }
 
 TEST(RekorTest, VerifyRekorLogEntryBadLogEntryFails) {
@@ -230,11 +209,8 @@ TEST(RekorTest, VerifyRekorLogEntryBadLogEntryFails) {
   ASSERT_TRUE(pub_key.has_value());
   std::string json = GetContentsFromFile("logentry_backslash.json");
   std::string endorsement = GetContentsFromFile("endorsement.json");
-  base::span<const uint8_t> log_entry = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  base::span<const uint8_t> endorsement_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
-  EXPECT_FALSE(VerifyRekorLogEntry(log_entry, *pub_key, endorsement_span));
+  EXPECT_FALSE(VerifyRekorLogEntry(base::as_byte_span(json), *pub_key,
+                                   base::as_byte_span(endorsement)));
 }
 
 TEST(RekorTest, VerifyRekorLogEntryBadEndorsementFails) {
@@ -242,11 +218,8 @@ TEST(RekorTest, VerifyRekorLogEntryBadEndorsementFails) {
   ASSERT_TRUE(pub_key.has_value());
   std::string json = GetContentsFromFile("logentry.json");
   std::string endorsement = "abcd";
-  base::span<const uint8_t> log_entry = base::make_span(
-      reinterpret_cast<const uint8_t*>(json.data()), json.size());
-  base::span<const uint8_t> endorsement_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(endorsement.data()), endorsement.size());
-  EXPECT_FALSE(VerifyRekorLogEntry(log_entry, *pub_key, endorsement_span));
+  EXPECT_FALSE(VerifyRekorLogEntry(base::as_byte_span(json), *pub_key,
+                                   base::as_byte_span(endorsement)));
 }
 
 }  // namespace device::enclave

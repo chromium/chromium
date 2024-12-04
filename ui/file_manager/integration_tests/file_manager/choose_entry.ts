@@ -21,7 +21,7 @@ function getDialogParams(): chrome.fileSystem.ChooseEntryOptions {
 /**
  * Opens a file dialog. The type of the dialog is dicated by the params.
  */
-async function chooseEntry(): Promise<Entry> {
+async function chooseEntry(): Promise<Entry|Entry[]> {
   const params = getDialogParams();
   return new Promise((resolve, reject) => {
     chrome.fileSystem.chooseEntry(params, (entry) => {

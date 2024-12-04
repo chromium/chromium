@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CONTENT_UNSAFE_RESOURCE_UTIL_H_
 
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 
 namespace content {
 class NavigationEntry;
@@ -27,12 +28,18 @@ namespace safe_browsing::unsafe_resource_util {
 //   navigations), though a pending navigation is okay.
 content::NavigationEntry* GetNavigationEntryForResource(
     const security_interstitials::UnsafeResource& resource);
+content::NavigationEntry* GetNavigationEntryForLocator(
+    const security_interstitials::UnsafeResourceLocator& resource,
+    const std::optional<int64_t>& navigation_id,
+    safe_browsing::SBThreatType threat_type);
 
 // Returns the WebContents associated with the given |resource| based on the
 // frame or document for which it was created. If that frame/document no longer
 // exists, this returns nullptr.
 content::WebContents* GetWebContentsForResource(
     const security_interstitials::UnsafeResource& resource);
+content::WebContents* GetWebContentsForLocator(
+    const security_interstitials::UnsafeResourceLocator& rfh_locator);
 
 }  // namespace safe_browsing::unsafe_resource_util
 

@@ -28,15 +28,6 @@ enum class MainThreadTaskLoadState;
 class MainThreadTaskQueue;
 class MainThreadSchedulerImpl;
 
-enum class UkmRecordingStatus {
-  kSuccess = 0,
-  kErrorMissingFrame = 1,
-  kErrorDetachedFrame = 2,
-  kErrorMissingUkmRecorder = 3,
-
-  kCount = 4,
-};
-
 // Helper class to take care of metrics on behalf of MainThreadScheduler.
 // This class should be used only on the main thread.
 class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {

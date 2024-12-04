@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/notification_tester/notification_tester_ui.h"
 
 #include "base/containers/span.h"
@@ -33,9 +28,7 @@ NotificationTesterUI::NotificationTesterUI(content::WebUI* web_ui)
           Profile::FromWebUI(web_ui), chrome::kChromeUINotificationTesterHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kNotificationTesterResources,
-                                              kNotificationTesterResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kNotificationTesterResources,
                               IDR_NOTIFICATION_TESTER_INDEX_HTML);
 
   // Add message handler.

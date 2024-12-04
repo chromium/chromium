@@ -261,8 +261,7 @@ AIManagerKeyedService::CreateLanguageModelInternal(
     const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
     AIContextBoundObjectSet& context_bound_object_set,
     base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
-    const std::optional<const AILanguageModel::Context>& context,
-    base::SupportsUserData* context_user_data) {
+    const std::optional<const AILanguageModel::Context>& context) {
   CHECK(browser_context_);
   auto task = std::make_unique<CreateLanguageModelOnDeviceSessionTask>(
       context_bound_object_set, browser_context_.get(), sampling_params,
@@ -515,8 +514,7 @@ void AIManagerKeyedService::CreateLanguageModelForCloning(
   // clone should be provided.
   auto task = CreateLanguageModelInternal(
       sampling_params, context_bound_object_set,
-      std::move(create_language_model_callback), context,
-      /*context_user_data=*/nullptr);
+      std::move(create_language_model_callback), context);
   // The on-device model must be available before the existing language model
   // was created, so the `CreateLanguageModelOnDeviceSessionTask` should
   // complete without waiting for the on-device model availability changes.

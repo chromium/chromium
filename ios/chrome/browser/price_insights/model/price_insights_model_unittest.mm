@@ -1033,3 +1033,61 @@ TEST_F(PriceInsightsModelTest, TestPriceBucketHighHighRelevance) {
                 kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed,
             config->iph_entrypoint_explicitly_dismissed);
 }
+
+// Test that when the price bucket is low, but history is missing, the relevance
+// is set to low and the entry point does not have a message.
+TEST_F(PriceInsightsModelTest, TestPriceBucketLowNoHistoryLowRelevance) {
+  base::RunLoop run_loop;
+
+  features_.InitAndEnableFeatureWithParameters(
+      commerce::kPriceInsightsIos,
+      {{kLowPriceParam, kLowPriceParamPriceIsLow}});
+
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->title = kTestTitle;
+  info->product_cluster_id = 12345L;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+
+  std::optional<commerce::PriceInsightsInfo> price_info;
+  price_info.emplace();
+  price_info->product_cluster_id = 123u;
+  price_info->price_bucket = commerce::PriceBucket::kLowPrice;
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      std::move(price_info));
+
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
+
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY),
+            config->accessibility_label);
+  EXPECT_EQ("", config->entrypoint_message);
+  EXPECT_EQ(base::SysNSStringToUTF8(kDownTrendSymbol),
+            config->entrypoint_image_name);
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+            config->image_type);
+  EXPECT_EQ(ContextualPanelItemConfiguration::low_relevance, config->relevance);
+  EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature,
+            config->iph_feature);
+  EXPECT_EQ(feature_engagement::events::
+                kIOSContextualPanelPriceInsightsEntrypointUsed,
+            config->iph_entrypoint_used_event_name);
+  EXPECT_EQ(feature_engagement::events::
+                kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed,
+            config->iph_entrypoint_explicitly_dismissed);
+}

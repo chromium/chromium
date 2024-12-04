@@ -70,7 +70,7 @@ bool FileSystemStatus::IsSystemImageExtFormat(const base::FilePath& path) {
   }
 
   std::array<uint8_t, 2> buf;
-  if (!file.ReadAndCheck(0x400 + 0x38, base::make_span(buf))) {
+  if (!file.ReadAndCheck(0x400 + 0x38, buf)) {
     PLOG(ERROR) << "File read error on system image file: " << path.value();
     return false;
   }

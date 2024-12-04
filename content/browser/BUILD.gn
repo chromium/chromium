@@ -1394,8 +1394,8 @@ source_set("browser") {
     "media/session/media_session_service_impl.h",
     "media/session/media_session_uma_helper.cc",
     "media/session/media_session_uma_helper.h",
-    "media/system_media_controls_notifier.cc",
-    "media/system_media_controls_notifier.h",
+    "media/system_media_controls/system_media_controls_notifier.cc",
+    "media/system_media_controls/system_media_controls_notifier.h",
     "media/url_provision_fetcher.cc",
     "media/url_provision_fetcher.h",
     "media/webaudio/audio_context_manager_impl.cc",
@@ -1619,7 +1619,6 @@ source_set("browser") {
     "preloading/prerenderer.h",
     "preloading/prerenderer_impl.cc",
     "preloading/prerenderer_impl.h",
-    "preloading/speculation_host_devtools_observer.h",
     "preloading/speculation_rules/speculation_host_impl.cc",
     "preloading/speculation_rules/speculation_host_impl.h",
     "presentation/presentation_service_impl.cc",
@@ -2909,6 +2908,8 @@ source_set("browser") {
       "renderer_host/dwrite_font_file_util_win.h",
       "renderer_host/dwrite_font_proxy_impl_win.cc",
       "renderer_host/dwrite_font_proxy_impl_win.h",
+      "renderer_host/input/stylus_handwriting_callback_sink_win.cc",
+      "renderer_host/input/stylus_handwriting_callback_sink_win.h",
       "renderer_host/input/stylus_handwriting_controller_win.cc",
       "renderer_host/input/stylus_handwriting_controller_win.h",
       "renderer_host/legacy_render_widget_host_win.cc",
@@ -2944,10 +2945,10 @@ source_set("browser") {
 
   if (is_win || is_mac) {
     sources += [
-      "media/web_app_system_media_controls.cc",
-      "media/web_app_system_media_controls.h",
-      "media/web_app_system_media_controls_manager.cc",
-      "media/web_app_system_media_controls_manager.h",
+      "media/system_media_controls/web_app_system_media_controls.cc",
+      "media/system_media_controls/web_app_system_media_controls.h",
+      "media/system_media_controls/web_app_system_media_controls_manager.cc",
+      "media/system_media_controls/web_app_system_media_controls_manager.h",
     ]
   }
 

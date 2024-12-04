@@ -166,7 +166,6 @@ if (is_win) {
 
     deps = [
       "//base",
-      "//build:chromeos_buildflags",
       "//components/app_launch_prefetch",
       "//components/gwp_asan/buildflags",
       "//components/stability_report",

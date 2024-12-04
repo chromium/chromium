@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 
 #include "base/feature_list.h"
@@ -284,10 +279,8 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(GetMainViewTitleId()));
 
   AddStrings(html_source);
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kProfilePickerResources, kProfilePickerResourcesSize),
-      IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
+  webui::SetupWebUIDataSource(html_source, kProfilePickerResources,
+                              IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
 }
 
 ProfilePickerUI::~ProfilePickerUI() = default;

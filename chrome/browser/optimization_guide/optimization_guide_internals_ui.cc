@@ -49,9 +49,7 @@ OptimizationGuideInternalsUI::OptimizationGuideInternalsUI(
       web_ui->GetWebContents()->GetBrowserContext(),
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost);
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kOptimizationGuideInternalsResources,
-                      kOptimizationGuideInternalsResourcesSize),
+      source, kOptimizationGuideInternalsResources,
       IDR_OPTIMIZATION_GUIDE_INTERNALS_OPTIMIZATION_GUIDE_INTERNALS_HTML);
 }
 

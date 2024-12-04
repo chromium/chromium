@@ -644,7 +644,7 @@ TEST(PacFileDeciderTest, AutodetectFailCustomFails2) {
 // This is a copy-paste of CustomPacFails1, with the exception that we give it
 // a 1 millisecond delay. This means it will now complete asynchronously.
 // Moreover, we test the NetLog to make sure it logged the pause.
-TEST(PacFileDeciderTest, CustomPacFails1WithPositiveDelay) {
+TEST(PacFileDeciderTest, CustomPacFails1_WithPositiveDelay) {
   base::test::TaskEnvironment task_environment;
 
   Rules rules;
@@ -689,7 +689,7 @@ TEST(PacFileDeciderTest, CustomPacFails1WithPositiveDelay) {
 // This is a copy-paste of CustomPacFails1, with the exception that we give it
 // a -5 second delay instead of a 0 ms delay. This change should have no effect
 // so the rest of the test is unchanged.
-TEST(PacFileDeciderTest, CustomPacFails1WithNegativeDelay) {
+TEST(PacFileDeciderTest, CustomPacFails1_WithNegativeDelay) {
   Rules rules;
   RuleBasedPacFileFetcher fetcher(&rules);
   DoNothingDhcpPacFileFetcher dhcp_fetcher;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 
 #include <utility>
@@ -44,8 +39,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   VersionUI::AddVersionDetailStrings(source);
   source->UseStringsJs();
 
-  source->AddResourcePaths(
-      base::make_span(kOmniboxResources, kOmniboxResourcesSize));
+  source->AddResourcePaths(kOmniboxResources);
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
   source->AddResourcePath("ml", IDR_OMNIBOX_ML_ML_HTML);
 

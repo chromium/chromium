@@ -4140,6 +4140,15 @@ Entrambi hanno lo stesso effetto sul comportamento del browser.</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
 <translation id="4030152268425532846">Disattiva l'esclusione dell'accesso automatico</translation>
 <translation id="4043796890723386527">Impedisci agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>
+<translation id="4047633048700722778">La configurazione del criterio consente di controllare il filtro di URL di SafeSites, che utilizza l'API Google Safe Search per classificare gli URL come pornografici o meno.
+
+Se il criterio viene impostato su:
+
+* Non filtrare i siti di contenuti per adulti, o se non viene configurato, i siti non vengono filtrati
+
+* Filtra i siti di contenuti per adulti, i siti pornografici vengono filtrati
+
+Il criterio viene applicato sia all'URL a cui l'utente accede sia agli iframe. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza su questo criterio e può essere utilizzato per ignorare i giudizi dell'API Google Safe Search.</translation>
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
@@ -8567,6 +8576,15 @@ Nota importante: le pianificazioni impostate da questo criterio potrebbero non e
       non sia installato l'host Chrome Remote Desktop.</translation>
 <translation id="7202925763179776247">Consenti limitazioni dei download</translation>
 <translation id="7203243973351251622">Registratore (supportata dalla versione 130)</translation>
+<translation id="7205989349935313324">Overlay di Lens consente agli utenti di eseguire ricerche su Google interagendo con uno screenshot della pagina corrente sovrapposto ai contenuti web effettivi. Inoltre, consente agli utenti di eseguire ricerche su Google sensibili al contesto della pagina corrente. Per fornire risposte contestuali, Overlay di Lens invia a Google i contenuti della pagina per rispondere alla query dell'utente con il contesto della pagina visualizzata.
+
+Non esiste un'impostazione utente per controllare questa funzionalità, che viene generalmente resa disponibile a tutti gli utenti che usano Google come motore di ricerca predefinito, a meno che non venga disattivata da questa policy.
+
+0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Disattiva la funzionalità.</translation>
 <translation id="7207095846245296855">Forza il filtro SafeSearch di Google</translation>
 <translation id="7211368186050418507">Non rilevare mai automaticamente il fuso orario</translation>
 <translation id="721617466745658461">Consenti agli utenti di selezionare il programma binario del browser <ph name="LACROS_NAME" /></translation>
@@ -9739,6 +9757,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy viene inizial
       Se il criterio viene impostato su Disattivato o se non viene configurato, i pacchetti non vengono inviati.</translation>
 <translation id="8168359201203671567">Colore della retroilluminazione della tastiera arcobaleno</translation>
 <translation id="8169452762291746260">Disattiva il monitoraggio dello stato di integrità del dispositivo</translation>
+<translation id="8170359860920320269">Filtra i siti di contenuti per adulti</translation>
 <translation id="8171262216089271568">Attiva il puntatore grande nella schermata di accesso</translation>
 <translation id="8171924760436219650">Imposta il pulsante destro come pulsante principale del mouse nella schermata di accesso</translation>
 <translation id="81724933026241365">Consenti agli utenti di spegnere il dispositivo con l'icona di arresto o il tasto di accensione fisico</translation>

@@ -80,9 +80,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   void HoldQueueHandle(user_education::RequiredNoticePriorityHandle
                            messaging_priority_handle) override;
   bool IsNoticeQueued() override;
-  void MaybeUnqueueNotice() override;
-  void MaybeQueueNotice() override;
+  void MaybeUnqueueNotice(NoticeQueueState unqueue_source) override;
+  void MaybeQueueNotice(NoticeQueueState queue_source) override;
   bool IsHoldingHandle() override;
+  void SetSuppressQueue(bool suppress_queue) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
   bool IsPrivacySandboxRestricted() override;
@@ -131,6 +132,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 
  protected:
   friend class PrivacySandboxServiceTest;
+  friend class PrivacySandboxQueueTestNoticeWithSearchEngine;
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            MetricsLoggingOccursCorrectly);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestNonRegularProfile,
@@ -211,6 +213,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
       RecordPrivacySandbox4StartupMetrics_GraduationFlowWhenNoticeShownToGuardian);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxQueueTestNoticeWithSearchEngine,
+                           PromptSuppressed);
 
   // Contains all possible privacy sandbox states, recorded on startup.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -426,6 +430,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 
   bool force_chrome_build_for_tests_ = false;
   bool should_emit_dark_launch_startup_metrics_ = true;
+  // Temporary flag signifying not to requeue if the prompt has been suppressed.
+  // TODO(crbug.com/370804492): When we add DMA notice to queue, remove this.
+  bool suppress_queue_ = false;
 
   base::WeakPtrFactory<PrivacySandboxServiceImpl> weak_factory_{this};
 };

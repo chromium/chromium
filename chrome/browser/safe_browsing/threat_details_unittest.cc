@@ -33,6 +33,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -55,6 +56,7 @@
 
 using content::BrowserThread;
 using content::WebContents;
+using security_interstitials::UnsafeResourceLocator;
 using testing::_;
 using testing::DoAll;
 using testing::Eq;
@@ -145,7 +147,7 @@ class ThreatDetailsWrap : public ThreatDetails {
     SetShouldSendReport(true);
   }
 
-  ~ThreatDetailsWrap() override {}
+  ~ThreatDetailsWrap() override = default;
 
   void ThreatDetailsDone(WebContentsKey web_contents_key) {
     ++done_callback_count_;
@@ -211,7 +213,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   bool ReportWasSent() { return report_sent_; }
 
  private:
-  ~MockSafeBrowsingUIManager() override {}
+  ~MockSafeBrowsingUIManager() override = default;
 
   std::string serialized_;
   bool report_sent_;
@@ -299,8 +301,9 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     resource->url = url;
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
-    resource->render_process_id = primary_main_frame_id.child_id;
-    resource->render_frame_token = primary_main_frame->GetFrameToken().value();
+    resource->rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
+        primary_main_frame_id.child_id,
+        primary_main_frame->GetFrameToken().value());
     resource->is_async_check = is_async_check;
   }
 

@@ -3812,7 +3812,7 @@ TEST_F(BackfaceVisibilityInteropTest, BackfaceInvisibleTransform) {
 }
 
 // Needs layer tree mode: hide_layer_and_subtree.
-TEST_F(DrawPropertiesTestWithLayerTree, SubtreeHiddenSingleLayerImpl) {
+TEST_F(DrawPropertiesTestWithLayerTree, SubtreeHidden_SingleLayerImpl) {
   auto root = Layer::Create();
   root->SetBounds(gfx::Size(50, 50));
   root->SetIsDrawable(true);
@@ -3844,7 +3844,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, SubtreeHiddenSingleLayerImpl) {
 }
 
 // Needs layer tree mode: hide_layer_and_subtree.
-TEST_F(DrawPropertiesTestWithLayerTree, SubtreeHiddenTwoLayersImpl) {
+TEST_F(DrawPropertiesTestWithLayerTree, SubtreeHidden_TwoLayersImpl) {
   auto root = Layer::Create();
   root->SetBounds(gfx::Size(50, 50));
   root->SetIsDrawable(true);

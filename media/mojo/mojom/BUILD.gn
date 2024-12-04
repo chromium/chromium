@@ -923,6 +923,7 @@ mojom("web_speech_recognition") {
     "speech_recognition_error.mojom",
     "speech_recognition_error_code.mojom",
     "speech_recognition_grammar.mojom",
+    "speech_recognition_recognition_context.mojom",
     "speech_recognition_result.mojom",
     "speech_recognizer.mojom",
   ]

@@ -197,27 +197,6 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
 
 }  // namespace
 
-void SelectorFilter::PushParentStackFrame(Element& parent) {
-  parent_stack_.push_back(parent);
-  // Mix tags, class names and ids into some sort of weird bouillabaisse.
-  // The filter is used for fast rejection of child and descendant selectors.
-  CollectElementIdentifierHashes(
-      parent, [this](unsigned hash) { ancestor_identifier_filter_.Add(hash); });
-}
-
-void SelectorFilter::PopParentStackFrame() {
-  DCHECK(!parent_stack_.empty());
-  CollectElementIdentifierHashes(*parent_stack_.back(), [this](unsigned hash) {
-    ancestor_identifier_filter_.Remove(hash);
-  });
-  parent_stack_.pop_back();
-  if (parent_stack_.empty()) {
-#if DCHECK_IS_ON()
-    DCHECK(ancestor_identifier_filter_.LikelyEmpty());
-#endif
-  }
-}
-
 void SelectorFilter::PushAllParentsOf(TreeScope& tree_scope) {
   PushAncestors(tree_scope.RootNode());
 }
@@ -244,12 +223,25 @@ void SelectorFilter::PushParent(Element& parent) {
                 << ", which is neither";
   }
 #endif
-  PushParentStackFrame(parent);
+  parent_stack_.push_back(parent);
+  // Mix tags, class names and ids into some sort of weird bouillabaisse.
+  // The filter is used for fast rejection of child and descendant selectors.
+  CollectElementIdentifierHashes(
+      parent, [this](unsigned hash) { ancestor_identifier_filter_.Add(hash); });
 }
 
 void SelectorFilter::PopParent(Element& parent) {
   DCHECK(ParentStackIsConsistent(&parent));
-  PopParentStackFrame();
+  DCHECK(!parent_stack_.empty());
+  CollectElementIdentifierHashes(*parent_stack_.back(), [this](unsigned hash) {
+    ancestor_identifier_filter_.Remove(hash);
+  });
+  parent_stack_.pop_back();
+  if (parent_stack_.empty()) {
+#if DCHECK_IS_ON()
+    DCHECK(ancestor_identifier_filter_.LikelyEmpty());
+#endif
+  }
 }
 
 void SelectorFilter::CollectIdentifierHashes(

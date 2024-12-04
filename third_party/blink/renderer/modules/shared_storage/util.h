@@ -24,10 +24,16 @@ class SharedStorageRunOperationMethodOptions;
 static constexpr size_t kMaximumFilteringIdMaxBytes = 8;
 
 static constexpr char kOpaqueContextOriginCheckErrorMessage[] =
-    "the method on sharedStorage is not allowed in an opaque origin context";
+    "The shared storage method is not allowed in an opaque origin context";
 
 static constexpr char kOpaqueDataOriginCheckErrorMessage[] =
-    "the method on sharedStorage is not allowed to have an opaque data origin";
+    "The shared storage method is not allowed to have an opaque data origin";
+
+static constexpr char kInvalidKeyParameterLengthErrorMessage[] =
+    "Length of the \"key\" parameter is not valid";
+
+static constexpr char kInvalidValueParameterLengthErrorMessage[] =
+    "Length of the \"value\" parameter is not valid";
 
 // This enum classifies the value of `dataOrigin` in
 // shared_storage_worklet_options.idl.
@@ -49,10 +55,9 @@ bool CheckBrowsingContextIsValid(ScriptState& script_state,
                                  ExceptionState& exception_state);
 
 // Return if the shared-storage permissions policy is allowed in
-// `execution_context`. Reject the `resolver` with an error if disallowed.
-bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
-                                         ExecutionContext& execution_context,
-                                         ScriptPromiseResolverBase& resolver);
+// `execution_context`. Throw an error via `exception_state` if disallowed.
+bool CheckSharedStoragePermissionsPolicy(ExecutionContext& execution_context,
+                                         ExceptionState& exception_state);
 
 // Returns true if a valid privateAggregationConfig is provided or if no config
 // is provided. A config is invalid if an invalid (i.e. too long) context_id

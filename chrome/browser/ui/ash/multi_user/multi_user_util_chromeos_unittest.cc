@@ -30,12 +30,12 @@ const char kTestAccountEmail[] = "test@test.com";
 
 class MultiUserUtilTest : public ChromeAshTestBase {
  public:
-  MultiUserUtilTest() {}
+  MultiUserUtilTest() = default;
 
   MultiUserUtilTest(const MultiUserUtilTest&) = delete;
   MultiUserUtilTest& operator=(const MultiUserUtilTest&) = delete;
 
-  ~MultiUserUtilTest() override {}
+  ~MultiUserUtilTest() override = default;
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();

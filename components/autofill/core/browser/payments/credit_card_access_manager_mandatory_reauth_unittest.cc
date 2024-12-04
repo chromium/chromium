@@ -166,9 +166,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
        MandatoryReauth_FetchLocalCard) {
   base::HistogramTester histogram_tester;
   CreateLocalCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  card->set_cvc(kTestCvc16);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
@@ -235,10 +234,10 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
 TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
        MandatoryReauth_FetchVirtualCard) {
   base::HistogramTester histogram_tester;
-  CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard* virtual_card =
+  CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+                   CreditCard::RecordType::kVirtualCard);
+  const CreditCard* virtual_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
   credit_card_access_manager().FetchCreditCard(
       virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
@@ -464,10 +463,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
        MandatoryReauth_FetchLocalCard_NoCvcFillWorksCorrectly) {
   base::HistogramTester histogram_tester;
-  CreateLocalCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  CreateLocalCard(kTestGUID, kTestNumber, /*cvc=*/u"");
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  card->set_cvc(u"");
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
@@ -524,10 +522,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
        MandatoryReauth_FetchMaskedServerCard_NoCvcFillWorksCorrectly) {
   base::HistogramTester histogram_tester;
   std::string test_number = "4444333322221111";
-  CreateServerCard(kTestGUID, test_number, kTestServerId);
-  CreditCard* masked_server_card =
+  CreateServerCard(kTestGUID, test_number, kTestServerId, /*cvc=*/u"");
+  const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  masked_server_card->set_cvc(u"");
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 

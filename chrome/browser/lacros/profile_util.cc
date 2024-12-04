@@ -15,8 +15,7 @@ uint64_t HashProfilePathToProfileId(const base::FilePath& profile_path) {
   // setting the lowest bit to 1. This gives us two properties:
   //  1. We can use the value 0 as a natural invalid/unset indicator.
   //  2. Any other even number is reserved for future use.
-  return 1 | base::legacy::CityHash64(
-                 base::as_bytes(base::make_span(profile_path.value())));
+  return 1 | base::legacy::CityHash64(base::as_byte_span(profile_path.value()));
 }
 
 ProfileAttributesEntry* GetProfileAttributesWithProfileId(uint64_t profile_id) {

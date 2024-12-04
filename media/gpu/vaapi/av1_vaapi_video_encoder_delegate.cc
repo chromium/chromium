@@ -15,6 +15,7 @@
 #include "base/bits.h"
 #include "base/logging.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/svc_layers.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
@@ -261,14 +262,17 @@ void DownscaleSegmentMap(const uint8_t* src_seg_map,
 
 AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
     const gfx::Size& visible_size,
-    int level_idx) {
+    int level_idx,
+    uint8_t num_tempral_layers) {
   AV1BitstreamBuilder::SequenceHeader sequence_header;
 
   // The only known hardware that supports AV1 encoding only uses profile 0.
   sequence_header.profile = 0;
-  sequence_header.operating_points_cnt_minus_1 = 0;
-  sequence_header.level[0] = level_idx;
-  sequence_header.tier[0] = 0;
+  sequence_header.operating_points_cnt_minus_1 = num_tempral_layers - 1;
+  for (uint8_t i = 0; i <= sequence_header.operating_points_cnt_minus_1; i++) {
+    sequence_header.level[i] = level_idx;
+    sequence_header.tier[i] = 0;
+  }
   sequence_header.frame_width_bits_minus_1 = 15;
   sequence_header.frame_height_bits_minus_1 = 15;
   sequence_header.width = visible_size.width();
@@ -314,12 +318,10 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
   // Disable loop filter delta.
   pic_hdr.loop_filter_delta_enabled = false;
   pic_hdr.primary_ref_frame = pic_param.primary_ref_frame;
-  // Set all reference frame indices to 0
-  for (uint8_t& ref_idx : pic_hdr.ref_frame_idx) {
-    ref_idx = 0;
+  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+    pic_hdr.ref_frame_idx[i] = pic_param.ref_frame_idx[i];
   }
-  // Refresh frame flags for last frame.
-  pic_hdr.refresh_frame_flags = 1 << (libgav1::kReferenceFrameLast - 1);
+  pic_hdr.refresh_frame_flags = pic_param.refresh_frame_flags;
   // Set order hint for each reference frame.
   pic_hdr.ref_order_hint[0] = pic_param.order_hint - 1;
   // Since we only use the last frame as the reference, these should
@@ -375,6 +377,32 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
     return false;
   }
 
+  if (config.HasSpatialLayer()) {
+    DVLOGF(1) << "AV1 spatial layer encoding is not supported";
+    return false;
+  }
+
+  ref_frames_.fill(nullptr);
+
+  num_temporal_layers_ = 1;
+  if (config.HasTemporalLayer()) {
+    CHECK_EQ(config.spatial_layers.size(), 1u);
+    num_temporal_layers_ = config.spatial_layers[0].num_of_temporal_layers;
+    if (num_temporal_layers_ > SVCLayers::kMaxTemporalLayers) {
+      VLOGF(1) << "Unsupported amount of temporal layers: "
+               << ", Temporal layer number: " << num_temporal_layers_;
+      return false;
+    }
+
+    std::vector<gfx::Size> spatial_layer_resolutions = {
+        {config.spatial_layers[0].width, config.spatial_layers[0].height}};
+
+    svc_layers_ = std::make_unique<SVCLayers>(
+        SVCLayers::Config(spatial_layer_resolutions, /*begin_active_layer=*/0,
+                          spatial_layer_resolutions.size(),
+                          num_temporal_layers_, config.inter_layer_pred));
+  }
+
   visible_size_ = config.input_visible_size;
   coded_size_ =
       gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(
@@ -424,8 +452,6 @@ AV1VaapiVideoEncoderDelegate::~AV1VaapiVideoEncoderDelegate() = default;
 bool AV1VaapiVideoEncoderDelegate::UpdateRates(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
-  // TODO(b/267521747): Implement rate control
-
   current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
 
@@ -447,14 +473,17 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   rc_config.frame_drop_thresh =
       base::strict_cast<int>(current_params_.drop_frame_thresh);
   rc_config.framerate = current_params_.framerate;
-  rc_config.layer_target_bitrate[0] =
-      current_params_.bitrate_allocation.GetSumBps() / 1000;
-  rc_config.ts_rate_decimator[0] = 1;
+  int bitrate_sum = 0;
+  for (int tid = 0; tid < num_temporal_layers_; ++tid) {
+    rc_config.ts_rate_decimator[tid] = 1u << (num_temporal_layers_ - tid - 1);
+    rc_config.max_quantizers[tid] = rc_config.max_quantizer;
+    rc_config.min_quantizers[tid] = rc_config.min_quantizer;
+    bitrate_sum += bitrate_allocation.GetBitrateBps(/*spatial_index=*/0, tid);
+    rc_config.layer_target_bitrate[tid] = bitrate_sum / 1000;
+  }
   rc_config.aq_mode = 3;
   rc_config.ss_number_layers = 1;
-  rc_config.ts_number_layers = 1;
-  rc_config.min_quantizers[0] = QindexToQuantizer(current_params_.min_qp);
-  rc_config.max_quantizers[0] = QindexToQuantizer(current_params_.max_qp);
+  rc_config.ts_number_layers = num_temporal_layers_;
   rc_config.scaling_factor_num[0] = 1;
   rc_config.scaling_factor_den[0] = 1;
   rc_config.is_screen = current_params_.is_screen;
@@ -465,6 +494,21 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   }
 
   rate_ctrl_->UpdateRateControl(rc_config);
+
+  // Update active layer status in |svc_layers_|, and key frame is produced
+  // when active layer changed.
+  if (svc_layers_) {
+    std::pair<bool, std::optional<std::unique_ptr<SVCLayers>>> result =
+        svc_layers_->RecreateSVCLayersIfNeeded(
+            current_params_.bitrate_allocation);
+    if (!result.first) {
+      return false;
+    }
+    if (result.second.has_value()) {
+      svc_layers_ = std::move(result.second.value());
+    }
+  }
+
   return true;
 }
 
@@ -489,7 +533,7 @@ BitstreamBufferMetadata AV1VaapiVideoEncoderDelegate::GetMetadata(
       payload_size, encode_job.IsKeyframeRequested(), encode_job.timestamp());
   CHECK(metadata.end_of_picture());
   auto picture = GetAV1Picture(encode_job);
-  // Revisit populating metadata.av1 if we need SVC.
+  metadata.svc_generic = picture->svc_generic;
   metadata.qp =
       base::strict_cast<int32_t>(picture->frame_header.quantizer.base_index);
   return metadata;
@@ -506,11 +550,59 @@ AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
     encode_job.ProduceKeyframe();
   }
 
+  const bool is_keyframe = encode_job.IsKeyframeRequested();
+  scoped_refptr<AV1Picture> pic = GetAV1Picture(encode_job);
+
+  std::optional<uint8_t> temporal_idx;
+  if (svc_layers_) {
+    // If keyframe is requested, then reset |svc_layers_|.
+    if (is_keyframe) {
+      CHECK_EQ(svc_layers_->spatial_idx(), 0u);
+      svc_layers_->Reset();
+    }
+
+    SVCLayers::PictureParam picture_param{};
+    svc_layers_->GetPictureParamAndMetadata(picture_param,
+                                            &(pic->svc_generic.emplace()));
+
+    pic->frame_header.refresh_frame_flags = picture_param.refresh_frame_flags;
+    temporal_idx = pic->svc_generic->temporal_idx;
+
+    if (!is_keyframe) {
+      CHECK(!picture_param.reference_frame_indices.empty());
+      for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+        if (i < picture_param.reference_frame_indices.size()) {
+          pic->frame_header.reference_frame_index[i] =
+              picture_param.reference_frame_indices[i];
+        } else {
+          pic->frame_header.reference_frame_index[i] =
+              picture_param.reference_frame_indices[0];
+        }
+      }
+    }
+    DVLOGF(4) << " frame_num=" << svc_layers_->frame_num()
+              << (is_keyframe ? " (keyframe)" : "") << ", refresh_frame_flags="
+              << std::bitset<libgav1::kNumReferenceFrameTypes>(
+                     pic->frame_header.refresh_frame_flags)
+              << ", temporal_idx=" << static_cast<int>(temporal_idx.value());
+  } else {
+    // Reference frame settings for simple stream.
+    if (encode_job.IsKeyframeRequested()) {
+      pic->frame_header.refresh_frame_flags = 0xff;
+    } else {
+      pic->frame_header.refresh_frame_flags = 0x1;
+      // Only reference last frame.
+      for (int8_t& ref_frame_index : pic->frame_header.reference_frame_index) {
+        ref_frame_index = 0;
+      }
+    }
+  }
+
   aom::AV1FrameParamsRTC frame_params{
       .frame_type =
           encode_job.IsKeyframeRequested() ? aom::kKeyFrame : aom::kInterFrame,
       .spatial_layer_id = 0,
-      .temporal_layer_id = 0,
+      .temporal_layer_id = temporal_idx.value_or(0),
   };
   if (rate_ctrl_->ComputeQP(frame_params) == aom::FrameDropDecision::kDrop) {
     CHECK(!encode_job.IsKeyframeRequested());
@@ -519,7 +611,7 @@ AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   }
 
   size_t frame_header_obu_offset = 0;
-  if (!SubmitTemporalDelimiter(frame_header_obu_offset)) {
+  if (!SubmitTemporalDelimiter(frame_header_obu_offset, temporal_idx)) {
     LOG(ERROR) << "Failed to submit temporal delimiter";
     return PrepareEncodeJobResult::kFail;
   }
@@ -534,7 +626,7 @@ AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   }
 
   // TODO(b/267521747): Rate control buffers go here
-  if (!SubmitFrame(encode_job, frame_header_obu_offset)) {
+  if (!SubmitFrame(encode_job, frame_header_obu_offset, temporal_idx)) {
     LOG(ERROR) << "Failed to submit frame";
     return PrepareEncodeJobResult::kFail;
   }
@@ -558,11 +650,19 @@ void AV1VaapiVideoEncoderDelegate::BitrateControlUpdate(
 
 // See section 5.6 of the AV1 specification.
 bool AV1VaapiVideoEncoderDelegate::SubmitTemporalDelimiter(
-    size_t& temporal_delimiter_obu_size) {
+    size_t& temporal_delimiter_obu_size,
+    std::optional<uint8_t> temporal_idx) {
   AV1BitstreamBuilder temporal_delimiter_obu;
-  temporal_delimiter_obu.WriteOBUHeader(
-      /*type=*/libgav1::ObuType::kObuTemporalDelimiter,
-      /*has_size=*/true);
+  if (svc_layers_) {
+    CHECK(temporal_idx.has_value());
+    temporal_delimiter_obu.WriteOBUHeader(
+        /*type=*/libgav1::ObuType::kObuTemporalDelimiter,
+        /*has_size=*/true, true, temporal_idx.value());
+  } else {
+    temporal_delimiter_obu.WriteOBUHeader(
+        /*type=*/libgav1::ObuType::kObuTemporalDelimiter,
+        /*has_size=*/true);
+  }
   temporal_delimiter_obu.WriteValueInLeb128(0);
 
   std::vector<uint8_t> temporal_delimiter_obu_data =
@@ -573,7 +673,8 @@ bool AV1VaapiVideoEncoderDelegate::SubmitTemporalDelimiter(
 
 bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeader(
     size_t& sequence_header_obu_size) {
-  sequence_header_ = FillAV1BuilderSequenceHeader(visible_size_, level_idx_);
+  sequence_header_ = FillAV1BuilderSequenceHeader(visible_size_, level_idx_,
+                                                  num_temporal_layers_);
   if (!SubmitSequenceParam()) {
     LOG(ERROR) << "Failed to submit sequence header";
     return false;
@@ -664,8 +765,10 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
   return SubmitPackedData(sequence_header_obu_data);
 }
 
-bool AV1VaapiVideoEncoderDelegate::SubmitFrame(const EncodeJob& job,
-                                               size_t frame_header_obu_offset) {
+bool AV1VaapiVideoEncoderDelegate::SubmitFrame(
+    const EncodeJob& job,
+    size_t frame_header_obu_offset,
+    std::optional<uint8_t> temporal_idx) {
   VAEncPictureParameterBufferAV1 pic_param{};
   VAEncSegMapBufferAV1 segment_map_param{};
   scoped_refptr<AV1Picture> pic = GetAV1Picture(job);
@@ -680,7 +783,7 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrame(const EncodeJob& job,
   pic->frame_header.quantizer.base_index = pic_param.base_qindex;
 
   size_t frame_header_obu_size_offset = 0;
-  if (!SubmitFrameOBU(pic_param, frame_header_obu_size_offset)) {
+  if (!SubmitFrameOBU(pic_param, frame_header_obu_size_offset, temporal_idx)) {
     LOG(ERROR) << "Failed to submit packed picture header";
     return false;
   }
@@ -695,9 +798,25 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrame(const EncodeJob& job,
     return false;
   }
 
-  last_frame_ = pic;
+  UpdateReferenceFrames(pic);
 
   return true;
+}
+
+void AV1VaapiVideoEncoderDelegate::UpdateReferenceFrames(
+    scoped_refptr<AV1Picture> pic) {
+  CHECK(pic);
+  if (svc_layers_) {
+    svc_layers_->PostEncode(pic->frame_header.refresh_frame_flags);
+  }
+  const std::bitset<libgav1::kNumReferenceFrameTypes> refresh_frame_flags(
+      pic->frame_header.refresh_frame_flags);
+
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
+    if (refresh_frame_flags[i]) {
+      ref_frames_[i] = pic;
+    }
+  }
 }
 
 // Fill the Picture Parameter struct.
@@ -720,8 +839,8 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
   for (int i = 0; i < libgav1::kNumReferenceFrameTypes; i++) {
     pic_param.reference_frames[i] = VA_INVALID_ID;
   }
-  for (int i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
-    pic_param.ref_frame_idx[i] = 0;
+  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+    pic_param.ref_frame_idx[i] = pic.frame_header.reference_frame_index[i];
   }
 
 #if VA_CHECK_VERSION(1, 16, 0)
@@ -729,7 +848,9 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 #else
   pic_param.reserved8bits0 = 0;
 #endif
-  pic_param.primary_ref_frame = is_keyframe ? kPrimaryReferenceNone : 0;
+  pic_param.primary_ref_frame =
+      is_keyframe ? kPrimaryReferenceNone : pic_param.ref_frame_idx[0];
+  pic_param.refresh_frame_flags = pic.frame_header.refresh_frame_flags;
 
   pic_param.order_hint = frame_num_ & 0xFF;
 
@@ -737,15 +858,13 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
   pic_param.ref_frame_ctrl_l1.value = 0;
 
   if (!is_keyframe) {
-    if (!last_frame_) {
-      LOG(ERROR) << "Tried to produce interframe but have no reference frame";
-      return false;
+    for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++) {
+      auto ref_pic = ref_frames_[i];
+      pic_param.reference_frames[i] =
+          ref_pic ? reinterpret_cast<VaapiAV1Picture*>(ref_pic.get())
+                        ->reconstruct_va_surface_id()
+                  : VA_INVALID_ID;
     }
-    // AV1 supports up to 8 reference frames, but we're only using the most
-    // recent frame.
-    pic_param.reference_frames[0] =
-        reinterpret_cast<VaapiAV1Picture*>(last_frame_.get())
-            ->reconstruct_va_surface_id();
     pic_param.ref_frame_ctrl_l0.fields.search_idx0 =
         libgav1::kReferenceFrameLast;
     pic_param.ref_frame_ctrl_l1.fields.search_idx0 =
@@ -915,10 +1034,17 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 // to be optional, while the latter does not.
 bool AV1VaapiVideoEncoderDelegate::SubmitFrameOBU(
     const VAEncPictureParameterBufferAV1& pic_param,
-    size_t& frame_header_obu_size_offset) {
+    size_t& frame_header_obu_size_offset,
+    std::optional<uint8_t> temporal_idx) {
   AV1BitstreamBuilder frame_obu;
-  frame_obu.WriteOBUHeader(/*type=*/libgav1::ObuType::kObuFrame,
-                           /*has_size=*/true);
+  if (svc_layers_) {
+    CHECK(temporal_idx.has_value());
+    frame_obu.WriteOBUHeader(/*type=*/libgav1::ObuType::kObuFrame,
+                             /*has_size=*/true, true, temporal_idx.value());
+  } else {
+    frame_obu.WriteOBUHeader(/*type=*/libgav1::ObuType::kObuFrame,
+                             /*has_size=*/true);
+  }
   frame_header_obu_size_offset = frame_obu.OutstandingBits() / 8;
 
   AV1BitstreamBuilder obu_data = AV1BitstreamBuilder::BuildFrameHeaderOBU(

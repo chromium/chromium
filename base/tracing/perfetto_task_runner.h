@@ -43,7 +43,6 @@ class BASE_EXPORT PerfettoTaskRunner : public perfetto::base::TaskRunner {
   // use case.
   bool RunsTasksOnCurrentThread() const override;
 
-  void SetTaskRunner(scoped_refptr<base::SequencedTaskRunner> task_runner);
   scoped_refptr<base::SequencedTaskRunner> GetOrCreateTaskRunner();
   bool HasTaskRunner() const { return !!task_runner_; }
 

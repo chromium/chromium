@@ -45,12 +45,6 @@ namespace ui {
 
 namespace {
 
-const int kModifierMask = EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_ALT_DOWN |
-                          EF_COMMAND_DOWN | EF_FUNCTION_DOWN | EF_ALTGR_DOWN;
-
-const int kInterestingFlagsMask =
-    kModifierMask | EF_IS_SYNTHESIZED | EF_IS_REPEAT;
-
 std::u16string ApplyModifierToAcceleratorString(
     const std::u16string& accelerator,
     int modifier_message_id) {
@@ -60,32 +54,6 @@ std::u16string ApplyModifierToAcceleratorString(
 }
 
 }  // namespace
-
-Accelerator::Accelerator() : Accelerator(VKEY_UNKNOWN, EF_NONE) {}
-
-Accelerator::Accelerator(KeyboardCode key_code,
-                         int modifiers,
-                         KeyState key_state,
-                         base::TimeTicks time_stamp)
-    : key_code_(key_code),
-      key_state_(key_state),
-      modifiers_(modifiers & kInterestingFlagsMask),
-      time_stamp_(time_stamp),
-      interrupted_by_mouse_event_(false) {}
-
-#if BUILDFLAG(IS_CHROMEOS)
-Accelerator::Accelerator(KeyboardCode key_code,
-                         DomCode code,
-                         int modifiers,
-                         KeyState key_state,
-                         base::TimeTicks time_stamp)
-    : key_code_(key_code),
-      code_(code),
-      key_state_(key_state),
-      modifiers_(modifiers & kInterestingFlagsMask),
-      time_stamp_(time_stamp),
-      interrupted_by_mouse_event_(false) {}
-#endif
 
 Accelerator::Accelerator(const KeyEvent& key_event)
     : key_code_(key_event.key_code()),
@@ -110,17 +78,6 @@ Accelerator::Accelerator(const KeyEvent& key_event)
 #endif
 }
 
-Accelerator::Accelerator(const Accelerator& accelerator) = default;
-
-Accelerator& Accelerator::operator=(const Accelerator& accelerator) = default;
-
-Accelerator::~Accelerator() = default;
-
-// static
-int Accelerator::MaskOutKeyEventFlags(int flags) {
-  return flags & kModifierMask;
-}
-
 KeyEvent Accelerator::ToKeyEvent() const {
   return KeyEvent(key_state() == Accelerator::KeyState::PRESSED
                       ? EventType::kKeyPressed
@@ -130,56 +87,6 @@ KeyEvent Accelerator::ToKeyEvent() const {
                   code(),
 #endif
                   modifiers(), time_stamp());
-}
-
-bool Accelerator::operator<(const Accelerator& rhs) const {
-  const int modifiers_with_mask = MaskOutKeyEventFlags(modifiers_);
-  const int rhs_modifiers_with_mask = MaskOutKeyEventFlags(rhs.modifiers_);
-  return std::tie(key_code_, key_state_, modifiers_with_mask) <
-         std::tie(rhs.key_code_, rhs.key_state_, rhs_modifiers_with_mask);
-}
-
-bool Accelerator::operator==(const Accelerator& rhs) const {
-  return (key_code_ == rhs.key_code_) && (key_state_ == rhs.key_state_) &&
-         (MaskOutKeyEventFlags(modifiers_) ==
-          MaskOutKeyEventFlags(rhs.modifiers_)) &&
-         interrupted_by_mouse_event_ == rhs.interrupted_by_mouse_event_;
-}
-
-bool Accelerator::operator!=(const Accelerator& rhs) const {
-  return !(*this == rhs);
-}
-
-bool Accelerator::IsEmpty() const {
-  return key_code_ == VKEY_UNKNOWN && modifiers_ == EF_NONE;
-}
-
-bool Accelerator::IsShiftDown() const {
-  return (modifiers_ & EF_SHIFT_DOWN) != 0;
-}
-
-bool Accelerator::IsCtrlDown() const {
-  return (modifiers_ & EF_CONTROL_DOWN) != 0;
-}
-
-bool Accelerator::IsAltDown() const {
-  return (modifiers_ & EF_ALT_DOWN) != 0;
-}
-
-bool Accelerator::IsAltGrDown() const {
-  return (modifiers_ & EF_ALTGR_DOWN) != 0;
-}
-
-bool Accelerator::IsCmdDown() const {
-  return (modifiers_ & EF_COMMAND_DOWN) != 0;
-}
-
-bool Accelerator::IsFunctionDown() const {
-  return (modifiers_ & EF_FUNCTION_DOWN) != 0;
-}
-
-bool Accelerator::IsRepeat() const {
-  return (modifiers_ & EF_IS_REPEAT) != 0;
 }
 
 #if BUILDFLAG(USE_BLINK)

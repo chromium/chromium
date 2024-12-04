@@ -68,7 +68,7 @@ struct Params {
   bool insert_in_group = false;
 
   // The tab group where the tab should be inserted (if null and
-  // `insert_in_group` the tab is inserted in a new tab group).
+  // `insert_in_group` is true, the tab is inserted in a new tab group).
   base::WeakPtr<const TabGroup> tab_group;
 };
 

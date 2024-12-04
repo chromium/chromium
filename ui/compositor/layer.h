@@ -466,6 +466,10 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
     return texture_layer_.get() || surface_layer_.get();
   }
 
+  const viz::SurfaceId& external_content_surface_id() const {
+    return surface_layer_->surface_id();
+  }
+
   // Show a solid color instead of delegated or surface contents.
   void SetShowSolidColorContent();
 

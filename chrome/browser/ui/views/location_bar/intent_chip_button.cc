@@ -32,11 +32,12 @@ IntentChipButton::IntentChipButton(Browser* browser,
       browser_(browser),
       delegate_(delegate) {
   DCHECK(browser);
+  SetIcon(kOpenInNewChromeRefreshIcon);
   SetText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetProperty(views::kElementIdentifierKey, kIntentChipElementId);
-    label()->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  label()->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
 }
 
 IntentChipButton::~IntentChipButton() = default;
@@ -121,10 +122,6 @@ ui::ImageModel IntentChipButton::GetIconImageModel() const {
     return OmniboxChipButton::GetIconImageModel();
   }
   return icon;
-}
-
-const gfx::VectorIcon& IntentChipButton::GetIcon() const {
-    return kOpenInNewChromeRefreshIcon;
 }
 
 ui::ColorId IntentChipButton::GetBackgroundColorId() const {

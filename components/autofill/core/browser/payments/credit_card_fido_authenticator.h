@@ -157,7 +157,6 @@ class CreditCardFidoAuthenticator
   bool IsValidRequestOptions(const base::Value::Dict& request_options);
 
  private:
-  friend class BrowserAutofillManagerTest;
   friend class CreditCardAccessManagerTestBase;
   friend class CreditCardFidoAuthenticatorTest;
   friend class TestCreditCardFidoAuthenticator;

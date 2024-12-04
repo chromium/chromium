@@ -42,7 +42,7 @@ MerchantTrustServiceFactory::~MerchantTrustServiceFactory() = default;
 std::unique_ptr<KeyedService>
 MerchantTrustServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  if (!base::FeatureList::IsEnabled(page_info::kMerchantTrust)) {
+  if (!page_info::IsMerchantTrustFeatureEnabled()) {
     return nullptr;
   }
 

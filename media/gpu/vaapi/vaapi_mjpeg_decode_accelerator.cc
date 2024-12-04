@@ -233,8 +233,8 @@ void VaapiMjpegDecodeAccelerator::Decoder::DecodeFromDmaBufTask(
     error_cb_.Run(task_id, UNREADABLE_INPUT);
     return;
   }
-  base::span<const uint8_t> src_image =
-      base::make_span(static_cast<const uint8_t*>(src_addr), src_size);
+  base::span<const uint8_t> src_image(static_cast<const uint8_t*>(src_addr),
+                                      src_size);
 
   DecodeImpl(task_id, src_image, std::move(dst_frame));
 

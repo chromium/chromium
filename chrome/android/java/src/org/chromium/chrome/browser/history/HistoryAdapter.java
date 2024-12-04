@@ -26,7 +26,7 @@ import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.ArrayList;
@@ -485,8 +485,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             Context context, @StringRes int resId) {
         var s = context.getString(resId);
         var link =
-                new NoUnderlineClickableSpan(
-                        context, (v) -> mManager.onPrivacyDisclaimerLinkClicked());
+                new ChromeClickableSpan(context, (v) -> mManager.onPrivacyDisclaimerLinkClicked());
         return SpanApplier.applySpans(s, new SpanApplier.SpanInfo("<link>", "</link>", link));
     }
 

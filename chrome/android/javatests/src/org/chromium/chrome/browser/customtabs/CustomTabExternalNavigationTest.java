@@ -173,7 +173,7 @@ public class CustomTabExternalNavigationTest {
                     final GURL testUrl = new GURL(url);
                     RedirectHandler redirectHandler = RedirectHandler.create();
                     redirectHandler.updateNewUrlLoading(
-                            PageTransition.LINK, false, true, 0, 0, false, true);
+                            PageTransition.LINK, false, true, 0, false, true);
                     ExternalNavigationParams params =
                             new ExternalNavigationParams.Builder(testUrl, false)
                                     .setIsMainFrame(true)
@@ -267,7 +267,7 @@ public class CustomTabExternalNavigationTest {
         setUpTwa();
         final GURL testUrl = new GURL("http://customtabtest.com");
         RedirectHandler redirectHandler = RedirectHandler.create();
-        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, false, true);
         ExternalNavigationParams params =
                 new ExternalNavigationParams.Builder(testUrl, false)
                         .setRedirectHandler(redirectHandler)

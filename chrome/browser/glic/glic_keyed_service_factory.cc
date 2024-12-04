@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 
+namespace glic {
+
 // static
 GlicKeyedService* GlicKeyedServiceFactory::GetGlicKeyedService(
     content::BrowserContext* browser_context) {
@@ -32,3 +34,5 @@ GlicKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<GlicKeyedService>(context);
 }
+
+}  // namespace glic

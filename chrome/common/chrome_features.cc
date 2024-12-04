@@ -148,12 +148,6 @@ BASE_FEATURE(kEnableCertManagementUIV2EditCerts,
 // Enable project Crostini, Linux VMs on Chrome OS.
 BASE_FEATURE(kCrostini, "Crostini", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable additional Crostini session status reporting for
-// managed devices only, i.e. reports of installed apps and kernel version.
-BASE_FEATURE(kCrostiniAdditionalEnterpriseReporting,
-             "CrostiniAdditionalEnterpriseReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable advanced access controls for Crostini-related features
 // (e.g. restricting VM CLI tools access, restricting Crostini root access).
 BASE_FEATURE(kCrostiniAdvancedAccessControls,
@@ -371,12 +365,6 @@ BASE_FEATURE(kPrivacyGuideForceAvailable,
 BASE_FEATURE(kLinkedServicesSetting,
              "LinkedServicesSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kCbdTimeframeRequired,
-             "CbdTimeframeRequired",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking System demo mode for Desktop
@@ -613,11 +601,6 @@ BASE_FEATURE(kHappinessTrackingOffice,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Hides the origin text from showing up briefly in WebApp windows.
-BASE_FEATURE(kHideWebAppOriginText,
-             "HideWebAppOriginText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables HTTPS-First Mode in a balanced configuration that doesn't warn on
 // HTTP when HTTPS can't be reasonably expected.
 BASE_FEATURE(kHttpsFirstBalancedMode,
@@ -844,32 +827,12 @@ BASE_FEATURE(kMacSystemScreenCapturePermissionCheck,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Whether to show the Metered toggle in Settings, allowing users to toggle
-// whether to treat a WiFi or Cellular network as 'metered'.
-BASE_FEATURE(kMeteredShowToggle,
-             "MeteredShowToggle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to show the Hidden toggle in Settings, allowing users to toggle
 // whether to treat a WiFi network as having a hidden ssid.
 BASE_FEATURE(kShowHiddenNetworkToggle,
              "ShowHiddenNetworkToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-BASE_FEATURE(kMoveWebApp,
-             "MoveWebApp",
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPrefix(
-    &kMoveWebApp,
-    "uninstallStartUrlPrefix",
-    "");
-const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPattern(
-    &kMoveWebApp,
-    "uninstallStartUrlPattern",
-    "");
-const base::FeatureParam<std::string>
-    kMoveWebAppInstallStartUrl(&kMoveWebApp, "installStartUrl", "");
 
 // Enables the use of system notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for

@@ -308,7 +308,7 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
   AVCodecParameters test_parameters_;
 };
 
-TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, ConversionSuccess) {
+TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_Success) {
   FFmpegH264ToAnnexBBitstreamConverter converter(&test_parameters_);
 
   auto test_packet = ScopedAVPacket::Allocate();
@@ -322,12 +322,12 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, ConversionSuccess) {
   // Converter will be automatically cleaned up.
 }
 
-TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, ConversionSuccessBigPacket) {
+TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessBigPacket) {
   FFmpegH264ToAnnexBBitstreamConverter converter(&test_parameters_);
 
   // Create new packet with 1000 excess bytes.
   auto test_packet = ScopedAVPacket::Allocate();
-  static uint8_t excess_data[sizeof(kPacketDataOkWithFieldLen4) + 1000] = {0};
+  static uint8_t excess_data[sizeof(kPacketDataOkWithFieldLen4) + 1000] = {};
   memcpy(excess_data, kPacketDataOkWithFieldLen4,
          sizeof(kPacketDataOkWithFieldLen4));
   CreatePacket(test_packet.get(), excess_data, sizeof(excess_data));
@@ -339,7 +339,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, ConversionSuccessBigPacket) {
   // Converter will be automatically cleaned up.
 }
 
-TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, ConversionFailureNullParams) {
+TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_FailureNullParams) {
   // Set up AVCConfigurationRecord to represent NULL data.
   AVCodecParameters dummy_parameters;
   dummy_parameters.extradata = nullptr;

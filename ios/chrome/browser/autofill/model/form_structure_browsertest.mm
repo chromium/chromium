@@ -25,6 +25,7 @@
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -131,14 +132,6 @@ class FormStructureBrowserTest
   FormStructureBrowserTest& operator=(const FormStructureBrowserTest&) = delete;
 
  protected:
-  class TestAutofillClient : public ChromeAutofillClientIOS {
-   public:
-    using ChromeAutofillClientIOS::ChromeAutofillClientIOS;
-    AutofillCrowdsourcingManager* GetCrowdsourcingManager() override {
-      return nullptr;
-    }
-  };
-
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(AutofillDriverIOS* driver)
@@ -171,9 +164,11 @@ class FormStructureBrowserTest
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
+      {.disable_server_communication = true}};
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
-  std::unique_ptr<TestAutofillClient> autofill_client_;
+  std::unique_ptr<AutofillClient> autofill_client_;
   AutofillAgent* autofill_agent_;
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
       autofill_manager_injector_;
@@ -244,7 +239,7 @@ void FormStructureBrowserTest::SetUp() {
   InfoBarManagerImpl::CreateForWebState(web_state());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
-  autofill_client_ = std::make_unique<TestAutofillClient>(
+  autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
       profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
   autofill::AutofillDriverIOSFactory::CreateForWebState(

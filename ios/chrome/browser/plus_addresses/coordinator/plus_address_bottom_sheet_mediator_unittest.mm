@@ -93,8 +93,11 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddress) {
 TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
   service().set_should_fail_to_reserve(true);
   OCMExpect([consumer_
-      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
-                      kReservePlusAddressError]);
+              notifyError:plus_addresses::metrics::
+                              PlusAddressModalCompletionStatus::
+                                  kReservePlusAddressError
+      withCreateErrorType:
+          plus_addresses::PlusAddressCreationBottomSheetErrorType::kNoError]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -146,9 +149,12 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddressError) {
                                 plus_addresses::test::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
-  OCMExpect([consumer_
-      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
-                      kConfirmPlusAddressError]);
+  OCMExpect([consumer_ notifyError:plus_addresses::metrics::
+                                       PlusAddressModalCompletionStatus::
+                                           kConfirmPlusAddressError
+               withCreateErrorType:plus_addresses::
+                                       PlusAddressCreationBottomSheetErrorType::
+                                           kCreateGeneric]);
   service().set_should_fail_to_confirm(true);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);

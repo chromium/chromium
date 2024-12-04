@@ -449,6 +449,15 @@ void TabAndroid::ReleaseWebContents(JNIEnv* env) {
   synced_tab_delegate_->ResetWebContents();
 }
 
+bool TabAndroid::IsPhysicalBackingSizeEmpty(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jweb_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  auto size = web_contents->GetNativeView()->GetPhysicalBackingSize();
+  return size.IsEmpty();
+}
+
 void TabAndroid::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,

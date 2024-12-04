@@ -39,7 +39,6 @@
 #include "base/threading/thread.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -99,12 +98,7 @@ const int32_t kSendBufferSizeForDevTools = 256 * 1024 * 1024;  // 256Mb
 const int32_t kReceiveBufferSizeForDevTools = 100 * 1024 * 1024;  // 100Mb
 
 const char kRemoteUrlPattern[] =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    "https://chrome-devtools-frontend.appspot.com/serve_internal_file/%s/"
-    "%s.html";
-#else
     "https://chrome-devtools-frontend.appspot.com/serve_rev/%s/%s.html";
-#endif
 
 constexpr net::NetworkTrafficAnnotationTag
     kDevtoolsHttpHandlerTrafficAnnotation =

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_section.h"
 
 #include <array>
@@ -1154,9 +1149,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("showTechnologyBadge",
                           !ash::features::IsSeparateNetworkIconsEnabled());
   html_source->AddBoolean(
-      "showMeteredToggle",
-      base::FeatureList::IsEnabled(::features::kMeteredShowToggle));
-  html_source->AddBoolean(
       "trafficCountersForWifiTesting",
       ash::features::IsTrafficCountersForWiFiTestingEnabled());
   html_source->AddBoolean(
@@ -1630,9 +1622,7 @@ void InternetSection::OnNetworkList(
       case NetworkType::kWiFi:
         connected_wifi_guid_ = network->guid;
         updater.AddSearchTags(GetWifiConnectedSearchConcepts());
-        if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle)) {
-          updater.AddSearchTags(GetWifiMeteredSearchConcepts());
-        }
+        updater.AddSearchTags(GetWifiMeteredSearchConcepts());
         if (base::FeatureList::IsEnabled(
                 ::features::kShowHiddenNetworkToggle)) {
           updater.AddSearchTags(GetWifiHiddenSearchConcepts());
@@ -1641,9 +1631,7 @@ void InternetSection::OnNetworkList(
 
       case NetworkType::kCellular:
         updater.AddSearchTags(GetCellularConnectedSearchConcepts());
-        if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle)) {
-          updater.AddSearchTags(GetCellularMeteredSearchConcepts());
-        }
+        updater.AddSearchTags(GetCellularMeteredSearchConcepts());
         break;
 
       case NetworkType::kTether:

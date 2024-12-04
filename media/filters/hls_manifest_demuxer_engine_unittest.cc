@@ -437,9 +437,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 TEST_F(HlsManifestDemuxerEngineTest, TestInitFailure) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
-  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  EXPECT_CALL(*this,
+              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(engine_->IsSeekable());
@@ -607,8 +606,9 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantWithNoSupportedCodecs) {
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(_, _)).Times(0);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kUnsupportedCodecs);
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+
+  EXPECT_CALL(*this,
+              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 }
@@ -706,9 +706,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
 TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
-  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  EXPECT_CALL(*this,
+              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 
@@ -961,9 +960,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamPropagatesOnce) {
 
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
-  EXPECT_CALL(*mock_mdeh_,
-              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
-  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  EXPECT_CALL(*this,
+              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 

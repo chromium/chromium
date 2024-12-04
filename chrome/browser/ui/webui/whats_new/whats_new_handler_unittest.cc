@@ -18,8 +18,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/user_education/webui/mock_whats_new_storage_service.h"
 #include "components/user_education/webui/whats_new_registry.h"
-#include "components/user_education/webui/whats_new_storage_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -48,31 +48,6 @@ class MockPage : public whats_new::mojom::Page {
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   mojo::Receiver<whats_new::mojom::Page> receiver_{this};
-};
-
-class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
- public:
-  MockWhatsNewStorageService() = default;
-  MOCK_METHOD(const base::Value::List&, ReadModuleData, (), (const override));
-  MOCK_METHOD(const base::Value::Dict&, ReadEditionData, (), (const, override));
-  MOCK_METHOD(int,
-              GetModuleQueuePosition,
-              (const std::string_view),
-              (const, override));
-  MOCK_METHOD(std::optional<int>,
-              GetUsedVersion,
-              (std::string_view edition_name),
-              (const override));
-  MOCK_METHOD(std::optional<std::string_view>,
-              FindEditionForCurrentVersion,
-              (),
-              (const, override));
-  MOCK_METHOD(bool, IsUsedEdition, (const std::string_view), (const, override));
-  MOCK_METHOD(void, SetModuleEnabled, (const std::string_view), (override));
-  MOCK_METHOD(void, ClearModule, (const std::string_view), (override));
-  MOCK_METHOD(void, SetEditionUsed, (const std::string_view), (override));
-  MOCK_METHOD(void, ClearEdition, (const std::string_view), (override));
-  MOCK_METHOD(void, Reset, (), (override));
 };
 
 }  // namespace

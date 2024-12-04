@@ -94,7 +94,6 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
-#include "third_party/blink/renderer/core/loader/idna_util.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
@@ -890,25 +889,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
           request.JavascriptWorld())
           ? CSPDisposition::DO_NOT_CHECK
           : CSPDisposition::CHECK;
-
-  // Warn if the resource URL's hostname contains IDNA deviation characters.
-  // Only warn if the resource URL's origin is different than its requestor
-  // (we don't want to warn for <img src="faß.de/image.img"> on faß.de).
-  // TODO(crbug.com/1396475): Remove once Non-Transitional mode is shipped.
-  if (url.HasIDNA2008DeviationCharacter() &&
-      resource_request.RequestorOrigin() &&
-      !resource_request.RequestorOrigin()->IsSameOriginWith(
-          SecurityOrigin::Create(url).get())) {
-    String message = GetConsoleWarningForIDNADeviationCharacters(url);
-    if (!message.empty()) {
-      request.GetOriginWindow()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kSecurity,
-              mojom::ConsoleMessageLevel::kWarning, message));
-      origin_window->CountUse(
-          WebFeature::kIDNA2008DeviationCharacterInHostnameOfIFrame);
-    }
-  }
 
   Client()->BeginNavigation(
       resource_request, request.GetRequestorBaseURL(), request.GetFrameType(),

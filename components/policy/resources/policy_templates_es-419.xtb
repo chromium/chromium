@@ -4232,6 +4232,15 @@ Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="4027608872760987929">Habilitar el proveedor de búsqueda predeterminado</translation>
 <translation id="4030152268425532846">Inhabilitar el rescate de acceso automático</translation>
 <translation id="4043796890723386527">Impedir que los usuarios creen o utilicen perfiles secundarios o usen el modo de invitado en el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="4047633048700722778">Si estableces la política, esta controlará el filtro de URL de SafeSites, el cual utiliza la API de Google Safe Search para clasificar las URL como pornográficas o no.
+
+Según el valor con el que establezcas la política, se obtendrán distintos comportamientos:
+
+* Si no aplicas filtros de contenido para adultos a los sitios (o no estableces ningún valor), no se filtrarán los sitios
+
+* Si aplicas filtros de contenido para adultos a los sitios, se filtrarán los sitios pornográficos
+
+La política se aplica a la URL a la que navega el usuario y a los iframes. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre esta política y se puede usar para anular los veredictos de la API de Google Safe Search.</translation>
 <translation id="4051723201852944592">Habilita la oclusión de ventanas</translation>
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes de tiempo de actividad del dispositivo</translation>
@@ -8821,6 +8830,15 @@ Nota importante: Es posible que los programas establecidos por esta política no
       Estas políticas se ignoran, a menos que el host del Escritorio remoto de Chrome esté instalado.</translation>
 <translation id="7202925763179776247">Permitir las restricciones de descarga</translation>
 <translation id="7203243973351251622">Grabadora (compatible a partir de la versión 130)</translation>
+<translation id="7205989349935313324">La función Lens Overlay permite a los usuarios realizar búsquedas en Google interactuando con una captura de pantalla de la página actual que se muestra sobre el contenido web real. Además, permite a los usuarios realizar búsquedas en Google que tengan en cuenta el contexto de la página actual. Para proporcionar respuestas contextuales, Lens Overlay envía el contenido de la página a Google para responder la consulta del usuario según el contexto de la página en la que se encuentra.
+
+No hay un parámetro de configuración del usuario para controlar esta función. Por lo general, está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
+
+0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que los revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función.</translation>
 <translation id="7207095846245296855">Forzar Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar de forma automática la zona horaria</translation>
 <translation id="721617466745658461">Permitir que los usuarios seleccionen el objeto binario del navegador <ph name="LACROS_NAME" /></translation>
@@ -10018,6 +10036,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si la inhabilitas o no la estableces, no se enviarán paquetes.</translation>
 <translation id="8168359201203671567">Color arcoíris para la retroiluminación del teclado</translation>
 <translation id="8169452762291746260">Inhabilitar la supervisión de estado de los dispositivos</translation>
+<translation id="8170359860920320269">Aplicar filtros de contenido para adultos a los sitios</translation>
 <translation id="8171262216089271568">Habilitar el cursor grande en la pantalla de acceso</translation>
 <translation id="8171924760436219650">Cambia el botón principal del mouse al botón derecho en la pantalla de acceso</translation>
 <translation id="81724933026241365">Permitir que los usuarios desactiven el dispositivo con el ícono de apagado o el botón de encendido físico</translation>

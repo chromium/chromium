@@ -1716,8 +1716,11 @@ void EventHandler::SetMouseDownMayStartAutoscroll() {
 
 bool EventHandler::ShouldApplyTouchAdjustment(
     const WebGestureEvent& event) const {
-  if (event.primary_pointer_type == WebPointerProperties::PointerType::kPen)
+  if (event.primary_pointer_type == WebPointerProperties::PointerType::kPen ||
+      event.primary_pointer_type ==
+          WebPointerProperties::PointerType::kEraser) {
     return false;
+  }
 
   return !event.TapAreaInRootFrame().IsEmpty();
 }

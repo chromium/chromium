@@ -91,8 +91,10 @@ class CONTENT_EXPORT GestureListenerManager
   // End WebContentsObserver overrides
 
   // Start RenderWidgetHost::InputEventObserver overrides
-  void OnInputEvent(const blink::WebInputEvent&) override;
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent&) override;
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override;
   // End RenderWidgetHost::InputEventObserver overrides

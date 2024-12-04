@@ -7,8 +7,11 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -50,6 +53,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -58,6 +62,7 @@
 #include "url/origin.h"
 
 using testing::AllOf;
+using testing::AnyOfArray;
 using testing::Contains;
 using testing::Ge;
 using testing::IsSupersetOf;
@@ -157,6 +162,31 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+using CheckCommandsCallback =
+    base::OnceCallback<void(const std::vector<int>&, const std::vector<int>&)>;
+
+struct FencedFrameContextMenuTestCase {
+  // Commands to be verified that are enabled initially and disabled after
+  // network revocation.
+  std::vector<int> command_ids;
+
+  // URL that the target frame will be navigated to.
+  std::string relative_url;
+
+  // Either the target HTML element id or click coordinate.
+  absl::variant<std::string, gfx::PointF> click_target;
+
+  // Invoked before network revocation.
+  CheckCommandsCallback callback_before_revocation;
+
+  // Invoked when the menu is opened after network revocation.
+  CheckCommandsCallback callback_after_revocation;
+
+  // If true, the test case sets up a nested iframe inside a fenced frame. Else
+  // there is a single fenced frame.
+  bool is_in_nested_iframe = false;
+};
+
 // TODO(crbug.com/375048798): Once Kombucha framework supports querying elements
 // inside iframe and fenced frame, convert the context menu tests to use
 // Kombucha framework.
@@ -178,6 +208,102 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
         "content/test/data");
     embedded_https_test_server().SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
+  }
+
+  void RunTest(FencedFrameContextMenuTestCase& test_case) {
+    ASSERT_TRUE(embedded_https_test_server().Start());
+
+    // Set up the frames.
+    GURL url(
+        embedded_https_test_server().GetURL("a.test", test_case.relative_url));
+    content::RenderFrameHost* fenced_frame_rfh =
+        test_case.is_in_nested_iframe ? CreateFencedFrameWithNestedIframe(url)
+                                      : CreateFencedFrame(url);
+
+    // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
+    content::WaitForHitTestData(fenced_frame_rfh);
+
+    // Get the nested iframe if there is one, else it is a nullptr.
+    content::RenderFrameHost* nested_iframe_rfh =
+        content::ChildFrameAt(fenced_frame_rfh, 0);
+    if (test_case.is_in_nested_iframe) {
+      ASSERT_TRUE(nested_iframe_rfh);
+      ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), url);
+      content::WaitForHitTestData(nested_iframe_rfh);
+    }
+
+    content::RenderFrameHost* target_frame =
+        test_case.is_in_nested_iframe ? nested_iframe_rfh : fenced_frame_rfh;
+
+    // Get the coordinate of the click target with respect to the target frame.
+    gfx::PointF target =
+        absl::visit(base::Overloaded(
+                        [&target_frame = std::as_const(target_frame)](
+                            std::string target_id) {
+                          return GetCenterCoordinatesOfElementWithId(
+                              target_frame, target_id);
+                        },
+                        [](gfx::PointF target_point) { return target_point; }),
+                    test_case.click_target);
+
+    if (test_case.is_in_nested_iframe) {
+      // Because the mouse event is forwarded to the `RenderWidgetHost` of the
+      // fenced frame, when the element is inside the nested iframe, it needs to
+      // be offset by the top left coordinates of the nested iframe relative to
+      // the fenced frame.
+      const gfx::PointF iframe_offset =
+          content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
+                                                              "child-0");
+      target.Offset(iframe_offset.x(), iframe_offset.y());
+    }
+
+    // Open a context menu by right clicking on the target.
+    ContextMenuWaiter menu_observer;
+    content::test::SimulateClickInFencedFrameTree(
+        target_frame, blink::WebMouseEvent::Button::kRight, target);
+
+    // Wait for context menu to be visible.
+    menu_observer.WaitForMenuOpenAndClose();
+
+    // All commands should be present and enabled in the context menu.
+    EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+                IsSupersetOf(test_case.command_ids));
+    EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+                IsSupersetOf(test_case.command_ids));
+
+    if (test_case.callback_before_revocation) {
+      std::move(test_case.callback_before_revocation)
+          .Run(menu_observer.GetCapturedCommandIds(),
+               menu_observer.GetCapturedEnabledCommandIds());
+    }
+
+    // Disable fenced frame untrusted network access.
+    ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+      (async () => {
+        return window.fence.disableUntrustedNetwork();
+      })();
+    )"));
+
+    // Open the context menu again.
+    ContextMenuWaiter menu_observer_after_revocation;
+    content::test::SimulateClickInFencedFrameTree(
+        target_frame, blink::WebMouseEvent::Button::kRight, target);
+
+    // Wait for context menu to be visible.
+    menu_observer_after_revocation.WaitForMenuOpenAndClose();
+
+    // All commands should be disabled in the context menu after fenced frame
+    // has untrusted network access revoked.
+    EXPECT_THAT(menu_observer_after_revocation.GetCapturedCommandIds(),
+                IsSupersetOf(test_case.command_ids));
+    EXPECT_THAT(menu_observer_after_revocation.GetCapturedEnabledCommandIds(),
+                Not(Contains(AnyOfArray(test_case.command_ids))));
+
+    if (test_case.callback_after_revocation) {
+      std::move(test_case.callback_after_revocation)
+          .Run(menu_observer_after_revocation.GetCapturedCommandIds(),
+               menu_observer_after_revocation.GetCapturedEnabledCommandIds());
+    }
   }
 
   // Create a fenced frame which is navigated to `url`.
@@ -299,646 +425,152 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
                             IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
-                       SaveLinkAsEntryIsDisabledAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    CommonOpenLinkCommandsDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                      IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                      IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = false};
 
-  // Navigate fenced frame to a page with an anchor element.
-  GURL fenced_frame_url(embedded_https_test_server().GetURL(
-      "a.test", "/download-anchor-same-origin.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-
-  // Get the coordinate of the anchor element inside the fenced frame.
-  const gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Save Link As..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Save Link As..." should be disabled in the context menu after fenced frame
-  // has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVELINKAS)));
+  RunTest(test_case);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ContextMenuFencedFrameTest,
-    SaveLinkAsEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+    CommonOpenLinkCommandsDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                      IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                      IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = true};
 
-  // Navigate the nested iframe to a page with an anchor element.
-  GURL nested_iframe_url(embedded_https_test_server().GetURL(
-      "a.test", "/download-anchor-same-origin.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrameWithNestedIframe(nested_iframe_url);
-  content::RenderFrameHost* nested_iframe_rfh =
-      content::ChildFrameAt(fenced_frame_rfh, 0);
-  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
-  // ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForHitTestData(nested_iframe_rfh);
-
-  // Get the coordinate of the anchor element inside the nested iframe.
-  gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
-
-  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
-  // fenced frame, the anchor element needs to be offset by the top left
-  // coordinates of the nested iframe relative to the fenced frame.
-  const gfx::PointF iframe_offset =
-      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
-                                                          "child-0");
-  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Save Link As..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Save Link As..." should be disabled in the context menu after fenced frame
-  // has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVELINKAS));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVELINKAS)));
+  RunTest(test_case);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
-                       SaveAudioAsEntryIsDisabledAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+                       SaveLinkAsDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_SAVELINKAS},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = false};
 
-  // Navigate fenced frame to a page with an audio element.
-  GURL fenced_frame_url(embedded_https_test_server().GetURL(
-      "a.test", "/accessibility/html/audio.html"));
+  RunTest(test_case);
+}
 
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveLinkAsDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_SAVELINKAS},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = true};
 
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
+  RunTest(test_case);
+}
 
-  // Click the audio element inside the fenced frame.
-  const gfx::PointF audio_element(15, 15);
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveImageAsDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_SAVEIMAGEAS},
+      .relative_url = "/test_visual.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
 
-  // Open a context menu by right clicking on the audio element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, audio_element);
+  RunTest(test_case);
+}
 
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveImageAsDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_SAVEIMAGEAS},
+      .relative_url = "/test_visual.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
 
-  // "Save Audio As..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEAVAS));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEAVAS));
+  RunTest(test_case);
+}
 
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveVideoAsInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_SAVEAVAS,
+                      IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS},
+      .relative_url = "/media/video-player-autoplay.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
 
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, audio_element);
+  RunTest(test_case);
+}
 
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveVideoAsDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_SAVEAVAS,
+                      IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS},
+      .relative_url = "/media/video-player-autoplay.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
 
-  // "Save Audio As..." should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEAVAS));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVEAVAS)));
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveAudioAsInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_SAVEAVAS},
+      .relative_url = "/accessibility/html/audio.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = false};
+
+  RunTest(test_case);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveAudioAsDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_SAVEAVAS},
+      .relative_url = "/accessibility/html/audio.html",
+      .click_target = gfx::PointF(15, 15),
+      .is_in_nested_iframe = true};
+
+  RunTest(test_case);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ContextMenuFencedFrameTest,
-    SaveAudioAsEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
-  // Navigate the nested iframe to a page with an audio element.
-  GURL nested_iframe_url(embedded_https_test_server().GetURL(
-      "a.test", "/accessibility/html/audio.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrameWithNestedIframe(nested_iframe_url);
-  content::RenderFrameHost* nested_iframe_rfh =
-      content::ChildFrameAt(fenced_frame_rfh, 0);
-  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
-  // ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForHitTestData(nested_iframe_rfh);
-
-  // Click the audio element inside the fenced frame.
-  gfx::PointF audio_element(15, 15);
-
-  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
-  // fenced frame, the click point needs to be offset by the top left
-  // coordinates of the nested iframe relative to the fenced frame.
-  const gfx::PointF iframe_offset =
-      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
-                                                          "child-0");
-  audio_element.Offset(iframe_offset.x(), iframe_offset.y());
-
-  // Open a context menu by right clicking on the audio element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, audio_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Save Audio As..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEAVAS));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEAVAS));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, audio_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Save Audio As..." should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEAVAS));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVEAVAS)));
-}
-
-IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
-                       SaveVideoAsEntryIsDisabledAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
-  // Navigate fenced frame to a page with a video element.
-  GURL fenced_frame_url(embedded_https_test_server().GetURL(
-      "a.test", "/media/video-player-autoplay.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForLoadStop(
-      content::WebContents::FromRenderFrameHost(fenced_frame_rfh));
-
-  // Click the video inside the fenced frame.
-  const gfx::PointF click_point(15, 15);
-
-  // Open a context menu by right clicking on the video element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Save Video As..." and "Save Video Frame As..." should be present and
-  // enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              IsSupersetOf({IDC_CONTENT_CONTEXT_SAVEAVAS,
-                            IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS}));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              IsSupersetOf({IDC_CONTENT_CONTEXT_SAVEAVAS,
-                            IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS}));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Save Video As..." and "Save Video Frame As..." should be disabled in the
-  // context menu after fenced frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              IsSupersetOf({IDC_CONTENT_CONTEXT_SAVEAVAS,
-                            IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS}));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVEAVAS)));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS)));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ContextMenuFencedFrameTest,
-    SaveVideoAsEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
-  // Navigate the nested iframe to a page with a video element.
-  GURL nested_iframe_url(embedded_https_test_server().GetURL(
-      "a.test", "/media/video-player-autoplay.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrameWithNestedIframe(nested_iframe_url);
-  content::RenderFrameHost* nested_iframe_rfh =
-      content::ChildFrameAt(fenced_frame_rfh, 0);
-  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
-  // ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForHitTestData(nested_iframe_rfh);
-
-  // Click the video inside the fenced frame.
-  gfx::PointF click_point(15, 15);
-
-  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
-  // fenced frame, the click point needs to be offset by the top left
-  // coordinates of the nested iframe relative to the fenced frame.
-  const gfx::PointF iframe_offset =
-      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
-                                                          "child-0");
-  click_point.Offset(iframe_offset.x(), iframe_offset.y());
-
-  // Open a context menu by right clicking on the video element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, click_point);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Save Video As..." and "Save Video Frame As..." should be present and
-  // enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              IsSupersetOf({IDC_CONTENT_CONTEXT_SAVEAVAS,
-                            IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS}));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              IsSupersetOf({IDC_CONTENT_CONTEXT_SAVEAVAS,
-                            IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS}));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, click_point);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Save Video As..." and "Save Video Frame As..." should be disabled in the
-  // context menu after fenced frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              IsSupersetOf({IDC_CONTENT_CONTEXT_SAVEAVAS,
-                            IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS}));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVEAVAS)));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS)));
-}
-
-IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
-                       SaveImageAsEntryIsDisabledAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
-  // Navigate fenced frame to an image.
-  GURL fenced_frame_url(
-      embedded_https_test_server().GetURL("a.test", "/test_visual.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-
-  // Click inside the fenced frame.
-  const gfx::PointF click_point(15, 15);
-
-  // Open a context menu by right clicking on the image.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Save Image As..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Save Image As..." should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS)));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ContextMenuFencedFrameTest,
-    SaveImageAsEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
-  // Navigate the nested iframe to an image.
-  GURL nested_iframe_url(
-      embedded_https_test_server().GetURL("a.test", "/test_visual.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrameWithNestedIframe(nested_iframe_url);
-  content::RenderFrameHost* nested_iframe_rfh =
-      content::ChildFrameAt(fenced_frame_rfh, 0);
-  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh are
-  // ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForHitTestData(nested_iframe_rfh);
-
-  // Click inside the nested iframe.
-  gfx::PointF click_point(15, 15);
-
-  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
-  // fenced frame, the click point needs to be offset by the top left
-  // coordinates of the nested iframe relative to the fenced frame.
-  const gfx::PointF iframe_offset =
-      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
-                                                          "child-0");
-  click_point.Offset(iframe_offset.x(), iframe_offset.y());
-
-  // Open a context menu by right clicking on the image.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Save Image As..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, click_point);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Save Image As..." should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS)));
-}
-
-IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
-                       OpenLinkInWebAppEntryIsDisabledAfterNetworkCutoff) {
-  // Add content/test/data for cross_site_iframe_factory.html.
-  embedded_https_test_server().ServeFilesFromSourceDirectory(
-      "content/test/data");
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
-  // Navigate fenced frame to a page with an anchor element with href to a web
-  // App.
-  GURL fenced_frame_url(embedded_https_test_server().GetURL(
-      "a.test", "/fenced_frames/web_app.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
-
-  // Install the anchor element href as a web App.
+    OpenLinkInWebAppDisabledInFencedFrameAfterNetworkCutoff) {
+  // Install the URL as a web App.
   InstallTestWebApp(GURL("https://www.google.com/"));
 
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP},
+      .relative_url = "/fenced_frames/web_app.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = false};
 
-  // Get the coordinate of the anchor element inside the fenced frame.
-  const gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Open Link In [App]" should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Open Link In [App]" should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
-  EXPECT_THAT(
-      menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-      testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP)));
+  RunTest(test_case);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ContextMenuFencedFrameTest,
-    OpenLinkInWebAppEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
-  // Add content/test/data for cross_site_iframe_factory.html.
-  embedded_https_test_server().ServeFilesFromSourceDirectory(
-      "content/test/data");
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
-  // Navigate the nested iframe to a page with an anchor element with href to a
-  // web App.
-  GURL nested_iframe_url(embedded_https_test_server().GetURL(
-      "a.test", "/fenced_frames/web_app.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrameWithNestedIframe(nested_iframe_url);
-  content::RenderFrameHost* nested_iframe_rfh =
-      content::ChildFrameAt(fenced_frame_rfh, 0);
-  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
-
-  // Install the anchor element href as a web App.
+    OpenLinkInWebAppDisabledInNestedIframeAfterNetworkCutoff) {
+  // Install the URL as a web App.
   InstallTestWebApp(GURL("https://www.google.com/"));
 
-  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
-  // ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForHitTestData(nested_iframe_rfh);
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP},
+      .relative_url = "/fenced_frames/web_app.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = true};
 
-  // Get the coordinate of the anchor element inside the nested iframe.
-  gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
-
-  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
-  // fenced frame, the anchor element needs to be offset by the top left
-  // coordinates of the nested iframe relative to the fenced frame.
-  const gfx::PointF iframe_offset =
-      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
-                                                          "child-0");
-  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Open Link In [App]" should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Open Link In [App]" should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
-  EXPECT_THAT(
-      menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-      testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP)));
+  RunTest(test_case);
 }
 
 // "Open Link in Profile" functionality is not available on ChromeOS Ash where
@@ -958,150 +590,68 @@ class ContextMenuFencedFrameMutilpleProfilesTest
         profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
     CreateBrowser(&secondary_profile);
   }
+
+  CheckCommandsCallback GetCallbackBeforeRevocation() const {
+    return base::BindLambdaForTesting(
+        [](const std::vector<int>& captured_commands,
+           const std::vector<int>& enabled_commands) {
+          ASSERT_THAT(captured_commands,
+                      Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
+          // "Open Link as User ..." should be present and enabled in the
+          // context menu.
+          EXPECT_THAT(captured_commands,
+                      Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                                     Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+          EXPECT_THAT(enabled_commands,
+                      Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                                     Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+        });
+  }
+
+  CheckCommandsCallback GetCallbackAfterRevocation() const {
+    return base::BindLambdaForTesting(
+        [](const std::vector<int>& captured_commands,
+           const std::vector<int>& enabled_commands) {
+          ASSERT_THAT(captured_commands,
+                      Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
+          // "Open Link as User ..." should be present and disabled in the
+          // context menu.
+          EXPECT_THAT(captured_commands,
+                      Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                                     Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
+          EXPECT_THAT(enabled_commands,
+                      Not(Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
+                                         Le(IDC_OPEN_LINK_IN_PROFILE_LAST)))));
+        });
+  }
 };
 
-IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameMutilpleProfilesTest,
-                       OpenLinkInProfileEntryIsDisabledAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameMutilpleProfilesTest,
+    OpenLinkInProfileDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .callback_before_revocation = GetCallbackBeforeRevocation(),
+      .callback_after_revocation = GetCallbackAfterRevocation(),
+      .is_in_nested_iframe = false};
 
-  // Navigate fenced frame to a page with an anchor element.
-  GURL fenced_frame_url(embedded_https_test_server().GetURL(
-      "a.test", "/download-anchor-same-origin.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-
-  // Get the coordinate of the anchor element inside the fenced frame.
-  const gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // No sub-menu is shown because there is only on other active profile.
-  ASSERT_THAT(menu_observer.GetCapturedCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
-  // "Open Link as User ..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
-                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
-                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // No sub-menu is shown.
-  ASSERT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
-  // "Open Link in Profile" should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
-                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
-                                 Le(IDC_OPEN_LINK_IN_PROFILE_LAST)))));
+  RunTest(test_case);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ContextMenuFencedFrameMutilpleProfilesTest,
-    OpenLinkInProfileEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+    OpenLinkInProfileDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .callback_before_revocation = GetCallbackBeforeRevocation(),
+      .callback_after_revocation = GetCallbackAfterRevocation(),
+      .is_in_nested_iframe = true};
 
-  // Navigate the nested iframe to a page with an anchor element.
-  GURL nested_iframe_url(embedded_https_test_server().GetURL(
-      "a.test", "/download-anchor-same-origin.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrameWithNestedIframe(nested_iframe_url);
-  content::RenderFrameHost* nested_iframe_rfh =
-      content::ChildFrameAt(fenced_frame_rfh, 0);
-  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
-  // ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForHitTestData(nested_iframe_rfh);
-
-  // Get the coordinate of the anchor element inside the nested iframe.
-  gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
-
-  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
-  // fenced frame, the anchor element needs to be offset by the top left
-  // coordinates of the nested iframe relative to the fenced frame.
-  const gfx::PointF iframe_offset =
-      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
-                                                          "child-0");
-  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // No sub-menu is shown because there is only on other active profile.
-  ASSERT_THAT(menu_observer.GetCapturedCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
-  // "Open Link as User ..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
-                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
-                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // No sub-menu is shown.
-  ASSERT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE)));
-  // "Open Link in Profile" should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
-                             Le(IDC_OPEN_LINK_IN_PROFILE_LAST))));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(AllOf(Ge(IDC_OPEN_LINK_IN_PROFILE_FIRST),
-                                 Le(IDC_OPEN_LINK_IN_PROFILE_LAST)))));
+  RunTest(test_case);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1144,129 +694,25 @@ class ContextMenuFencedFrameProtocolHandlerTest
 };
 
 IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameProtocolHandlerTest,
-                       OpenLinkWithEntryIsDisabledAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+                       OpenLinkWithDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKWITH},
+      .relative_url = "/fenced_frames/protocol_handler.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = false};
 
-  // Navigate fenced frame to a page with an anchor element, whose href will be
-  // handled by a custom protocol handler.
-  GURL fenced_frame_url(embedded_https_test_server().GetURL(
-      "a.test", "/fenced_frames/protocol_handler.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-
-  // Get the coordinate of the anchor element inside the fenced frame.
-  const gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Open Link With..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKWITH));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKWITH));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Open Link With..." should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKWITH));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKWITH)));
+  RunTest(test_case);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ContextMenuFencedFrameProtocolHandlerTest,
-    OpenLinkWithEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameProtocolHandlerTest,
+                       OpenLinkWithDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKWITH},
+      .relative_url = "/fenced_frames/protocol_handler.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = true};
 
-  // Navigate the nested iframe to a page with an anchor element, whose href
-  // will be handled by a custom protocol handler.
-  GURL nested_iframe_url(embedded_https_test_server().GetURL(
-      "a.test", "/fenced_frames/protocol_handler.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrameWithNestedIframe(nested_iframe_url);
-  content::RenderFrameHost* nested_iframe_rfh =
-      content::ChildFrameAt(fenced_frame_rfh, 0);
-  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
-  // ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForHitTestData(nested_iframe_rfh);
-
-  // Get the coordinate of the anchor element inside the nested iframe.
-  gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
-
-  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
-  // fenced frame, the anchor element needs to be offset by the top left
-  // coordinates of the nested iframe relative to the fenced frame.
-  const gfx::PointF iframe_offset =
-      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
-                                                          "child-0");
-  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Save Link With..." should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKWITH));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKWITH));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Save Link With..." should be disabled in the context menu after fenced
-  // frame has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKWITH));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKWITH)));
+  RunTest(test_case);
 }
 
 class ContextMenuLinkPreviewFencedFrameTest
@@ -1283,127 +729,25 @@ class ContextMenuLinkPreviewFencedFrameTest
 };
 
 IN_PROC_BROWSER_TEST_F(ContextMenuLinkPreviewFencedFrameTest,
-                       LinkPreviewEntryIsDisabledAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+                       LinkPreviewDisabledInFencedFrameAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = false};
 
-  // Navigate fenced frame to a page with an anchor element.
-  GURL fenced_frame_url(embedded_https_test_server().GetURL(
-      "a.test", "/download-anchor-same-origin.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(fenced_frame_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-
-  // Get the coordinate of the anchor element inside the fenced frame.
-  const gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(fenced_frame_rfh, "anchor");
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Preview Link" should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      fenced_frame_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Preview Link" should be disabled in the context menu after fenced frame
-  // has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW)));
+  RunTest(test_case);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ContextMenuLinkPreviewFencedFrameTest,
-    LinkPreviewEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
+IN_PROC_BROWSER_TEST_F(ContextMenuLinkPreviewFencedFrameTest,
+                       LinkPreviewDisabledInNestedIframeAfterNetworkCutoff) {
+  FencedFrameContextMenuTestCase test_case = {
+      .command_ids = {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW},
+      .relative_url = "/download-anchor-same-origin.html",
+      .click_target = "anchor",
+      .is_in_nested_iframe = true};
 
-  // Navigate the nested iframe to a page with an anchor element.
-  GURL nested_iframe_url(embedded_https_test_server().GetURL(
-      "a.test", "/download-anchor-same-origin.html"));
-
-  content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrameWithNestedIframe(nested_iframe_url);
-  content::RenderFrameHost* nested_iframe_rfh =
-      content::ChildFrameAt(fenced_frame_rfh, 0);
-  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
-
-  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh is
-  // ready for hit testing.
-  content::WaitForHitTestData(fenced_frame_rfh);
-  content::WaitForHitTestData(nested_iframe_rfh);
-
-  // Get the coordinate of the anchor element inside the nested iframe.
-  gfx::PointF anchor_element =
-      GetCenterCoordinatesOfElementWithId(nested_iframe_rfh, "anchor");
-
-  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
-  // fenced frame, the anchor element needs to be offset by the top left
-  // coordinates of the nested iframe relative to the fenced frame.
-  const gfx::PointF iframe_offset =
-      content::test::GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh,
-                                                          "child-0");
-  anchor_element.Offset(iframe_offset.x(), iframe_offset.y());
-
-  // Open a context menu by right clicking on the anchor element.
-  ContextMenuWaiter menu_observer;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  // "Preview Link" should be present and enabled in the context menu.
-  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
-  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
-
-  // Disable fenced frame untrusted network access.
-  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  // Open the context menu again.
-  ContextMenuWaiter menu_observer_after_network_cutoff;
-  content::test::SimulateClickInFencedFrameTree(
-      nested_iframe_rfh, blink::WebMouseEvent::Button::kRight, anchor_element);
-
-  // Wait for context menu to be visible.
-  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
-
-  // "Preview Link" should be disabled in the context menu after fenced frame
-  // has untrusted network access revoked.
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
-              Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW));
-  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
-              Not(Contains(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW)));
+  RunTest(test_case);
 }
 
 class InterestGroupContentBrowserClient : public ChromeContentBrowserClient {

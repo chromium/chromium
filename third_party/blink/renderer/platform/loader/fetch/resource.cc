@@ -407,8 +407,7 @@ bool Resource::MustRefetchDueToIntegrityMetadata(
   if (params.IntegrityMetadata().empty())
     return false;
 
-  return !IntegrityMetadata::SetsEqual(IntegrityMetadata(),
-                                       params.IntegrityMetadata());
+  return IntegrityMetadata() != params.IntegrityMetadata();
 }
 
 const scoped_refptr<const SecurityOrigin>& Resource::GetOrigin() const {

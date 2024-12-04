@@ -168,7 +168,7 @@ class UIBrokerImplTest : public AshTestBase, public UIBroker::Observer {
   std::unique_ptr<UIBroker> ui_broker_;
 };
 
-TEST_F(UIBrokerImplTest, ShowDiscoveryInitial) {
+TEST_F(UIBrokerImplTest, ShowDiscovery_Initial) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
   ui_broker_->ShowDiscovery(device);
@@ -177,7 +177,7 @@ TEST_F(UIBrokerImplTest, ShowDiscoveryInitial) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
 }
 
-TEST_F(UIBrokerImplTest, ShowDiscoverySubsequent) {
+TEST_F(UIBrokerImplTest, ShowDiscovery_Subsequent) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairSubsequent);
   ui_broker_->ShowDiscovery(device);
@@ -186,7 +186,7 @@ TEST_F(UIBrokerImplTest, ShowDiscoverySubsequent) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
 }
 
-TEST_F(UIBrokerImplTest, ShowPairingInitial) {
+TEST_F(UIBrokerImplTest, ShowPairing_Initial) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
   ui_broker_->ShowPairing(device);
@@ -195,7 +195,7 @@ TEST_F(UIBrokerImplTest, ShowPairingInitial) {
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->show_pairing());
 }
 
-TEST_F(UIBrokerImplTest, ShowPairingSubsequent) {
+TEST_F(UIBrokerImplTest, ShowPairing_Subsequent) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairSubsequent);
   ui_broker_->ShowPairing(device);
@@ -204,7 +204,7 @@ TEST_F(UIBrokerImplTest, ShowPairingSubsequent) {
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->show_pairing());
 }
 
-TEST_F(UIBrokerImplTest, ShowPairingFailedInitial) {
+TEST_F(UIBrokerImplTest, ShowPairingFailed_Initial) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
   ui_broker_->ShowPairingFailed(device);
@@ -213,7 +213,7 @@ TEST_F(UIBrokerImplTest, ShowPairingFailedInitial) {
   EXPECT_EQ(pairing_failed_action_, PairingFailedAction::kNavigateToSettings);
 }
 
-TEST_F(UIBrokerImplTest, ShowPairingFailedSubsequent) {
+TEST_F(UIBrokerImplTest, ShowPairingFailed_Subsequent) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairSubsequent);
   ui_broker_->ShowPairingFailed(device);
@@ -222,7 +222,7 @@ TEST_F(UIBrokerImplTest, ShowPairingFailedSubsequent) {
   EXPECT_EQ(pairing_failed_action_, PairingFailedAction::kNavigateToSettings);
 }
 
-TEST_F(UIBrokerImplTest, ShowPairingFailedRetroactive) {
+TEST_F(UIBrokerImplTest, ShowPairingFailed_Retroactive) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairRetroactive);
   ui_broker_->ShowPairingFailed(device);
@@ -232,7 +232,7 @@ TEST_F(UIBrokerImplTest, ShowPairingFailedRetroactive) {
       presenter_factory_->fake_fast_pair_presenter()->show_pairing_failed());
 }
 
-TEST_F(UIBrokerImplTest, ShowAssociateAccountInitial) {
+TEST_F(UIBrokerImplTest, ShowAssociateAccount_Initial) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
   ui_broker_->ShowAssociateAccount(device);
@@ -241,7 +241,7 @@ TEST_F(UIBrokerImplTest, ShowAssociateAccountInitial) {
   EXPECT_EQ(associate_account_action_, AssociateAccountAction::kLearnMore);
 }
 
-TEST_F(UIBrokerImplTest, ShowAssociateAccountRetroactive) {
+TEST_F(UIBrokerImplTest, ShowAssociateAccount_Retroactive) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairRetroactive);
   ui_broker_->ShowAssociateAccount(device);
@@ -250,7 +250,7 @@ TEST_F(UIBrokerImplTest, ShowAssociateAccountRetroactive) {
   EXPECT_EQ(associate_account_action_, AssociateAccountAction::kLearnMore);
 }
 
-TEST_F(UIBrokerImplTest, ShowInstallCompanionAppInitialDisabled) {
+TEST_F(UIBrokerImplTest, ShowInstallCompanionApp_Initial_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -262,7 +262,7 @@ TEST_F(UIBrokerImplTest, ShowInstallCompanionAppInitialDisabled) {
                             "");
 }
 
-TEST_F(UIBrokerImplTest, ShowInstallCompanionAppInitialEnabled) {
+TEST_F(UIBrokerImplTest, ShowInstallCompanionApp_Initial_Enabled) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -274,7 +274,7 @@ TEST_F(UIBrokerImplTest, ShowInstallCompanionAppInitialEnabled) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kDownloadAndLaunchApp);
 }
 
-TEST_F(UIBrokerImplTest, ShowInstallCompanionAppSubsequentDisabled) {
+TEST_F(UIBrokerImplTest, ShowInstallCompanionApp_Subsequent_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -286,7 +286,7 @@ TEST_F(UIBrokerImplTest, ShowInstallCompanionAppSubsequentDisabled) {
                             "");
 }
 
-TEST_F(UIBrokerImplTest, ShowInstallCompanionAppSubsequentEnabled) {
+TEST_F(UIBrokerImplTest, ShowInstallCompanionApp_Subsequent_Enabled) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -298,7 +298,7 @@ TEST_F(UIBrokerImplTest, ShowInstallCompanionAppSubsequentEnabled) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kDownloadAndLaunchApp);
 }
 
-TEST_F(UIBrokerImplTest, ShowInstallCompanionAppRetroactiveDisabled) {
+TEST_F(UIBrokerImplTest, ShowInstallCompanionApp_Retroactive_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -310,7 +310,7 @@ TEST_F(UIBrokerImplTest, ShowInstallCompanionAppRetroactiveDisabled) {
                             "");
 }
 
-TEST_F(UIBrokerImplTest, ShowInstallCompanionAppRetroactiveEnabled) {
+TEST_F(UIBrokerImplTest, ShowInstallCompanionApp_Retroactive_Enabled) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -322,7 +322,7 @@ TEST_F(UIBrokerImplTest, ShowInstallCompanionAppRetroactiveEnabled) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kDownloadAndLaunchApp);
 }
 
-TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppInitialDisabled) {
+TEST_F(UIBrokerImplTest, ShowLaunchCompanionApp_Initial_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -334,7 +334,7 @@ TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppInitialDisabled) {
                             "");
 }
 
-TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppInitialEnabled) {
+TEST_F(UIBrokerImplTest, ShowLaunchCompanionApp_Initial_Enabled) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -346,7 +346,7 @@ TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppInitialEnabled) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kLaunchApp);
 }
 
-TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppSubsequentDisabled) {
+TEST_F(UIBrokerImplTest, ShowLaunchCompanionApp_Subsequent_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -358,7 +358,7 @@ TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppSubsequentDisabled) {
                             "");
 }
 
-TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppSubsequentEnabled) {
+TEST_F(UIBrokerImplTest, ShowLaunchCompanionApp_Subsequent_Enabled) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -370,7 +370,7 @@ TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppSubsequentEnabled) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kLaunchApp);
 }
 
-TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppRetroactiveDisabled) {
+TEST_F(UIBrokerImplTest, ShowLaunchCompanionApp_Retroactive_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -382,7 +382,7 @@ TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppRetroactiveDisabled) {
                             "");
 }
 
-TEST_F(UIBrokerImplTest, ShowLaunchCompanionAppRetroactiveEnabled) {
+TEST_F(UIBrokerImplTest, ShowLaunchCompanionApp_Retroactive_Enabled) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -401,7 +401,7 @@ TEST_F(UIBrokerImplTest, ShowPasskey) {
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->show_passkey());
 }
 
-TEST_F(UIBrokerImplTest, RemoveNotificationsInitial) {
+TEST_F(UIBrokerImplTest, RemoveNotifications_Initial) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
   ui_broker_->RemoveNotifications();
@@ -410,7 +410,7 @@ TEST_F(UIBrokerImplTest, RemoveNotificationsInitial) {
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->removed());
 }
 
-TEST_F(UIBrokerImplTest, RemoveNotificationsSubsequent) {
+TEST_F(UIBrokerImplTest, RemoveNotifications_Subsequent) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairSubsequent);
   ui_broker_->RemoveNotifications();
@@ -419,7 +419,7 @@ TEST_F(UIBrokerImplTest, RemoveNotificationsSubsequent) {
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->removed());
 }
 
-TEST_F(UIBrokerImplTest, RemoveNotificationsRetroactive) {
+TEST_F(UIBrokerImplTest, RemoveNotifications_Retroactive) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairRetroactive);
   ui_broker_->RemoveNotifications();

@@ -6,6 +6,8 @@ import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(!is_android)
+
 generate_grd("build_grd") {
   grd_prefix = "internals"
   out_grd = "$target_gen_dir/resources.grd"
@@ -13,13 +15,8 @@ generate_grd("build_grd") {
   input_files = [ "internals.html" ]
   input_files_base_dir = rebase_path(".", "//")
 
-  if (!is_android) {
-    deps = [ "user_education:build_grdp" ]
-    grdp_files = [ "$target_gen_dir/user_education/resources.grdp" ]
-  } else {
-    deps = [ "notifications:build_grdp" ]
-    grdp_files = [ "$target_gen_dir/notifications/resources.grdp" ]
-  }
+  deps = [ "user_education:build_grdp" ]
+  grdp_files = [ "$target_gen_dir/user_education/resources.grdp" ]
 }
 
 grit("resources") {

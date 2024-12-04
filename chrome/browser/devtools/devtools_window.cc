@@ -811,15 +811,6 @@ Profile* DevToolsWindow::GetProfileForDevToolsWindow(
   return profile->GetOriginalProfile();
 }
 
-namespace {
-
-scoped_refptr<DevToolsAgentHost> GetOrCreateDevToolsHostForWebContents(
-    WebContents* wc) {
-  return DevToolsAgentHost::GetOrCreateForTab(wc);
-}
-
-}  // namespace
-
 // static
 void DevToolsWindow::ToggleDevToolsWindow(
     content::WebContents* inspected_web_contents,
@@ -829,7 +820,7 @@ void DevToolsWindow::ToggleDevToolsWindow(
     const std::string& settings,
     DevToolsOpenedByAction toggled_by) {
   scoped_refptr<DevToolsAgentHost> agent(
-      GetOrCreateDevToolsHostForWebContents(inspected_web_contents));
+      DevToolsAgentHost::GetOrCreateForTab(inspected_web_contents));
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
   bool do_open = force_open;
   if (!window) {
@@ -902,7 +893,7 @@ void DevToolsWindow::InspectElement(
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(inspected_frame_host);
   scoped_refptr<DevToolsAgentHost> agent(
-      GetOrCreateDevToolsHostForWebContents(web_contents));
+      DevToolsAgentHost::GetOrCreateForTab(web_contents));
   agent->InspectElement(inspected_frame_host, x, y);
   bool should_measure_time = !FindDevToolsWindow(agent.get());
   base::TimeTicks start_time = base::TimeTicks::Now();

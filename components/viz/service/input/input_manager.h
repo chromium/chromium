@@ -91,6 +91,8 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
   RenderInputRouterSupportBase* GetRootRenderInputRouterSupport(
       const FrameSinkId& frame_sink_id) override;
+  const CompositorFrameMetadata* GetLastActivatedFrameMetadata(
+      const FrameSinkId& frame_sink_id) override;
 
 #if BUILDFLAG(IS_ANDROID)
   // AndroidInputCallbackClient implementation.
@@ -113,6 +115,9 @@ class VIZ_SERVICE_EXPORT InputManager
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
                                  uint32_t grouping_id) override;
+  std::optional<bool> IsDelegatedInkHovering(
+      const FrameSinkId& frame_sink_id) override;
+  GpuServiceImpl* GetGpuService() override;
 
   void SetupRenderInputRouterDelegateConnection(
       uint32_t grouping_id,

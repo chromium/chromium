@@ -46,7 +46,8 @@ source_set("browser_tests") {
     "inspect/inspect_ui_browsertest.cc",
     "js/js_browsertest.cc",
     "key_value_pair_viewer/key_value_pair_viewer_browsertest.cc",
-    "lens/lens_webui_browsertest.cc",
+    "lens/lens_overlay_webui_browsertest.cc",
+    "lens/lens_side_panel_webui_browsertest.cc",
     "location_internals/location_internals_browsertest.cc",
     "media/media_engagement_browsertest.cc",
     "media_internals/media_internals_browsertest.cc",
@@ -81,7 +82,6 @@ source_set("browser_tests") {
     sources += [
       "intro/intro_browsertest.cc",
       "signin/batch_upload_view_browsertest.cc",
-      "welcome/welcome_browsertest.cc",
     ]
   }
 
@@ -673,13 +673,11 @@ generate_grd("build_grd") {
       "inline_login:build_grdp",
       "intro:build_grdp",
       "signin:build_grdp",
-      "welcome:build_grdp",
     ]
     grdp_files += [
       "$target_gen_dir/inline_login/resources.grdp",
       "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
-      "$target_gen_dir/welcome/resources.grdp",
     ]
   }
 

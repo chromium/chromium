@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -61,9 +56,7 @@ void CreateAndAddWebUIDataSource(Profile* profile, const std::string& host) {
   };
   html_source->AddLocalizedStrings(kStrings);
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kCertificateViewerResources,
-                                              kCertificateViewerResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kCertificateViewerResources,
                               IDR_CERTIFICATE_VIEWER_CERTIFICATE_VIEWER_HTML);
 }
 

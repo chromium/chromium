@@ -236,9 +236,6 @@ class DiscardableImageMap::Generator {
         return;
       }
 
-      SkNoDrawCanvas canvas(scaled_tile_rect.width(),
-                            scaled_tile_rect.height());
-      canvas.setMatrix(SkMatrix::RectToRect(shader->tile(), scaled_tile_rect));
       base::AutoReset<bool> auto_reset(&only_gather_animated_images_, true);
       size_t prev_images_size = map_.images_.size();
       GatherDiscardableImages(shader->paint_record()->buffer(), &op_rect);

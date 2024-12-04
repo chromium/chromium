@@ -5,12 +5,14 @@
 #ifndef NET_DNS_PUBLIC_DOH_PROVIDER_ENTRY_H_
 #define NET_DNS_PUBLIC_DOH_PROVIDER_ENTRY_H_
 
+#include <initializer_list>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -35,6 +37,7 @@ namespace net {
 //
 // If `feature` is disabled, the entry is eligible for neither auto-upgrade nor
 // the dropdown menu.
+// DohProviderEntries are only constructed with static data in production.
 struct NET_EXPORT DohProviderEntry {
  public:
   using List = std::vector<raw_ptr<const DohProviderEntry, VectorExperimental>>;
@@ -48,17 +51,17 @@ struct NET_EXPORT DohProviderEntry {
     kExtra,
   };
 
-  std::string provider;
+  std::string_view provider;
   // Avoid using base::Feature& and use raw_ref instead. Use feature.get()
   // for accessing the raw reference.
   raw_ref<const base::Feature> feature;
   std::set<IPAddress> ip_addresses;
-  std::set<std::string> dns_over_tls_hostnames;
+  base::flat_set<std::string_view> dns_over_tls_hostnames;
   DnsOverHttpsServerConfig doh_server_config;
-  std::string ui_name;
-  std::string privacy_policy;
+  std::string_view ui_name;
+  std::string_view privacy_policy;
   bool display_globally;
-  std::set<std::string> display_countries;
+  base::flat_set<std::string> display_countries;
   LoggingLevel logging_level;
 
   // Returns the full list of DoH providers. A subset of this list may be used
@@ -67,40 +70,43 @@ struct NET_EXPORT DohProviderEntry {
   static const List& GetList();
 
   static DohProviderEntry ConstructForTesting(
-      std::string provider,
+      std::string_view provider,
       const base::Feature* feature,
-      std::set<std::string_view> dns_over_53_server_ip_strs,
-      std::set<std::string> dns_over_tls_hostnames,
+      std::initializer_list<std::string_view> dns_over_53_server_ip_strs,
+      base::flat_set<std::string_view> dns_over_tls_hostnames,
       std::string dns_over_https_template,
-      std::string ui_name,
-      std::string privacy_policy,
+      std::string_view ui_name,
+      std::string_view privacy_policy,
       bool display_globally,
-      std::set<std::string> display_countries,
+      base::flat_set<std::string> display_countries,
       LoggingLevel logging_level = LoggingLevel::kNormal);
 
   // Entries are neither copyable nor moveable. This allows tests to construct a
   // List but ensures that `const DohProviderEntry*` is a safe type for
   // application code.
   DohProviderEntry(DohProviderEntry& other) = delete;
-  DohProviderEntry(DohProviderEntry&& other) = delete;
+  DohProviderEntry(DohProviderEntry&& other);
 
   ~DohProviderEntry();
 
  private:
+  // DohProviderEntry must be constructed with strings with static storage
+  // duration that are never destroyed.
   DohProviderEntry(
-      std::string provider,
+      std::string_view provider,
       // Disallow implicit copying of the `feature` parameter because there
       // cannot be more than one `base::Feature` for a given feature name.
       const base::Feature* feature,
-      std::set<std::string_view> dns_over_53_server_ip_strs,
-      std::set<std::string> dns_over_tls_hostnames,
+      std::initializer_list<std::string_view> dns_over_53_server_ip_strs,
+      base::flat_set<std::string_view> dns_over_tls_hostnames,
       std::string dns_over_https_template,
-      std::string ui_name,
-      std::string privacy_policy,
+      std::string_view ui_name,
+      std::string_view privacy_policy,
       bool display_globally,
-      std::set<std::string> display_countries,
+      base::flat_set<std::string> display_countries,
       LoggingLevel logging_level,
-      std::set<std::string_view> dns_over_https_server_ip_strs = {});
+      std::initializer_list<std::string_view> dns_over_https_server_ip_strs =
+          {});
 };
 
 }  // namespace net

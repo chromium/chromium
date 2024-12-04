@@ -328,7 +328,7 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
   DCHECK(!new_instance->RequiresDedicatedProcess());
   DCHECK(!new_instance->HasProcess());
   RenderFrameHostImpl* root = rfh->GetOutermostMainFrame();
-  root->ForEachRenderFrameHostWithAction(
+  root->ForEachRenderFrameHostImplWithAction(
       [site_instance = std::move(new_instance),
        root](RenderFrameHostImpl* rfhi) {
         if (rfhi->GetParent())
@@ -1020,21 +1020,23 @@ void RenderFrameHostManager::PrepareForCollectingPage(
   TRACE_EVENT("navigation", "RenderFrameHostManager::PrepareForCollectingPage");
 
   // We insert RenderViewHosts for all frames.
-  main_render_frame_host->ForEachRenderFrameHost([&](RenderFrameHostImpl* rfh) {
-    render_view_hosts->insert(rfh->render_view_host()->GetSafeRef());
-    if (rfh->is_main_frame()) {
-      for (auto& it : rfh->browsing_context_state()->proxy_hosts()) {
-        // This avoids including the proxy created when starting a
-        // new cross-process, cross-BrowsingInstance navigation, as well as any
-        // restored proxies which are also in a different BrowsingInstance.
-        if (rfh->GetSiteInstance()->group()->IsRelatedSiteInstanceGroup(
-                it.second->site_instance_group())) {
-          render_view_hosts->insert(
-              it.second->GetRenderViewHost()->GetSafeRef());
+  main_render_frame_host->ForEachRenderFrameHostImpl(
+      [&](RenderFrameHostImpl* rfh) {
+        render_view_hosts->insert(rfh->render_view_host()->GetSafeRef());
+        if (rfh->is_main_frame()) {
+          for (auto& it : rfh->browsing_context_state()->proxy_hosts()) {
+            // This avoids including the proxy created when starting a
+            // new cross-process, cross-BrowsingInstance navigation, as well as
+            // any restored proxies which are also in a different
+            // BrowsingInstance.
+            if (rfh->GetSiteInstance()->group()->IsRelatedSiteInstanceGroup(
+                    it.second->site_instance_group())) {
+              render_view_hosts->insert(
+                  it.second->GetRenderViewHost()->GetSafeRef());
+            }
+          }
         }
-      }
-    }
-  });
+      });
 
   // When BrowsingContextState is decoupled from the FrameTreeNode and
   // RenderFrameHostManager (legacy mode is disabled), proxies and

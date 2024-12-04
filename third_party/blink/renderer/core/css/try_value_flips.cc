@@ -642,8 +642,7 @@ const CSSValue* TransformPositionArea(
   return MakeGarbageCollected<CSSValuePair>(
       CSSIdentifierValue::Create(first_value_transformed),
       CSSIdentifierValue::Create(second_value_transformed),
-      pair->KeepIdenticalValues() ? CSSValuePair::kKeepIdenticalValues
-                                  : CSSValuePair::kDropIdenticalValues);
+      CSSValuePair::kKeepIdenticalValues);
 }
 
 }  // namespace

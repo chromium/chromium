@@ -106,7 +106,7 @@ namespace safe_browsing {
 
 class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
  public:
-  ChromePasswordProtectionServiceBrowserTest() {}
+  ChromePasswordProtectionServiceBrowserTest() = default;
 
   ChromePasswordProtectionServiceBrowserTest(
       const ChromePasswordProtectionServiceBrowserTest&) = delete;

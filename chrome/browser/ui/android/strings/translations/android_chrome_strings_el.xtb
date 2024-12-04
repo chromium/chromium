@@ -942,6 +942,7 @@
 <translation id="5316947901395241499">Η αποθήκευση κωδικού πρόσβασης έχει απενεργοποιηθεί από τον διαχειριστή σας</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5319359161174645648">Η Google συνιστά το Chrome</translation>
+<translation id="5326246328175179736">Δεν μπορείτε να συνδεθείτε χρησιμοποιώντας αυτόν τον λογαριασμό</translation>
 <translation id="5328542107300944283">Χρήση με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Αιτήματα για άδειες</translation>
 <translation id="534580735623577507">Δεν υπάρχουν ιστότοποι από: <ph name="TIME_PERIOD" /></translation>
@@ -951,6 +952,7 @@
 <translation id="5375577065097716013">Αναζήτ. εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Έξοδος από την ανώνυμη περιήγηση</translation>
 <translation id="5395376160638294582">Βεβαιωθείτε ότι θα μπορείτε να χρησιμοποιείτε πάντα τα δεδομένα του Chrome στον Λογαριασμό σας Google</translation>
+<translation id="5397794290049113714">Εσείς</translation>
 <translation id="539881862970320163">Προτάθηκε ισχυρός κωδικός πρόσβασης. Έχει γίνει απόκρυψη του πληκτρολογίου.</translation>
 <translation id="5409881200985013443">Υποβολή <ph name="ONE_TIME_CODE" /> σε <ph name="CLIENT_NAME" />;</translation>
 <translation id="5410300144953132176">Ο χρήστης <ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) θέλει να συμμετάσχετε σε μια ομάδα καρτελών. Οποιοσδήποτε διαθέτει τον σύνδεσμο μπορεί να επεξεργαστεί όλες τις καρτέλες, επομένως, εξετάστε προσεκτικά το ενδεχόμενο συμμετοχής σας. Ο σύνδεσμος λήγει σε 48 ώρες.</translation>
@@ -978,6 +980,7 @@
 <translation id="5514904542973294328">Απενεργοποιήθηκε από τον διαχειριστή αυτής της συσκευής</translation>
 <translation id="5515439363601853141">Ξεκλειδώστε για προβολή του κωδικού πρόσβασης</translation>
 <translation id="5517095782334947753">Έχετε σελιδοδείκτες, ιστορικό, κωδικούς πρόσβασης και άλλες ρυθμίσεις από τον λογαριασμό <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">Φύλλο κάτω μέρους πρόσφατης δραστηριότητας</translation>
 <translation id="5524843473235508879">Η ανακατεύθυνση αποκλείστηκε.</translation>
 <translation id="5526281268548144413">Δεν είναι δυνατό το κλείσιμο σε πολλά παράθυρα</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Πριν από # λ.}other{Πριν από # λ.}}</translation>
@@ -1280,6 +1283,7 @@
 <translation id="6817747507826986771">Κοινοποιήστε γρήγορα αυτήν τη σελίδα. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Έκλεισε η ενημέρωση για τη Διαχείριση κωδικών πρόσβασης Google</translation>
+<translation id="6824933543577433709">Το φύλλο κάτω μέρους πρόσφατης δραστηριότητας έκλεισε</translation>
 <translation id="6828070228333235514">Διακοπή παρακολούθησης τιμής</translation>
 <translation id="6830728435402077660">Μη ασφαλές</translation>
 <translation id="6831043979455480757">Μετάφραση</translation>
@@ -1498,6 +1502,7 @@
 <translation id="7691043218961417207">Εξερευνήστε περιεχόμενο για παρακολούθηση</translation>
 <translation id="7697383401610880082">Λαβή μεταφοράς</translation>
 <translation id="7698359219371678927">Δημιουργία μηνύματος ηλεκτρονικού ταχυδρομείου στην εφαρμογή <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Το φύλλο κάτω μέρους πρόσφατης δραστηριότητας άνοιξε σε πλήρες ύψος</translation>
 <translation id="7707922173985738739">Χρήση δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="7709918231054955894">Λάβετε όλες τις καρτέλες σας</translation>
 <translation id="7733878270780732638">Δεν υπάρχει αρκετός χώρος στη συσκευή.</translation>

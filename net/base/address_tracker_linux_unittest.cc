@@ -519,7 +519,7 @@ TEST_F(AddressTrackerLinuxTest, IgnoreInterface) {
   EXPECT_EQ(0u, GetOnlineLinks().size());
 }
 
-TEST_F(AddressTrackerLinuxTest, IgnoreInterfaceNonIgnoredInterface) {
+TEST_F(AddressTrackerLinuxTest, IgnoreInterface_NonIgnoredInterface) {
   IgnoreInterface(kIgnoredInterfaceName);
   InitializeAddressTracker(true);
 

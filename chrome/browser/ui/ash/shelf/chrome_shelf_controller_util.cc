@@ -169,7 +169,6 @@ bool IsAppPinEditable(apps::AppType app_type,
     case apps::AppType::kChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       return true;
     case apps::AppType::kStandaloneBrowser:
       // Lacros behaves like the Chrome browser icon and cannot be unpinned.
@@ -180,7 +179,6 @@ bool IsAppPinEditable(apps::AppType app_type,
       return false;
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       NOTREACHED() << "Type " << (int)app_type
                    << " should not appear in shelf.";
     case apps::AppType::kBruschetta:

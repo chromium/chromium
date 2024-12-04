@@ -63,7 +63,6 @@ em::AppInfo::AppType ExtractAppType(const apps::AppType app_type) {
     case apps::AppType::kPluginVm:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_PLUGINVM;
     case apps::AppType::kChromeApp:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_EXTENSION;
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
@@ -74,7 +73,6 @@ em::AppInfo::AppType ExtractAppType(const apps::AppType app_type) {
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_BRUSCHETTA;
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kRemote:
     case apps::AppType::kUnknown:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_UNKNOWN;

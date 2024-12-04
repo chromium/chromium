@@ -204,9 +204,6 @@ extern const char kModernTabStripInactiveTabsHighContrast[];
 extern const char kModernTabStripHighContrastNTB[];
 extern const char kModernTabStripDetachedTabs[];
 
-// Feature flag that allows external apps to show default browser settings.
-BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
-
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
@@ -309,6 +306,9 @@ BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 // Feature flag to enable the Lens "Search copied image" omnibox entrypoint.
 BASE_DECLARE_FEATURE(kEnableLensOverlay);
 extern const base::NotFatalUntil kLensOverlayNotFatalUntil;
+
+// Feature flag to enable the Lens View Finder Unified experience
+BASE_DECLARE_FEATURE(kEnableLensViewFinderUnifiedExperience);
 
 // Feature flag to enable the Lens overlay location bar entrypoint. Enabled by
 // default.
@@ -472,12 +472,6 @@ int SafetyCheckNotificationsImpressionLimit();
 
 // Feature flag enabling Choose from Drive.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
-
-// Feature flag enabling Save to Drive.
-BASE_DECLARE_FEATURE(kIOSSaveToDrive);
-
-// Feature flag enabling Save to Photos.
-BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
 
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
@@ -922,6 +916,15 @@ BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 // profile is enabled. This is the case if `kSeparateProfilesForManagedAccounts`
 // is enabled *and* the iOS version is >= 17 (required for multiprofile).
 bool AreSeparateProfilesForManagedAccountsEnabled();
+
+// Feature flag to assign each managed account to its own separate profile.
+// DO NOT CHECK DIRECTLY, use IsManagedProfileCreationUpdatedScreenEnabled()!
+BASE_DECLARE_FEATURE(kManagedProfileCreationUpdatedScreen);
+
+// Returns whether the feature to put each managed account into its own separate
+// profile is enabled. This is the case if
+// `kManagedProfileCreationUpdatedScreen`.
+bool IsManagedProfileCreationUpdatedScreenEnabled();
 
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);

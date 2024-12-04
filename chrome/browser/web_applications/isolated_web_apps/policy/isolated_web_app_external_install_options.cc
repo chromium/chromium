@@ -63,11 +63,15 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
   if (!entry.is_dict()) {
     return base::unexpected("Policy entry is not dictionary");
   }
+  return FromPolicyPrefValue(entry.GetDict());
+}
 
-  const base::Value::Dict& entry_dict = entry.GetDict();
-
+// static
+base::expected<IsolatedWebAppExternalInstallOptions, std::string>
+IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
+    const base::Value::Dict& entry) {
   const std::string* const update_manifest_url_raw =
-      entry_dict.FindString(kPolicyUpdateManifestUrlKey);
+      entry.FindString(kPolicyUpdateManifestUrlKey);
   if (!update_manifest_url_raw) {
     return base::unexpected(
         "Update manifest URL value is not found or has the wrong type");
@@ -79,7 +83,7 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
   }
 
   const std::string* const web_bundle_id_raw =
-      entry_dict.FindString(kPolicyWebBundleIdKey);
+      entry.FindString(kPolicyWebBundleIdKey);
   if (!web_bundle_id_raw) {
     return base::unexpected(
         "Web Bundle ID value is not found or has the wrong type");
@@ -100,7 +104,7 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
   std::optional<base::Version> maybe_pinned_version;
 
   if (const auto* pinned_version_raw =
-          entry_dict.FindString(kPolicyPinnedVersionKey)) {
+          entry.FindString(kPolicyPinnedVersionKey)) {
     base::Version pinned_version = base::Version(*pinned_version_raw);
     if (!pinned_version.IsValid()) {
       return base::unexpected("Pinned version has invalid format");
@@ -109,7 +113,7 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
   }
 
   const std::string* const update_channel_raw =
-      entry_dict.FindString(kPolicyUpdateChannelKey);
+      entry.FindString(kPolicyUpdateChannelKey);
 
   if (!update_channel_raw) {
     return IsolatedWebAppExternalInstallOptions(

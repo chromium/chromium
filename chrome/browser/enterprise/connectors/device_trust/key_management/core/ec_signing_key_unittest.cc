@@ -27,7 +27,7 @@ class ECSigningKeyTest : public testing::Test {
               const std::string& data) {
     crypto::SignatureVerifier verifier;
     verifier.VerifyInit(algo, signature, pubkey);
-    verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
+    verifier.VerifyUpdate(base::as_byte_span(data));
     return verifier.VerifyFinal();
   }
 
@@ -45,7 +45,7 @@ TEST_F(ECSigningKeyTest, Sign) {
   const std::string data("data to be sign");
 
   // Make sure that signatures generated with the key can be verified.
-  auto signature = key()->SignSlowly(base::as_bytes(base::make_span(data)));
+  auto signature = key()->SignSlowly(base::as_byte_span(data));
   ASSERT_TRUE(signature);
   ASSERT_NE(0u, signature->size());
   ASSERT_TRUE(Verify(key()->Algorithm(), pubkey, *signature, data));
@@ -81,7 +81,7 @@ TEST_F(ECSigningKeyTest, WrapAndSign) {
   std::unique_ptr<crypto::UnexportableSigningKey> key2 =
       provider()->FromWrappedSigningKeySlowly(key()->GetWrappedKey());
   const std::string data("data to be sign");
-  auto signature = key2->SignSlowly(base::as_bytes(base::make_span(data)));
+  auto signature = key2->SignSlowly(base::as_byte_span(data));
   ASSERT_TRUE(signature);
   ASSERT_NE(0u, signature->size());
   ASSERT_TRUE(Verify(key2->Algorithm(), pubkey, *signature, data));

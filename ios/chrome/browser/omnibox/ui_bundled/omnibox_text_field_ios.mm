@@ -219,13 +219,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   if ([self hasAutocompleteText]) {
     self.text = self.userText;
   }
-  if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
+  if ([self hasAdditionalText]) {
     [self removeAdditionalText];
   }
 }
 
 - (void)setAdditionalText:(NSAttributedString*)additionalText {
-  CHECK(IsRichAutocompletionEnabled());
   [self removeAdditionalText];
 
   if (!additionalText.length) {
@@ -385,7 +384,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // additionnal text.
   if (self.editing) {
     NSRange foregroundColorRange = entireString;
-    if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
+    if ([self hasAdditionalText]) {
       foregroundColorRange =
           NSMakeRange(0, mutableText.length - self.additionalText.length);
     }
@@ -514,8 +513,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
   if (gestureRecognizer == _tapGestureRecognizer) {
     return [self isPreEditing] || [self hasAutocompleteText] ||
-           (IsRichAutocompletionEnabled() && [self hasAdditionalText]) ||
-           self.omniboxHasRichInline;
+           [self hasAdditionalText];
   }
   return YES;
 }
@@ -531,11 +529,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   if (self.hasAutocompleteText) {
     [self acceptAutocompleteText];
   }
-  if (IsRichAutocompletionEnabled() && self.hasAdditionalText) {
+  if (self.hasAdditionalText) {
     [self handleUserInitiatedRemovalOfAdditionalText];
-  }
-  if (IsRichAutocompletionEnabled() && self.omniboxHasRichInline) {
-    [self handleUserInitiatedRemovalOfRichInline];
   }
 }
 
@@ -681,7 +676,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     [self clearAutocompleteText];
     return;
   }
-  if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
+  if ([self hasAdditionalText]) {
     [self handleUserInitiatedRemovalOfAdditionalText];
     return;
   }
@@ -771,8 +766,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     case OmniboxKeyboardActionLeftArrow:
     case OmniboxKeyboardActionRightArrow:
       return ([self isPreEditing] || [self hasAutocompleteText] ||
-              (IsRichAutocompletionEnabled() && [self hasAdditionalText]) ||
-              self.omniboxHasRichInline);
+              [self hasAdditionalText]);
   }
 }
 
@@ -797,7 +791,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)keyCommandLeft {
   CHECK([self isPreEditing] || [self hasAutocompleteText] ||
-        [self hasAdditionalText] || self.omniboxHasRichInline);
+        [self hasAdditionalText]);
 
   // Cursor offset.
   NSInteger offset = 0;
@@ -813,17 +807,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     // Accept autocomplete suggestion.
     [self acceptAutocompleteText];
   }
-  if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
+  if ([self hasAdditionalText]) {
     if (!hasAutocompleteText) {
       offset = self.userText.length - 1;
     }
     [self handleUserInitiatedRemovalOfAdditionalText];
-  }
-  if (IsRichAutocompletionEnabled() && self.omniboxHasRichInline) {
-    if (!hasAutocompleteText) {
-      offset = self.userText.length - 1;
-    }
-    [self handleUserInitiatedRemovalOfRichInline];
   }
 
   // Place the cursor at computed offset.
@@ -837,7 +825,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)keyCommandRight {
   CHECK([self isPreEditing] || [self hasAutocompleteText] ||
-        [self hasAdditionalText] || self.omniboxHasRichInline);
+        [self hasAdditionalText]);
 
   if ([self isPreEditing]) {
     [self exitPreEditState];
@@ -846,11 +834,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   if ([self hasAutocompleteText]) {
     [self acceptAutocompleteText];
   }
-  if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
+  if ([self hasAdditionalText]) {
     [self handleUserInitiatedRemovalOfAdditionalText];
-  }
-  if (IsRichAutocompletionEnabled() && self.omniboxHasRichInline) {
-    [self handleUserInitiatedRemovalOfRichInline];
   }
 
   // Put the cursor to the end of the input.
@@ -889,10 +874,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 /// Length of added text in the omnibox (autocomplete and additional text).
 - (NSUInteger)addedTextLength {
-  if (IsRichAutocompletionEnabled()) {
-    return _autocompleteTextLength + self.additionalText.length;
-  }
-  return _autocompleteTextLength;
+  return _autocompleteTextLength + self.additionalText.length;
 }
 
 /// Returns whether there is added text in the omnibox (autocomplete or
@@ -908,7 +890,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 /// Text in the omnibox without the additional text.
 - (NSAttributedString*)textWithoutAdditionalText {
-  if (!IsRichAutocompletionEnabled() || !self.additionalText.length) {
+  if (!self.additionalText.length) {
     return self.attributedText;
   }
   CHECK_LE(self.additionalText.length, self.attributedText.length);
@@ -921,7 +903,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 /// Removes the additional text.
 - (void)removeAdditionalText {
-  CHECK(IsRichAutocompletionEnabled());
   if (!_additionalText) {
     return;
   }
@@ -934,19 +915,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 /// suggestions.
 - (void)handleUserInitiatedRemovalOfAdditionalText {
   [self removeAdditionalText];
-  if ([self.delegate
-          respondsToSelector:@selector(textFieldDidRemoveAdditionalText:)]) {
-    [self.delegate textFieldDidRemoveAdditionalText:self];
-  }
-}
-
-/// Removes the rich inline as default suggestion.
-- (void)handleUserInitiatedRemovalOfRichInline {
-  if (!self.omniboxHasRichInline) {
-    return;
-  }
-
-  self.omniboxHasRichInline = NO;
   if ([self.delegate
           respondsToSelector:@selector(textFieldDidRemoveAdditionalText:)]) {
     [self.delegate textFieldDidRemoveAdditionalText:self];
@@ -991,7 +959,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     [fieldText appendAttributedString:autocompleteText];
   }
   // Append additional text.
-  if (IsRichAutocompletionEnabled() && self.additionalText) {
+  if (self.additionalText) {
     [fieldText appendAttributedString:self.additionalText];
   }
 

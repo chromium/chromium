@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Restore.NavigationToFirstPaint" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-01">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -1422,7 +1422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrameHasRTLDomain2" enum="Boolean"
-    expires_after="2024-11-19">
+    expires_after="2025-05-19">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -1433,7 +1433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrameHasRTLDomainDifferentPage2" enum="Boolean"
-    expires_after="2024-11-19">
+    expires_after="2025-05-19">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -1467,7 +1467,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrameScheme2" enum="NavigationScheme"
-    expires_after="2024-12-15">
+    expires_after="never">
+<!-- expires-never: Primary metric for measuring page loads, particularly for security analyses. -->
+
   <owner>estark@chromium.org</owner>
   <owner>elawrence@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -2067,7 +2069,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.StartToCommit" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-01">
   <owner>nasko@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -2110,7 +2112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleCount" units="throttles"
-    expires_after="2025-04-27">
+    expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2121,7 +2123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleDeferredEvent"
-    enum="NavigationThrottleEvent" expires_after="2024-12-01">
+    enum="NavigationThrottleEvent" expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2132,7 +2134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleDeferTime.{Event}" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2025-06-01">
   <owner>cduvall@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -2147,7 +2149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleEventDurationTime.{Event}" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2160,7 +2162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleEventExecutionTime.{Event}" units="ms"
-    expires_after="2025-04-27">
+    expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2172,7 +2174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleExecutionTime.{Event}" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2025-06-01">
   <owner>cduvall@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -2186,8 +2188,20 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
+<histogram
+    name="Navigation.Throttles.PolicyBlocklist.CacheHit.GoogleSearch.SafeSitesFilterEnabled"
+    enum="BooleanCacheHit" expires_after="2025-04-06">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records cache hit distribution that PolicyBlocklistNavigationThrottle uses
+    for the Safe Sites Filter check. Recorded at OnCommit() if the Safe Sites
+    Filter is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Throttles.PolicyBlocklist.DeferDurationTime2"
-    units="ms" expires_after="2025-04-06">
+    units="ms" expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2197,8 +2211,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.Throttles.PolicyBlocklist.RedirectCount.GoogleSearch.SafeSitesFilterEnabled"
+    units="times" expires_after="2025-04-06">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures redirect counts that PolicyBlocklistNavigationThrottles recognize.
+    Recorded at OnCommit() if the Safe Sites Filter is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2"
-    enum="PolicyBlocklistRequestThrottleAction" expires_after="2025-04-06">
+    enum="PolicyBlocklistRequestThrottleAction" expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2209,19 +2234,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2"
-    units="ms" expires_after="2025-04-06">
+<histogram
+    name="Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2{Condition}"
+    units="ms" expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures duration times from the time PolicyBlocklistNavigationThrottles
     observes the first WillStartRequest() to the time it observes the
-    WillProcessResponse(). Recorded when the WillProcessResponse() is handled.
+    WillProcessResponse(). Recorded {Condition}.
+  </summary>
+  <token key="Condition">
+    <variant name="" summary="when the WillProcessResponse() is handled"/>
+    <variant name=".GoogleSearch.SafeSitesFilterEnabled"
+        summary="at OnCommit() if the Safe Sites Filter is enabled"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration.GoogleSearch.SafeSitesFilterEnabled"
+    units="ms" expires_after="2025-04-06">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures duration times from the time PolicyBlocklistNavigationThrottles
+    defers WillProcessResponse() to the time it calls Resume(). Recorded at
+    OnCommit() if the Safe Sites Filter is enabled.
   </summary>
 </histogram>
 
 <histogram name="Navigation.ThrottleTotalDeferCount{Condition}"
-    units="throttles" expires_after="2025-04-06">
+    units="throttles" expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2233,7 +2276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.ThrottleTotalDeferTime{Condition}" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2905,6 +2948,25 @@ chromium-metrics-reviews@google.com.
   <summary>
     Final status for prerender pages - either success, or why it was canceled.
   </summary>
+</histogram>
+
+<histogram name="Prerender.IsPrerenderingSRPUrl.{PreloadingEmbedderType}"
+    enum="Boolean" expires_after="2025-05-11">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    To record whether a prerendering attempt initiated by
+    {PreloadingEmbedderType} is trying to prerender a SRP url or not.
+
+    This is recorded when PrerenderManager::StartPrerender* is called to
+    initiate {PreloadingEmbedderType}, which is the list of affected prerender
+    triggers in https://crbug.com/40066983.
+  </summary>
+  <token key="PreloadingEmbedderType">
+    <variant name="Embedder_BookmarkBar"
+        summary="Prerender BookmarkBar Trigger"/>
+    <variant name="Embedder_NewTabPage" summary="Prerender NewTabPage Trigger"/>
+  </token>
 </histogram>
 
 <histogram name="Prerender.PrerenderLoadComplete" enum="BooleanSuccess"

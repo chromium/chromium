@@ -80,8 +80,9 @@ std::string GetFileNameForPageNumber(const std::string& name, int page_number) {
 
 std::unique_ptr<ENHMETAHEADER> GetEmfHeader(const std::string& emf_data) {
   Emf emf;
-  if (!emf.InitFromData(base::as_bytes(base::make_span(emf_data))))
+  if (!emf.InitFromData(base::as_byte_span(emf_data))) {
     return nullptr;
+  }
 
   auto meta_header = std::make_unique<ENHMETAHEADER>();
   if (GetEnhMetaFileHeader(emf.emf(), kHeaderSize, meta_header.get()) !=
@@ -112,8 +113,8 @@ void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
 }
 
 std::string HashData(const char* data, size_t len) {
-  auto span = base::make_span(reinterpret_cast<const uint8_t*>(data), len);
-  return base::HexEncode(base::SHA1Hash(span));
+  return base::HexEncode(
+      base::SHA1Hash(base::span(reinterpret_cast<const uint8_t*>(data), len)));
 }
 
 class PdfToEmfConverterBrowserTest

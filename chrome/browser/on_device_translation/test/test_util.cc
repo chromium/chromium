@@ -218,4 +218,44 @@ void TestCanTranslate(Browser* browser,
             result);
 }
 
+// Tests that the AITranslatorCapabilities.available returns the expected
+// result.
+void TestTranslatorCapabilitiesAvailable(Browser* browser,
+                                         const std::string_view result) {
+  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                   R"(
+  (async () => {
+    try {
+      return (await ai.translator.capabilities()).available;
+    } catch (e) {
+      return e.toString();
+    }
+    })();
+  )")
+                .ExtractString(),
+            result);
+}
+
+// Tests that the AITranslatorCapabilities.languagePairAvailable() returns the
+// expected result.
+void TestLanguagePairAvailable(Browser* browser,
+                               const std::string_view sourceLang,
+                               const std::string_view targetLang,
+                               const std::string_view result) {
+  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                   base::StringPrintf(R"(
+  (async () => {
+    try {
+      const capabilities = await ai.translator.capabilities();
+      return capabilities.languagePairAvailable('%s','%s');
+    } catch (e) {
+      return e.toString();
+    }
+    })();
+  )",
+                                      sourceLang, targetLang))
+                .ExtractString(),
+            result);
+}
+
 }  // namespace on_device_translation

@@ -17,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -84,10 +83,8 @@ class MockAutofillClient : public TestAutofillClient {
   ~MockAutofillClient() override = default;
 
   MOCK_METHOD(void,
-              DidFillOrPreviewForm,
-              (mojom::ActionPersistence action_persistence,
-               AutofillTriggerSource trigger_source,
-               bool is_refill),
+              DidFillForm,
+              (AutofillTriggerSource trigger_source, bool is_refill),
               (override));
 };
 
@@ -454,12 +451,12 @@ TEST_F(FormFillerTest, UndoResetsCachedAutofillState) {
   EXPECT_FALSE(autofill_field->is_autofilled());
 }
 
-TEST_F(FormFillerTest, FillOrPreviewFormCallsDidFillOrPreviewForm) {
+TEST_F(FormFillerTest, FillOrPreviewFormCallsDidFillForm) {
   FormData form = test::CreateTestAddressFormData();
   FormsSeen({form});
 
   AutofillProfile profile = test::GetFullProfile();
-  EXPECT_CALL(autofill_client_, DidFillOrPreviewForm);
+  EXPECT_CALL(autofill_client_, DidFillForm);
   FillAutofillFormData(form, form.fields().front(), &profile);
 }
 

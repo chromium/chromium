@@ -37,7 +37,7 @@ namespace {
 
 class MockDeviceSettingsObserver : public DeviceSettingsService::Observer {
  public:
-  ~MockDeviceSettingsObserver() override {}
+  ~MockDeviceSettingsObserver() override = default;
 
   MOCK_METHOD0(OwnershipStatusChanged, void());
   MOCK_METHOD0(DeviceSettingsUpdated, void());

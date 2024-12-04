@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 
 #include "base/feature_list.h"
@@ -35,16 +30,12 @@ SegmentationInternalsUI::SegmentationInternalsUI(content::WebUI* web_ui)
         segmentation_platform::features::kSegmentationSurveyInternalsPage
             .Get()) {
       webui::SetupWebUIDataSource(
-          source,
-          base::make_span(kSegmentationInternalsResources,
-                          kSegmentationInternalsResourcesSize),
+          source, kSegmentationInternalsResources,
           IDR_SEGMENTATION_INTERNALS_SEGMENTATION_SURVEY_HTML);
     }
   } else {
     webui::SetupWebUIDataSource(
-        source,
-        base::make_span(kSegmentationInternalsResources,
-                        kSegmentationInternalsResourcesSize),
+        source, kSegmentationInternalsResources,
         IDR_SEGMENTATION_INTERNALS_SEGMENTATION_INTERNALS_HTML);
   }
 }

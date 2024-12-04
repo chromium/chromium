@@ -374,7 +374,7 @@ TEST(ChannelTest, RejectHandles) {
   EXPECT_EQ(0u, receiver_delegate.num_messages());
 }
 
-TEST(ChannelTest, DeserializeMessageBadExtraHeaderSize) {
+TEST(ChannelTest, DeserializeMessage_BadExtraHeaderSize) {
   // Verifies that a message payload is rejected when the extra header chunk
   // size not properly aligned.
   constexpr uint16_t kBadAlignment = kChannelMessageAlignment + 1;

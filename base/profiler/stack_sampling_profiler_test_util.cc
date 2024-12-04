@@ -33,7 +33,7 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/no_destructor.h"
-#include "base/profiler/chrome_unwinder_android.h"
+#include "base/profiler/chrome_unwinder_android_32.h"
 #include "base/profiler/native_unwinder_android.h"
 #endif
 
@@ -137,23 +137,24 @@ std::unique_ptr<NativeUnwinderAndroid> CreateNativeUnwinderAndroidForTesting(
       exclude_module_with_base_address, GetMapDelegateForTesting());
 }
 
-std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
+std::unique_ptr<Unwinder> CreateChromeUnwinderAndroid32ForTesting(
     uintptr_t chrome_module_base_address) {
   static constexpr char kCfiFileName[] = "assets/unwind_cfi_32_v2";
 
   // The wrapper class ensures that `MemoryMappedFile` has the same lifetime
   // as the unwinder.
-  class ChromeUnwinderAndroidForTesting : public ChromeUnwinderAndroid {
+  class ChromeUnwinderAndroid32ForTesting : public ChromeUnwinderAndroid32 {
    public:
-    ChromeUnwinderAndroidForTesting(std::unique_ptr<MemoryMappedFile> cfi_file,
-                                    const ChromeUnwindInfoAndroid& unwind_info,
-                                    uintptr_t chrome_module_base_address,
-                                    uintptr_t text_section_start_address)
-        : ChromeUnwinderAndroid(unwind_info,
-                                chrome_module_base_address,
-                                text_section_start_address),
+    ChromeUnwinderAndroid32ForTesting(
+        std::unique_ptr<MemoryMappedFile> cfi_file,
+        const ChromeUnwindInfoAndroid32& unwind_info,
+        uintptr_t chrome_module_base_address,
+        uintptr_t text_section_start_address)
+        : ChromeUnwinderAndroid32(unwind_info,
+                                  chrome_module_base_address,
+                                  text_section_start_address),
           cfi_file_(std::move(cfi_file)) {}
-    ~ChromeUnwinderAndroidForTesting() override = default;
+    ~ChromeUnwinderAndroid32ForTesting() override = default;
 
    private:
     std::unique_ptr<MemoryMappedFile> cfi_file_;
@@ -165,9 +166,9 @@ std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
   auto cfi_file = std::make_unique<MemoryMappedFile>();
   bool ok = cfi_file->Initialize(base::File(fd), cfi_region);
   DCHECK(ok);
-  return std::make_unique<ChromeUnwinderAndroidForTesting>(
+  return std::make_unique<ChromeUnwinderAndroid32ForTesting>(
       std::move(cfi_file),
-      base::CreateChromeUnwindInfoAndroid(
+      base::CreateChromeUnwindInfoAndroid32(
           {cfi_file->data(), cfi_file->length()}),
       chrome_module_base_address,
       /* text_section_start_address= */ base::android::kStartOfText);
@@ -455,7 +456,7 @@ StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
   std::vector<std::unique_ptr<Unwinder>> unwinders;
   unwinders.push_back(CreateNativeUnwinderAndroidForTesting(
       reinterpret_cast<uintptr_t>(&__executable_start)));
-  unwinders.push_back(CreateChromeUnwinderAndroidForTesting(
+  unwinders.push_back(CreateChromeUnwinderAndroid32ForTesting(
       reinterpret_cast<uintptr_t>(&__executable_start)));
   return BindOnce(
       [](std::vector<std::unique_ptr<Unwinder>> unwinders) {

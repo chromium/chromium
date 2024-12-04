@@ -167,6 +167,7 @@ bool IsMailHTMLBlockquoteElement(const Node*);
 // invalid nodes to <table> elements.
 bool IsDisplayInsideTable(const Node*);
 bool IsTableCell(const Node*);
+bool IsTablePartElement(const Node*);
 bool IsHTMLListElement(const Node*);
 bool IsListItem(const Node*);
 bool IsListItemTag(const Node*);

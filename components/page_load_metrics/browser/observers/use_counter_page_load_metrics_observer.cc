@@ -370,6 +370,12 @@ UseCounterPageLoadMetricsObserver::OnCommit(
   recorder_->RecordOrDeferUseCounterFeature(
       rfh, {FeatureType::kWebFeature, web_feature_page_visit});
 
+  auto webdx_feature_page_visit =
+      static_cast<blink::UseCounterFeature::EnumValue>(
+          WebDXFeature::kPageVisits);
+  recorder_->RecordOrDeferUseCounterFeature(
+      rfh, {FeatureType::kWebDXFeature, webdx_feature_page_visit});
+
   auto css_total_pages_measured =
       static_cast<blink::UseCounterFeature::EnumValue>(
           CSSSampleId::kTotalPagesMeasured);

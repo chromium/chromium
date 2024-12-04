@@ -928,9 +928,6 @@ TEST_F(PasswordManagerAndroidUtilTest,
 
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_DeletesLoginDataFilesForMigratedUsers) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kClearLoginDatabaseForAllMigratedUPMUsers);
-
   base::HistogramTester histogram_tester;
   const char kRemovalStatusProfileMetric[] =
       "PasswordManager.ProfileLoginData.RemovalStatus";
@@ -988,8 +985,6 @@ TEST_F(
     SetUsesSplitStoresAndUPMForLocal_NoLoginDataFilesCreatedForDeactivatedAccountUsers) {
   // This test simulated a case when the GMS Core version was manually
   // downgraded after UPM activation.
-  base::test::ScopedFeatureList enable_clearing_flag{
-      password_manager::features::kClearLoginDatabaseForAllMigratedUPMUsers};
   // In this test UPM should get deactivated because of low GMS Core version.
   base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
       base::NumberToString(GetLocalUpmMinGmsVersion() - 1));

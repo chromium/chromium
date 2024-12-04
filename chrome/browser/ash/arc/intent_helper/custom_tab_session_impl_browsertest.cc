@@ -26,8 +26,8 @@
 class CustomTabSessionImplTest : public InProcessBrowserTest,
                                  public content::WebContentsObserver {
  public:
-  CustomTabSessionImplTest() {}
-  ~CustomTabSessionImplTest() override {}
+  CustomTabSessionImplTest() = default;
+  ~CustomTabSessionImplTest() override = default;
   CustomTabSessionImplTest(const CustomTabSessionImplTest&) = delete;
   CustomTabSessionImplTest& operator=(const CustomTabSessionImplTest&) = delete;
 

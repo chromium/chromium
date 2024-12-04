@@ -225,10 +225,6 @@ extern const char kModernTabStripHighContrastNTB[] =
 extern const char kModernTabStripDetachedTabs[] =
     "modern-tab-strip-detached-tabs";
 
-BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
-             "DefaultBrowserIntentsShowSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              "IOSBrowserEditMenuMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -274,6 +270,11 @@ BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
 BASE_FEATURE(kEnableLensOverlay,
              "EnableLensOverlay",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableLensViewFinderUnifiedExperience,
+             "EnableLensViewFinderUnifiedExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Update to the correct milestone after launch.
 // Also update in components/omnibox/browser/autocomplete_result.cc.
 const base::NotFatalUntil kLensOverlayNotFatalUntil = base::NotFatalUntil::M200;
@@ -473,14 +474,6 @@ TipsSafeBrowsingExperimentType TipsSafeBrowsingExperimentTypeEnabled() {
 BASE_FEATURE(kIOSChooseFromDrive,
              "IOSChooseFromDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIOSSaveToDrive,
-             "IOSSaveToDrive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIOSSaveToPhotos,
-             "IOSSaveToPhotos",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              "IOSDownloadNoUIUpdateInBackground",
@@ -1138,6 +1131,14 @@ bool AreSeparateProfilesForManagedAccountsEnabled() {
     return false;
   }
   return base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts);
+}
+
+BASE_FEATURE(kManagedProfileCreationUpdatedScreen,
+             "ManagedProfileCreationUpdatedScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsManagedProfileCreationUpdatedScreenEnabled() {
+  return base::FeatureList::IsEnabled(kManagedProfileCreationUpdatedScreen);
 }
 
 BASE_FEATURE(kOmahaResyncTimerOnForeground,

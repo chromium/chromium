@@ -541,7 +541,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
   std::unique_ptr<QuickPairMetricsLogger> metrics_logger_;
 };
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShownInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShown_Initial) {
   SimulateDiscoveryUiShown(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -590,7 +590,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShownInitial) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShownSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShown_Subsequent) {
   SimulateDiscoveryUiShown(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -639,7 +639,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiShownSubsequent) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissed_Initial) {
   SimulateDiscoveryUiDismissed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -688,7 +688,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedInitial) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByUserInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByUser_Initial) {
   SimulateDiscoveryUiDismissedByUser(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -737,7 +737,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByUserInitial) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByTimeoutInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByTimeout_Initial) {
   SimulateDiscoveryUiDismissedByTimeout(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -786,7 +786,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByTimeoutInitial) {
             1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissed_Subsequent) {
   SimulateDiscoveryUiDismissed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -835,7 +835,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedSubsequent) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByUserSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiDismissedByUser_Subsequent) {
   SimulateDiscoveryUiDismissedByUser(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -934,7 +934,7 @@ TEST_F(QuickPairMetricsLoggerTest,
             1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressedInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Initial) {
   AssertUserPairedWithFastPairPref(false);
   SimulateDiscoveryUiConnectPressed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
@@ -985,7 +985,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressedInitial) {
   AssertUserPairedWithFastPairPref(true);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressedSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Subsequent) {
   AssertUserPairedWithFastPairPref(false);
   SimulateDiscoveryUiConnectPressed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
@@ -1036,7 +1036,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressedSubsequent) {
   AssertUserPairedWithFastPairPref(true);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairingFailedInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairingFailed_Initial) {
   SimulatePairingFailed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1085,7 +1085,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingFailedInitial) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairingFailedSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairingFailed_Subsequent) {
   SimulatePairingFailed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1134,7 +1134,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingFailedSubsequent) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceededInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceeded_Initial) {
   SimulatePairingSucceeded(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1183,7 +1183,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceededInitial) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceededSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceeded_Subsequent) {
   SimulatePairingSucceeded(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1232,7 +1232,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairingSucceededSubsequent) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnelInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnel_Initial) {
   SimulatePairingFlow(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
 
@@ -1267,7 +1267,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnelInitial) {
             1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnelRetroactive) {
+TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnel_Retroactive) {
   SimulatePairingFlow(Protocol::kFastPairRetroactive);
   base::RunLoop().RunUntilIdle();
 
@@ -1303,7 +1303,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnelRetroactive) {
             1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnelSubseqent) {
+TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnel_Subseqent) {
   SimulatePairingFlow(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
 
@@ -1334,7 +1334,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogSuccessFunnelSubseqent) {
             1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissed_Initial) {
   SimulateErrorUiDismissed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1383,7 +1383,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedInitial) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedByUserInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedByUser_Initial) {
   SimulateErrorUiDismissedByUser(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1432,7 +1432,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedByUserInitial) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissed_Subsequent) {
   SimulateErrorUiDismissed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1481,7 +1481,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedSubsequent) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedByUserSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedByUser_Subsequent) {
   SimulateErrorUiDismissedByUser(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1530,7 +1530,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiDismissedByUserSubsequent) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressedInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressed_Initial) {
   SimulateErrorUiSettingsPressed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1579,7 +1579,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressedInitial) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressedSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressed_Subsequent) {
   SimulateErrorUiSettingsPressed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1628,7 +1628,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressedSubsequent) {
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairTimeInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairTime_Initial) {
   SimulateDiscoveryUiConnectPressed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   histogram_tester().ExpectTotalCount(kFastPairPairTimeMetricInitial, 0);
@@ -1638,7 +1638,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairTimeInitial) {
   histogram_tester().ExpectTotalCount(kFastPairPairTimeMetricInitial, 1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairTimeSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairTime_Subsequent) {
   SimulateDiscoveryUiConnectPressed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   histogram_tester().ExpectTotalCount(kFastPairPairTimeMetricSubsequent, 0);
@@ -2164,7 +2164,7 @@ TEST_F(QuickPairMetricsLoggerTest,
             0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, DevicedPairedFastPair) {
+TEST_F(QuickPairMetricsLoggerTest, DevicedPaired_FastPair) {
   EXPECT_EQ(histogram_tester().GetBucketCount(kPairingMethodMetric,
                                               PairingMethod::kFastPair),
             0);
@@ -2216,7 +2216,7 @@ TEST_F(QuickPairMetricsLoggerTest, DevicePaired) {
             1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyInitial) {
+TEST_F(QuickPairMetricsLoggerTest, WriteAccountKey_Initial) {
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
   histogram_tester().ExpectTotalCount(
       kFastPairAccountKeyWriteResultMetricInitial, 0);
@@ -2238,7 +2238,7 @@ TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyInitial) {
       kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyRetroactive) {
+TEST_F(QuickPairMetricsLoggerTest, WriteAccountKey_Retroactive) {
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
   histogram_tester().ExpectTotalCount(
       kFastPairAccountKeyWriteResultMetricInitial, 0);
@@ -2260,7 +2260,7 @@ TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyRetroactive) {
       kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailureRetroactive) {
+TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailure_Retroactive) {
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
   histogram_tester().ExpectTotalCount(
       kFastPairAccountKeyWriteResultMetricInitial, 0);
@@ -2282,7 +2282,7 @@ TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailureRetroactive) {
       kFastPairAccountKeyWriteFailureMetricRetroactive, 1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailureInitial) {
+TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailure_Initial) {
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
   histogram_tester().ExpectTotalCount(
       kFastPairAccountKeyWriteResultMetricInitial, 0);
@@ -2304,7 +2304,7 @@ TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailureInitial) {
       kFastPairAccountKeyWriteFailureMetricRetroactive, 0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairFailureInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairFailure_Initial) {
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
@@ -2322,7 +2322,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairFailureInitial) {
   histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairSuccessInitial) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairSuccess_Initial) {
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
@@ -2340,7 +2340,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairSuccessInitial) {
   histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairFailureSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairFailure_Subsequent) {
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
@@ -2358,7 +2358,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairFailureSubsequent) {
   histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairSuccessSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairSuccess_Subsequent) {
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
@@ -2376,7 +2376,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairSuccessSubsequent) {
   histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairFailureRetroactive) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairFailure_Retroactive) {
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
@@ -2394,7 +2394,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairFailureRetroactive) {
   histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, LogPairSuccessRetroactive) {
+TEST_F(QuickPairMetricsLoggerTest, LogPairSuccess_Retroactive) {
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
   histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
@@ -2412,7 +2412,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogPairSuccessRetroactive) {
   histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, DiscoveryLearnMorePressedInitial) {
+TEST_F(QuickPairMetricsLoggerTest, DiscoveryLearnMorePressed_Initial) {
   SimulateDiscoveryUiLearnMorePressed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
 
@@ -2524,7 +2524,7 @@ TEST_F(QuickPairMetricsLoggerTest,
             1);
 }
 
-TEST_F(QuickPairMetricsLoggerTest, DiscoveryLearnMorePressedSubsequent) {
+TEST_F(QuickPairMetricsLoggerTest, DiscoveryLearnMorePressed_Subsequent) {
   SimulateDiscoveryUiLearnMorePressed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
 

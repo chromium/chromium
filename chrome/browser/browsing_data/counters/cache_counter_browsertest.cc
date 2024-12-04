@@ -41,7 +41,7 @@ namespace {
 
 class CacheCounterTest : public InProcessBrowserTest {
  public:
-  CacheCounterTest() {}
+  CacheCounterTest() = default;
 
   void SetUpOnMainThread() override {
     run_loop_ = std::make_unique<base::RunLoop>();

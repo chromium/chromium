@@ -46,10 +46,7 @@ public class ToolbarIphControllerUnitTest {
 
     @Test
     public void testShowPriceDropIph() {
-        int y_inset =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.price_drop_spotted_iph_ntp_tabswitcher_y_inset);
+        int y_inset = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_iph_y_inset);
         mToolbarIphController.showPriceDropIph(mAnchorView);
 
         HighlightParams expectedParams = new HighlightParams(HighlightShape.CIRCLE);

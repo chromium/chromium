@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -139,10 +134,8 @@ WebAppSettingsUI::WebAppSettingsUI(content::WebUI* web_ui)
   AddAppManagementStrings(html_source);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kAppSettingsResources, kAppSettingsResourcesSize),
-      IDR_APP_SETTINGS_WEB_APP_SETTINGS_HTML);
+  webui::SetupWebUIDataSource(html_source, kAppSettingsResources,
+                              IDR_APP_SETTINGS_WEB_APP_SETTINGS_HTML);
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   install_manager_observation_.Observe(&provider->install_manager());

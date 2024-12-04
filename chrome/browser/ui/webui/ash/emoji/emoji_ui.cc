@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 
 #include <iostream>
@@ -117,15 +112,13 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
       chrome::kChromeUIEmojiPickerHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
-      IDR_EMOJI_PICKER_INDEX_HTML);
-  source->AddResourcePaths(base::make_span(kEmoji, kEmojiSize));
+  webui::SetupWebUIDataSource(source, kEmojiPickerResources,
+                              IDR_EMOJI_PICKER_INDEX_HTML);
+  source->AddResourcePaths(kEmoji);
 
   // Add seal extra resources.
   if (SealUtils::ShouldEnable()) {
-    source->AddResourcePaths(
-        base::make_span(kSealResources, kSealResourcesSize));
+    source->AddResourcePaths(kSealResources);
   }
 
   // Some web components defined in seal extra resources are based on lit; so

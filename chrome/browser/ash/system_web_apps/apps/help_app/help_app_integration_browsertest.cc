@@ -914,12 +914,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   content::TestNavigationObserver navigation_observer(test_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  std::string dialog_name =
-      base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)
-          ? "WebAppSimpleInstallDialog"
-          : "PWAConfirmationBubbleView";
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey(),
-                                       dialog_name);
+                                       "WebAppSimpleInstallDialog");
 
   // Script that tells the Help App to call the
   // OpenUrlInBrowserAndTriggerInstallDialog Mojo function.
@@ -1228,28 +1224,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                    }));
   search_run_loop.Run();
 #endif
-}
-
-// TODO(crbug.com/381127101): Re-enable this test
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
-                       DISABLED_HelpAppV2CanOpenAlmanacScheme) {
-  WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
-
-  base::test::TestFuture<apps::PackageId> future;
-  apps::AppInstallServiceAsh::InstallAppCallbackForTesting() =
-      future.GetCallback();
-  constexpr char kScript[] = R"(
-    (() => {
-      location.href = 'almanac://install-app?package_id=web:test';
-      return true;
-    })();
-  )";
-  EXPECT_EQ(true,
-            content::EvalJs(
-                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
-  EXPECT_EQ(future.Get<apps::PackageId>(),
-            apps::PackageId::FromString("web:test"));
 }
 
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2CanOpenCrosAppsScheme) {

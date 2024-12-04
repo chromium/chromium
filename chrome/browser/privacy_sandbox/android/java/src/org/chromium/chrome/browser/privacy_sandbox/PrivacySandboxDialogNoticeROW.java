@@ -11,9 +11,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import androidx.annotation.StringRes;
+
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
+import org.chromium.ui.widget.TextViewWithLeading;
 
 /** Dialog in the form of a notice shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogNoticeROW extends ChromeDialog
@@ -28,6 +32,8 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
     private @SurfaceType int mSurfaceType;
+    private @StringRes int mLearnMoreBullet2StringRes =
+            R.string.privacy_sandbox_m1_notice_row_learn_more_bullet_2;
 
     public PrivacySandboxDialogNoticeROW(
             Context context,
@@ -74,6 +80,58 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
                                         });
                             }
                         });
+        handleAdsApiUxEnhancements();
+    }
+
+    private void handleAdsApiUxEnhancements() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
+            return;
+        }
+        mContentView
+                .findViewById(R.id.privacy_sandbox_m1_notice_row_description_2)
+                .setVisibility(View.GONE);
+        mContentView
+                .findViewById(R.id.privacy_sandbox_m1_notice_row_description_2_v2)
+                .setVisibility(View.VISIBLE);
+        ((TextViewWithLeading)
+                        mContentView.findViewById(R.id.privacy_sandbox_m1_notice_row_description_4))
+                .setText(getContext().getString(R.string.privacy_sandbox_m1_notice_row_last_text));
+        mLearnMoreBullet2StringRes = R.string.privacy_sandbox_m1_notice_row_learn_more_bullet_2_v2;
+    }
+
+    private void handleAdsApiUxEnhancementsDropdown() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
+            return;
+        }
+        ((TextViewWithLeading)
+                        mContentView.findViewById(
+                                R.id.privacy_sandbox_m1_notice_row_learn_more_description_2))
+                .setText(
+                        getContext()
+                                .getString(
+                                        R.string
+                                                .privacy_sandbox_m1_notice_row_learn_more_description_2_v2));
+        mContentView
+                .findViewById(R.id.privacy_sandbox_m1_notice_row_learn_more_description_5)
+                .setVisibility(View.GONE);
+        mContentView
+                .findViewById(R.id.privacy_sandbox_m1_notice_row_learn_more_heading_3)
+                .setVisibility(View.VISIBLE);
+        mContentView
+                .findViewById(
+                        R.id.privacy_sandbox_m1_notice_row_learn_more_description_5_v2_no_link)
+                .setVisibility(View.VISIBLE);
+        mContentView
+                .findViewById(R.id.privacy_sandbox_m1_notice_row_learn_more_heading_1)
+                .setVisibility(View.GONE);
+        mContentView
+                .findViewById(R.id.privacy_sandbox_m1_notice_row_learn_more_description_android)
+                .setVisibility(View.GONE);
+        mContentView
+                .findViewById(R.id.privacy_sandbox_m1_notice_row_learn_more_description_android_v2)
+                .setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -134,12 +192,13 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
                         getContext(),
                         mContentView,
                         R.id.privacy_sandbox_m1_notice_row_learn_more_bullet_two,
-                        R.string.privacy_sandbox_m1_notice_row_learn_more_bullet_2);
+                        mLearnMoreBullet2StringRes);
 
                 mScrollView.post(
                         () -> {
                             mScrollView.scrollTo(0, mDropdownElement.getTop());
                         });
+                handleAdsApiUxEnhancementsDropdown();
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());

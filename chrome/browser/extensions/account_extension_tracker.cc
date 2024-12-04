@@ -221,6 +221,28 @@ void AccountExtensionTracker::OnSignInInitiatedFromExtensionPromo(
       kMaxSigninFromExtensionBubbleDelay);
 }
 
+bool AccountExtensionTracker::CanUploadAsAccountExtension(
+    const Extension& extension) const {
+  // Uploading extensions as "account extensions" aka extensions syncing to the
+  // current signed in user, is only enabled if the user is signed in and
+  // syncing extensions in transport mode.
+  if (!sync_util::IsSyncingExtensionsInTransportMode(profile_)) {
+    return false;
+  }
+
+  // An extension is eligible to be uploaded if it's syncable and is a local
+  // extension (i.e. it's not currently syncing).
+  return GetAccountExtensionType(extension.id()) ==
+             AccountExtensionType::kLocal &&
+         sync_util::ShouldSync(profile_, &extension);
+}
+
+void AccountExtensionTracker::SetAccountExtensionTypeForTesting(
+    const ExtensionId& extension_id,
+    AccountExtensionType type) {
+  SetAccountExtensionType(extension_id, type);
+}
+
 void AccountExtensionTracker::SetAccountExtensionType(
     const ExtensionId& extension_id,
     AccountExtensionTracker::AccountExtensionType type) {

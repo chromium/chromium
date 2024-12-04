@@ -17,15 +17,23 @@ export interface SizeOption {
   size: number;
 }
 
+// LINT.IfChange(PenAndEraserSizes)
 export const ERASER_SIZES: SizeOption[] = [
-  // LINT.IfChange(EraserSizes)
   {icon: 'eraser-size-1', label: 'ink2BrushSizeExtraThin', size: 1},
   {icon: 'eraser-size-2', label: 'ink2BrushSizeThin', size: 2},
   {icon: 'eraser-size-3', label: 'ink2BrushSizeMedium', size: 3},
   {icon: 'eraser-size-4', label: 'ink2BrushSizeThick', size: 6},
   {icon: 'eraser-size-5', label: 'ink2BrushSizeExtraThick', size: 8},
-  // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:EraserSizes)
 ];
+
+export const PEN_SIZES: SizeOption[] = [
+  {icon: 'pen-size-1', label: 'ink2BrushSizeExtraThin', size: 1},
+  {icon: 'pen-size-2', label: 'ink2BrushSizeThin', size: 2},
+  {icon: 'pen-size-3', label: 'ink2BrushSizeMedium', size: 3},
+  {icon: 'pen-size-4', label: 'ink2BrushSizeThick', size: 6},
+  {icon: 'pen-size-5', label: 'ink2BrushSizeExtraThick', size: 8},
+];
+// LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:PenAndEraserSizes)
 
 export const HIGHLIGHTER_SIZES: SizeOption[] = [
   // LINT.IfChange(HighlighterSizes)
@@ -35,16 +43,6 @@ export const HIGHLIGHTER_SIZES: SizeOption[] = [
   {icon: 'highlighter-size-4', label: 'ink2BrushSizeThick', size: 12},
   {icon: 'highlighter-size-5', label: 'ink2BrushSizeExtraThick', size: 16},
   // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:HighlighterSizes)
-];
-
-export const PEN_SIZES: SizeOption[] = [
-  // LINT.IfChange(PenSizes)
-  {icon: 'pen-size-1', label: 'ink2BrushSizeExtraThin', size: 1},
-  {icon: 'pen-size-2', label: 'ink2BrushSizeThin', size: 2},
-  {icon: 'pen-size-3', label: 'ink2BrushSizeMedium', size: 3},
-  {icon: 'pen-size-4', label: 'ink2BrushSizeThick', size: 6},
-  {icon: 'pen-size-5', label: 'ink2BrushSizeExtraThick', size: 8},
-  // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:PenSizes)
 ];
 
 const InkSizeSelectorElementBase = I18nMixinLit(CrLitElement);

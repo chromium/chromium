@@ -367,7 +367,7 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
 
     guard.Release();
     result = MakeGarbageCollected<cssvalue::CSSStepsTimingFunctionValue>(
-        steps->GetIntValue(), position);
+        steps, position);
   }
   stream.ConsumeWhitespace();
   return result;
@@ -1278,7 +1278,7 @@ CSSPrimitiveValue* ConsumeNumberOrPercent(
           ConsumePercent(stream, context, value_stream)) {
     if (value->IsNumericLiteralValue()) {
       return CSSNumericLiteralValue::Create(
-          value->GetDoubleValue() / 100.0,
+          To<CSSNumericLiteralValue>(value)->ClampedDoubleValue() / 100.0,
           CSSPrimitiveValue::UnitType::kNumber);
     } else {
       // Just return it directly; when the caller calls ComputeNumber(),
@@ -1353,7 +1353,7 @@ bool IsNonZeroUserUnitsValue(const CSSPrimitiveValue* value) {
   if (const auto* numeric_literal = DynamicTo<CSSNumericLiteralValue>(value)) {
     return numeric_literal->GetType() ==
                CSSPrimitiveValue::UnitType::kUserUnits &&
-           value->GetDoubleValue() != 0;
+           numeric_literal->ClampedDoubleValue() != 0;
   }
   const auto& math_value = To<CSSMathFunctionValue>(*value);
   return math_value.Category() == kCalcNumber && math_value.DoubleValue() != 0;
@@ -6004,21 +6004,17 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenStream& stream,
   is_auto_repeat = IdentMatches<CSSValueID::kAutoFill, CSSValueID::kAutoFit>(
       stream.Peek().Id());
   CSSValueList* repeated_values;
-  // The number of repetitions for <auto-repeat> is not important at parsing
-  // level because it will be computed later, let's set it to 1.
-  wtf_size_t repetitions = 1;
+  CSSPrimitiveValue* repetition = nullptr;
 
   if (is_auto_repeat) {
     repeated_values = MakeGarbageCollected<cssvalue::CSSGridAutoRepeatValue>(
         stream.ConsumeIncludingWhitespace().Id());
   } else {
     // TODO(rob.buis): a consumeIntegerRaw would be more efficient here.
-    CSSPrimitiveValue* repetition = ConsumePositiveInteger(stream, context);
+    repetition = ConsumePositiveInteger(stream, context);
     if (!repetition) {
       return false;
     }
-    repetitions =
-        ClampTo<wtf_size_t>(repetition->GetDoubleValue(), 0, kGridMaxTracks);
     repeated_values = CSSValueList::CreateSpaceSeparated();
   }
 
@@ -6064,12 +6060,12 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenStream& stream,
   } else {
     // We clamp the repetitions to a multiple of the repeat() track list's size,
     // while staying below the max grid size.
-    repetitions =
-        std::min(repetitions, kGridMaxTracks / (is_subgrid_track_list
-                                                    ? number_of_line_name_sets
-                                                    : number_of_tracks));
+    wtf_size_t extra_clamp =
+        kGridMaxTracks /
+        (is_subgrid_track_list ? number_of_line_name_sets : number_of_tracks);
     auto* integer_repeated_values =
-        MakeGarbageCollected<cssvalue::CSSGridIntegerRepeatValue>(repetitions);
+        MakeGarbageCollected<cssvalue::CSSGridIntegerRepeatValue>(repetition,
+                                                                  extra_clamp);
     for (wtf_size_t i = 0; i < repeated_values->length(); ++i) {
       integer_repeated_values->Append(repeated_values->Item(i));
     }

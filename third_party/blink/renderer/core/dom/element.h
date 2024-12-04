@@ -1027,6 +1027,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
   bool IsMouseFocusable(
       UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
+  // If the element might be a keyboard-focusable scroller, then it will call
+  // IsKeyboardFocusableScroller which can be slow. Avoid calling this function
+  // outside of focus sequential navigation.
   virtual bool IsKeyboardFocusable(
       UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
 
@@ -1401,17 +1404,18 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void SetPseudoElementStylesChangeCounters(bool value);
 
-  // Create per column (fragmentainer) ::column pseudo element during layout,
-  // and add it to the end of the list of generated column pseudo elements.
-  // Also, if ::column::scroll-marker is specified, it creates one
-  // ::scroll-marker per ::column pseudo element. ClearColumnPseudoElements()
-  // needs to be called before each layout pass that generate these pseudo
-  // elements.
-  ColumnPseudoElement* CreateColumnPseudoElementIfNeeded(
+  // Get (or create if it doesn't already exist) a per-column (fragmentainer)
+  // ::column pseudo-element for the given column index.
+  ///
+  // Also, if ::column::scroll-marker is specified, create one ::scroll-marker
+  // per ::column pseudo-element, if needed, and if it doesn't already exist.
+  ColumnPseudoElement* GetOrCreateColumnPseudoElementIfNeeded(
       wtf_size_t index,
       const PhysicalRect& column_rect);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
-  void ClearColumnPseudoElements();
+
+  // Clear all ::column pseudo-elements, except for the leading `to_keep` ones.
+  void ClearColumnPseudoElements(wtf_size_t to_keep = 0);
 
   // True if a scroller has not been explicitly scrolled by a user or by a
   // programmatic scroll. Indicates that we should use the CSS scroll-start
@@ -1635,11 +1639,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Mark for style invalidation/recalc for :lang() selectors to pick up the
   // changes.
-  void LangAttributeChanged();
+  virtual void LangAttributeChanged();
 
   TextDirection ParentDirectionality() const;
   bool RecalcSelfOrAncestorHasDirAuto();
   std::optional<TextDirection> ResolveAutoDirectionality() const;
+
+  void AttachPseudoElement(PseudoId, AttachContext&);
+  void DetachPseudoElement(PseudoId, bool performing_reattach);
 
  private:
   friend class AXObject;
@@ -1741,6 +1748,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void MarkNonSlottedHostChildrenForStyleRecalc();
 
   void RebuildPseudoElementLayoutTree(PseudoId, WhitespaceAttacher&);
+  void RebuildColumnLayoutTrees(WhitespaceAttacher&);
   void RebuildFirstLetterLayoutTree();
   void RebuildShadowRootLayoutTree(WhitespaceAttacher&);
   inline void CheckForEmptyStyleChange(const Node* node_before_change,
@@ -1748,10 +1756,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void UpdateColumnPseudoElements(const StyleRecalcChange,
                                   const StyleRecalcContext&);
-  PseudoElement* UpdateScrollMarkerGroupPseudoElement(
-      PseudoId pseudo_id,
-      const StyleRecalcChange,
-      const StyleRecalcContext&);
+  PseudoElement* UpdateLayoutSiblingPseudoElement(PseudoId pseudo_id,
+                                                  const StyleRecalcChange,
+                                                  const StyleRecalcContext&);
   PseudoElement* UpdatePseudoElement(
       PseudoId,
       const StyleRecalcChange,
@@ -1779,24 +1786,26 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       PseudoId,
       const StyleRecalcContext&,
       const AtomicString& view_transition_name = g_null_atom);
-  void AttachPseudoElement(PseudoId, AttachContext&);
-  void DetachPseudoElement(PseudoId, bool performing_reattach);
 
   void AttachPrecedingPseudoElements(AttachContext& context) {
+    AttachPseudoElement(kPseudoIdScrollMarker, context);
     AttachPseudoElement(kPseudoIdMarker, context);
     AttachPseudoElement(kPseudoIdCheckMark, context);
     AttachPseudoElement(kPseudoIdBefore, context);
   }
 
   void AttachSucceedingPseudoElements(AttachContext& context) {
-    AttachPseudoElement(kPseudoIdSelectArrow, context);
+    AttachPseudoElement(kPseudoIdPickerIcon, context);
     AttachPseudoElement(kPseudoIdAfter, context);
     AttachPseudoElement(kPseudoIdBackdrop, context);
     UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);
     AttachPseudoElement(kPseudoIdFirstLetter, context);
   }
 
+  void AttachColumnPseudoElements(AttachContext& context);
+
   void DetachPrecedingPseudoElements(bool performing_reattach) {
+    DetachPseudoElement(kPseudoIdScrollMarker, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollMarkerGroupBefore, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollUpButton, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollDownButton, performing_reattach);
@@ -1808,12 +1817,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   void DetachSucceedingPseudoElements(bool performing_reattach) {
-    DetachPseudoElement(kPseudoIdSelectArrow, performing_reattach);
+    DetachPseudoElement(kPseudoIdPickerIcon, performing_reattach);
     DetachPseudoElement(kPseudoIdAfter, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollMarkerGroupAfter, performing_reattach);
     DetachPseudoElement(kPseudoIdBackdrop, performing_reattach);
     DetachPseudoElement(kPseudoIdFirstLetter, performing_reattach);
   }
+
+  void DetachColumnPseudoElements(bool performing_reattach);
 
   void RecomputeDirectionFromParent();
 

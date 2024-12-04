@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_MODEL_H_
 
 #include "base/observer_list.h"
+#include "base/types/pass_key.h"
 
 namespace page_actions {
 
+class PageActionController;
 class PageActionModelObserver;
 
 // PageActionModel represents the page action's state, scoped to a single tab.
@@ -22,9 +24,7 @@ class PageActionModel {
   void AddObserver(PageActionModelObserver* observer);
   void RemoveObserver(PageActionModelObserver* observer);
 
-  // TODO(crbug.com/376285151): Add base::PassKey protection to limit access to
-  // the controller.
-  void SetShowRequested(bool requested);
+  void SetShowRequested(base::PassKey<PageActionController>, bool requested);
 
   bool show_requested() const { return show_requested_; }
 

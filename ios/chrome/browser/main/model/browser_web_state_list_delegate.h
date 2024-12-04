@@ -5,7 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_WEB_STATE_LIST_DELEGATE_H_
 #define IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_WEB_STATE_LIST_DELEGATE_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
+
+class ProfileIOS;
 
 // WebStateList delegate used by Browser implementation.
 class BrowserWebStateListDelegate : public WebStateListDelegate {
@@ -23,12 +26,11 @@ class BrowserWebStateListDelegate : public WebStateListDelegate {
     kForceRealization,
   };
 
-  // Creates a BrowserWebStateListDelegate with default policies.
-  BrowserWebStateListDelegate();
-
   // Creates a BrowserWebStateListDelegate with specific policies.
-  BrowserWebStateListDelegate(InsertionPolicy insertion_policy,
-                              ActivationPolicy activation_policy);
+  explicit BrowserWebStateListDelegate(
+      ProfileIOS* profile,
+      InsertionPolicy insertion_policy = InsertionPolicy::kAttachTabHelpers,
+      ActivationPolicy activation_policy = ActivationPolicy::kForceRealization);
 
   ~BrowserWebStateListDelegate() override;
 
@@ -36,7 +38,13 @@ class BrowserWebStateListDelegate : public WebStateListDelegate {
   void WillAddWebState(web::WebState* web_state) override;
   void WillActivateWebState(web::WebState* web_state) override;
 
+  // Returns the profile used for this instance.
+  ProfileIOS* profile() { return profile_.get(); }
+
  private:
+  // Profile that should be used for all WebState in that WebStateList.
+  raw_ptr<ProfileIOS> const profile_;
+
   // Controls what to do when a WebState is inserted.
   const InsertionPolicy insertion_policy_;
 

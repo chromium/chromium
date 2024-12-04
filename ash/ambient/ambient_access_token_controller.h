@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/backoff_entry.h"
 
 namespace ash {
@@ -23,7 +24,7 @@ namespace ash {
 class ASH_EXPORT AmbientAccessTokenController {
  public:
   using AccessTokenCallback =
-      base::OnceCallback<void(const std::string& gaia_id,
+      base::OnceCallback<void(const GaiaId& gaia_id,
                               const std::string& access_token)>;
 
   AmbientAccessTokenController();
@@ -48,7 +49,7 @@ class ASH_EXPORT AmbientAccessTokenController {
   friend class AmbientAshTestBase;
 
   void RefreshAccessToken();
-  void AccessTokenRefreshed(const std::string& gaia_id,
+  void AccessTokenRefreshed(const GaiaId& gaia_id,
                             const std::string& access_token,
                             const base::Time& expiration_time);
   void RetryRefreshAccessToken();
@@ -59,7 +60,7 @@ class ASH_EXPORT AmbientAccessTokenController {
 
   base::TimeDelta GetTimeUntilReleaseForTesting();
 
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::string access_token_;
 
   // The expiration time of the |access_token_|.

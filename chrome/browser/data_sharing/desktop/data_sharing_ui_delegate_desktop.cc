@@ -27,7 +27,7 @@ void DataSharingUIDelegateDesktop::HandleShareURLIntercepted(
       DataSharingServiceFactory::GetForProfile(profile_);
   const data_sharing::DataSharingService::ParseUrlResult token =
       service->ParseDataSharingUrl(url);
-  if (!token->IsValid()) {
+  if (!token.has_value() || !token->IsValid()) {
     // TODO(crbug.com/371068565): show an error to tell users what happened.
     return;
   }

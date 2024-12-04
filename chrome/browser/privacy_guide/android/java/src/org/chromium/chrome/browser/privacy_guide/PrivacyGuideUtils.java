@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -33,10 +32,6 @@ class PrivacyGuideUtils {
     static boolean isHistorySyncEnabled(Profile profile) {
         Set<Integer> syncTypes = SyncServiceFactory.getForProfile(profile).getSelectedTypes();
 
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            return syncTypes.contains(UserSelectableType.HISTORY);
-        }
         // The toggle represents both History and Tabs.
         // History and Tabs should usually have the same value, but in some
         // cases they may not, e.g. if one of them is disabled by policy. In that

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 
 #include <string>
@@ -350,12 +345,10 @@ void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {
 void CreateAndAddPrintPreviewUISource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIPrintHost);
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize),
-      IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
+  webui::SetupWebUIDataSource(source, kPrintPreviewResources,
+                              IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
   AddPrintPreviewStrings(source);
-  source->AddResourcePaths(base::make_span(kPdfResources, kPdfResourcesSize));
+  source->AddResourcePaths(kPdfResources);
   SetupPrintPreviewPlugin(source);
   AddPrintPreviewFlags(source, profile);
 }

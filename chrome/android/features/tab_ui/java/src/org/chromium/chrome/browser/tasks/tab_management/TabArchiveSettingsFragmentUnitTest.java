@@ -91,6 +91,7 @@ public class TabArchiveSettingsFragmentUnitTest {
                 (TabArchiveTimeDeltaPreference)
                         tabArchiveSettingsFragment.findPreference(
                                 TabArchiveSettingsFragment.INACTIVE_TIMEDELTA_PREF);
+
         assertEquals(
                 "After 7 days",
                 archiveTimeDeltaPreference.getCheckedRadioButtonForTesting().getPrimaryText());
@@ -129,5 +130,32 @@ public class TabArchiveSettingsFragmentUnitTest {
         enableAutoDelete.onClick();
         histogramWatcher.assertExpected();
         assertFalse(mArchiveSettings.isAutoDeleteEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testArchiveTimeDeltaSettings() {
+        mArchiveSettings.setArchiveEnabled(true);
+        mArchiveSettings.setArchiveTimeDeltaDays(7);
+        mArchiveSettings.setAutoDeleteEnabled(false);
+
+        TabArchiveSettingsFragment tabArchiveSettingsFragment = launchFragment();
+
+        // Verify the correct radio button is checked.
+        TabArchiveTimeDeltaPreference archiveTimeDeltaPreference =
+                (TabArchiveTimeDeltaPreference)
+                        tabArchiveSettingsFragment.findPreference(
+                                TabArchiveSettingsFragment.INACTIVE_TIMEDELTA_PREF);
+        assertEquals(
+                "Never", archiveTimeDeltaPreference.getRadioButtonForTesting(0).getPrimaryText());
+        assertEquals(
+                "After 7 days",
+                archiveTimeDeltaPreference.getRadioButtonForTesting(1).getPrimaryText());
+        assertEquals(
+                "After 14 days",
+                archiveTimeDeltaPreference.getRadioButtonForTesting(2).getPrimaryText());
+        assertEquals(
+                "After 21 days",
+                archiveTimeDeltaPreference.getRadioButtonForTesting(3).getPrimaryText());
     }
 }

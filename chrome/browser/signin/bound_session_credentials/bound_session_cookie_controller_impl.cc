@@ -145,7 +145,7 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
       refresh_cookie_fetcher_backoff_(&kBackoffPolicy) {
   CHECK(!bound_session_params.wrapped_key().empty());
   base::span<const uint8_t> wrapped_key =
-      base::as_bytes(base::make_span(bound_session_params.wrapped_key()));
+      base::as_byte_span(bound_session_params.wrapped_key());
   session_binding_helper_ = std::make_unique<SessionBindingHelper>(
       key_service_.get(), wrapped_key, session_id_);
   // Preemptively load the binding key to speed up the generation of binding

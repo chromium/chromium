@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/signin/inline_login_ui.h"
 
 #include <memory>
@@ -124,12 +119,9 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIChromeSigninHost);
 
-  source->AddResourcePaths(
-      base::make_span(kInlineLoginResources, kInlineLoginResourcesSize));
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
-      IDR_INLINE_LOGIN_INLINE_LOGIN_HTML);
+  source->AddResourcePaths(kInlineLoginResources);
+  webui::SetupWebUIDataSource(source, kGaiaAuthHostResources,
+                              IDR_INLINE_LOGIN_INLINE_LOGIN_HTML);
   // TODO(crbug.com/40250068): Remove this when saml_password_attributes.js is
   // made TrustedTypes compliant.
   source->DisableTrustedTypesCSP();
@@ -138,14 +130,10 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       network::mojom::CSPDirectiveName::ConnectSrc, "connect-src *;");
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddResourcePaths(base::make_span(kArcAccountPickerResources,
-                                           kArcAccountPickerResourcesSize));
-  source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
-                                           kGaiaActionButtonsResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kEduCoexistenceResources, kEduCoexistenceResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kSupervisionResources, kSupervisionResourcesSize));
+  source->AddResourcePaths(kArcAccountPickerResources);
+  source->AddResourcePaths(kGaiaActionButtonsResources);
+  source->AddResourcePaths(kEduCoexistenceResources);
+  source->AddResourcePaths(kSupervisionResources);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Only add a filter when runing as test.

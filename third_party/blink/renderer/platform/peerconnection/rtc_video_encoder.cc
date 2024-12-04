@@ -883,8 +883,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   // Fill `webrtc::CodecSpecificInfo.generic_frame_info` to provide more
   // accurate description of used layering.
-  void FillGenericFrameInfo(webrtc::CodecSpecificInfo& info,
-                            const media::BitstreamBufferMetadata& metadata);
+  media::EncoderStatus FillGenericFrameInfo(
+      webrtc::CodecSpecificInfo& info,
+      const media::BitstreamBufferMetadata& metadata);
 
   // This is attached to |gpu_task_runner_|, not the thread class is constructed
   // on.
@@ -1178,7 +1179,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     // |use_native_input_| state. As a result we don't toggle
     // |use_native_input_| flag here for them.
     if (frame_buffer->type() == webrtc::VideoFrameBuffer::Type::kNative) {
-      frame = static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get())
+      frame = static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get())
                   ->getMediaVideoFrame();
       if (frame->storage_type() == media::VideoFrame::STORAGE_UNOWNED_MEMORY) {
         if (use_native_input_) {
@@ -1301,10 +1302,6 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChange(
 
   if (status_ != WEBRTC_VIDEO_CODEC_OK)
     return;
-
-  if (svc_controller_) {
-    svc_controller_->OnRatesUpdated(parameters.bitrate);
-  }
 
   RequestEncodingParametersChangeInternal(parameters, std::nullopt);
 }
@@ -1470,38 +1467,56 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
   scoped_event.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
 }
 
-void RTCVideoEncoder::Impl::FillGenericFrameInfo(
+media::EncoderStatus RTCVideoEncoder::Impl::FillGenericFrameInfo(
     webrtc::CodecSpecificInfo& info,
     const media::BitstreamBufferMetadata& metadata) {
   CHECK(svc_controller_);
-  CHECK(metadata.svc_generic.has_value());
 
-  const media::SVCGenericMetadata& md_generic = metadata.svc_generic.value();
-  // Some codecs, like H.265, may produce output bitstream that does not follow
-  // SVC spec and there is no parsing on the bitstream to get the reference
-  // structure. For them, we don't fill in generic frame info, which will be
-  // used to create dependency descriptor.
-  if (!md_generic.follow_svc_spec &&
-      (!md_generic.reference_flags || !md_generic.refresh_flags)) {
-    return;
-  }
+  auto config = svc_controller_->StreamConfig();
+
+  // For L1T1 we don't care what reference structure the encoder has produced.
+  const bool is_l1t1 =
+      config.num_spatial_layers == 1 && config.num_temporal_layers == 1;
 
   std::vector<webrtc::ScalableVideoController::LayerFrameConfig> layer_frames =
       svc_controller_->NextFrameConfig(metadata.key_frame);
-  CHECK_EQ(layer_frames.size(), 1ull /*num_of_spatial_layers*/);
-  CHECK_EQ(layer_frames[0].TemporalId(), md_generic.temporal_idx);
+
+  DCHECK_EQ(config.num_spatial_layers, 1);
+  if (layer_frames.size() != 1ull /*num_of_spatial_layers*/) {
+    return {media::EncoderStatus::Codes::kEncoderFailedEncode,
+            "Invalid number of layer frames: " +
+                base::NumberToString(layer_frames.size())};
+  }
 
   webrtc::GenericFrameInfo generic =
       svc_controller_->OnEncodeDone(layer_frames[0]);
 
-  // If VEA doesn't follow the SVC spec, we need to check whether
-  // the reference dependency is allowed.
-  if (!md_generic.follow_svc_spec) {
-    if (*md_generic.refresh_flags >= 1 << webrtc::kMaxEncoderBuffers) {
-      DLOG(ERROR) << "Invalid refreshed encode buffer flags: "
-                  << *md_generic.refresh_flags;
-      return;
+  // VEA can skip svc_generic only for L1T1.
+  CHECK(metadata.svc_generic.has_value() || is_l1t1);
+
+  if (!is_l1t1 && !metadata.svc_generic->follow_svc_spec) {
+    const media::SVCGenericMetadata& md_generic = metadata.svc_generic.value();
+    // Some codecs, like H.265, may produce output bitstream that does not
+    // follow SVC spec and there is no parsing on the bitstream to get the
+    // reference structure.
+    if (!md_generic.reference_flags || !md_generic.refresh_flags) {
+      return {media::EncoderStatus::Codes::kEncoderFailedEncode,
+              "Missing reference flags or refresh flags"};
     }
+    if (*md_generic.refresh_flags >= (1 << webrtc::kMaxEncoderBuffers)) {
+      return {media::EncoderStatus::Codes::kEncoderFailedEncode,
+              "Invalid refreshed encode buffer flags: " +
+                  base::NumberToString(*md_generic.refresh_flags)};
+    }
+
+    if (layer_frames[0].TemporalId() != md_generic.temporal_idx) {
+      return {media::EncoderStatus::Codes::kEncoderFailedEncode,
+              "Invalid temporal id: " +
+                  base::NumberToString(md_generic.temporal_idx) +
+                  " expected: " +
+                  base::NumberToString(layer_frames[0].TemporalId())};
+    }
+
     generic.encoder_buffers.clear();
     if (encode_buffers_tid_.size() == 0) {
       encode_buffers_tid_.resize(webrtc::kMaxEncoderBuffers);
@@ -1510,14 +1525,15 @@ void RTCVideoEncoder::Impl::FillGenericFrameInfo(
     for (int i = 0; i < webrtc::kMaxEncoderBuffers; i++) {
       bool referenced = !!(*md_generic.reference_flags & (1u << i));
       if (referenced) {
-        if (encode_buffers_tid_[i] > temporal_id) {
-          DLOG(ERROR) << "Refs upper layer frame is not allowed";
-          return;
-        }
-        if (encode_buffers_tid_[i] == temporal_id && temporal_id != 0) {
-          DLOG(ERROR)
-              << "Refs same layer frame is not allowed for non-base layer";
-          return;
+        // If VEA doesn't follow the SVC spec, we need to check whether
+        // the reference dependency is allowed.
+        if (encode_buffers_tid_[i] > temporal_id ||
+            (encode_buffers_tid_[i] == temporal_id && temporal_id != 0)) {
+          return {media::EncoderStatus::Codes::kEncoderFailedEncode,
+                  "Invalid referenced temporal id: " +
+                      base::NumberToString(encode_buffers_tid_[i]) +
+                      " for current frame with tid: " +
+                      base::NumberToString(temporal_id)};
         }
       }
       bool updated = !!(*md_generic.refresh_flags & (1u << i));
@@ -1535,6 +1551,7 @@ void RTCVideoEncoder::Impl::FillGenericFrameInfo(
   if (metadata.key_frame) {
     info.template_structure = svc_controller_->DependencyStructure();
   }
+  return {media::EncoderStatus::Codes::kOk};
 }
 
 void RTCVideoEncoder::Impl::BitstreamBufferReady(
@@ -1870,17 +1887,16 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       // simulate based on the codec specific info.
     } break;
     case webrtc::kVideoCodecAV1:
-      if (metadata.svc_generic) {
-        FillGenericFrameInfo(info, metadata);
-      }
-      break;
 #if BUILDFLAG(RTC_USE_H265)
     case webrtc::kVideoCodecH265:
-      if (metadata.svc_generic) {
-        FillGenericFrameInfo(info, metadata);
+#endif  // BUILDFLAG(RTC_USE_H265)
+      if (svc_controller_) {
+        media::EncoderStatus status = FillGenericFrameInfo(info, metadata);
+        if (!status.is_ok()) {
+          NotifyErrorStatus(status);
+        }
       }
       break;
-#endif  // BUILDFLAG(RTC_USE_H265)
     default:
       break;
   }
@@ -1969,8 +1985,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   bool requires_copy_or_scale =
       frame_buffer->type() != webrtc::VideoFrameBuffer::Type::kNative;
   if (!requires_copy_or_scale) {
-    const WebRtcVideoFrameAdapter* frame_adapter =
-        static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get());
+    const WebRtcVideoFrameAdapterInterface* frame_adapter =
+        static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get());
     frame = frame_adapter->getMediaVideoFrame();
     frame->set_timestamp(timestamp);
     const media::VideoFrame::StorageType storage = frame->storage_type();
@@ -2144,7 +2160,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
         black_frame_, black_frame_->format(), black_frame_->visible_rect(),
         black_frame_->natural_size());
   } else {
-    frame = static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get())
+    frame = static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get())
                 ->getMediaVideoFrame();
   }
   frame->set_timestamp(base::Microseconds(frame_chunk.timestamp_us));

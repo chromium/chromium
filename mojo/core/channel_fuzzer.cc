@@ -89,7 +89,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
   sender->Start();
 
   sender->Write(mojo::core::Channel::Message::CreateRawForFuzzing(
-      base::make_span(data, size)));
+      base::span(data, size)));
 
   // Make sure |receiver| does whatever work it's gonna do in response to our
   // message. By the time the loop goes idle, all parsing will be done.

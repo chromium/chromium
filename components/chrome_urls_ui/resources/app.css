@@ -22,3 +22,7 @@
     --primary-color: var(--google-grey-200);
   }
 }
+
+span.bold {
+  font-weight: 700;
+}

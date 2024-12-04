@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_style.h"
 #include "third_party/blink/renderer/core/editing/editing_style_utilities.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -213,6 +215,13 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
         IsPresentationalHTMLElement(last_closed_->parentNode())) {
       last_closed_ = last_closed_->parentElement();
       should_append_parent_tag = true;
+    }
+    if (RuntimeEnabledFeatures::IncludeTableTagInExtendedSelectionEnabled()) {
+      if (last_closed_ && IsTablePartElement(last_closed_)) {
+        last_closed_ =
+            Traversal<HTMLTableElement>::FirstAncestor(*last_closed_);
+        should_append_parent_tag = true;
+      }
     }
   }
 

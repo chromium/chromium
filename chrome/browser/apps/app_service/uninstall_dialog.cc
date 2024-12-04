@@ -45,8 +45,7 @@ void UninstallDialog::PrepareToShow(IconKey icon_key,
         icon_key.icon_effects | apps::IconEffects::kMdIconStyle);
   }
 
-  if (app_type_ == AppType::kChromeApp ||
-      app_type_ == AppType::kStandaloneBrowserChromeApp) {
+  if (app_type_ == AppType::kChromeApp) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallSource",
                               extensions::UNINSTALL_SOURCE_APP_LIST,
                               extensions::NUM_UNINSTALL_SOURCES);

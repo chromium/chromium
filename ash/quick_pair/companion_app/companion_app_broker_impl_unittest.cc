@@ -97,7 +97,7 @@ class CompanionAppBrokerImplUnitTest : public AshTestBase,
   bool launch_companion_app_notification_shown_ = false;
 };
 
-TEST_F(CompanionAppBrokerImplUnitTest, MaybeShowCompanionAppActionsDisabled) {
+TEST_F(CompanionAppBrokerImplUnitTest, MaybeShowCompanionAppActions_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -136,7 +136,7 @@ TEST_F(CompanionAppBrokerImplUnitTest,
 
 // The companion app is installed, but no browser link is supplied and guests
 // can only access browser link.
-TEST_F(CompanionAppBrokerImplUnitTest, NoCompanionAppNotificationGuest) {
+TEST_F(CompanionAppBrokerImplUnitTest, NoCompanionAppNotification_Guest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kFastPairPwaCompanion,
@@ -159,7 +159,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, NoCompanionAppNotificationGuest) {
 
 // If the app is installed, the user should be pointed directly toward it via
 // the "Launch" notification
-TEST_F(CompanionAppBrokerImplUnitTest, ShowLaunchCompanionAppInstalled) {
+TEST_F(CompanionAppBrokerImplUnitTest, ShowLaunchCompanionApp_Installed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kFastPairPwaCompanion,
@@ -182,7 +182,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, ShowLaunchCompanionAppInstalled) {
 
 // When the app is not yet installed and there is no Play store link, users
 // should be directed to the browser via "Launch" notification.
-TEST_F(CompanionAppBrokerImplUnitTest, ShowLaunchCompanionAppNoPlayStoreLink) {
+TEST_F(CompanionAppBrokerImplUnitTest, ShowLaunchCompanionApp_NoPlayStoreLink) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kFastPairPwaCompanion,
@@ -205,7 +205,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, ShowLaunchCompanionAppNoPlayStoreLink) {
 
 // If no companion app information is provided for this device, the user cannot
 // be directed to the app, so no notification will be shown.
-TEST_F(CompanionAppBrokerImplUnitTest, NoCompanionAppNotificationNoAppInfo) {
+TEST_F(CompanionAppBrokerImplUnitTest, NoCompanionAppNotification_NoAppInfo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kFastPairPwaCompanion,
@@ -228,7 +228,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, NoCompanionAppNotificationNoAppInfo) {
 
 // If the app is not yet installed, the Play store link takes precedence over
 // the browser link.
-TEST_F(CompanionAppBrokerImplUnitTest, ShowInstallCompanionAppPlayStoreLink) {
+TEST_F(CompanionAppBrokerImplUnitTest, ShowInstallCompanionApp_PlayStoreLink) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kFastPairPwaCompanion,
@@ -249,7 +249,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, ShowInstallCompanionAppPlayStoreLink) {
   EXPECT_FALSE(launch_companion_app_notification_shown_);
 }
 
-TEST_F(CompanionAppBrokerImplUnitTest, InstallCompanionAppDisabled) {
+TEST_F(CompanionAppBrokerImplUnitTest, InstallCompanionApp_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -261,7 +261,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, InstallCompanionAppDisabled) {
 
 // TODO(b/290816916): Update with new logic to check device metadata.
 // Ensures calling InstallCompanionApp with feature enabled does not crash.
-TEST_F(CompanionAppBrokerImplUnitTest, InstallCompanionAppEnabled) {
+TEST_F(CompanionAppBrokerImplUnitTest, InstallCompanionApp_Enabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kFastPairPwaCompanion,
@@ -274,7 +274,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, InstallCompanionAppEnabled) {
   companion_app_broker_->InstallCompanionApp(test_device_);
 }
 
-TEST_F(CompanionAppBrokerImplUnitTest, LaunchCompanionAppDisabled) {
+TEST_F(CompanionAppBrokerImplUnitTest, LaunchCompanionApp_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
@@ -286,7 +286,7 @@ TEST_F(CompanionAppBrokerImplUnitTest, LaunchCompanionAppDisabled) {
 
 // TODO(b/290816916): Update with new logic to check device metadata.
 // Ensures calling LaunchCompanionApp with feature enabled does not crash.
-TEST_F(CompanionAppBrokerImplUnitTest, LaunchCompanionAppEnabled) {
+TEST_F(CompanionAppBrokerImplUnitTest, LaunchCompanionApp_Enabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kFastPairPwaCompanion,

@@ -9,7 +9,11 @@ interface AITranslatorFactory {
     RaisesException
   ]
   Promise<AITranslator> create(optional AITranslatorCreateOptions options = {});
-// TODO(crbug.com/322229993): Add capabilities().
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AITranslatorCapabilities> capabilities();
 };
 
 dictionary AITranslatorCreateOptions {

@@ -56,21 +56,21 @@ TEST(RedactorTest, RedactMultipleHitsNotPresentInInput) {
 TEST(RedactorTest, RedactMultipleHits) {
   auto redactor = CreateRedactor({CreateRule("ab")});
   std::string output("ab cab");
-  redactor.Redact("zabq", output);
+  EXPECT_EQ(RedactResult::kContinue, redactor.Redact("zabq", output));
   EXPECT_EQ("ab cab", output);
 }
 
 TEST(RedactorTest, RedactMultipleHitsMultipleRegex) {
   auto redactor = CreateRedactor({CreateRule("ab"), CreateRule("z")});
   std::string output("ab zcab");
-  redactor.Redact(std::string(), output);
+  EXPECT_EQ(RedactResult::kContinue, redactor.Redact(std::string(), output));
   EXPECT_EQ("[##] [#]c[##]", output);
 }
 
 TEST(RedactorTest, RedactNotAtEnd) {
   auto redactor = CreateRedactor({CreateRule("ab")});
   std::string output("abc");
-  redactor.Redact(std::string(), output);
+  EXPECT_EQ(RedactResult::kContinue, redactor.Redact(std::string(), output));
   EXPECT_EQ("[##]c", output);
 }
 
@@ -78,7 +78,7 @@ TEST(RedactorTest, RedactAlways) {
   auto redactor =
       CreateRedactor({CreateRule("ab", RedactBehavior::REDACT_ALWAYS)});
   std::string output("abc");
-  redactor.Redact("ab", output);
+  EXPECT_EQ(RedactResult::kContinue, redactor.Redact("ab", output));
   EXPECT_EQ("[##]c", output);
 }
 

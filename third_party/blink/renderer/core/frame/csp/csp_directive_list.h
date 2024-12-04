@@ -36,7 +36,7 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
     ResourceRequest::RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
     const String& nonce = String(),
-    const IntegrityMetadataSet& hashes = IntegrityMetadataSet(),
+    const IntegrityMetadataSet& integrity_metadata = IntegrityMetadataSet(),
     ParserDisposition parser_disposition = kParserInserted);
 
 CORE_EXPORT

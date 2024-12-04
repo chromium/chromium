@@ -53,9 +53,8 @@ bool PPB_X509Util_Shared::GetCertificateFields(
       PP_X509CERTIFICATE_PRIVATE_SUBJECT_ORGANIZATION_UNIT_NAME,
       base::Value(base::JoinString(subject.organization_unit_names, "\n")));
 
-  fields->SetField(
-      PP_X509CERTIFICATE_PRIVATE_SERIAL_NUMBER,
-      base::Value(base::as_bytes(base::make_span(cert.serial_number()))));
+  fields->SetField(PP_X509CERTIFICATE_PRIVATE_SERIAL_NUMBER,
+                   base::Value(base::as_byte_span(cert.serial_number())));
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_VALIDITY_NOT_BEFORE,
                    base::Value(cert.valid_start().InSecondsFSinceUnixEpoch()));
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_VALIDITY_NOT_AFTER,
@@ -63,7 +62,7 @@ bool PPB_X509Util_Shared::GetCertificateFields(
   std::string_view cert_der =
       net::x509_util::CryptoBufferAsStringPiece(cert.cert_buffer());
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_RAW,
-                   base::Value(base::as_bytes(base::make_span(cert_der))));
+                   base::Value(base::as_byte_span(cert_der)));
   return true;
 }
 
@@ -73,7 +72,7 @@ bool PPB_X509Util_Shared::GetCertificateFields(
     ppapi::PPB_X509Certificate_Fields* fields) {
   scoped_refptr<net::X509Certificate> cert =
       net::X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(der, length)));
+          base::as_bytes(base::span(der, length)));
   if (!cert)
     return false;
   return GetCertificateFields(*cert, fields);

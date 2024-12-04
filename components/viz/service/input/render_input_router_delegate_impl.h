@@ -25,6 +25,8 @@ class TouchEmulator;
 
 namespace viz {
 
+class GpuServiceImpl;
+
 // RenderInputRouterDelegateImpl provides RenderInputRouter access to input
 // handling related information and functionality within Viz.
 class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
@@ -46,6 +48,9 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
         std::unique_ptr<blink::WebCoalescedInputEvent> event) = 0;
     virtual void OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
                                            uint32_t grouping_id) = 0;
+    virtual std::optional<bool> IsDelegatedInkHovering(
+        const FrameSinkId& frame_sink_id) = 0;
+    virtual GpuServiceImpl* GetGpuService() = 0;
   };
 
   RenderInputRouterDelegateImpl(
@@ -58,7 +63,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
 
   // RenderInputRouterDelegate overrides.
   input::RenderWidgetHostViewInput* GetPointerLockView() override;
-  const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() override;
+  std::optional<bool> IsDelegatedInkHovering() override;
   std::unique_ptr<input::RenderInputRouterIterator>
   GetEmbeddedRenderInputRouters() override;
   input::RenderWidgetHostInputEventRouter* GetInputEventRouter() override;

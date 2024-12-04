@@ -1098,16 +1098,16 @@ const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
 }
 
 bool AXTree::Unserialize(const AXTreeUpdate& update) {
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   for (const auto& new_data : update.nodes)
-    DCHECK(new_data.id != kInvalidAXNodeID)
+    CHECK(new_data.id != kInvalidAXNodeID)
         << "AXTreeUpdate contains invalid node: " << update.ToString();
   if (update.tree_data.tree_id != AXTreeIDUnknown() &&
       data_.tree_id != AXTreeIDUnknown()) {
-    DCHECK_EQ(update.tree_data.tree_id, data_.tree_id)
+    CHECK_EQ(update.tree_data.tree_id, data_.tree_id)
         << "Tree id mismatch between tree update and this tree.";
   }
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
 
   event_data_ = std::make_unique<AXEvent>();
   event_data_->event_from = update.event_from;
@@ -1469,14 +1469,14 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   observers_.Notify(&AXTreeObserver::OnAtomicUpdateFinished, this,
                     root_->id() != old_root_id, changes);
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   CheckTreeConsistency(update);
 #endif
 
   return true;
 }
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
   // Return early if no expected node count was supplied.
   if (!update.tree_checks || !update.tree_checks->node_count) {
@@ -1488,7 +1488,7 @@ void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
     return;
   }
 
-  DCHECK(root_);
+  CHECK(root_);
   std::ostringstream msg;
   msg << "After a tree update, there is a tree inconsistency.\n"
       << "\n* Number of ids mapped: " << id_map_.size()
@@ -1497,9 +1497,9 @@ void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
       << "\n* AXTreeUpdate: "
       << TreeToStringHelper(root_, 0, /*verbose*/ false);
 
-  DCHECK(false) << msg.str();
+  NOTREACHED() << msg.str();
 }
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
 
 AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   DCHECK(!GetTreeUpdateInProgressState());

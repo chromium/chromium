@@ -802,18 +802,18 @@ void SessionStorageImpl::OnDatabaseOpened(leveldb::Status status) {
   database_->RunDatabaseTask(
       base::BindOnce([](const DomStorageDatabase& db) {
         ValueAndStatus version;
-        version.status = db.Get(
-            base::make_span(SessionStorageMetadata::kDatabaseVersionBytes),
-            &version.value);
+        version.status =
+            db.Get(base::span(SessionStorageMetadata::kDatabaseVersionBytes),
+                   &version.value);
 
         KeyValuePairsAndStatus namespaces;
         namespaces.status = db.GetPrefixed(
-            base::make_span(SessionStorageMetadata::kNamespacePrefixBytes),
+            base::span(SessionStorageMetadata::kNamespacePrefixBytes),
             &namespaces.key_value_pairs);
 
         ValueAndStatus next_map_id;
         next_map_id.status =
-            db.Get(base::make_span(SessionStorageMetadata::kNextMapIdKeyBytes),
+            db.Get(base::span(SessionStorageMetadata::kNextMapIdKeyBytes),
                    &next_map_id.value);
 
         return std::make_tuple(std::move(version), std::move(namespaces),

@@ -86,7 +86,7 @@ class PluginInfoHostImplShutdownNotifierFactory
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "PluginInfoHostImpl") {}
 
-  ~PluginInfoHostImplShutdownNotifierFactory() override {}
+  ~PluginInfoHostImplShutdownNotifierFactory() override = default;
 };
 
 std::unique_ptr<PluginMetadata> GetPluginMetadata(const WebPluginInfo& plugin) {

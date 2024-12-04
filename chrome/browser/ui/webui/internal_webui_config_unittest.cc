@@ -27,6 +27,8 @@ namespace {
 
 const char kTestWebUIHost[] = "test";
 const char kTestWebUIURL[] = "chrome://test";
+const char kTestUserFacingWebUIHost[] = "test-user-facing";
+const char kTestUserFacingWebUIURL[] = "chrome://test-user-facing";
 
 class TestWebUIController : public content::WebUIController {
  public:
@@ -40,6 +42,20 @@ class TestInternalWebUIConfig
     : public webui::DefaultInternalWebUIConfig<TestWebUIController> {
  public:
   TestInternalWebUIConfig() : DefaultInternalWebUIConfig(kTestWebUIHost) {}
+};
+
+class TestUserFacingWebUIController : public content::WebUIController {
+ public:
+  explicit TestUserFacingWebUIController(content::WebUI* web_ui)
+      : WebUIController(web_ui) {}
+};
+
+class TestUserFacingWebUIConfig
+    : public content::DefaultWebUIConfig<TestUserFacingWebUIController> {
+ public:
+  TestUserFacingWebUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme, kTestUserFacingWebUIHost) {
+  }
 };
 
 }  // namespace
@@ -110,4 +126,14 @@ TEST_F(InternalWebUIConfigFeatureEnabledTest, EnabledWhenPrefSet) {
   EXPECT_NE(webui_controller_pref_enabled, nullptr);
   EXPECT_EQ(u"test title",
             webui_controller_pref_enabled->web_ui()->GetOverriddenTitle());
+}
+
+// Tests the IsInternalWebUI method.
+TEST_F(InternalWebUIConfigFeatureEnabledTest, IsInternalWebUIConfig) {
+  content::ScopedWebUIConfigRegistration registration(
+      std::make_unique<TestInternalWebUIConfig>());
+  EXPECT_TRUE(webui::IsInternalWebUI(GURL(kTestWebUIURL)));
+  content::ScopedWebUIConfigRegistration user_facing_registration(
+      std::make_unique<TestUserFacingWebUIConfig>());
+  EXPECT_FALSE(webui::IsInternalWebUI(GURL(kTestUserFacingWebUIURL)));
 }

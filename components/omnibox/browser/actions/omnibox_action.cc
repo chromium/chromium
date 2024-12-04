@@ -142,6 +142,5 @@ void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
            context.match_selection_timestamp_,
            /*destination_url_entered_without_scheme=*/false,
            /*destination_url_entered_with_http_scheme=*/false, u"",
-           AutocompleteMatch(), AutocompleteMatch(),
-           IDNA2008DeviationCharacter::kNone);
+           AutocompleteMatch(), AutocompleteMatch());
 }

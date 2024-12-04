@@ -23,6 +23,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class PasswordFeatureManagerImplTest : public ::testing::Test {
@@ -39,7 +40,7 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
     account_.email = "account@gmail.com";
-    account_.gaia = "account";
+    account_.gaia = GaiaId("account");
     account_.account_id = CoreAccountId::FromGaiaId(account_.gaia);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

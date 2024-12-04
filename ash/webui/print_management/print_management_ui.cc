@@ -147,9 +147,7 @@ PrintManagementUI::PrintManagementUI(
       "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(html_source);
 
-  const auto resources = base::make_span(kAshPrintManagementResources,
-                                         kAshPrintManagementResourcesSize);
-  SetUpWebUIDataSource(html_source, resources,
+  SetUpWebUIDataSource(html_source, kAshPrintManagementResources,
                        IDR_ASH_PRINT_MANAGEMENT_INDEX_HTML);
 
   html_source->AddResourcePath(

@@ -114,14 +114,14 @@ AutofillDriverFactory& WebViewAutofillClientIOS::GetAutofillDriverFactory() {
   return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
 }
 
-AutofillCrowdsourcingManager*
+AutofillCrowdsourcingManager&
 WebViewAutofillClientIOS::GetCrowdsourcingManager() {
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
     crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
         this, GetChannel(), GetLogManager());
   }
-  return crowdsourcing_manager_.get();
+  return *crowdsourcing_manager_;
 }
 
 PersonalDataManager& WebViewAutofillClientIOS::GetPersonalDataManager() {
@@ -266,10 +266,8 @@ bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() const {
       password_manager::prefs::kCredentialsEnableService);
 }
 
-void WebViewAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::ActionPersistence action_persistence,
-    AutofillTriggerSource trigger_source,
-    bool is_refill) {}
+void WebViewAutofillClientIOS::DidFillForm(AutofillTriggerSource trigger_source,
+                                           bool is_refill) {}
 
 bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);

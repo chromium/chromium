@@ -803,14 +803,6 @@ bool PageSchedulerImpl::IsBackgrounded() const {
          !main_thread_scheduler_->IsVirtualTimeEnabled();
 }
 
-FrameSchedulerImpl* PageSchedulerImpl::SelectFrameForUkmAttribution() {
-  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
-    if (frame_scheduler->GetUkmRecorder())
-      return frame_scheduler;
-  }
-  return nullptr;
-}
-
 bool PageSchedulerImpl::HasWakeUpBudgetPools() const {
   // All WakeUpBudgetPools should be initialized together.
   DCHECK_EQ(!!unimportant_wake_up_budget_pool_, !!hidden_wake_up_budget_pool_);

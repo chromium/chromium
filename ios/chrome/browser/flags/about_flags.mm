@@ -453,48 +453,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation kPriceInsightsVariations[] =
      {"See price history", kPriceInsightsSeePriceHistoryParam,
       std::size(kPriceInsightsSeePriceHistoryParam), nullptr}};
 
-const FeatureEntry::FeatureParam kRichAutocompletionImplementationLabel[] = {
-    {kRichAutocompletionParam, kRichAutocompletionParamLabel}};
-const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationTextField3Chars[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamTextField},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
-const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationTextField4Chars[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamTextField},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "4"}};
-const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationNoAdditionalText3Chars[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
-const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationNoAdditionalText4Chars[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "4"}};
-const FeatureEntry::FeatureVariation
-    kRichAutocompletionImplementationVariations[] = {
-        {"In Label", kRichAutocompletionImplementationLabel,
-         std::size(kRichAutocompletionImplementationLabel), nullptr},
-        {"In TextField, 3 Min Chars",
-         kRichAutocompletionImplementationTextField3Chars,
-         std::size(kRichAutocompletionImplementationTextField3Chars), nullptr},
-        {"In TextField, 4 Min Chars",
-         kRichAutocompletionImplementationTextField4Chars,
-         std::size(kRichAutocompletionImplementationTextField4Chars), nullptr},
-        {"No Additional Text, 3 Min Chars",
-         kRichAutocompletionImplementationNoAdditionalText3Chars,
-         std::size(kRichAutocompletionImplementationNoAdditionalText3Chars),
-         nullptr},
-        {"No Additional Text, 4 Min Chars",
-         kRichAutocompletionImplementationNoAdditionalText4Chars,
-         std::size(kRichAutocompletionImplementationNoAdditionalText4Chars),
-         nullptr},
-};
-
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
     {web::features::kOneTapForMapsConsentModeParamTitle,
      web::features::kOneTapForMapsConsentModeDefaultParam}};
@@ -1416,6 +1374,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-lens-overlay", flag_descriptions::kEnableLensOverlayName,
      flag_descriptions::kEnableLensOverlayDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableLensOverlay)},
+    {"enable-lens-view-finder-unified-experience",
+     flag_descriptions::kEnableLensViewFinderUnifiedExperienceName,
+     flag_descriptions::kEnableLensViewFinderUnifiedExperienceDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableLensViewFinderUnifiedExperience)},
     {"enable-disco-feed-endpoint",
      flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointName,
      flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointDescription,
@@ -1575,10 +1538,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::
              kSegmentationPlatformIosModuleRankerSplitBySurface)},
-    {"default-browser-intents-show-settings",
-     flag_descriptions::kDefaultBrowserIntentsShowSettingsName,
-     flag_descriptions::kDefaultBrowserIntentsShowSettingsDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserIntentsShowSettings)},
     {"ios-password-bottom-sheet-autofocus",
      flag_descriptions::kIOSPasswordBottomSheetAutofocusName,
      flag_descriptions::kIOSPasswordBottomSheetAutofocusDescription,
@@ -1751,9 +1710,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingAsyncRealTimeCheckDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingAsyncRealTimeCheck)},
-    {"enable-save-to-photos", flag_descriptions::kIOSSaveToPhotosName,
-     flag_descriptions::kIOSSaveToPhotosDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSSaveToPhotos)},
     {"enable-save-to-photos-improvements",
      flag_descriptions::kIOSSaveToPhotosImprovementsName,
      flag_descriptions::kIOSSaveToPhotosImprovementsDescription,
@@ -1776,9 +1732,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"privacy-guide-ios", flag_descriptions::kPrivacyGuideIosName,
      flag_descriptions::kPrivacyGuideIosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPrivacyGuideIos)},
-    {"enable-save-to-drive", flag_descriptions::kIOSSaveToDriveName,
-     flag_descriptions::kIOSSaveToDriveDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSSaveToDrive)},
     {"fullscreen-improvement", flag_descriptions::kFullscreenImprovementName,
      flag_descriptions::kFullscreenImprovementDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kFullscreenImprovement)},
@@ -1822,13 +1775,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableiPadFeedGhostCardsName,
      flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableiPadFeedGhostCards)},
-    {"omnibox-rich-autocompletion",
-     flag_descriptions::kOmniboxRichAutocompletionName,
-     flag_descriptions::kOmniboxRichAutocompletionDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kRichAutocompletion,
-         kRichAutocompletionImplementationVariations,
-         "RichAutocompletionImplementationVariations")},
     {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
      flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableLensCamera)},
@@ -2172,6 +2118,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSeparateProfilesForManagedAccountsName,
      flag_descriptions::kSeparateProfilesForManagedAccountsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSeparateProfilesForManagedAccounts)},
+    {"managed-profile-creation-updated-screen",
+     flag_descriptions::kManagedProfileCreationUpdatedScreenName,
+     flag_descriptions::kManagedProfileCreationUpdatedScreenDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kManagedProfileCreationUpdatedScreen)},
     {"tab-resumption-2-reason", flag_descriptions::kTabResumption2ReasonName,
      flag_descriptions::kTabResumption2ReasonDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabResumption2Reason)},

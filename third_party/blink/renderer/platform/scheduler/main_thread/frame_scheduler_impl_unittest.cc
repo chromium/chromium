@@ -188,10 +188,6 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
 
   ~FrameSchedulerDelegateForTesting() override = default;
 
-  ukm::UkmRecorder* GetUkmRecorder() override { return nullptr; }
-
-  ukm::SourceId GetUkmSourceId() override { return ukm::kInvalidSourceId; }
-
   void UpdateTaskTime(base::TimeDelta unreported_task_time) override {
     update_unreported_task_time_calls_++;
   }

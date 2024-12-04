@@ -333,7 +333,7 @@ TEST_F(OngoingProcessViewTest, UpdateWithNotification) {
 }
 
 // Tests that the notification pill button can be updated with a new text.
-TEST_F(OngoingProcessViewTest, UpdateWithNotificationPillButton) {
+TEST_F(OngoingProcessViewTest, UpdateWithNotification_PillButton) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Create a notification with a pill button.
@@ -381,7 +381,7 @@ TEST_F(OngoingProcessViewTest, UpdateWithNotificationPillButton) {
 }
 
 // Tests that the notification buttons can be updated with new icons.
-TEST_F(OngoingProcessViewTest, UpdateWithNotificationIconButtons) {
+TEST_F(OngoingProcessViewTest, UpdateWithNotification_IconButtons) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Create a notification with two icons.

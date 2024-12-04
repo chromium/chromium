@@ -62,7 +62,7 @@ void ShapeResultBloberizer::SetText(const StringView& text,
     cluster_ends_.Shrink(0);
   }
 
-  DVLOG(4) << "   Cluster ends: " << base::make_span(cluster_ends_);
+  DVLOG(4) << "   Cluster ends: " << base::span(cluster_ends_);
 
   cluster_ends_offset_ = from;
   current_text_ = text;
@@ -84,12 +84,11 @@ void ShapeResultBloberizer::CommitText() {
   DCHECK(!current_text_.IsNull());
 
   DVLOG(4) << "   CommitText from: " << from << " to: " << to;
-  DVLOG(4) << "   CommitText glyphs: "
-           << base::make_span(
-                  pending_glyphs_.end() - current_character_indexes_.size(),
-                  pending_glyphs_.end());
+  DVLOG(4)
+      << "   CommitText glyphs: "
+      << base::span(pending_glyphs_).last(current_character_indexes_.size());
   DVLOG(4) << "   CommitText cluster starts: "
-           << base::make_span(current_character_indexes_);
+           << base::span(current_character_indexes_);
 
   wtf_size_t pending_utf8_original_size = pending_utf8_.size();
   wtf_size_t pending_utf8_character_indexes_original_size =
@@ -181,10 +180,9 @@ void ShapeResultBloberizer::CommitPendingRun() {
   if (text_size) {
     DVLOG(4) << "  CommitPendingRun text: \""
              << std::string(pending_utf8_.begin(), pending_utf8_.end()) << "\"";
-    DVLOG(4) << "  CommitPendingRun glyphs: "
-             << base::make_span(pending_glyphs_);
+    DVLOG(4) << "  CommitPendingRun glyphs: " << base::span(pending_glyphs_);
     DVLOG(4) << "  CommitPendingRun indexes: "
-             << base::make_span(pending_utf8_character_indexes_);
+             << base::span(pending_utf8_character_indexes_);
     DCHECK_EQ(pending_utf8_character_indexes_.size(), run_size);
     base::ranges::copy(pending_utf8_character_indexes_, buffer.clusters);
     base::ranges::copy(pending_utf8_, buffer.utf8text);
@@ -404,7 +402,7 @@ class ClusterStarts {
     std::sort(cluster_starts_.begin(), cluster_starts_.end());
     DCHECK_EQ(base::ranges::adjacent_find(cluster_starts_),
               cluster_starts_.end());
-    DVLOG(4) << "  Cluster starts: " << base::make_span(cluster_starts_);
+    DVLOG(4) << "  Cluster starts: " << base::span(cluster_starts_);
     if (!cluster_starts_.empty()) {
       // 'from' may point inside a cluster; the least seen index may be larger.
       DCHECK_LE(from, *cluster_starts_.begin());

@@ -140,13 +140,13 @@ base::span<const int> GetInstallationPathKeys(bool system_install) {
   if (!system_install) {
     // %LOCALAPPDATA% is the only location for per-user installs.
     static constexpr int kPerUserKeys[] = {base::DIR_LOCAL_APP_DATA};
-    return base::make_span(kPerUserKeys);
+    return base::span(kPerUserKeys);
   }
   if (base::win::OSInfo::GetArchitecture() ==
       base::win::OSInfo::X86_ARCHITECTURE) {
     // %PROGRAMFILES% is the only location for 32-bit Windows.
     static constexpr int kPerMachineKeys[] = {base::DIR_PROGRAM_FILES};
-    return base::make_span(kPerMachineKeys);
+    return base::span(kPerMachineKeys);
   }
   // %PROGRAMFILES%, which matches the current binary's bitness, is the default
   // for 64-bit Windows (x64 and arm64). The "opposite" location is the
@@ -159,7 +159,7 @@ base::span<const int> GetInstallationPathKeys(bool system_install) {
       base::DIR_PROGRAM_FILES6432,  // Folder for 64-bit apps.
 #endif
   };
-  return base::make_span(kx64PerMachineKeys);
+  return base::span(kx64PerMachineKeys);
 }
 
 }  // namespace

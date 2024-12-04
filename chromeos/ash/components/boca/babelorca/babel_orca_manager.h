@@ -21,6 +21,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
+class GaiaId;
+
 namespace ash::babelorca {
 class BabelOrcaController;
 class CaptionController;
@@ -67,7 +69,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<babelorca::CaptionController> caption_controller,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
       PrefService* pref_service);
 

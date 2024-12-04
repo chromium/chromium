@@ -14,7 +14,6 @@ inline constexpr char kTestChromeAppId[] = "test_chrome_app_id";
 inline constexpr char kTestPwaAppId[] = "test_pwa_app_id";
 inline constexpr char kTestSwaAppId[] = "test_swa_app_id";
 inline constexpr char kTestArcAppId[] = "test_arc_app_id";
-inline constexpr char kTestLacrosChromeAppId[] = "test_lacros_chrome_app_id";
 inline constexpr char kTestUnsupportedAppId[] = "test_unsupported_app_id";
 inline constexpr char kTestChromeAppId1[] = "test_chrome_app_1";
 inline constexpr char kTestPwaAppId1[] = "test_pwa_app_1";

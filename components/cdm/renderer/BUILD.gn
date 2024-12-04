@@ -36,9 +36,6 @@ static_library("renderer") {
       "widevine_key_system_info.cc",
       "widevine_key_system_info.h",
     ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//third_party/widevine/cdm:headers",
-    ]
+    deps += [ "//third_party/widevine/cdm:headers" ]
   }
 }

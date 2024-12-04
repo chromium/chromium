@@ -38,7 +38,7 @@ constexpr char kTestDeviceAddress[] = "Fake_Address";
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* raw_data, size_t size) {
-  auto data_span = base::make_span(raw_data, size);
+  auto data_span = base::span(raw_data, size);
   auto adapter =
       base::MakeRefCounted<::testing::NiceMock<device::MockBluetoothAdapter>>();
   device::FidoCableDevice test_cable_device(adapter.get(), kTestDeviceAddress);

@@ -8,28 +8,14 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/first_run/ui_bundled/interruptible_chrome_coordinator.h"
 
-class AuthenticationService;
 @class HistorySyncCoordinator;
-class PrefService;
-
+namespace history_sync {
+enum class HistorySyncSkipReason;
+}
 namespace signin_metrics {
 enum class AccessPoint : int;
 }  // namespace signin_metrics
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
-// The reasons why the History Sync Opt-In screen should be skipped instead of
-// being shown to the user. `kNone` indicates that the screen should not be
-// skipped.
-enum class HistorySyncSkipReason {
-  kNone,
-  kNotSignedIn,
-  kSyncForbiddenByPolicies,
-  kAlreadyOptedIn,
-  kDeclinedTooOften,
-};
 
 // Delegate for the history sync coordinator.
 @protocol HistorySyncCoordinatorDelegate <NSObject>
@@ -45,18 +31,9 @@ enum class HistorySyncSkipReason {
 // showing the view in a navigation controller.
 @interface HistorySyncCoordinator : InterruptibleChromeCoordinator
 
-// Checks if the History Sync Opt-In screen should be skipped, and returns the
-// corresponding reason. HistorySyncSkipReason::kNone means that the screen
-// should not be skipped.
-+ (HistorySyncSkipReason)
-    getHistorySyncOptInSkipReason:(syncer::SyncService*)syncService
-            authenticationService:(AuthenticationService*)authenticationService
-                      prefService:(PrefService*)prefService
-            isHistorySyncOptional:(BOOL)isOptional;
-
 // Records metric if the History Sync Opt-In screen is skipped for the given
 // reason, for the given access point.
-+ (void)recordHistorySyncSkipMetric:(HistorySyncSkipReason)reason
++ (void)recordHistorySyncSkipMetric:(history_sync::HistorySyncSkipReason)reason
                         accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

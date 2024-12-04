@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version_info/channel.h"
+#include "components/data_sharing/internal/avatar_fetcher.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/internal/data_sharing_network_loader_impl.h"
 #include "components/data_sharing/internal/group_data_proto_utils.h"
@@ -102,7 +103,8 @@ DataSharingServiceImpl::DataSharingServiceImpl(
       preview_server_proxy_(
           std::make_unique<PreviewServerProxy>(identity_manager,
                                                url_loader_factory,
-                                               channel)) {
+                                               channel)),
+      avatar_fetcher_(std::make_unique<AvatarFetcher>()) {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COLLABORATION_GROUP,
@@ -167,47 +169,12 @@ std::set<GroupData> DataSharingServiceImpl::ReadAllGroups() {
 std::optional<GroupMemberPartialData>
 DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
     const GroupId& group_id,
-    const std::string& member_gaia_id) {
+    const GaiaId& member_gaia_id) {
   if (!group_data_model_) {
     return std::nullopt;
   }
   return group_data_model_->GetPossiblyRemovedGroupMember(group_id,
                                                           member_gaia_id);
-}
-
-void DataSharingServiceImpl::ReadAllGroups(
-    base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {
-  // TODO(crbug.com/370897286): this method should be deleted.
-  if (!sdk_delegate_) {
-    // Reply in a posted task to avoid reentrance on the calling side.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            base::unexpected(PeopleGroupActionFailure::kPersistentFailure)));
-    return;
-  }
-
-  data_sharing_pb::ReadGroupsParams params;
-  for (const GroupId& group_id :
-       collaboration_group_sync_bridge_->GetCollaborationGroupIds()) {
-    params.add_group_ids(group_id.value());
-    data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
-        params.add_group_params();
-    group_params->set_group_id(group_id.value());
-    group_params->set_consistency_token("");
-  }
-
-  if (params.group_ids().empty()) {
-    // No groups to read.
-    std::move(callback).Run(std::set<GroupData>());
-    return;
-  }
-
-  sdk_delegate_->ReadGroups(
-      params,
-      base::BindOnce(&DataSharingServiceImpl::OnReadAllGroupsCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DataSharingServiceImpl::ReadGroup(
@@ -414,7 +381,7 @@ void DataSharingServiceImpl::OnGroupDeleted(const GroupId& group_id,
 }
 
 void DataSharingServiceImpl::OnMemberAdded(const GroupId& group_id,
-                                           const std::string& member_gaia_id,
+                                           const GaiaId& member_gaia_id,
                                            const base::Time& event_time) {
   for (auto& observer : observers_) {
     observer.OnGroupMemberAdded(group_id, member_gaia_id, event_time);
@@ -422,7 +389,7 @@ void DataSharingServiceImpl::OnMemberAdded(const GroupId& group_id,
 }
 
 void DataSharingServiceImpl::OnMemberRemoved(const GroupId& group_id,
-                                             const std::string& member_gaia_id,
+                                             const GaiaId& member_gaia_id,
                                              const base::Time& event_time) {
   for (auto& observer : observers_) {
     observer.OnGroupMemberRemoved(group_id, member_gaia_id, event_time);
@@ -450,24 +417,6 @@ void DataSharingServiceImpl::OnReadSingleGroupCompleted(
           base::unexpected(PeopleGroupActionFailure::kPersistentFailure));
       return;
     }
-  }
-
-  std::move(callback).Run(
-      base::unexpected(StatusToPeopleGroupActionFailure(result.error())));
-}
-
-void DataSharingServiceImpl::OnReadAllGroupsCompleted(
-    base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback,
-    const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
-        result) {
-  if (result.has_value()) {
-    std::set<GroupData> groups;
-    for (const data_sharing_pb::GroupData& group_data :
-         result.value().group_data()) {
-      groups.insert(GroupDataFromProto(group_data));
-    }
-    std::move(callback).Run(groups);
-    return;
   }
 
   std::move(callback).Run(
@@ -538,7 +487,18 @@ DataSharingServiceImpl::GetCollaborationGroupSyncBridgeForTesting() {
 
 bool DataSharingServiceImpl::ShouldInterceptNavigationForShareURL(
     const GURL& url) {
-  return ParseDataSharingUrl(url).has_value();
+  ParseUrlResult result = ParseDataSharingUrl(url);
+  if (result.has_value()) {
+    return true;
+  }
+  switch (result.error()) {
+    case ParseUrlStatus::kUnknown:
+    case ParseUrlStatus::kHostOrPathMismatchFailure:
+      return false;
+    case ParseUrlStatus::kQueryMissingFailure:
+    case ParseUrlStatus::kSuccess:
+      return true;
+  }
 }
 
 void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(
@@ -575,10 +535,14 @@ DataSharingService::ParseUrlResult DataSharingServiceImpl::ParseDataSharingUrl(
 
   std::string group_id;
   std::string access_token;
-  net::GetValueForKeyInQuery(url, kGroupIdKey, &group_id);
-  net::GetValueForKeyInQuery(url, kTokenBlobKey, &access_token);
+  if (!net::GetValueForKeyInQuery(url, kGroupIdKey, &group_id)) {
+    group_id.clear();
+  }
+  if (!net::GetValueForKeyInQuery(url, kTokenBlobKey, &access_token)) {
+    access_token.clear();
+  }
 
-  if (group_id.empty() || access_token.empty()) {
+  if (group_id.empty()) {
     return base::unexpected(ParseUrlStatus::kQueryMissingFailure);
   }
 
@@ -615,6 +579,14 @@ void DataSharingServiceImpl::GetSharedEntitiesPreview(
   preview_server_proxy_->GetSharedDataPreview(
       group_token, syncer::DataType::SHARED_TAB_GROUP_DATA,
       std::move(callback));
+}
+
+void DataSharingServiceImpl::GetAvatarImageForURL(
+    const GURL& avatar_url,
+    int size,
+    base::OnceCallback<void(const gfx::Image&)> callback,
+    image_fetcher::ImageFetcher* image_fetcher) {
+  avatar_fetcher_->Fetch(avatar_url, size, std::move(callback), image_fetcher);
 }
 
 void DataSharingServiceImpl::SetSDKDelegate(

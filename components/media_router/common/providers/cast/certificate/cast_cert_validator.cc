@@ -91,8 +91,8 @@ class CertVerificationContextImpl : public CertVerificationContext {
     };
 
     // Verify with RSASSA-PKCS1-v1_5 and |digest|.
-    auto signature_bytes = base::as_bytes(base::make_span(signature));
-    auto data_bytes = base::as_bytes(base::make_span(data));
+    auto signature_bytes = base::as_byte_span(signature);
+    auto data_bytes = base::as_byte_span(data);
     bssl::ScopedEVP_MD_CTX ctx;
     return EVP_PKEY_id(key_.get()) == EVP_PKEY_RSA &&
            EVP_DigestVerifyInit(ctx.get(), nullptr, digest, nullptr,

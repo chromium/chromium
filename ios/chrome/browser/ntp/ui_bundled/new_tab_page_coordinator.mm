@@ -838,6 +838,8 @@
   _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
       initWithBaseViewController:self.NTPViewController
                          browser:self.browser];
+  _tabGroupIndicatorCoordinator.parentViewController =
+      self.headerViewController;
   _tabGroupIndicatorCoordinator.toolbarHeightDelegate = nil;
   _tabGroupIndicatorCoordinator.displayedOnNTP = YES;
   [_tabGroupIndicatorCoordinator start];

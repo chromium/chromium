@@ -716,7 +716,7 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge) {
   EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
-TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudgeOptOut) {
+TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptOut) {
   const auto* nudge_id = kVideoConferenceTraySpeakOnMuteOptInNudgeId;
 
   // Ensure relevant prefs have been registered.
@@ -753,7 +753,7 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudgeOptOut) {
   EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
-TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudgeOptIn) {
+TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptIn) {
   const auto* nudge_id = kVideoConferenceTraySpeakOnMuteOptInNudgeId;
 
   // Ensure relevant prefs have been registered.

@@ -53,7 +53,7 @@ class ConnectorsServiceBase {
 
   virtual std::optional<ReportingSettings> GetReportingSettings();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   std::optional<std::string> GetProfileDmToken() const;
 #endif
 

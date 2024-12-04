@@ -345,7 +345,8 @@ void PaintOpWriter::Write(const DrawImage& draw_image,
     Write(pixmap.height());
     size_t pixmap_size = pixmap.computeByteSize();
     WriteSize(pixmap_size);
-    WriteData(pixmap_size, pixmap.addr());
+    WriteData(base::span<const uint8_t>(
+        static_cast<const uint8_t*>(pixmap.addr()), pixmap_size));
     return;
   }
 
@@ -438,7 +439,7 @@ void PaintOpWriter::Write(const SkHighContrastConfig& config) {
 void PaintOpWriter::Write(const sk_sp<SkData>& data) {
   if (data.get() && data->size()) {
     WriteSize(data->size());
-    WriteData(data->size(), data->data());
+    WriteData(base::span<const uint8_t>(data->bytes(), data->size()));
   } else {
     // Differentiate between nullptr and valid but zero size.  It's not clear
     // that this happens in practice, but seems better to be consistent.
@@ -487,7 +488,7 @@ void PaintOpWriter::Write(const gfx::HDRMetadata& hdr_metadata) {
   std::vector<uint8_t> bytes =
       gfx::mojom::HDRMetadata::Serialize(&hdr_metadata);
   WriteSize(bytes.size());
-  WriteData(bytes.size(), bytes.data());
+  WriteData(base::as_byte_span(bytes));
 }
 
 void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
@@ -665,13 +666,10 @@ void PaintOpWriter::Write(const PaintShader* shader,
   }
 
   WriteSize(shader->colors_.size());
-  WriteData(shader->colors_.size() *
-                (shader->colors_.size() > 0 ? sizeof(shader->colors_[0]) : 0u),
-            shader->colors_.data());
+  WriteData(base::as_byte_span(shader->colors_));
 
   WriteSize(shader->positions_.size());
-  WriteData(shader->positions_.size() * sizeof(SkScalar),
-            shader->positions_.data());
+  WriteData(base::as_byte_span(shader->positions_));
   // Explicitly don't write the cached_shader_ because that can be regenerated
   // using other fields.
 }
@@ -688,21 +686,21 @@ void PaintOpWriter::Write(SkYUVAInfo::Subsampling subsampling) {
   WriteSimple(static_cast<uint32_t>(subsampling));
 }
 
-void PaintOpWriter::WriteData(size_t bytes, const void* input) {
+void PaintOpWriter::WriteData(base::span<const uint8_t> data) {
   AssertFieldAlignment();
 
-  if (bytes == 0) {
+  if (data.size() == 0) {
     return;
   }
 
-  EnsureBytes(bytes);
+  EnsureBytes(data.size());
 
   if (!valid_) {
     return;
   }
 
-  memcpy(memory_, input, bytes);
-  DidWrite(bytes);
+  memcpy(memory_, data.data(), data.size());
+  DidWrite(data.size());
 }
 
 void PaintOpWriter::AlignMemory(size_t alignment) {
@@ -1124,7 +1122,7 @@ void PaintOpWriter::Write(const SkRegion& region) {
   DCHECK_EQ(bytes_required, bytes_written);
 
   WriteSize(bytes_written);
-  WriteData(bytes_written, data.data());
+  WriteData(base::as_byte_span(data));
 }
 
 }  // namespace cc

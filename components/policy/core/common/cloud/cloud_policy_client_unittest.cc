@@ -979,7 +979,23 @@ TEST_F(CloudPolicyClientTest, BrowserRegistrationWithTokenTestTimeout) {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
+// Tests for `CloudPolicyClient::RegisterWithOidcResponse`.
+class CloudPolicyClientOidcRegistrationTest
+    : public CloudPolicyClientTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  bool IsTokenEncrypted() { return GetParam(); }
+  std::string GetOauthToken() {
+    return IsTokenEncrypted() ? std::string() : kOAuthToken;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CloudPolicyClientOidcRegistrationTest,
+                         testing::Bool());
+
+TEST_P(CloudPolicyClientOidcRegistrationTest,
+       RegistrationWithOidcAndPolicyFetch) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   ExpectAndCaptureJob(GetRegistrationResponse());
@@ -996,8 +1012,9 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
   client_->RegisterWithOidcResponse(
-      register_user, kOAuthToken, kIdToken, std::string() /* no client_id*/,
-      kDefaultOidcRegistrationTimeout, result_future.GetCallback());
+      register_user, GetOauthToken(), kIdToken, std::string() /* no client_id*/,
+      kDefaultOidcRegistrationTimeout, IsTokenEncrypted(),
+      result_future.GetCallback());
 
   const CloudPolicyClient::Result result = result_future.Get();
   EXPECT_TRUE(result.IsSuccess());
@@ -1030,7 +1047,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
   CheckPolicyResponse(policy_response);
 }
 
-TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
+TEST_P(CloudPolicyClientOidcRegistrationTest,
+       RegistrationWithOidcAndPolicyFetchWithOidcState) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
   em::DeviceManagementRequest registration_request = GetRegistrationRequest();
   registration_request.mutable_register_request()
@@ -1049,10 +1067,10 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   register_parameters.oidc_state = kOidcState;
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
-  client_->RegisterWithOidcResponse(register_parameters, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/,
-                                    kDefaultOidcRegistrationTimeout,
-                                    result_future.GetCallback());
+  client_->RegisterWithOidcResponse(
+      register_parameters, GetOauthToken(), kIdToken,
+      std::string() /* no client_id*/, kDefaultOidcRegistrationTimeout,
+      IsTokenEncrypted(), result_future.GetCallback());
 
   const CloudPolicyClient::Result result = result_future.Get();
   EXPECT_TRUE(result.IsSuccess());
@@ -1085,7 +1103,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
   CheckPolicyResponse(policy_response);
 }
 
-TEST_F(CloudPolicyClientTest, OidcRegistrationFailure) {
+TEST_P(CloudPolicyClientOidcRegistrationTest, OidcRegistrationFailure) {
   DeviceManagementService::JobConfiguration::JobType job_type;
   EXPECT_CALL(job_creation_handler_, OnJobCreation)
       .WillOnce(DoAll(
@@ -1101,8 +1119,9 @@ TEST_F(CloudPolicyClientTest, OidcRegistrationFailure) {
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
   client_->RegisterWithOidcResponse(
-      register_user, kOAuthToken, kIdToken, std::string() /* no client_id*/,
-      kDefaultOidcRegistrationTimeout, result_future.GetCallback());
+      register_user, GetOauthToken(), kIdToken, std::string() /* no client_id*/,
+      kDefaultOidcRegistrationTimeout, IsTokenEncrypted(),
+      result_future.GetCallback());
 
   const CloudPolicyClient::Result result = result_future.Get();
   EXPECT_FALSE(result.IsSuccess());

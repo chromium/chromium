@@ -254,7 +254,7 @@ UsersPrivateIsUserListManagedFunction::UsersPrivateIsUserListManagedFunction() {
 }
 
 UsersPrivateIsUserListManagedFunction::
-    ~UsersPrivateIsUserListManagedFunction() {}
+    ~UsersPrivateIsUserListManagedFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateIsUserListManagedFunction::Run() {
   return RespondNow(WithArguments(IsDeviceEnterpriseManaged()));

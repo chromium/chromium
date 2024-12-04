@@ -34,11 +34,6 @@ class DataSharingInternalsPageHandlerImpl
   void GetAllGroups(GetAllGroupsCallback callback) override;
 
  private:
-  void OnGetAllGroupsDone(
-      GetAllGroupsCallback callback,
-      const data_sharing::DataSharingService::GroupsDataSetOrFailureOutcome&
-          group_result);
-
   mojo::Receiver<data_sharing_internals::mojom::PageHandler> receiver_;
   mojo::Remote<data_sharing_internals::mojom::Page> page_;
 

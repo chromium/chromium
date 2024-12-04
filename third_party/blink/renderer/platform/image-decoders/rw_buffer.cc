@@ -236,6 +236,10 @@ size_t ROBuffer::Iter::size() const {
   return std::min(block_->capacity_, remaining_);
 }
 
+base::span<const uint8_t> ROBuffer::Iter::operator*() const {
+  return base::span(data(), size());
+}
+
 bool ROBuffer::Iter::Next() {
   if (remaining_) {
     remaining_ -= size();

@@ -499,10 +499,16 @@ const Iban* PaymentsDataManager::GetIbanByInstrumentId(
   return nullptr;
 }
 
-CreditCard* PaymentsDataManager::GetCreditCardByGUID(const std::string& guid) {
+const CreditCard* PaymentsDataManager::GetCreditCardByGUID(
+    const std::string& guid) const {
   const std::vector<CreditCard*>& credit_cards = GetCreditCards();
   auto iter = FindElementByGUID(credit_cards, guid);
   return iter != credit_cards.end() ? *iter : nullptr;
+}
+
+CreditCard* PaymentsDataManager::GetMutableCreditCardByGUID(
+    const std::string& guid) {
+  return const_cast<CreditCard*>(GetCreditCardByGUID(guid));
 }
 
 const CreditCard* PaymentsDataManager::GetCreditCardByNumber(
@@ -1088,10 +1094,8 @@ bool PaymentsDataManager::IsServerCard(const CreditCard* credit_card) const {
 
 bool PaymentsDataManager::ShouldShowCardsFromAccountOption() const {
 // The feature is only for Linux, Windows, Mac, and Fuchsia.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
+    BUILDFLAG(IS_FUCHSIA)
   // This option should only be shown for users that have not enabled the Sync
   // Feature and that have server credit cards available.
   // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
@@ -1110,8 +1114,8 @@ bool PaymentsDataManager::ShouldShowCardsFromAccountOption() const {
                              features::kAutofillRemovePaymentsButterDropdown);
 #else
   return false;
-#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) ||
-        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#endif  // #if BUILDFLAG(IS_LINUX) ||BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(IS_FUCHSIA)
 }
 
 void PaymentsDataManager::OnUserAcceptedCardsFromAccountOption() {
@@ -1356,7 +1360,9 @@ void PaymentsDataManager::DeleteAllLocalCreditCards() {
 
 void PaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   DCHECK_EQ(CreditCard::RecordType::kLocalCard, credit_card.record_type());
-  CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());
+  CreditCard* existing_credit_card =
+      GetMutableCreditCardByGUID(credit_card.guid());
+
   if (!existing_credit_card) {
     return;
   }
@@ -1391,7 +1397,7 @@ void PaymentsDataManager::UpdateLocalCvc(const std::string& guid,
     return;
   }
 
-  CreditCard* existing_credit_card = GetCreditCardByGUID(guid);
+  const CreditCard* existing_credit_card = GetCreditCardByGUID(guid);
   if (!existing_credit_card) {
     return;
   }
@@ -1604,7 +1610,8 @@ void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,
 }
 
 void PaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
-  CreditCard* credit_card = GetCreditCardByGUID(card.guid());
+  CreditCard* credit_card = GetMutableCreditCardByGUID(card.guid());
+
   // This early return is necessary because this is called at filling time,
   // where a credit card might be filled even though it is not in the CC
   // storage. An example would be filling a scanned credit card.
@@ -2102,9 +2109,9 @@ void PaymentsDataManager::OnPaymentInstrumentsRefreshed(
     updated_urls.emplace_back(display_icon_url);
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(updated_urls,
-                       {AutofillImageFetcherBase::ImageSize::kSmall,
-                        AutofillImageFetcherBase::ImageSize::kLarge});
+    FetchImagesForURLs(
+        updated_urls,
+        base::span_from_ref(AutofillImageFetcherBase::ImageSize::kLarge));
   }
 }
 

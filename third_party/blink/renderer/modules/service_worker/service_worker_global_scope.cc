@@ -339,7 +339,7 @@ void ServiceWorkerGlobalScope::FetchAndRunClassicScript(
       WTF::BindOnce(&ServiceWorkerGlobalScope::DidFetchClassicScript,
                     WrapWeakPersistent(this),
                     WrapPersistent(classic_script_loader), stack_id),
-      RejectCoepUnsafeNone(false), {}, CreateUniqueIdentifier());
+      RejectCoepUnsafeNone(false), {});
 }
 
 void ServiceWorkerGlobalScope::FetchAndRunModuleScript(

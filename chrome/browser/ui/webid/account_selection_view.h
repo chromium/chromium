@@ -43,8 +43,10 @@ class AccountSelectionView {
     // Informs the controller that the user has made a selection.
     virtual void OnAccountSelected(const GURL& idp_config_url,
                                    const Account& account) = 0;
-    // Informs the controller that the user has dismissed the sheet with reason
-    // `dismiss_reason`.
+    // TODO(https://crbug.com/377803489): Rename this method to
+    // OnUserCancelled.
+    // This method is called when the user interacts with the UI in a way that
+    // cancels out of the entire fedcm flow.
     virtual void OnDismiss(
         content::IdentityRequestDialogController::DismissReason
             dismiss_reason) = 0;

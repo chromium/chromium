@@ -6,11 +6,13 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
+#include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/enterprise/watermarking/content/watermark_text_container.h"
+#include "components/enterprise/watermarking/watermark.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -140,11 +142,17 @@ void DataProtectionNavigationController::
   // Regardless of whether watermark text is empty, attach it as web contents
   // user data so that other browser process code can draw watermarks outside
   // of the context of a navigation (ex. when printing).
+  enterprise_watermark::WatermarkBlock block =
+      enterprise_watermark::DrawWatermarkToPaintRecord(
+          settings.watermark_text, enterprise_watermark::GetFillColor(),
+          enterprise_watermark::GetOutlineColor());
   enterprise_watermark::WatermarkTextContainer::CreateForWebContents(
       expected_web_contents.get());
   enterprise_watermark::WatermarkTextContainer::FromWebContents(
       expected_web_contents.get())
-      ->SetWatermarkText(settings.watermark_text);
+      ->SetWatermarkText(
+          block.record.ToSkPicture(SkRect::MakeWH(block.width, block.height)),
+          block.width, block.height);
 
   if (!settings.watermark_text.empty()) {
     browser_view->ApplyWatermarkSettings(settings.watermark_text);

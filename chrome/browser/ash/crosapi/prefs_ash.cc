@@ -211,19 +211,6 @@ void PrefsAsh::SetPref(mojom::PrefPath path,
   std::move(callback).Run();
 }
 
-void PrefsAsh::ClearExtensionControlledPref(
-    mojom::PrefPath path,
-    ClearExtensionControlledPrefCallback callback) {
-  auto state = GetState(path);
-  if (state && state->pref_source == AshPrefSource::kExtensionControlled) {
-    state->pref_service->RemoveStandaloneBrowserPref(state->path);
-  } else {
-    // Only logging to be robust against version skew (lacros ahead of ash)
-    LOG(WARNING) << "Tried to clear a pref that is not extension controlled";
-  }
-  std::move(callback).Run();
-}
-
 void PrefsAsh::AddObserver(mojom::PrefPath path,
                            mojo::PendingRemote<mojom::PrefObserver> observer) {
   auto state = GetState(path);

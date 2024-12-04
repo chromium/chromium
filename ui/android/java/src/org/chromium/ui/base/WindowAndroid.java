@@ -800,6 +800,13 @@ public class WindowAndroid
                 mOverlayTransformApiHelper.destroy();
             }
         }
+
+        if (mTrackOcclusion) {
+            View decorView = getDecorView();
+            if (decorView != null) {
+                decorView.removeOnAttachStateChangeListener(this);
+            }
+        }
     }
 
     /**

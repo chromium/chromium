@@ -121,7 +121,6 @@ void PointerEventManager::Clear() {
   skip_touch_filter_all_ = false;
   discarded_event_.target = kInvalidDOMNodeId;
   discarded_event_.time = base::TimeTicks();
-  SetDocument(frame_->GetDocument());
 }
 
 void PointerEventManager::Trace(Visitor* visitor) const {
@@ -133,7 +132,6 @@ void PointerEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(mouse_event_manager_);
   visitor->Trace(captured_scrollbar_);
   visitor->Trace(resize_scrollable_area_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 PointerEventManager::PointerEventBoundaryEventDispatcher::
@@ -795,7 +793,8 @@ bool PointerEventManager::HandleScrollbarTouchDrag(const WebPointerEvent& event,
                                                    Scrollbar* scrollbar) {
   if (!scrollbar ||
       (event.pointer_type != WebPointerProperties::PointerType::kTouch &&
-       event.pointer_type != WebPointerProperties::PointerType::kPen)) {
+       event.pointer_type != WebPointerProperties::PointerType::kPen &&
+       event.pointer_type != WebPointerProperties::PointerType::kEraser)) {
     return false;
   }
 
@@ -1182,7 +1181,9 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
   }
 
   if (mouse_event.GetType() == WebInputEvent::Type::kMouseLeave &&
-      mouse_event.pointer_type == WebPointerProperties::PointerType::kPen) {
+      (mouse_event.pointer_type == WebPointerProperties::PointerType::kPen ||
+       mouse_event.pointer_type ==
+           WebPointerProperties::PointerType::kEraser)) {
     pointer_event_factory_.Remove(pointer_event->pointerId());
   }
   return result;

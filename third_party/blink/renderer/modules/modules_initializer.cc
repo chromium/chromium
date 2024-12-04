@@ -358,7 +358,7 @@ std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
   WebString sink_id(
       HTMLMediaElementAudioOutputDevice::sinkId(html_media_element));
   MediaInspectorContextImpl* context_impl = MediaInspectorContextImpl::From(
-      *To<LocalDOMWindow>(html_media_element.GetExecutionContext()));
+      *To<LocalDOMWindow>(html_media_element.GetExecutionContextForPlayer()));
   FrameWidget* frame_widget =
       html_media_element.GetDocument().GetFrame()->GetWidgetForLocalRoot();
   return web_frame_client->CreateMediaPlayer(

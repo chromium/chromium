@@ -292,6 +292,14 @@ class AndroidAutofillProviderTestBase
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  TestContentAutofillClient& autofill_client() {
+    return *autofill_client_injector_[web_contents()];
+  }
+
+  AutofillDriver& autofill_driver(content::RenderFrameHost* rfh = nullptr) {
+    return android_autofill_manager(rfh).driver();
+  }
+
   TestAndroidAutofillManager& android_autofill_manager(
       content::RenderFrameHost* rfh = nullptr) {
     return *autofill_manager_injector_[rfh ? rfh : main_frame()];
@@ -348,7 +356,8 @@ TEST_F(AndroidAutofillProviderTest, HasServerPrediction) {
       android_autofill_manager().has_server_prediction(form.global_id()));
 
   // Resetting removes prediction state.
-  test_api(android_autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
   EXPECT_FALSE(
       android_autofill_manager().has_server_prediction(form.global_id()));
 }
@@ -795,7 +804,8 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
       form, form.fields().front());
 
   EXPECT_CALL(provider_bridge(), CancelSession());
-  test_api(android_autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
 }
 
 class AndroidAutofillProviderWithCredManTest
@@ -1018,7 +1028,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
       form.global_id());
   android_autofill_manager().SimulateOnAskForValuesToFill(
       form, form.fields().front());
-  test_api(android_autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());

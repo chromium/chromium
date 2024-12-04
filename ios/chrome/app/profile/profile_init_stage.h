@@ -19,6 +19,10 @@ enum class ProfileInitStage {
   // is no longer supported (i.e. all users have migrated).
   kMigrateStorage,
 
+  // Delete all data for previously discarded sessions. If no sessions was
+  // recently discarded, this will transition immediately to the next stage.
+  kPurgeDiscardedSessionsData,
+
   // Profile preferences have been loaded and the ProfileIOS object and all
   // KeyedServices can be used. The app will automatically transition to the
   // next stage.

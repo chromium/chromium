@@ -301,8 +301,8 @@ ShoppingService::ShoppingService(
         CanLoadProductSpecificationsFullPageUi(account_checker_.get())) {
       cluster_manager_ = std::make_unique<ClusterManager>(
           product_specifications_service_,
-          std::make_unique<ClusterServerProxy>(identity_manager,
-                                               url_loader_factory),
+          std::make_unique<ClusterServerProxy>(
+              identity_manager, url_loader_factory, account_checker_.get()),
           base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,
@@ -771,8 +771,8 @@ void ShoppingService::GetProductSpecificationsForUrls(
                 }
 
                 UMA_HISTOGRAM_PERCENTAGE(
-                    "Commerce.Compare.Table.PercentageValidProducts",
-                    (float)cluster_ids.size() / (float)data.size());
+                    "Commerce.Compare.Table.PercentageValidProducts2",
+                    ((float)cluster_ids.size() / (float)data.size()) * 100.0f);
 
                 if (!service || cluster_ids.empty()) {
                   std::move(callback).Run(std::move(cluster_ids), std::nullopt);
@@ -838,11 +838,6 @@ bool ShoppingService::IsRegionLockedFeatureEnabled(
 bool ShoppingService::IsMerchantViewerEnabled() {
   return IsRegionLockedFeatureEnabled(kCommerceMerchantViewer,
                                       kCommerceMerchantViewerRegionLaunched);
-}
-
-bool ShoppingService::IsCommercePriceTrackingEnabled() {
-  return IsRegionLockedFeatureEnabled(kCommercePriceTracking,
-                                      kCommercePriceTrackingRegionLaunched);
 }
 
 bool ShoppingService::IsPriceInsightsEligible() {

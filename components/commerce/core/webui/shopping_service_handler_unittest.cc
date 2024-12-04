@@ -50,36 +50,6 @@ namespace {
 const std::string kTestUrl1 = "http://www.example.com/1";
 const std::string kTestUrl2 = "http://www.example.com/2";
 
-class MockPage : public shopping_service::mojom::Page {
- public:
-  MockPage() = default;
-  ~MockPage() override = default;
-
-  mojo::PendingRemote<shopping_service::mojom::Page> BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-  mojo::Receiver<shopping_service::mojom::Page> receiver_{this};
-
-  MOCK_METHOD(void,
-              PriceTrackedForBookmark,
-              (shopping_service::mojom::BookmarkProductInfoPtr product),
-              (override));
-  MOCK_METHOD(void,
-              PriceUntrackedForBookmark,
-              (shopping_service::mojom::BookmarkProductInfoPtr product),
-              (override));
-  MOCK_METHOD(void,
-              OperationFailedForBookmark,
-              (shopping_service::mojom::BookmarkProductInfoPtr product,
-               bool is_tracked),
-              (override));
-  MOCK_METHOD(void,
-              OnProductBookmarkMoved,
-              (shopping_service::mojom::BookmarkProductInfoPtr product),
-              (override));
-};
-
 class MockDelegate : public ShoppingServiceHandler::Delegate {
  public:
   MockDelegate() {
@@ -97,7 +67,6 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
               GetOrAddBookmarkForCurrentUrl,
               (),
               (override));
-  MOCK_METHOD(void, ShowBookmarkEditorForCurrentUrl, (), (override));
   MOCK_METHOD(ukm::SourceId, GetCurrentTabUkmSourceId, (), (override));
   MOCK_METHOD(void,
               ShowFeedbackForProductSpecifications,
@@ -113,46 +82,6 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
     ON_CALL(*this, GetCurrentTabUkmSourceId).WillByDefault(testing::Return(id));
   }
 };
-
-void GetEvaluationProductInfos(
-    base::OnceClosure closure,
-    std::vector<shopping_service::mojom::BookmarkProductInfoPtr> expected,
-    std::vector<shopping_service::mojom::BookmarkProductInfoPtr> found) {
-  ASSERT_EQ(expected.size(), found.size());
-  std::unordered_map<uint64_t, shopping_service::mojom::BookmarkProductInfoPtr*>
-      found_map;
-  for (auto& item : found) {
-    found_map[item->bookmark_id] = &item;
-  }
-
-  for (auto& item : expected) {
-    auto find_it = found_map.find(item->bookmark_id);
-    ASSERT_FALSE(find_it == found_map.end());
-
-    shopping_service::mojom::BookmarkProductInfoPtr* found_item =
-        find_it->second;
-
-    ASSERT_EQ(item->bookmark_id, (*found_item)->bookmark_id);
-    ASSERT_EQ(item->info->current_price, (*found_item)->info->current_price);
-    ASSERT_EQ(item->info->domain, (*found_item)->info->domain);
-    ASSERT_EQ(item->info->title, (*found_item)->info->title);
-    ASSERT_EQ(item->info->image_url.spec(),
-              (*found_item)->info->image_url.spec());
-  }
-  std::move(closure).Run();
-}
-
-// A matcher for checking if a mojo bookmark info has the specified bookmark ID
-// (uint64_t).
-MATCHER_P(MojoBookmarkInfoWithId, expected_id, "") {
-  return arg->bookmark_id == expected_id;
-}
-
-// A matcher for checking if a mojo bookmark info has the specified cluster ID
-// (uint64_t).
-MATCHER_P(MojoBookmarkInfoWithClusterId, expected_id, "") {
-  return arg->info->cluster_id == expected_id;
-}
 
 class ShoppingServiceHandlerTest : public testing::Test {
  public:
@@ -182,14 +111,12 @@ class ShoppingServiceHandlerTest : public testing::Test {
     auto delegate = std::make_unique<MockDelegate>();
     delegate_ = delegate.get();
     handler_ = std::make_unique<commerce::ShoppingServiceHandler>(
-        page_.BindAndGetRemote(),
         mojo::PendingReceiver<
             shopping_service::mojom::ShoppingServiceHandler>(),
         bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
         &tracker_, std::move(delegate), &logs_uploader_);
   }
 
-  MockPage page_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
@@ -224,253 +151,6 @@ std::optional<ProductInfo> BuildProductInfoWithPriceSummary(
   return info;
 }
 
-TEST_F(ShoppingServiceHandlerTest, ConvertToMojoTypes) {
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      true, 1230000, "usd");
-
-  const std::string image_url = "https://example.com/image.png";
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_.get(), product);
-  meta->mutable_lead_image()->set_url(image_url);
-  meta->mutable_shopping_specifics()
-      ->mutable_previous_price()
-      ->set_amount_micros(4560000);
-  meta->mutable_shopping_specifics()
-      ->mutable_previous_price()
-      ->set_currency_code("usd");
-  power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_.get(), product,
-                                            std::move(meta));
-
-  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
-  bookmark_list.push_back(product);
-
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> mojo_list =
-      ShoppingServiceHandler::BookmarkListToMojoList(*bookmark_model_,
-                                                  bookmark_list, "en-us");
-
-  EXPECT_EQ(mojo_list[0]->bookmark_id, product->id());
-  EXPECT_EQ(mojo_list[0]->info->current_price, "$1.23");
-  EXPECT_EQ(mojo_list[0]->info->previous_price, "$4.56");
-  EXPECT_EQ(mojo_list[0]->info->domain, "example.com");
-  EXPECT_EQ(mojo_list[0]->info->title, "product 1");
-  EXPECT_EQ(mojo_list[0]->info->image_url.spec(), image_url);
-}
-
-// If the new price is greater than the old price, we shouldn't include the
-// |previous_price| field in the mojo data type.
-TEST_F(ShoppingServiceHandlerTest, ConvertToMojoTypes_PriceIncrease) {
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      true, 1230000, "usd");
-
-  const std::string image_url = "https://example.com/image.png";
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_.get(), product);
-  meta->mutable_lead_image()->set_url(image_url);
-  meta->mutable_shopping_specifics()
-      ->mutable_previous_price()
-      ->set_amount_micros(1000000);
-  meta->mutable_shopping_specifics()
-      ->mutable_previous_price()
-      ->set_currency_code("usd");
-  power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_.get(), product,
-                                            std::move(meta));
-
-  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
-  bookmark_list.push_back(product);
-
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> mojo_list =
-      ShoppingServiceHandler::BookmarkListToMojoList(*bookmark_model_,
-                                                  bookmark_list, "en-us");
-
-  EXPECT_EQ(mojo_list[0]->bookmark_id, product->id());
-  EXPECT_EQ(mojo_list[0]->info->current_price, "$1.23");
-  EXPECT_TRUE(mojo_list[0]->info->previous_price.empty());
-  EXPECT_EQ(mojo_list[0]->info->domain, "example.com");
-  EXPECT_EQ(mojo_list[0]->info->title, "product 1");
-  EXPECT_EQ(mojo_list[0]->info->image_url.spec(), image_url);
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestTrackProductSuccess) {
-  uint64_t cluster_id = 123u;
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
-      cluster_id, false, 1230000, "usd");
-
-  EXPECT_CALL(*shopping_service_,
-              Subscribe(VectorHasSubscriptionWithId("123"), testing::_))
-      .Times(1);
-  EXPECT_CALL(page_,
-              PriceTrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
-      .Times(1);
-  EXPECT_CALL(page_, OperationFailedForBookmark(testing::_, testing::_))
-      .Times(0);
-
-  handler_->TrackPriceForBookmark(product->id());
-
-  // Assume the subscription callback fires with a success.
-  handler_->OnSubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestUntrackProductSuccess) {
-  uint64_t cluster_id = 123u;
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
-      cluster_id, true, 1230000, "usd");
-
-  EXPECT_CALL(*shopping_service_,
-              Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_))
-      .Times(1);
-  EXPECT_CALL(page_,
-              PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
-      .Times(1);
-  EXPECT_CALL(page_, OperationFailedForBookmark(testing::_, testing::_))
-      .Times(0);
-
-  handler_->UntrackPriceForBookmark(product->id());
-
-  // Assume the subscription callback fires with a success.
-  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestTrackProductFailure) {
-  uint64_t cluster_id = 123u;
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
-      cluster_id, false, 1230000, "usd");
-
-  // Simulate failed calls in the subscriptions manager.
-  shopping_service_->SetSubscribeCallbackValue(false);
-  shopping_service_->SetUnsubscribeCallbackValue(false);
-
-  // "untrack" should be called once to undo the "track" change in the UI.
-  EXPECT_CALL(page_,
-              PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
-      .Times(1);
-  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(0);
-  EXPECT_CALL(page_, OperationFailedForBookmark(
-                         MojoBookmarkInfoWithId(product->id()), true))
-      .Times(1);
-
-  handler_->TrackPriceForBookmark(product->id());
-
-  // Assume the subscription callback fires with a failure.
-  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), false);
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestUntrackProductFailure) {
-  uint64_t cluster_id = 123u;
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
-      cluster_id, true, 1230000, "usd");
-
-  // Simulate failed calls in the subscriptions manager.
-  shopping_service_->SetSubscribeCallbackValue(false);
-  shopping_service_->SetUnsubscribeCallbackValue(false);
-
-  // "track" should be called once to undo the "untrack" change in the UI.
-  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(1);
-  EXPECT_CALL(page_,
-              PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
-      .Times(0);
-  EXPECT_CALL(page_, OperationFailedForBookmark(
-                         MojoBookmarkInfoWithId(product->id()), false))
-      .Times(1);
-
-  handler_->UntrackPriceForBookmark(product->id());
-
-  // Assume the subscription callback fires with a failure.
-  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), false);
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(ShoppingServiceHandlerTest, PageUpdateForPriceTrackChange) {
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      true, 1230000, "usd");
-
-  EXPECT_CALL(page_,
-              PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())));
-
-  // Assume the plumbing for subscriptions works and fake an unsubscribe event.
-  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(123L), true);
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestUnsubscribeCausedByBookmarkDeletion) {
-  uint64_t cluster_id = 123u;
-  EXPECT_CALL(page_, PriceUntrackedForBookmark(
-                         MojoBookmarkInfoWithClusterId(cluster_id)))
-      .Times(1);
-
-  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestGetProductInfo_FeatureEnabled) {
-  EXPECT_CALL(tracker_, NotifyEvent("price_tracking_side_panel_shown"));
-
-  shopping_service_->SetIsReady(true);
-  shopping_service_->SetIsShoppingListEligible(true);
-
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      true, 1230000, "usd");
-  AddProductBookmark(bookmark_model_.get(), u"product 2",
-                     GURL("http://example.com/2"), 456L, false, 4560000, "usd");
-  shopping_service_->SetGetAllSubscriptionsCallbackValue(
-      {BuildUserSubscriptionForClusterId(123L)});
-
-  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
-  bookmark_list.push_back(product);
-  shopping_service_->SetGetAllPriceTrackedBookmarksCallbackValue(bookmark_list);
-  shopping_service_->SetGetAllShoppingBookmarksValue(bookmark_list);
-
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> mojo_list =
-      ShoppingServiceHandler::BookmarkListToMojoList(*bookmark_model_,
-                                                  bookmark_list, "en-us");
-
-  handler_->GetAllPriceTrackedBookmarkProductInfo(base::BindOnce(
-      &GetEvaluationProductInfos, base::DoNothing(), std::move(mojo_list)));
-
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestGetAllShoppingInfo_FeatureEnabled) {
-  base::RunLoop run_loop;
-
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      true, 1230000, "usd");
-  const bookmarks::BookmarkNode* product2 = AddProductBookmark(
-      bookmark_model_.get(), u"product 2", GURL("http://example.com/2"), 456L,
-      false, 4560000, "usd");
-
-  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
-  bookmark_list.push_back(product);
-  bookmark_list.push_back(product2);
-  shopping_service_->SetGetAllPriceTrackedBookmarksCallbackValue(bookmark_list);
-  shopping_service_->SetGetAllShoppingBookmarksValue(bookmark_list);
-
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> mojo_list =
-      ShoppingServiceHandler::BookmarkListToMojoList(*bookmark_model_,
-                                                  bookmark_list, "en-us");
-
-  handler_->GetAllShoppingBookmarkProductInfo(
-      base::BindOnce(&GetEvaluationProductInfos, run_loop.QuitClosure(),
-                     std::move(mojo_list)));
-}
-
 TEST_F(ShoppingServiceHandlerTest,
        TestGetProductInfoForCurrentUrl_FeatureEligible) {
   base::RunLoop run_loop;
@@ -485,8 +165,7 @@ TEST_F(ShoppingServiceHandlerTest,
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         shopping_service::mojom::ProductInfoPtr product_info) {
+      [](base::RunLoop* run_loop, shared::mojom::ProductInfoPtr product_info) {
         ASSERT_EQ("example_title", product_info->title);
         ASSERT_EQ("example_cluster_title", product_info->cluster_title);
         ASSERT_EQ(123u, product_info->cluster_id);
@@ -513,7 +192,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductInfoForUrl) {
       GURL("http://example.com/"),
       base::BindOnce(
           [](base::RunLoop* run_loop, const GURL& url,
-             shopping_service::mojom::ProductInfoPtr product_info) {
+             shared::mojom::ProductInfoPtr product_info) {
             ASSERT_EQ("example_title", product_info->title);
             ASSERT_EQ("example_cluster_title", product_info->cluster_title);
             ASSERT_EQ(123u, product_info->cluster_id);
@@ -536,8 +215,7 @@ TEST_F(ShoppingServiceHandlerTest,
   shopping_service_->SetIsPriceInsightsEligible(false);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         shopping_service::mojom::ProductInfoPtr product_info) {
+      [](base::RunLoop* run_loop, shared::mojom::ProductInfoPtr product_info) {
         ASSERT_EQ("", product_info->title);
         ASSERT_EQ("", product_info->cluster_title);
         run_loop->Quit();
@@ -869,65 +547,6 @@ TEST_F(ShoppingServiceHandlerTest,
   run_loop.Run();
 }
 
-TEST_F(ShoppingServiceHandlerTest, TestTrackPriceForCurrentUrl) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      false, 1230000, "usd");
-  EXPECT_CALL(*delegate_, GetOrAddBookmarkForCurrentUrl)
-      .Times(1)
-      .WillOnce(testing::Return(product));
-  EXPECT_CALL(*shopping_service_,
-              Subscribe(VectorHasSubscriptionWithId("123"), testing::_))
-      .Times(1);
-
-  handler_->SetPriceTrackingStatusForCurrentUrl(true);
-
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::Shopping_ShoppingAction::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  ukm_recorder.ExpectEntryMetric(
-      entries[0], ukm::builders::Shopping_ShoppingAction::kPriceTrackedName, 1);
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestUntrackPriceForCurrentUrl) {
-  ProductInfo info;
-  info.product_cluster_id = 123u;
-  info.title = "product";
-  AddProductBookmark(bookmark_model_.get(), u"product",
-                     GURL("http://example.com/1"),
-                     info.product_cluster_id.value(), false, 1230000, "usd");
-  shopping_service_->SetIsSubscribedCallbackValue(true);
-  shopping_service_->SetResponseForGetProductInfoForUrl(info);
-
-  EXPECT_CALL(*delegate_, GetOrAddBookmarkForCurrentUrl).Times(0);
-  EXPECT_CALL(*shopping_service_,
-              Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_))
-      .Times(1);
-
-  handler_->SetPriceTrackingStatusForCurrentUrl(false);
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(ShoppingServiceHandlerTest,
-       TestGetParentBookmarkFolderNameForCurrentUrl_NoBookmark) {
-  base::RunLoop run_loop;
-  handler_->GetParentBookmarkFolderNameForCurrentUrl(base::BindOnce(
-      [](base::RunLoop* run_loop, const std::u16string& name) {
-        ASSERT_EQ(u"", name);
-        run_loop->Quit();
-      },
-      &run_loop));
-
-  run_loop.Run();
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
-  EXPECT_CALL(*delegate_, ShowBookmarkEditorForCurrentUrl).Times(1);
-
-  handler_->ShowBookmarkEditorForCurrentUrl();
-}
-
 TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
   ProductSpecifications specs;
   specs.product_dimension_map[1] = "color";
@@ -975,8 +594,6 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
           },
           &run_loop, handler_.get()));
   run_loop.Run();
-
-  handler_->ShowBookmarkEditorForCurrentUrl();
 }
 
 TEST_F(ShoppingServiceHandlerTest,
@@ -1092,26 +709,6 @@ TEST_F(ShoppingServiceHandlerTest,
   ASSERT_NE(
       log_id_one,
       entry_two->log_ai_data_request()->model_execution_info().execution_id());
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestBookmarkNodeMoved) {
-  uint64_t cluster_id = 12345u;
-
-  const bookmarks::BookmarkNode* node_with_product = AddProductBookmark(
-      bookmark_model_.get(), u"title", GURL("https://example.com"), cluster_id);
-  shopping_service_->SetIsSubscribedCallbackValue(true);
-  const bookmarks::BookmarkNode* node_without_product =
-      bookmark_model_->AddNewURL(bookmark_model_->other_node(), 0, u"title",
-                                 GURL("https://test.com"));
-
-  EXPECT_CALL(page_, OnProductBookmarkMoved(
-                         MojoBookmarkInfoWithId(node_with_product->id())))
-      .Times(1);
-  bookmark_model_->Move(node_with_product, bookmark_model_->bookmark_bar_node(),
-                        0);
-  bookmark_model_->Move(node_without_product,
-                        bookmark_model_->bookmark_bar_node(), 1);
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestGetAllProductSpecificationsSets) {
@@ -1321,11 +918,10 @@ TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_ShowRange) {
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("$100.00 - $200.00", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("$100.00 - $200.00", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1339,11 +935,10 @@ TEST_F(ShoppingServiceHandlerTest,
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("$100.00+", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("$100.00+", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1357,11 +952,10 @@ TEST_F(ShoppingServiceHandlerTest,
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("$200.00", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("$200.00", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1374,11 +968,10 @@ TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_Unspecified) {
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("-", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("-", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1391,11 +984,10 @@ TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_SinglePrice) {
 
   base::RunLoop run_loop;
   handler_->GetProductInfoForUrl(
-      GURL(),
-      base::BindOnce([](const GURL& url,
-                        shopping_service::mojom::ProductInfoPtr product_info) {
-        ASSERT_EQ("$150.00", product_info->price_summary);
-      }).Then(run_loop.QuitClosure()));
+      GURL(), base::BindOnce([](const GURL& url,
+                                shared::mojom::ProductInfoPtr product_info) {
+                ASSERT_EQ("$150.00", product_info->price_summary);
+              }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1413,14 +1005,12 @@ class ShoppingServiceHandlerFeatureDisableTest : public testing::Test {
     shopping_service_ = std::make_unique<MockShoppingService>();
     shopping_service_->SetAccountChecker(account_checker_.get());
     handler_ = std::make_unique<commerce::ShoppingServiceHandler>(
-        page_.BindAndGetRemote(),
         mojo::PendingReceiver<
             shopping_service::mojom::ShoppingServiceHandler>(),
         bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
         &tracker_, nullptr, nullptr);
   }
 
-  MockPage page_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockAccountChecker> account_checker_;
   std::unique_ptr<MockShoppingService> shopping_service_;
@@ -1430,24 +1020,6 @@ class ShoppingServiceHandlerFeatureDisableTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList features_;
 };
-
-TEST_F(ShoppingServiceHandlerFeatureDisableTest,
-       TestGetProductInfo_FeatureDisabled) {
-  shopping_service_->SetIsShoppingListEligible(false);
-  EXPECT_CALL(tracker_, NotifyEvent("price_tracking_side_panel_shown"))
-      .Times(0);
-
-  const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      true, 1230000, "usd");
-
-  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
-  bookmark_list.push_back(product);
-  std::vector<shopping_service::mojom::BookmarkProductInfoPtr> empty_list;
-
-  handler_->GetAllPriceTrackedBookmarkProductInfo(base::BindOnce(
-      &GetEvaluationProductInfos, base::DoNothing(), std::move(empty_list)));
-}
 
 class ShoppingServiceHandlerLoggingDisableTest
     : public ShoppingServiceHandlerTest {
@@ -1482,8 +1054,6 @@ TEST_F(ShoppingServiceHandlerLoggingDisableTest,
           handler_.get())
           .Then(run_loop.QuitClosure()));
   run_loop.Run();
-
-  handler_->ShowBookmarkEditorForCurrentUrl();
 }
 
 TEST_F(ShoppingServiceHandlerLoggingDisableTest,

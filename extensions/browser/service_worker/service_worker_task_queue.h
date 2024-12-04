@@ -187,18 +187,22 @@ class ServiceWorkerTaskQueue
 
     void SetWorkerId(const WorkerId& worker_id,
                      ProcessManager* process_manager);
+    void ResetWorkerId() { worker_id_.reset(); }
+    void SetBrowserState(BrowserState browser_state) {
+      browser_state_ = browser_state;
+    }
+    void SetRendererState(RendererState renderer_state) {
+      renderer_state_ = renderer_state;
+    }
 
     bool ready() const;
 
     BrowserState browser_state() const { return browser_state_; }
+    RendererState renderer_state() const { return renderer_state_; }
 
     const std::optional<WorkerId>& worker_id() const { return worker_id_; }
 
    private:
-    // TODO(crbug.com/40936639): Remove this friend class reference now that
-    // there are accessors for the class members.
-    friend class ServiceWorkerTaskQueue;
-
     BrowserState browser_state_ = BrowserState::kInitial;
     RendererState renderer_state_ = RendererState::kInitial;
 

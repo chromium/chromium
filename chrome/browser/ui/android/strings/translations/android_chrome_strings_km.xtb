@@ -942,6 +942,7 @@
 <translation id="5316947901395241499">ការរក្សាទុកពាក្យសម្ងាត់ត្រូវបានបិទដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5319359161174645648">Google ណែនាំ Chrome</translation>
+<translation id="5326246328175179736">អ្នក​មិនអាច​ចូល​ដោយប្រើ​គណនីនេះ​បានទេ</translation>
 <translation id="5328542107300944283">ប្រើ​តាមរយៈ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">សំណើសុំ​ការអនុញ្ញាត</translation>
 <translation id="534580735623577507">មិនមាន​គេហទំព័រ​ពីរយៈពេល <ph name="TIME_PERIOD" />ទេ</translation>
@@ -951,6 +952,7 @@
 <translation id="5375577065097716013">ស្វែងរករូបភាពដោយប្រើ Google Lens <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">ចេញ​ពីមុខងារឯកជន</translation>
 <translation id="5395376160638294582">សូមប្រាកដថា អ្នកអាចប្រើទិន្នន័យ Chrome នៅក្នុងគណនី Google របស់អ្នកបានជានិច្ច</translation>
+<translation id="5397794290049113714">អ្នក</translation>
 <translation id="539881862970320163">បានណែនាំ​ពាក្យសម្ងាត់ខ្លាំង។ បាន​លាក់​ក្ដារចុច។</translation>
 <translation id="5409881200985013443">ដាក់បញ្ជូន <ph name="ONE_TIME_CODE" /> នៅលើ <ph name="CLIENT_NAME" /> ឬ?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) ចង់ឱ្យ​អ្នកចូលរួម​ក្រុមផ្ទាំង។ គ្រប់គ្នាដែល​មានតំណនេះ​អាចកែ​ផ្ទាំង​ទាំងអស់​បាន ដូច្នេះ​សូមចូលរួម​ដោយ​ប្រុងប្រយ័ត្ន។ តំណនេះ​ផុតកំណត់​ក្នុង​រយៈពេល 48 ម៉ោង។</translation>
@@ -978,6 +980,7 @@
 <translation id="5514904542973294328">បិទដោយ​អ្នក​គ្រប់គ្រងឧបករណ៍នេះ</translation>
 <translation id="5515439363601853141">ដោះសោ​ដើម្បី​មើល​ពាក្យសម្ងាត់​របស់អ្នក</translation>
 <translation id="5517095782334947753">អ្នកមានចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀតពី <ph name="FROM_ACCOUNT" /> ។</translation>
+<translation id="5517326820028369152">សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ</translation>
 <translation id="5524843473235508879">​បាន​ទប់ស្កាត់​ការបញ្ជូន​បន្ត។</translation>
 <translation id="5526281268548144413">មិនអាចបិទ​នៅលើ​វិនដូ​ច្រើន​បានទេ</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# នាទី​មុន}other{# នាទី​មុន}}</translation>
@@ -1280,6 +1283,7 @@
 <translation id="6817747507826986771">ចែករំលែកទំព័រនេះបានយ៉ាងរហ័ស។ ដើម្បីកែផ្លូវកាត់នេះ សូមចុចឱ្យជាប់។</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">បានបិទការដំឡើងកំណែកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
+<translation id="6824933543577433709">បានបិទ​សន្លឹក​ខាងក្រោម​សកម្មភាព​ថ្មីៗ</translation>
 <translation id="6828070228333235514">ឈប់តាមដានតម្លៃ</translation>
 <translation id="6830728435402077660">គ្មានសុវត្ថិភាព</translation>
 <translation id="6831043979455480757">បកប្រែ</translation>
@@ -1498,6 +1502,7 @@
 <translation id="7691043218961417207">រុករកខ្លឹមសារសម្រាប់តាមដាន</translation>
 <translation id="7697383401610880082">ដង​អូស</translation>
 <translation id="7698359219371678927">បង្កើតអ៊ីមែលនៅក្នុង <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">បានបើក​សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ​ពេញអេក្រង់</translation>
 <translation id="7707922173985738739">ប្រើ​ទិន្នន័យ​ទូរសព្ទចល័ត</translation>
 <translation id="7709918231054955894">ទទួលបាន​ផ្ទាំង​ទាំងអស់​របស់អ្នក</translation>
 <translation id="7733878270780732638">មិនមាន​ទំហំផ្ទុក​គ្រប់គ្រាន់​លើឧបករណ៍ទេ។</translation>

@@ -37,6 +37,7 @@ constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
     {Suggestion::Icon::kCardVerve, IDR_AUTOFILL_CC_VERVE},
     {Suggestion::Icon::kCardVisa, IDR_AUTOFILL_CC_VISA},
     {Suggestion::Icon::kIban, IDR_AUTOFILL_IBAN},
+    {Suggestion::Icon::kBnpl, IDR_AUTOFILL_BNPL_GENERIC},
 #if BUILDFLAG(IS_ANDROID)
     {Suggestion::Icon::kHttpWarning, IDR_ANDROID_AUTOFILL_HTTP_WARNING},
     {Suggestion::Icon::kHttpsInvalid,
@@ -71,6 +72,7 @@ constexpr auto kNewCardArtAndNetworkDataResources =
         {Suggestion::Icon::kCardVerve, IDR_AUTOFILL_METADATA_CC_VERVE},
         {Suggestion::Icon::kCardVisa, IDR_AUTOFILL_METADATA_CC_VISA},
         {Suggestion::Icon::kIban, IDR_AUTOFILL_IBAN},
+        {Suggestion::Icon::kBnpl, IDR_AUTOFILL_METADATA_BNPL_GENERIC},
 #if BUILDFLAG(IS_ANDROID)
         {Suggestion::Icon::kHttpWarning, IDR_ANDROID_AUTOFILL_HTTP_WARNING},
         {Suggestion::Icon::kHttpsInvalid,

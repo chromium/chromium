@@ -878,6 +878,18 @@ const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
      switches::kDisableGpuRasterization, ""},
 };
 
+const FeatureEntry::FeatureParam kEnableLazyLoadImageForAllInvisiblePage[] = {
+    {"enabled_page_type", "all_invisible_page"}};
+const FeatureEntry::FeatureParam kEnableLazyLoadImageForPrerenderPage[] = {
+    {"enabled_page_type", "prerender_page"}};
+
+const FeatureEntry::FeatureVariation
+    kSearchSuggsetionPrerenderTypeVariations[] = {
+        {"for all invisible page", kEnableLazyLoadImageForAllInvisiblePage,
+         std::size(kEnableLazyLoadImageForAllInvisiblePage), nullptr},
+        {"for prerendering page", kEnableLazyLoadImageForPrerenderPage,
+         std::size(kEnableLazyLoadImageForPrerenderPage), nullptr}};
+
 const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceAutomatic, switches::kTopChromeTouchUi,
@@ -2200,13 +2212,17 @@ const FeatureEntry::FeatureVariation kRichAutocompletionAndroidVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kJumpStartOmnibox1Minute[] = {
-    {"jump_start_min_away_time_minutes", "1"}};
+    {"jump_start_min_away_time_minutes", "1"},
+    {"jump_start_cover_recently_visited_page", "true"}};
 const FeatureEntry::FeatureParam kJumpStartOmnibox15Minutes[] = {
-    {"jump_start_min_away_time_minutes", "15"}};
+    {"jump_start_min_away_time_minutes", "15"},
+    {"jump_start_cover_recently_visited_page", "true"}};
 const FeatureEntry::FeatureParam kJumpStartOmnibox30Minutes[] = {
-    {"jump_start_min_away_time_minutes", "30"}};
+    {"jump_start_min_away_time_minutes", "30"},
+    {"jump_start_cover_recently_visited_page", "true"}};
 const FeatureEntry::FeatureParam kJumpStartOmnibox60Minutes[] = {
-    {"jump_start_min_away_time_minutes", "60"}};
+    {"jump_start_min_away_time_minutes", "60"},
+    {"jump_start_cover_recently_visited_page", "true"}};
 
 const FeatureEntry::FeatureVariation kJumpStartOmniboxVariations[] = {
     {"(after 1min)", kJumpStartOmnibox1Minute,
@@ -2661,9 +2677,18 @@ const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_UseLargeFavicon[] = {
         {"use_large_favicon", "true"}};
 const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown[] = {
+        {"force_card_shown", "true"},
+        {"use_large_favicon", "true"}};
+const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck[] = {
         {"skip_device_check", "true"},
         {"use_large_favicon", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown
+        [] = {{"force_card_shown", "true"},
+              {"skip_device_check", "true"},
+              {"use_large_favicon", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_DelayTime200Ms[] = {
         {"schedule_delay_time_ms", "200"}};
@@ -2672,23 +2697,32 @@ const FeatureEntry::FeatureParam
         {"schedule_delay_time_ms", "200"},
         {"use_large_favicon", "true"}};
 
-const FeatureEntry::FeatureVariation
-    kAndroidAppIntegrationWithFaviconVariations[] = {
-        {"Use large favicon (No delay)",
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
-         std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
-        {"Skip device check + Use large favicon (No delay)",
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck,
-         std::size(
-             kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck),
-         nullptr},
-        {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
-         std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
-        {"200ms delay with large favicon",
-         kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon,
-         std::size(
-             kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
-         nullptr}};
+const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations[] =
+    {{"Use large favicon (No delay)",
+      kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
+      std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
+     {"Use large favicon (No delay) + force card shown",
+      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown,
+      std::size(
+          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown),
+      nullptr},
+     {"Skip device check + Use large favicon (No delay)",
+      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck,
+      std::size(
+          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck),
+      nullptr},
+     {"Skip device check + Use large favicon (No delay) + force card shown",
+      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown,
+      std::size(
+          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown),
+      nullptr},
+     {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
+      std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
+     {"200ms delay with large favicon",
+      kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon,
+      std::size(
+          kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
+      nullptr}};
 
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
@@ -4491,6 +4525,13 @@ const FeatureEntry kFeatureEntries[] = {
      // On Android, this is always enabled.
      kOsAura, FEATURE_VALUE_TYPE(features::kOverlayScrollbar)},
 #endif  // USE_AURA
+    {"enable-lazy-load-image-for-invisible-pages",
+     flag_descriptions::kEnableLazyLoadImageForInvisiblePageName,
+     flag_descriptions::kEnableLazyLoadImageForInvisiblePageDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         blink::features::kEnableLazyLoadImageForInvisiblePage,
+         kSearchSuggsetionPrerenderTypeVariations,
+         "EnableLazyLoadImageForInvisiblePage")},
     {"enable-quic", flag_descriptions::kQuicName,
      flag_descriptions::kQuicDescription, kOsAll,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableQuic, switches::kDisableQuic)},
@@ -6074,10 +6115,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcFriendlierErrorDialogName,
      flag_descriptions::kArcFriendlierErrorDialogDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableFriendlierErrorDialog)},
-    {"arc-file-picker-experiment",
-     flag_descriptions::kArcFilePickerExperimentName,
-     flag_descriptions::kArcFilePickerExperimentDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kFilePickerExperimentFeature)},
     {"arc-native-bridge-toggle", flag_descriptions::kArcNativeBridgeToggleName,
      flag_descriptions::kArcNativeBridgeToggleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kNativeBridgeToggleFeature)},
@@ -7341,14 +7378,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSuppressToolbarCapturesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSuppressToolbarCaptures)},
 
-    {"enable-commerce-price-tracking",
-     commerce::flag_descriptions::kCommercePriceTrackingName,
-     commerce::flag_descriptions::kCommercePriceTrackingDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         commerce::kCommercePriceTracking,
-         commerce::kCommercePriceTrackingAndroidVariations,
-         "CommercePriceTracking")},
-
     {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
      commerce::flag_descriptions::kPriceInsightsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(commerce::kPriceInsights)},
@@ -7663,12 +7692,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktopDemo)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"hats-webui", flag_descriptions::kHatsWebUIName,
-     flag_descriptions::kHatsWebUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kHaTSWebUI)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-elegant-text-height",
      flag_descriptions::kAndroidElegantTextHeightName,
@@ -7963,10 +7986,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseSearchClickForRightClickName,
      flag_descriptions::kUseSearchClickForRightClickDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kUseSearchClickForRightClick)},
-
-    {"show-metered-toggle", flag_descriptions::kMeteredShowToggleName,
-     flag_descriptions::kMeteredShowToggleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kMeteredShowToggle)},
 
     {"display-alignment-assistance",
      flag_descriptions::kDisplayAlignmentAssistanceName,
@@ -9061,11 +9080,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrintPreviewCrosPrimary)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"cbd-timeframe-required", flag_descriptions::kCbdTimeframeRequiredName,
-     flag_descriptions::kCbdTimeframeRequiredDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCbdTimeframeRequired)},
-#endif
 
     {"prerender2", flag_descriptions::kPrerender2Name,
      flag_descriptions::kPrerender2Description, kOsAll,
@@ -10019,7 +10033,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kRenderArcNotificationsByChrome)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
     {"ios-promo-refreshed-password-bubble",
      flag_descriptions::kIOSPromoRefreshedPasswordBubbleName,
      flag_descriptions::kIOSPromoRefreshedPasswordBubbleDescription, kOsDesktop,
@@ -10032,7 +10046,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"ios-promo-payment-bubble", flag_descriptions::kIOSPromoPaymentBubbleName,
      flag_descriptions::kIOSPromoPaymentBubbleDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIOSPromoPaymentBubble)},
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-compression-dictionary-transport",
      flag_descriptions::kCompressionDictionaryTransportName,
@@ -10933,15 +10947,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrosSoulGravediggerDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootGravedigger")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"clear-login-database-for-all-migrated-upm-users",
-     flag_descriptions::kClearLoginDatabaseForAllMigratedUPMUsersName,
-     flag_descriptions::kClearLoginDatabaseForAllMigratedUPMUsersDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kClearLoginDatabaseForAllMigratedUPMUsers)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
     {"clear-undecryptable-passwords",
      flag_descriptions::kClearUndecryptablePasswordsName,
@@ -11872,6 +11877,10 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(ash::switches::kMantisFeatureKey, "")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"signature-based-sri", flag_descriptions::kSignatureBasedSriName,
+     flag_descriptions::kSignatureBasedSriDescription, kOsAll,
+     FEATURE_VALUE_TYPE(network::features::kSRIMessageSignatureEnforcement)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
@@ -12213,12 +12222,12 @@ std::vector<FeatureEntry>* GetEntriesForTesting() {
 }
 
 void SetFeatureEntries(const std::vector<FeatureEntry>& entries) {
-  CHECK(GetEntriesForTesting()->empty());  // IN-TEST
+  auto* entries_for_testing = GetEntriesForTesting();  // IN-TEST
+  CHECK(entries_for_testing->empty());
   for (const auto& entry : entries) {
-    GetEntriesForTesting()->push_back(entry);  // IN-TEST
+    entries_for_testing->push_back(entry);
   }
-  FlagsStateSingleton::GetInstance()->RebuildState(
-      *GetEntriesForTesting());  // IN-TEST
+  FlagsStateSingleton::GetInstance()->RebuildState(*entries_for_testing);
 }
 
 ScopedFeatureEntries::ScopedFeatureEntries(
@@ -12233,10 +12242,11 @@ ScopedFeatureEntries::~ScopedFeatureEntries() {
 }
 
 base::span<const FeatureEntry> GetFeatureEntries() {
-  if (!GetEntriesForTesting()->empty()) {
-    return base::span<FeatureEntry>(*GetEntriesForTesting());
+  if (const auto* entries_for_testing = GetEntriesForTesting();
+      !entries_for_testing->empty()) {
+    return *entries_for_testing;
   }
-  return base::make_span(kFeatureEntries, std::size(kFeatureEntries));
+  return kFeatureEntries;
 }
 
 }  // namespace testing

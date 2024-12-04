@@ -16,9 +16,12 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/device_api/device_service_impl.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -83,14 +86,6 @@ constexpr char kNotAffiliatedErrorMessage[] =
     "This web API is not allowed if the current profile is not affiliated.";
 
 #if BUILDFLAG(IS_CHROMEOS)
-constexpr char kTrustedIwaManifestFile[] = "manifest_app1.json";
-constexpr char kTrustedIwaManifestUrl[] =
-    "https://example.com/manifest_app1.json";
-constexpr char kTrustedIwaSignedWebBundle[] = "web_bundle_app.swbn";
-constexpr char kBaseUrlForUrlLoader[] = "https://example.com/";
-constexpr char kUpdateManifestValueApp[] = R"(
-    {"versions":
-    [{"version": "1.0.0","src": "https://example.com/web_bundle_app.swbn"}]})";
 constexpr char kUntrustedIwaAppOrigin[] =
     "isolated-app://abc2sheak3vpmm7vmjqnjwuzx3xwot3vdayrlgnvbkq2mp5lg4daaaic";
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -388,31 +383,27 @@ class DeviceAPIServiceIwaTest : public DeviceAPIServiceWebAppTest {
   }
 
   void InstallTrustedApps() override {
-    web_app::TestSignedWebBundle swbn_app =
-        web_app::TestSignedWebBundleBuilder::BuildDefault();
+    auto app = web_app::IsolatedWebAppBuilder(
+                   web_app::ManifestBuilder().SetVersion("1.0.0"))
+                   .BuildBundle();
+    app->TrustSigningKey();
+    app->FakeInstallPageState(profile());
 
-    url_info = web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-        swbn_app.id);
-
-    web_app::IwaTestServerConfigurator configurator;
-    configurator.AddUpdateManifest(kTrustedIwaManifestFile,
-                                   kUpdateManifestValueApp);
-    configurator.AddSignedWebBundle(kTrustedIwaSignedWebBundle,
-                                    std::move(swbn_app));
-    configurator.ConfigureURLLoader(GURL(kBaseUrlForUrlLoader),
-                                    profile_url_loader_factory(),
-                                    fake_web_contents_manager());
+    url_info_ = web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+        app->web_bundle_id());
 
     web_app::WebAppTestInstallObserver install_observer(profile());
     install_observer.BeginListening({app_id()});
 
-    web_app::PolicyGenerator policy_generator;
+    web_app::IwaTestServerConfigurator configurator{
+        profile_url_loader_factory()};
+    configurator.AddBundle(std::move(app));
 
-    policy_generator.AddForceInstalledIwa(get_url_info().web_bundle_id(),
-                                          GURL(kTrustedIwaManifestUrl));
-
-    profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
-                               policy_generator.Generate());
+    profile()->GetPrefs()->SetList(
+        prefs::kIsolatedWebAppInstallForceList,
+        base::Value::List().Append(
+            web_app::IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
+                get_url_info().web_bundle_id())));
 
     EXPECT_EQ(install_observer.Wait(), app_id());
     task_environment()->RunUntilIdle();
@@ -442,7 +433,7 @@ class DeviceAPIServiceIwaTest : public DeviceAPIServiceWebAppTest {
   }
 
   const web_app::IsolatedWebAppUrlInfo& get_url_info() const {
-    return *url_info;
+    return *url_info_;
   }
 
   const webapps::AppId& app_id() const { return get_url_info().app_id(); }
@@ -454,7 +445,7 @@ class DeviceAPIServiceIwaTest : public DeviceAPIServiceWebAppTest {
 
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kIsolatedWebApps};
-  std::optional<web_app::IsolatedWebAppUrlInfo> url_info;
+  std::optional<web_app::IsolatedWebAppUrlInfo> url_info_;
 };
 
 TEST_F(DeviceAPIServiceIwaTest, ConnectsForTrustedApps) {

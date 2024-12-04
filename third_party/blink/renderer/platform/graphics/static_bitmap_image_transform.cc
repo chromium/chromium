@@ -242,9 +242,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // Create the resource provider for the target for the blit.
   std::unique_ptr<CanvasResourceProvider> resource_provider;
   {
-    SkImageInfo dest_info = SkImageInfo::Make(
-        dest_size, dest_color_type, dest_alpha_type, dest_color_space);
-    constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kNo;
     // If `source` is accelerated, then use a SharedImage provider.
@@ -257,16 +254,16 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
                 .SharedImageInterface()
                 ->UsageForMailbox(source->GetMailboxHolder().mailbox);
         resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-            dest_info, kFilterQuality, kShouldInitialize, context_provider,
-            RasterMode::kGPU, shared_image_usage_flags);
+            gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
+            dest_alpha_type, dest_color_space, kShouldInitialize,
+            context_provider, RasterMode::kGPU, shared_image_usage_flags);
       }
     }
     // If not (or if the SharedImage provider fails), fall back to software.
     if (!resource_provider) {
       resource_provider = CanvasResourceProvider::CreateBitmapProvider(
           gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
-          dest_alpha_type, std::move(dest_color_space), kFilterQuality,
-          kShouldInitialize);
+          dest_alpha_type, std::move(dest_color_space), kShouldInitialize);
     }
   }
 

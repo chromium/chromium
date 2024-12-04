@@ -470,7 +470,8 @@ public class HistoricalTabSaverImplTest {
                             .unarchiveAndRestoreTabs(
                                     mActivity.getTabCreator(/* incognito= */ false),
                                     Arrays.asList(archivedTabModelSupplier.get().getTabAt(0)),
-                                    /* updateTimestamp= */ false);
+                                    /* updateTimestamp= */ false,
+                                    /* areTabsBeingOpened= */ false);
                 });
         assertEntriesAre(empty);
     }

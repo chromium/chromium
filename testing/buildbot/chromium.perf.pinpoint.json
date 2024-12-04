@@ -17,7 +17,7 @@
         "args": [
           "-v",
           "-v",
-          "--browser=android-trichrome-bundle",
+          "--browser=android-trichrome-chrome-google-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-go-wembley-perf_map.json",
           "--ignore-benchmark-exit-code"

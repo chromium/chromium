@@ -104,8 +104,8 @@ AnalyzeResponseResult CheckIfCredentialWasLeaked(
       CipherDecrypt(response->reencrypted_lookup_hash, encryption_key);
   if (!decrypted_username_password) {
     DLOG(ERROR) << "Can't decrypt data="
-                << base::HexEncode(base::as_bytes(
-                       base::make_span(response->reencrypted_lookup_hash)));
+                << base::HexEncode(
+                       base::as_byte_span(response->reencrypted_lookup_hash));
     return AnalyzeResponseResult::kDecryptionError;
   }
 

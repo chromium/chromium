@@ -18,7 +18,8 @@ namespace autofill {
 // `StartUploadRequest`.
 class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
  public:
-  explicit MockAutofillCrowdsourcingManager(AutofillClient* client);
+  explicit MockAutofillCrowdsourcingManager(AutofillClient* client,
+                                            LogManager* log_manager = nullptr);
   ~MockAutofillCrowdsourcingManager() override;
 
   MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =

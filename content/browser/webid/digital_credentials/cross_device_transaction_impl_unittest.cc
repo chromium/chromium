@@ -9,6 +9,7 @@
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -47,7 +48,8 @@ MATCHER_P(ContainsError, expected_error, "") {
   return true;
 }
 
-class DigitalIdentityCrossDeviceTransactionTest : public ::testing::Test {
+class DigitalIdentityCrossDeviceTransactionTest
+    : public ::testing::TestWithParam<RequestInfo::RequestType> {
  public:
   void SetUp() override {
     scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
@@ -72,6 +74,7 @@ class DigitalIdentityCrossDeviceTransactionTest : public ::testing::Test {
     request_value.Set("foo", "bar");
     return base::Value(std::move(request));
   }
+  RequestInfo::RequestType request_type() { return GetParam(); }
 
   static std::array<uint8_t, device::cablev2::kQRKeySize> qr_generator_key() {
     std::array<uint8_t, device::cablev2::kQRKeySize> key = {0};
@@ -92,37 +95,37 @@ class DigitalIdentityCrossDeviceTransactionTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(DigitalIdentityCrossDeviceTransactionTest, NoBle) {
+TEST_P(DigitalIdentityCrossDeviceTransactionTest, NoBle) {
   bluetooth_values_for_testing_->SetLESupported(false);
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
-      origin(), request(), qr_generator_key(), network_context_factory(),
-      base::DoNothing(), callback_.GetCallback());
+      RequestInfo(request_type(), origin(), request()), qr_generator_key(),
+      network_context_factory(), base::DoNothing(), callback_.GetCallback());
   EXPECT_THAT(callback_.Take(), ContainsError(SystemError::kNoBleSupport));
 }
 
-TEST_F(DigitalIdentityCrossDeviceTransactionTest, NoAdapter) {
+TEST_P(DigitalIdentityCrossDeviceTransactionTest, NoAdapter) {
   EXPECT_CALL(*mock_adapter_, IsPresent).WillRepeatedly(Return(false));
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
-      origin(), request(), qr_generator_key(), network_context_factory(),
-      base::DoNothing(), callback_.GetCallback());
+      RequestInfo(request_type(), origin(), request()), qr_generator_key(),
+      network_context_factory(), base::DoNothing(), callback_.GetCallback());
   EXPECT_THAT(callback_.Take(), ContainsError(SystemError::kNoBleSupport));
 }
 
-TEST_F(DigitalIdentityCrossDeviceTransactionTest, PermissionDenied) {
+TEST_P(DigitalIdentityCrossDeviceTransactionTest, PermissionDenied) {
   EXPECT_CALL(*mock_adapter_, IsPresent).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_adapter_, GetOsPermissionStatus)
       .WillRepeatedly(
           Return(device::BluetoothAdapter::PermissionStatus::kDenied));
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
-      origin(), request(), qr_generator_key(), network_context_factory(),
-      base::DoNothing(), callback_.GetCallback());
+      RequestInfo(request_type(), origin(), request()), qr_generator_key(),
+      network_context_factory(), base::DoNothing(), callback_.GetCallback());
   EXPECT_THAT(callback_.Take(), ContainsError(SystemError::kPermissionDenied));
 }
 
-TEST_F(DigitalIdentityCrossDeviceTransactionTest, NoPowerThenPowered) {
+TEST_P(DigitalIdentityCrossDeviceTransactionTest, NoPowerThenPowered) {
   EXPECT_CALL(*mock_adapter_, IsPresent).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_adapter_, GetOsPermissionStatus)
       .WillRepeatedly(
@@ -130,8 +133,9 @@ TEST_F(DigitalIdentityCrossDeviceTransactionTest, NoPowerThenPowered) {
   EXPECT_CALL(*mock_adapter_, IsPowered).WillRepeatedly(Return(false));
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
-      origin(), request(), qr_generator_key(), network_context_factory(),
-      event_callback_.GetRepeatingCallback(), callback_.GetCallback());
+      RequestInfo(request_type(), origin(), request()), qr_generator_key(),
+      network_context_factory(), event_callback_.GetRepeatingCallback(),
+      callback_.GetCallback());
 
   EXPECT_EQ(event_callback_.Take(), Event(SystemEvent::kBluetoothNotPowered));
 
@@ -141,7 +145,7 @@ TEST_F(DigitalIdentityCrossDeviceTransactionTest, NoPowerThenPowered) {
   EXPECT_EQ(event_callback_.Take(), Event(SystemEvent::kReady));
 }
 
-TEST_F(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenDenied) {
+TEST_P(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenDenied) {
   EXPECT_CALL(*mock_adapter_, IsPresent).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_adapter_, GetOsPermissionStatus)
       .WillOnce(
@@ -156,8 +160,9 @@ TEST_F(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenDenied) {
                   callback) { permission_callback = std::move(callback); }));
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
-      origin(), request(), qr_generator_key(), network_context_factory(),
-      event_callback_.GetRepeatingCallback(), callback_.GetCallback());
+      RequestInfo(request_type(), origin(), request()), qr_generator_key(),
+      network_context_factory(), event_callback_.GetRepeatingCallback(),
+      callback_.GetCallback());
 
   EXPECT_EQ(event_callback_.Take(), Event(SystemEvent::kNeedPermission));
 
@@ -167,7 +172,7 @@ TEST_F(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenDenied) {
   EXPECT_THAT(callback_.Take(), ContainsError(SystemError::kPermissionDenied));
 }
 
-TEST_F(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenGranted) {
+TEST_P(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenGranted) {
   EXPECT_CALL(*mock_adapter_, IsPresent).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_adapter_, GetOsPermissionStatus)
       .WillOnce(
@@ -182,8 +187,9 @@ TEST_F(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenGranted) {
                   callback) { permission_callback = std::move(callback); }));
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
-      origin(), request(), qr_generator_key(), network_context_factory(),
-      event_callback_.GetRepeatingCallback(), callback_.GetCallback());
+      RequestInfo(request_type(), origin(), request()), qr_generator_key(),
+      network_context_factory(), event_callback_.GetRepeatingCallback(),
+      callback_.GetCallback());
 
   EXPECT_EQ(event_callback_.Take(), Event(SystemEvent::kNeedPermission));
 
@@ -193,7 +199,7 @@ TEST_F(DigitalIdentityCrossDeviceTransactionTest, NeedPermissionThenGranted) {
   EXPECT_EQ(event_callback_.Take(), Event(SystemEvent::kReady));
 }
 
-TEST_F(DigitalIdentityCrossDeviceTransactionTest,
+TEST_P(DigitalIdentityCrossDeviceTransactionTest,
        BleTurnedOffDuringTransaction) {
   EXPECT_CALL(*mock_adapter_, IsPresent).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_adapter_, GetOsPermissionStatus)
@@ -201,8 +207,9 @@ TEST_F(DigitalIdentityCrossDeviceTransactionTest,
   EXPECT_CALL(*mock_adapter_, IsPowered).WillRepeatedly(Return(true));
 
   std::unique_ptr<Transaction> transaction = Transaction::New(
-      origin(), request(), qr_generator_key(), network_context_factory(),
-      event_callback_.GetRepeatingCallback(), callback_.GetCallback());
+      RequestInfo(request_type(), origin(), request()), qr_generator_key(),
+      network_context_factory(), event_callback_.GetRepeatingCallback(),
+      callback_.GetCallback());
 
   EXPECT_EQ(event_callback_.Take(), Event(SystemEvent::kReady));
 
@@ -211,6 +218,11 @@ TEST_F(DigitalIdentityCrossDeviceTransactionTest,
 
   EXPECT_THAT(callback_.Take(), ContainsError(SystemError::kLostPower));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DigitalIdentityCrossDeviceTransactionTest,
+                         ::testing::Values(RequestInfo::RequestType::kGet,
+                                           RequestInfo::RequestType::kCreate));
 
 }  // namespace
 }  // namespace content::digital_credentials::cross_device

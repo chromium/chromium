@@ -265,11 +265,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   DownloadManagerTabHelper::CreateForWebState(web_state);
   SafariDownloadTabHelper::CreateForWebState(web_state);
   VcardTabHelper::CreateForWebState(web_state);
-
-  // Drive tab helper.
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    DocumentDownloadTabHelper::CreateForWebState(web_state);
-  }
+  DocumentDownloadTabHelper::CreateForWebState(web_state);
 
   PageloadForegroundDurationTabHelper::CreateForWebState(web_state);
 

@@ -288,6 +288,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
       std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {}
   void SetResponse(const ResourceResponse&);
   const ResourceResponse& GetResponse() const { return response_; }
+  ResourceResponse& GetMutableResponseForTesting() { return response_; }
 
   // Sets the serialized metadata retrieved from the platform's cache.
   // The default implementation does nothing. Subclasses interested in the data

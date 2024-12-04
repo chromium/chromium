@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "google_apis/common/base_requests.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace google_apis {
 class RequestSender;
@@ -29,21 +30,20 @@ using UploadTokenCallback = base::OnceCallback<void(
 class UploadTokenRequest : public google_apis::UrlFetchRequestBase {
  public:
   UploadTokenRequest(google_apis::RequestSender* sender,
-                     std::string gaia_id,
+                     GaiaId gaia_id,
                      std::string token,
                      UploadTokenCallback callback);
   UploadTokenRequest(const UploadTokenRequest&) = delete;
   UploadTokenRequest& operator=(const UploadTokenRequest&) = delete;
   ~UploadTokenRequest() override;
 
-  const std::string gaia_id() const { return gaia_id_; }
+  const GaiaId& gaia_id() const { return gaia_id_; }
 
   // For testing.
   void OverrideURLForTesting(std::string url);
 
   UploadTokenCallback callback() { return std::move(callback_); }
 
-  std::string gaia_id() { return gaia_id_; }
   std::string token() { return token_; }
 
  protected:
@@ -65,7 +65,7 @@ class UploadTokenRequest : public google_apis::UrlFetchRequestBase {
  private:
   void OnDataParsed(bool success);
 
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::string token_;
 
   std::string url_base_;

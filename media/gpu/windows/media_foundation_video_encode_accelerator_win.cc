@@ -128,6 +128,9 @@ constexpr FramerateAndResolution kDefaultMaxFramerateAndResolution = {
     kDefaultFrameRateNumerator / kDefaultFrameRateDenominator,
     gfx::Size(1920, 1080)};
 
+// The default supported min resolution.
+constexpr gfx::Size kDefaultMinResolution(32, 32);
+
 // For H.264, some NVIDIA GPUs may report `MF_VIDEO_MAX_MB_PER_SEC` value equals
 // to `6799902`, resulting chromium think 8K & 30fps is supported, and some
 // Intel GPUs only support level 5.2. Since most devices only support up to 4K,
@@ -149,8 +152,6 @@ constexpr FramerateAndResolution kModern4KMaxFramerateAndResolution = {
     300, gfx::Size(3840, 2160)};
 constexpr FramerateAndResolution kModern8KMaxFramerateAndResolution = {
     128, gfx::Size(7680, 4320)};
-
-constexpr gfx::Size kMinResolution(32, 32);
 
 constexpr CLSID kIntelAV1HybridEncoderCLSID = {
     0x62c053ce,
@@ -770,6 +771,105 @@ std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
   return framerate_and_resolutions;
 }
 
+// Ideally, we should query the API to get the minimum resolution of each codec
+// under each vendor. However, since there is no such API available, based on
+// the actual results, although the minimum resolutions of different codecs for
+// each vendor vary, but the results always remain consistent among different
+// GPU models. Therefore, we can just hardcode these values within the function.
+gfx::Size GetMinResolution(
+    VideoCodec codec,
+    MediaFoundationVideoEncodeAccelerator::DriverVendor vendor) {
+  using DriverVendor = MediaFoundationVideoEncodeAccelerator::DriverVendor;
+  switch (codec) {
+    case VideoCodec::kH264:
+      switch (vendor) {
+        case DriverVendor::kAMD:
+          // Below result based on: AMD Radeon(TM) Graphics (Ryzen 7 Pro 4750U),
+          // AMD Radeon(TM) Graphics (Ryzen 9 9950X), AMD Radeon(TM) RX 6600.
+          return gfx::Size(128, 128);
+        case DriverVendor::kIntel:
+          // Below result based on: Intel UHD Graphics 750, Intel Arc(TM) A380,
+          // Intel Arc(TM) Graphic (Ultra5 125H), Intel(R) Iris(R) Xe MAX
+          // Graphics.
+          return gfx::Size(18, 18);
+        case DriverVendor::kNvidia:
+          // Below result based on: NVIDIA RTX 3050, NVIDIA RTX 3070, NVIDIA RTX
+          // 4080.
+          return gfx::Size(146, 50);
+        case DriverVendor::kQualcomm:
+          // Below result based on: Qualcomm(R) Adreno(TM) 690, Qualcomm(R)
+          // Adreno(TM) X1-85.
+          return gfx::Size(96, 96);
+        case DriverVendor::kOther:
+          return kDefaultMinResolution;
+      }
+    case VideoCodec::kHEVC:
+      switch (vendor) {
+        case DriverVendor::kAMD:
+          // Below result based on: AMD Radeon(TM) Graphics (Ryzen 7 Pro 4750U),
+          // AMD Radeon(TM) Graphics (Ryzen 9 9950X), AMD Radeon(TM) RX 6600.
+          return gfx::Size(130, 128);
+        case DriverVendor::kIntel:
+          // Below result based on: Intel UHD Graphics 750, Intel Arc(TM) A380,
+          // Intel Arc(TM) Graphic (Ultra5 125H), Intel(R) Iris(R) Xe MAX
+          // Graphics.
+          return gfx::Size(66, 114);
+        case DriverVendor::kNvidia:
+          // Below result based on: NVIDIA RTX 3050, NVIDIA RTX 3070, NVIDIA RTX
+          // 4080.
+          return gfx::Size(130, 34);
+        case DriverVendor::kQualcomm:
+          // Below result based on: Qualcomm(R) Adreno(TM) 690, Qualcomm(R)
+          // Adreno(TM) X1-85.
+          return gfx::Size(96, 96);
+        case DriverVendor::kOther:
+          return kDefaultMinResolution;
+      }
+    case VideoCodec::kVP9:
+      switch (vendor) {
+        case DriverVendor::kAMD:
+          // Below result based on: AMD Radeon(TM) Graphics (Ryzen 9 9950X).
+          return gfx::Size(66, 66);
+        case DriverVendor::kIntel:
+          // Below result based on: Intel UHD Graphics 750, Intel Arc(TM) A380,
+          // Intel Arc(TM) Graphic (Ultra5 125H), Intel(R) Iris(R) Xe MAX
+          // Graphics.
+          //
+          // NOTE: Intel UHD Graphics 750, Intel Arc(TM) A380, Intel(R) Iris(R)
+          // Xe MAX Graphics actually only requires >= 66x66, but Intel Arc(TM)
+          // Graphic (Ultra5 125H) requires >= 66x120.
+          return gfx::Size(66, 120);
+        case DriverVendor::kNvidia:
+          // Below result based on: NVIDIA RTX 4080.
+          return gfx::Size(66, 66);
+        // As of the testing date, no Qualcomm hardware supports VP9 encoding.
+        case DriverVendor::kQualcomm:
+        case DriverVendor::kOther:
+          return kDefaultMinResolution;
+      }
+    case VideoCodec::kAV1:
+      switch (vendor) {
+        case DriverVendor::kAMD:
+          // Below result based on: AMD Radeon(TM) Graphics (Ryzen 9 9950X).
+          return gfx::Size(114, 82);
+        case DriverVendor::kIntel:
+          // Below result based on: Intel Arc(TM) A380, Intel Arc(TM) Graphic
+          // (Ultra5 125H).
+          return gfx::Size(114, 82);
+        case DriverVendor::kNvidia:
+          // Below result based on: NVIDIA RTX 4080.
+          return gfx::Size(130, 66);
+        case DriverVendor::kQualcomm:
+          // Below result based on: Qualcomm(R) Adreno(TM) X1-85.
+          return gfx::Size(256, 128);
+        case DriverVendor::kOther:
+          return kDefaultMinResolution;
+      }
+    default:
+      NOTREACHED();
+  }
+}
+
 int GetMaxTemporalLayer(VideoCodec codec,
                         std::vector<ComPtr<IMFActivate>>& activates,
                         const gpu::GpuDriverBugWorkarounds& workarounds) {
@@ -966,6 +1066,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
     std::vector<FramerateAndResolution> max_framerate_and_resolutions = {
         kDefaultMaxFramerateAndResolution};
+    gfx::Size min_resolution = kDefaultMinResolution;
 
     if (base::FeatureList::IsEnabled(
             kExpandMediaFoundationEncodingResolutions)) {
@@ -984,6 +1085,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
       CHECK(encoder);
       max_framerate_and_resolutions =
           GetMaxFramerateAndResolutionsFromMFT(codec, encoder.Get());
+      min_resolution = GetMinResolution(codec, GetDriverVendor(activate));
       activate->ShutdownObject();
     }
 
@@ -991,6 +1093,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
       DVLOG(3) << __func__ << ": " << codec << " codec, max resolution width: "
                << max_framerate_and_resolution.resoluion.width() << ", height: "
                << max_framerate_and_resolution.resoluion.height()
+               << ", min resolution width: " << min_resolution.width()
+               << ", height: " << min_resolution.height()
                << ", framerate: " << max_framerate_and_resolution.frame_rate;
 
       SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN,
@@ -999,7 +1103,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
                                    kDefaultFrameRateDenominator,
                                kDefaultFrameRateDenominator, bitrate_mode,
                                {SVCScalabilityMode::kL1T1});
-      profile.min_resolution = kMinResolution;
+      profile.min_resolution = min_resolution;
 
       if (!workarounds_.disable_svc_encoding) {
         if (num_temporal_layers >= 2) {
@@ -1017,7 +1121,6 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
       SupportedProfile portrait_profile(profile);
       portrait_profile.max_resolution.Transpose();
-      portrait_profile.min_resolution.Transpose();
 
       std::vector<VideoCodecProfile> codec_profiles;
       if (codec == VideoCodec::kH264) {
@@ -1269,6 +1372,13 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   encoder_info_.supports_frame_size_change =
       !workarounds_.disable_media_foundation_frame_size_change;
 
+  if (rate_ctrl_) {
+    // Software rate control should always have a trusted QP. We are safe to
+    // report encoder info right away.
+    client_->NotifyEncoderInfoChange(encoder_info_);
+    encoder_info_sent_ = true;
+  }
+
   if (!base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing) ||
       config.input_format == PIXEL_FORMAT_NV12) {
     return true;
@@ -1307,8 +1417,6 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
       << "Using video processor to convert from " << config.input_format
       << " to encoder accepted " << vp_config.output_format;
 
-  // Notify encoder info change to client after initialization succeeded.
-  client_->NotifyEncoderInfoChange(encoder_info_);
   return true;
 }
 
@@ -1581,23 +1689,25 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 }
 
 bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
-  if (max_framerate_and_resolutions_.empty()) {
+  if (max_framerate_and_resolutions_.empty() || min_resolution_.IsEmpty()) {
     DCHECK(encoder_);
     max_framerate_and_resolutions_ =
         GetMaxFramerateAndResolutionsFromMFT(codec_, encoder_.Get());
+    min_resolution_ = GetMinResolution(codec_, vendor_);
   }
 
   for (auto& [frame_rate, resolution] : max_framerate_and_resolutions_) {
-    if (size.width() >= kMinResolution.width() &&
-        size.height() >= kMinResolution.height() &&
+    if (size.width() >= min_resolution_.width() &&
+        size.height() >= min_resolution_.height() &&
         size.width() <= resolution.width() &&
         size.height() <= resolution.height() && frame_rate_ <= frame_rate) {
       return true;
     }
 
     size.Transpose();
-    if (size.width() >= kMinResolution.width() &&
-        size.height() >= kMinResolution.height() &&
+    // Portrait profile only transpose max resolution.
+    if (size.height() >= min_resolution_.width() &&
+        size.width() >= min_resolution_.height() &&
         size.width() <= resolution.width() &&
         size.height() <= resolution.height() && frame_rate_ <= frame_rate) {
       return true;
@@ -2242,11 +2352,15 @@ void MediaFoundationVideoEncodeAccelerator::FeedInputs() {
   auto& next_input = pending_input_queue_.front();
 
   HRESULT hr = ProcessInput(next_input);
+  if (hr == MF_E_NOTACCEPTING) {
+    return;
+  }
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "Failed to encode pending frame: " + PrintHr(hr)});
     return;
   }
+  encoder_needs_input_counter_--;
   pending_input_queue_.pop_front();
   input_since_keyframe_count_++;
 }
@@ -2261,92 +2375,109 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                "timestamp", input.timestamp, "discard_output",
                input.discard_output);
 
-  // Force key frame for the first frame in GOP.
-  bool force_key_frame = input_since_keyframe_count_ % gop_length_ == 0;
-
-  // Reset the frame count when keyframe is requested.
-  if (input.options.key_frame || force_key_frame) {
-    input_since_keyframe_count_ = 0;
-  }
-
-  int max_quantizer = AVEncQPtoQindex(codec_, GetMaxQuantizer(codec_));
-  std::optional<uint8_t> quantizer;
-  int temporal_id = 0;
-  if (input.options.quantizer.has_value()) {
-    DCHECK_EQ(codec_, VideoCodec::kH264);
-    quantizer = std::clamp(static_cast<int>(input.options.quantizer.value()), 1,
-                           kH26xMaxQp);
-  } else if (rate_ctrl_ && !input.discard_output) {
-    VideoRateControlWrapper::FrameParams frame_params{};
-    frame_params.frame_type =
-        input.options.key_frame || force_key_frame
-            ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
-            : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
-    // H.264 and H.265 SW BRC need timestamp information.
-    frame_params.timestamp = input.timestamp.InMilliseconds();
-    temporal_id =
-        svc_parser_->AssignTemporalIdBySvcSpec(input_since_keyframe_count_);
-    frame_params.temporal_layer_id = temporal_id;
-    // For now, MFVEA does not support spatial layer encoding.
-    frame_params.spatial_layer_id = 0;
-    // If there exists a rate_ctrl_, the qp computed by rate_ctrl_ should be
-    // set on sample metadata and carried over from input to output.
-    int computed_qp = rate_ctrl_->ComputeQP(frame_params);
-    if (computed_qp < 0) {
-      // Negative QP values mean that the frame should be dropped. We use
-      // maximum QP in that case.
-      // Drop frame functionality is not supported yet.
-      // TODO(b/361250558): Support drop frame for H.264/HEVC Rate Controller
-      computed_qp = max_quantizer;
-    }
-    quantizer = std::clamp(computed_qp, 1, max_quantizer);
-  } else if (input.discard_output) {
-    // Set up encoder for maximum speed if we're anyway going to discard the
-    // output.
-    quantizer = max_quantizer;
-  }
-
   HRESULT hr = S_OK;
-  if (quantizer.has_value()) {
-    VARIANT var;
-    var.vt = VT_UI4;
-    var.ulVal = temporal_id;
-    DVLOG(3) << "Setting CODECAPI_AVEncVideoSelectLayer to " << var.ulVal;
-    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoSelectLayer, &var);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set select temporal layer", hr);
-    var.vt = VT_UI8;
-    var.ullVal = QindextoAVEncQP(codec_, quantizer.value());
-    DVLOG(3) << "Setting CODECAPI_AVEncVideoEncodeQP to " << var.ullVal;
-    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
-    hr = input.input_sample->SetUINT64(MFSampleExtension_VideoEncodeQP,
-                                       var.ullVal);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
-  }
-  if (input.options.key_frame || force_key_frame) {
-    VARIANT var;
-    var.vt = VT_UI4;
-    var.ulVal = 1;
-    DVLOG(3) << "Setting CODECAPI_AVEncVideoForceKeyFrame to " << var.ulVal;
-    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoForceKeyFrame, &var);
-    RETURN_ON_HR_FAILURE(hr, "Set CODECAPI_AVEncVideoForceKeyFrame failed", hr);
-  }
+  if (has_not_accepted_sample_) {
+    // Let's validate that prepared sample actually matches the metadata.
+    const OutOfBandMetadata& metadata = sample_metadata_queue_.back();
+    if (metadata.timestamp != input.timestamp) {
+      LOG(ERROR) << "Prepared sample doesn't match metadata.";
+      return E_FAIL;
+    }
+  } else {
+    // Force key frame for the first frame in GOP.
+    bool force_key_frame = input_since_keyframe_count_ % gop_length_ == 0;
 
-  // We don't actually tell the MFT about the color space since all current
-  // MFT implementations just write UNSPECIFIED in the bitstream, and setting
-  // it can actually break some encoders; see https://crbug.com/1446081.
-  sample_metadata_queue_.push_back(
-      OutOfBandMetadata{.color_space = input.color_space,
-                        .discard_output = input.discard_output,
-                        .qp = quantizer,
-                        .frame_id = input_since_keyframe_count_});
+    // Reset the frame count when keyframe is requested.
+    if (input.options.key_frame || force_key_frame) {
+      input_since_keyframe_count_ = 0;
+    }
+
+    int max_quantizer = AVEncQPtoQindex(codec_, GetMaxQuantizer(codec_));
+    std::optional<uint8_t> quantizer;
+    int temporal_id = 0;
+    if (input.options.quantizer.has_value()) {
+      DCHECK_EQ(codec_, VideoCodec::kH264);
+      quantizer = std::clamp(static_cast<int>(input.options.quantizer.value()),
+                             1, kH26xMaxQp);
+    } else if (rate_ctrl_ && !input.discard_output) {
+      VideoRateControlWrapper::FrameParams frame_params{};
+      frame_params.frame_type =
+          input.options.key_frame || force_key_frame
+              ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
+              : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
+      // H.264 and H.265 SW BRC need timestamp information.
+      frame_params.timestamp = input.timestamp.InMilliseconds();
+      temporal_id =
+          svc_parser_->AssignTemporalIdBySvcSpec(input_since_keyframe_count_);
+      frame_params.temporal_layer_id = temporal_id;
+      // For now, MFVEA does not support spatial layer encoding.
+      frame_params.spatial_layer_id = 0;
+      // If there exists a rate_ctrl_, the qp computed by rate_ctrl_ should be
+      // set on sample metadata and carried over from input to output.
+      int computed_qp = rate_ctrl_->ComputeQP(frame_params);
+      if (computed_qp < 0) {
+        // Negative QP values mean that the frame should be dropped. We use
+        // maximum QP in that case.
+        // Drop frame functionality is not supported yet.
+        // TODO(b/361250558): Support drop frame for H.264/HEVC Rate Controller
+        computed_qp = max_quantizer;
+      }
+      quantizer = std::clamp(computed_qp, 1, max_quantizer);
+    } else if (input.discard_output) {
+      // Set up encoder for maximum speed if we're anyway going to discard the
+      // output.
+      quantizer = max_quantizer;
+    }
+
+    if (quantizer.has_value()) {
+      VARIANT var;
+      var.vt = VT_UI4;
+      var.ulVal = temporal_id;
+      DVLOG(3) << "Setting CODECAPI_AVEncVideoSelectLayer to " << var.ulVal;
+      hr = codec_api_->SetValue(&CODECAPI_AVEncVideoSelectLayer, &var);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set select temporal layer", hr);
+      var.vt = VT_UI8;
+      var.ullVal = QindextoAVEncQP(codec_, quantizer.value());
+      DVLOG(3) << "Setting CODECAPI_AVEncVideoEncodeQP to " << var.ullVal;
+      hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
+      hr = input.input_sample->SetUINT64(MFSampleExtension_VideoEncodeQP,
+                                         var.ullVal);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
+    }
+    if (input.options.key_frame || force_key_frame) {
+      VARIANT var;
+      var.vt = VT_UI4;
+      var.ulVal = 1;
+      DVLOG(3) << "Setting CODECAPI_AVEncVideoForceKeyFrame to " << var.ulVal;
+      hr = codec_api_->SetValue(&CODECAPI_AVEncVideoForceKeyFrame, &var);
+      RETURN_ON_HR_FAILURE(hr, "Set CODECAPI_AVEncVideoForceKeyFrame failed",
+                           hr);
+    }
+
+    // We don't actually tell the MFT about the color space since all current
+    // MFT implementations just write UNSPECIFIED in the bitstream, and setting
+    // it can actually break some encoders; see https://crbug.com/1446081.
+    sample_metadata_queue_.push_back(
+        OutOfBandMetadata{.color_space = input.color_space,
+                          .discard_output = input.discard_output,
+                          .qp = quantizer,
+                          .frame_id = input_since_keyframe_count_,
+                          .timestamp = input.timestamp});
+  }
 
   {
     TRACE_EVENT1("media", "IMFTransform::ProcessInput", "timestamp",
                  input.timestamp);
     hr = encoder_->ProcessInput(input_stream_id_, input.input_sample.Get(), 0);
-    encoder_needs_input_counter_--;
   }
+
+  // Check if ProcessInput() actually accepted the sample, if not, remember that
+  // we don't need to prepare sample next time but just check the timestamp and
+  // use it directly. This is a workaround for crbug.com/377749373 since HMFT
+  // may reject to accept the new input which is corresponding to a
+  // METransformNeedInput event.
+  has_not_accepted_sample_ = (hr == MF_E_NOTACCEPTING);
   return hr;
 }
 
@@ -2692,7 +2823,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   // the QP is trusted (`encoder_info_.reports_average_qp` is true, which it is
   // by default).
   std::optional<int32_t> frame_qp;
-  bool should_notify_reports_average_qp_change = false;
+  bool should_notify_encoder_info_change = false;
   // If there exists a valid qp in sample metadata, do not query HMFT for
   // MFSampleExtension_VideoEncodeQP.
   if (metadata.qp.has_value()) {
@@ -2706,7 +2837,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     if (vendor_ == DriverVendor::kIntel) {
       if ((FAILED(hr) || !IsValidQp(codec_, frame_qp_from_sample)) &&
           encoder_info_.reports_average_qp) {
-        should_notify_reports_average_qp_change = true;
+        should_notify_encoder_info_change = true;
         encoder_info_.reports_average_qp = false;
       }
     }
@@ -2715,8 +2846,9 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
       frame_qp = AVEncQPtoQindex(codec_, frame_qp_from_sample & 0xfffful);
     }
   }
-  if (should_notify_reports_average_qp_change) {
+  if (!encoder_info_sent_ || should_notify_encoder_info_change) {
     client_->NotifyEncoderInfoChange(encoder_info_);
+    encoder_info_sent_ = true;
   }
 
   const bool keyframe = MFGetAttributeUINT32(

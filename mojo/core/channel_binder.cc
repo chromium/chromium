@@ -435,8 +435,8 @@ base::android::BinderStatusOr<void> ChannelBinder::SendMessageToReceiver(
   ASSIGN_OR_RETURN(auto parcel, receiver.PrepareTransaction());
   const base::android::ParcelWriter writer(parcel);
 
-  const auto bytes = base::make_span(
-      static_cast<const uint8_t*>(message->data()), message->data_num_bytes());
+  const auto bytes = base::span(static_cast<const uint8_t*>(message->data()),
+                                message->data_num_bytes());
   RETURN_IF_ERROR(WriteMessagePayload(writer, bytes));
 
   auto handles = message->TakeHandles();

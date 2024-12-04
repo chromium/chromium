@@ -157,7 +157,7 @@ class BatteryUpdateMessageHandlerTest : public testing::Test {
   std::unique_ptr<BatteryUpdateMessageHandler> battery_update_message_handler_;
 };
 
-TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdateGetMessages) {
+TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_GetMessages) {
   EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
@@ -185,7 +185,7 @@ TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdateGetMessages) {
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
-TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdateObservation) {
+TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_Observation) {
   EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
@@ -214,7 +214,7 @@ TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdateObservation) {
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
-TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdateMultipleMessages) {
+TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_MultipleMessages) {
   EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
@@ -292,7 +292,7 @@ TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdateMultipleMessages) {
                     ->percentage.value());
 }
 
-TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdateGetMessages) {
+TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdate_GetMessages) {
   EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
@@ -320,7 +320,7 @@ TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdateGetMessages) {
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
-TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdateObservation) {
+TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdate_Observation) {
   EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));

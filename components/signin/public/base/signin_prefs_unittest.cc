@@ -47,9 +47,9 @@ TEST_F(SigninPrefsTest, AccountPrefsInitialization) {
 }
 
 TEST_F(SigninPrefsTest, RemovingAccountPrefs) {
-  const GaiaId gaia_id1 = "gaia_id1";
-  const GaiaId gaia_id2 = "gaia_id2";
-  const GaiaId gaia_id3 = "gaia_id3";
+  const GaiaId gaia_id1("gaia_id1");
+  const GaiaId gaia_id2("gaia_id2");
+  const GaiaId gaia_id3("gaia_id3");
 
   // Setting any value should create the dict entry for the given gaia id.
   signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id1);
@@ -76,9 +76,9 @@ TEST_F(SigninPrefsTest, RemovingAccountPrefs) {
 }
 
 TEST_F(SigninPrefsTest, RemovingAllAccountPrefs) {
-  const GaiaId gaia_id1 = "gaia_id1";
-  const GaiaId gaia_id2 = "gaia_id2";
-  const GaiaId gaia_id3 = "gaia_id3";
+  const GaiaId gaia_id1("gaia_id1");
+  const GaiaId gaia_id2("gaia_id2");
+  const GaiaId gaia_id3("gaia_id3");
 
   // Setting any value should create the dict entry for the given gaia id.
   signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id1);
@@ -96,7 +96,7 @@ TEST_F(SigninPrefsTest, RemovingAllAccountPrefs) {
 }
 
 TEST_F(SigninPrefsTest, ObservingSigninPrefChanges) {
-  const GaiaId gaia_id1 = "gaia_id1";
+  const GaiaId gaia_id1("gaia_id1");
 
   base::MockCallback<base::RepeatingClosure> mock_callback;
   signin_prefs().ObserveSigninPrefsChanges(pref_change_registrar(),
@@ -115,7 +115,7 @@ TEST_F(SigninPrefsTest, ObservingSigninPrefChanges) {
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
   // Doing any pref change should call an update, even on a different id.
-  const GaiaId gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   EXPECT_CALL(mock_callback, Run()).Times(1);
   signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id2);
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
@@ -148,7 +148,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionDismissCount) {
 
   // Creating the main dict through setting a different pref should still return
   // the default value - 0.
-  const GaiaId gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   signin_prefs().SetChromeSigninInterceptionUserChoice(
       gaia_id2, ChromeSigninUserChoice::kSignin);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
@@ -171,7 +171,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionUserChoice) {
 
   // Creating the main dict through setting a different pref should still return
   // the default value - ChromeSigninUserChoice::kNoChoice.
-  const GaiaId gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id2);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id2),
@@ -203,7 +203,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionLastBubbleDeclineTime) {
 
   // Creating the main dict through setting a different pref should still return
   // the default value - no time.
-  const GaiaId gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   signin_prefs().SetChromeSigninInterceptionUserChoice(
       gaia_id2, ChromeSigninUserChoice::kSignin);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
@@ -227,7 +227,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionRepromptCount) {
 
   // Creating the main dict through setting a different pref should still return
   // the default value - 0.
-  const GaiaId gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   signin_prefs().SetChromeSigninInterceptionUserChoice(
       gaia_id2, ChromeSigninUserChoice::kSignin);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));

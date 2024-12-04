@@ -67,7 +67,7 @@ TEST_F(EventDateFormatterUtilTest,
   EXPECT_EQ(actual_end, u"4:30\u202fPM");
 }
 
-TEST_F(EventDateFormatterUtilTest, GetFormattedInterval12HourClock) {
+TEST_F(EventDateFormatterUtilTest, GetFormattedInterval_12HourClock) {
   const char* start_time_string = "22 Nov 2021 23:30 GMT";
   const char* end_time_string = "23 Nov 2021 0:30 GMT";
   base::Time start_time, end_time;
@@ -84,7 +84,7 @@ TEST_F(EventDateFormatterUtilTest, GetFormattedInterval12HourClock) {
   EXPECT_EQ(actual, u"3:30\u2009\x2013\u20094:30\u202fPM");
 }
 
-TEST_F(EventDateFormatterUtilTest, GetFormattedInterval24HourClock) {
+TEST_F(EventDateFormatterUtilTest, GetFormattedInterval_24HourClock) {
   const char* start_time_string = "22 Nov 2021 23:30 GMT";
   const char* end_time_string = "23 Nov 2021 0:30 GMT";
   base::Time start_time, end_time;

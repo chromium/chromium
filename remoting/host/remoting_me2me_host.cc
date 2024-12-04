@@ -1847,6 +1847,14 @@ void HostProcess::StartHost() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   desktop_environment_options_.set_enable_remote_webauthn(is_corp_host_);
 #endif
+#if BUILDFLAG(IS_WIN)
+  // Set a default value for whether to allow the dxgi capturer. This value can
+  // be explicitly disallowed by the client when session options are applied.
+  // The desktop process will check whether DXGI is supported in the session
+  // it is capturing before attempting to use it.
+  desktop_environment_options_.desktop_capture_options()
+      ->set_allow_directx_capturer(true);
+#endif
 
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),

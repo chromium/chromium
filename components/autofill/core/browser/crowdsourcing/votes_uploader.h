@@ -23,6 +23,57 @@ namespace autofill {
 
 class BrowserAutofillManager;
 
+// Determines, buffers, and uploads votes for a form to the crowdsourcing
+// server.
+//
+// A form's vote contains the `FormSignature` and, for each field, a tuple of
+// the `FieldSignature` and its `FieldType`, and further metadata. See
+// autofill_crowdsourcing_encoding.h for further details.
+//
+// In VotesUploader, "to vote" also includes "to emit quality metrics".
+// For brevity, function names don't mention the metrics explicitly.
+//
+// VotesUploader enqueues votes that are cast before form submission are
+// enqueued. New votes for a form signature replace already-enqueued ones for
+// that signature. Enqueued votes are flushed by BrowserAutofillManager when it
+// dies or is reset.
+//
+//   MaybeStartVoteUploadProcess()◄─────────BrowserAutofillManager
+//       │
+//       │async
+//       │
+//       ▼
+//   DeterminePossibleFieldTypesForUpload()
+//       │
+//       │       if submission
+//       ├──────►────────────────────────────────┐
+//       │else                                   │
+//       │
+//       ▼                                       │
+//   QueueVote()                                 │
+//   - Runs oldest callbacks if buffer is full.  │
+//   - Stores a vote callback.                   │
+//                                               │
+//   QueuedVote::callback                        │
+//       │                                       │
+//       ├──────◄────────────────────────────────┘
+//       │
+//       ▼
+//   OnSubmissionFieldTypesDetermined()
+//       │
+//       │
+//       ▼
+//   UploadVote()
+//       │
+//       │if submission
+//       │
+//       ▼
+//   FlushPendingVotes()◄────────────────BrowserAutofillManager
+//
+// TODO(crbug.com/374086145): Investigate if vote flushing should be decoupled
+// from BrowserAutofillManager lifetime.
+//
+// Owned by BrowserAutofillManager.
 // TODO(crbug.com/374086145): Move ownership to AutofillClient.
 class VotesUploader {
  public:
@@ -42,8 +93,8 @@ class VotesUploader {
       base::TimeTicks initial_interaction_timestamp,
       ukm::SourceId ukm_source_id);
 
-  // Triggers and wipes all pending QualityAndVotesUploadCallbacks.
-  void FlushPendingLogQualityAndVotesUploadCallbacks();
+  // Triggers and wipes all pending votes.
+  void FlushPendingVotes();
 
   // TODO(crbug.com/374086145): Remove public member.
   std::u16string last_unlocked_credit_card_cvc_;
@@ -53,24 +104,24 @@ class VotesUploader {
   // callback for `form_signature` or triggering a pending callback in case too
   // many callbacks are stored to create space.
   // Virtual and protected for testing.
-  virtual void StoreUploadVotesAndLogQualityCallback(
-      FormSignature form_signature,
-      base::OnceClosure callback);
+  virtual void QueueVote(FormSignature form_signature,
+                         base::OnceClosure callback);
 
   // Logs quality metrics for the |submitted_form| and uploads votes for the
   // field types to the crowdsourcing server, if appropriate.
   // |observed_submission| indicates whether the upload is a result of an
   // observed submission event.
   // Virtual and protected for testing.
-  virtual void UploadVotesAndLogQuality(
-      std::unique_ptr<FormStructure> submitted_form,
-      base::TimeTicks interaction_time,
-      base::TimeTicks submission_time,
-      bool observed_submission,
-      ukm::SourceId source_id);
+  virtual void UploadVote(std::unique_ptr<FormStructure> submitted_form,
+                          base::TimeTicks interaction_time,
+                          base::TimeTicks submission_time,
+                          bool observed_submission,
+                          ukm::SourceId source_id);
 
  private:
   friend class VotesUploaderTestApi;
+
+  struct QueuedVote;
 
   // Method called after the values present on submitted fields were associated
   // with Autofill field types. It is used to route calls to
@@ -85,7 +136,7 @@ class VotesUploader {
       ukm::SourceId source_id);
 
   // Removes a callback for the given `form_signature` without calling it.
-  void WipeLogQualityAndVotesUploadCallback(FormSignature form_signature);
+  void WipePendingVotesForForm(FormSignature form_signature);
 
   AutofillClient& client();
 
@@ -104,7 +155,7 @@ class VotesUploader {
   // Callbacks are wiped in the following situations:
   // - A form is submitted.
   // - A callback is overridden by a more recent version.
-  std::list<std::pair<FormSignature, base::OnceClosure>> queued_vote_uploads_;
+  std::list<QueuedVote> queued_vote_uploads_;
 
   // This task runner sequentializes calls to
   // DeterminePossibleFieldTypesForUpload to ensure that blur votes are

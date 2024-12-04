@@ -960,9 +960,7 @@ int RuntimeGetContextsFunction::GetTabId(content::WebContents& web_contents) {
 }
 
 int RuntimeGetContextsFunction::GetFrameId(content::RenderFrameHost& host) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&host);
-  mojom::ViewType view_type = extensions::GetViewType(web_contents);
+  mojom::ViewType view_type = extensions::GetViewType(&host);
 
   if (view_type == extensions::mojom::ViewType::kDeveloperTools) {
     return -1;

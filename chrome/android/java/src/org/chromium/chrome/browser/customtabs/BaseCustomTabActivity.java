@@ -284,7 +284,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         mBookmarkModelSupplier,
                         mTabBookmarkerSupplier,
                         getTabModelSelectorSupplier(),
-                        this::getLastUserInteractionTime,
                         getBrowserControlsManager(),
                         getWindowAndroid(),
                         getLifecycleDispatcher(),

@@ -331,7 +331,12 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     @Override
-    public void onModuleClicked(@ModuleType int moduleType, int modulePosition) {
+    public void onModuleClicked(@ModuleType int moduleType) {
+        int moduleRank = mMediator.getModuleRank(moduleType);
+        onModuleClicked(moduleType, moduleRank);
+    }
+
+    private void onModuleClicked(@ModuleType int moduleType, int modulePosition) {
         HomeModulesMetricsUtils.recordModuleClicked(
                 moduleType, modulePosition, mModuleDelegateHost.isHomeSurface());
     }
@@ -340,7 +345,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     public void removeModule(@ModuleType int moduleType) {
         boolean isModuleRemoved = mMediator.remove(moduleType);
 
-        if (isModuleRemoved && mModel.size() < mItemPerScreen) {
+        if (isModuleRemoved && (mModel.size() < mItemPerScreen || mModel.size() == 1)) {
             mRecyclerView.invalidateItemDecorations();
         }
     }

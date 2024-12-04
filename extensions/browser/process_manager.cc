@@ -244,12 +244,11 @@ void ProcessManager::Shutdown() {
 }
 
 void ProcessManager::RegisterRenderFrameHost(
-    content::WebContents* web_contents,
     content::RenderFrameHost* render_frame_host,
     const Extension* extension) {
   DCHECK(render_frame_host->IsRenderFrameLive());
   ExtensionRenderFrameData* data = &all_extension_frames_[render_frame_host];
-  data->view_type = GetViewType(web_contents);
+  data->view_type = GetViewType(render_frame_host);
 
   // Keep the lazy background page alive as long as any non-background-page
   // extension views are visible. Keepalive count balanced in

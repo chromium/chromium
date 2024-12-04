@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_coordinator.h"
 
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -104,15 +105,17 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  [self.browser->GetCommandDispatcher()
+  Browser* browser = self.browser;
+  ProfileIOS* profile = browser->GetProfile();
+
+  [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(TabsAnimationCommands)];
 
-  BOOL regularModeEnabled =
-      !IsIncognitoModeForced(self.browser->GetProfile()->GetPrefs());
+  BOOL regularModeEnabled = !IsIncognitoModeForced(profile->GetPrefs());
 
   _contextMenuProvider = [[TabContextMenuHelper alloc]
-             initWithProfile:self.browser->GetProfile()
+             initWithProfile:profile
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   GridContainerViewController* container =
@@ -134,7 +137,11 @@
 
   self.gridViewController = gridViewController;
 
-  _mediator = [[RegularGridMediator alloc] initWithModeHolder:self.modeHolder];
+  _mediator = [[RegularGridMediator alloc]
+      initWithModeHolder:self.modeHolder
+        messagingService:collaboration::messaging::
+                             MessagingBackendServiceFactory::GetForProfile(
+                                 profile)];
   _mediator.consumer = gridViewController;
 
   gridViewController.dragDropHandler = _mediator;

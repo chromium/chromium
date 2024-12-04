@@ -8,8 +8,12 @@
 
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
@@ -79,6 +83,7 @@ void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
         chrome_urls::mojom::WebuiUrlInfo::New());
     url_info->url = url;
     url_info->enabled = true;
+    url_info->internal = false;
     webui_urls.push_back(std::move(url_info));
   }
   for (const content::WebUIConfigInfo& config_info : info_list) {
@@ -86,6 +91,7 @@ void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
         chrome_urls::mojom::WebuiUrlInfo::New());
     url_info->url = config_info.origin.GetURL();
     url_info->enabled = config_info.enabled;
+    url_info->internal = webui::IsInternalWebUI(config_info.origin.GetURL());
     webui_urls.push_back(std::move(url_info));
   }
   // Sort the URLs.
@@ -97,6 +103,13 @@ void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
   for (base::cstring_view url : chrome::ChromeDebugURLs()) {
     result->command_urls.push_back(GURL(url));
   }
+
+  // Note: |local_state| may be null in unit tests.
+  PrefService* local_state = g_browser_process->local_state();
+  result->internal_debugging_uis_enabled =
+      !!local_state &&
+      local_state->FindPreference(prefs::kInternalOnlyUisEnabled) &&
+      local_state->GetBoolean(prefs::kInternalOnlyUisEnabled);
   std::move(callback).Run(std::move(result));
 }
 

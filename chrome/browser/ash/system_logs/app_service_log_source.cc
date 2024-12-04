@@ -25,7 +25,7 @@ constexpr char kAppServiceLogEntry[] = "app_service";
 AppServiceLogSource::AppServiceLogSource()
     : SystemLogsSource("AppServiceLog") {}
 
-AppServiceLogSource::~AppServiceLogSource() {}
+AppServiceLogSource::~AppServiceLogSource() = default;
 
 void AppServiceLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

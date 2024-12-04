@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.ComprehensiveTabList;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -146,6 +147,30 @@ public class DataSharingTabGroupUtilsUnitTest {
         assertTrue(result.collaborationGroupsDestroyed.isEmpty());
     }
 
+    // Regression test for https://crbug.com/381335056.
+    @Test
+    public void testGetSyncedGroupsDestroyedByTabRemoval_GroupInAnotherWindow() {
+        List<TabGroupData> tabGroups = new ArrayList<>();
+        tabGroups.add(
+                new TabGroupData(
+                        LOCAL_TAB_GROUP_ID_1,
+                        List.of(TAB_ID_1, TAB_ID_2),
+                        /* isCollaboration= */ false));
+        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        ComprehensiveTabList comprehensiveList = tabModel.getComprehensiveTabList();
+        while (tabModel.getCount() > 0) {
+            tabModel.removeTab(tabModel.getTabAt(0));
+            comprehensiveList.getTabList().remove(0);
+        }
+        Tab tab3 = tabModel.addTab(TAB_ID_3);
+        comprehensiveList.getTabList().add(tab3);
+
+        GroupsPendingDestroy result =
+                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(
+                        tabModel, List.of(tab3));
+        assertTrue(result.isEmpty());
+    }
+
     @Test
     public void testGetSyncedGroupsDestroyedByTabRemoval_TabAlreadyClosing() {
         List<TabGroupData> tabGroups = new ArrayList<>();
@@ -155,8 +180,10 @@ public class DataSharingTabGroupUtilsUnitTest {
                         List.of(TAB_ID_1, TAB_ID_2),
                         /* isCollaboration= */ false));
         var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
-        // Remove tab 1 from the model to simulate that it is in the pending closure state.
-        tabModel.removeTab(tabModel.getTabAt(1));
+        // Remove a tab from the model to simulate that it is in the pending closure state.
+        Tab tab1 = tabModel.getTabAt(1);
+        tab1.setClosing(true);
+        tabModel.removeTab(tab1);
 
         GroupsPendingDestroy result =
                 DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(

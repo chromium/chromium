@@ -40,7 +40,7 @@ TEST(TldCleanupUtilTest, TwoRealTldsSuccessfullyRead) {
                                    /*is_private=*/false})));
 }
 
-TEST(TldCleanupUtilTest, TwoRealTldsSuccessfullyReadWindowsEndings) {
+TEST(TldCleanupUtilTest, TwoRealTldsSuccessfullyRead_WindowsEndings) {
   std::string icann_domains =
       "foo\r\n"
       "bar\r\n";

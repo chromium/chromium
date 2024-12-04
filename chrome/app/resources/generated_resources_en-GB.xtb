@@ -1132,7 +1132,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1769157454356586138">Scan failed. This file is blocked by your administrator</translation>
 <translation id="1770407692401984718">Drag an image here or</translation>
 <translation id="177053719077591686">Back up Android apps to Google Drive.</translation>
-<translation id="1771075623623424448">Looking for the browser device-log page? Visit<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Create a Wi-Fi hotspot using your <ph name="DEVICE_TYPE" />'s mobile data to provide Internet to other devices. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Hosted app data</translation>
 <translation id="177529472352014190">Connect to OneDrive</translation>
@@ -3141,6 +3140,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3166443275568926403">Performance and Battery State</translation>
 <translation id="3167446923957429259">Move your mouth left</translation>
 <translation id="3167562202484086668">Delete all <ph name="BRAND" /> data</translation>
+<translation id="3169901410527787002">Always read keyboard input in the address bar</translation>
 <translation id="3169930038976362151">Choose the theme that fits your needs. To change your theme, wallpaper, screen saver and more, just touch and hold on the desktop.</translation>
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Body</translation>
@@ -3152,6 +3152,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3179982752812949580">Text font</translation>
 <translation id="3180284704187420717">Save your bookmarks, passwords and more with sync</translation>
 <translation id="3180990259147710757">Shift jaw left</translation>
+<translation id="3181825792072797598">Turn on Sync</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
 <translation id="3182749001423093222">Spell check</translation>
 <translation id="3183139917765991655">Profile Importer</translation>
@@ -4339,7 +4340,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3988124842897276887">This tab is connected to a USB device</translation>
 <translation id="3988996860813292272">Select time zone</translation>
 <translation id="3989635538409502728">Sign Out</translation>
-<translation id="3991055816270226534">Manage third-party cookies and tracking protections</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near this device to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google uses this information collected from this device to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs. This information is not used to identify any individual.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />You can turn off Location Accuracy at any time in this device's location settings under Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access &gt; Advanced location settings. If Location Accuracy is off, no Location Accuracy data will be collected. For Android apps and services, only the IP address is used, if available, to determine this device's location, which may impact the availability and accuracy of locations for Android apps and services such as Google Maps.<ph name="END_PARAGRAPH3" />
@@ -6982,7 +6982,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5927132638760172455">Casting to an unknown receiver</translation>
 <translation id="592740088639760830">Stop this container</translation>
 <translation id="592880897588170157">Download PDF files instead of automatically opening them in Chrome</translation>
-<translation id="5928969282301718193">All done for now</translation>
 <translation id="5930567261594625340">Night sky</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> immediately.</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
@@ -7553,7 +7552,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6344170822609224263">Access list of network connections</translation>
 <translation id="6344576354370880196">Saved printers</translation>
 <translation id="6344608411615208519">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your parent</translation>
-<translation id="6344622098450209924">Tracking Protection</translation>
 <translation id="6345418402353744910">Your username and password are required for the proxy <ph name="PROXY" /> so that the admin can configure your network</translation>
 <translation id="6345566021391290381">There are passwords shared with you for <ph name="WEBSITE_NAME" />. You can use them in the sign-in form.</translation>
 <translation id="6345878117466430440">Mark as read</translation>
@@ -10148,7 +10146,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8195920051450756553">Delay before activating the same key again</translation>
 <translation id="8197673340773315084">Add a name or label, like Work or Personal</translation>
 <translation id="8198456017687137612">Casting tab</translation>
-<translation id="8198457270656084773">Looking for the system device-log page? Visit<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Network (Service) and Device properties</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8202160505685531999">Please re-enter your password to update your <ph name="DEVICE_TYPE" /> profile.</translation>

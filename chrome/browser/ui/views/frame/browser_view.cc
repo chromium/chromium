@@ -55,6 +55,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
@@ -315,8 +316,6 @@
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/promos/promos_types.h"
-#include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -957,7 +956,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* privacy_sandbox_service =
           PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
-    privacy_sandbox_service->MaybeQueueNotice();
+    privacy_sandbox_service->MaybeQueueNotice(
+        PrivacySandboxService::NoticeQueueState::kQueueOnStartup);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

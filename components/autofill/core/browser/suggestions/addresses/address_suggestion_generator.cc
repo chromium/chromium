@@ -128,14 +128,9 @@ std::u16string GetProfileSuggestionMainText(const AutofillProfile& profile,
 
 // Returns the minimum number of fields that should be returned by
 // `AutofillProfile::CreateInferredLabels()`, based on the type of the
-// triggering field and on the filling granularity.
-int GetNumberOfMinimalFieldsToShow(FieldType trigger_field_type,
-                                   SuggestionType suggestion_type) {
-  if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable) &&
-      features::kAutofillGranularFillingAvailableWithImprovedLabelsParam
-          .Get()) {
+// triggering field.
+int GetNumberOfMinimalFieldsToShow(FieldType trigger_field_type) {
+  if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone) {
     // Phone fields are a special case. For them we want both the
     // `FULL_NAME` and `ADDRESS_HOME_LINE1` to be present.
     return 2;
@@ -151,7 +146,6 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     const std::vector<AutofillProfile>& profiles,
     const FieldTypeSet& field_types,
     FieldType trigger_field_type,
-    SuggestionType suggestion_type,
     const std::string& app_locale) {
   // Generate disambiguating labels based on the list of matches.
   std::vector<std::u16string> differentiating_labels;
@@ -161,15 +155,14 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
                          -> raw_ptr<const AutofillProfile, VectorExperimental> {
                        return &profile;
                      });
-  if (features::kAutofillGranularFillingAvailableWithImprovedLabelsParam
-          .Get() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels) &&
+      !features::kAutofillImprovedLabelsParamOnlyWithMainTextChangesParam
+           .Get()) {
     AutofillProfile::CreateInferredLabels(
         profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
         {trigger_field_type},
-        GetNumberOfMinimalFieldsToShow(trigger_field_type, suggestion_type),
-        app_locale, &differentiating_labels,
+        GetNumberOfMinimalFieldsToShow(trigger_field_type), app_locale,
+        &differentiating_labels,
         /*use_improved_labels_order=*/true);
   } else {
     AutofillProfile::CreateInferredLabels(
@@ -181,14 +174,12 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
 }
 
 // For each profile in `profiles`, returns a vector of `Suggestion::labels` to
-// be applied. Takes into account the `suggestion_type` and the
-// `trigger_field_type` to add specific granular filling labels. Optionally adds
-// a differentiating label if the Suggestion::main_text + granular filling label
-// is not unique.
+// be applied. Takes into account the `trigger_field_type` to add specific
+// labels. Optionally adds a differentiating label if the Suggestion::main_text
+// +  label is not unique.
 std::vector<std::vector<Suggestion::Text>> CreateSuggestionLabels(
     const std::vector<AutofillProfile>& profiles,
     const FieldTypeSet& field_types,
-    SuggestionType suggestion_type,
     FieldType trigger_field_type,
     const std::string& app_locale) {
   // Suggestions for filling only one field (field-by-field filling) should not
@@ -199,7 +190,7 @@ std::vector<std::vector<Suggestion::Text>> CreateSuggestionLabels(
   }
   const std::vector<std::u16string> suggestions_differentiating_labels =
       GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,
-                                 suggestion_type, app_locale);
+                                 app_locale);
   return base::ToVector(
       suggestions_differentiating_labels, [](const std::u16string& label) {
         return std::vector<Suggestion::Text>{Suggestion::Text(label)};
@@ -531,7 +522,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
 
   std::vector<Suggestion> suggestions;
   std::vector<std::vector<Suggestion::Text>> labels = CreateSuggestionLabels(
-      profiles, field_types, suggestion_type, trigger_field_type, app_locale);
+      profiles, field_types, trigger_field_type, app_locale);
   // This will be used to check if suggestions should be supported with icons.
   // TODO(crbug.com/40285811): Consider simplifying this to be any address
   // field.
@@ -545,17 +536,14 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
       }) > 1;
   FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
-  // If `features::kAutofillGranularFillingAvailableWithImprovedLabelsParam` of
-  // the `kAutofillGranularFillingAvailable` feature is enabled, name fields
-  // should have `NAME_FULL` as main text, unless in field by field filling
-  // mode.
+  // If `features::kAutofillImprovedLabels` is enabled, name fields should have
+  // `NAME_FULL` as main text, unless in field by field filling mode.
   FieldType main_text_field_type =
       GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
               suggestion_type != SuggestionType::kAddressFieldByFieldFilling &&
-              base::FeatureList::IsEnabled(
-                  features::kAutofillGranularFillingAvailable) &&
-              features::kAutofillGranularFillingAvailableWithImprovedLabelsParam
-                  .Get()
+              base::FeatureList::IsEnabled(features::kAutofillImprovedLabels) &&
+              !features::kAutofillImprovedLabelsParamWithoutMainTextChangesParam
+                   .Get()
           ? NAME_FULL
           : trigger_field_type;
   for (size_t i = 0; i < profiles.size(); ++i) {

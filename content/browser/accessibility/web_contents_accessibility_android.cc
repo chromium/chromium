@@ -1797,7 +1797,7 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
                          ProcessCompletedAccessibilityTreeSnapshot,
                      GetWeakPtr(), env, std::move(movable_view_structure_root)),
       std::move(params));
-  web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+  web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
       [&combiner](RenderFrameHostImpl* rfhi) {
         combiner->RequestSnapshotOnRenderFrameHost(rfhi);
       });

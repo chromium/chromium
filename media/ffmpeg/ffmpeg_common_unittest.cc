@@ -156,7 +156,7 @@ TEST_F(FFmpegCommonTest, AVStreamToDecoderConfig) {
   ASSERT_TRUE(found_video);
 }
 
-TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfigOpusAmbisonics4ch) {
+TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_4ch) {
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(
       GetTestDataFilePath("bear-opus-end-trimming-4ch-channelmapping2.webm")));
@@ -179,7 +179,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfigOpusAmbisonics4ch) {
   EXPECT_EQ(4, audio_config.channels());
 }
 
-TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfigOpusAmbisonics11ch) {
+TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_11ch) {
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(
       GetTestDataFilePath("bear-opus-end-trimming-11ch-channelmapping2.webm")));
@@ -202,7 +202,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfigOpusAmbisonics11ch) {
   EXPECT_EQ(11, audio_config.channels());
 }
 
-TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig9chWav) {
+TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_9ch_wav) {
   base::MemoryMappedFile file;
   ASSERT_TRUE(file.Initialize(GetTestDataFilePath("9ch.wav")));
   InMemoryUrlProtocol protocol(file.data(), file.length(), false);

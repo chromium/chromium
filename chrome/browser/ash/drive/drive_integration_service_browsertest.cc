@@ -414,7 +414,7 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
   DriveIntegrationBrowserTestWithMirrorSyncEnabled& operator=(
       const DriveIntegrationBrowserTestWithMirrorSyncEnabled&) = delete;
 
-  ~DriveIntegrationBrowserTestWithMirrorSyncEnabled() override {}
+  ~DriveIntegrationBrowserTestWithMirrorSyncEnabled() override = default;
 
   void SetUpOnMainThread() override { MockGetSyncingPaths(); }
 

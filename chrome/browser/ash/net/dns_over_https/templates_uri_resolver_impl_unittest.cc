@@ -240,17 +240,16 @@ class TemplatesUriResolverImplTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsMode,
-                                                 SecureDnsConfig::kModeOff);
-    pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsTemplates,
-                                                 "");
-    pref_service_.registry()->RegisterStringPref(
+    local_state_.registry()->RegisterStringPref(prefs::kDnsOverHttpsMode,
+                                                SecureDnsConfig::kModeOff);
+    local_state_.registry()->RegisterStringPref(prefs::kDnsOverHttpsTemplates,
+                                                "");
+    local_state_.registry()->RegisterStringPref(
         prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
-    pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsSalt, "");
+    local_state_.registry()->RegisterStringPref(prefs::kDnsOverHttpsSalt, "");
 
-    fake_user_manager_ = new user_manager::FakeUserManager(&pref_service_);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_.get()));
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
     doh_template_uri_resolver_ = std::make_unique<TemplatesUriResolverImpl>();
 
@@ -271,18 +270,21 @@ class TemplatesUriResolverImplTest : public testing::Test {
         std::move(device_attributes));
   }
 
-  void TearDown() override { scoped_user_manager_.reset(); }
-
-  void SetUpAffiliatedUser() {
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        "test-user@testdomain.com", "1234567890"));
-    fake_user_manager_->AddUserWithAffiliation(account_id, true);
+  void TearDown() override {
+    user_ = nullptr;
+    fake_user_manager_.Reset();
   }
 
-  void SetUpUnaffiliatedUser() {
+  const user_manager::User* SetUpAffiliatedUser() {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         "test-user@testdomain.com", "1234567890"));
-    fake_user_manager_->AddUser(account_id);
+    return fake_user_manager_->AddUserWithAffiliation(account_id, true);
+  }
+
+  const user_manager::User* SetUpUnaffiliatedUser() {
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(
+        "test-user@testdomain.com", "1234567890"));
+    return fake_user_manager_->AddUser(account_id);
   }
 
   void ChangeNetworkOncSource(const std::string& path,
@@ -294,18 +296,18 @@ class TemplatesUriResolverImplTest : public testing::Test {
   }
 
   void SetUpDOHSecureModeWithSalt(std::string salt) {
-    pref_service()->Set(prefs::kDnsOverHttpsMode,
-                        base::Value(SecureDnsConfig::kModeSecure));
-    pref_service()->Set(prefs::kDnsOverHttpsSalt, base::Value(salt));
+    local_state()->Set(prefs::kDnsOverHttpsMode,
+                       base::Value(SecureDnsConfig::kModeSecure));
+    local_state()->Set(prefs::kDnsOverHttpsSalt, base::Value(salt));
   }
 
   void SetUpDOHTemplatesWithIdentifiers(std::string_view identifier) {
-    pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                        base::Value(identifier));
+    local_state()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                       base::Value(identifier));
   }
 
   void SetUpDOHGoogleDnsTemplate() {
-    pref_service()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+    local_state()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
   }
 
   std::string GetDisplayTemplates() {
@@ -316,8 +318,10 @@ class TemplatesUriResolverImplTest : public testing::Test {
     return doh_template_uri_resolver_->GetEffectiveTemplates();
   }
 
-  PrefService* pref_service() { return &pref_service_; }
-  user_manager::FakeUserManager* user_manager() { return fake_user_manager_; }
+  PrefService* local_state() { return &local_state_; }
+  user_manager::FakeUserManager* user_manager() {
+    return fake_user_manager_.Get();
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -325,9 +329,10 @@ class TemplatesUriResolverImplTest : public testing::Test {
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
 
  private:
-  TestingPrefServiceSimple pref_service_;
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> fake_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  TestingPrefServiceSimple local_state_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
+  raw_ptr<user_manager::User> user_ = nullptr;
   ScopedStubInstallAttributes test_install_attributes_{
       StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
 };
@@ -335,12 +340,13 @@ class TemplatesUriResolverImplTest : public testing::Test {
 // Test that verifies the correct substitution of placeholders in the template
 // uri.
 TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiers) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt(kTestSalt);
   SetUpDOHTemplatesWithIdentifiers(kTemplateIdentifiers);
   SetUpDOHGoogleDnsTemplate();
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateIdentifiers);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiers);
@@ -348,8 +354,8 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiers) {
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
   // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
-  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
-  doh_template_uri_resolver_->Update(pref_service());
+  local_state()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetEffectiveTemplates(), kGoogleDns);
   EXPECT_FALSE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 }
@@ -358,12 +364,13 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiers) {
 // uri if unknown identifiers are included. Unknown identifiers will be deleted
 // from effective template.
 TEST_F(TemplatesUriResolverImplTest, TemplatesWithThreeUnknownIdentifiers) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt(kTestSalt);
   SetUpDOHTemplatesWithIdentifiers(kTemplateWithThreeUnknownIdentifiers);
   SetUpDOHGoogleDnsTemplate();
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateWithThreeUnknownIdentifiers);
   EXPECT_EQ(GetEffectiveTemplates(),
@@ -372,9 +379,9 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithThreeUnknownIdentifiers) {
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
   // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
-  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  local_state()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   EXPECT_EQ(GetEffectiveTemplates(), kGoogleDns);
   EXPECT_FALSE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
@@ -384,12 +391,13 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithThreeUnknownIdentifiers) {
 // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` if the user is not affiliated.
 TEST_F(TemplatesUriResolverImplTest,
        TemplatesWithUnknownIdentifiersUnaffiliated) {
-  SetUpUnaffiliatedUser();
+  const auto* user = SetUpUnaffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt(kTestSalt);
   SetUpDOHTemplatesWithIdentifiers(kTemplateWithThreeUnknownIdentifiers);
   SetUpDOHGoogleDnsTemplate();
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   EXPECT_EQ(GetDisplayTemplates(),
             kDisplayTemplateOnlyUserAndUnknownIdentifiers);
@@ -401,12 +409,13 @@ TEST_F(TemplatesUriResolverImplTest,
 // Tests that only user indentifiers are replaced in
 // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` if the user is not affiliated.
 TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersUnaffiliated) {
-  SetUpUnaffiliatedUser();
+  const auto* user = SetUpUnaffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt(kTestSalt);
   SetUpDOHTemplatesWithIdentifiers(kTemplateIdentifiers);
   SetUpDOHGoogleDnsTemplate();
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateIdentifiersUnaffiliated);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersUnaffiliated);
@@ -416,13 +425,14 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersUnaffiliated) {
 // Verifies that, when the pref sets a list of template URI separated by space,
 // all template URIs are being resolved.
 TEST_F(TemplatesUriResolverImplTest, MultipleTemplatesWithIdentifiers) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt(kTestSalt);
   SetUpDOHGoogleDnsTemplate();
   std::string multiple_templates = base::StringPrintf(
       "%s %s %s", kTemplateIdentifiers, kGoogleDns, kTemplateIdentifiers);
   SetUpDOHTemplatesWithIdentifiers(multiple_templates);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   std::string expected_multiple_templates =
       base::StringPrintf("%s %s %s", kEffectiveTemplateIdentifiers, kGoogleDns,
@@ -433,7 +443,8 @@ TEST_F(TemplatesUriResolverImplTest, MultipleTemplatesWithIdentifiers) {
 
 // Verifies that an unknown identifier is stripped from placeholders.
 TEST_F(TemplatesUriResolverImplTest, MultipleTemplatesWithUnknownIdentifiers) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt(kTestSalt);
   SetUpDOHGoogleDnsTemplate();
   std::string multiple_templates =
@@ -441,7 +452,7 @@ TEST_F(TemplatesUriResolverImplTest, MultipleTemplatesWithUnknownIdentifiers) {
                          kTemplateWithUnknownIdentifier);
   SetUpDOHTemplatesWithIdentifiers(multiple_templates);
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   std::string expected_multiple_templates =
       base::StringPrintf("%s %s %s", kEffectiveTemplateWithUnknownIdentifiers,
@@ -452,12 +463,13 @@ TEST_F(TemplatesUriResolverImplTest, MultipleTemplatesWithUnknownIdentifiers) {
 }
 
 TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersNoSalt) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateIdentifiers);
   SetUpDOHGoogleDnsTemplate();
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateIdentifiers);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersNoSalt);
@@ -465,20 +477,21 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersNoSalt) {
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
   // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
-  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
-  doh_template_uri_resolver_->Update(pref_service());
+  local_state()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetEffectiveTemplates(), kGoogleDns);
 }
 
 // Unknown identifiers will be stripped from effective templates and
 // replaced with "VALUE_NOT_AVAILABLE" in display templates.
 TEST_F(TemplatesUriResolverImplTest, TemplatesWithUnknownIdentifiersNoSalt) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateWithThreeUnknownIdentifiers);
   SetUpDOHGoogleDnsTemplate();
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
 
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateWithThreeUnknownIdentifiers);
   EXPECT_EQ(GetEffectiveTemplates(),
@@ -487,8 +500,8 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithUnknownIdentifiersNoSalt) {
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
   // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
-  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
-  doh_template_uri_resolver_->Update(pref_service());
+  local_state()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetEffectiveTemplates(), kGoogleDns);
 }
 
@@ -544,7 +557,8 @@ constexpr char kNoReplacementDisplayTemplateIdentifiersWithIp[] =
 // default network is managed by user policy.
 TEST_F(TemplatesUriResolverImplTest,
        TemplatesWithIdentifiersIpAddressUnaffiliatedUser) {
-  SetUpUnaffiliatedUser();
+  const auto* user = SetUpUnaffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateIdentifiersWithIp);
   const ash::NetworkStateHandler* network_state_handler =
@@ -553,7 +567,7 @@ TEST_F(TemplatesUriResolverImplTest,
   const ash::NetworkState* network = network_state_handler->DefaultNetwork();
 
   // Verify that the IP addresses are not replaced for unmanaged networks.
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(network->onc_source(), ::onc::ONCSource::ONC_SOURCE_UNKNOWN);
   EXPECT_EQ(GetDisplayTemplates(),
             kNoReplacementDisplayTemplateIdentifiersWithIp);
@@ -564,7 +578,7 @@ TEST_F(TemplatesUriResolverImplTest,
   // policy.
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateIdentifiersWithIp);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
 
@@ -572,7 +586,7 @@ TEST_F(TemplatesUriResolverImplTest,
   // device policy.
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             kNoReplacementDisplayTemplateIdentifiersWithIp);
   EXPECT_EQ(GetEffectiveTemplates(),
@@ -585,7 +599,8 @@ TEST_F(TemplatesUriResolverImplTest,
 // default network is managed by user policy or device policy.
 TEST_F(TemplatesUriResolverImplTest,
        TemplatesWithIdentifiersIpAddressAffiliatedUser) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateIdentifiersWithIp);
   const ash::NetworkStateHandler* network_state_handler =
@@ -594,7 +609,7 @@ TEST_F(TemplatesUriResolverImplTest,
   const ash::NetworkState* network = network_state_handler->DefaultNetwork();
 
   // Verify that the IP is not replaced for unmanaged networks.
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(network->onc_source(), ::onc::ONCSource::ONC_SOURCE_UNKNOWN);
   EXPECT_EQ(GetDisplayTemplates(),
             kNoReplacementDisplayTemplateIdentifiersWithIp);
@@ -603,13 +618,13 @@ TEST_F(TemplatesUriResolverImplTest,
 
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateIdentifiersWithIp);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
 
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateIdentifiersWithIp);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
 }
@@ -622,7 +637,8 @@ TEST_F(TemplatesUriResolverImplTest,
 // placeholder in display template.
 TEST_F(TemplatesUriResolverImplTest,
        TemplatesWithIpAddressAndUnknowIdentifierAndAffiliatedUser) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateWithIpAndUnknownIdentifier);
   const ash::NetworkStateHandler* network_state_handler =
@@ -631,7 +647,7 @@ TEST_F(TemplatesUriResolverImplTest,
   const ash::NetworkState* network = network_state_handler->DefaultNetwork();
 
   // Verify that the IP is not replaced for unmanaged networks, IP is deleted.
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(network->onc_source(), ::onc::ONCSource::ONC_SOURCE_UNKNOWN);
   EXPECT_EQ(GetDisplayTemplates(),
             kDisplayTemplateWithIpAndUnknownIdentifierIpDeleted);
@@ -640,13 +656,13 @@ TEST_F(TemplatesUriResolverImplTest,
 
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateWithIpAndUnknownIdentifier);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
 
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(), kDisplayTemplateWithIpAndUnknownIdentifier);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
 }
@@ -659,7 +675,8 @@ TEST_F(TemplatesUriResolverImplTest,
 // replaced with placeholder in display template.
 TEST_F(TemplatesUriResolverImplTest,
        TemplatesWithIpAddressAndTwoUnknowIdentifierAndAffiliatedUser) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateWithIpAndTwoUnknownIdentifier);
   const ash::NetworkStateHandler* network_state_handler =
@@ -668,7 +685,7 @@ TEST_F(TemplatesUriResolverImplTest,
   const ash::NetworkState* network = network_state_handler->DefaultNetwork();
 
   // Verify that the IP is not replaced for unmanaged networks, IP is deleted.
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(network->onc_source(), ::onc::ONCSource::ONC_SOURCE_UNKNOWN);
   EXPECT_EQ(GetDisplayTemplates(),
             kDisplayTemplateWithIpAndTwoUnknownIdentifierIpDeleted);
@@ -677,14 +694,14 @@ TEST_F(TemplatesUriResolverImplTest,
 
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             kDisplayTemplateWithIpAndTwoUnknownIdentifier);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
 
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             kDisplayTemplateWithIpAndTwoUnknownIdentifier);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
@@ -698,7 +715,8 @@ TEST_F(TemplatesUriResolverImplTest,
 // replaced with placeholder in display template.
 TEST_F(TemplatesUriResolverImplTest,
        TemplatesWithIpAddressAndTwoUnknowIdentifierV2AndAffiliatedUser) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateWithIpAndTwoUnknownIdentifierV2);
   const ash::NetworkStateHandler* network_state_handler =
@@ -709,7 +727,7 @@ TEST_F(TemplatesUriResolverImplTest,
   // Verify that the IP is not replaced for unmanaged networks, IP is deleted,
   // unknown identifiers are replaced in display template with
   // "VALUE_NOT_AVAILABLE" and deleted from effective template.
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(network->onc_source(), ::onc::ONCSource::ONC_SOURCE_UNKNOWN);
   EXPECT_EQ(GetDisplayTemplates(),
             kDisplayTemplateWithIpAndTwoUnknownIdentifierIpDeleted);
@@ -718,14 +736,14 @@ TEST_F(TemplatesUriResolverImplTest,
 
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             kDisplayTemplateWithIpAndTwoUnknownIdentifierV2);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
 
   ChangeNetworkOncSource(network->path(),
                          ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             kDisplayTemplateWithIpAndTwoUnknownIdentifierV2);
   EXPECT_EQ(GetEffectiveTemplates(), kEffectiveTemplateIdentifiersWithIp);
@@ -733,7 +751,8 @@ TEST_F(TemplatesUriResolverImplTest,
 
 TEST_F(TemplatesUriResolverImplTest,
        TemplatesWithIdentifiersIpProtocolUpdates) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateIdentifiersWithIp);
 
@@ -745,21 +764,21 @@ TEST_F(TemplatesUriResolverImplTest,
 
   SetIpAddress(network->device_path(), /*ipconfig_path=*/"",
                /*ipconfig_path=*/"");
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             kNoReplacementDisplayTemplateIdentifiersWithIp);
   EXPECT_EQ(GetEffectiveTemplates(),
             kNoReplacementEffectiveTemplateIdentifiersWithIp);
 
   SetIpAddress(network->device_path(), "ipconfig_v4_path", "100.0.0.1");
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             "https://dns.google.alternativeuri/${100.0.0.1}");
   EXPECT_EQ(GetEffectiveTemplates(),
             "https://dns.google.alternativeuri/001064000001");
 
   SetIpAddress(network->device_path(), "ipconfig_v6_path", "0:0:0:0:100:0:0:1");
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             "https://dns.google.alternativeuri/${::100:0:0:1}");
   EXPECT_EQ(
@@ -769,7 +788,8 @@ TEST_F(TemplatesUriResolverImplTest,
 
 // Verify that IP replacement is not happening when a VPN is connected.
 TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersIpWithVpn) {
-  SetUpAffiliatedUser();
+  const auto* user = SetUpAffiliatedUser();
+  ASSERT_TRUE(user);
   SetUpDOHSecureModeWithSalt("");
   SetUpDOHTemplatesWithIdentifiers(kTemplateIdentifiersWithIp);
 
@@ -785,7 +805,7 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersIpWithVpn) {
   network_handler_test_helper_->SetServiceProperty(
       "/service/vpn1", shill::kStateProperty, base::Value(shill::kStateOnline));
 
-  doh_template_uri_resolver_->Update(pref_service());
+  doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetDisplayTemplates(),
             kNoReplacementDisplayTemplateIdentifiersWithIp);
   EXPECT_EQ(GetEffectiveTemplates(),

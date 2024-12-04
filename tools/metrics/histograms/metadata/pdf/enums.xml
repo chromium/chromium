@@ -166,6 +166,50 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeBrushType) -->
 
+<!-- LINT.IfChange(PDFInk2StrokeHighlighterColor) -->
+
+<enum name="PDFInk2StrokeHighlighterColor">
+  <int value="0" label="LightRed"/>
+  <int value="1" label="LightYellow"/>
+  <int value="2" label="LightGreen"/>
+  <int value="3" label="LightBlue"/>
+  <int value="4" label="LightOrange"/>
+  <int value="5" label="Red"/>
+  <int value="6" label="Yellow"/>
+  <int value="7" label="Green"/>
+  <int value="8" label="Blue"/>
+  <int value="9" label="Orange"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeHighlighterColor) -->
+
+<!-- LINT.IfChange(PDFInk2StrokePenColor) -->
+
+<enum name="PDFInk2StrokePenColor">
+  <int value="0" label="Black"/>
+  <int value="1" label="DarkGrey2"/>
+  <int value="2" label="DarkGrey1"/>
+  <int value="3" label="LightGrey"/>
+  <int value="4" label="White"/>
+  <int value="5" label="Red1"/>
+  <int value="6" label="Yellow1"/>
+  <int value="7" label="Green1"/>
+  <int value="8" label="Blue1"/>
+  <int value="9" label="Tan1"/>
+  <int value="10" label="Red2"/>
+  <int value="11" label="Yellow2"/>
+  <int value="12" label="Green2"/>
+  <int value="13" label="Blue2"/>
+  <int value="14" label="Tan2"/>
+  <int value="15" label="Red3"/>
+  <int value="16" label="Yellow3"/>
+  <int value="17" label="Green3"/>
+  <int value="18" label="Blue3"/>
+  <int value="19" label="Tan3"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokePenColor) -->
+
 <enum name="PDFPostMessageDataType">
 <!-- This must be kept current with PostMessageDataType in
      chrome/browser/resources/pdf/pdf_viewer.ts. -->

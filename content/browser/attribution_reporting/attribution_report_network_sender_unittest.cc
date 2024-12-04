@@ -16,6 +16,7 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
@@ -44,6 +45,10 @@
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif
 
 namespace content {
 
@@ -842,6 +847,109 @@ TEST_F(AttributionReportNetworkSenderTest,
         "Conversions.DebugReport.ReportRetrySucceedAggregatable", true, 1);
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AttributionReportNetworkSenderTest,
+       AndroidApplicationBackgrounded_ReportSent) {
+  // Trigger a state change signal for the desired state.
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+  base::RunLoop().Quit();
+
+  // All OK
+  {
+    base::HistogramTester histograms;
+    auto report = DefaultEventLevelReport();
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kEventLevelReportUrl, ""));
+    // kOk = 0.
+    histograms.ExpectUniqueSample(
+        "Conversions.HttpResponseOrNetErrorCode.AppBackgrounded", net::HTTP_OK,
+        1);
+  }
+
+  // Internal error
+  {
+    base::HistogramTester histograms;
+    auto report = DefaultEventLevelReport();
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
+    network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(kEventLevelReportUrl), completion_status,
+        network::mojom::URLResponseHead::New(), ""));
+    // kInternalError = 1.
+    histograms.ExpectUniqueSample(
+        "Conversions.HttpResponseOrNetErrorCode.AppBackgrounded",
+        net::ERR_FAILED, 1);
+  }
+  // External error
+  {
+    base::HistogramTester histograms;
+    auto report = DefaultEventLevelReport();
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kEventLevelReportUrl, "", net::HTTP_UNAUTHORIZED));
+    // kExternalError = 2.
+    histograms.ExpectUniqueSample(
+        "Conversions.HttpResponseOrNetErrorCode.AppBackgrounded",
+        net::HTTP_UNAUTHORIZED, 1);
+  }
+}
+
+TEST_F(AttributionReportNetworkSenderTest,
+       AndroidApplicationDestroyed_ReportSent) {
+  // Trigger a state change signal for the desired state.
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES);
+  base::RunLoop().Quit();
+
+  // All OK
+  {
+    base::HistogramTester histograms;
+    auto report = DefaultEventLevelReport();
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kEventLevelReportUrl, ""));
+    // kOk = 0.
+    histograms.ExpectUniqueSample(
+        "Conversions.HttpResponseOrNetErrorCode.AppDestroyed", net::HTTP_OK, 1);
+  }
+
+  // Internal error
+  {
+    base::HistogramTester histograms;
+    auto report = DefaultEventLevelReport();
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
+    network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(kEventLevelReportUrl), completion_status,
+        network::mojom::URLResponseHead::New(), ""));
+    // kInternalError = 1.
+    histograms.ExpectUniqueSample(
+        "Conversions.HttpResponseOrNetErrorCode.AppDestroyed", net::ERR_FAILED,
+        1);
+  }
+  // External error
+  {
+    base::HistogramTester histograms;
+    auto report = DefaultEventLevelReport();
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kEventLevelReportUrl, "", net::HTTP_UNAUTHORIZED));
+    // kExternalError = 2.
+    histograms.ExpectUniqueSample(
+        "Conversions.HttpResponseOrNetErrorCode.AppDestroyed",
+        net::HTTP_UNAUTHORIZED, 1);
+  }
+}
+#endif
 
 TEST_F(AttributionReportNetworkSenderTest,
        ErrorReportSent_ReportBodySetCorrectly) {

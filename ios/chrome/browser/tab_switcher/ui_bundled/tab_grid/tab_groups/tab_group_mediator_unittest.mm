@@ -84,7 +84,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
     tab_group_sync_service_ =
         std::make_unique<tab_groups::FakeTabGroupSyncService>();
     share_kit_service_ =
-        std::make_unique<TestShareKitService>(nullptr, nullptr);
+        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
     collaboration_service_ =
         std::make_unique<collaboration::MockCollaborationService>();
 
@@ -192,7 +192,7 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
 TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
   auto other_browser = std::make_unique<TestBrowser>(
       profile_.get(), scene_state_,
-      std::make_unique<BrowserWebStateListDelegate>());
+      std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
   SnapshotBrowserAgent::CreateForBrowser(other_browser.get());
 
   browser_list_->AddBrowser(other_browser.get());

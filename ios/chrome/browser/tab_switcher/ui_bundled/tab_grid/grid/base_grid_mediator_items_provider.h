@@ -7,6 +7,7 @@
 
 @class GridItemIdentifier;
 
+@class ActivityLabelData;
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -16,6 +17,10 @@ class WebStateID;
 
 // Returns YES if `itemID` is selected in selection mode.
 - (BOOL)isItemSelected:(GridItemIdentifier*)itemID;
+
+// Returns the information needed for showing the label on the cell. Returns nil
+// if the label shouldn't be displayed.
+- (ActivityLabelData*)activityLabelDataForItem:(GridItemIdentifier*)itemID;
 
 @end
 

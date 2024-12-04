@@ -165,25 +165,6 @@ void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }
 
-void ShoppingUiHandlerDelegate::ShowBookmarkEditorForCurrentUrl() {
-  auto current_url = GetCurrentTabUrl();
-  if (!current_url.has_value()) {
-    return;
-  }
-  auto* browser = chrome::FindLastActiveWithProfile(profile_);
-  if (!browser) {
-    return;
-  }
-  const bookmarks::BookmarkNode* existing_node =
-      bookmark_model_->GetMostRecentlyAddedUserNodeForURL(current_url.value());
-  if (!existing_node) {
-    return;
-  }
-  BookmarkEditor::Show(browser->window()->GetNativeWindow(), profile_,
-                       BookmarkEditor::EditDetails::EditNode(existing_node),
-                       BookmarkEditor::SHOW_TREE);
-}
-
 ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
   auto* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {

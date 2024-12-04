@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -45,9 +40,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUntrustedDataSharingURL);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kDataSharingResources, kDataSharingResourcesSize),
-      IDR_DATA_SHARING_DATA_SHARING_HTML);
+  webui::SetupWebUIDataSource(source, kDataSharingResources,
+                              IDR_DATA_SHARING_DATA_SHARING_HTML);
 
   // Allow untrusted mojo resources to be loaded.
   source->OverrideContentSecurityPolicy(

@@ -22,6 +22,10 @@
 #else
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/platform_test_extension_loader.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 #endif
 
 namespace extensions {
@@ -34,14 +38,72 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 }
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+// ActivityType that doesn't restore tabs on cold start. Any type other than
+// kTabbed is fine.
+const auto kTestActivityType = chrome::android::ActivityType::kCustomTab;
+
 bool IsMV3AllowedContextType(ContextType context_type) {
   return context_type == ContextType::kServiceWorker ||
          context_type == ContextType::kFromManifest ||
          context_type == ContextType::kNone;
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 }  // namespace
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+// TestTabModel provides a means of creating a tab associated with a given
+// profile. The new tab can then be added to Android's TabModelList.
+class ExtensionPlatformBrowserTest::TestTabModel : public TabModel {
+ public:
+  explicit TestTabModel(Profile* profile)
+      : TabModel(profile, kTestActivityType),
+        web_contents_(content::WebContents::Create(
+            content::WebContents::CreateParams(GetProfile()))) {}
+
+  ~TestTabModel() override = default;
+
+  // TabModel:
+  int GetTabCount() const override { return 0; }
+  int GetActiveIndex() const override { return 0; }
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override {
+    return nullptr;
+  }
+  content::WebContents* GetActiveWebContents() const override {
+    return web_contents_.get();
+  }
+  content::WebContents* GetWebContentsAt(int index) const override {
+    return nullptr;
+  }
+  TabAndroid* GetTabAt(int index) const override { return nullptr; }
+  void SetActiveIndex(int index) override {}
+  void ForceCloseAllTabs() override {}
+  void CloseTabAt(int index) override {}
+  void CreateTab(TabAndroid* parent,
+                 content::WebContents* web_contents,
+                 bool select) override {}
+  void HandlePopupNavigation(TabAndroid* parent,
+                             NavigateParams* params) override {}
+  content::WebContents* CreateNewTabForDevTools(const GURL& url) override {
+    return nullptr;
+  }
+  bool IsSessionRestoreInProgress() const override { return false; }
+  bool IsActiveModel() const override { return false; }
+  void AddObserver(TabModelObserver* observer) override {}
+  void RemoveObserver(TabModelObserver* observer) override {}
+  int GetTabCountNavigatedInTimeWindow(
+      const base::Time& begin_time,
+      const base::Time& end_time) const override {
+    return 0;
+  }
+  void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
+                                      const base::Time& end_time) override {}
+
+ private:
+  // The WebContents associated with this tab's profile.
+  std::unique_ptr<content::WebContents> web_contents_;
+};
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
     ContextType context_type)
@@ -73,6 +135,16 @@ void ExtensionPlatformBrowserTest::SetUpOnMainThread() {
 void ExtensionPlatformBrowserTest::TearDown() {
   web_contents_.reset();
   PlatformBrowserTest::TearDown();
+}
+
+void ExtensionPlatformBrowserTest::TearDownOnMainThread() {
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  if (tab_model_) {
+    TabModelList::RemoveTabModel(tab_model_.get());
+    tab_model_.reset();
+  }
+#endif
+  PlatformBrowserTest::TearDownOnMainThread();
 }
 
 const Extension* ExtensionPlatformBrowserTest::LoadExtension(
@@ -133,6 +205,27 @@ void ExtensionPlatformBrowserTest::DisableExtension(
 
 content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents() {
   return chrome_test_utils::GetActiveWebContents(this);
+}
+
+void ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
+    Profile* profile,
+    const GURL& url) {
+#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  OpenURLOffTheRecord(profile, url);
+#else
+  // Android doesn't have an OpenURLOffTheRecord() helper so we roll our own.
+  Profile* incognito_profile =
+      this->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  if (tab_model_) {
+    TabModelList::RemoveTabModel(tab_model_.get());
+    tab_model_.reset();
+  }
+  // Create a tab model for the incognito profile then navigate to the URL.
+  tab_model_ = std::make_unique<TestTabModel>(incognito_profile);
+  TabModelList::AddTabModel(tab_model_.get());
+  // This blocks until the navigation completes.
+  ASSERT_TRUE(content::NavigateToURL(tab_model_->GetActiveWebContents(), url));
+#endif
 }
 
 Profile* ExtensionPlatformBrowserTest::profile() {

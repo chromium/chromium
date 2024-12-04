@@ -15,7 +15,6 @@ class Size;
 
 namespace glic {
 class GlicView;
-}
 
 // Class for Glic window controller. Owned by the Glic profile keyed-service.
 // This gets created when the Glic window needs to be shown and it owns the Glic
@@ -53,5 +52,7 @@ class GlicWindowController {
 
   base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_

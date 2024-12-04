@@ -677,7 +677,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       scoped_selection_handles_;
 
   // Bounds to use if we have no backing WebContents.
-  gfx::Rect default_bounds_;
+  gfx::Rect default_bounds_dip_;
 
   const bool using_browser_compositor_;
   std::unique_ptr<SynchronousCompositorHost> sync_compositor_;

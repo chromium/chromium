@@ -6,7 +6,7 @@ edechamps@google.com
 ciaramcmullin@google.com
 abhipatel@chromium.org
 
-per-file masked_domain_list*=aakallam@chromium.org
-per-file url_matcher_with_bypass*=aakallam@chromium.org
+per-file common/masked_domain_list*=aakallam@chromium.org
+per-file common/url_matcher_with_bypass*=aakallam@chromium.org
 
 file://net/OWNERS

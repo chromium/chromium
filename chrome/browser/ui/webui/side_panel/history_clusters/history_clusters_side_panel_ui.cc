@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 
 #include <string>
@@ -74,12 +69,9 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   history_embeddings::PopulateSourceForWebUI(source, profile);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelHistoryClustersResources,
-                      kSidePanelHistoryClustersResourcesSize),
+      source, kSidePanelHistoryClustersResources,
       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 HistoryClustersSidePanelUI::~HistoryClustersSidePanelUI() = default;

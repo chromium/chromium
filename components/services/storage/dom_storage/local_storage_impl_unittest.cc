@@ -164,8 +164,7 @@ class LocalStorageImplTest : public testing::Test {
     context()->GetDatabaseForTesting().PostTaskWithThisObject(
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           leveldb::Status status =
-              db.Put(base::as_bytes(base::make_span(key)),
-                     base::as_bytes(base::make_span(value)));
+              db.Put(base::as_byte_span(key), base::as_byte_span(value));
           ASSERT_TRUE(status.ok());
           loop.Quit();
         }));

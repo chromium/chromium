@@ -240,8 +240,7 @@ class EndpointFetcher {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // `identity_manager_` can be null if it is not needed for authentication (in
   // this case, callers should invoke `PerformRequest` directly).
-  const raw_ptr<signin::IdentityManager, AcrossTasksDanglingUntriaged>
-      identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   // `consent_level_` is used together with `identity_manager_`, so it can be
   // null if `identity_manager_` is null.
   const std::optional<signin::ConsentLevel> consent_level_;

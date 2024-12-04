@@ -18,7 +18,7 @@ UserDeviceContext::UserDeviceContext(std::wstring device_resource_id,
       user_sid(user_sid),
       dm_token(dm_token) {}
 
-UserDeviceContext::~UserDeviceContext() {}
+UserDeviceContext::~UserDeviceContext() = default;
 
 UserDeviceContext::UserDeviceContext(const UserDeviceContext& other)
     : device_resource_id(other.device_resource_id),

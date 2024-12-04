@@ -15,9 +15,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
@@ -58,7 +59,7 @@ class ChromeBackupWatcher {
                             }
                         });
 
-        mPrefChangeRegistrar = new PrefChangeRegistrar(profile);
+        mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
         for (PrefBackupSerializer serializer : ChromeBackupAgentImpl.NATIVE_PREFS_SERIALIZERS) {
             for (String pref : serializer.getAllowlistedPrefs()) {
                 mPrefChangeRegistrar.addObserver(pref, this::onBackupPrefsChanged);

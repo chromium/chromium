@@ -37,9 +37,6 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
   virtual perfetto::protos::gen::TriggerRule ToProtoForTesting() const;
   virtual void GenerateMetadataProto(MetadataProto* out) const;
 
-  // Seconds from the rule is triggered to finalization should start.
-  virtual base::TimeDelta GetTraceDelay() const;
-
   // Probability that we should allow a tigger to  happen.
   double trigger_chance() const { return trigger_chance_; }
   std::optional<base::TimeDelta> delay() const { return delay_; }
@@ -50,15 +47,16 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
       const std::vector<perfetto::protos::gen::TriggerRule>& configs,
       std::vector<std::unique_ptr<BackgroundTracingRule>>& rules);
 
-  const std::string& rule_id() const { return rule_id_; }
+  const std::string& rule_name() const { return rule_name_; }
   std::optional<int32_t> triggered_value() const { return triggered_value_; }
+  uint64_t GetFlowId() const;
 
   bool is_crash() const { return is_crash_; }
 
   bool OnRuleTriggered(std::optional<int32_t> value);
 
  protected:
-  virtual std::string GetDefaultRuleId() const;
+  virtual std::string GetDefaultRuleName() const;
 
   virtual void DoInstall() = 0;
   virtual void DoUninstall() = 0;
@@ -71,12 +69,11 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
   RuleTriggeredCallback trigger_callback_;
   bool installed_ = false;
   double trigger_chance_ = 1.0;
-  base::TimeDelta trigger_delay_;
   std::optional<base::TimeDelta> delay_;
   std::optional<base::TimeDelta> activation_delay_;
   base::OneShotTimer trigger_timer_;
   base::OneShotTimer activation_timer_;
-  std::string rule_id_;
+  std::string rule_name_;
   std::optional<int32_t> triggered_value_;
   bool is_crash_ = false;
 };

@@ -99,12 +99,6 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions() {
       false);
 }
 
-// If this is enabled, LoadingPredictor avoids prefetching during
-// browser startup.
-BASE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup,
-             "AvoidLoadingPredictorPrefetchDuringBrowserStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If this is enabled, LoadingPredictor restricts the number of preconnects for
 // the same destination to one.
 BASE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount,

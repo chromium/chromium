@@ -116,9 +116,7 @@ FirmwareUpdateAppUI::FirmwareUpdateAppUI(content::WebUI* web_ui)
       "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(source);
 
-  const auto resources = base::make_span(kAshFirmwareUpdateAppResources,
-                                         kAshFirmwareUpdateAppResourcesSize);
-  SetUpWebUIDataSource(source, resources,
+  SetUpWebUIDataSource(source, kAshFirmwareUpdateAppResources,
                        IDR_ASH_FIRMWARE_UPDATE_APP_INDEX_HTML);
 
   AddFirmwareUpdateAppStrings(source);

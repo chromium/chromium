@@ -122,7 +122,7 @@ TEST_F(CalendarViewPixelTest, Basics) {
 
 // Tests that the scroll view scrolls up when there are not at least 2 weeks
 // visible below todays view (without up-next view).
-TEST_F(CalendarViewPixelTest, BasicsShowMoreFutureDates) {
+TEST_F(CalendarViewPixelTest, Basics_ShowMoreFutureDates) {
   // Sets time override.
   base::Time date;
 

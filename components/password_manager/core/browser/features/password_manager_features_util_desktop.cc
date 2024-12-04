@@ -22,6 +22,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 using signin::GaiaIdHash;
 
@@ -148,7 +149,7 @@ PasswordForm::Store GetDefaultPasswordStore(
     return PasswordForm::Store::kProfileStore;
   }
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     return PasswordForm::Store::kProfileStore;
   }
@@ -181,7 +182,7 @@ bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
     return false;
   }
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     return false;
   }
@@ -199,7 +200,7 @@ void OptInToAccountStorage(PrefService* pref_service,
   DCHECK(sync_service);
   CHECK(CanCreateAccountStore(pref_service));
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // Maybe the account went away since the opt-in UI was shown. This should be
     // rare, but is ultimately harmless - just do nothing here.
@@ -227,7 +228,7 @@ void OptOutOfAccountStorage(PrefService* pref_service,
   CHECK(pref_service);
   CHECK(sync_service);
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // In rare cases, it could happen that the account went away since the
     // opt-out UI was triggered.
@@ -251,7 +252,7 @@ void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
   DCHECK(sync_service);
   CHECK(CanCreateAccountStore(pref_service));
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // In rare cases, it could happen that the account went away since the
     // opt-out UI was triggered.
@@ -276,7 +277,7 @@ void SetDefaultPasswordStore(PrefService* pref_service,
   DCHECK(sync_service);
   CHECK(CanCreateAccountStore(pref_service));
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // Maybe the account went away since the UI was shown. This should be rare,
     // but is ultimately harmless - just do nothing here.
@@ -293,7 +294,7 @@ void SetDefaultPasswordStore(PrefService* pref_service,
 
 void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
-    const std::vector<std::string>& gaia_ids) {
+    const std::vector<GaiaId>& gaia_ids) {
   DCHECK(pref_service);
 
   // Build a set of hashes of all the Gaia IDs.

@@ -198,11 +198,6 @@ BASE_FEATURE(kLvmApplicationContainers,
              "ArcLvmApplicationContainers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls experimental file picker feature for ARC.
-BASE_FEATURE(kFilePickerExperimentFeature,
-             "ArcFilePickerExperiment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the guest swap is enabled. This is only for ARCVM.
 BASE_FEATURE(kGuestSwap, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
 

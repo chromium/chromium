@@ -44,6 +44,8 @@ external/wpt/notifications/permissions-non-secure.html
 external/wpt/notifications/shownotification-without-permission.https.window.html
 external/wpt/notifications/shownotification.https.window.html
 external/wpt/permissions-policy/reporting/report-only-single-endpoint.https.sub.html
+external/wpt/service-workers/service-worker/controller-on-reload.https.html
+external/wpt/service-workers/service-worker/fetch-request-xhr.https.html
 external/wpt/storage-access-api/storageAccess.testdriver.sub.html
 virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cache-storage.https.tentative.window.html?document
 virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cache.tentative.window.html

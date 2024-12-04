@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/collaboration/public/messaging/message.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -473,6 +474,34 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
 
 TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 
+RecentActivityRowData TabHoverCardBubbleView::GetRecentActivityData(
+    const TabRendererData& tab_data) {
+  RecentActivityRowData recent_activity_data;
+  bool show_recent_activity = false;
+
+  if (auto message = tab_data.recent_activity) {
+    if (auto member = message->attribution.triggering_user) {
+      using collaboration::messaging::CollaborationEvent;
+
+      const std::u16string username = base::UTF8ToUTF16(member->display_name);
+      const CollaborationEvent action = message->collaboration_event;
+
+      if (action == CollaborationEvent::TAB_ADDED) {
+        recent_activity_data.text = l10n_util::GetStringFUTF16(
+            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB, username);
+        show_recent_activity = true;
+      } else if (action == CollaborationEvent::TAB_UPDATED) {
+        recent_activity_data.text = l10n_util::GetStringFUTF16(
+            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB, username);
+        show_recent_activity = true;
+      }
+    }
+  }
+  recent_activity_data.should_show_recent_activity = show_recent_activity;
+
+  return recent_activity_data;
+}
+
 void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // Preview image is never visible for the active tab.
   if (thumbnail_view_) {
@@ -536,7 +565,12 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   title_label_->SetData({title, is_filename});
   domain_label_->SetData({domain, false});
 
-  const bool show_discard_status = tab_data.should_show_discard_status;
+  RecentActivityRowData recent_activity_data = GetRecentActivityData(tab_data);
+  bool show_recent_activity = recent_activity_data.should_show_recent_activity;
+
+  // Recent activity takes precedence over discard status for shared tabs.
+  const bool show_discard_status =
+      !show_recent_activity && tab_data.should_show_discard_status;
   const int64_t tab_memory_usage_in_bytes =
       tab_data.tab_resource_usage
           ? tab_data.tab_resource_usage->memory_usage_in_bytes()
@@ -547,18 +581,22 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
           : false;
   // High memory usage notification is considered a tab alert. Show it even
   // if the memory usage in hover cards pref is disabled.
+  // However, recent activity takes precedence over memory usage for
+  // shared tabs.
   const bool show_memory_usage =
-      !show_discard_status &&
+      !show_recent_activity && !show_discard_status &&
       ((bubble_params_.show_memory_usage && tab_memory_usage_in_bytes > 0) ||
        is_high_memory_usage);
-  const bool show_footer =
-      alert_state_.has_value() || show_discard_status || show_memory_usage;
+  const bool show_footer = alert_state_.has_value() || show_discard_status ||
+                           show_memory_usage || show_recent_activity;
 
   footer_view_->SetAlertData({alert_state_, show_discard_status,
                               tab_data.discarded_memory_savings_in_bytes});
 
   footer_view_->SetPerformanceData(
       {show_memory_usage, is_high_memory_usage, tab_memory_usage_in_bytes});
+
+  footer_view_->SetRecentActivityData(recent_activity_data);
 
   if (thumbnail_view_) {
     // We only clip the corners of the fade image when there isn't a footer.

@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_stream_pool.h"
@@ -42,6 +43,9 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
   QuicSessionPool* GetQuicSessionPool() override;
   const QuicSessionAliasKey& GetKey() override;
   const NetLogWithSource& GetNetLog() override;
+
+  // Retrieves information on the current state of `this` as a base::Value.
+  base::Value::Dict GetInfoAsValue() const;
 
   // Returns the first non-pending result of a QUIC session attempt start, if
   // any. Never returns ERR_IO_PENDING.

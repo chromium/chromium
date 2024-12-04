@@ -2104,7 +2104,7 @@ test("content_browsertests") {
       "../browser/accessibility/ax_platform_node_textrangeprovider_win_browsertest.cc",
       "../browser/accessibility/ax_platform_node_win_browsertest.cc",
       "../browser/accessibility/hit_testing_win_browsertest.cc",
-      "../browser/media/web_app_system_media_controls_browsertest.cc",
+      "../browser/media/system_media_controls/web_app_system_media_controls_browsertest.cc",
       "../browser/network/network_service_process_tracker_win_browsertest.cc",
       "../browser/renderer_host/accessibility_object_lifetime_win_browsertest.cc",
       "../browser/renderer_host/accessibility_tree_linkage_win_browsertest.cc",
@@ -2656,7 +2656,7 @@ test("content_unittests") {
     "../browser/media/session/media_session_impl_service_routing_unittest.cc",
     "../browser/media/session/media_session_impl_unittest.cc",
     "../browser/media/session/media_session_uma_helper_unittest.cc",
-    "../browser/media/system_media_controls_notifier_unittest.cc",
+    "../browser/media/system_media_controls/system_media_controls_notifier_unittest.cc",
     "../browser/media/webaudio/audio_context_manager_impl_unittest.cc",
     "../browser/memory/swap_metrics_driver_impl_unittest.cc",
     "../browser/metrics/histogram_shared_memory_config_unittest.cc",
@@ -3059,8 +3059,7 @@ test("content_unittests") {
   }
 
   if (is_win || is_mac) {
-    sources +=
-        [ "../browser/media/web_app_system_media_controls_manager_unittest.cc" ]
+    sources += [ "../browser/media/system_media_controls/web_app_system_media_controls_manager_unittest.cc" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {

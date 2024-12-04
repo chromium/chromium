@@ -29,6 +29,7 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -95,13 +96,13 @@ class CSSCubicBezierTimingFunctionValue : public CSSValue {
 
 class CSSStepsTimingFunctionValue : public CSSValue {
  public:
-  CSSStepsTimingFunctionValue(int steps,
+  CSSStepsTimingFunctionValue(const CSSPrimitiveValue* steps,
                               StepsTimingFunction::StepPosition step_position)
       : CSSValue(kStepsTimingFunctionClass),
         steps_(steps),
         step_position_(step_position) {}
 
-  int NumberOfSteps() const { return steps_; }
+  const CSSPrimitiveValue* NumberOfSteps() const { return steps_.Get(); }
   StepsTimingFunction::StepPosition GetStepPosition() const {
     return step_position_;
   }
@@ -111,11 +112,12 @@ class CSSStepsTimingFunctionValue : public CSSValue {
   bool Equals(const CSSStepsTimingFunctionValue&) const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
+    visitor->Trace(steps_);
     CSSValue::TraceAfterDispatch(visitor);
   }
 
  private:
-  int steps_;
+  Member<const CSSPrimitiveValue> steps_;
   StepsTimingFunction::StepPosition step_position_;
 };
 

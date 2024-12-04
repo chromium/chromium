@@ -829,10 +829,21 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
             initWebContents(webContents);
             loadUrl(mPendingLoadParams);
             mPendingLoadParams = null;
-            return true;
+        } else {
+            restoreIfNeeded(caller);
         }
 
-        restoreIfNeeded(caller);
+        // If we are trying to share a tab, and it has never been loaded, then it will not have its
+        // physical backing size set, which means it will never produce any frames. In this case,
+        // set the physical backing size to an estimate of what it would be if it were shown.
+        if (caller == TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER && !hasBacking()) {
+            var display = mWindowAndroid.getDisplay();
+            int width = (int) (mWebContents.getWidth() * display.getDipScale());
+            int height = (int) (mWebContents.getHeight() * display.getDipScale());
+            TabImplJni.get()
+                    .onPhysicalBackingSizeChanged(mNativeTabAndroid, mWebContents, width, height);
+        }
+
         return true;
     }
 
@@ -2280,6 +2291,11 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     }
 
     @VisibleForTesting
+    boolean hasBacking() {
+        return !TabImplJni.get().isPhysicalBackingSizeEmpty(mNativeTabAndroid, mWebContents);
+    }
+
+    @VisibleForTesting
     protected void setTitle(String title) {
         mTitle = title;
     }
@@ -2552,6 +2568,8 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         void destroyWebContents(long nativeTabAndroid);
 
         void releaseWebContents(long nativeTabAndroid);
+
+        boolean isPhysicalBackingSizeEmpty(long nativeTabAndroid, WebContents webContents);
 
         void onPhysicalBackingSizeChanged(
                 long nativeTabAndroid, WebContents webContents, int width, int height);

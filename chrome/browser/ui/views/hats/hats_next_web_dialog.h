@@ -11,7 +11,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/webui/hats/hats_page_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -35,8 +34,7 @@ class Widget;
 // to the user.
 class HatsNextWebDialog : public views::BubbleDialogDelegateView,
                           public content::WebContentsDelegate,
-                          public ProfileObserver,
-                          public HatsPageHandlerDelegate {
+                          public ProfileObserver {
   METADATA_HEADER(HatsNextWebDialog, views::BubbleDialogDelegateView)
 
  public:
@@ -59,15 +57,10 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  // HatsPageHandlerDelegate:
-  std::string GetTriggerId() override;
-  bool GetEnableTesting() override;
-  std::vector<std::string> GetLanguageList() override;
-  base::Value::Dict GetProductSpecificDataJson() override;
   std::optional<std::string> GetHistogramName();
-  void OnSurveyLoaded() override;
-  void OnSurveyCompleted() override;
-  void OnSurveyClosed() override;
+  void OnSurveyLoaded();
+  void OnSurveyCompleted();
+  void OnSurveyClosed();
   void OnSurveyQuestionAnswered(const std::string& state);
 
   static bool ParseSurveyQuestionAnswer(const std::string& input,

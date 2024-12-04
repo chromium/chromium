@@ -46,7 +46,7 @@ class PLATFORM_EXPORT Digestor {
   // set. This object cannot be reused; do not update it after Finish.
   bool Update(base::span<const uint8_t>);
   bool UpdateUtf8(const String&,
-                  WTF::UTF8ConversionMode = WTF::kLenientUTF8Conversion);
+                  WTF::Utf8ConversionMode = WTF::Utf8ConversionMode::kLenient);
   bool Finish(DigestValue&);
 
  private:

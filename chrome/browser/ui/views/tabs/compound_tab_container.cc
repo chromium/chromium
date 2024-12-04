@@ -435,12 +435,12 @@ void CompoundTabContainer::UpdateTabGroupVisuals(
   unpinned_tab_container_->UpdateTabGroupVisuals(group_id);
 }
 
-void CompoundTabContainer::NotifyTabGroupEditorBubbleOpened() {
-  unpinned_tab_container_->NotifyTabGroupEditorBubbleOpened();
+void CompoundTabContainer::NotifyTabstripBubbleOpened() {
+  unpinned_tab_container_->NotifyTabstripBubbleOpened();
 }
 
-void CompoundTabContainer::NotifyTabGroupEditorBubbleClosed() {
-  unpinned_tab_container_->NotifyTabGroupEditorBubbleClosed();
+void CompoundTabContainer::NotifyTabstripBubbleClosed() {
+  unpinned_tab_container_->NotifyTabstripBubbleClosed();
 }
 
 std::optional<int> CompoundTabContainer::GetModelIndexOf(

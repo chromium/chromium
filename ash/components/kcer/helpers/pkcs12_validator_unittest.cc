@@ -11,6 +11,7 @@
 
 #include "ash/components/kcer/kcer_nss/test_utils.h"
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,8 +51,8 @@ scoped_refptr<const Cert> MakeKcerCertFromBsslCert(const std::string& nickname,
   }
 
   scoped_refptr<net::X509Certificate> x509_cert =
-      net::X509Certificate::CreateFromBytes(
-          base::make_span(cert_der.get(), size_t(cert_der_size)));
+      net::X509Certificate::CreateFromBytes(base::span(
+          cert_der.get(), base::checked_cast<size_t>(cert_der_size)));
   return MakeKcerCert("name", x509_cert);
 }
 

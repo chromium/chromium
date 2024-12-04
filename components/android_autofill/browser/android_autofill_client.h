@@ -85,7 +85,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   const std::string& GetAppLocale() const final;
   bool IsOffTheRecord() const final;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
-  autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() final;
+  autofill::AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   autofill::PersonalDataManager& GetPersonalDataManager() final;
   autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() final;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
@@ -121,10 +121,8 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   bool IsAutofillPaymentMethodsEnabled() const final;
   bool IsAutocompleteEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
-  void DidFillOrPreviewForm(
-      autofill::mojom::ActionPersistence action_persistence,
-      autofill::AutofillTriggerSource trigger_source,
-      bool is_refill) final;
+  void DidFillForm(autofill::AutofillTriggerSource trigger_source,
+                   bool is_refill) final;
   bool IsContextSecure() const final;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
   autofill::autofill_metrics::FormInteractionsUkmLogger&

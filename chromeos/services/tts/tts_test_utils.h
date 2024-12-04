@@ -71,8 +71,8 @@ class MockAudioStreamFactory : public media::mojom::AudioStreamFactory {
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       const base::UnguessableToken& group_id,
-      base::OnceCallback<void(media::mojom::ReadOnlyAudioDataPipePtr)> callback)
-      override {}
+      base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>
+          callback) override {}
 
   mojo::PendingReceiver<media::mojom::AudioOutputStream> audio_output_stream_;
 };

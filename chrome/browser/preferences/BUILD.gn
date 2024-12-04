@@ -34,18 +34,18 @@ android_library("java") {
 }
 
 android_library("pref_service_java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java" ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/preferences/PrefServiceUtil.java" ]
 
   deps = [
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-
-  srcjar_deps = [ ":pref_service_jni_headers" ]
 }
 
 # TODO(chouinard,estade): Consider breaking this target up into a different target for each pref file.
@@ -79,10 +79,6 @@ java_cpp_strings("java_pref_names_srcjar") {
 
 generate_jni("jni_headers") {
   sources = [ "android/java/src/org/chromium/chrome/browser/preferences/ChromeSharedPreferences.java" ]
-}
-
-generate_jni("pref_service_jni_headers") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java" ]
 }
 
 source_set("android") {

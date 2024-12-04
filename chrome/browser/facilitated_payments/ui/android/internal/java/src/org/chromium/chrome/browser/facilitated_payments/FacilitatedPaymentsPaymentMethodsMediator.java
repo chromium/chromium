@@ -264,8 +264,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                     PersonalDataManagerFactory.getForProfile(mProfile)
                             .getCustomImageForAutofillSuggestionIfAvailable(
                                     eWallet.getDisplayIconUrl(),
-                                    AutofillUiUtils.CardIconSpecs.create(
-                                            context, ImageSize.SQUARE));
+                                    AutofillUiUtils.CardIconSpecs.create(context, ImageSize.LARGE));
         }
         if (eWalletIconOptional.isPresent()) {
             eWalletModelBuilder.with(EWALLET_ICON_BITMAP, eWalletIconOptional.get());

@@ -409,12 +409,8 @@
     "includes": [4000],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/resources.grd": {
-    "META": {"sizes": {"includes": [8]}},
+    "META": {"sizes": {"includes": [11]}},
     "includes": [4010],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/hats/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [4020],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/history/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
@@ -647,10 +643,6 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_js_error/resources.grd": {
    "META": {"sizes": {"includes": [10],}},
    "includes": [5160],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/welcome/resources.grd": {
-    "META": {"sizes": {"includes": [80]}},
-    "includes": [5180],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/whats_new/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
@@ -1030,6 +1022,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/components/policy/resources/webui/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [7420],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/components/signin/core/browser/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7430],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/ukm/debug/resources.grd": {
     "META": {"sizes": {"includes": [5]}},

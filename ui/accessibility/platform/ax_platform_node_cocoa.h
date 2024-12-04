@@ -56,6 +56,9 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // (legacy AXDescription attribute).
 - (id)titleUIElement;
 
+// Collects all nested accessible tree item ids in treeItemIds.
+- (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)treeItemIds;
+
 // Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
 // found.
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role;

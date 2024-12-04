@@ -181,7 +181,7 @@ TEST_F(FastPairDiscoverableScannerImplTest,
   scanner_->NotifyDeviceFound(device);
 }
 
-TEST_F(FastPairDiscoverableScannerImplTest, UtilityProcessStoppedDeviceLost) {
+TEST_F(FastPairDiscoverableScannerImplTest, UtilityProcessStopped_DeviceLost) {
   auto device = std::make_unique<device::MockBluetoothDevice>(
       adapter_.get(), 0, "test_name", kAddress, /*paired=*/false,
       /*connected=*/false);
@@ -198,7 +198,7 @@ TEST_F(FastPairDiscoverableScannerImplTest, UtilityProcessStoppedDeviceLost) {
   scanner_->NotifyDeviceFound(device_ptr);
 }
 
-TEST_F(FastPairDiscoverableScannerImplTest, ValidModelIdFactoryCreate) {
+TEST_F(FastPairDiscoverableScannerImplTest, ValidModelId_FactoryCreate) {
   discoverable_scanner_.reset();
   std::unique_ptr<FastPairDiscoverableScanner>
       discoverable_scanner_from_factory =
@@ -521,7 +521,7 @@ TEST_F(FastPairDiscoverableScannerImplTest, NearbyShareModelId) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerImplTest, InvokesLostCallbackAfterFoundV1) {
+TEST_F(FastPairDiscoverableScannerImplTest, InvokesLostCallbackAfterFound_v1) {
   device::BluetoothDevice* device = GetDevice(kValidModelId);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
@@ -582,7 +582,7 @@ TEST_F(FastPairDiscoverableScannerImplTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerImplTest, InvokesLostCallbackAfterFoundV2) {
+TEST_F(FastPairDiscoverableScannerImplTest, InvokesLostCallbackAfterFound_v2) {
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
   nearby::fastpair::Status* status = metadata.mutable_status();

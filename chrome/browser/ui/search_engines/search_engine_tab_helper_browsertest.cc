@@ -74,7 +74,7 @@ class TemplateURLServiceObserver {
   TemplateURLServiceObserver& operator=(const TemplateURLServiceObserver&) =
       delete;
 
-  ~TemplateURLServiceObserver() {}
+  ~TemplateURLServiceObserver() = default;
 
  private:
   void StopLoop() { runner_->Quit(); }

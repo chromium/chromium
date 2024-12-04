@@ -55,7 +55,7 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
  public:
   explicit WaitForURLsDeletedObserver(base::RunLoop* runner)
       : runner_(runner) {}
-  ~WaitForURLsDeletedObserver() override {}
+  ~WaitForURLsDeletedObserver() override = default;
   WaitForURLsDeletedObserver(const WaitForURLsDeletedObserver&) = delete;
   WaitForURLsDeletedObserver& operator=(const WaitForURLsDeletedObserver&) =
       delete;

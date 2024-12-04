@@ -609,6 +609,7 @@ void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
   // Remove all the tabs from the model.
   contents_data_->MoveGroupTo(group_model(), group, to_index);
 
+  UpdateSelectionModelForMoves(tab_indices, to_index);
   ValidateTabStripModel();
 
   for (auto notification : notifications) {
@@ -2755,14 +2756,17 @@ void TabStripModel::MoveTabToIndexImpl(
     FixOpeners(initial_index);
   }
 
-  // Update the selection model before the contents data so there is access to
-  // the right initial active index.
-  TabStripSelectionChange selection =
-      MaybeUpdateSelectionModel(initial_index, final_index, select_after_move);
+  TabStripSelectionChange selection(GetActiveTab(), selection_model_);
 
   contents_data_->MoveTabRecursive(initial_index, final_index, group, pin);
 
+  UpdateSelectionModelForMove(initial_index, final_index, select_after_move);
+
   ValidateTabStripModel();
+
+  selection.new_model = selection_model_;
+  selection.new_tab = GetActiveTab();
+  selection.new_contents = GetActiveWebContents();
 
   // Send all the notifications.
   if (initial_index != final_index) {
@@ -2805,6 +2809,8 @@ void TabStripModel::MoveTabsToIndexImpl(
 
   // Update `contents_data`.
   contents_data_->MoveTabsRecursive(tab_indices, destination_index, group, pin);
+
+  UpdateSelectionModelForMoves(tab_indices, destination_index);
 
   ValidateTabStripModel();
 
@@ -2924,25 +2930,30 @@ void TabStripModel::MaybeUpdateTabGroupHeaderAccessibleName(
   tab_group->RunTabGroupVisualsChangedCallback();
 }
 
-TabStripSelectionChange TabStripModel::MaybeUpdateSelectionModel(
-    int initial_index,
-    int final_index,
-    bool select_after_move) {
+void TabStripModel::UpdateSelectionModelForMove(int initial_index,
+                                                int final_index,
+                                                bool select_after_move) {
   if (initial_index == final_index) {
-    return TabStripSelectionChange();
+    return;
   }
 
-  TabStripSelectionChange selection(GetActiveTab(), selection_model_);
   selection_model_.Move(initial_index, final_index, 1);
   if (!selection_model_.IsSelected(final_index) && select_after_move) {
     selection_model_.SetSelectedIndex(final_index);
-    // This means that the tab at the initial index currently in the tabstrip is
-    // the new active webcontents.
-    selection.new_tab = GetTabAtIndex(initial_index);
-    selection.new_contents = GetWebContentsAt(initial_index);
   }
-  selection.new_model = selection_model_;
-  return selection;
+}
+
+void TabStripModel::UpdateSelectionModelForMoves(
+    const std::vector<int>& tab_indices,
+    int destination_index) {
+  const std::vector<std::pair<int, int>> moved_indices =
+      CalculateIncrementalTabMoves(tab_indices, destination_index);
+
+  for (std::pair<int, int> move : moved_indices) {
+    if (move.first != move.second) {
+      selection_model_.Move(move.first, move.second, 1);
+    }
+  }
 }
 
 std::vector<std::pair<int, int>> TabStripModel::CalculateIncrementalTabMoves(
@@ -2989,14 +3000,21 @@ TabStripModel::PrepareTabsToMoveToIndex(const std::vector<int>& tab_indices,
       CalculateIncrementalTabMoves(tab_indices, destination_index);
   std::vector<MoveNotification> notifications;
 
+  ui::ListSelectionModel selection_model_copy = selection_model_;
   for (std::pair<int, int> move : moved_indices) {
     if (move.first != move.second) {
       FixOpeners(move.first);
     }
 
-    // Update the `selection_model_`
-    TabStripSelectionChange selection =
-        MaybeUpdateSelectionModel(move.first, move.second, false);
+    // Update the `selection_model_copy_`
+    TabStripSelectionChange selection;
+    if (move.first == move.second) {
+      selection = TabStripSelectionChange();
+    } else {
+      selection = TabStripSelectionChange(GetActiveTab(), selection_model_copy);
+      selection_model_copy.Move(move.first, move.second, 1);
+      selection.new_model = selection_model_copy;
+    }
 
     const tabs::TabInterface* const tab = GetTabAtIndex(move.first);
     const MoveNotification notification = {move.first, tab->GetGroup(), tab,

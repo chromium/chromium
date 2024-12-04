@@ -42,6 +42,9 @@ class ASH_EXPORT QuickInsertSearchRequest {
                                    bool has_more_results)>;
   using DoneCallback = base::OnceCallback<void(bool interrupted)>;
 
+  static constexpr base::TimeDelta kGifDebouncingDelay =
+      base::Milliseconds(200);
+
   // `done_closure` is guaranteed to be called strictly after the last call to
   // `callback`.
   QuickInsertSearchRequest(
@@ -58,6 +61,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
   ~QuickInsertSearchRequest();
 
  private:
+  void StartGifSearch(std::string_view query);
   void HandleSearchSourceResults(QuickInsertSearchSource source,
                                  std::vector<QuickInsertSearchResult> results,
                                  bool has_more_results);
@@ -93,6 +97,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
   const raw_ref<QuickInsertClient> client_;
 
   std::unique_ptr<QuickInsertClipboardHistoryProvider> clipboard_provider_;
+  QuickInsertSearchDebouncer gif_search_debouncer_;
   std::unique_ptr<EndpointFetcher> gif_fetcher_;
 
   SearchResultsCallback current_callback_;

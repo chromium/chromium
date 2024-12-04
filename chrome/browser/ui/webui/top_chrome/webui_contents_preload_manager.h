@@ -172,9 +172,6 @@ class WebUIContentsPreloadManager : public ProfileObserver,
 
   std::unique_ptr<PendingPreload> pending_preload_;
 
-  // Tracks the timeticks when Request() is called.
-  std::map<raw_ptr<content::WebContents>, base::TimeTicks> request_time_map_;
-
   // Tracks the WebUI presence state under a profile.
   std::unique_ptr<PerProfileWebUITracker> webui_tracker_;
 

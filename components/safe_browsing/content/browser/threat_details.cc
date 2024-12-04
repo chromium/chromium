@@ -551,7 +551,7 @@ void ThreatDetails::StartCollection() {
     AddUrl(referrer_url, GURL(), std::string(), nullptr);
   }
 
-  if (!AsyncCheckTracker::IsMainPageLoadPending(resource_)) {
+  if (!AsyncCheckTracker::IsMainPageResourceLoadPending(resource_)) {
     // Get URLs of frames, scripts etc from the DOM.
     // OnReceivedThreatDOMDetails will be called when the renderer replies.
     // TODO(mattm): In theory, if the user proceeds through the warning DOM

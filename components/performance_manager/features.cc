@@ -24,6 +24,18 @@ BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,
              "BackgroundTabLoadingFromPerformanceManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(size_t,
+                   kBackgroundTabLoadingMinSiteEngagement,
+                   &kBackgroundTabLoadingFromPerformanceManager,
+                   "min_site_engagement",
+                   0);
+
+BASE_FEATURE_PARAM(bool,
+                   kBackgroundTabLoadingRestoreMainFrameState,
+                   &kBackgroundTabLoadingFromPerformanceManager,
+                   "restore_main_frame_state",
+                   true);
+
 BASE_FEATURE(kPerformanceControlsPerformanceSurvey,
              "PerformanceControlsPerformanceSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -55,7 +67,7 @@ BASE_FEATURE(kPrefetchVirtualMemoryPolicy,
 
 BASE_FEATURE(kPerformanceInterventionUI,
              "PerformanceInterventionUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPerformanceInterventionDemoMode,
              "PerformanceInterventionDemoMode",
@@ -141,7 +153,7 @@ BASE_FEATURE(kMemoryMeasurementInFreezingPolicy,
 
 BASE_FEATURE(kDiscardFrozenBrowsingInstancesWithGrowingPMF,
              "DiscardFrozenBrowsingInstancesWithGrowingPMF",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Note: These params are associated with `kCPUMeasurementInFreezingPolicy`
 // instead of `kFreezingOnBatterySaver` or

@@ -588,7 +588,7 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
 
 // Check that audio cannot play when the AUDIO ContextFeatureFlag is not
 // provided.
-TEST_F(WebEngineIntegrationMediaTest, PlayAudioNoFlag) {
+TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Both FilteredServiceDirectory and test data are needed.
   fuchsia::web::CreateContextParams create_params =
@@ -660,7 +660,7 @@ TEST_F(WebEngineIntegrationMediaTest,
   navigation_listener()->RunUntilTitleEquals("ended");
 }
 
-TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccessWithoutPermission) {
+TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithoutPermission) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
@@ -670,7 +670,7 @@ TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccessWithoutPermission) {
   navigation_listener()->RunUntilTitleEquals("ended-NotFoundError");
 }
 
-TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoadingBlocked) {
+TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
@@ -689,7 +689,7 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoadingBlocked) {
 
 // Initially, set media blocking to be true. When media is unblocked, check that
 // it begins playing, since autoplay=true.
-TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoadingAfterUnblock) {
+TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_AfterUnblock) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
@@ -791,12 +791,12 @@ void WebEngineIntegrationCameraTest::RunCameraTest(bool grant_permission) {
   navigation_listener()->RunUntilTitleEquals("ended");
 }
 
-TEST_F(WebEngineIntegrationCameraTest, CameraAccessWithPermission) {
+TEST_F(WebEngineIntegrationCameraTest, CameraAccess_WithPermission) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   RunCameraTest(/*grant_permission=*/true);
 }
 
-TEST_F(WebEngineIntegrationCameraTest, CameraAccessWithoutPermission) {
+TEST_F(WebEngineIntegrationCameraTest, CameraAccess_WithoutPermission) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   RunCameraTest(/*grant_permission=*/false);
 }
@@ -840,7 +840,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
 // Check that the CodecFactory service is not requested when
 // HARDWARE_VIDEO_DECODER is not provided.
 // The video should use software decoders and still play.
-TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlagNotProvided) {
+TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   bool is_requested = false;
   auto* outgoing_directory = filtered_service_directory().outgoing_directory();

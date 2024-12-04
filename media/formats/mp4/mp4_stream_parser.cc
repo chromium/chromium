@@ -403,7 +403,7 @@ VideoTransformation MP4StreamParser::CalculateRotation(
   // 3x3 matrix: [ a b c ]
   //             [ d e f ]
   //             [ x y z ]
-  int32_t rotation_matrix[kDisplayMatrixDimension] = {0};
+  int32_t rotation_matrix[kDisplayMatrixDimension] = {};
 
   // Shift values for fixed point multiplications.
   const int32_t shifts[kDisplayMatrixHeight] = {16, 16, 30};

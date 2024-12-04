@@ -469,8 +469,8 @@ bool BackgroundTracingManagerImpl::InitializePerfettoTriggerRules(
   for (auto& rule : trigger_rules_) {
     rule->Install(base::BindRepeating([](const BackgroundTracingRule* rule) {
       base::UmaHistogramSparse("Tracing.Background.Perfetto.Trigger",
-                               variations::HashName(rule->rule_id()));
-      perfetto::Tracing::ActivateTriggers({rule->rule_id()},
+                               variations::HashName(rule->rule_name()));
+      perfetto::Tracing::ActivateTriggers({rule->rule_name()},
                                           /*ttl_ms=*/0);
       return true;
     }));
@@ -711,7 +711,7 @@ void BackgroundTracingManagerImpl::SaveTrace(
     base::Token trace_uuid,
     const BackgroundTracingRule* triggered_rule,
     std::string&& trace_data) {
-  std::string rule_name = triggered_rule->rule_id();
+  std::string rule_name = triggered_rule->rule_name();
   if (triggered_rule->triggered_value()) {
     rule_name.append(
         base::StringPrintf(" value: %d", *triggered_rule->triggered_value()));
@@ -965,6 +965,8 @@ bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
   }
   for (BackgroundTracingRule& obs : it->second) {
     if (obs.OnRuleTriggered(value)) {
+      TRACE_EVENT_INSTANT("toplevel", "NamedTrigger",
+                          base::trace_event::TriggerFlow(trigger_name, value));
       return true;
     }
   }

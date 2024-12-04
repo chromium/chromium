@@ -549,7 +549,7 @@ TEST_F(CastRunnerIntegrationTest, ApiBindings) {
   EXPECT_EQ(component.ExecuteJavaScript("1+2+\"\""), "3");
 }
 
-TEST_F(CastRunnerIntegrationTest, UnknownCastAppIdFails) {
+TEST_F(CastRunnerIntegrationTest, UnknownCastAppId_Fails) {
   TestCastComponent component(test_realm_services());
   const char kUnknownComponentUrl[] = "cast:99999999";
 
@@ -615,7 +615,7 @@ TEST_F(CastRunnerIntegrationTest, IsolatedContext) {
 }
 
 // Verify that the component fails to start if no service directory is offered.
-TEST_F(CastRunnerIntegrationTest, ServiceDirectoryMissingFailToStart) {
+TEST_F(CastRunnerIntegrationTest, ServiceDirectoryMissing_FailToStart) {
   TestCastComponent component(test_realm_services());
   component.disable_offer_services();
   app_config_manager().AddApp(kTestAppId,
@@ -630,7 +630,7 @@ TEST_F(CastRunnerIntegrationTest, ServiceDirectoryMissingFailToStart) {
 // Verify that the component fails to start if the offered service directory
 // channel has already been closed, such that Connect() calls will result in
 // service request channels being dropped.
-TEST_F(CastRunnerIntegrationTest, ServiceDirectoryEmptyFailToStart) {
+TEST_F(CastRunnerIntegrationTest, ServiceDirectoryEmpty_FailToStart) {
   TestCastComponent component(test_realm_services());
   component.offer_closed_services();
   app_config_manager().AddApp(kTestAppId,
@@ -645,7 +645,7 @@ TEST_F(CastRunnerIntegrationTest, ServiceDirectoryEmptyFailToStart) {
 // Simulate an Agent crash by tearing down `services_`, resulting in the
 // service-directory and bindings passed to the Cast activity itself being
 // closed. This should cause the component to terminate.
-TEST_F(CastRunnerIntegrationTest, ServicesCloseTerminatesComponent) {
+TEST_F(CastRunnerIntegrationTest, ServicesClose_TerminatesComponent) {
   TestCastComponent component(test_realm_services());
   app_config_manager().AddApp(kTestAppId,
                               test_server().GetURL(kEchoHeaderPath));
@@ -862,7 +862,7 @@ TEST_F(CastRunnerIntegrationTest, LegacyMetricsRedirect) {
 
 // Verifies that the ApplicationContext::OnApplicationTerminated() is notified
 // with the component exit code if the web content closes itself.
-TEST_F(CastRunnerIntegrationTest, OnApplicationTerminatedWindowClose) {
+TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_WindowClose) {
   TestCastComponent component(test_realm_services());
   const GURL url = test_server().GetURL(kBlankAppUrl);
   app_config_manager().AddApp(kTestAppId, url);
@@ -883,7 +883,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminatedWindowClose) {
 
 // Verifies that the ApplicationContext::OnApplicationTerminated() is notified
 // with the component exit code if the component is requested to stop.
-TEST_F(CastRunnerIntegrationTest, OnApplicationTerminatedComponentStop) {
+TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_ComponentStop) {
   TestCastComponent component(test_realm_services());
   const GURL url = test_server().GetURL(kBlankAppUrl);
   app_config_manager().AddApp(kTestAppId, url);
@@ -905,7 +905,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminatedComponentStop) {
 
 // Ensures that CastRunner handles the value not being specified.
 // TODO(https://crrev.com/c/2516246): Check for no logging.
-TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverityNotSet) {
+TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverity_NotSet) {
   TestCastComponent component(test_realm_services());
   GURL app_url = test_server().GetURL(kBlankAppUrl);
   auto app_config =
@@ -918,7 +918,7 @@ TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverityNotSet) {
 }
 
 // TODO(https://crrev.com/c/2516246): Check for logging.
-TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverityDebug) {
+TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverity_DEBUG) {
   TestCastComponent component(test_realm_services());
   GURL app_url = test_server().GetURL(kBlankAppUrl);
   auto app_config =
@@ -978,7 +978,7 @@ TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
 // TODO(crbug.com/40730094): Expand the test to verify that the persisted data
 // is correctly cleared (e.g. using a custom test HTML app that uses persisted
 // data).
-TEST_F(CastRunnerIntegrationTest, DataResetService) {
+TEST_F(CastRunnerIntegrationTest, DataReset_Service) {
   base::RunLoop loop;
   auto data_reset = test_realm_services().Connect<chromium::cast::DataReset>();
   data_reset.set_error_handler([quit_loop = loop.QuitClosure()](zx_status_t) {
@@ -1004,7 +1004,7 @@ TEST_F(CastRunnerIntegrationTest, DataResetService) {
 
 // Verifies that the CastRunner exposes a fuchsia.web.FrameHost protocol
 // capability, without requiring any special configuration.
-TEST_F(CastRunnerIntegrationTest, FrameHostService) {
+TEST_F(CastRunnerIntegrationTest, FrameHost_Service) {
   // Connect to the fuchsia.web.FrameHost service and create a Frame.
   auto frame_host = test_realm_services().Connect<fuchsia::web::FrameHost>();
   fuchsia::web::FramePtr frame;

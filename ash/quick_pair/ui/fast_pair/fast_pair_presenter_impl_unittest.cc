@@ -408,7 +408,7 @@ TEST_F(FastPairPresenterImplTest,
       kFastPairDiscoveryUserNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryChild) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Child) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
 
@@ -731,7 +731,7 @@ TEST_F(FastPairPresenterImplTest,
       kFastPairDiscoveryGuestNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryUserConnectClicked) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_ConnectClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
@@ -756,7 +756,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryUserConnectClicked) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryUserLearnMoreClicked) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_LearnMoreClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
@@ -781,7 +781,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryUserLearnMoreClicked) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kLearnMore);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryUserDismissedByUser) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_DismissedByUser) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
@@ -832,7 +832,7 @@ TEST_F(FastPairPresenterImplTest,
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByTimeout);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryUserDismissedByOS) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_User_DismissedByOS) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
@@ -857,7 +857,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryUserDismissedByOS) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByOs);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryGuest) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
 
@@ -876,7 +876,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryGuest) {
       kFastPairDiscoveryGuestNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryKioskApp) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_KioskApp) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryGuestNotificationId));
 
@@ -901,7 +901,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryKioskApp) {
       kFastPairDiscoveryGuestNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryGuestConnectClicked) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_ConnectClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
@@ -921,7 +921,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryGuestConnectClicked) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryGuestLearnMoreClicked) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_LearnMoreClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
@@ -941,7 +941,7 @@ TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryGuestLearnMoreClicked) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kLearnMore);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryGuestDismissedByUser) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_DismissedByUser) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
@@ -982,7 +982,7 @@ TEST_F(FastPairPresenterImplTest,
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByTimeout);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowInitialDiscoveryGuestDismissedByOS) {
+TEST_F(FastPairPresenterImplTest, ShowInitialDiscovery_Guest_DismissedByOS) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
@@ -1017,7 +1017,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairing) {
       kFastPairPairingNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowPairingNoDeviceMetadata) {
+TEST_F(FastPairPresenterImplTest, ShowPairing_NoDeviceMetadata) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairPairingNotificationId));
 
@@ -1052,7 +1052,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailed) {
       kFastPairErrorNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowPairingFailedNoDeviceMetadata) {
+TEST_F(FastPairPresenterImplTest, ShowPairingFailed_NoDeviceMetadata) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairErrorNotificationId));
 
@@ -1072,7 +1072,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailedNoDeviceMetadata) {
       kFastPairErrorNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowPairingFailedSettingsClicked) {
+TEST_F(FastPairPresenterImplTest, ShowPairingFailed_SettingsClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
@@ -1092,7 +1092,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairingFailedSettingsClicked) {
   EXPECT_EQ(pairing_failed_action_, PairingFailedAction::kNavigateToSettings);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowPairingFailedDismissedByOS) {
+TEST_F(FastPairPresenterImplTest, ShowPairingFailed_DismissedByOS) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
@@ -1162,7 +1162,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppEnabled) {
       kFastPairApplicationInstalledNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowCompanionAppSetupClicked) {
+TEST_F(FastPairPresenterImplTest, ShowCompanionApp_SetupClicked) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -1189,7 +1189,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppSetupClicked) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kLaunchApp);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowCompanionAppNoDeviceMetadata) {
+TEST_F(FastPairPresenterImplTest, ShowCompanionApp_NoDeviceMetadata) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -1216,7 +1216,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppNoDeviceMetadata) {
       kFastPairApplicationInstalledNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowCompanionAppDismissedByUser) {
+TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByUser) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -1243,7 +1243,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppDismissedByUser) {
   EXPECT_EQ(companion_app_action_, CompanionAppAction::kDismissedByUser);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowCompanionAppDismissedByOS) {
+TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByOS) {
   base::test::ScopedFeatureList feature_list{
       ash::features::kFastPairPwaCompanion};
 
@@ -1293,7 +1293,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount) {
             1);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowAssociateAccountSaveClicked) {
+TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_SaveClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
@@ -1314,7 +1314,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccountSaveClicked) {
             AssociateAccountAction::kAssociateAccount);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowAssociateAccountNoDeviceMetadata) {
+TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_NoDeviceMetadata) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairAssociateAccountNotificationId));
 
@@ -1334,7 +1334,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccountNoDeviceMetadata) {
       kFastPairAssociateAccountNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowAssociateAccountNoIdentityManager) {
+TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_NoIdentityManager) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairAssociateAccountNotificationId));
 
@@ -1354,7 +1354,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccountNoIdentityManager) {
       kFastPairAssociateAccountNotificationId));
 }
 
-TEST_F(FastPairPresenterImplTest, ShowAssociateAccountLearnMoreClicked) {
+TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_LearnMoreClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
@@ -1374,7 +1374,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccountLearnMoreClicked) {
   EXPECT_EQ(associate_account_action_, AssociateAccountAction::kLearnMore);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowAssociateAccountDismissedByUser) {
+TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByUser) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
@@ -1395,7 +1395,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccountDismissedByUser) {
             AssociateAccountAction::kDismissedByUser);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowAssociateAccountDismissedByTimeout) {
+TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByTimeout) {
   SetIdentityManager(identity_manager_);
   test_message_center_.CloseNotificationsWhenRemoved();
   Login(user_manager::UserType::kRegular);
@@ -1416,7 +1416,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccountDismissedByTimeout) {
             associate_account_action_);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowAssociateAccountDismissedByOS) {
+TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_DismissedByOS) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
@@ -1436,7 +1436,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccountDismissedByOS) {
   EXPECT_EQ(AssociateAccountAction::kDismissedByOs, associate_account_action_);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscoveryConnect) {
+TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_Connect) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoverySubsequentNotificationId));
 
@@ -1460,7 +1460,7 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscoveryConnect) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscoveryLearnMore) {
+TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_LearnMore) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoverySubsequentNotificationId));
 
@@ -1484,7 +1484,7 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscoveryLearnMore) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kLearnMore);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscoveryDismissedByUser) {
+TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_DismissedByUser) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoverySubsequentNotificationId));
 
@@ -1509,7 +1509,7 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscoveryDismissedByUser) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByUser);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscoveryDismissedByOS) {
+TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_DismissedByOS) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoverySubsequentNotificationId));
 

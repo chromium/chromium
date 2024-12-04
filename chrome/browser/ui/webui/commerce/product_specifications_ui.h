@@ -57,7 +57,6 @@ class ProductSpecificationsUI
           receiver);
 
   void CreateShoppingServiceHandler(
-      mojo::PendingRemote<shopping_service::mojom::Page> page,
       mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
           receiver) override;
 
@@ -80,7 +79,7 @@ class ProductSpecificationsUI
 
   mojo::Receiver<
       product_specifications::mojom::ProductSpecificationsHandlerFactory>
-      product_specifications_handler_factory_receiver_{this};
+      product_specifications_factory_receiver_{this};
 
   std::unique_ptr<ProductSpecificationsHandler> product_specifications_handler_;
 

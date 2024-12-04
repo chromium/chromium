@@ -14,7 +14,6 @@ class Browser;
 @protocol CountryCodePickerCommands;
 @protocol DriveFilePickerCommands;
 @class MainController;
-@class NewTabPageController;
 class ProfileIOS;
 @class SceneController;
 @class SceneState;

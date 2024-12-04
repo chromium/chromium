@@ -8,6 +8,7 @@
 
 #include "base/notimplemented.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/viz/service/input/peak_gpu_memory_tracker_impl.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
@@ -51,10 +52,8 @@ RenderInputRouterDelegateImpl::GetPointerLockView() {
   NOTREACHED();
 }
 
-const cc::RenderFrameMetadata&
-RenderInputRouterDelegateImpl::GetLastRenderFrameMetadata() {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTREACHED();
+std::optional<bool> RenderInputRouterDelegateImpl::IsDelegatedInkHovering() {
+  return delegate_->IsDelegatedInkHovering(frame_sink_id_);
 }
 
 std::unique_ptr<input::RenderInputRouterIterator>
@@ -126,9 +125,8 @@ void RenderInputRouterDelegateImpl::OnInvalidInputEventSource() {
 std::unique_ptr<PeakGpuMemoryTracker>
 RenderInputRouterDelegateImpl::MakePeakGpuMemoryTracker(
     PeakGpuMemoryTracker::Usage usage) {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<PeakGpuMemoryTrackerImpl>(usage,
+                                                    delegate_->GetGpuService());
 }
 
 }  // namespace viz

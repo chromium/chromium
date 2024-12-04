@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
+#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
                                     SceneStateObserver>
@@ -37,6 +38,9 @@
 
   // Coordinator of the First Run UI.
   FirstRunCoordinator* _firstRunCoordinator;
+
+  // Used to force the device orientation in portrait mode on iPhone.
+  std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 }
 
 #pragma mark - SceneStateObserver
@@ -54,6 +58,19 @@
 #pragma mark - ProfileStateObserver
 
 - (void)profileState:(ProfileState*)profileState
+    willTransitionToInitStage:(ProfileInitStage)nextInitStage
+                fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage != ProfileInitStage::kFirstRun) {
+    return;
+  }
+
+  AppState* appState = profileState.appState;
+  if (appState.startupInformation.isFirstRun) {
+    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+  }
+}
+
+- (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
   if (nextInitStage == ProfileInitStage::kFirstRun) {
@@ -62,7 +79,8 @@
   }
 
   if (fromInitStage == ProfileInitStage::kFirstRun) {
-    [self.profileState removeAgent:self];
+    _scopedForceOrientation.reset();
+    [profileState removeAgent:self];
     return;
   }
 }

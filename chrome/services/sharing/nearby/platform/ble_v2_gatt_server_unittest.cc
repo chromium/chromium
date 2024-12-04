@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/ble_v2_gatt_server.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -31,8 +32,8 @@ const device::BluetoothUUID kCharacteristicUuid1 =
     device::BluetoothUUID("00001101-0000-1000-8000-00805f9b34fb");
 const device::BluetoothUUID kCharacteristicUuid2 =
     device::BluetoothUUID("00001102-0000-1000-8000-00805f9b34fc");
-const std::string kNewCharacteristicValue = "123456";
-const int kPartialBufferOffset = 2;
+constexpr char kNewCharacteristicValue[] = "123456";
+constexpr int kPartialBufferOffset = 2;
 
 class FakeGattService : public nearby::chrome::BleV2GattServer::GattService {
  public:
@@ -290,8 +291,7 @@ TEST_F(BleV2GattServerTest,
   EXPECT_FALSE(read_result->is_error_code());
   EXPECT_TRUE(read_result->is_data());
   EXPECT_EQ(kNewCharacteristicValue,
-            base::as_string_view(
-                base::as_chars(base::make_span(read_result->get_data()))));
+            base::as_string_view(base::span(read_result->get_data())));
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.GattServer.OnLocalCharacteristicRead.Result",
       /*bucket: success=*/1, 1);
@@ -475,9 +475,9 @@ TEST_F(
   auto read_result = future.Take();
   EXPECT_FALSE(read_result->is_error_code());
   EXPECT_TRUE(read_result->is_data());
-  EXPECT_EQ(kNewCharacteristicValue.substr(kPartialBufferOffset),
-            base::as_string_view(
-                base::as_chars(base::make_span(read_result->get_data()))));
+  EXPECT_EQ(
+      std::string_view(kNewCharacteristicValue).substr(kPartialBufferOffset),
+      base::as_string_view(base::span(read_result->get_data())));
 }
 
 TEST_F(BleV2GattServerTest,

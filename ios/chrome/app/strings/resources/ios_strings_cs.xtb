@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Zapnout oznámení bezpečnostní kontroly…</translation>
 <translation id="1652333207707886577">Nabídku si můžete přizpůsobit</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Zbývající čas: {TIME} sekund}=1{Zbývající čas: {TIME} sekunda}few{Zbývající čas: {TIME} sekundy}many{Zbývající čas: {TIME} sekundy}other{Zbývající čas: {TIME} sekund}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložené heslo.}few{Nad klávesnicí jsou k dispozici {count} uložená hesla.}many{Nad klávesnicí je k dispozici {count} uloženého hesla.}other{Nad klávesnicí je k dispozici {count} uložených hesel.}}</translation>
 <translation id="1654232554734641711">Přístup k mikrofonu je povolen</translation>
 <translation id="16554782717487656">Rozpoznávat jednotky</translation>
 <translation id="1657011748321897393">Sdílení se nezdařilo, protože nejste připojeni k síti.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Otevřít mřížku karet</translation>
 <translation id="20485545164632846">nová položka</translation>
 <translation id="2049727122989709386">V následujícím počtu účtů používáte stejné heslo <ph name="COUNT" /></translation>
-<translation id="2050196510205866090">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložená platební metoda.}few{Nad klávesnicí jsou k dispozici {count} uložené platební metody.}many{Nad klávesnicí je k dispozici {count} uložené platební metody.}other{Nad klávesnicí je k dispozici {count} uložených platebních metod.}}</translation>
 <translation id="2059166748188874810">Samosprávná oblast</translation>
 <translation id="20638360198452347">Výběr typu jednotek</translation>
 <translation id="2067852168641682340">Pokaždé uložit do tohoto účtu</translation>
@@ -329,7 +327,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2390457533592708044">Skrýt modul <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Zásilku nelze doručit</translation>
 <translation id="2410754283952462441">Vyberte účet</translation>
-<translation id="2411749908844615428">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložená adresa.}few{Nad klávesnicí jsou k dispozici {count} uložené adresy.}many{Nad klávesnicí je k dispozici {count} uložené adresy.}other{Nad klávesnicí je k dispozici {count} uložených adres.}}</translation>
 <translation id="2424805048070062787">Pokračovat s touto kartou</translation>
 <translation id="2426805022920575512">Vybrat jiný účet</translation>
 <translation id="243275146591958220">Zrušit stahování</translation>
@@ -757,7 +754,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4525629404718770519">Zobrazovat náhledy odkazů</translation>
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4532845899244822526">Výběr složky</translation>
-<translation id="4539187448429948815">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložený návrh automatického doplňování.}few{Nad klávesnicí jsou k dispozici {count} uložené návrhy automatického doplňování.}many{Nad klávesnicí je k dispozici {count} uloženého návrhu automatického doplňování.}other{Nad klávesnicí je k dispozici {count} uložených návrhů automatického doplňování.}}</translation>
 <translation id="4547181496285029457">Zpět na kartu Nedávné</translation>
 <translation id="4552042254369397518">Kopírování…</translation>
 <translation id="4564893319561643483">Skrýt modul <ph name="TITLE" /></translation>
@@ -770,6 +766,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4597892826846980979">Aktivujte si oznámení o kartách</translation>
 <translation id="4601095002996233687">Hloubkové kontroly podezřelých souborů ke stažení.</translation>
 <translation id="4606247758155004938">Váš prohlížeč je spravován vaší organizací.</translation>
+<translation id="4607887340472970274">Sledování cen</translation>
 <translation id="4611811151908969241">Skrýt možnost Přestat sledovat web <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Vyhledává se pomocí Googlu</translation>
 <translation id="4619564267100705184">Ověřte svoji totožnost</translation>
@@ -1274,7 +1271,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6710079714193676716">Spravováno vaší organizací. Některé funkce mohou být nedostupné. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Přejít na feed</translation>
 <translation id="6713676799463473249">Upraveno <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Sledovat cenu</translation>
 <translation id="6722623263381062480">Přijaté karty</translation>
 <translation id="6723740634201835758">V účtu Google</translation>
 <translation id="672735642903863329">Synchronizujte své záložky hesla a další obsah do všech svých zařízení.</translation>
@@ -1440,7 +1436,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="75362970626182391">Nová skupina karet</translation>
 <translation id="7537586195939242955">Pass v této chvíli do aplikace Passbook nelze nainstalovat.</translation>
 <translation id="754655535278952384">Zkontrolováno: <ph name="TIME" /></translation>
-<translation id="755255281989213264">Přizpůsobit nabídku</translation>
 <translation id="7553234618121028547">Tuto funkci vypnete tak, že otevřete <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" /> a přejdete na Volby hesel.</translation>
 <translation id="7557508262441527045">Odhlášeno</translation>
 <translation id="7561196759112975576">Vždy</translation>

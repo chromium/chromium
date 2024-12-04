@@ -127,9 +127,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
 
     @Override
     protected void addDialogView(
-            PropertyModel model,
-            @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
-            @Nullable Callback<View> onDialogShownCallback) {
+            PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
         if (mDialogContainer == null) mDialogContainer = createDialogContainer();
 
         model.set(ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE, true);
@@ -152,9 +150,6 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         setBrowserControlsAccess(true);
 
         showDialogContainer();
-        if (onDialogShownCallback != null) {
-            onDialogShownCallback.onResult(mDialogView);
-        }
     }
 
     @Override

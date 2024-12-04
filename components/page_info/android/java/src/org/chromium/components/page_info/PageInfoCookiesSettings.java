@@ -269,7 +269,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             : calculateDaysUntilExpiration(
                                     TimeUtils.currentTimeMillis(), expiration);
             updateThirdPartyCookiesTitleTemporary(days);
-            int resId = R.string.page_info_cookies_send_feedback_description;
+            int resId =
+                    mIsModeBUi
+                            ? R.string.page_info_cookies_tracking_protection_description
+                            : R.string.page_info_cookies_send_feedback_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
                             getString(resId),
@@ -360,8 +363,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private void updateCookieSwitch() {
         // TODO(crbug.com/40064612): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
-            mCookieSwitch.setSummary(
-                    getString(R.string.page_info_tracking_protection_toggle_blocked));
+            int resId =
+                    mBlockAll3pc || !mIsModeBUi
+                            ? R.string.page_info_tracking_protection_toggle_blocked
+                            : R.string.page_info_tracking_protection_toggle_limited;
+            mCookieSwitch.setSummary(getString(resId));
         } else {
             mCookieSwitch.setSummary(
                     getString(R.string.page_info_tracking_protection_toggle_allowed));

@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">הפעלת ההתראות של בדיקת האבטחה…</translation>
 <translation id="1652333207707886577">התאמה אישית של התפריט</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{הזמן שנותר: {TIME} שניות}=1{הזמן שנותר: שנייה ({TIME})}one{הזמן שנותר: {TIME} שניות}two{הזמן שנותר: {TIME} שניות}other{הזמן שנותר: {TIME} שניות}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{סיסמה שמורה אחת ({count}) זמינה מעל למקלדת.}one{{count} סיסמאות שמורות זמינות מעל המקלדת.}two{{count} סיסמאות שמורות זמינות מעל המקלדת.}other{{count} סיסמאות שמורות זמינות מעל המקלדת.}}</translation>
 <translation id="1654232554734641711">יש הרשאת גישה למיקרופון</translation>
 <translation id="16554782717487656">זיהוי יחידות</translation>
 <translation id="1657011748321897393">השיתוף נכשל משום שאין לך חיבור לרשת.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="20485545164632846">פריט חדש</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> חשבונות משתמשים באותה סיסמה</translation>
-<translation id="2050196510205866090">{count,plural, =1{אמצעי תשלום שמור אחד ({count}) זמין מעל המקלדת.}one{{count} אמצעי תשלום שמורים זמינים מעל המקלדת.}two{{count} אמצעי תשלום שמורים זמינים מעל המקלדת.}other{{count} אמצעי תשלום שמורים זמינים מעל המקלדת.}}</translation>
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="20638360198452347">בורר סוגי היחידות</translation>
 <translation id="2067852168641682340">שמירה בחשבון הזה בכל פעם</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">הסתרה של '<ph name="MODULE_NAME" />'</translation>
 <translation id="2403129868389095715">אי אפשר למסור את החבילה</translation>
 <translation id="2410754283952462441">בחירת חשבון</translation>
-<translation id="2411749908844615428">{count,plural, =1{כתובת שמורה אחת ({count}) זמינה מעל המקלדת.}one{{count} כתובות שמורות זמינות מעל המקלדת.}two{{count} כתובות שמורות זמינות מעל המקלדת.}other{{count} כתובות שמורות זמינות מעל המקלדת.}}</translation>
 <translation id="2424805048070062787">המשך הגלישה בכרטיסייה הזו</translation>
 <translation id="2426805022920575512">בחירת חשבון אחר</translation>
 <translation id="243275146591958220">ביטול ההורדה</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">הפעלת התצוגה המקדימה של הקישורים</translation>
 <translation id="452750746583162491">סקירת הנתונים המסונכרנים</translation>
 <translation id="4532845899244822526">בחירת תיקייה</translation>
-<translation id="4539187448429948815">{count,plural, =1{מעל המקלדת מופיעה הצעה שמורה אחת ({count}) של ההשלמה האוטומטית.}one{מעל המקלדת מופיעות {count} הצעות שמורות של ההשלמה האוטומטית.}two{מעל המקלדת מופיעות {count} הצעות שמורות של ההשלמה האוטומטית.}other{מעל המקלדת מופיעות {count} הצעות שמורות של ההשלמה האוטומטית.}}</translation>
 <translation id="4547181496285029457">חזרה לכרטיסייה הקודמת</translation>
 <translation id="4552042254369397518">מתבצעת העתקה…</translation>
 <translation id="4564893319561643483">הסתרה של '<ph name="TITLE" />'</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">קבלת התראות על כרטיסיות</translation>
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606247758155004938">הדפדפן מנוהל על ידי הארגון שלך.</translation>
+<translation id="4607887340472970274">מעקב מחירים</translation>
 <translation id="4611811151908969241">הסתרת האפשרות 'ביטול המעקב אחרי <ph name="DOMAIN_NAME" />'</translation>
 <translation id="461440297010471931">‏חיפוש באמצעות Google</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
@@ -1274,7 +1271,6 @@
 <translation id="6710079714193676716">מנוהל על-ידי הארגון שלך. ייתכן שחלק מהתכונות לא יהיו זמינות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">לכניסה אל הפיד</translation>
 <translation id="6713676799463473249">תאריך השינוי האחרון: <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">מעקב אחר מחירים</translation>
 <translation id="6722623263381062480">כרטיסיות שהתקבלו</translation>
 <translation id="6723740634201835758">‏בחשבון Google שלך</translation>
 <translation id="672735642903863329">גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
@@ -1440,7 +1436,6 @@
 <translation id="75362970626182391">קבוצת כרטיסיות חדשה</translation>
 <translation id="7537586195939242955">‏מצטערים, לא ניתן להתקין את ה-Pass שלך ב-Passbook בשלב הזה.</translation>
 <translation id="754655535278952384">הבדיקה האחרונה: <ph name="TIME" /></translation>
-<translation id="755255281989213264">התאמה אישית של התפריט</translation>
 <translation id="7553234618121028547">כדי להשבית את המילוי האוטומטי, פותחים את ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /> ועוברים אל 'אפשרויות של סיסמאות'.</translation>
 <translation id="7557508262441527045">החשבון לא מחובר</translation>
 <translation id="7561196759112975576">תמיד</translation>

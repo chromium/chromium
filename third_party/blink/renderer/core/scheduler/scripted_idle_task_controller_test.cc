@@ -201,7 +201,6 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
       WebSchedulingPriority) override {
     return nullptr;
   }
-  ukm::SourceId GetUkmSourceId() override { return ukm::kInvalidSourceId; }
   void OnStartedUsingNonStickyFeature(
       SchedulingPolicy::Feature feature,
       const SchedulingPolicy& policy,

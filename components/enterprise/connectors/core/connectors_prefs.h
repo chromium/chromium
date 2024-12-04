@@ -6,7 +6,6 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_PREFS_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 class PrefRegistrySimple;
 

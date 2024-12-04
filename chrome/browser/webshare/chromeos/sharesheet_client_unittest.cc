@@ -30,10 +30,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_paths_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace webshare {
 
 class SharesheetClientUnitTest : public ChromeRenderViewHostTestHarness {
@@ -136,21 +132,12 @@ TEST_F(SharesheetClientUnitTest, TestWithoutFilesInIncognito) {
 TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
   SetGuest();
   SharesheetClient sharesheet_client(web_contents());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::FilePath share_cache_dir;
-  ASSERT_TRUE(chrome::GetShareCachePath(&share_cache_dir));
-  const base::FilePath first_file =
-      share_cache_dir.AppendASCII(".web_share/share1/first.txt");
-  const base::FilePath second_file =
-      share_cache_dir.AppendASCII(".web_share/share2/second.txt");
-#else
   const base::FilePath share_cache_dir =
       file_manager::util::GetShareCacheFilePath(profile());
   const base::FilePath first_file =
       share_cache_dir.AppendASCII(".WebShare/share1/first.txt");
   const base::FilePath second_file =
       share_cache_dir.AppendASCII(".WebShare/share2/second.txt");
-#endif
   const std::string title = "Subject";
   const std::string text = "Message";
   const GURL share_url("https://example.com/");

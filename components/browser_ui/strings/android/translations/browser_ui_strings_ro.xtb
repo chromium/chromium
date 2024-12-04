@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">Când opțiunea este activată, site-urile pot solicita să vadă textul și imaginile salvate în clipboard. Când opțiunea este dezactivată, site-urile nu pot vedea textul sau imaginile salvate în clipboard.</translation>
 <translation id="5853982612236235577">Când opțiunea este activată, site-urile îți pot solicita să-ți trimită notificări. Când opțiunea este dezactivată, site-urile nu pot trimite notificări.</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
+<translation id="5860491529813859533">Activează</translation>
 <translation id="5876056640971328065">Întrerupe videoclipul</translation>
 <translation id="5877248419911025165">Restrânge toate solicitările</translation>
 <translation id="5884085660368669834">Preferință pentru site</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">Introdu adresa web</translation>
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Acum poți accesa rapid filele sugerate din lista de aplicații a dispozitivului și din rezultatele căutării pe dispozitiv. Se poate dezactiva oricând din setările Chrome.</translation>
 <translation id="6015775454662021376">Gestionează accesul acestui site la dispozitivul tău</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6042308850641462728">Mai multe</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">Mai întâi întreabă</translation>
 <translation id="7423538860840206698">Citirea clipboardului este blocată</translation>
 <translation id="7425915948813553151">Tema întunecată pentru site-uri</translation>
+<translation id="7488573225650545859">Ascunde filele Afișare din lista de aplicații</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Când opțiunea este activată, site-urile pot afișa solicitări de conectare. Când opțiunea este dezactivată, site-urile nu pot afișa solicitări de conectare.</translation>
 <translation id="7553211568594248088">Ieși din căutarea în hub</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">Acest conținut provine de pe <ph name="DOMAIN_NAME" />, oferit de Google.</translation>
 <translation id="8088603949666785339">Mai multe opțiuni în <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Reduce performanța, dar face motorul V8 mai rezistent la atacuri</translation>
+<translation id="8112925981674547014">Vezi filele în lista de aplicații</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome va limita din nou cookie-urile mâine}few{# zile până când Chrome va limita din nou cookie-urile}other{# de zile până când Chrome va limita din nou cookie-urile}}</translation>
 <translation id="8116925261070264013">Cu sunetul dezactivat</translation>
 <translation id="8117244575099414087">Când opțiunea este activată, site-urile pot folosi senzorii dispozitivului. Când opțiunea este dezactivată, site-urile nu pot folosi senzori.</translation>

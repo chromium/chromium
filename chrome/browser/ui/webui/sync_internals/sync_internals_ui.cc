@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
 
 #include <memory>
@@ -41,9 +36,7 @@ void CreateAndAddSyncInternalsHTMLSource(Profile* profile) {
       "trusted-types jstemplate static-types;");
 
   source->UseStringsJs();
-  source->AddResourcePaths(
-      base::make_span(kSyncServiceSyncInternalsResources,
-                      kSyncServiceSyncInternalsResourcesSize));
+  source->AddResourcePaths(kSyncServiceSyncInternalsResources);
 
   source->SetDefaultResource(IDR_SYNC_SERVICE_SYNC_INTERNALS_INDEX_HTML);
 }

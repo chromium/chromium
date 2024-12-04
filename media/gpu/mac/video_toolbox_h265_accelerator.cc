@@ -214,7 +214,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitSlice(
   frame_vps_ids_.insert(sps->sps_video_parameter_set_id);
   frame_sps_ids_.insert(pps->pps_seq_parameter_set_id);
   frame_pps_ids_.insert(pps->pps_pic_parameter_set_id);
-  frame_slice_data_.push_back(base::make_span(data, size));
+  frame_slice_data_.push_back(base::span(data, size));
 
   return Status::kOk;
 }
@@ -241,7 +241,7 @@ bool VideoToolboxH265Accelerator::ExtractChangedParameterSetData(
       // Update active parameter set data.
       (*active_parameter_set_data_out)[parameter_set_id] = seen_it->second;
       // Extract the parameter set data.
-      parameter_set_data_out->push_back(base::make_span(seen_it->second));
+      parameter_set_data_out->push_back(base::span(seen_it->second));
     }
   }
   return true;

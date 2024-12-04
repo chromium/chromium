@@ -6,12 +6,18 @@
 
 #include <memory>
 
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/launcher/glic_controller.h"
+#include "chrome/browser/glic/launcher/glic_status_icon.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 
-GlicBackgroundModeManager::GlicBackgroundModeManager() {
+GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
+    : status_tray_(status_tray) {
   configuration_ = std::make_unique<GlicConfiguration>(this);
   OnEnabledChanged(configuration_->IsEnabled());
+
+  controller_ = std::make_unique<GlicController>();
 }
 
 GlicBackgroundModeManager::~GlicBackgroundModeManager() = default;
@@ -33,9 +39,14 @@ void GlicBackgroundModeManager::OnEnabledChanged(bool enabled) {
 void GlicBackgroundModeManager::EnterBackgroundMode() {
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::GLIC_LAUNCHER, KeepAliveRestartOption::ENABLED);
+
+  status_icon_ =
+      std::make_unique<GlicStatusIcon>(controller_.get(), status_tray_);
 }
 
 void GlicBackgroundModeManager::ExitBackgroundMode() {
+  status_icon_.reset();
+
   keep_alive_.reset();
 }
 

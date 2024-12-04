@@ -120,7 +120,7 @@ class AXRelationCache {
   // using values of type IDREF/IDREFS.
   void CacheRelations(Element& element);
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   void CheckElementWasProcessed(Element& element);
 
   // Check that reverse relations were cached when the node was attached via
@@ -354,7 +354,7 @@ class AXRelationCache {
   // subsequent relations when nodes fare attached or attributes change.
   void DoInitialDocumentScan(Document&);
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   // A list of all elements that have had a chance to be processed for relations
   // before an AXObject has been created (it's important for crrev.com/c/4778093
   // to process relations first). An error here indicates that

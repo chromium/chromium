@@ -27,14 +27,13 @@ void ScrollMarkerGroupPseudoElement::Trace(Visitor* v) const {
 
 void ScrollMarkerGroupPseudoElement::AddToFocusGroup(
     ScrollMarkerPseudoElement& scroll_marker) {
-  scroll_marker.SetScrollMarkerGroup(this);
   focus_group_.push_back(scroll_marker);
 }
 
 ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::FindNextScrollMarker(
     const Element& current) {
   if (wtf_size_t index = focus_group_.Find(current); index != kNotFound) {
-    return focus_group_[index == focus_group_.size() - 1 ? 0u : index + 1];
+    return focus_group_[std::min(index + 1, focus_group_.size() - 1)];
   }
   return nullptr;
 }
@@ -43,7 +42,7 @@ ScrollMarkerPseudoElement*
 ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker(
     const Element& current) {
   if (wtf_size_t index = focus_group_.Find(current); index != kNotFound) {
-    return focus_group_[index == 0u ? focus_group_.size() - 1 : index - 1];
+    return focus_group_[index == 0 ? 0u : index - 1];
   }
   return nullptr;
 }

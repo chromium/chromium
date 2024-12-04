@@ -17,6 +17,7 @@ import org.chromium.components.collaboration.messaging.InstantNotificationType;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
+import org.chromium.components.collaboration.messaging.RecentActivityAction;
 import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
@@ -123,15 +124,21 @@ class ConversionUtils {
     private static ActivityLogItem createActivityLogItemAndMaybeAddToList(
             @Nullable ArrayList<ActivityLogItem> list,
             @CollaborationEvent int collaborationEvent,
-            String titleText,
-            String descriptionText,
-            String timestampText,
+            String userDisplayName,
+            boolean userIsSelf,
+            String description,
+            long timeDeltaMs,
+            boolean showFavicon,
+            @RecentActivityAction int action,
             MessageAttribution activityMetadata) {
         ActivityLogItem activityLogItem = new ActivityLogItem();
         activityLogItem.collaborationEvent = collaborationEvent;
-        activityLogItem.titleText = titleText;
-        activityLogItem.descriptionText = descriptionText;
-        activityLogItem.timestampText = timestampText;
+        activityLogItem.userDisplayName = userDisplayName;
+        activityLogItem.userIsSelf = userIsSelf;
+        activityLogItem.description = description;
+        activityLogItem.timeDeltaMs = timeDeltaMs;
+        activityLogItem.showFavicon = showFavicon;
+        activityLogItem.action = action;
         activityLogItem.activityMetadata = activityMetadata;
 
         if (list != null) {

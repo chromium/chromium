@@ -19,8 +19,7 @@ TEST(AppManagementMojomTraitsTest, RoundTripAppType) {
       apps::AppType::kChromeApp, apps::AppType::kWeb,
       apps::AppType::kPluginVm,  apps::AppType::kStandaloneBrowser,
       apps::AppType::kRemote,    apps::AppType::kBorealis,
-      apps::AppType::kSystemWeb, apps::AppType::kStandaloneBrowserChromeApp,
-      apps::AppType::kExtension};
+      apps::AppType::kSystemWeb, apps::AppType::kExtension};
 
   for (auto app_type_in : kTestAppType) {
     apps::AppType app_type_out;

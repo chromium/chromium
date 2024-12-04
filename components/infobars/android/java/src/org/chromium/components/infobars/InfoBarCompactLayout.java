@@ -22,11 +22,11 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 /**
- * Lays out controls along a line, sandwiched between an (optional) icon and close button.
- * This should only be used by the {@link InfoBar} class, and is created when the InfoBar subclass
+ * Lays out controls along a line, sandwiched between an (optional) icon and close button. This
+ * should only be used by the {@link InfoBar} class, and is created when the InfoBar subclass
  * declares itself to be using a compact layout via {@link InfoBar#usesCompactLayout}.
  */
 public class InfoBarCompactLayout extends LinearLayout implements View.OnClickListener {
@@ -155,7 +155,7 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
             final Context context = mLayout.getContext();
             SpannableString link = new SpannableString(label);
             link.setSpan(
-                    new NoUnderlineClickableSpan(context, onTapCallback),
+                    new ChromeClickableSpan(context, onTapCallback),
                     0,
                     label.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

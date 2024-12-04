@@ -1,4 +1,4 @@
-    <style include="cr-shared-style cr-hidden-style settings-shared iron-flex">
+    <style include="cr-shared-style cr-hidden-style settings-shared">
       .content-settings-header,
       .radio-group {
         padding: 0 var(--cr-section-padding);
@@ -700,10 +700,6 @@
                     $i18n{safetyHubEntryPointButtonLabel}
                   </cr-button>
                 </settings-safety-hub-module>
-              </template>
-              <template is="dom-if" if="[[!enableSafetyHub_]]">
-                <review-notification-permissions>
-                </review-notification-permissions>
               </template>
             </template>
             <h2>$i18n{siteSettingsDefaultBehavior}</h2>

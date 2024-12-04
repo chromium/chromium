@@ -18,9 +18,9 @@ namespace chrome_browser_net {
 
 class ProbeMessageTest : public ::testing::Test {
  protected:
-  ProbeMessageTest() {}
+  ProbeMessageTest() = default;
 
-  ~ProbeMessageTest() override {}
+  ~ProbeMessageTest() override = default;
 };
 
 TEST_F(ProbeMessageTest, TestGenerateProbeRequest) {

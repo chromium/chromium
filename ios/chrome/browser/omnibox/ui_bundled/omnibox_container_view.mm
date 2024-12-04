@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_thumbnail_button.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -51,8 +50,7 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 const CGFloat kClearButtonInset = 4.0f;
 /// Clear button image size.
 const CGFloat kClearButtonImageSize = 17.0f;
-/// Clear button size.
-const CGFloat kClearButtonSize = 28.5f;
+
 }  // namespace
 
 #pragma mark - OmniboxContainerView
@@ -69,18 +67,9 @@ const CGFloat kClearButtonSize = 28.5f;
 @implementation OmniboxContainerView {
   /// The leading image view. Used for autocomplete icons.
   UIImageView* _leadingImageView;
-  /// UILabel for additional text.
-  FadeTruncatingLabel* _additionalTextLabel;
-  /// Horizontal stack view containing the `_leadingImageView` ,
-  /// `_thumbnailImageView`, `_textScrollView` and `clearButton`.
+  /// Horizontal stack view containing the `_leadingImageView`,
+  /// `_thumbnailImageView`, `textField`.
   UIStackView* _stackView;
-
-  /// Horizontal scroll view containing `_textStackView`.
-  UIScrollView* _textScrollView;
-  /// Horizontal stack view containing the `textField` and
-  /// `_additionalTextLabel` to allow scrolling the additional text.
-  UIStackView* _textStackView;
-
   // The image thumnail button.
   OmniboxThumbnailButton* _thumbnailButton;
 
@@ -151,47 +140,8 @@ const CGFloat kClearButtonSize = 28.5f;
                          afterView:_thumbnailButton];
     }
 
-    if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
-      // Text scroll view.
-      _textScrollView = [[UIScrollView alloc] init];
-      _textScrollView.translatesAutoresizingMaskIntoConstraints = NO;
-      _textScrollView.showsHorizontalScrollIndicator = NO;
-      _textScrollView.showsVerticalScrollIndicator = NO;
-      [_stackView addArrangedSubview:_textScrollView];
-
-      // Additional text.
-      _additionalTextLabel = [[FadeTruncatingLabel alloc] init];
-      _additionalTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
-      _additionalTextLabel.isAccessibilityElement = NO;
-      _additionalTextLabel.clipsToBounds = YES;
-      _additionalTextLabel.hidden = YES;
-      _additionalTextLabel.lineBreakMode = NSLineBreakByClipping;
-      _additionalTextLabel.displayAsURL = YES;
-      _additionalTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-
-      // Text stack view.
-      _textStackView = [[UIStackView alloc]
-          initWithArrangedSubviews:@[ _textField, _additionalTextLabel ]];
-      _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
-      _textStackView.axis = UILayoutConstraintAxisHorizontal;
-      _textStackView.alignment = UIStackViewAlignmentCenter;
-      _textStackView.spacing = 0;
-      _textStackView.distribution = UIStackViewDistributionFill;
-      [_textScrollView addSubview:_textStackView];
-      AddSameConstraints(_textScrollView, _textStackView);
-
-      [NSLayoutConstraint activateConstraints:@[
-        [_textScrollView.heightAnchor
-            constraintEqualToAnchor:_textStackView.heightAnchor],
-        // Limit text field width to scroll view width to allow correct handling
-        // of the caret by UITextField.
-        [_textField.widthAnchor
-            constraintLessThanOrEqualToAnchor:_textScrollView.widthAnchor]
-      ]];
-
-    } else {  // !IsRichAutocompletionEnabled
-      [_stackView addArrangedSubview:_textField];
-    }
+    // Textfield.
+    [_stackView addArrangedSubview:_textField];
 
     // Clear button.
     UIButtonConfiguration* conf =
@@ -211,18 +161,10 @@ const CGFloat kClearButtonSize = 28.5f;
         CreateLiftEffectCirclePointerStyleProvider();
     // Do not use the system clear button. Use a custom view instead.
     _textField.clearButtonMode = UITextFieldViewModeNever;
-    if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
-      [NSLayoutConstraint activateConstraints:@[
-        [_clearButton.widthAnchor constraintEqualToConstant:kClearButtonSize],
-        [_clearButton.heightAnchor constraintEqualToConstant:kClearButtonSize],
-      ]];
-      [_stackView addArrangedSubview:_clearButton];
-    } else {
-      // Note that `rightView` is an incorrect name, it's really a trailing
-      // view.
-      _textField.rightViewMode = UITextFieldViewModeAlways;
-      _textField.rightView = _clearButton;
-    }
+    // Note that `rightView` is an incorrect name, it's really a trailing
+    // view.
+    _textField.rightViewMode = UITextFieldViewModeAlways;
+    _textField.rightView = _clearButton;
 
     // Spacing between image and text field.
     [_stackView
@@ -233,20 +175,6 @@ const CGFloat kClearButtonSize = 28.5f;
     // Constraints.
     AddSameConstraintsToSides(_textField, _stackView,
                               LayoutSides::kTop | LayoutSides::kBottom);
-    if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
-      AddSameConstraintsToSides(_additionalTextLabel, _stackView,
-                                LayoutSides::kTop | LayoutSides::kBottom);
-
-      // Prevents the text field from taking more horizontal space than needed.
-      // This allows the additional text to sit flush with the text in
-      // `_textField`.
-      [_textField setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
-                                    forAxis:UILayoutConstraintAxisHorizontal];
-      // Allow the additional text to take more horizontal space.
-      [_additionalTextLabel
-          setContentHuggingPriority:UILayoutPriorityDefaultLow
-                            forAxis:UILayoutConstraintAxisHorizontal];
-    }
     [_textField
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
@@ -297,12 +225,8 @@ const CGFloat kClearButtonSize = 28.5f;
 }
 
 - (void)setClearButtonHidden:(BOOL)isHidden {
-  if (IsRichAutocompletionEnabled(RichAutocompletionImplementation::kLabel)) {
-    _clearButton.hidden = isHidden;
-  } else {
     self.textField.rightViewMode =
         isHidden ? UITextFieldViewModeNever : UITextFieldViewModeAlways;
-  }
 }
 
 - (void)setSemanticContentAttribute:
@@ -312,48 +236,20 @@ const CGFloat kClearButtonSize = 28.5f;
 }
 
 - (void)updateAdditionalText:(NSString*)additionalText {
-  CHECK(IsRichAutocompletionEnabled(RichAutocompletionImplementation::kAny));
-
-  if (IsRichAutocompletionEnabled(
-          RichAutocompletionImplementation::kTextField)) {
-    // Additional text in text field.
-    if (!additionalText) {
-      _textField.additionalText = nil;
-    } else {
-      NSMutableAttributedString* addditionalAttributedText =
-          [[NSMutableAttributedString alloc] initWithString:additionalText];
-      [addditionalAttributedText
-          addAttributes:@{
-            NSForegroundColorAttributeName :
-                [UIColor colorNamed:kTextSecondaryColor]
-          }
-                  range:NSMakeRange(0, addditionalAttributedText.length)];
-      _textField.additionalText = addditionalAttributedText;
-    }
-  } else if (IsRichAutocompletionEnabled(
-                 RichAutocompletionImplementation::kLabel)) {
-    // Additional text in Label.
-    _additionalTextLabel.text = additionalText;
-    _additionalTextLabel.hidden = !additionalText.length;
-    // Update the font here as `_textField` changes font for different dynamic
-    // type. TODO(crbug.com/325035406): Refactor dynamic type handling.
-    _additionalTextLabel.font = _textField.font;
-
-    // The placeholder text prevents the text field from hugging to a size
-    // smaller than `placeholder`. This prevents the additional text from
-    // staying flush to the text field (crbug.com/326371877).
-    if (_additionalTextLabel.hidden) {
-      _textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
-    } else {
-      _textField.placeholder = nil;
-    }
+  // Additional text in text field.
+  if (!additionalText) {
+    _textField.additionalText = nil;
+  } else {
+    NSMutableAttributedString* additionalAttributedText =
+        [[NSMutableAttributedString alloc] initWithString:additionalText];
+    [additionalAttributedText
+        addAttributes:@{
+          NSForegroundColorAttributeName :
+              [UIColor colorNamed:kTextSecondaryColor]
+        }
+                range:NSMakeRange(0, additionalAttributedText.length)];
+    _textField.additionalText = additionalAttributedText;
   }
-}
-
-- (void)setOmniboxHasRichInline:(BOOL)omniboxHasRichInline {
-  CHECK(IsRichAutocompletionEnabled(
-      RichAutocompletionImplementation::kNoAdditionalText));
-  _textField.omniboxHasRichInline = omniboxHasRichInline;
 }
 
 #pragma mark - TextFieldViewContaining

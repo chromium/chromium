@@ -2,14 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_platform_apitest.h"
-#include "content/public/test/browser_test.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/test.h"
@@ -17,15 +11,24 @@
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
 #endif
 
 namespace extensions {
 
-#if !BUILDFLAG(IS_ANDROID)
-
 using extensions::ResultCatcher;
 
-class AlarmsApiTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using AlarmsApiTestBase = ExtensionPlatformApiTest;
+#else
+using AlarmsApiTestBase = ExtensionApiTest;
+#endif
+
+class AlarmsApiTest : public AlarmsApiTestBase {
  public:
   AlarmsApiTest() = default;
   ~AlarmsApiTest() override = default;
@@ -34,16 +37,16 @@ class AlarmsApiTest : public ExtensionApiTest {
 
   void SetUp() override {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-    ExtensionApiTest::SetUp();
+    AlarmsApiTestBase::SetUp();
   }
 
   void TearDown() override {
     histogram_tester_.release();
-    ExtensionApiTest::TearDown();
+    AlarmsApiTestBase::TearDown();
   }
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    AlarmsApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -64,17 +67,21 @@ class AlarmsApiTest : public ExtensionApiTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that an alarm created by an extension with incognito split mode is
 // only triggered in the browser context it was created in.
+// TODO(crbug.com/381140149): This test crashes waiting for the incognito
+// listener to be satisfied. Split incognito mode does not appear to work yet
+// on desktop android.
 IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
   Profile* incognito_profile =
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ResultCatcher catcher_incognito;
   catcher_incognito.RestrictToBrowserContext(incognito_profile);
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
   EventRouter* event_router = EventRouter::Get(incognito_profile);
 
   ExtensionTestMessageListener listener("ready: false");
@@ -87,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
   EXPECT_TRUE(listener_incognito.WaitUntilSatisfied());
 
   // Open incognito window.
-  OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
 
   event_router->BroadcastEvent(std::make_unique<Event>(
       events::FOR_TEST, api::test::OnMessage::kEventName,
@@ -96,21 +103,21 @@ IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
   EXPECT_TRUE(catcher.GetNextResult());
   EXPECT_TRUE(catcher_incognito.GetNextResult());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that the behavior for an alarm created in incognito context should be
 // the same if incognito is in spanning mode.
 IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSpanning) {
   ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser()->profile());
+  catcher.RestrictToBrowserContext(profile());
 
   ASSERT_TRUE(LoadAlarmsExtensionIncognito("spanning"));
 
   // Open incognito window.
-  OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 using AlarmsPlatformApiTest = ExtensionPlatformApiTest;

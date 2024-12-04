@@ -123,6 +123,10 @@ void InspectorMediaAgent::RegisterAgent() {
   instrumenting_agents_->AddInspectorMediaAgent(this);
   auto* cache = MediaInspectorContextImpl::From(*GetTargetExecutionContext());
   Vector<WebString> players = cache->AllPlayerIdsAndMarkSent();
+  if (players.empty()) {
+    return;
+  }
+
   PlayersCreated(players);
   for (const auto& player_id : players) {
     const auto& media_player = cache->MediaPlayerFromId(player_id);

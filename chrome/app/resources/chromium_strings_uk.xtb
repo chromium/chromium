@@ -260,6 +260,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4510853178268397146">Немає відомостей про конфіденційність цього розширення, зокрема про те, як воно збирає і використовує дані. Chromium радить вилучити його.</translation>
 <translation id="452711251841752011">Вітаємо в Chromium! Відкрито нове вікно веб-переглядача</translation>
 <translation id="4531137820806573936">Вебпереглядачу Chromium потрібен дозвіл, щоб створити карту оточення й відстежувати ваші руки</translation>
+<translation id="4534145890176164066">Chromium краще визначає форми й швидше заповнює їх</translation>
 <translation id="4536805923587466102">Ви вже ввійшли як <ph name="USER_EMAIL_ADDRESS" /> в іншому профілі Chromium</translation>
 <translation id="4544142686420020088">Не вдалось оновити веб-переглядач Chromium. <ph name="BEGIN_LINK" />Вирішіть проблеми з оновленням Chrome.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium може зробити цю вкладку неактивною, щоб покращити якість вебперегляду й прискорити роботу.</translation>
@@ -478,6 +479,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7349591376906416160">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7355355292030546812">Вебпереглядач Chromium заблокував завантаження, оскільки цей файл може зашкодити вашим особистим обліковим записам і обліковим записам у соціальних мережах, зокрема <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Це розширення більше не підтримується. Chromium радить вилучити його.</translation>
+<translation id="7389750180956889333">Chromium краще визначає форми й швидше заповнює їх. Докладніше про <ph name="BEGIN_LINK" />автозаповнення в Chrome<ph name="END_LINK" />.</translation>
 <translation id="7398989605938454041">Створюйте профілі Chromium для різних цілей (наприклад, робочий і особистий), щоб розмежовувати роботу й дозвілля.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Версія Chromium для розробників</translation>
 <translation id="7450541714075000668">Текст скопійовано</translation>

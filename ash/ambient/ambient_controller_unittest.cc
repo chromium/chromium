@@ -511,7 +511,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings, ShouldReturnCachedAccessToken) {
   base::OnceClosure closure = base::MakeExpectedRunClosure(FROM_HERE);
   base::RunLoop run_loop;
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
-      [&](const std::string& gaia_id, const std::string& access_token_fetched) {
+      [&](const GaiaId& gaia_id, const std::string& access_token_fetched) {
         EXPECT_EQ(access_token_fetched, TestAmbientClient::kTestAccessToken);
 
         std::move(closure).Run();
@@ -552,7 +552,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   base::OnceClosure closure = base::MakeExpectedRunClosure(FROM_HERE);
   base::RunLoop run_loop_1;
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
-      [&](const std::string& gaia_id, const std::string& access_token_fetched) {
+      [&](const GaiaId& gaia_id, const std::string& access_token_fetched) {
         EXPECT_EQ(access_token_fetched, TestAmbientClient::kTestAccessToken);
 
         std::move(closure).Run();
@@ -568,7 +568,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
 
   closure = base::MakeExpectedRunClosure(FROM_HERE);
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
-      [&](const std::string& gaia_id, const std::string& access_token_fetched) {
+      [&](const GaiaId& gaia_id, const std::string& access_token_fetched) {
         EXPECT_TRUE(access_token_fetched.empty());
 
         std::move(closure).Run();

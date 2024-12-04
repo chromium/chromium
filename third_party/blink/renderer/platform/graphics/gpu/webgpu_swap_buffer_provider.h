@@ -40,6 +40,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     // Called to make the WebGPU/Dawn stop accessing the texture prior to its
     // transfer to the compositor/video frame
     virtual void OnTextureTransferred() = 0;
+    virtual void InitializeLayer(cc::Layer* layer) = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
   };
 
@@ -57,7 +58,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   viz::SharedImageFormat Format() const;
   gfx::Size Size() const;
   cc::Layer* CcLayer();
-  void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
   void DiscardCurrentSwapBuffer();
   scoped_refptr<WebGPUMailboxTexture> GetNewTexture(
@@ -143,8 +143,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   const wgpu::TextureUsage internal_usage_;
   const PredefinedColorSpace color_space_;
   const gfx::HDRMetadata hdr_metadata_;
-  cc::PaintFlags::FilterQuality filter_quality_ =
-      cc::PaintFlags::FilterQuality::kLow;
   int max_texture_size_;
 
   // Pool of SwapBuffers which manages creation, release and recycling of

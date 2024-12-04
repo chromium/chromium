@@ -226,18 +226,6 @@ public interface TabGroupModelFilter extends TabList {
     @NonNull
     TabUngrouper getTabUngrouper();
 
-    /**
-     * This method moves Tab with id as {@code sourceTabId} out of the group it belongs to in the
-     * specified direction.
-     *
-     * @param sourceTabId The id of the {@link Tab} to get the source group.
-     * @param trailing True if the tab should be placed after the tab group when removed. False if
-     *     it should be placed before.
-     * @deprecated Use {@link TabUngrouper#ungroupTabs(List<Tab>, boolean)} instead.
-     */
-    @Deprecated
-    void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing);
-
     // TODO(crbug.com/372068933): This method should probably have more restricted access.
     /**
      * This method undo the given grouped {@link Tab}.

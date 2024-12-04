@@ -6,92 +6,65 @@
 
 #include <string>
 
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "base/json/json_writer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 
-namespace {
-
-// TODO(peletskyi): Read manifest from the signed web bundle file.
-blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->id = application_url.DeprecatedGetOriginAsURL();
-  manifest->scope = application_url.Resolve("/");
-  manifest->start_url = application_url.Resolve("/testing-start-url.html");
-  manifest->display = web_app::DisplayMode::kStandalone;
-  manifest->short_name = u"App name";
-  manifest->version = u"1.0.0";
-
-  return manifest;
-}
-
-void ConfigureFakeWebContentsManager(
-    const web_package::SignedWebBundleId& id,
-    web_app::FakeWebContentsManager& fake_web_contents_manager) {
-  const GURL origin_url =
-      web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(id)
-          .origin()
-          .GetURL();
-
-  const GURL install_url =
-      origin_url.Resolve("/.well-known/_generated_install_page.html");
-
-  auto& page_state =
-      fake_web_contents_manager.GetOrCreatePageState(install_url);
-  page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
-  page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
-  page_state.manifest_url = origin_url.Resolve("manifest.webmanifest");
-  page_state.valid_manifest_for_web_app = true;
-  page_state.manifest_before_default_processing =
-      CreateDefaultManifest(origin_url);
-}
-}  // namespace
-
 namespace web_app {
 
-IwaTestServerConfigurator::IwaTestServerConfigurator() = default;
+namespace {
+
+constexpr std::string_view kServerBaseUrl = "https://bundle-server.com";
+
+}  // namespace
+
+IwaTestServerConfigurator::IwaTestServerConfigurator(
+    network::TestURLLoaderFactory& factory)
+    : factory_(factory) {
+  storage_.SetBaseUrl(GURL(kServerBaseUrl));
+}
+
 IwaTestServerConfigurator::~IwaTestServerConfigurator() = default;
 
-void IwaTestServerConfigurator::AddUpdateManifest(std::string relative_url,
-                                                  std::string manifest_value) {
-  served_update_manifests_.push_back(
-      {.relative_url_ = std::move(relative_url),
-       .manifest_value_ = std::move(manifest_value)});
+void IwaTestServerConfigurator::AddBundle(
+    std::unique_ptr<BundledIsolatedWebApp> bundle,
+    std::optional<std::vector<UpdateChannel>> update_channels) {
+  auto& bundle_ref = *bundle;
+
+  auto web_bundle_url =
+      storage_.AddBundle(std::move(bundle), std::move(update_channels));
+  const auto& web_bundle_id = bundle_ref.web_bundle_id();
+
+  factory_->AddResponse(web_bundle_url.spec(), bundle_ref.GetBundleData());
+
+  RegenerateServedUpdateManifest(web_bundle_id);
 }
 
-void IwaTestServerConfigurator::AddSignedWebBundle(
-    std::string relative_url,
-    web_app::TestSignedWebBundle web_bundle) {
-  served_signed_web_bundles_.push_back(
-      {.relative_url_ = std::move(relative_url),
-       .web_bundle_ = std::move(web_bundle)});
+void IwaTestServerConfigurator::RegenerateServedUpdateManifest(
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  network::mojom::URLResponseHeadPtr head =
+      network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK);
+  head->mime_type = "application/json";
+  network::URLLoaderCompletionStatus status;
+
+  factory_->AddResponse(
+      storage_.GetUpdateManifestUrl(web_bundle_id), std::move(head),
+      *base::WriteJson(storage_.GetUpdateManifest(web_bundle_id)), status);
 }
 
-void IwaTestServerConfigurator::ConfigureURLLoader(
-    const GURL& base_url,
-    network::TestURLLoaderFactory& test_factory,
-    FakeWebContentsManager& fake_web_contents_manager) {
-  for (const auto& served_update_manifest : served_update_manifests_) {
-    const GURL url = base_url.Resolve(served_update_manifest.relative_url_);
-
-    network::mojom::URLResponseHeadPtr head =
-        network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK);
-    head->mime_type = "application/json";
-    const network::URLLoaderCompletionStatus status;
-    test_factory.AddResponse(url, std::move(head),
-                             served_update_manifest.manifest_value_, status);
-  }
-
-  for (const auto& served_web_bundle : served_signed_web_bundles_) {
-    const GURL url = base_url.Resolve(served_web_bundle.relative_url_);
-    const std::string web_bundle_str(served_web_bundle.web_bundle_.data.begin(),
-                                     served_web_bundle.web_bundle_.data.end());
-    test_factory.AddResponse(url.spec(), web_bundle_str);
-
-    ConfigureFakeWebContentsManager(served_web_bundle.web_bundle_.id,
-                                    fake_web_contents_manager);
-  }
+// static
+base::Value::Dict IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::optional<UpdateChannel>& update_channel,
+    const std::optional<base::Version>& pinned_version) {
+  return test::CreateForceInstallIwaPolicyEntry(
+      web_bundle_id,
+      test::BundleVersionsStorage::GetUpdateManifestUrl(GURL(kServerBaseUrl),
+                                                        web_bundle_id),
+      update_channel, pinned_version);
 }
 
 }  // namespace web_app

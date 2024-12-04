@@ -46,11 +46,6 @@ BUILDER_EXCLUDE_SET = set([
 TEST_SUITE_EXCLUDE_SET = set([
     # 'chrome_all_tast_tests': crbug.com/1516971
     'chrome_all_tast_tests',
-    # TODO(crbug.com/40927590): Remove `*headless_shell_wpt_tests` exceptions
-    # once the migration is complete and sharding doesn't need to be manually
-    # managed anymore.
-    'headless_shell_wpt_tests',
-    'not_site_per_process_headless_shell_wpt_tests',
 ])
 
 # Test suite and try builder dicts that should not be autosharded any further.

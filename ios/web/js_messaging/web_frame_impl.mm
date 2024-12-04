@@ -96,7 +96,7 @@ bool WebFrameImpl::IsMainFrame() const {
   return is_main_frame_;
 }
 
-GURL WebFrameImpl::GetSecurityOrigin() const {
+GURL WebFrameImpl::GetSecurityOriginDeprecated() const {
   return security_origin_;
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -22,9 +17,7 @@ SuggestInternalsUI::SuggestInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISuggestInternalsHost);
 
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kSuggestInternalsResources,
-                                              kSuggestInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kSuggestInternalsResources,
                               IDR_SUGGEST_INTERNALS_SUGGEST_INTERNALS_HTML);
   webui::EnableTrustedTypesCSP(source);
 }

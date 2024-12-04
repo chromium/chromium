@@ -125,7 +125,6 @@ Refer to README.md for content description and update process.
  <item id="network_location_request" added_in_milestone="65" type="completing" content_hash_code="04d00293" os_list="linux,windows,chromeos,android" semantics_fields="2,3,4,5" policy_fields="-1" file_path="services/device/geolocation/network_location_request.cc" />
  <item id="network_time_component" added_in_milestone="62" content_hash_code="01ac0991" os_list="linux,windows,chromeos,android" file_path="components/network_time/network_time_tracker.cc" />
  <item id="new_tab_page_handler" added_in_milestone="84" content_hash_code="02ee5881" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc" />
- <item id="nux_ntp_background_preview" added_in_milestone="74" content_hash_code="01df3270" os_list="linux,windows" file_path="chrome/browser/ui/webui/welcome/ntp_background_fetcher.cc" />
  <item id="oauth2_access_token_fetcher" added_in_milestone="62" content_hash_code="01ff32b0" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_access_token_fetcher.cc" />
  <item id="oauth2_api_call_flow" added_in_milestone="65" type="completing" content_hash_code="067ca204" os_list="linux,windows,chromeos,android" policy_fields="-1" file_path="google_apis/gaia/oauth2_api_call_flow.cc" />
  <item id="oauth2_mint_token_flow" added_in_milestone="62" type="partial" second_id="oauth2_api_call_flow" content_hash_code="05756bf8" os_list="linux,windows,chromeos,android" semantics_fields="1,2,3,4,5" policy_fields="3,4" file_path="google_apis/gaia/oauth2_mint_token_flow.cc" />
@@ -499,4 +498,5 @@ Refer to README.md for content description and update process.
  <item id="chromeos_quick_insert_gif_media_fetcher" added_in_milestone="133" content_hash_code="05d03088" os_list="chromeos" file_path="ash/quick_insert/quick_insert_asset_fetcher_impl.cc" />
  <item id="chromeos_feedback_report_hpke_public_key_fetch_for_variations" added_in_milestone="133" content_hash_code="03357d0e" os_list="chromeos,linux,windows" file_path="extensions/browser/api/feedback_private/feedback_service.cc" />
  <item id="shared_storage_worklet_host" added_in_milestone="133" content_hash_code="04cb9ff5" os_list="linux,windows,android,chromeos" file_path="content/browser/shared_storage/shared_storage_worklet_host.cc" />
+ <item id="webauthn_challenge_fetch" added_in_milestone="133" content_hash_code="00d0cb34" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/challenge_url_fetcher.cc" />
 </annotations>

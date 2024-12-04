@@ -67,10 +67,13 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
     kOverlayStackingPositionAbove = 1,
   };
 
-  int8_t CompareOverlayStackingPosition(const AtomicString& highlight_name1,
-                                        const Highlight* highlight1,
-                                        const AtomicString& highlight_name2,
-                                        const Highlight* highlight2) const;
+  // Compares Highlights by priority and breaks ties by order of insertion to
+  // the registry: a higher priority takes precedence, and in the case
+  // priorities are the same, the most recently registered Highlight takes
+  // precedence.
+  int8_t CompareOverlayStackingPosition(
+      const AtomicString& highlight_name1,
+      const AtomicString& highlight_name2) const;
 
   class IterationSource final
       : public HighlightRegistryMapIterable::IterationSource {
@@ -103,8 +106,12 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   uint64_t dom_tree_version_for_validate_highlight_markers_ = 0;
   uint64_t style_version_for_validate_highlight_markers_ = 0;
   bool force_markers_validation_ = true;
+  // Number of Highlights registered so far during the lifetime of this
+  // HighlightRegistry. Used to store this information for every Highlight
+  // registered in order to break ties when determining Highlight precedence.
+  uint64_t highlights_registered_ = 0;
 
-  HighlightRegistryMap::iterator GetMapIterator(const AtomicString& key) {
+  HighlightRegistryMap::iterator GetMapIterator(const AtomicString& key) const {
     return highlights_.Find<HighlightRegistryMapEntryNameTranslator>(key);
   }
 

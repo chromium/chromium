@@ -118,6 +118,7 @@ if (is_linux || is_mac || is_win) {
       "//components/feature_engagement/public",
       "//components/user_education/common",
       "//components/user_education/webui",
+      "//components/user_education/webui:test_support",
       "//content/test:test_support",
       "//mojo/public/cpp/bindings",
       "//testing/gmock",

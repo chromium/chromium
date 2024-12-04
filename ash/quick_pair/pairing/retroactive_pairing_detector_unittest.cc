@@ -385,7 +385,7 @@ TEST_F(RetroactivePairingDetectorTest, NoMessageStream) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, MessageStreamNoBle) {
+TEST_F(RetroactivePairingDetectorTest, MessageStream_NoBle) {
   Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
@@ -406,7 +406,7 @@ TEST_F(RetroactivePairingDetectorTest, MessageStreamNoBle) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, MessageStreamNoModelId) {
+TEST_F(RetroactivePairingDetectorTest, MessageStream_NoModelId) {
   Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
@@ -428,7 +428,7 @@ TEST_F(RetroactivePairingDetectorTest, MessageStreamNoModelId) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, MessageStreamSocketError) {
+TEST_F(RetroactivePairingDetectorTest, MessageStream_SocketError) {
   Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
@@ -450,7 +450,7 @@ TEST_F(RetroactivePairingDetectorTest, MessageStreamSocketError) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, MessageStreamNoBytes) {
+TEST_F(RetroactivePairingDetectorTest, MessageStream_NoBytes) {
   Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
@@ -473,7 +473,7 @@ TEST_F(RetroactivePairingDetectorTest, MessageStreamNoBytes) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, MessageStreamBleModelIdLost) {
+TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_Lost) {
   Login(user_manager::UserType::kRegular);
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
@@ -496,7 +496,7 @@ TEST_F(RetroactivePairingDetectorTest, MessageStreamBleModelIdLost) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, MessageStreamBleModelIdFlagEnabled) {
+TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagEnabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -530,7 +530,7 @@ TEST_F(RetroactivePairingDetectorTest, MessageStreamBleModelIdFlagEnabled) {
   EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
-TEST_F(RetroactivePairingDetectorTest, MessageStreamBleModelIdFlagDisabled) {
+TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1537,7 +1537,7 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, DontNotifyOptedOutFlagEnabled) {
+TEST_F(RetroactivePairingDetectorTest, DontNotify_OptedOut_FlagEnabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
 
@@ -1569,7 +1569,7 @@ TEST_F(RetroactivePairingDetectorTest, DontNotifyOptedOutFlagEnabled) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, NotifyOptedOutFlagDisabled) {
+TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
 
@@ -1600,7 +1600,7 @@ TEST_F(RetroactivePairingDetectorTest, NotifyOptedOutFlagDisabled) {
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, NotifyOptedOutStrictFlagDisabled) {
+TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_StrictFlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
 
@@ -1631,7 +1631,7 @@ TEST_F(RetroactivePairingDetectorTest, NotifyOptedOutStrictFlagDisabled) {
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, NotifyOptedOutSavedFlagDisabled) {
+TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_SavedFlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
 
@@ -1662,7 +1662,7 @@ TEST_F(RetroactivePairingDetectorTest, NotifyOptedOutSavedFlagDisabled) {
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, NotifyOptedInFlagDisabled) {
+TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1690,7 +1690,7 @@ TEST_F(RetroactivePairingDetectorTest, NotifyOptedInFlagDisabled) {
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, NotifyOptedInStrictFlagDisabled) {
+TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_StrictFlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
 
@@ -1720,7 +1720,7 @@ TEST_F(RetroactivePairingDetectorTest, NotifyOptedInStrictFlagDisabled) {
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, NotifyOptedInSavedFlagDisabled) {
+TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_SavedFlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
 
@@ -2147,7 +2147,7 @@ TEST_F(RetroactivePairingDetectorTest, NoCrashWhenFootprintsResponseIsSlow) {
   fast_pair_repository_->TriggerIsDeviceSavedToAccountCallback();
 }
 
-TEST_F(RetroactivePairingDetectorTest, FastPairHIDSuccess) {
+TEST_F(RetroactivePairingDetectorTest, FastPairHID_Success) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2175,7 +2175,7 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHIDSuccess) {
   EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
-TEST_F(RetroactivePairingDetectorTest, FastPairHIDGattConnectionOpenSuccess) {
+TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionOpen_Success) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2203,7 +2203,7 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHIDGattConnectionOpenSuccess) {
   EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
-TEST_F(RetroactivePairingDetectorTest, FastPairHIDGattConnectionFailure) {
+TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionFailure) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2229,7 +2229,7 @@ TEST_F(RetroactivePairingDetectorTest, FastPairHIDGattConnectionFailure) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, FastPairHIDReadModelIdFailure) {
+TEST_F(RetroactivePairingDetectorTest, FastPairHID_ReadModelIdFailure) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

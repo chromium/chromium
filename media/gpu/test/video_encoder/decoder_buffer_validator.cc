@@ -72,7 +72,7 @@ std::unique_ptr<DecoderBufferValidator> DecoderBufferValidator::Create(
           profile, visible_rect, num_spatial_layers, num_temporal_layers,
           inter_layer_pred);
     case VideoCodec::kAV1:
-      return std::make_unique<AV1Validator>(visible_rect);
+      return std::make_unique<AV1Validator>(visible_rect, num_temporal_layers);
     default:
       LOG(ERROR) << "Unsupported profile: " << GetProfileName(profile);
       return nullptr;
@@ -977,8 +977,9 @@ bool VP9Validator::ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
   return true;
 }
 
-AV1Validator::AV1Validator(const gfx::Rect& visible_rect)
-    : DecoderBufferValidator(visible_rect, /*num_temporal_layers=*/1),
+AV1Validator::AV1Validator(const gfx::Rect& visible_rect,
+                           size_t num_temporal_layers)
+    : DecoderBufferValidator(visible_rect, num_temporal_layers),
       buffer_pool_(libgav1::OnInternalFrameBufferSizeChanged,
                    libgav1::GetInternalFrameBuffer,
                    libgav1::ReleaseInternalFrameBuffer,
@@ -1057,6 +1058,12 @@ bool AV1Validator::Validate(const DecoderBuffer* buffer,
   if (av1_parser.frame_header().frame_type == libgav1::FrameType::kFrameKey) {
     sequence_header_ = av1_parser.sequence_header();
   }
+
+  if (metadata.svc_generic) {
+    ValidateTemporalSVCStream(decoder_buffer, metadata,
+                              av1_parser.frame_header());
+  }
+
   decoder_state_.UpdateReferenceFrames(
       curr_frame, av1_parser.frame_header().refresh_frame_flags);
 
@@ -1064,5 +1071,66 @@ bool AV1Validator::Validate(const DecoderBuffer* buffer,
 
   return true;
 }
+
+bool AV1Validator::ValidateTemporalSVCStream(
+    const DecoderBuffer& decoder_buffer,
+    const BitstreamBufferMetadata& metadata,
+    const libgav1::ObuFrameHeader& header) {
+  const SVCGenericMetadata& svc_metadata = *metadata.svc_generic;
+  CHECK_EQ(svc_metadata.spatial_idx, 0);
+
+  if (svc_metadata.temporal_idx >= num_temporal_layers_) {
+    LOG(ERROR) << "Invalid temporal_idx="
+               << base::strict_cast<int>(svc_metadata.temporal_idx);
+    return false;
+  }
+  if (metadata.key_frame) {
+    if (svc_metadata.spatial_idx != 0 || svc_metadata.temporal_idx != 0) {
+      LOG(ERROR) << "Spatial and temporal id must be 0 for keyframes.";
+      return false;
+    }
+  } else if (header.show_existing_frame) {
+    if (!decoder_state_.reference_frame[header.frame_to_show]) {
+      LOG(ERROR) << "Attempting to show an existing frame, but the selected "
+                    "reference buffer is invalid.";
+      return false;
+    }
+    return true;
+  }
+
+  // Check that referenced frames are OK.
+  if (header.frame_type == libgav1::FrameType::kFrameInter) {
+    std::set<uint8_t> used_indices;
+    for (uint8_t ref_frame_index : header.reference_frame_index) {
+      if (ref_frame_index >=
+          static_cast<uint8_t>(libgav1::kNumReferenceFrameTypes)) {
+        LOG(ERROR) << "Invalid reference frame index: "
+                   << static_cast<int>(ref_frame_index);
+        return false;
+      }
+      if (base::Contains(used_indices, ref_frame_index)) {
+        // |header.ref_frame_index| might have the same indices because an
+        // encoder fills the same index if the actually used ref frames is less
+        // than |kNumReferenceFrameTypes|.
+        continue;
+      }
+      used_indices.insert(ref_frame_index);
+      if (!decoder_state_.reference_frame[ref_frame_index]) {
+        LOG(ERROR) << "Frame is trying to reference buffer with invalid state.";
+        return false;
+      }
+      const libgav1::RefCountedBufferPtr& ref =
+          decoder_state_.reference_frame[ref_frame_index];
+      if (ref->temporal_id() > svc_metadata.temporal_idx) {
+        LOG(ERROR) << "Frame is trying to reference buffer from higher "
+                      "temporal layer.";
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 }  // namespace test
 }  // namespace media

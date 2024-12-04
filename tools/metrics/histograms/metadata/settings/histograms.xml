@@ -178,8 +178,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records the time period that users cleared from the Clear Browsing Data
-    dialog advanced tab. Users in the CbdTimeframeRequired experiment record
-    this only for the first deletion.
+    dialog advanced tab.
   </summary>
 </histogram>
 
@@ -190,8 +189,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records the time period that users cleared from the Clear Browsing Data
-    dialog basic tab. Users in the CbdTimeframeRequired experiment record this
-    only for the first deletion.
+    dialog basic tab.
   </summary>
 </histogram>
 
@@ -445,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.AdMeasurement.Enabled"
-    enum="BooleanEnabled" expires_after="2025-03-30">
+    enum="BooleanEnabled" expires_after="2025-06-01">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -489,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
-    expires_after="2025-03-30">
+    expires_after="2025-06-01">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -591,18 +589,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SafetyCheck.NotificationsListCount"
-    units="suggestions" expires_after="2025-03-01">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    The number of suggestions of notification permissions to revoke, recorded
-    when the notification permission list is initialized for the SafetyCheck
-    notifications module.
-  </summary>
-</histogram>
-
 <histogram name="Settings.SafetyCheck.NotificationsModuleEntryPointShown"
     enum="BooleanVisible" expires_after="2024-12-01">
   <owner>sideyilmaz@chromium.org</owner>
@@ -613,19 +599,6 @@ chromium-metrics-reviews@google.com.
     is shown to the user, i.e. whether it is enabled and at least one
     notification permission met the criteria for review. Recorded whenever the
     user visits the Safety Check page in Chrome Settings.
-  </summary>
-</histogram>
-
-<histogram name="Settings.SafetyCheck.NotificationsModuleInteractions"
-    enum="SafetyCheckNotificationsModuleInteractions"
-    expires_after="2025-12-31">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    The user actions taken on the notifications module in safety check in Chrome
-    settings. Recorded every time the user interacts with the respective UI
-    element.
   </summary>
 </histogram>
 
@@ -658,17 +631,6 @@ chromium-metrics-reviews@google.com.
     permissions module of safety check in Chrome settings. Emitted when the user
     clicks regrants permissions through the permissions review interface in
     Chrome settings.
-  </summary>
-</histogram>
-
-<histogram name="Settings.SafetyCheck.UnusedSitePermissionsListCount"
-    units="suggestions" expires_after="2024-11-03">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    The number of suggestions of unused site permissions to revoke, recorded
-    when the list of sites with revoked permissions is initialized when the user
-    opens the SafetyCheck unused site permissions module.
   </summary>
 </histogram>
 
@@ -795,6 +757,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.AutorevokeUnusedSitePermissions.StateOnStartup"
+    enum="BooleanEnabled" expires_after="2025-04-06">
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures whether auto-revocation is enabled for unused site permissions.
+    Recorded when the SafetyHubFetchService is created on browser start up.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.Dashboard.Interactions"
     enum="SafetyHubDashboardInteractions" expires_after="2025-04-06">
   <owner>rubindl@google.com</owner>
@@ -879,6 +853,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Captures Safety Hub page visits and three dot menu clicks for any Safety Hub
     module.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.MagicStack.StateOnStartup"
+    enum="BooleanEnabled" expires_after="2025-04-06">
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures whether the Safety Hub Magic Stack module is enabled. Recorded when
+    the SafetyHubMagicStackBuilder is created on browser start up. Android-only.
   </summary>
 </histogram>
 
@@ -1086,7 +1070,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
-    expires_after="2025-03-30">
+    expires_after="2025-06-01">
   <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>

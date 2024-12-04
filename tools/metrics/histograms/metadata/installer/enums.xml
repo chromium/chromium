@@ -130,20 +130,6 @@ chromium-metrics-reviews@google.com.
   <int value="255" label="Unspecified/unknown error in user-mode"/>
 </enum>
 
-<enum name="ChromeOSRevenPartitionMigration">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kNoMigrationNeeded"/>
-  <int value="2" label="kGptReadKernError"/>
-  <int value="3" label="kGptReadRootError"/>
-  <int value="4" label="kGptWriteKernError"/>
-  <int value="5" label="kGptWriteRootError"/>
-  <int value="6" label="kDiskOpenError"/>
-  <int value="7" label="kDiskReadError"/>
-  <int value="8" label="kDiskWriteError"/>
-  <int value="9" label="kRootPartitionUnexpectedSize"/>
-  <int value="10" label="kMigrationNotAllowed"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

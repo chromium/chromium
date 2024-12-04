@@ -1211,7 +1211,7 @@ void XMLDocumentParser::Characters(const xmlChar* chars, int length) {
   }
 
   CreateLeafTextNodeIfNeeded();
-  buffered_text_.Append(chars, length);
+  buffered_text_.AppendSpan(base::span(chars, static_cast<size_t>(length)));
 }
 
 void XMLDocumentParser::GetError(XMLErrors::ErrorType type,

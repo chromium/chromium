@@ -17,6 +17,18 @@ BASE_DECLARE_FEATURE(kSyncMigrateBookmarksWithoutClientTagHash);
 
 BASE_DECLARE_FEATURE(kSyncMinimizeDeletionsDuringBookmarkBatchUpload);
 
+// If enabled, support displaying and uploading individual items (bookmarks or
+// folders) in the Batch Upload UI.
+//
+// Batch Upload of all items is supported regardless of this feature flag.
+//
+// On Windows/Mac/Linux: this flag only affects behavior if the
+// `syncer::kSyncEnableBookmarksInTransportMode` feature is also enabled.
+//
+// On Android: this flag does not affect user-visiable behavior, but does enable
+// new code paths.
+BASE_DECLARE_FEATURE(kSyncBookmarksBatchUploadSelectedItems);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_BOOKMARKS_SWITCHES_H_

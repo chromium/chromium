@@ -18,15 +18,18 @@ void TriggersDataSource::Register() {
   perfetto::DataSource<TriggersDataSource>::Register(desc);
 }
 
-void TriggersDataSource::EmitTrigger(const std::string& trigger_name) {
-  Trace([trigger_name](TraceContext ctx) {
+void TriggersDataSource::EmitTrigger(
+    const BackgroundTracingRule* triggered_rule) {
+  Trace([triggered_rule](TraceContext ctx) {
     auto packet = ctx.NewTracePacket();
     packet->set_timestamp(
         TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
     packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
     auto* trigger = packet->set_chrome_trigger();
-    trigger->set_trigger_name(trigger_name);
-    trigger->set_trigger_name_hash(base::HashFieldTrialName(trigger_name));
+    trigger->set_trigger_name(triggered_rule->rule_name());
+    trigger->set_trigger_name_hash(
+        base::HashFieldTrialName(triggered_rule->rule_name()));
+    trigger->set_flow_id(triggered_rule->GetFlowId());
   });
 }
 

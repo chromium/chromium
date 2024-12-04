@@ -7,20 +7,16 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/google/core/common/google_util.h"
 #include "url/url_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#endif
 
 namespace arc {
 
@@ -87,11 +83,8 @@ void LinkHandlerModel::OpenLinkWithHandler(uint32_t handler_id) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/40808069): Take metrics in Lacros as well.
   ArcMetricsService::RecordArcUserInteraction(
       context_, arc::UserInteractionType::APP_STARTED_FROM_LINK_CONTEXT_MENU);
-#endif
 }
 
 LinkHandlerModel::LinkHandlerModel(

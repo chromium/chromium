@@ -297,6 +297,9 @@ class EventGenerator {
   // Set force of touch PointerDetails.
   void SetTouchForce(float force) { touch_pointer_details_.force = force; }
 
+  // Sets Event properties. The previous value is replaced if present.
+  void SetProperties(std::optional<Event::Properties> properties);
+
   // Generates a touch press event. If |touch_location_in_screen| is not null,
   // the touch press event will happen at |touch_location_in_screen|. Otherwise,
   // it will happen at the current event location |current_screen_location_|.
@@ -549,6 +552,8 @@ class EventGenerator {
   Target target_ = Target::WIDGET;
 
   std::unique_ptr<TestTickClock> tick_clock_;
+
+  std::optional<Event::Properties> properties_;
 };
 
 // This generates key events for moidfiers as well as the key with

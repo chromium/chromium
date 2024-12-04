@@ -107,12 +107,11 @@ async function openFileDialogClickOkButton(
 
   const entrySet = await setUpFileEntrySet(volume);
   const result = await remoteCall.openAndWaitForClosingDialog(
-                     {type: 'openFile'}, volume, entrySet, closer,
-                     useBrowserOpen) as Entry;
+      {type: 'openFile'}, volume, entrySet, closer, useBrowserOpen);
   // If the file is opened via the filesystem API, check the name matches.
   // Otherwise, the caller is responsible for verifying the returned URL.
   if (!useBrowserOpen) {
-    chrome.test.assertEq(name, result.name);
+    chrome.test.assertEq(name, (result as Entry).name);
   }
 
   return result;

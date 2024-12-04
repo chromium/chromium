@@ -811,7 +811,7 @@ TEST(CTAPResponseTest, TestSerializeGetInfoResponse) {
 
   EXPECT_THAT(AuthenticatorGetInfoResponse::EncodeToCBOR(response),
               ::testing::ElementsAreArray(
-                  base::make_span(test_data::kTestGetInfoResponsePlatformDevice)
+                  base::span(test_data::kTestGetInfoResponsePlatformDevice)
                       .subspan<1>()));
 }
 
@@ -840,7 +840,7 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
   };
 
   const auto application_parameter =
-      base::make_span(test_data::kApplicationParameter)
+      base::span(test_data::kApplicationParameter)
           .subspan<0, kRpIdHashLength>();
   // Starting signature counter value set by example 4 of the CTAP spec. The
   // signature counter can start at any value but it should never decrease.
@@ -877,10 +877,10 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
           std::move(authenticator_data),
           std::make_unique<OpaqueAttestationStatement>(
               "packed", cbor::Value(std::move(attestation_map)))));
-  EXPECT_THAT(AsCTAPStyleCBORBytes(response),
-              ::testing::ElementsAreArray(
-                  base::make_span(test_data::kTestMakeCredentialResponse)
-                      .subspan<1>()));
+  EXPECT_THAT(
+      AsCTAPStyleCBORBytes(response),
+      ::testing::ElementsAreArray(
+          base::span(test_data::kTestMakeCredentialResponse).subspan<1>()));
 }
 
 TEST(CTAPResponseTest, AttestationObjectResponseFields) {

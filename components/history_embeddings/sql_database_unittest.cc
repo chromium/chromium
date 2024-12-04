@@ -106,10 +106,11 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
 
   // Write passages
   UrlData url_passages(1, 1, base::Time::Now());
-  proto::PassagesValue& original_proto = url_passages.passages;
-  original_proto.add_passages("fake passage 1");
-  original_proto.add_passages("fake passage 2");
-  EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
+  url_passages.passages.add_passages("fake passage 1");
+  url_passages.passages.add_passages("fake passage 2");
+  url_passages.embeddings.push_back(FakeEmbedding());
+  url_passages.embeddings.push_back(FakeEmbedding());
+  EXPECT_TRUE(sql_database->AddUrlData(url_passages));
 
   // Reset and reload.
   sql_database.reset();
@@ -251,13 +252,16 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
-  UrlData url_passages(1, 1, base::Time::Now());
-  url_passages.passages.add_passages("fake passage 1");
-  url_passages.passages.add_passages("fake passage 2");
-  EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
-  url_passages.visit_id = 2;
-  url_passages.passages.add_passages("fake passage 3");
-  EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
+  UrlData url_data(1, 1, base::Time::Now());
+  url_data.passages.add_passages("fake passage 1");
+  url_data.passages.add_passages("fake passage 2");
+  url_data.embeddings.push_back(FakeEmbedding());
+  url_data.embeddings.push_back(FakeEmbedding());
+  EXPECT_TRUE(sql_database->AddUrlData(url_data));
+  url_data.visit_id = 2;
+  url_data.passages.add_passages("fake passage 3");
+  url_data.embeddings.push_back(FakeEmbedding());
+  EXPECT_TRUE(sql_database->AddUrlData(url_data));
 
   // Verify that the new one has replaced the old one.
   auto read_proto = sql_database->GetPassages(1);
@@ -401,38 +405,41 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
+  {
+    UrlData url_data(1, 1, base::Time::Now());
+    url_data.passages.add_passages("fake passage 1");
+    url_data.passages.add_passages("fake passage 2");
+    url_data.passages.add_passages("fake passage 3");
+    url_data.embeddings.push_back(FakeEmbedding());
+    url_data.embeddings.push_back(FakeEmbedding());
+    url_data.embeddings.push_back(FakeEmbedding());
+    EXPECT_TRUE(sql_database->AddUrlData(url_data));
+  }
 
-  // Store passages.
-  UrlData url_passages(1, 1, base::Time::Now());
-  url_passages.passages.add_passages("fake passage 1");
-  url_passages.passages.add_passages("fake passage 2");
-  url_passages.passages.add_passages("fake passage 3");
-  EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
+  {
+    UrlData data = sql_database->GetUrlData(1).value();
+    CHECK_EQ(data.url_id, 1);
+    CHECK_EQ(data.visit_id, 1);
+    CHECK_EQ(data.passages.passages_size(), 3);
+    CHECK_EQ(data.embeddings.size(), 3u);
+    EXPECT_EQ(data.passages.passages(0), "fake passage 1");
+    EXPECT_EQ(data.passages.passages(1), "fake passage 2");
+    EXPECT_EQ(data.passages.passages(2), "fake passage 3");
+  }
 
-  UrlData data = sql_database->GetUrlData(1).value();
-
-  // There are passages, but no embeddings stored yet.
-  CHECK_EQ(data.url_id, 1);
-  CHECK_EQ(data.visit_id, 1);
-  CHECK_EQ(data.passages.passages_size(), 3);
-  CHECK_EQ(data.embeddings.size(), 0u);
-
-  // Store embeddings.
-  UrlData url_embeddings(url_passages);
-  url_embeddings.embeddings.push_back(FakeEmbedding());
-  url_embeddings.embeddings.push_back(FakeEmbedding());
-  url_embeddings.embeddings.push_back(FakeEmbedding());
-  sql_database->InsertOrReplaceEmbeddings(url_embeddings);
-
-  // There are passages and embeddings now.
-  data = sql_database->GetUrlData(1).value();
-  CHECK_EQ(data.url_id, 1);
-  CHECK_EQ(data.visit_id, 1);
-  CHECK_EQ(data.passages.passages_size(), 3);
-  EXPECT_EQ(data.passages.passages(0), "fake passage 1");
-  EXPECT_EQ(data.passages.passages(1), "fake passage 2");
-  EXPECT_EQ(data.passages.passages(2), "fake passage 3");
-  CHECK_EQ(data.embeddings.size(), 3u);
+  // It's also possible to have passages but no embeddings, for example
+  // during a database rebuild.
+  sql_database->DeleteAllData(false, true);
+  {
+    UrlData data = sql_database->GetUrlData(1).value();
+    CHECK_EQ(data.url_id, 1);
+    CHECK_EQ(data.visit_id, 1);
+    CHECK_EQ(data.passages.passages_size(), 3);
+    CHECK_EQ(data.embeddings.size(), 0u);
+    EXPECT_EQ(data.passages.passages(0), "fake passage 1");
+    EXPECT_EQ(data.passages.passages(1), "fake passage 2");
+    EXPECT_EQ(data.passages.passages(2), "fake passage 3");
+  }
 
   // Absent `url_id` returns std::nullopt.
   EXPECT_FALSE(sql_database->GetUrlData(2).has_value());
@@ -457,7 +464,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IterationSkipsAndReportsMismatches) {
   // Add one too many embeddings to trigger a mismatch.
   url_datas[1].embeddings.push_back(FakeEmbedding());
   EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
-  EXPECT_TRUE(sql_database->AddUrlData(url_datas[1]));
+  EXPECT_TRUE(sql_database->AddAnyUrlDataForTesting(url_datas[1]));
 
   base::HistogramTester histogram_tester;
   int observed = 0;

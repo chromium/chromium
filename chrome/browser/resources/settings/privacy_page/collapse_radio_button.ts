@@ -10,8 +10,8 @@ import '../settings_shared.css.js';
 
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {CrRadioButtonMixin} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
+import {CrRippleMixinPolymer} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin_polymer.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './collapse_radio_button.html.js';
@@ -22,7 +22,7 @@ export interface SettingsCollapseRadioButtonElement {
   };
 }
 const SettingsCollapseRadioButtonElementBase =
-    PaperRippleMixin(CrRadioButtonMixin(PolymerElement));
+    CrRippleMixinPolymer(CrRadioButtonMixin(PolymerElement));
 
 export class SettingsCollapseRadioButtonElement extends
     SettingsCollapseRadioButtonElementBase {
@@ -115,12 +115,10 @@ export class SettingsCollapseRadioButtonElement extends
     return this.getRipple();
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
-    const ripple = super._createRipple();
-    ripple.id = 'ink';
+  // Overridden from CrRippleMixinPolymer
+  override createRipple() {
+    this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
+    const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle');
     return ripple;

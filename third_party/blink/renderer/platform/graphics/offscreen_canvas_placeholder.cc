@@ -40,14 +40,6 @@ void SetSuspendAnimation(
   }
 }
 
-void UpdateDispatcherFilterQuality(
-    base::WeakPtr<blink::CanvasResourceDispatcher> dispatcher,
-    cc::PaintFlags::FilterQuality filter) {
-  if (dispatcher) {
-    dispatcher->SetFilterQuality(filter);
-  }
-}
-
 }  // unnamed namespace
 
 namespace blink {
@@ -121,35 +113,6 @@ void OffscreenCanvasPlaceholder::SetOffscreenCanvasDispatcher(
   DCHECK(IsOffscreenCanvasRegistered());
   frame_dispatcher_ = std::move(dispatcher);
   frame_dispatcher_task_runner_ = std::move(task_runner);
-  // The UpdateOffscreenCanvasFilterQuality could be called to change the filter
-  // quality before this function. We need to first apply the filter changes to
-  // the corresponding offscreen canvas.
-  if (filter_quality_) {
-    cc::PaintFlags::FilterQuality quality = filter_quality_.value();
-    filter_quality_ = std::nullopt;
-    UpdateOffscreenCanvasFilterQuality(quality);
-  }
-}
-
-void OffscreenCanvasPlaceholder::UpdateOffscreenCanvasFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  DCHECK(IsOffscreenCanvasRegistered());
-  if (!frame_dispatcher_task_runner_) {
-    filter_quality_ = filter_quality;
-    return;
-  }
-
-  if (filter_quality_ == filter_quality)
-    return;
-
-  filter_quality_ = filter_quality;
-  if (frame_dispatcher_task_runner_->BelongsToCurrentThread()) {
-    UpdateDispatcherFilterQuality(frame_dispatcher_, filter_quality);
-  } else {
-    PostCrossThreadTask(*frame_dispatcher_task_runner_, FROM_HERE,
-                        CrossThreadBindOnce(UpdateDispatcherFilterQuality,
-                                            frame_dispatcher_, filter_quality));
-  }
 }
 
 void OffscreenCanvasPlaceholder::SetSuspendOffscreenCanvasAnimation(

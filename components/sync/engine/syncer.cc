@@ -53,13 +53,13 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     case CLIENT_DATA_OBSOLETE:
       return SyncerErrorValueForUma::kServerReturnClientDataObsolete;
     case ENCRYPTION_OBSOLETE:
-      return SyncerErrorValueForUma::kServerReturnClientDataObsolete;
+      return SyncerErrorValueForUma::kServerReturnEncryptionObsolete;
     case UNKNOWN_ERROR:
       return SyncerErrorValueForUma::kServerReturnUnknownError;
     case CONFLICT:
       return SyncerErrorValueForUma::kServerReturnConflict;
     case INVALID_MESSAGE:
-      return SyncerErrorValueForUma::kServerReturnUnknownError;
+      return SyncerErrorValueForUma::kServerReturnInvalidMessage;
   }
   NOTREACHED();
 }
@@ -72,13 +72,13 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
       return SyncerErrorValueForUma::kNetworkConnectionUnavailable;
     case SyncerError::Type::kHttpError:
       if (error.GetHttpErrorOrDie() == net::HTTP_UNAUTHORIZED) {
-        return SyncerErrorValueForUma::kSyncAuthError;
+        return SyncerErrorValueForUma::kHttpAuthError;
       }
-      return SyncerErrorValueForUma::kSyncServerError;
+      return SyncerErrorValueForUma::kHttpError;
     case SyncerError::Type::kProtocolError:
       return GetSyncerErrorValueForUma(error.GetProtocolErrorOrDie());
     case SyncerError::Type::kProtocolViolationError:
-      return SyncerErrorValueForUma::kServerResponseValidationFailed;
+      return SyncerErrorValueForUma::kProtocolViolationError;
   }
   NOTREACHED();
 }
@@ -240,7 +240,6 @@ SyncerError Syncer::BuildAndPostCommits(const DataTypeSet& request_types,
   VLOG(1) << "Committing from types "
           << DataTypeSetToDebugString(request_types);
 
-  base::TimeTicks commit_cycle_start_time = base::TimeTicks::Now();
   CommitProcessor commit_processor(
       request_types,
       cycle->context()->data_type_registry()->commit_contributor_map());
@@ -259,11 +258,12 @@ SyncerError Syncer::BuildAndPostCommits(const DataTypeSet& request_types,
       break;
     }
 
+    base::TimeTicks commit_start_time = base::TimeTicks::Now();
     SyncerError error = commit->PostAndProcessResponse(
         nudge_tracker, cycle, cycle->mutable_status_controller(),
         cycle->context()->extensions_activity());
     LogCommitResult(error, commit->GetContributingDataTypes(),
-                    commit_cycle_start_time);
+                    commit_start_time);
     if (error.type() != SyncerError::Type::kSuccess) {
       return error;
     }

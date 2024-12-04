@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -67,6 +68,9 @@ class SavedTabGroupTab {
     return redirect_url_chain_;
   }
   bool is_pending_sanitization() const { return is_pending_sanitization_; }
+  const SharedAttribution& shared_attribution() const {
+    return shared_attribution_;
+  }
 
   // Mutators.
   SavedTabGroupTab& SetURL(GURL url) {
@@ -118,6 +122,16 @@ class SavedTabGroupTab {
     return *this;
   }
 
+  // Sets the updater of the tab, and also the creator if it's the first update.
+  // This method should be preferred over SetCreatedByAttribution() for local
+  // changes.
+  SavedTabGroupTab& SetUpdatedByAttribution(GaiaId updated_by);
+
+  // Sets the creator of the tab. Must be called only when there is no creator
+  // already set. Don't invoke this method, as it should only be invoked from
+  // the sync bridge for incoming sync updates (use SetUpdatedByAttribution()).
+  SavedTabGroupTab& SetCreatedByAttribution(GaiaId created_by);
+
   // Merges this tabs data with a specific from sync and returns the newly
   // merged specific. Side effect: Updates the values in the tab.
   void MergeRemoteTab(const SavedTabGroupTab& remote_tab);
@@ -152,12 +166,16 @@ class SavedTabGroupTab {
   // A guid which refers to the device which created the tab group. If metadata
   // is not being tracked when the saved tab group is being created, this value
   // will be null. The value could also be null if the group was created before
-  // M127. Used for metrics purposes only.
+  // M127. Used for metrics purposes only. Applicable for saved tab groups only.
   std::optional<std::string> creator_cache_guid_;
 
   // The cache guid of the device that last modified this tab group. Can be null
-  // if the group was just created. Used for metrics purposes only.
+  // if the group was just created. Used for metrics purposes only. Applicable
+  // for saved tab groups only.
   std::optional<std::string> last_updater_cache_guid_;
+
+  // Atribution data for the shared tab. Applicable to shared tab groups only.
+  SharedAttribution shared_attribution_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;

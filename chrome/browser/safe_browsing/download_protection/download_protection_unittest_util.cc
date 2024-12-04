@@ -18,7 +18,7 @@ scoped_refptr<net::X509Certificate> ReadTestCertificate(
   }
   net::CertificateList certs =
       net::X509Certificate::CreateCertificateListFromBytes(
-          base::as_bytes(base::make_span(cert_data)),
+          base::as_byte_span(cert_data),
           net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
   return certs.empty() ? nullptr : certs[0];
 }

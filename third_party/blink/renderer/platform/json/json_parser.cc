@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
@@ -104,7 +105,7 @@ Error ReadInt(Cursor<CharType>* cursor,
   const CharType* start_ptr = cursor->pos;
   bool have_leading_zero = '0' == *(cursor->pos);
   int length = 0;
-  while (cursor->pos < end && '0' <= *(cursor->pos) && *(cursor->pos) <= '9') {
+  while (cursor->pos < end && IsASCIIDigit(*(cursor->pos))) {
     ++(cursor->pos);
     ++length;
   }
@@ -170,9 +171,7 @@ Error ReadHexDigits(Cursor<CharType>* cursor, const CharType* end, int digits) {
   if (end - cursor->pos < digits)
     return Error::kInvalidEscape;
   for (int i = 0; i < digits; ++i) {
-    CharType c = *(cursor->pos)++;
-    if (!(('0' <= c && c <= '9') || ('a' <= c && c <= 'f') ||
-          ('A' <= c && c <= 'F'))) {
+    if (!IsASCIIHexDigit(*(cursor->pos)++)) {
       cursor->pos = token_start;
       return Error::kInvalidEscape;
     }
@@ -368,24 +367,13 @@ Error ParseToken(Cursor<CharType>* cursor,
 }
 
 template <typename CharType>
-inline int HexToInt(CharType c) {
-  if ('0' <= c && c <= '9')
-    return c - '0';
-  if ('A' <= c && c <= 'F')
-    return c - 'A' + 10;
-  if ('a' <= c && c <= 'f')
-    return c - 'a' + 10;
-  NOTREACHED();
-}
-
-template <typename CharType>
 Error DecodeString(Cursor<CharType>* cursor,
                    const CharType* end,
                    String* output) {
   if (cursor->pos + 1 > end - 1)
     return Error::kSyntaxError;
   if (cursor->pos + 1 == end - 1) {
-    *output = "";
+    *output = g_empty_string;
     return Error::kNoError;
   }
 
@@ -437,9 +425,10 @@ Error DecodeString(Cursor<CharType>* cursor,
         c = '\v';
         break;
       case 'u':
-        c = (HexToInt(*(cursor->pos)) << 12) +
-            (HexToInt(*(cursor->pos + 1)) << 8) +
-            (HexToInt(*(cursor->pos + 2)) << 4) + HexToInt(*(cursor->pos + 3));
+        c = (ToASCIIHexValue(*(cursor->pos)) << 12) +
+            (ToASCIIHexValue(*(cursor->pos + 1)) << 8) +
+            (ToASCIIHexValue(*(cursor->pos + 2)) << 4) +
+            ToASCIIHexValue(*(cursor->pos + 3));
         cursor->pos += 4;
         break;
       default:
@@ -450,7 +439,7 @@ Error DecodeString(Cursor<CharType>* cursor,
   *output = buffer.ToString();
 
   // Validate constructed utf16 string.
-  if (output->Utf8(kStrictUTF8Conversion).empty()) {
+  if (output->Utf8(Utf8ConversionMode::kStrict).empty()) {
     cursor->pos = string_start;
     return Error::kUnsupportedEncoding;
   }

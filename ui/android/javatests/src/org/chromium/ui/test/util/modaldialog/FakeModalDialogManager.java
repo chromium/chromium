@@ -4,8 +4,6 @@
 
 package org.chromium.ui.test.util.modaldialog;
 
-import android.view.View;
-
 import androidx.activity.ComponentDialog;
 
 import org.jni_zero.CalledByNativeForTesting;
@@ -33,8 +31,7 @@ public class FakeModalDialogManager extends ModalDialogManager {
                             @Override
                             protected void addDialogView(
                                     PropertyModel model,
-                                    Callback<ComponentDialog> onDialogCreatedCallback,
-                                    Callback<View> onDialogShownCallback) {}
+                                    Callback<ComponentDialog> onDialogCreatedCallback) {}
 
                             @Override
                             protected void removeDialogView(PropertyModel model) {}

@@ -32,8 +32,8 @@ TEST(SignedWebBundleSignatureStackEntryTest, Getters) {
   SignedWebBundleSignatureStackEntry signature_stack_entry(
       /*attributes_cbor=*/{3, 4, 5},
       SignedWebBundleSignatureInfoEd25519(
-          Ed25519PublicKey::Create(base::make_span(kEd25519PublicKey)),
-          Ed25519Signature::Create(base::make_span(kEd25519Signature))));
+          Ed25519PublicKey::Create(base::span(kEd25519PublicKey)),
+          Ed25519Signature::Create(base::span(kEd25519Signature))));
 
   EXPECT_THAT(signature_stack_entry.attributes_cbor(), ElementsAre(3, 4, 5));
 

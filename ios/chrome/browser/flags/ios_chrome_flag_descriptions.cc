@@ -325,6 +325,11 @@ extern const char kMagicStackDescription[] =
     "When enabled, a Magic Stack will be shown in the Home surface displaying "
     "a variety of modules.";
 
+const char kManagedProfileCreationUpdatedScreenName[] =
+    "Enable managed profile creation updated screen";
+const char kManagedProfileCreationUpdatedScreenDescription[] =
+    "When enabled, managed profile cration will use the new sheets";
+
 const char kCredentialProviderExtensionPromoName[] =
     "Enable the Credential Provider Extension promo.";
 const char kCredentialProviderExtensionPromoDescription[] =
@@ -343,12 +348,6 @@ const char kDefaultBrowserBannerPromoName[] = "Default Browser banner promo";
 const char kDefaultBrowserBannerPromoDescription[] =
     "When enabled, the default browser banner promo will show when conditions "
     "are met.";
-
-const char kDefaultBrowserIntentsShowSettingsName[] =
-    "Default Browser Intents show settings";
-const char kDefaultBrowserIntentsShowSettingsDescription[] =
-    "When enabled, external apps can trigger the settings screen showing "
-    "default browser tutorial.";
 
 const char kDefaultBrowserTriggerCriteriaExperimentName[] =
     "Show default browser promo trigger criteria experiment";
@@ -576,18 +575,10 @@ const char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
 const char kIOSChooseFromDriveDescription[] =
     "Enables the Choose from Drive feature on iOS.";
 
-const char kIOSSaveToDriveName[] = "IOS Save to Drive";
-const char kIOSSaveToDriveDescription[] =
-    "Enables the Save to Drive feature on iOS.";
-
 const char kIOSSaveToPhotosImprovementsName[] =
     "IOS Save to Photos Improvements";
 const char kIOSSaveToPhotosImprovementsDescription[] =
     "Enables the Save to Photos Improvements on iOS.";
-
-const char kIOSSaveToPhotosName[] = "IOS Save to Photos";
-const char kIOSSaveToPhotosDescription[] =
-    "Enables the Save to Photos feature on iOS.";
 
 const char kIOSPasswordBottomSheetAutofocusName[] =
     "IOS Password Manager Bottom Sheet Autofocus";
@@ -860,12 +851,6 @@ const char kOmniboxOnDeviceTailSuggestionsName[] =
 const char kOmniboxOnDeviceTailSuggestionsDescription[] =
     "Google tail non personalized search suggestions provided by a compact on "
     "device model.";
-
-const char kOmniboxRichAutocompletionName[] =
-    "Omnibox rich inline autocompletion";
-const char kOmniboxRichAutocompletionDescription[] =
-    "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
-    "to any type of input that users repeatedly use to get to specific URLs.";
 
 const char kOmniboxSuggestionAnswerMigrationName[] =
     "Omnibox suggestion answer migration";
@@ -1157,6 +1142,11 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
 
 const char kEnableLensOverlayName[] = "Enable Lens Overlay";
 const char kEnableLensOverlayDescription[] = "Enables lens overlay UI";
+
+const char kEnableLensViewFinderUnifiedExperienceName[] =
+    "Enable LVF Unified Experience";
+const char kEnableLensViewFinderUnifiedExperienceDescription[] =
+    "Enables Lens View Finder unified experience";
 
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =

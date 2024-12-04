@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/json/json_values.h"
 
 #include <algorithm>
@@ -77,9 +72,8 @@ inline bool EscapeChar(UChar c, StringBuilder* dst) {
   return true;
 }
 
-const LChar kHexDigits[17] = "0123456789ABCDEF";
-
 void AppendUnsignedAsHex(UChar number, StringBuilder* dst) {
+  constexpr auto kHexDigits = base::span_from_cstring("0123456789ABCDEF");
   dst->Append("\\u");
   for (size_t i = 0; i < 4; ++i) {
     dst->Append(kHexDigits[(number & 0xF000) >> 12]);

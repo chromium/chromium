@@ -2373,12 +2373,12 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
     const Timeout& timeout,
     base::Value::Dict& arg_dict,
     base::Value::List& nodes) {
-  if (w3c_compliant_ && arg_dict.contains(kElementKeyW3C)) {
+  if (arg_dict.contains(kElementKeyW3C)) {
     return ResolveElementReferenceInPlace(
         *client_, expected_frame_id, context_id, object_group_name,
         expected_loader_id, kElementKeyW3C, timeout, arg_dict, nodes);
   }
-  if (!w3c_compliant_ && arg_dict.contains(kElementKey)) {
+  if (arg_dict.contains(kElementKey)) {
     return ResolveElementReferenceInPlace(
         *client_, expected_frame_id, context_id, object_group_name,
         expected_loader_id, kElementKey, timeout, arg_dict, nodes);

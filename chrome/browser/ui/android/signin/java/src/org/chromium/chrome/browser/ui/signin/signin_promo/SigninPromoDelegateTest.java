@@ -37,6 +37,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
+import java.util.Set;
+
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninPromoDelegateTest {
     @Rule
@@ -126,6 +128,17 @@ public class SigninPromoDelegateTest {
     public void testBookmarkPromoHidden_typeManagedByPolicy() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         doReturn(true).when(mSyncService).isTypeManagedByPolicy(UserSelectableType.BOOKMARKS);
+        createDelegate(SigninAccessPoint.BOOKMARK_MANAGER);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testBookmarkPromoHidden_typesAlreadyEnabled() {
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        doReturn(Set.of(UserSelectableType.BOOKMARKS, UserSelectableType.READING_LIST))
+                .when(mSyncService)
+                .getSelectedTypes();
         createDelegate(SigninAccessPoint.BOOKMARK_MANAGER);
 
         assertFalse(mDelegate.canShowPromo());

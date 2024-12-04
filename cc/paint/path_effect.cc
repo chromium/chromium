@@ -56,7 +56,7 @@ class DashPathEffect final : public PathEffect {
     // PaintOpWriter::Write(std::vector), which lets us use
     // PaintOpReader::Read(std::vector) below.
     writer.WriteSize(intervals_.size());
-    writer.WriteData(intervals_.size() * sizeof(float), intervals_.data());
+    writer.WriteData(base::as_byte_span(intervals_));
     writer.Write(phase_);
   }
 

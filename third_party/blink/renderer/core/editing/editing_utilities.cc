@@ -76,8 +76,12 @@
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/html/html_table_caption_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
+#include "third_party/blink/renderer/core/html/html_table_col_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
+#include "third_party/blink/renderer/core/html/html_table_row_element.h"
+#include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/html/image_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -1144,6 +1148,13 @@ bool IsTableCell(const Node* node) {
   DCHECK(node);
   LayoutObject* r = node->GetLayoutObject();
   return r ? r->IsTableCell() : IsA<HTMLTableCellElement>(*node);
+}
+
+bool IsTablePartElement(const Node* n) {
+  return n &&
+         (IsA<HTMLTableCellElement>(*n) || IsA<HTMLTableCaptionElement>(*n) ||
+          IsA<HTMLTableColElement>(*n) || IsA<HTMLTableSectionElement>(*n) ||
+          IsA<HTMLTableRowElement>(*n));
 }
 
 HTMLElement* CreateDefaultParagraphElement(Document& document) {

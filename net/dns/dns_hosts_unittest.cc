@@ -97,7 +97,7 @@ TEST(DnsHostsTest, ParseHosts) {
 #endif
 }
 
-TEST(DnsHostsTest, ParseHostsCommaIsToken) {
+TEST(DnsHostsTest, ParseHosts_CommaIsToken) {
   const std::string kContents = "127.0.0.1 comma1,comma2";
 
   const ExpectedHostsEntry kEntries[] = {
@@ -111,7 +111,7 @@ TEST(DnsHostsTest, ParseHostsCommaIsToken) {
   ASSERT_EQ(0UL, actual_hosts.size());
 }
 
-TEST(DnsHostsTest, ParseHostsCommaIsWhitespace) {
+TEST(DnsHostsTest, ParseHosts_CommaIsWhitespace) {
   std::string kContents = "127.0.0.1 comma1,comma2";
 
   const ExpectedHostsEntry kEntries[] = {
@@ -127,7 +127,7 @@ TEST(DnsHostsTest, ParseHostsCommaIsWhitespace) {
 }
 
 // Test that the right comma mode is used on each platform.
-TEST(DnsHostsTest, ParseHostsCommaModeByPlatform) {
+TEST(DnsHostsTest, ParseHosts_CommaModeByPlatform) {
   std::string kContents = "127.0.0.1 comma1,comma2";
   DnsHosts actual_hosts;
   ParseHosts(kContents, &actual_hosts);
@@ -145,55 +145,55 @@ TEST(DnsHostsTest, ParseHostsCommaModeByPlatform) {
 #endif
 }
 
-TEST(DnsHostsTest, HostsParserEmpty) {
+TEST(DnsHostsTest, HostsParser_Empty) {
   DnsHosts hosts;
   ParseHosts("", &hosts);
   EXPECT_EQ(0u, hosts.size());
 }
 
-TEST(DnsHostsTest, HostsParserOnlyWhitespace) {
+TEST(DnsHostsTest, HostsParser_OnlyWhitespace) {
   DnsHosts hosts;
   ParseHosts(" ", &hosts);
   EXPECT_EQ(0u, hosts.size());
 }
 
-TEST(DnsHostsTest, HostsParserEndsWithNothing) {
+TEST(DnsHostsTest, HostsParser_EndsWithNothing) {
   DnsHosts hosts;
   ParseHosts("127.0.0.1 localhost", &hosts);
   EXPECT_EQ(1u, hosts.size());
 }
 
-TEST(DnsHostsTest, HostsParserEndsWithWhitespace) {
+TEST(DnsHostsTest, HostsParser_EndsWithWhitespace) {
   DnsHosts hosts;
   ParseHosts("127.0.0.1 localhost ", &hosts);
   EXPECT_EQ(1u, hosts.size());
 }
 
-TEST(DnsHostsTest, HostsParserEndsWithComment) {
+TEST(DnsHostsTest, HostsParser_EndsWithComment) {
   DnsHosts hosts;
   ParseHosts("127.0.0.1 localhost # comment", &hosts);
   EXPECT_EQ(1u, hosts.size());
 }
 
-TEST(DnsHostsTest, HostsParserEndsWithNewline) {
+TEST(DnsHostsTest, HostsParser_EndsWithNewline) {
   DnsHosts hosts;
   ParseHosts("127.0.0.1 localhost\n", &hosts);
   EXPECT_EQ(1u, hosts.size());
 }
 
-TEST(DnsHostsTest, HostsParserEndsWithTwoNewlines) {
+TEST(DnsHostsTest, HostsParser_EndsWithTwoNewlines) {
   DnsHosts hosts;
   ParseHosts("127.0.0.1 localhost\n\n", &hosts);
   EXPECT_EQ(1u, hosts.size());
 }
 
-TEST(DnsHostsTest, HostsParserEndsWithNewlineAndWhitespace) {
+TEST(DnsHostsTest, HostsParser_EndsWithNewlineAndWhitespace) {
   DnsHosts hosts;
   ParseHosts("127.0.0.1 localhost\n ", &hosts);
   EXPECT_EQ(1u, hosts.size());
 }
 
-TEST(DnsHostsTest, HostsParserEndsWithNewlineAndToken) {
+TEST(DnsHostsTest, HostsParser_EndsWithNewlineAndToken) {
   DnsHosts hosts;
   ParseHosts("127.0.0.1 localhost\ntoken", &hosts);
   EXPECT_EQ(1u, hosts.size());

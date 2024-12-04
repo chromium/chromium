@@ -130,13 +130,12 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
 }
 
 void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
-  const SkImageInfo resource_info =
-      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        GetRenderingContextSkColorInfo());
+  const SkColorInfo color_info = GetRenderingContextSkColorInfo();
   std::unique_ptr<CanvasResourceProvider> provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-        resource_info, gpu::SharedImageUsageSet(), this);
+        Size(), color_info.colorType(), color_info.alphaType(),
+        color_info.refColorSpace(), gpu::SharedImageUsageSet(), this);
   }
   ReplaceResourceProvider(std::move(provider));
   if (ResourceProvider() && ResourceProvider()->IsValid()) {
@@ -156,9 +155,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
           : nullptr;
 
   std::unique_ptr<CanvasResourceProvider> provider;
-  const SkImageInfo resource_info =
-      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        GetRenderingContextSkColorInfo());
+  const SkColorInfo resource_info = GetRenderingContextSkColorInfo();
   // Do not initialize the CRP using Skia. The CRP can have bottom left origin
   // in which case Skia Graphite won't be able to render into it, and WebGL is
   // responsible for clearing the CRP when it renders anyway and we have clear
@@ -181,7 +178,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       DCHECK(LowLatencyEnabled());
       provider = CanvasResourceProvider::CreatePassThroughProvider(
           Size(), resource_info.colorType(), resource_info.alphaType(),
-          resource_info.refColorSpace(), FilterQuality(),
+          resource_info.refColorSpace(),
           SharedGpuContext::ContextProviderWrapper(), this);
     }
     if (!provider) {
@@ -196,7 +193,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       }
       provider = CanvasResourceProvider::CreateSharedImageProvider(
-          resource_info, FilterQuality(), kShouldInitialize,
+          Size(), resource_info.colorType(), resource_info.alphaType(),
+          resource_info.refColorSpace(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           shared_image_usage_flags, this);
     }
@@ -211,7 +209,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        resource_info, FilterQuality(), kShouldInitialize,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, this);
   }
@@ -222,14 +221,13 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   if (!provider && dispatcher) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
-        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
+        resource_info.refColorSpace(), kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
-        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
-        this);
+        resource_info.refColorSpace(), kShouldInitialize, this);
   }
 
   ReplaceResourceProvider(std::move(provider));
@@ -250,9 +248,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
           : nullptr;
 
   std::unique_ptr<CanvasResourceProvider> provider;
-  const SkImageInfo resource_info =
-      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        GetRenderingContextSkColorInfo());
+  const SkColorInfo resource_info = GetRenderingContextSkColorInfo();
   const bool use_gpu =
       hint == RasterModeHint::kPreferGPU && ShouldAccelerate2dContext();
   constexpr auto kShouldInitialize =
@@ -262,7 +258,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     // SwapChain if possible.
     provider = CanvasResourceProvider::CreateSwapChainProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
-        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
+        resource_info.refColorSpace(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), this);
     // If SwapChain failed or it was not possible, we will try a SharedImage
     // with a set of flags trying to add Usage Display and Usage Scanout and
@@ -279,7 +275,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       }
       provider = CanvasResourceProvider::CreateSharedImageProvider(
-          resource_info, FilterQuality(), kShouldInitialize,
+          Size(), resource_info.colorType(), resource_info.alphaType(),
+          resource_info.refColorSpace(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           shared_image_usage_flags, this);
     }
@@ -294,7 +291,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        resource_info, FilterQuality(), kShouldInitialize,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, this);
   } else if (SharedGpuContext::MaySupportImageChromium() &&
@@ -302,7 +300,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     const gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        resource_info, FilterQuality(), kShouldInitialize,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
         shared_image_usage_flags, this);
   }
@@ -316,14 +315,13 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   if (!provider && dispatcher) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
-        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
+        resource_info.refColorSpace(), kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
         Size(), resource_info.colorType(), resource_info.alphaType(),
-        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
-        this);
+        resource_info.refColorSpace(), kShouldInitialize, this);
   }
 
   ReplaceResourceProvider(std::move(provider));
@@ -335,7 +333,6 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
       base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                     ResourceProvider()->GetType());
     }
-    ResourceProvider()->SetFilterQuality(FilterQuality());
     ResourceProvider()->SetResourceRecyclingEnabled(true);
   }
 }

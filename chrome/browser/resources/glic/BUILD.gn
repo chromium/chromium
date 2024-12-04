@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/optimize_webui.gni")
 
 assert(enable_glic)
 
@@ -17,39 +18,26 @@ build_webui("build") {
   non_web_component_files = [
     "browser_proxy.ts",
     "main.ts",
-    "glic_api_host.ts",
+    "glic_api_impl/glic_api_host.ts",
+    "glic_api/glic_api_client.ts",
+    "glic_api/post_message_transport.ts",
+    "glic_api/request_types.ts",
+    "glic_api/glic_api.ts",
   ]
 
   webui_context_type = "trusted"
   ts_deps = [
-    "glic_api_host:post_message_transport",
-    "glic_api_host:request_types",
-    "//chrome/browser/resources/glic:glic_api",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  extra_grdp_deps = [
-    "//chrome/browser/resources/glic/glic_api_host:glic_api_grdp",
-    "//chrome/browser/resources/glic/glic_api_host:glic_api_shared_grdp",
-  ]
-  extra_grdp_files = [
-    "$root_gen_dir/chrome/browser/resources/glic/glic_generated.grdp",
-    "$root_gen_dir/chrome/browser/resources/glic/glic_api_shared.grdp",
-  ]
+  extra_grdp_deps = [ ":glic_api_injection_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/glic_api_injection.grdp" ]
 
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/glic:mojo_bindings_ts__generator" ]
   mojo_files =
       [ "$root_gen_dir/chrome/browser/ui/webui/glic/glic.mojom-webui.ts" ]
-  ts_path_mappings = [
-    "//glic/glic_api_host/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/glic/glic_api_host/*",
-            target_gen_dir),
-    "//glic/glic_api/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/glic/*",
-                    target_gen_dir),
-  ]
 
   ts_definitions = [
     # These files are necessary for chrome.webviewTag:
@@ -60,10 +48,24 @@ build_webui("build") {
     "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
   ]
+
+  ts_composite = true
 }
 
-ts_library("glic_api") {
-  root_dir = "glic_api"
-  in_files = [ "glic_api.ts" ]
-  composite = true
+# Build the API provided to the Glic web client. It needs to be built into a
+# single js file and sent to the Glic web client at runtime.
+glic_api_injection_manifest = "$target_gen_dir/glic_api_injection_manifest.json"
+optimize_webui("glic_api_injection") {
+  host = "about:blank"
+  input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+  js_module_in_files = [ "glic_api/glic_api_client.js" ]
+  out_manifest = "$glic_api_injection_manifest"
+  deps = [ ":build_ts" ]
+}
+
+generate_grd("glic_api_injection_grdp") {
+  manifest_files = [ "$glic_api_injection_manifest" ]
+  deps = [ ":glic_api_injection" ]
+  grd_prefix = "glic"
+  out_grd = "$target_gen_dir/glic_api_injection.grdp"
 }

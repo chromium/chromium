@@ -23,13 +23,14 @@ import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.language.LanguageSplitInstaller;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -66,7 +67,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         mPageTitle.set(getString(R.string.language_settings));
-        mPrefChangeRegistrar = new PrefChangeRegistrar(getProfile());
+        mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
 
         // Create the correct version of language settings.
         if (shouldShowDetailedPreferences()) {

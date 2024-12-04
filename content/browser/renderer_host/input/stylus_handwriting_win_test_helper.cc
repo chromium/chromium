@@ -30,10 +30,15 @@ ITfHandwriting* StylusHandwritingWinTestHelper::GetTfHandwriting() {
   return static_cast<ITfHandwriting*>(mock_tf_impl());
 }
 
+ITfSource* StylusHandwritingWinTestHelper::GetTfSource() {
+  return static_cast<ITfSource*>(mock_tf_impl());
+}
+
 void StylusHandwritingWinTestHelper::SetUpDefaultMockInfrastructure() {
   SetUpMockTfImpl();
   DefaultMockQueryInterfaceMethod();
   DefaultMockSetHandwritingStateMethod();
+  DefaultMockAdviseSinkMethod();
   SetUpStylusHandwritingControllerWin();
 }
 
@@ -49,10 +54,17 @@ void StylusHandwritingWinTestHelper::SetUpStylusHandwritingControllerWin() {
 void StylusHandwritingWinTestHelper::DefaultMockQueryInterfaceMethod() {
   ON_CALL(*mock_tf_impl(), QueryInterface(Eq(__uuidof(ITfHandwriting)), _))
       .WillByDefault(SetComPointeeAndReturnResult<1>(GetTfHandwriting(), S_OK));
+  ON_CALL(*mock_tf_impl(), QueryInterface(Eq(__uuidof(ITfSource)), _))
+      .WillByDefault(SetComPointeeAndReturnResult<1>(GetTfSource(), S_OK));
 }
 
 void StylusHandwritingWinTestHelper::DefaultMockSetHandwritingStateMethod() {
   ON_CALL(*mock_tf_impl(), SetHandwritingState(_)).WillByDefault(Return(S_OK));
+}
+
+void StylusHandwritingWinTestHelper::DefaultMockAdviseSinkMethod() {
+  ON_CALL(*mock_tf_impl(), AdviseSink(_, _, _))
+      .WillByDefault(SetValueParamAndReturnResult<2>(/*value=*/0, S_OK));
 }
 
 }  // namespace content

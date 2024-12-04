@@ -92,11 +92,11 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
 TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
   net::CookieAccessResult original = net::CookieAccessResult(
       net::CookieEffectiveSameSite::LAX_MODE,
-      net::CookieInclusionStatus(
-          net::CookieInclusionStatus::
-              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
-          net::CookieInclusionStatus::
-              WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT),
+      net::CookieInclusionStatus::MakeFromReasonsForTesting(
+          {net::CookieInclusionStatus::
+               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX},
+          {net::CookieInclusionStatus::
+               WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}),
       net::CookieAccessSemantics::LEGACY,
       true /* is_allowed_to_access_secure_cookies */);
   net::CookieAccessResult copied;

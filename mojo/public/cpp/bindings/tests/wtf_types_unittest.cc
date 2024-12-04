@@ -111,7 +111,7 @@ void ExpectStringMap(
 
 }  // namespace
 
-TEST_F(WTFTypesTest, SerializationWTFVectorToWTFVector) {
+TEST_F(WTFTypesTest, Serialization_WTFVectorToWTFVector) {
   using MojomType = ArrayDataView<StringDataView>;
 
   WTF::Vector<WTF::String> strs = ConstructStringArray();
@@ -132,7 +132,7 @@ TEST_F(WTFTypesTest, SerializationWTFVectorToWTFVector) {
   EXPECT_EQ(strs, strs2);
 }
 
-TEST_F(WTFTypesTest, SerializationWTFVectorInlineCapacity) {
+TEST_F(WTFTypesTest, Serialization_WTFVectorInlineCapacity) {
   using MojomType = ArrayDataView<StringDataView>;
 
   WTF::Vector<WTF::String, 1> strs(4);
@@ -158,7 +158,7 @@ TEST_F(WTFTypesTest, SerializationWTFVectorInlineCapacity) {
   EXPECT_EQ(strs, strs2);
 }
 
-TEST_F(WTFTypesTest, SerializationWTFVectorToStlVector) {
+TEST_F(WTFTypesTest, Serialization_WTFVectorToStlVector) {
   using MojomType = ArrayDataView<StringDataView>;
 
   WTF::Vector<WTF::String> strs = ConstructStringArray();
@@ -183,7 +183,7 @@ TEST_F(WTFTypesTest, SerializationWTFVectorToStlVector) {
   EXPECT_EQ(kUTF8HelloWorld, *strs2[3]);
 }
 
-TEST_F(WTFTypesTest, SerializationPublicAPI) {
+TEST_F(WTFTypesTest, Serialization_PublicAPI) {
   blink::TestWTFStructPtr input(blink::TestWTFStruct::New(kHelloWorld, 42));
 
   blink::TestWTFStructPtr cloned_input = input.Clone();
@@ -270,7 +270,7 @@ TEST_F(WTFTypesTest, SendStringMap) {
   }
 }
 
-TEST_F(WTFTypesTest, NestedStructCloneAndEquals) {
+TEST_F(WTFTypesTest, NestedStruct_CloneAndEquals) {
   auto a = blink::TestWTFStructWrapper::New();
   a->nested_struct = blink::TestWTFStruct::New("foo", 1);
   a->array_struct.push_back(blink::TestWTFStruct::New("bar", 2));

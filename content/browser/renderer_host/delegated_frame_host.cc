@@ -531,6 +531,10 @@ void DelegatedFrameHost::OnCompositingShuttingDown(ui::Compositor* compositor) {
   CHECK(!compositor_);
 }
 
+void DelegatedFrameHost::OnFirstSurfaceActivation(
+    ui::Compositor* compositor,
+    const viz::SurfaceInfo& surface_info) {}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DelegatedFrameHost, private:
 

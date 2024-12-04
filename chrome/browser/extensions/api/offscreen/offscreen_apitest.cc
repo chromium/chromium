@@ -85,6 +85,7 @@ class AudioWaiter : public content::WebContentsObserver {
   base::RunLoop run_loop_;
   bool expected_state_ = false;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Sets the extension to be enabled in incognito mode.
 scoped_refptr<const Extension> SetExtensionIncognitoEnabled(
@@ -118,7 +119,6 @@ void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
       }).Then(run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -326,6 +326,78 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutCommandLineFlag,
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
+// Tests creating, querying, and closing offscreen documents in an incognito
+// spanning mode extension.
+// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+// TODO(crbug.com/345326424): Flaky on Mac builds.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_IncognitoModeHandling_SpanningMode \
+  DISABLED_IncognitoModeHandling_SpanningMode
+#else
+#define MAYBE_IncognitoModeHandling_SpanningMode \
+  IncognitoModeHandling_SpanningMode
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
+                       MAYBE_IncognitoModeHandling_SpanningMode) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["offscreen"],
+           "incognito": "spanning"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Blank.");
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  extension = SetExtensionIncognitoEnabled(*extension, *profile());
+  ASSERT_TRUE(extension);
+
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  // Wake up the on-the-record service worker (the only one we have, as a
+  // spanning mode extension).
+  WakeUpServiceWorker(*extension, *profile());
+
+  auto has_offscreen_document = [this, extension](Profile& profile) {
+    bool programmatic =
+        ProgrammaticallyCheckIfHasOffscreenDocument(*extension, profile);
+    bool in_manager =
+        OffscreenDocumentManager::Get(&profile)
+            ->GetOffscreenDocumentForExtension(*extension) != nullptr;
+    EXPECT_EQ(programmatic, in_manager) << "Mismatch between manager and API.";
+    return programmatic && in_manager;
+  };
+
+  // There's less to do in a spanning mode extension - by definition, we can't
+  // call any methods from an incognito profile, so we just have to verify that
+  // the incognito profile is unaffected.
+  ProgrammaticallyCreateOffscreenDocument(*extension, *profile());
+  EXPECT_TRUE(has_offscreen_document(*profile()));
+  // Don't use `has_offscreen_document()` since we can't actually check the
+  // programmatic status, which requires executing script in an incognito
+  // process.
+  OffscreenDocumentManager* incognito_manager =
+      OffscreenDocumentManager::Get(incognito_profile);
+  EXPECT_EQ(nullptr,
+            incognito_manager->GetOffscreenDocumentForExtension(*extension));
+
+  ProgrammaticallyCloseOffscreenDocument(*extension, *profile());
+  EXPECT_FALSE(has_offscreen_document(*profile()));
+  EXPECT_EQ(nullptr,
+            incognito_manager->GetOffscreenDocumentForExtension(*extension));
+}
+
 // TODO(crbug.com/378916068): Enable more tests on desktop android.
 #if !BUILDFLAG(IS_ANDROID)
 // Tests creating, querying, and closing offscreen documents in an incognito
@@ -408,79 +480,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   ProgrammaticallyCloseOffscreenDocument(*extension, *profile());
   EXPECT_FALSE(has_offscreen_document(*profile()));
   EXPECT_FALSE(has_offscreen_document(*incognito_profile));
-}
-
-// Tests creating, querying, and closing offscreen documents in an incognito
-// spanning mode extension.
-// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
-// objects which are intended to be leaked.
-// TODO(crbug.com/345326424): Flaky on Mac builds.
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
-#define MAYBE_IncognitoModeHandling_SpanningMode \
-  DISABLED_IncognitoModeHandling_SpanningMode
-#else
-#define MAYBE_IncognitoModeHandling_SpanningMode \
-  IncognitoModeHandling_SpanningMode
-#endif
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
-                       MAYBE_IncognitoModeHandling_SpanningMode) {
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Offscreen Document Test",
-           "manifest_version": 3,
-           "version": "0.1",
-           "background": {"service_worker": "background.js"},
-           "permissions": ["offscreen"],
-           "incognito": "spanning"
-         })";
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Blank.");
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
-                     "<html>offscreen</html>");
-
-  scoped_refptr<const Extension> extension =
-      LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  extension = SetExtensionIncognitoEnabled(*extension, *profile());
-  ASSERT_TRUE(extension);
-
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  ASSERT_TRUE(incognito_browser);
-  Profile* incognito_profile = incognito_browser->profile();
-
-  // Wake up the on-the-record service worker (the only one we have, as a
-  // spanning mode extension).
-  WakeUpServiceWorker(*extension, *profile());
-
-  auto has_offscreen_document = [this, extension](Profile& profile) {
-    bool programmatic =
-        ProgrammaticallyCheckIfHasOffscreenDocument(*extension, profile);
-    bool in_manager =
-        OffscreenDocumentManager::Get(&profile)
-            ->GetOffscreenDocumentForExtension(*extension) != nullptr;
-    EXPECT_EQ(programmatic, in_manager) << "Mismatch between manager and API.";
-    return programmatic && in_manager;
-  };
-
-  // There's less to do in a spanning mode extension - by definition, we can't
-  // call any methods from an incognito profile, so we just have to verify that
-  // the incognito profile is unaffected.
-  ProgrammaticallyCreateOffscreenDocument(*extension, *profile());
-  EXPECT_TRUE(has_offscreen_document(*profile()));
-  // Don't use `has_offscreen_document()` since we can't actually check the
-  // programmatic status, which requires executing script in an incognito
-  // process.
-  OffscreenDocumentManager* incognito_manager =
-      OffscreenDocumentManager::Get(incognito_profile);
-  EXPECT_EQ(nullptr,
-            incognito_manager->GetOffscreenDocumentForExtension(*extension));
-
-  ProgrammaticallyCloseOffscreenDocument(*extension, *profile());
-  EXPECT_FALSE(has_offscreen_document(*profile()));
-  EXPECT_EQ(nullptr,
-            incognito_manager->GetOffscreenDocumentForExtension(*extension));
 }
 
 IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {

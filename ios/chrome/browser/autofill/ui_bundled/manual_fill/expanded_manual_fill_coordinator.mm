@@ -165,7 +165,8 @@ using manual_fill::ManualFillDataType;
       [[ManualFillPasswordCoordinator alloc]
              initWithBaseViewController:self.baseViewController
                                 browser:self.browser
-          manualFillPlusAddressMediator:[self manualFillPlusAddressMediator]
+          manualFillPlusAddressMediator:
+              [self manualFillPlusAddressMediatorForFallback:NO]
                                     URL:URL
                        injectionHandler:self.injectionHandler
                invokedOnObfuscatedField:self.invokedOnObfuscatedField
@@ -205,7 +206,8 @@ using manual_fill::ManualFillDataType;
   AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
          initWithBaseViewController:self.baseViewController
                             browser:self.browser
-      manualFillPlusAddressMediator:[self manualFillPlusAddressMediator]
+      manualFillPlusAddressMediator:
+          [self manualFillPlusAddressMediatorForFallback:YES]
                    injectionHandler:self.injectionHandler
              showAutofillFormButton:(_focusedFieldDataType ==
                                      ManualFillDataType::kAddress)];
@@ -218,7 +220,8 @@ using manual_fill::ManualFillDataType;
 }
 
 // Initializes `_manualFillPlusAddressMediator`.
-- (ManualFillPlusAddressMediator*)manualFillPlusAddressMediator {
+- (ManualFillPlusAddressMediator*)manualFillPlusAddressMediatorForFallback:
+    (BOOL)isAddressManualFallback {
   if (!base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled)) {
     return nil;
@@ -241,10 +244,11 @@ using manual_fill::ManualFillDataType;
   CHECK(plusAddressService);
 
   _manualFillPlusAddressMediator = [[ManualFillPlusAddressMediator alloc]
-      initWithFaviconLoader:faviconLoader
-         plusAddressService:plusAddressService
-                        URL:URL
-             isOffTheRecord:profile->IsOffTheRecord()];
+        initWithFaviconLoader:faviconLoader
+           plusAddressService:plusAddressService
+                          URL:URL
+               isOffTheRecord:profile->IsOffTheRecord()
+      isAddressManualFallback:isAddressManualFallback];
 
   return _manualFillPlusAddressMediator;
 }

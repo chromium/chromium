@@ -295,42 +295,6 @@ TEST_F(PrefsAshTest, ExtensionPrefsControllable) {
   EXPECT_TRUE(get_value.GetBool());
 }
 
-TEST_F(PrefsAshTest, ExtensionPrefsGetSetClear) {
-  local_state()->registry()->RegisterBooleanPref(
-      ash::prefs::kDockedMagnifierEnabled, false);
-
-  Profile* const profile = CreateProfile();
-  PrefsAsh prefs_ash(profile_manager(), local_state());
-  prefs_ash.OnPrimaryProfileReadyForTesting(profile);
-
-  mojo::Remote<mojom::Prefs> prefs_remote;
-  prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
-  mojom::PrefPath path = mojom::PrefPath::kDockedMagnifierEnabled;
-
-  prefs_remote->SetPref(path, base::Value(true), base::DoNothing());
-  prefs_remote.FlushForTesting();
-
-  base::Value get_value;
-  mojom::PrefControlState get_control;
-
-  GetExtensionPrefWithControl(prefs_remote, path, &get_value, &get_control);
-
-  // Controlled by lacros as it was set above.
-  EXPECT_EQ(get_control, mojom::PrefControlState::kLacrosExtensionControlled);
-  EXPECT_TRUE(get_value.GetBool());
-
-  // Clear Extension controlled pref.
-  prefs_remote->ClearExtensionControlledPref(path, base::DoNothing());
-  prefs_remote.FlushForTesting();
-
-  GetExtensionPrefWithControl(prefs_remote, path, &get_value, &get_control);
-
-  // Controllable by lacros, as it was unset above. No longer enabled as it
-  // was cleared.
-  EXPECT_EQ(get_control, mojom::PrefControlState::kLacrosExtensionControllable);
-  EXPECT_FALSE(get_value.GetBool());
-}
-
 TEST_F(PrefsAshTest, ExtensionPrefsClearNonExtensionPref) {
   local_state()->registry()->RegisterBooleanPref(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, false);
@@ -347,10 +311,6 @@ TEST_F(PrefsAshTest, ExtensionPrefsClearNonExtensionPref) {
   prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
   // Note this is the non-extension PrefPath.
   mojom::PrefPath path = mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled;
-
-  // Does nothing since this is not an extension controlled pref.
-  prefs_remote->ClearExtensionControlledPref(path, base::DoNothing());
-  prefs_remote.FlushForTesting();
 
   // Get returns value.
   base::Value get_value;

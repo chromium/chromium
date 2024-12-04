@@ -68,7 +68,7 @@ std::optional<base::Value::Dict> ParseDistributionPreferences(
 StandaloneInstallerConfigurator::StandaloneInstallerConfigurator()
     : is_msi_installation_(false) {}
 
-StandaloneInstallerConfigurator::~StandaloneInstallerConfigurator() {}
+StandaloneInstallerConfigurator::~StandaloneInstallerConfigurator() = default;
 
 // static
 StandaloneInstallerConfigurator**
@@ -125,7 +125,7 @@ void StandaloneInstallerConfigurator::ConfigureInstallationType(
 
 std::wstring StandaloneInstallerConfigurator::GetCurrentDate() {
   static const wchar_t kDateFormat[] = L"yyyyMMdd";
-  wchar_t date_str[std::size(kDateFormat)] = {0};
+  wchar_t date_str[std::size(kDateFormat)] = {};
   int len = GetDateFormatW(LOCALE_INVARIANT, 0, nullptr, kDateFormat, date_str,
                            std::size(date_str));
   if (len) {

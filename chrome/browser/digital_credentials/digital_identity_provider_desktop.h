@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "content/public/browser/digital_identity_provider.h"
 
@@ -43,6 +44,15 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
               DigitalIdentityCallback callback) override;
 
  private:
+  // Shared implementation between `Request()` and `Create()` above.
+  void Transact(
+      content::WebContents* web_contents,
+      content::digital_credentials::cross_device::RequestInfo::RequestType
+          request_type,
+      const url::Origin& rp_origin,
+      base::ValueView request,
+      DigitalIdentityCallback callback);
+
   // Called whenever some significant event occurs during the transaction.
   void OnEvent(const std::string& qr_url,
                content::digital_credentials::cross_device::Event);

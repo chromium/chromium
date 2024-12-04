@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/gtk/gtk.gni")
-import("//build/lacros/lacros_resource_sizes.gni")
 import("//chromeos/tast_control.gni")
 
 if (is_chromeos_device) {
@@ -76,10 +75,6 @@ source_set("test_support") {
     "lacros_test_helper.cc",
     "lacros_test_helper.h",
   ]
-}
-
-lacros_resource_sizes_test("resource_sizes_lacros_chrome") {
-  data_deps = [ "//chrome:chrome" ]
 }
 
 source_set("unit_tests") {

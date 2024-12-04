@@ -1883,10 +1883,16 @@ public class AwContents implements SmartClipProvider {
     }
 
     public void startPrerendering(
-            @NonNull String prerenderingUrl, @Nullable AwPrefetchParameters prefetchParameters) {
+            @NonNull String prerenderingUrl,
+            @Nullable AwPrefetchParameters prefetchParameters,
+            @Nullable Callback<Void> activationCallback) {
         if (isDestroyed(NO_WARN)) return;
         AwContentsJni.get()
-                .startPrerendering(mNativeAwContents, prerenderingUrl, prefetchParameters);
+                .startPrerendering(
+                        mNativeAwContents,
+                        prerenderingUrl,
+                        prefetchParameters,
+                        activationCallback.bind(null));
     }
 
     public void cancelAllPrerendering() {
@@ -4361,7 +4367,7 @@ public class AwContents implements SmartClipProvider {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                     && AwFeatureMap.isEnabled(VizFeatures.WEBVIEW_FRAME_RATE_HINTS)) {
-                float frame_rate = View.REQUESTED_FRAME_RATE_CATEGORY_NO_PREFERENCE;
+                float frame_rate = View.REQUESTED_FRAME_RATE_CATEGORY_DEFAULT;
                 if (mPreferredFrameIntervalNanos > 0) {
                     frame_rate = (float) 1e9 / mPreferredFrameIntervalNanos;
                 }
@@ -4948,7 +4954,8 @@ public class AwContents implements SmartClipProvider {
         void startPrerendering(
                 long nativeAwContents,
                 @JniType("std::string") @NonNull String prerenderingUrl,
-                @Nullable AwPrefetchParameters prefetchParameters);
+                @Nullable AwPrefetchParameters prefetchParameters,
+                @Nullable Runnable activationCallback);
 
         void cancelAllPrerendering(long nativeAwContents);
     }

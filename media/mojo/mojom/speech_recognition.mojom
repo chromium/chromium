@@ -6,12 +6,13 @@ module media.mojom;
 
 import "media/mojo/mojom/audio_data.mojom";
 import "media/mojo/mojom/speech_recognition_audio_forwarder.mojom";
+import "media/mojo/mojom/speech_recognition_recognition_context.mojom";
 import "media/mojo/mojom/speech_recognizer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -341,4 +342,8 @@ struct SpeechRecognitionOptions {
   // The sample rate of the forwarded audio.
   [MinVersion=6]
   int32 sample_rate;
+
+  // The optional recognition context for speech recognition biasing.
+  [MinVersion=8]
+  SpeechRecognitionRecognitionContext? recognition_context;
 };

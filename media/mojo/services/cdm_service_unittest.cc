@@ -178,12 +178,12 @@ class CdmServiceTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(CdmServiceTest, InitializeCdmSuccess) {
+TEST_F(CdmServiceTest, InitializeCdm_Success) {
   Initialize();
   InitializeCdm(kClearKeyKeySystem, true);
 }
 
-TEST_F(CdmServiceTest, InitializeCdmInvalidKeySystem) {
+TEST_F(CdmServiceTest, InitializeCdm_InvalidKeySystem) {
   Initialize();
   InitializeCdm(kInvalidKeySystem, false);
 }
@@ -212,7 +212,7 @@ TEST_F(CdmServiceTest, DestroyCdmFactory) {
 }
 
 // Destroy service will destroy the CdmFactory and all CDMs.
-TEST_F(CdmServiceTest, DestroyCdmServiceAfterCdmCreation) {
+TEST_F(CdmServiceTest, DestroyCdmService_AfterCdmCreation) {
   Initialize();
   InitializeCdm(kClearKeyKeySystem, true);
 
@@ -228,7 +228,7 @@ TEST_F(CdmServiceTest, DestroyCdmServiceAfterCdmCreation) {
 
 // Before the CDM is fully created, CdmService has been destroyed. We should
 // fail gracefully instead of a crash. See crbug.com/1190319.
-TEST_F(CdmServiceTest, DestroyCdmServiceDuringCdmCreation) {
+TEST_F(CdmServiceTest, DestroyCdmService_DuringCdmCreation) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, CdmFactoryConnectionClosed())
       .WillOnce(Invoke(&run_loop, &base::RunLoop::Quit));

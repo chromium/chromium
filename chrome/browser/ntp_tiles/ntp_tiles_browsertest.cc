@@ -82,7 +82,7 @@ class MostVisitedSitesWaiter : public MostVisitedSites::Observer {
 
 class NTPTilesTest : public InProcessBrowserTest {
  public:
-  NTPTilesTest() {}
+  NTPTilesTest() = default;
 
  protected:
   void SetUpOnMainThread() override {

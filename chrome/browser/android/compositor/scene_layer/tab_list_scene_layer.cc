@@ -31,7 +31,7 @@ TabListSceneLayer::TabListSceneLayer(JNIEnv* env, const JavaRef<jobject>& jobj)
   layer()->AddChild(own_tree_);
 }
 
-TabListSceneLayer::~TabListSceneLayer() {}
+TabListSceneLayer::~TabListSceneLayer() = default;
 
 void TabListSceneLayer::BeginBuildingFrame(JNIEnv* env,
                                            const JavaParamRef<jobject>& jobj) {

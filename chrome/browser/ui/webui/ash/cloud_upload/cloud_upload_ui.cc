@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 
 #include "ash/webui/common/trusted_types_util.h"
@@ -111,9 +106,8 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"googleDrive", IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE},
   };
   source->AddLocalizedStrings(kStrings);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
-      IDR_CLOUD_UPLOAD_MAIN_HTML);
+  webui::SetupWebUIDataSource(source, kCloudUploadResources,
+                              IDR_CLOUD_UPLOAD_MAIN_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");

@@ -278,9 +278,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::EqualsCaseInsensitiveASCII(parsed_scheme_utf8,
-                                       chromeos::kAppInstallUriScheme) ||
-      base::EqualsCaseInsensitiveASCII(parsed_scheme_utf8,
-                                       chromeos::kLegacyAppInstallUriScheme)) {
+                                       chromeos::kAppInstallUriScheme)) {
     return metrics::OmniboxInputType::URL;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

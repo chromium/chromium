@@ -344,18 +344,18 @@
       <message name="IDS_IOS_AUTOFILL_ADDRESS2" desc="Title of the field of a profile address representing the second line of the address. [Length: 15em] [iOS only]">
         Address 2
       </message>
-      <message name="IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of address suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has address suggestions available for autofill purposes. According to the number of available addresses, the string goes from singular to plural. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_ADDRESS_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to addresses. This announcement is triggered when the user enters edit mode in an address-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
-           =1 {{count} saved address available above your keyboard.}
-           other {{count} saved addresses available above your keyboard.}}
+           =1 {{count} option for address available above your keyboard.}
+           other {{count} options for address available above your keyboard.}}
       </message>
       <message name="IDS_IOS_AUTOFILL_ADMIN_LEVEL2" desc="Title of the field of a profile address representing the administrative area level 2. A sub-division of a state, e.g. a Municipio in Brazil or Mexico. [Length: 15em] [iOS only]">
         Municipality
       </message>
-      <message name="IDS_IOS_AUTOFILL_AUTOCOMPLETE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of autocomplete suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that only has autocomplete suggestions available for autofill purposes. According to the number of available autocomplete suggestions, the string goes from singular to plural. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_AUTOCOMPLETE_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to autocomplete. This announcement is triggered when the user enters edit mode in an autocomplete-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
-           =1 {{count} saved autocomplete suggestion available above your keyboard.}
-           other {{count} saved autocomplete suggestions available above your keyboard.}}
+           =1 {{count} option for autocomplete available above your keyboard.}
+           other {{count} options for autocomplete available above your keyboard.}}
       </message>
       <message name="IDS_IOS_AUTOFILL_CARDHOLDER" desc="Title of the field representing the full name of a credit card holder. [Length: 15em] [iOS only]">
         Name on card
@@ -420,15 +420,15 @@
       <message name="IDS_IOS_AUTOFILL_NICKNAME" desc="Title of the field representing the user defined nickname of a credit card. [Length: 15em] [iOS only]">
         Card nickname
       </message>
-      <message name="IDS_IOS_AUTOFILL_PASSWORD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of password suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has password suggestions available for autofill purposes. According to the number of available passwords, the string goes from singular to plural. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_PASSWORD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to passwords. This announcement is triggered when the user enters edit mode in a password-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
-           =1 {{count} saved password available above your keyboard.}
-           other {{count} saved passwords available above your keyboard.}}
+           =1 {{count} option for password available above your keyboard.}
+           other {{count} options for password available above your keyboard.}}
       </message>
-      <message name="IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of payment method suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has payment method suggestions available for autofill purposes. According to the number of available payment methods, the string goes from singular to plural. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_PAYMENT_METHOD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to payment methods. This announcement is triggered when the user enters edit mode in a payment method-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
         {count, plural,
-           =1 {{count} saved payment method available above your keyboard.}
-           other {{count} saved payment methods available above your keyboard.}}
+           =1 {{count} option for payment method available above your keyboard.}
+           other {{count} options for payment method available above your keyboard.}}
       </message>
       <message name="IDS_IOS_AUTOFILL_PHONE" desc="Title of the field of a profile address representing the phone number of the addressee. [Length: 15em] [iOS only]">
         Phone
@@ -1617,6 +1617,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MANAGER_OPEN_ACCESSIBILITY_LABEL" desc="Accessibility label (read by VoiceOver) for the button to open a file in the Drive app, after that file was downloaded and saved to Drive. [iOS only]">
         Open in Google Drive
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_ORIGIN_HOST_LABEL" desc="String showing the host that triggered the download.">
+        From: <ph name="ORIGINATING_HOST">$1<ex>chromium.org</ex></ph>
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_PERCENT_DOWNLOADED" desc="Accessibility label for the percentage of the file that has been downloaded. [iOS only]">
         <ph name="PERCENT">$1<ex>49</ex></ph> percent downloaded
       </message>
@@ -1812,6 +1815,18 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
         Your organization limits what you can sync.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MANAGEMENT_DISCLAIMER" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+       The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which can view some information.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_CANCEL" meaning="Button label to avoid using a managed profile" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+       Cancel
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE" meaning="Button label to continue with a managed profile" desc="Message displayed in the primary button on a screen where the user is asked to create a work profile.">
+       Continue
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+       A separate space for work
       </message>
       <message name="IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Restrict Accounts To Patterns) [iOS only]">
           Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.
@@ -3210,7 +3225,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Done
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_TITLE" desc="The title of the screen on the overflow menu where users can customize the items in the menu." meaning="[iOS only]">
-        Customize menu
+        Customize Menu
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS" desc="The iOS menu item for starting the process to edit actions on the overflow menu." meaning="[iOS only] [Length: Unlimited]">
         Customize Menu
@@ -4020,7 +4035,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           Couldn't untrack the price.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE" desc="Title for Price Notifications table view.">
-        Track price
+        Price Tracking
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TOAST_IPH_TEXT" desc="Text for Price tracking toast IPH.">
         Track price here
@@ -6009,6 +6024,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOGGLE_SWITCH_ACCESSIBILITY_HINT" desc="Action hint for any switch. This is spoken by VoiceOver. [iOS only]">
         Double tap to toggle setting
       </message>
+      <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_BACK" desc="The accessibility hint for the toolbar back button, to open the long press menu [iOS only].">
+        Double tap and hold to open history
+      </message>
+      <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_FORWARD" desc="The accessibility hint for the toolbar forward button, to open the long press menu [iOS only].">
+        Double tap and hold to open history
+      </message>
+      <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_NEW_TAB" desc="The accessibility hint for the toolbar new tab button, to open the long press menu [iOS only].">
+        Double tap and hold to open more options
+      </message>
+      <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_TAB_GRID" desc="The accessibility hint for the toolbar tab grid button, to open the long press menu [iOS only].">
+        Double tap and hold to open more options
+      </message>
       <message name="IDS_IOS_TOOLBAR_CLOSE_MENU" desc="The accessibility label for the toolbar close settings menu button [iOS only].">
         Close menu
       </message>
@@ -6136,7 +6163,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Paste and go
       </message>
       <message name="IDS_IOS_TOOLS_MENU_PRICE_TRACKING" desc="The iOS menu item for Price Notifications" meaning="[Length: 16em] [iOS only].">
-        Track Price
+        Price Tracking
       </message>
       <message name="IDS_IOS_TOOLS_MENU_QR_SCANNER" desc="The iOS menu item for opening the QR Code Scanner screen, allowing the user to scan QR code.">
         Scan QR Code

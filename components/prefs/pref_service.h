@@ -413,8 +413,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // Write extension-controlled prefs from Lacros in ash.
   void SetStandaloneBrowserPref(std::string_view path,
                                 const base::Value& value);
-  // Clear extension-controlled prefs from Lacros in ash.
-  void RemoveStandaloneBrowserPref(std::string_view path);
 
   // Clear all prefs in standalone_browser_pref_store_. Use it when rolling back
   // to Ash (i.e. disabling Lacros).

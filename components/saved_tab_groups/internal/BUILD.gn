@@ -70,6 +70,7 @@ source_set("model") {
     "//components/saved_tab_groups/public:features",
     "//components/sync",
     "//components/tab_groups",
+    "//google_apis",
     "//ui/gfx",
     "//url",
   ]

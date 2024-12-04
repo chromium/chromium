@@ -284,6 +284,13 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="ErrorUrlPopup"/>
 </enum>
 
+<enum name="FedCmDisclosureDialogResult">
+  <int value="0" label="Account row clicked"/>
+  <int value="1" label="Cancel button clicked"/>
+  <int value="2" label="Back button clicked"/>
+  <int value="3" label="Tab or window is closed or refreshed"/>
+</enum>
+
 <enum name="FedCmIdpSigninMatchStatus">
   <int value="0"
       label="Match. Browser has signed-in IDP status, accounts endpoint
@@ -319,6 +326,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="In Back/Forward Cache"/>
   <int value="5" label="Running Unload Handlers"/>
   <int value="6" label="Ready to be deleted"/>
+</enum>
+
+<enum name="FedCmLoadingDialogResult">
+  <int value="0" label="Proceeds with existing accounts"/>
+  <int value="1" label="Cancel button clicked"/>
+  <int value="2"
+      label="Proceeds by completing login to IDP flow in pop-up or CCT"/>
+  <int value="3" label="Tab or window is destroyed"/>
 </enum>
 
 <enum name="FedCmMismatchDialogResult">

@@ -19,6 +19,7 @@
 #include "base/uuid.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/messaging/message_port.h"
+#include "extensions/browser/message_tracker.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
@@ -146,8 +147,19 @@ class ExtensionMessagePort : public MessagePort {
 
   bool ShouldSkipFrameForBFCache(content::RenderFrameHost* render_frame_host);
 
-  void OnConnectResponse(const PortContext& port_context, bool success);
-  void Prune(const PortContext& port_context);
+  void OnConnectResponse(
+      const PortContext& port_context,
+      const base::UnguessableToken& connect_dispatch_tracking_id,
+      bool success);
+  void Prune(const PortContext& port_context,
+             const base::UnguessableToken& connect_dispatch_tracking_id);
+
+  void ReportOpenChannelResult(
+      MessageTracker::OpenChannelMessagePipelineResult emit_value);
+
+  void ReportOpenChannelConnectDispatchResult(
+      const base::UnguessableToken& tracking_id,
+      MessageTracker::OpenChannelMessagePipelineResult emit_value);
 
   ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
@@ -202,6 +214,10 @@ class ExtensionMessagePort : public MessagePort {
   // Tracking ID to every metric to emit once the result of the channel opening
   // is determined.
   std::set<base::UnguessableToken> pending_open_channel_tracking_ids_;
+  // Tracking ID to every metric to emit if the channel (this class) closes
+  // (destructs) before each port has responded to DispatchOnConnect IPC.
+  std::set<base::UnguessableToken>
+      pending_open_channel_connect_dispatch_tracking_ids_;
 
   base::WeakPtrFactory<ExtensionMessagePort> weak_ptr_factory_{this};
 };

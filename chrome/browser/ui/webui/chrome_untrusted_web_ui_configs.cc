@@ -11,7 +11,6 @@
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
-#include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "components/compose/buildflags.h"
@@ -52,7 +51,6 @@ void RegisterChromeUntrustedWebUIConfigs() {
       std::make_unique<lens::LensSidePanelUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<HatsUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<DataSharingUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<PrivacySandboxDialogUntrustedUIConfig>());

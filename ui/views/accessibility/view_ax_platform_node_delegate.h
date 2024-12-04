@@ -153,7 +153,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // during the constructor.
   virtual void Init();
 
-  ui::AXNodeData data() { return data_; }
+  const ui::AXNodeData& data() const { return data_; }
   ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
 
   // Manager for the accessibility tree for this view. The tree will only have

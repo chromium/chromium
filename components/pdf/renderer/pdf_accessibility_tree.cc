@@ -49,7 +49,6 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "base/containers/contains.h"
-#include "services/screen_ai/public/cpp/metrics.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -1199,8 +1198,6 @@ void PdfAccessibilityTree::OnOcrDataReceived(
       // Make all nodes relative to the root node.
       node_from_ocr.relative_bounds.offset_container_id = doc_node_->id;
     }
-    screen_ai::RecordMostDetectedLanguageInOcrData(
-        "Accessibility.PdfOcr.MostDetectedLanguageInOcrData2", tree_update);
 
     if (unserialized_node_exist) {
       // `nodes_` have not been unserialized yet, so update `nodes_` directly

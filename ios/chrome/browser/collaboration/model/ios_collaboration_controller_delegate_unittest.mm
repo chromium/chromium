@@ -37,7 +37,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         startDispatchingToTarget:application_commands_mock_
                      forProtocol:@protocol(ApplicationCommands)];
     share_kit_service_ =
-        std::make_unique<TestShareKitService>(nullptr, nullptr);
+        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
     base_view_controller_ = [[FakeUIViewController alloc] init];
   }
 

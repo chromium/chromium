@@ -44,7 +44,6 @@ FacilitatedPaymentsManager::~FacilitatedPaymentsManager() {
 void FacilitatedPaymentsManager::Reset() {
   has_payflow_started_ = false;
   ukm_source_id_ = 0;
-  trigger_source_ = TriggerSource::kUnknown;
   initiate_payment_request_details_ =
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
   ui_state_ = UiState::kHidden;
@@ -63,7 +62,6 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
       &FacilitatedPaymentsManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
   pix_code_copied_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
-  trigger_source_ = TriggerSource::kCopyEvent;
   // Check whether the domain for the render_frame_host_url is allowlisted.
   if (!IsMerchantAllowlisted(render_frame_host_url)) {
     // The merchant is not part of the allowlist, ignore the copy event.
@@ -183,7 +181,6 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
-  fop_selector_shown_time_ = base::TimeTicks::Now();
 }
 
 void FacilitatedPaymentsManager::OnPixPaymentPromptResult(

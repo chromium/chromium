@@ -121,15 +121,6 @@ public interface DataSharingService {
     void removeObserver(Observer observer);
 
     /**
-     * Refresh and read all the group data the user is part of.
-     *
-     * <p>Refresh data if necessary. The result is ordered by group ID.
-     *
-     * @param callback On success passes to the `callback` a set of all groups known to the client.
-     */
-    void readAllGroups(Callback<GroupsDataSetOrFailureOutcome> callback);
-
-    /**
      * Refresh and read the requested group data.
      *
      * <p>Refresh data if necessary.

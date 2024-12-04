@@ -69,7 +69,7 @@ class SafeDMG {
 
 SafeDMG::SafeDMG() : dmg_file_(), unpack_dir_() {}
 
-SafeDMG::~SafeDMG() {}
+SafeDMG::~SafeDMG() = default;
 
 int SafeDMG::Main(base::span<const char*> args) {
   if (args.size() != 2 && args.size() != 3) {

@@ -148,8 +148,8 @@ void EncodeAndSaveImage(const base::FilePath& file_path, gfx::Image image) {
       image, gfx::Size(informed_restore::kPreviewContainerWidth,
                        resized_image_height));
   auto png_bytes = resized_image.As1xPNGBytes();
-  auto raw_data = base::make_span(png_bytes->data(), png_bytes->size());
-  if (!base::WriteFile(file_path, raw_data)) {
+  if (!base::WriteFile(file_path,
+                       base::span(png_bytes->data(), png_bytes->size()))) {
     LOG(ERROR) << "Failed to write informed restore image to "
                << file_path.MaybeAsASCII();
   }

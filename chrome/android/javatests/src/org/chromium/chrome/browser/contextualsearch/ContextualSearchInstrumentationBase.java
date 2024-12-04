@@ -133,7 +133,6 @@ public class ContextualSearchInstrumentationBase {
                     activity.getBrowserControlsManager(),
                     activity.getWindowAndroid(),
                     activity.getTabModelSelector(),
-                    () -> activity.getLastUserInteractionTime(),
                     activity.getEdgeToEdgeControllerSupplierForTesting());
             setSelectionController(new MockCSSelectionController(activity, this));
             Profile profile = ProfileManager.getLastUsedRegularProfile();

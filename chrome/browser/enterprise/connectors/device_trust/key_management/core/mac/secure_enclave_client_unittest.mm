@@ -493,7 +493,7 @@ TEST_F(SecureEnclaveClientTest, SignDataWithKey) {
   std::string data = "test_string";
   OSStatus error;
   EXPECT_TRUE(secure_enclave_client_->SignDataWithKey(
-      test_key_.get(), base::as_bytes(base::make_span(data)), output, &error));
+      test_key_.get(), base::as_byte_span(data), output, &error));
   EXPECT_TRUE(output.size() > 0);
 }
 

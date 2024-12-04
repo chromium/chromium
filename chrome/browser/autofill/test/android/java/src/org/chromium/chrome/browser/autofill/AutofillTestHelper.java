@@ -241,22 +241,23 @@ public class AutofillTestHelper {
     }
 
     /**
-     * Sets the use {@code count} and use {@code date} of the test credit card associated with the
-     * {@code guid}. This update is not saved to disk.
+     * Adds a credit card with predefined data about its usage. Always returns the GUID of the card.
      *
-     * @param guid The GUID of the credit card to modify.
+     * @param card Card added.
      * @param count The use count to assign to the credit card. It should be non-negative.
      * @param daysSinceLastUsed The number of days since the credit card was last used.
      */
-    public void setCreditCardUseStatsForTesting(
-            final String guid, final int count, final int daysSinceLastUsed)
+    public String addCreditCardWithUseStatsForTesting(
+            final CreditCard card, final int count, final int daysSinceLastUsed)
             throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        runOnUiThreadBlocking(
-                () ->
-                        AutofillTestHelperJni.get()
-                                .setCreditCardUseStats(guid, count, daysSinceLastUsed));
+        String guid =
+                runOnUiThreadBlocking(
+                        () ->
+                                AutofillTestHelperJni.get()
+                                        .addCreditCardWithUseStats(card, count, daysSinceLastUsed));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
+        return guid;
     }
 
     /**
@@ -642,7 +643,7 @@ public class AutofillTestHelper {
 
         long getProfileUseDate(String guid);
 
-        void setCreditCardUseStats(String guid, int count, int daysSinceLastUsed);
+        String addCreditCardWithUseStats(CreditCard card, int count, int daysSinceLastUsed);
 
         int getCreditCardUseCount(String guid);
 

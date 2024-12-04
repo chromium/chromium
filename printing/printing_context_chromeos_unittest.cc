@@ -238,7 +238,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_Collate) {
 TEST_F(PrintingContextTest, SettingsToIPPOptions_Pin) {
   EXPECT_FALSE(HasAttribute(kIppPin));
   settings_.set_pin_value("1234");
-  TestOctetStringOptionValue(kIppPin, base::make_span("1234", 4u));
+  TestOctetStringOptionValue(kIppPin, base::span_from_cstring("1234"));
 }
 
 TEST_F(PrintingContextTest, SettingsToIPPOptions_Resolution) {

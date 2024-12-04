@@ -105,9 +105,7 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
     case AppType::kStandaloneBrowser:
     case AppType::kRemote:
     case AppType::kBorealis:
-    case AppType::kStandaloneBrowserChromeApp:
     case AppType::kExtension:
-    case AppType::kStandaloneBrowserExtension:
     case AppType::kBruschetta:
       NOTREACHED();
   }

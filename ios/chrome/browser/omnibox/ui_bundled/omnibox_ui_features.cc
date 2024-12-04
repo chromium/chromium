@@ -15,30 +15,3 @@ BASE_FEATURE(kOmniboxActionsInSuggest,
 bool IsRichAutocompletionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }
-
-const char kRichAutocompletionParam[] = "RichAutocompletionParam";
-const char kRichAutocompletionParamLabel[] = "Label";
-const char kRichAutocompletionParamTextField[] = "TextField";
-const char kRichAutocompletionParamNoAdditionalText[] = "NoAdditionalText";
-
-bool IsRichAutocompletionEnabled(RichAutocompletionImplementation type) {
-  if (!IsRichAutocompletionEnabled()) {
-    return false;
-  }
-
-  if (type == RichAutocompletionImplementation::kAny) {
-    return true;
-  }
-
-  std::string featureParam = base::GetFieldTrialParamValueByFeature(
-      omnibox::kRichAutocompletion, kRichAutocompletionParam);
-  if (type == RichAutocompletionImplementation::kLabel) {
-    return featureParam == kRichAutocompletionParamLabel;
-  } else if (type == RichAutocompletionImplementation::kNoAdditionalText) {
-    return featureParam == kRichAutocompletionParamNoAdditionalText;
-  }
-
-  // TextField is the default.
-  return featureParam == kRichAutocompletionParamTextField ||
-         featureParam.empty();
-}

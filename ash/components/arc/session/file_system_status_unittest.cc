@@ -37,11 +37,11 @@ class FileSystemStatusTest : public testing::Test {
   base::ScopedTempDir dir_;
 };
 
-TEST_F(FileSystemStatusTest, IsSystemImageExtFormatFileMissing) {
+TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_FileMissing) {
   EXPECT_FALSE(IsSystemImageExtFormat(base::FilePath("/nonexistent")));
 }
 
-TEST_F(FileSystemStatusTest, IsSystemImageExtFormatFileSizeTooSmall) {
+TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_FileSizeTooSmall) {
   base::FilePath file;
   ASSERT_TRUE(base::CreateTemporaryFile(&file));
   std::vector<uint8_t> data(100, 0);
@@ -50,7 +50,7 @@ TEST_F(FileSystemStatusTest, IsSystemImageExtFormatFileSizeTooSmall) {
   EXPECT_FALSE(IsSystemImageExtFormat(file));
 }
 
-TEST_F(FileSystemStatusTest, IsSystemImageExtFormatMagicNumberDoesNotMatch) {
+TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_MagicNumberDoesNotMatch) {
   base::FilePath file;
   ASSERT_TRUE(base::CreateTemporaryFile(&file));
   std::vector<uint8_t> data(2048, 0);
@@ -59,7 +59,7 @@ TEST_F(FileSystemStatusTest, IsSystemImageExtFormatMagicNumberDoesNotMatch) {
   EXPECT_FALSE(IsSystemImageExtFormat(file));
 }
 
-TEST_F(FileSystemStatusTest, IsSystemImageExtFormatMagicNumberMatches) {
+TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_MagicNumberMatches) {
   base::FilePath file;
   ASSERT_TRUE(base::CreateTemporaryFile(&file));
   std::vector<uint8_t> data(2048, 0);

@@ -23,6 +23,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
+import java.util.Set;
+
 /** {@link SigninPromoDelegate} for bookmark signin promo. */
 public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
     @VisibleForTesting static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
@@ -71,6 +73,12 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                 || !signinManager.isSigninAllowed()) {
+            return false;
+        }
+        if (syncService
+                .getSelectedTypes()
+                .containsAll(
+                        Set.of(UserSelectableType.BOOKMARKS, UserSelectableType.READING_LIST))) {
             return false;
         }
 

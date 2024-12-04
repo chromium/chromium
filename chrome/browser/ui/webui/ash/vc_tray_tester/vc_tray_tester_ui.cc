@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/vc_tray_tester/vc_tray_tester_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -29,10 +24,8 @@ VcTrayTesterUI::VcTrayTesterUI(content::WebUI* web_ui)
                                              chrome::kChromeUIVcTrayTesterHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kVcTrayTesterResources, kVcTrayTesterResourcesSize),
-      IDR_VC_TRAY_TESTER_MAIN_HTML);
+  webui::SetupWebUIDataSource(html_source, kVcTrayTesterResources,
+                              IDR_VC_TRAY_TESTER_MAIN_HTML);
 
   // Add message handler.
   // web_ui->AddMessageHandler(std::make_unique<NotificationTesterHandler>());

@@ -351,11 +351,10 @@ class TrustedKVv2SignalsEmbeddedTest : public testing::Test {
     size_t response_body_size = desired_size - kOhttpHeaderSize;
     response_body.resize(response_body_size, 0x00);
 
-    base::SpanWriter writer(
-        base::as_writable_bytes(base::make_span(response_body)));
+    base::SpanWriter writer(base::as_writable_byte_span(response_body));
     writer.WriteU8BigEndian(0x00);
     writer.WriteU32BigEndian(hex_bytes.size());
-    writer.Write(base::as_bytes(base::make_span(hex_bytes)));
+    writer.Write(base::as_byte_span(hex_bytes));
 
     return response_body;
   }

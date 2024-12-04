@@ -550,6 +550,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testRenderROWNotice() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -561,6 +562,36 @@ public final class PrivacySandboxDialogTest {
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_row_notice_dialog");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void testRenderRowNoticeV2() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
+        launchDialog();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_row_notice_dialog_v2");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
+    public void testRenderRowNoticeV2PrivacyPolicyDisabled() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
+        launchDialog();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        onView(withId(R.id.dropdown_container)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_sandbox_m1_notice_row_learn_more_description_5_v2_no_link))
+                .inRoot(isDialog())
+                .perform(scrollTo());
+        renderViewWithId(
+                R.id.privacy_sandbox_dialog,
+                "privacy_sandbox_row_notice_dialog_v2_privacy_policy_link_not_shown");
     }
 
     @Test

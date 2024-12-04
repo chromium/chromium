@@ -214,6 +214,11 @@ using base::UserMetricsAction;
   // Dismiss Find in Page focus.
   [findInPageCommandsHandler defocusFindInPage];
 
+  // Dismiss all snackbars.
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  [snackbarHandler dismissAllSnackbars];
+
   SceneState* sceneState = self.browser->GetSceneState();
   NonModalDefaultBrowserPromoSchedulerSceneAgent* nonModalPromoScheduler =
       [NonModalDefaultBrowserPromoSchedulerSceneAgent

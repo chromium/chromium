@@ -444,11 +444,11 @@ FakeOSUserManager::UserInfo::UserInfo(const wchar_t* domain,
       comment(comment),
       sid(sid) {}
 
-FakeOSUserManager::UserInfo::UserInfo() {}
+FakeOSUserManager::UserInfo::UserInfo() = default;
 
 FakeOSUserManager::UserInfo::UserInfo(const UserInfo& other) = default;
 
-FakeOSUserManager::UserInfo::~UserInfo() {}
+FakeOSUserManager::UserInfo::~UserInfo() = default;
 
 bool FakeOSUserManager::UserInfo::operator==(const UserInfo& other) const {
   return domain == other.domain && password == other.password &&
@@ -554,7 +554,7 @@ FakeScopedLsaPolicy::FakeScopedLsaPolicy(FakeScopedLsaPolicyFactory* factory)
   // running elevated.  That's OK, everything is faked out anyway.
 }
 
-FakeScopedLsaPolicy::~FakeScopedLsaPolicy() {}
+FakeScopedLsaPolicy::~FakeScopedLsaPolicy() = default;
 
 HRESULT FakeScopedLsaPolicy::StorePrivateData(const wchar_t* key,
                                               const wchar_t* value) {
@@ -635,7 +635,7 @@ FakeScopedUserProfile::FakeScopedUserProfile(const std::wstring& sid,
                   domain.c_str(), username.c_str(), password.c_str()) == S_OK;
 }
 
-FakeScopedUserProfile::~FakeScopedUserProfile() {}
+FakeScopedUserProfile::~FakeScopedUserProfile() = default;
 
 HRESULT FakeScopedUserProfile::SaveAccountInfo(
     const base::Value::Dict& properties) {
@@ -677,7 +677,7 @@ FakeWinHttpUrlFetcherFactory::RequestData::RequestData(const RequestData& rhs)
 
 FakeWinHttpUrlFetcherFactory::RequestData::~RequestData() = default;
 
-FakeWinHttpUrlFetcherFactory::Response::Response() {}
+FakeWinHttpUrlFetcherFactory::Response::Response() = default;
 
 FakeWinHttpUrlFetcherFactory::Response::Response(const Response& rhs)
     : headers(rhs.headers),
@@ -792,7 +792,7 @@ std::unique_ptr<WinHttpUrlFetcher> FakeWinHttpUrlFetcherFactory::Create(
 FakeWinHttpUrlFetcher::FakeWinHttpUrlFetcher(const GURL& url)
     : WinHttpUrlFetcher() {}
 
-FakeWinHttpUrlFetcher::~FakeWinHttpUrlFetcher() {}
+FakeWinHttpUrlFetcher::~FakeWinHttpUrlFetcher() = default;
 
 bool FakeWinHttpUrlFetcher::IsValid() const {
   return true;

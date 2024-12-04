@@ -79,6 +79,8 @@ static_library("unsafe_resource") {
   sources = [
     "unsafe_resource.cc",
     "unsafe_resource.h",
+    "unsafe_resource_locator.cc",
+    "unsafe_resource_locator.h",
   ]
 
   deps = [

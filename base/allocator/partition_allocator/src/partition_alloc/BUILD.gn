@@ -645,6 +645,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/time/time.h",
       "partition_alloc_base/time/time_override.cc",
       "partition_alloc_base/time/time_override.h",
+      "partition_alloc_base/types/same_as_any.h",
       "partition_alloc_base/types/strong_alias.h",
       "partition_alloc_base/win/win_handle_types.h",
       "partition_alloc_base/win/win_handle_types_list.inc",

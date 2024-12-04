@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 
 #include <optional>
@@ -285,12 +280,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
                          ntp_features::kNtpBackgroundImageErrorDetection));
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelCustomizeChromeResources,
-                      kSidePanelCustomizeChromeResourcesSize),
+      source, kSidePanelCustomizeChromeResources,
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));

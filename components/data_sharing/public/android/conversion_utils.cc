@@ -56,7 +56,7 @@ ScopedJavaLocalRef<jobject> CreateJavaGroupData(JNIEnv* env,
       ConvertUTF8ToJavaString(env, group_data.group_token.group_id.value()),
       ConvertUTF8ToJavaString(env, group_data.display_name),
       ToTypedJavaArrayOfObjects(
-          env, base::make_span(j_members),
+          env, base::span(j_members),
           org_chromium_components_data_1sharing_GroupMember_clazz(env)),
       ConvertUTF8ToJavaString(env, group_data.group_token.access_token));
 }
@@ -72,7 +72,7 @@ ScopedJavaLocalRef<jobjectArray> CreateGroupedDataArray(
   ScopedJavaLocalRef<jobjectArray> j_group_array;
   if (!j_groups_data.empty()) {
     j_group_array = ToTypedJavaArrayOfObjects(
-        env, base::make_span(j_groups_data),
+        env, base::span(j_groups_data),
         org_chromium_components_data_1sharing_GroupData_clazz(env));
   }
 
@@ -92,7 +92,7 @@ ScopedJavaLocalRef<jobject> CreateJavaSharedTabGroupPreview(
   ScopedJavaLocalRef<jobjectArray> j_tabs_array;
   if (!j_tabs.empty()) {
     j_tabs_array = ToTypedJavaArrayOfObjects(
-        env, base::make_span(j_tabs),
+        env, base::span(j_tabs),
         org_chromium_components_data_1sharing_TabPreview_clazz(env));
   }
   return Java_SharedTabGroupPreview_createSharedTabGroupPreview(

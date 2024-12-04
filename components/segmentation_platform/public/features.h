@@ -149,6 +149,9 @@ BASE_DECLARE_FEATURE(kEducationalTipModule);
 // The maximum number of times the default browser promo card can be visible to
 // the user.
 extern const base::FeatureParam<int> kMaxDefaultBrowserCardImpressions;
+// The maximum number of times the tab group promo card can be visible to the
+// user.
+extern const base::FeatureParam<int> kMaxTabGroupCardImpressions;
 
 }  // namespace segmentation_platform::features
 

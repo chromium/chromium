@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 
 #include <atomic>
@@ -43,10 +38,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 
   RealboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kOmniboxPopupResources, kOmniboxPopupResourcesSize),
-      IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
+  webui::SetupWebUIDataSource(source, kOmniboxPopupResources,
+                              IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
   webui::EnableTrustedTypesCSP(source);
 
   content::URLDataSource::Add(profile_,

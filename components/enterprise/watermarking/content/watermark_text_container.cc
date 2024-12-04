@@ -7,15 +7,19 @@
 namespace enterprise_watermark {
 
 WatermarkTextContainer::WatermarkTextContainer(content::WebContents* contents)
-    : content::WebContentsUserData<WatermarkTextContainer>(*contents) {}
+    : content::WebContentsUserData<WatermarkTextContainer>(*contents),
+      block_width_(0),
+      block_height_(0) {}
 
-void WatermarkTextContainer::SetWatermarkText(std::string watermark_text) {
-  watermark_text_ = std::move(watermark_text);
+void WatermarkTextContainer::SetWatermarkText(sk_sp<SkPicture> picture,
+                                              int block_width,
+                                              int block_height) {
+  picture_ = picture;
+  block_width_ = block_width;
+  block_height_ = block_height;
 }
 
-const std::string& WatermarkTextContainer::watermark_text() const {
-  return watermark_text_;
-}
+WatermarkTextContainer::~WatermarkTextContainer() = default;
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WatermarkTextContainer);
 

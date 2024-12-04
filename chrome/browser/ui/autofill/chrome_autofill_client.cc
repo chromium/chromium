@@ -326,13 +326,13 @@ ChromeAutofillClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-AutofillCrowdsourcingManager* ChromeAutofillClient::GetCrowdsourcingManager() {
+AutofillCrowdsourcingManager& ChromeAutofillClient::GetCrowdsourcingManager() {
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
     crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
         this, GetChannel(), GetLogManager());
   }
-  return crowdsourcing_manager_.get();
+  return *crowdsourcing_manager_;
 }
 
 AutofillOptimizationGuide* ChromeAutofillClient::GetAutofillOptimizationGuide()
@@ -805,13 +805,10 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() const {
       password_manager::PasswordManagerSetting::kOfferToSavePasswords);
 }
 
-void ChromeAutofillClient::DidFillOrPreviewForm(
-    mojom::ActionPersistence action_persistence,
-    AutofillTriggerSource trigger_source,
-    bool is_refill) {
+void ChromeAutofillClient::DidFillForm(AutofillTriggerSource trigger_source,
+                                       bool is_refill) {
 #if BUILDFLAG(IS_ANDROID)
-  if (action_persistence == mojom::ActionPersistence::kFill &&
-      trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
+  if (trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
       !is_refill) {
     // TODO(crbug.com/40900538): Test that the message was announced.
     autofill::AnnounceTextForA11y(

@@ -308,7 +308,7 @@ bool TabDeclutterController::HasNewUnusedTabsForNudge(
 
   // Check for new unused duplicate tabs.
   for (auto& [url, tabs] : duplicate_tabs) {
-    if (IsNewTabDetectedForNudge(base::make_span(tabs))) {
+    if (IsNewTabDetectedForNudge(base::span(tabs))) {
       return true;
     }
   }

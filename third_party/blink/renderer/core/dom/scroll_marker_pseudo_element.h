@@ -33,7 +33,8 @@ class ScrollMarkerPseudoElement : public PseudoElement {
     return scroll_marker_group_;
   }
 
-  void DetachLayoutTree(bool performing_reattach) final;
+  void AttachLayoutTree(AttachContext&) final;
+  void Dispose() final;
   void Trace(Visitor* v) const final;
 
  private:

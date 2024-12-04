@@ -91,6 +91,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.Ink2StrokeHighlighterColor"
+    enum="PDFInk2StrokeHighlighterColor" expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the brush color used for an Ink2 Highlighter stroke modification in
+    the PDF viewer. This is only recorded when drawing actions are performed by
+    the user, but not if they occur as part of undo or redo operations.
+  </summary>
+</histogram>
+
+<histogram name="PDF.Ink2StrokePenColor" enum="PDFInk2StrokePenColor"
+    expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the brush color used for an Ink2 Pen stroke modification in the PDF
+    viewer. This is only recorded when drawing actions are performed by the
+    user, but not if they occur as part of undo or redo operations.
+  </summary>
+</histogram>
+
 <histogram name="PDF.Ink2Stroke{Brush}Size" enum="PDFInk2StrokeBrushSize"
     expires_after="2025-12-01">
   <owner>andyphan@chromium.org</owner>

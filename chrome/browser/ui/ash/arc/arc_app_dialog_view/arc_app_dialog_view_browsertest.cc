@@ -32,7 +32,7 @@ namespace arc {
 
 class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
  public:
-  ArcAppUninstallDialogViewBrowserTest() {}
+  ArcAppUninstallDialogViewBrowserTest() = default;
 
   ArcAppUninstallDialogViewBrowserTest(
       const ArcAppUninstallDialogViewBrowserTest&) = delete;
@@ -115,7 +115,7 @@ class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
 class ArcAppPermissionDialogViewBrowserTest
     : public ArcAppUninstallDialogViewBrowserTest {
  public:
-  ArcAppPermissionDialogViewBrowserTest() {}
+  ArcAppPermissionDialogViewBrowserTest() = default;
 
   ArcAppPermissionDialogViewBrowserTest(
       const ArcAppPermissionDialogViewBrowserTest&) = delete;

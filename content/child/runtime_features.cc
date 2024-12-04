@@ -31,6 +31,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
+#include "net/base/features.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
@@ -339,6 +340,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
       runtimeFeatureNameToChromiumFeatureMapping[] = {
           {"AllowContentInitiatedDataUrlNavigations",
            raw_ref(features::kAllowContentInitiatedDataUrlNavigations)},
+          {"AllowSameSiteNoneCookiesInSandbox",
+           raw_ref(net::features::kAllowSameSiteNoneCookiesInSandbox)},
           {"AllowURNsInIframes", raw_ref(blink::features::kAllowURNsInIframes)},
           {"AllowURNsInIframes",
            raw_ref(features::kPrivacySandboxAdsAPIsOverride),
@@ -392,6 +395,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"ReduceAcceptLanguage",
            raw_ref(network::features::kReduceAcceptLanguage)},
           {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
+          {"SignatureBasedIntegrity",
+           raw_ref(network::features::kSRIMessageSignatureEnforcement)},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
@@ -678,18 +683,6 @@ void ResolveInvalidConfigurations() {
         << blink::features::kInterestGroupStorage.name << " in addition.";
     WebRuntimeFeatures::EnableAdInterestGroupAPI(false);
     WebRuntimeFeatures::EnableFledge(false);
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
-    WebRuntimeFeatures::EnableFledgeMultiBid(false);
-    WebRuntimeFeatures::EnableFledgeRealTimeReporting(false);
-
-    if (!base::FeatureList::IsEnabled(
-            blink::features::
-                kAlwaysAllowFledgeDeprecatedRenderURLReplacements)) {
-      WebRuntimeFeatures::EnableFledgeDeprecatedRenderURLReplacements(false);
-    }
   }
 
   // PermissionElement cannot be enabled without the support of the

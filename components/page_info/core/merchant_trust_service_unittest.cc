@@ -9,13 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/core/features.h"
-#include "components/page_info/core/proto/merchant_trust_metadata.pb.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -31,12 +29,14 @@ using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationMetadata;
 
 namespace {
-proto::MerchantTrustSignalsV3 CreateValidProto() {
-  proto::MerchantTrustSignalsV3 proto;
-  proto.set_star_rating(3.8);
-  proto.set_count_rating(45);
-  proto.set_page_url("https://page_url.com");
-  proto.set_overall_summary("Test summary");
+const char kTestSummary[] = "This is a test summary.";
+
+commerce::MerchantTrustSignalsV2 CreateValidProto() {
+  commerce::MerchantTrustSignalsV2 proto;
+  proto.set_merchant_star_rating(3.8);
+  proto.set_merchant_count_rating(45);
+  proto.set_merchant_details_page_url("https://page_url.com");
+  proto.set_reviews_summary(kTestSummary);
   return proto;
 }
 
@@ -98,10 +98,10 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionTrue) {
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionTrue));
 
   std::optional<page_info::MerchantData> info =
-      service()->GetMerchantTrustInfo(GURL("https://foo.com"),
-                                      ukm::UkmRecorder::GetNewSourceID());
+      service()->GetMerchantTrustInfo(GURL("https://foo.com"));
   EXPECT_TRUE(info.has_value());
   EXPECT_EQ(info->page_url, GURL("https://page_url.com"));
+  EXPECT_EQ(info->reviews_summary, kTestSummary);
 }
 
 // Tests that proto are not returned correctly when optimization guide decision
@@ -111,8 +111,7 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionUnknown) {
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionUnknown));
 
   std::optional<page_info::MerchantData> info =
-      service()->GetMerchantTrustInfo(GURL("https://foo.com"),
-                                      ukm::UkmRecorder::GetNewSourceID());
+      service()->GetMerchantTrustInfo(GURL("https://foo.com"));
   EXPECT_FALSE(info.has_value());
 }
 
@@ -120,8 +119,7 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionUnknown) {
 TEST_F(MerchantTrustServiceTest, NoOptimizationGuideNotAllowed) {
   SetOptimizationGuideAllowed(false);
   std::optional<page_info::MerchantData> info =
-      service()->GetMerchantTrustInfo(GURL("https://foo.com"),
-                                      ukm::UkmRecorder::GetNewSourceID());
+      service()->GetMerchantTrustInfo(GURL("https://foo.com"));
   EXPECT_FALSE(info.has_value());
 }
 
@@ -136,8 +134,7 @@ TEST_F(MerchantTrustServiceTest, SampleData) {
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionUnknown));
 
   std::optional<page_info::MerchantData> info =
-      service()->GetMerchantTrustInfo(GURL("https://foo.com"),
-                                      ukm::UkmRecorder::GetNewSourceID());
+      service()->GetMerchantTrustInfo(GURL("https://foo.com"));
   EXPECT_TRUE(info.has_value());
   EXPECT_EQ(
       info->page_url,

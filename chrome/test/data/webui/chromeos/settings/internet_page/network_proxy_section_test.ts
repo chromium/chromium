@@ -69,13 +69,6 @@ suite('<network-proxy-section>', () => {
           value: true,
         },
       },
-      'ash': {
-        'lacros_proxy_controlling_extension': {
-          key: 'ash.lacros_proxy_controlling_extension',
-          type: chrome.settingsPrivate.PrefType.DICTIONARY,
-          value: {},
-        },
-      },
       'proxy': {},
     };
     props = initializeProps();
@@ -181,36 +174,5 @@ suite('<network-proxy-section>', () => {
     assertEquals(kExtensionName, extensionIndicator.extensionName);
     assertEquals(kExtensionId, extensionIndicator.extensionId);
     assertFalse(extensionIndicator.extensionCanBeDisabled);
-  });
-
-  // Tests that the extension indicator is shown with the correct extension
-  // metadata when the proxy is controlled by an extension in Lacros. In this
-  // case, the extension metadata is stored in the
-  // ash.lacros_proxy_controlling_extension pref.
-  test('Proxy set by Lacros extension', () => {
-    assertNull(proxySection.shadowRoot!.querySelector(
-        'lacros-extension-controlled-indicator'));
-    // Set the proxy pref without extension data.
-    proxySection.prefs.proxy = {
-      type: chrome.settingsPrivate.PrefType.DICTIONARY,
-      value: {},
-    };
-    // Set the pref which is populated when a Lacros extension controls the
-    // proxy.
-    proxySection.prefs.ash.lacros_proxy_controlling_extension = {
-      value: {
-        'extension_id_key': kExtensionId,
-        'extension_name_key': kExtensionName,
-        'can_be_disabled_key': false,
-      },
-    };
-    // Set the effective proxy value as controlled by an extension.
-    setDirectProxyConfig();
-
-    const lacrosExtensionIndicator = proxySection.shadowRoot!.querySelector(
-        'lacros-extension-controlled-indicator');
-    assertTrue(!!lacrosExtensionIndicator);
-    assertEquals(kExtensionName, lacrosExtensionIndicator.extensionName);
-    assertEquals(kExtensionId, lacrosExtensionIndicator.extensionId);
   });
 });

@@ -1066,6 +1066,7 @@ def _set_cwd():
 
 
 def main(sys_args):
+  sys.stdout.reconfigure(line_buffering=True)
   _set_cwd()
   args = sys_args[1:]  # Skip program name.
   options = parse_arguments(args)
@@ -1255,8 +1256,8 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       crossbench_test = CrossbenchTest(options, isolated_out_dir)
       for run_num in range(options.benchmark_max_runs):
         print(f'\n### {display_name} (attempt #{run_num}) ###')
-        return_code = crossbench_test.execute_benchmark(benchmark, display_name,
-                                                        [])
+        return_code = crossbench_test.execute_benchmark(
+            benchmark, display_name, options.passthrough_args)
         if return_code == 0:
           break
       overall_return_code = return_code or overall_return_code

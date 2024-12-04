@@ -144,7 +144,7 @@ public class AccountPickerBottomSheetTest {
         mAutoTestRule.setIsAutomotive(false);
         mSigninAccessPoint = SigninAccessPoint.WEB_SIGNIN;
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME);
+        mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
         doAnswer(
                         invocation -> {
@@ -201,7 +201,7 @@ public class AccountPickerBottomSheetTest {
 
         onVisibleView(withText(TestAccounts.ACCOUNT1.getEmail())).check(matches(isDisplayed()));
         onVisibleView(withText(TestAccounts.ACCOUNT1.getFullName())).check(matches(isDisplayed()));
-        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getEmail()))
+        onView(withText(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()))
                 .check(matches(isDisplayed()));
         onVisibleView(withText(R.string.signin_add_account_to_device))
                 .check(matches(isDisplayed()));
@@ -221,7 +221,7 @@ public class AccountPickerBottomSheetTest {
         onVisibleView(withText(TestAccounts.ACCOUNT1.getFullName())).check(matches(isDisplayed()));
         onVisibleView(withText(TestAccounts.ACCOUNT2.getEmail())).check(matches(isDisplayed()));
         onVisibleView(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
-        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getEmail()))
+        onView(withText(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()))
                 .check(matches(isDisplayed()));
         onVisibleView(withText(R.string.signin_add_account_to_device))
                 .check(matches(isDisplayed()));
@@ -236,7 +236,7 @@ public class AccountPickerBottomSheetTest {
 
         onVisibleView(withText(TestAccounts.ACCOUNT1.getEmail())).check(matches(isDisplayed()));
         onVisibleView(withText(TestAccounts.ACCOUNT1.getFullName())).check(matches(isDisplayed()));
-        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getEmail()))
+        onView(withText(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()))
                 .check(matches(isDisplayed()));
         onVisibleView(withText(R.string.signin_add_account_to_device))
                 .check(matches(isDisplayed()));
@@ -248,7 +248,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testCollapsedSheetWithZeroAccount() {
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -274,7 +274,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testExpandedSheetAtLaunchWithZeroAccount() {
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -452,7 +452,7 @@ public class AccountPickerBottomSheetTest {
     public void testAccountDisappearedOnCollapsedSheet() {
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -470,7 +470,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -488,7 +488,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -504,7 +504,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testAccountReappearedOnCollapsedSheet() {
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
@@ -534,7 +534,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
         checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
 
-        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
 
         checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
     }
@@ -546,7 +546,7 @@ public class AccountPickerBottomSheetTest {
 
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
-        checkCollapsedAccountListForWebSignin(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME);
+        checkCollapsedAccountListForWebSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
     }
 
     @Test
@@ -735,7 +735,7 @@ public class AccountPickerBottomSheetTest {
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT, 2);
         buildAndShowCollapsedThenExpandedBottomSheet();
-        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getEmail())).perform(click());
+        onView(withText(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail())).perform(click());
 
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
@@ -1373,8 +1373,7 @@ public class AccountPickerBottomSheetTest {
         onVisibleView(withText(R.string.signin_add_account_to_device))
                 .check(matches(isDisplayed()));
         checkVisibleViewDoesNotExist(withText(TestAccounts.ACCOUNT1.getEmail()));
-        checkVisibleViewDoesNotExist(
-                withText(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME.getEmail()));
+        checkVisibleViewDoesNotExist(withText(TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail()));
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
     }

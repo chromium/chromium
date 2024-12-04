@@ -10,23 +10,19 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/arc.mojom.h"  // nogncheck
-#else
-#error "ARC files should only be included for Ash-chrome or Lacros-chrome."
+#if !BUILDFLAG(IS_CHROMEOS)
+#error "ARC files should only be included for ChromeOS/ASH"
 #endif
 
 namespace arc {
@@ -75,17 +71,9 @@ class ActivityIconLoader {
     FAILED_ARC_NOT_SUPPORTED,
   };
 
-  // Ash uses arc::mojom interface while Lacros uses crosapi::mojom.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   using ActivityIconPtr = mojom::ActivityIconPtr;
   using ActivityNamePtr = mojom::ActivityNamePtr;
   using ScaleFactor = mojom::ScaleFactor;
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  using ActivityIconPtr = crosapi::mojom::ActivityIconPtr;
-  using ActivityNamePtr = crosapi::mojom::ActivityNamePtr;
-  using ScaleFactor = crosapi::mojom::ScaleFactor;
-#endif
-
   using ActivityToIconsMap = std::map<ActivityName, Icons>;
   using OnIconsReadyCallback =
       base::OnceCallback<void(std::unique_ptr<ActivityToIconsMap>)>;

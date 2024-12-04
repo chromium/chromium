@@ -21,7 +21,7 @@ ChromeBrowserPepperHostFactory::ChromeBrowserPepperHostFactory(
     content::BrowserPpapiHost* host)
     : host_(host) {}
 
-ChromeBrowserPepperHostFactory::~ChromeBrowserPepperHostFactory() {}
+ChromeBrowserPepperHostFactory::~ChromeBrowserPepperHostFactory() = default;
 
 std::unique_ptr<ResourceHost>
 ChromeBrowserPepperHostFactory::CreateResourceHost(

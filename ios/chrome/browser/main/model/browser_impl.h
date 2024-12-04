@@ -56,9 +56,6 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   // The type of this browser.
   const Type type_;
 
-  // The ProfileIOS this Browser is attached to. Must not be null.
-  raw_ptr<ProfileIOS> const profile_;
-
   // The owned WebStateList.
   WebStateList web_state_list_;
 

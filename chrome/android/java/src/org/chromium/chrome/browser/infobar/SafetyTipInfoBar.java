@@ -15,7 +15,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarLayout;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 /**
  * An infobar to present a Safety Tip. This is a thin vineer over standard ConfirmInfoBar to provide
@@ -80,7 +80,7 @@ public class SafetyTipInfoBar extends ConfirmInfoBar {
         if (mLearnMoreLinkText != null && !mLearnMoreLinkText.isEmpty()) {
             SpannableString link = new SpannableString(mLearnMoreLinkText);
             link.setSpan(
-                    new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
+                    new ChromeClickableSpan(layout.getContext(), view -> onLinkClicked()),
                     0,
                     link.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

@@ -181,8 +181,7 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
       offscreen_canvas().Size(), viz::SinglePlaneFormat::kRGBA_8888,
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-      /*provider=*/nullptr, shared_image_interface_provider(),
-      cc::PaintFlags::FilterQuality::kLow);
+      /*provider=*/nullptr, shared_image_interface_provider());
   EXPECT_TRUE(!!canvas_resource);
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
@@ -208,8 +207,7 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   auto canvas_resource2 = CanvasResourceSharedBitmap::Create(
       offscreen_canvas().Size(), viz::SinglePlaneFormat::kRGBA_8888,
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-      /*provider=*/nullptr, shared_image_interface_provider(),
-      cc::PaintFlags::FilterQuality::kLow);
+      /*provider=*/nullptr, shared_image_interface_provider());
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrameSync_(_))
       .WillOnce(::testing::WithArg<0>(

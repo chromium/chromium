@@ -1,4 +1,5 @@
 <?php
+header("Cache-Control: max-age=3600");
 echo "Purpose: " . $_SERVER["HTTP_PURPOSE"];
 ?>
 

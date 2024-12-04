@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">સલામતી માટે તપાસ સંબંધિત નોટિફિકેશન ચાલુ કરો…</translation>
 <translation id="1652333207707886577">તમારું મેનૂ કસ્ટમાઇઝ કરો</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{બાકી રહેલો સમય: {TIME} સેકન્ડ}=1{બાકી રહેલો સમય: {TIME} સેકન્ડ}one{બાકી રહેલો સમય: {TIME} સેકન્ડ}other{બાકી રહેલો સમય: {TIME} સેકન્ડ}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલો પાસવર્ડ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલો પાસવર્ડ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલા પાસવર્ડ ઉપલબ્ધ છે.}}</translation>
 <translation id="1654232554734641711">માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="16554782717487656">એકમોની ભાળ મેળવો</translation>
 <translation id="1657011748321897393">શેરિંગ નિષ્ફળ થઇ કારણ કે તમે નેટવર્ક સાથે જોડાયેલ નથી.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">ટૅબ ગ્રિડ ખોલો</translation>
 <translation id="20485545164632846">નવી આઇટમ</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> એકાઉન્ટ એક જ પાસવર્ડનો ઉપયોગ કરી રહ્યાં છે</translation>
-<translation id="2050196510205866090">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}}</translation>
 <translation id="2059166748188874810">નગરપાલિકા</translation>
 <translation id="20638360198452347">એકમના પ્રકારનું પસંદગીકર્તા</translation>
 <translation id="2067852168641682340">દરેક વખતે આ એકાઉન્ટમાં સાચવો</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" છુપાવો</translation>
 <translation id="2403129868389095715">તમારું પૅકેજ ડિલિવર કરી શકાતું નથી</translation>
 <translation id="2410754283952462441">એકાઉન્ટ પસંદ કરો</translation>
-<translation id="2411749908844615428">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલું સરનામું ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલું સરનામું ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલા સરનામા ઉપલબ્ધ છે.}}</translation>
 <translation id="2424805048070062787">આ ટૅબ સાથે ચાલુ રાખો</translation>
 <translation id="2426805022920575512">બીજું એકાઉન્ટ પસંદ કરો</translation>
 <translation id="243275146591958220">ડાઉનલોડ રદ કરો</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">લિંકના પ્રીવ્યૂ બતાવો</translation>
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
 <translation id="4532845899244822526">ફોલ્ડર પસંદ કરો</translation>
-<translation id="4539187448429948815">{count,plural, =1{તમારા કીબોર્ડની ઉપર {count} સાચવેલું ઑટોમૅટિક રીતે પૂર્ણ કરવાનું સૂચન ઉપલબ્ધ છે.}one{તમારા કીબોર્ડની ઉપર {count} સાચવેલું ઑટોમૅટિક રીતે પૂર્ણ કરવાનું સૂચન ઉપલબ્ધ છે.}other{તમારા કીબોર્ડની ઉપર {count} સાચવેલા ઑટોમૅટિક રીતે પૂર્ણ કરવાના સૂચન ઉપલબ્ધ છે.}}</translation>
 <translation id="4547181496285029457">તાજેતરના ટૅબ પર પાછા ફરો</translation>
 <translation id="4552042254369397518">કૉપિ કરી રહ્યાં છીએ…</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" છુપાવો</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">ટૅબના નોટિફિકેશન મેળવો</translation>
 <translation id="4601095002996233687">શંકાસ્પદ ડાઉનલોડ માટે સવિસ્તર સ્કૅનની સુવિધા.</translation>
 <translation id="4606247758155004938">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે.</translation>
+<translation id="4607887340472970274">કિંમત ટ્રૅક કરવી</translation>
 <translation id="4611811151908969241">'<ph name="DOMAIN_NAME" />ને અનફૉલો કરો' છુપાવો</translation>
 <translation id="461440297010471931">Google વડે શોધી રહ્યાં છીએ</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
@@ -1274,7 +1271,6 @@
 <translation id="6710079714193676716">તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે. અમુક સુવિધાઓ અનુપલબ્ધ હોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">ફીડ પર જાઓ</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />ના રોજ ફેરફાર કર્યો</translation>
-<translation id="6717862474255265991">કિંમત ટ્રૅક કરો</translation>
 <translation id="6722623263381062480">પ્રાપ્ત કરેલા ટૅબ</translation>
 <translation id="6723740634201835758">તમારા Google એકાઉન્ટમાં</translation>
 <translation id="672735642903863329">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક્સ, પાસવર્ડ અને બીજું ઘણું મેળવો.</translation>
@@ -1440,7 +1436,6 @@
 <translation id="75362970626182391">ટૅબનું નવું ગ્રૂપ</translation>
 <translation id="7537586195939242955">માફ કરશો, તમારો પાસ આ સમયે પાસબુક પર ઇન્સ્ટોલ કરી શકાતો નથી.</translation>
 <translation id="754655535278952384">છેલ્લે ચેક કર્યાનો સમય <ph name="TIME" /></translation>
-<translation id="755255281989213264">મેનૂ કસ્ટમાઇઝ કરો</translation>
 <translation id="7553234618121028547">બંધ કરવા માટે, <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> ખોલો અને પાસવર્ડ સંબંધિત વિકલ્પો પર જાઓ.</translation>
 <translation id="7557508262441527045">સાઇન આઉટ કર્યું</translation>
 <translation id="7561196759112975576">હંમેશાં</translation>

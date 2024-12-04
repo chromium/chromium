@@ -289,7 +289,7 @@ TEST_F(AppDefinedWebsitesTest, CanLoadAssetStatementsWithEmptyIncludeList) {
 }
 
 TEST_F(AppDefinedWebsitesTest,
-       CanLoadAssetStatementsWithIncludesOneUrlIsNotFound) {
+       CanLoadAssetStatementsWithIncludes_oneUrlIsNotFound) {
   SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements,
                     {"asset-statement.example"});
 
@@ -317,7 +317,7 @@ TEST_F(AppDefinedWebsitesTest,
 }
 
 TEST_F(AppDefinedWebsitesTest,
-       CanLoadAssetStatementsWithIncludesOneUrlDoesNotResolve) {
+       CanLoadAssetStatementsWithIncludes_oneUrlDoesNotResolve) {
   SetProviderResult(AppDefinedDomainCriteria::kAndroidAssetStatements,
                     {"asset-statement.example"});
 
@@ -373,7 +373,7 @@ TEST_F(AppDefinedWebsitesTest, IsAppDefinedDomainWithoutIncludes) {
 }
 
 TEST_F(AppDefinedWebsitesTest,
-       IsAppDefinedDomainWithoutIncludesEmptyListIsNotAppDefined) {
+       IsAppDefinedDomainWithoutIncludes_emptyListIsNotAppDefined) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndDisableFeature(
       features::kWebViewDigitalAssetLinksLoadIncludes);
@@ -393,7 +393,7 @@ TEST_F(AppDefinedWebsitesTest,
 }
 
 TEST_F(AppDefinedWebsitesTest,
-       IsAppDefinedDomainWithoutIncludesOtherDomainIsNotRelated) {
+       IsAppDefinedDomainWithoutIncludes_otherDomainIsNotRelated) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndDisableFeature(
       features::kWebViewDigitalAssetLinksLoadIncludes);
@@ -437,7 +437,7 @@ TEST_F(AppDefinedWebsitesTest, IsAppDefinedDomainWithIncludes) {
 }
 
 TEST_F(AppDefinedWebsitesTest,
-       IsAppDefinedDomainWithIncludesLoadFromManifestDirectly) {
+       IsAppDefinedDomainWithIncludes_loadFromManifestDirectly) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(
       features::kWebViewDigitalAssetLinksLoadIncludes);
@@ -462,7 +462,7 @@ TEST_F(AppDefinedWebsitesTest,
 }
 
 TEST_F(AppDefinedWebsitesTest,
-       IsAppDefinedDomainWithIncludesEmptyListIsNotAppDefined) {
+       IsAppDefinedDomainWithIncludes_emptyListIsNotAppDefined) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(
       features::kWebViewDigitalAssetLinksLoadIncludes);
@@ -485,7 +485,7 @@ TEST_F(AppDefinedWebsitesTest,
 }
 
 TEST_F(AppDefinedWebsitesTest,
-       IsAppDefinedDomainWithIncludesOtherDomainIsNotRelated) {
+       IsAppDefinedDomainWithIncludes_otherDomainIsNotRelated) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(
       features::kWebViewDigitalAssetLinksLoadIncludes);

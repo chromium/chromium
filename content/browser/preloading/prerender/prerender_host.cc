@@ -654,7 +654,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   frame_tree_->Shutdown();
   frame_tree_.reset();
 
-  page->render_frame_host()->ForEachRenderFrameHostIncludingSpeculative(
+  page->render_frame_host()->ForEachRenderFrameHostImplIncludingSpeculative(
       [this](RenderFrameHostImpl* rfh) {
         // The visibility state of the prerendering page has not been
         // updated by

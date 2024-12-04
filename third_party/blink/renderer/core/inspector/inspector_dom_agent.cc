@@ -117,7 +117,7 @@ template <typename Functor>
 void ForEachSupportedPseudo(const Element* element, Functor& func) {
   for (PseudoId pseudo_id :
        {kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
-        kPseudoIdSelectArrow, kPseudoIdMarker, kPseudoIdBackdrop}) {
+        kPseudoIdPickerIcon, kPseudoIdMarker, kPseudoIdBackdrop}) {
     if (!PseudoElement::IsWebExposed(pseudo_id, element))
       continue;
     if (PseudoElement* pseudo_element = element->GetPseudoElement(pseudo_id))
@@ -201,8 +201,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::Before;
     case kPseudoIdAfter:
       return protocol::DOM::PseudoTypeEnum::After;
-    case kPseudoIdSelectArrow:
-      return protocol::DOM::PseudoTypeEnum::SelectArrow;
+    case kPseudoIdPickerIcon:
+      return protocol::DOM::PseudoTypeEnum::PickerIcon;
     case kPseudoIdMarker:
       return protocol::DOM::PseudoTypeEnum::Marker;
     case kPseudoIdBackdrop:

@@ -6,6 +6,7 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="hu">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">A ChatGPT GPT-4-je üzemelteti</translation>
+  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Blokkolja a hirdetéseket és a nyomkövetőket a webes böngészés közben.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Ültess fákat böngészés közben. Már több mint 200 milliót elültettünk.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">A Google-lal megtalálhatja, amire szüksége van</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Internetes kutatásai ingyenesen finanszírozzák az egyesületeket</translation>

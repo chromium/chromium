@@ -37,15 +37,15 @@ class FastPairDecoderTest : public testing::Test {
   }
 };
 
-TEST_F(FastPairDecoderTest, HasModelIdThreeByteFormat) {
+TEST_F(FastPairDecoderTest, HasModelId_ThreeByteFormat) {
   EXPECT_TRUE(HasModelIdString(kModelId));
 }
 
-TEST_F(FastPairDecoderTest, HasModelIdTooShort) {
+TEST_F(FastPairDecoderTest, HasModelId_TooShort) {
   EXPECT_FALSE(HasModelIdString("11"));
 }
 
-TEST_F(FastPairDecoderTest, HasModelIdLongFormat) {
+TEST_F(FastPairDecoderTest, HasModelId_LongFormat) {
   std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
                                    .SetHeader(0b00001000)
                                    .SetModelId("11223344")
@@ -62,7 +62,7 @@ TEST_F(FastPairDecoderTest, HasModelIdLongFormat) {
   EXPECT_TRUE(HasModelId(&bytes));
 }
 
-TEST_F(FastPairDecoderTest, HasModelIdLongInvalidVersion) {
+TEST_F(FastPairDecoderTest, HasModelId_LongInvalidVersion) {
   std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
                                    .SetHeader(0b00101000)
                                    .SetModelId("11223344")
@@ -71,7 +71,7 @@ TEST_F(FastPairDecoderTest, HasModelIdLongInvalidVersion) {
   EXPECT_FALSE(HasModelId(&bytes));
 }
 
-TEST_F(FastPairDecoderTest, HasModelIdLongInvalidLength) {
+TEST_F(FastPairDecoderTest, HasModelId_LongInvalidLength) {
   std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
                                    .SetHeader(0b00001010)
                                    .SetModelId("11223344")
@@ -88,22 +88,22 @@ TEST_F(FastPairDecoderTest, HasModelIdLongInvalidLength) {
   EXPECT_FALSE(HasModelId(&bytes));
 }
 
-TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceDataNoResultForNullData) {
+TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_NoResultForNullData) {
   EXPECT_EQ(GetHexModelIdFromServiceData(nullptr), std::nullopt);
 }
 
-TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceDataNoResultForEmptyData) {
+TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_NoResultForEmptyData) {
   std::vector<uint8_t> empty;
   EXPECT_EQ(GetHexModelIdFromServiceData(&empty), std::nullopt);
 }
 
-TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceDataThreeByteData) {
+TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_ThreeByteData) {
   std::vector<uint8_t> bytes;
   base::HexStringToBytes(kModelId, &bytes);
   EXPECT_EQ(GetHexModelIdFromServiceData(&bytes), kModelId);
 }
 
-TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceDataLongModelId) {
+TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_LongModelId) {
   std::vector<uint8_t> service_data = FastPairServiceDataCreator::Builder()
                                           .SetHeader(kLongModelIdHeader)
                                           .SetModelId(kLongModelId)
@@ -113,7 +113,7 @@ TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceDataLongModelId) {
   EXPECT_EQ(GetHexModelIdFromServiceData(&service_data), kLongModelId);
 }
 
-TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceDataLongModelIdTrimmed) {
+TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_LongModelIdTrimmed) {
   std::vector<uint8_t> service_data = FastPairServiceDataCreator::Builder()
                                           .SetHeader(kPaddedLongModelIdHeader)
                                           .SetModelId(kPaddedModelId)

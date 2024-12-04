@@ -202,9 +202,8 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
       std::vector<sync_pb::WebauthnCredentialSpecifics> credentials =
           passkey_model_->GetPasskeysForRelyingPartyId(rp_id_);
       for (auto& cred : credentials) {
-        if (base::ranges::equal(
-                base::as_bytes(base::make_span(cred.credential_id())),
-                base::make_span(*selected_credential_id_))) {
+        if (base::ranges::equal(base::as_byte_span(cred.credential_id()),
+                                base::span(*selected_credential_id_))) {
           selected_credential =
               std::make_unique<sync_pb::WebauthnCredentialSpecifics>(
                   std::move(cred));

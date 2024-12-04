@@ -268,12 +268,12 @@ class DecryptingAudioDecoderTest : public testing::Test {
   Decryptor::AudioFrames decoded_frame_list_;
 };
 
-TEST_F(DecryptingAudioDecoderTest, InitializeNormal) {
+TEST_F(DecryptingAudioDecoderTest, Initialize_Normal) {
   Initialize();
 }
 
 // Ensure decoder handles invalid audio configs without crashing.
-TEST_F(DecryptingAudioDecoderTest, InitializeInvalidAudioConfig) {
+TEST_F(DecryptingAudioDecoderTest, Initialize_InvalidAudioConfig) {
   AudioDecoderConfig config(AudioCodec::kUnknown, kUnknownSampleFormat,
                             CHANNEL_LAYOUT_STEREO, 0, EmptyExtraData(),
                             EncryptionScheme::kCenc);
@@ -282,7 +282,7 @@ TEST_F(DecryptingAudioDecoderTest, InitializeInvalidAudioConfig) {
 }
 
 // Ensure decoder handles unsupported audio configs without crashing.
-TEST_F(DecryptingAudioDecoderTest, InitializeUnsupportedAudioConfig) {
+TEST_F(DecryptingAudioDecoderTest, Initialize_UnsupportedAudioConfig) {
   SetCdmType(CDM_WITH_DECRYPTOR);
   EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).WillOnce([&](auto cb) {
     event_cb_ = cb;
@@ -297,7 +297,7 @@ TEST_F(DecryptingAudioDecoderTest, InitializeUnsupportedAudioConfig) {
   InitializeAndExpectResult(config, false);
 }
 
-TEST_F(DecryptingAudioDecoderTest, InitializeCdmWithoutDecryptor) {
+TEST_F(DecryptingAudioDecoderTest, Initialize_CdmWithoutDecryptor) {
   SetCdmType(CDM_WITHOUT_DECRYPTOR);
   AudioDecoderConfig config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                             CHANNEL_LAYOUT_STEREO, kSampleRate,
@@ -306,13 +306,13 @@ TEST_F(DecryptingAudioDecoderTest, InitializeCdmWithoutDecryptor) {
 }
 
 // Test normal decrypt and decode case.
-TEST_F(DecryptingAudioDecoderTest, DecryptAndDecodeNormal) {
+TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_Normal) {
   Initialize();
   EnterNormalDecodingState();
 }
 
 // Test the case where the decryptor errors for mismatched subsamples
-TEST_F(DecryptingAudioDecoderTest, DecryptAndDecodeSubsampleError) {
+TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_SubsampleError) {
   Initialize();
 
   scoped_refptr<media::DecoderBuffer> mismatched_encrypted_buffer =
@@ -329,7 +329,7 @@ TEST_F(DecryptingAudioDecoderTest, DecryptAndDecodeSubsampleError) {
 
 // Test the case where the decryptor returns error when doing decrypt and
 // decode.
-TEST_F(DecryptingAudioDecoderTest, DecryptAndDecodeDecodeError) {
+TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_DecodeError) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeAudio(_, _))
@@ -341,7 +341,7 @@ TEST_F(DecryptingAudioDecoderTest, DecryptAndDecodeDecodeError) {
 }
 
 // Test the case where the decryptor returns multiple decoded frames.
-TEST_F(DecryptingAudioDecoderTest, DecryptAndDecodeMultipleFrames) {
+TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_MultipleFrames) {
   Initialize();
 
   scoped_refptr<AudioBuffer> frame_a = AudioBuffer::CreateEmptyBuffer(
@@ -365,14 +365,14 @@ TEST_F(DecryptingAudioDecoderTest, DecryptAndDecodeMultipleFrames) {
 }
 
 // Test the case where the decryptor receives end-of-stream buffer.
-TEST_F(DecryptingAudioDecoderTest, DecryptAndDecodeEndOfStream) {
+TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_EndOfStream) {
   Initialize();
   EnterNormalDecodingState();
   EnterEndOfStreamState();
 }
 
 // Test reinitializing decode with a new encrypted config.
-TEST_F(DecryptingAudioDecoderTest, ReinitializeEncryptedToEncrypted) {
+TEST_F(DecryptingAudioDecoderTest, Reinitialize_EncryptedToEncrypted) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, InitializeAudioDecoder(_, _))
@@ -394,7 +394,7 @@ TEST_F(DecryptingAudioDecoderTest, ReinitializeEncryptedToEncrypted) {
 }
 
 // Test reinitializing decode with a new clear config.
-TEST_F(DecryptingAudioDecoderTest, ReinitializeEncryptedToClear) {
+TEST_F(DecryptingAudioDecoderTest, Reinitialize_EncryptedToClear) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, InitializeAudioDecoder(_, _))
@@ -417,7 +417,7 @@ TEST_F(DecryptingAudioDecoderTest, ReinitializeEncryptedToClear) {
 
 // Test the case where the a key is added when the decryptor is in
 // kWaitingForKey state.
-TEST_F(DecryptingAudioDecoderTest, KeyAddedDuringWaitingForKey) {
+TEST_F(DecryptingAudioDecoderTest, KeyAdded_DuringWaitingForKey) {
   Initialize();
   EXPECT_MEDIA_LOG(HasSubstr("DecryptingAudioDecoder: no key for key"));
   EnterWaitingForKeyState();
@@ -435,7 +435,7 @@ TEST_F(DecryptingAudioDecoderTest, KeyAddedDuringWaitingForKey) {
 
 // Test the case where the a key is added when the decryptor is in
 // kPendingDecode state.
-TEST_F(DecryptingAudioDecoderTest, KeyAddedDuringPendingDecode) {
+TEST_F(DecryptingAudioDecoderTest, KeyAdded_DuringPendingDecode) {
   Initialize();
   EXPECT_MEDIA_LOG(HasSubstr("DecryptingAudioDecoder: no key for key"));
   EnterPendingDecodeState();
@@ -457,21 +457,21 @@ TEST_F(DecryptingAudioDecoderTest, KeyAddedDuringPendingDecode) {
 
 // Test resetting when the decoder is in kIdle state but has not decoded any
 // frame.
-TEST_F(DecryptingAudioDecoderTest, ResetDuringIdleAfterInitialization) {
+TEST_F(DecryptingAudioDecoderTest, Reset_DuringIdleAfterInitialization) {
   Initialize();
   Reset();
 }
 
 // Test resetting when the decoder is in kIdle state after it has decoded one
 // frame.
-TEST_F(DecryptingAudioDecoderTest, ResetDuringIdleAfterDecodedOneFrame) {
+TEST_F(DecryptingAudioDecoderTest, Reset_DuringIdleAfterDecodedOneFrame) {
   Initialize();
   EnterNormalDecodingState();
   Reset();
 }
 
 // Test resetting when the decoder is in kPendingDecode state.
-TEST_F(DecryptingAudioDecoderTest, ResetDuringPendingDecode) {
+TEST_F(DecryptingAudioDecoderTest, Reset_DuringPendingDecode) {
   Initialize();
   EnterPendingDecodeState();
 
@@ -481,7 +481,7 @@ TEST_F(DecryptingAudioDecoderTest, ResetDuringPendingDecode) {
 }
 
 // Test resetting when the decoder is in kWaitingForKey state.
-TEST_F(DecryptingAudioDecoderTest, ResetDuringWaitingForKey) {
+TEST_F(DecryptingAudioDecoderTest, Reset_DuringWaitingForKey) {
   Initialize();
   EXPECT_MEDIA_LOG(HasSubstr("DecryptingAudioDecoder: no key for key"));
   EnterWaitingForKeyState();
@@ -493,7 +493,7 @@ TEST_F(DecryptingAudioDecoderTest, ResetDuringWaitingForKey) {
 
 // Test resetting when the decoder has hit end of stream and is in
 // kDecodeFinished state.
-TEST_F(DecryptingAudioDecoderTest, ResetAfterDecodeFinished) {
+TEST_F(DecryptingAudioDecoderTest, Reset_AfterDecodeFinished) {
   Initialize();
   EnterNormalDecodingState();
   EnterEndOfStreamState();
@@ -501,7 +501,7 @@ TEST_F(DecryptingAudioDecoderTest, ResetAfterDecodeFinished) {
 }
 
 // Test resetting after the decoder has been reset.
-TEST_F(DecryptingAudioDecoderTest, ResetAfterReset) {
+TEST_F(DecryptingAudioDecoderTest, Reset_AfterReset) {
   Initialize();
   EnterNormalDecodingState();
   Reset();

@@ -120,6 +120,25 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kPrivacyPolicyLinkClicked,
   };
 
+  // Contains the possible states of the Notice Queue.
+  // Must be kept in sync with NoticeQueueState in
+  // tools/metrics/histograms/enums.xml
+  // LINT.IfChange(NoticeQueueState)
+  enum class NoticeQueueState {
+    // Queued on browser startup.
+    kQueueOnStartup = 0,
+    // Queued when new tab helper is created or navigation occurred.
+    kQueueOnThOrNav = 1,
+    // Released when new tab helper is created or navigation occurred.
+    kReleaseOnThOrNav = 2,
+    // Released because DMA notice showed during session.
+    kReleaseOnDMA = 3,
+    // Released after successful show.
+    kReleaseOnShown = 4,
+    kMaxValue = kReleaseOnShown,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:NoticeQueueState)
+
   // If during the trials a previous consent decision was made, or the notice
   // was already acknowledged, and the privacy sandbox is disabled,
   // `prefs::kPrivacySandboxM1PromptSuppressed` was set to either
@@ -190,18 +209,24 @@ class PrivacySandboxService : public KeyedService {
   virtual bool IsPromptOpenForBrowser(Browser* browser) = 0;
 
   // The following methods call directly into the product messaging controller.
+  // TODO(crbug.com/370804492): When we add DMA notice to queue, consider
+  // extrapolating these methods.
   virtual bool IsNoticeQueued() = 0;
   virtual bool IsHoldingHandle() = 0;
   // If the notice is in the queue, it will unqueue it. Otherwise, if the handle
   // is being held, it will release the handle.
-  virtual void MaybeUnqueueNotice() = 0;
+  virtual void MaybeUnqueueNotice(NoticeQueueState queue_source) = 0;
   // If a prompt is required and we are not already in the queue or holding the
   // handle, will add the notice to the product messaging controller queue.
-  virtual void MaybeQueueNotice() = 0;
+  virtual void MaybeQueueNotice(NoticeQueueState queue_source) = 0;
   // Triggered by product messaging code when our turn in queue has arrived.
   // Moves the handle to temporary location to hold it.
   virtual void HoldQueueHandle(user_education::RequiredNoticePriorityHandle
                                    messaging_priority_handle) = 0;
+  // Tracks whether the queue is meant to be suppressed or not. If set to true,
+  // queueing and unqueueing attempts will be ignored, but the existing queue
+  // will be unaffected.
+  virtual void SetSuppressQueue(bool suppress_queue) = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // If set to true, this treats the testing environment as that of a branded
@@ -327,10 +352,6 @@ class PrivacySandboxService : public KeyedService {
   TopicsConsentLastUpdateSource() const = 0;
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
-
-  // Temporary flag signifying not to requeue if the prompt has been suppressed.
-  // TODO(crbug.com/370804492): When we add DMA notice to queue, remove this.
-  bool suppress_queue = false;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_

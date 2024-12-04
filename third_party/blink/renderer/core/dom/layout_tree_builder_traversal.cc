@@ -78,8 +78,10 @@ ContainerNode* LayoutTreeBuilderTraversal::LayoutParent(const Node& node) {
   // from all call sites of this function, or move the check here.
   ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(node);
 
-  while (parent && HasDisplayContentsStyle(*parent))
+  while (parent && (HasDisplayContentsStyle(*parent) ||
+                    parent->IsColumnPseudoElement())) {
     parent = LayoutTreeBuilderTraversal::Parent(*parent);
+  }
 
   return parent;
 }
@@ -92,9 +94,10 @@ LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
     return node.GetDocument().GetLayoutView();
   }
   const Node* search_start_node = &node;
-  // Parent of ::scroll-marker-group should be layout parent of its
-  // originating element.
-  if (node.IsScrollMarkerGroupPseudoElement()) {
+  // Parent of ::scroll-marker-group and ::scroll-button() should be layout
+  // parent of its originating element.
+  if (node.IsScrollMarkerGroupPseudoElement() ||
+      node.IsScrollButtonPseudoElement()) {
     search_start_node = node.parentNode();
   }
   ContainerNode* parent =
@@ -184,11 +187,11 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
         return next;
       [[fallthrough]];
     case kPseudoIdAfter:
-      if (Node* next = parent_element->GetPseudoElement(kPseudoIdSelectArrow)) {
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
       if (Node* next = parent_element->GetPseudoElement(
               kPseudoIdScrollMarkerGroupAfter)) {
         return next;
@@ -240,11 +243,11 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
   switch (pseudo_id) {
     case kPseudoIdScrollMarkerGroupAfter:
       if (Node* previous =
-              parent_element->GetPseudoElement(kPseudoIdSelectArrow)) {
+              parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
       if (Node* previous = parent_element->GetPseudoElement(kPseudoIdAfter)) {
         return previous;
       }
@@ -341,7 +344,7 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
           current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
     return last;
   }
-  if (Node* last = current_element->GetPseudoElement(kPseudoIdSelectArrow)) {
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
     return last;
   }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
@@ -444,7 +447,7 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
   if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
     return first;
   }
-  if (Node* first = current_element->GetPseudoElement(kPseudoIdSelectArrow)) {
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
     return first;
   }
   return current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter);

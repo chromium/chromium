@@ -18,8 +18,8 @@ namespace ime {
 
 class AnnouncementViewTest : public ChromeViewsTestBase {
  public:
-  AnnouncementViewTest() {}
-  ~AnnouncementViewTest() override {}
+  AnnouncementViewTest() = default;
+  ~AnnouncementViewTest() override = default;
 
  protected:
   void SetUp() override {

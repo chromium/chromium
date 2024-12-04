@@ -9,19 +9,19 @@
 
 namespace media {
 
-TEST(VideoBitrateAllocationTest, ConstructorDefaultsModeConstant) {
+TEST(VideoBitrateAllocationTest, Constructor_DefaultsModeConstant) {
   VideoBitrateAllocation allocation;
 
   ASSERT_EQ(allocation.GetMode(), Bitrate::Mode::kConstant);
 }
 
-TEST(VideoBitrateAllocationTest, ConstructorConstantBitrateCorrectMode) {
+TEST(VideoBitrateAllocationTest, Constructor_ConstantBitrate_CorrectMode) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kConstant);
 
   ASSERT_EQ(allocation.GetMode(), Bitrate::Mode::kConstant);
 }
 
-TEST(VideoBitrateAllocationTest, ConstructorVariableBitrateCorrectMode) {
+TEST(VideoBitrateAllocationTest, Constructor_VariableBitrate_CorrectMode) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
 
   ASSERT_EQ(allocation.GetMode(), Bitrate::Mode::kVariable);
@@ -71,7 +71,7 @@ TEST(VideoBitrateAllocationTest, SetAndGet) {
   }
 }
 
-TEST(VideoBitrateAllocationTest, SetBitrateVariableBitrateCorrectSum) {
+TEST(VideoBitrateAllocationTest, SetBitrate_VariableBitrate_CorrectSum) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
   allocation.SetBitrate(0, 0, 1u);
   allocation.SetBitrate(1, 0, 2u);
@@ -82,7 +82,7 @@ TEST(VideoBitrateAllocationTest, SetBitrateVariableBitrateCorrectSum) {
   ASSERT_EQ(15u, allocation.GetSumBps());
 }
 
-TEST(VideoBitrateAllocationTest, SetBitratePeakTooLowIncreasesPeak) {
+TEST(VideoBitrateAllocationTest, SetBitrate_PeakTooLow_IncreasesPeak) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
   allocation.SetPeakBps(50u);
 
@@ -90,7 +90,7 @@ TEST(VideoBitrateAllocationTest, SetBitratePeakTooLowIncreasesPeak) {
   ASSERT_EQ(allocation.GetSumBitrate().peak_bps(), 1000u);
 }
 
-TEST(VideoBitrateAllocationTest, SetPeakBpsGreaterThanSumSucceeds) {
+TEST(VideoBitrateAllocationTest, SetPeakBps_GreaterThanSum_Succeeds) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
   allocation.SetBitrate(0, 0, 500u);
   allocation.SetBitrate(0, 1, 500u);
@@ -100,7 +100,7 @@ TEST(VideoBitrateAllocationTest, SetPeakBpsGreaterThanSumSucceeds) {
   ASSERT_EQ(allocation.GetSumBitrate().peak_bps(), 2000u);
 }
 
-TEST(VideoBitrateAllocationTest, SetPeakBpsEqualToSumSucceeds) {
+TEST(VideoBitrateAllocationTest, SetPeakBps_EqualToSum_Succeeds) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
   allocation.SetBitrate(0, 0, 400u);
   allocation.SetBitrate(0, 1, 300u);
@@ -112,19 +112,19 @@ TEST(VideoBitrateAllocationTest, SetPeakBpsEqualToSumSucceeds) {
   ASSERT_EQ(allocation.GetSumBitrate().peak_bps(), 1000u);
 }
 
-TEST(VideoBitrateAllocationTest, SetPeakBpsImplicitConstantBitrateFails) {
+TEST(VideoBitrateAllocationTest, SetPeakBps_ImplicitConstantBitrate_Fails) {
   VideoBitrateAllocation allocation;
 
   ASSERT_FALSE(allocation.SetPeakBps(1u));
 }
 
-TEST(VideoBitrateAllocationTest, SetPeakBpsConstantBitrateFails) {
+TEST(VideoBitrateAllocationTest, SetPeakBps_ConstantBitrate_Fails) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kConstant);
 
   ASSERT_FALSE(allocation.SetPeakBps(1u));
 }
 
-TEST(VideoBitrateAllocationTest, SetPeakBpsPeakLessThanSumFails) {
+TEST(VideoBitrateAllocationTest, SetPeakBps_PeakLessThanSum_Fails) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
   allocation.SetBitrate(0, 0, 1000u);
 
@@ -208,7 +208,7 @@ TEST(VideoBitrateAllocationTest, ToString) {
   EXPECT_EQ(allocation.ToString(), "Empty VideoBitrateAllocation");
 }
 
-TEST(VideoBitrateAllocationTest, ToStringVariableBitrateAndSingleLayer) {
+TEST(VideoBitrateAllocationTest, ToString_VariableBitrateAndSingleLayer) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
   allocation.SetBitrate(0, 0, 1u);
 
@@ -216,7 +216,7 @@ TEST(VideoBitrateAllocationTest, ToStringVariableBitrateAndSingleLayer) {
             "active spatial layers: 1, {SL#0: {1}}, mode VBR with peak bps 1");
 }
 
-TEST(VideoBitrateAllocationTest, ToStringVariableBitrateAndMultiLayer) {
+TEST(VideoBitrateAllocationTest, ToString_VariableBitrateAndMultiLayer) {
   VideoBitrateAllocation allocation(Bitrate::Mode::kVariable);
   allocation.SetBitrate(0, 0, 1u);
   allocation.SetBitrate(0, 1, 2u);

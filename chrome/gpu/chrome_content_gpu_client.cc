@@ -54,7 +54,7 @@ ChromeContentGpuClient::ChromeContentGpuClient() {
 #endif
 }
 
-ChromeContentGpuClient::~ChromeContentGpuClient() {}
+ChromeContentGpuClient::~ChromeContentGpuClient() = default;
 
 void ChromeContentGpuClient::GpuServiceInitialized() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">آن ہونے پر، سائٹس آپ کے کلپ بورڈ میں محفوظ کردہ ٹیکسٹ اور تصاویر دیکھنے کے لیے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کے کلپ بورڈ میں محفوظ کردہ ٹیکسٹ یا تصاویر نہیں دیکھ سکتی ہیں۔</translation>
 <translation id="5853982612236235577">آن ہونے پر، سائٹس اطلاعات بھیجنے کے لیے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس اطلاعات نہیں بھیج سکتیں۔</translation>
 <translation id="5860033963881614850">آف</translation>
+<translation id="5860491529813859533">آن کریں</translation>
 <translation id="5876056640971328065">ویڈیو موقوف کریں</translation>
 <translation id="5877248419911025165">تمام درخواستوں کو سکیڑیں</translation>
 <translation id="5884085660368669834">سائٹ کی ترجیح</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">ویب پتہ درج کریں</translation>
 <translation id="5975083100439434680">زوم آؤٹ کریں</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">‏اب آپ اپنے آلے کی ایپس کی فہرست سے اور آلے کے تلاش کے نتائج میں تجویز کردہ ٹیبز تک فوری طور پر رسائی حاصل کر سکتے ہیں۔ اسے Chrome کی ترتیبات میں کسی بھی وقت آف کریں۔</translation>
 <translation id="6015775454662021376">اپنے آلے تک اس سائٹ کی رسائی کو کنٹرول کریں</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6042308850641462728">مزید</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">پہلے پوچھیں</translation>
 <translation id="7423538860840206698">کلپ بورڈ پڑھنے سے مسدود کیا گیا</translation>
 <translation id="7425915948813553151">سائٹس کیلئے گہری تھیم</translation>
+<translation id="7488573225650545859">'اپنی ایپس کی فہرست میں ٹیبز دیکھیں' کو چھپائیں</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">آن ہونے پر، سائٹس سائن ان پرامپٹس دکھا سکتی ہیں۔ آف ہونے پر، سائٹس سائن ان پرامپٹس نہیں دکھا سکتی ہیں۔</translation>
 <translation id="7553211568594248088">ہب تلاش سے باہر نکلیں</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">‏یہ مواد <ph name="DOMAIN_NAME" /> کی جانب سے ہے، جسے Google نے ڈیلیور کیا ہے۔</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> میں مزید اختیارات</translation>
 <translation id="8090579562279016251">‏اس سے کارکردگی کم ہو جاتی ہے لیکن V8 حملوں کا مزید مزاحم ہو جاتا ہے</translation>
+<translation id="8112925981674547014">اپنی ایپس کی فہرست میں ٹیبز دیکھیں</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{‏Chrome کل دوبارہ کوکیز کو محدود کر دے گا}other{‏# دنوں میں Chrome کوکیز کو دوبارہ محدود کر دے گا}}</translation>
 <translation id="8116925261070264013">‏خاموش کردہ</translation>
 <translation id="8117244575099414087">آن ہونے پر، سائٹس آپ کے آلے کے سینسرز کا استعمال کر سکتی ہیں۔ آف ہونے پر، سائٹس سینسرز کا استعمال نہیں کر سکتیں۔</translation>

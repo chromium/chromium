@@ -40,7 +40,7 @@ class CrostiniUpgradeAvailableNotificationTest
   CrostiniUpgradeAvailableNotificationTest& operator=(
       const CrostiniUpgradeAvailableNotificationTest&) = delete;
 
-  ~CrostiniUpgradeAvailableNotificationTest() override {}
+  ~CrostiniUpgradeAvailableNotificationTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

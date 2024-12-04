@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju skatīt starpliktuvē saglabāto tekstu un attēlus. Kad šis slēdzis ir izslēgts, vietnes nevar skatīt starpliktuvē saglabāto tekstu vai attēlus.</translation>
 <translation id="5853982612236235577">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju sūtīt paziņojumus. Kad šis slēdzis ir izslēgts, vietnes nevar sūtīt paziņojumus.</translation>
 <translation id="5860033963881614850">Izsl.</translation>
+<translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5876056640971328065">Apturēt video atskaņošanu</translation>
 <translation id="5877248419911025165">Sakļaut visus pieprasījumus</translation>
 <translation id="5884085660368669834">Vietnes preference</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">Ievadiet tīmekļa adresi</translation>
 <translation id="5975083100439434680">Tālināt</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> — <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Tagad varat ātri piekļūt ieteiktajām cilnēm no ierīces lietotņu saraksta un ierīces meklēšanas rezultātos. Jebkurā brīdī Chrome iestatījumos varat izslēgt šo funkciju.</translation>
 <translation id="6015775454662021376">Pārvaldiet šīs vietnes piekļuvi jūsu ierīcei</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6042308850641462728">Vairāk</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">Vispirms jautāt</translation>
 <translation id="7423538860840206698">Bloķēta starpliktuves satura lasīšana</translation>
 <translation id="7425915948813553151">Tumšā motīva lietošana vietnēs</translation>
+<translation id="7488573225650545859">Paslēpt kartīti Ciļņu skatīšana lietotņu sarakstā</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kad šis slēdzis ir ieslēgts, vietnēs var rādīt pierakstīšanās uzvednes. Kad šis slēdzis ir izslēgts, vietnēs nevar rādīt pierakstīšanās uzvednes.</translation>
 <translation id="7553211568594248088">izietu no meklēšanas mezglā</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">Šis saturs ir no vietnes <ph name="DOMAIN_NAME" />, ko nodrošina Google.</translation>
 <translation id="8088603949666785339">Vairāk opciju šeit: <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Samazina veiktspēju, bet uzlabo V8 izturību pret uzbrukumiem</translation>
+<translation id="8112925981674547014">Ciļņu skatīšana lietotņu sarakstā</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Rīt pārlūkā Chrome atkal tiks ierobežoti sīkfaili}zero{Pēc # dienām pārlūkā Chrome atkal tiks ierobežoti sīkfaili}one{Pēc # dienas pārlūkā Chrome atkal tiks ierobežoti sīkfaili}other{Pēc # dienām pārlūkā Chrome atkal tiks ierobežoti sīkfaili}}</translation>
 <translation id="8116925261070264013">Izslēgta skaņa</translation>
 <translation id="8117244575099414087">Kad šis slēdzis ir ieslēgts, vietnes var izmantot ierīces sensorus. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot sensorus.</translation>

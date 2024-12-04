@@ -184,7 +184,6 @@ source_set("unit_tests") {
   deps = [
     ":for_tests",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/download/database",
     "//components/download/public/common:test_support",
     "//components/leveldb_proto",

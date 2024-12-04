@@ -114,7 +114,8 @@ class CONTENT_EXPORT Calculator {
   virtual void EmitCongestedIntervalsMeasurementTraceEvent(
       StartupStage startup_stage,
       base::TimeTicks start_time,
-      base::TimeTicks end_time);
+      base::TimeTicks end_time,
+      size_t num_congested_slices);
 
   // Exposed for testing.
   virtual void EmitCongestedIntervalTraceEvent(CongestionType congestion_type,

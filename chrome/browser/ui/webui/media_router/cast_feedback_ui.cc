@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 
 #include <memory>
@@ -170,11 +165,8 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
   source->AddBoolean("globalMediaControlsCastStartStop",
                      GlobalMediaControlsCastStartStopEnabled(profile_));
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kMediaRouterFeedbackResources,
-                      kMediaRouterFeedbackResourcesSize),
-      IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
+  webui::SetupWebUIDataSource(source, kMediaRouterFeedbackResources,
+                              IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
 
   web_ui->RegisterMessageCallback(
       "close", base::BindRepeating(&CastFeedbackUI::OnCloseMessage,

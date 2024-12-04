@@ -151,8 +151,8 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jstring>& jcard_number);
 
   // Adds or modifies a local credit card.  If |jguid| is an empty string, we
-  // are creating a new card.  Else we are updating an existing profile.  Always
-  // returns the GUID for this profile; the GUID it may have just been created.
+  // are creating a new card. Else we are updating an existing card. Always
+  // returns the GUID for this card; the GUID it may have just been created.
   base::android::ScopedJavaLocalRef<jstring> SetCreditCard(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcard);

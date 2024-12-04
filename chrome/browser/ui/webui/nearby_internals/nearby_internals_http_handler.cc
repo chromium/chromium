@@ -22,7 +22,7 @@
 namespace {
 
 // This enum class needs to stay in sync with the Rpc definition in
-// chrome/browser/resources/nearby_internals/types.js.
+// chrome/browser/resources/chromeos/nearby_internals/types.ts
 enum class Rpc {
   kCertificate = 0,
   kContact = 1,
@@ -31,7 +31,7 @@ enum class Rpc {
 };
 
 // This enum class needs to stay in sync with the Direction definition in
-// chrome/browser/resources/nearby_internals/types.js.
+// chrome/browser/resources/chromeos/nearby_internals/types.ts
 enum class Direction { kRequest = 0, kResponse = 1 };
 
 std::string FormatAsJSON(const base::Value::Dict& value) {

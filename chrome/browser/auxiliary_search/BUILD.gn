@@ -94,6 +94,9 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProviderTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleViewBinderUnitTest.java",
   ]
 
   deps = [
@@ -109,6 +112,7 @@ robolectric_library("junit") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/auxiliary_search/proto:proto_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -118,13 +122,16 @@ robolectric_library("junit") {
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/background_task_scheduler:factory_java",
     "//components/background_task_scheduler:public_java",
+    "//components/browser_ui/theme/android:java_resources",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_appsearch_appsearch_builtin_types_java",
     "//third_party/androidx:androidx_appsearch_appsearch_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:gendeps_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
     "//url:gurl_junit_test_support",
     "//url:url_java",
   ]

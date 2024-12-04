@@ -167,7 +167,7 @@ class AuthenticationService : public KeyedService,
   base::ScopedClosureRunner DeclareAccountSwitchInProgress();
 
  private:
-  friend class AuthenticationServiceTest;
+  friend class AuthenticationServiceTestBase;
   friend class FakeAuthenticationService;
 
   // Returns the cached MDM errors associated with `identity`. If the cache

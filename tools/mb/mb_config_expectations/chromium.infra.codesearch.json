@@ -78,6 +78,7 @@
       "is_clang": true,
       "is_debug": true,
       "symbol_level": 1,
+      "target_environment": "device",
       "target_os": "ios",
       "use_remoteexec": true
     }

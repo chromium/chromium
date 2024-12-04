@@ -93,6 +93,8 @@ class PLATFORM_EXPORT HTTPHeaderMap final {
     return headers_ == rhs.headers_;
   }
 
+  String GetAsRawString(int status_code, String status_message) const;
+
  private:
   MapType headers_;
 };

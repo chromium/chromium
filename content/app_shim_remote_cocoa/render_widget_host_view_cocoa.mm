@@ -287,6 +287,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // full string in the renderer.
   std::u16string _availableText;
   size_t _availableTextOffset;
+  NSUInteger _availableTextChangeCounter;
   gfx::Range _textSelectionRange;
 
   // The composition range, cached from the RenderWidgetHostView. This is only
@@ -476,6 +477,8 @@ void ExtractUnderlines(NSAttributedString* string,
   NSRect textRectInViewCoordinates =
       [self convertRect:textRectInWindowCoordinates fromView:nil];
 
+  NSUInteger capturedChangeCounter = _availableTextChangeCounter;
+
   [self.spellChecker
       showCorrectionIndicatorOfType:NSCorrectionIndicatorTypeDefault
                       primaryString:candidateResult.replacementString
@@ -484,12 +487,14 @@ void ExtractUnderlines(NSAttributedString* string,
                                view:self
                   completionHandler:^(NSString* acceptedString) {
                     [self didAcceptReplacementString:acceptedString
-                               forTextCheckingResult:candidateResult];
+                               forTextCheckingResult:candidateResult
+                                    withChangeNumber:capturedChangeCounter];
                   }];
 }
 
 - (void)didAcceptReplacementString:(NSString*)acceptedString
-             forTextCheckingResult:(NSTextCheckingResult*)correction {
+             forTextCheckingResult:(NSTextCheckingResult*)correction
+                  withChangeNumber:(NSUInteger)changeNumber {
   // TODO: Keep NSSpellChecker up to date on the user's response via
   // -recordResponse:toCorrection:forWord:language:inSpellDocumentWithTag:.
   // Call it to report whether they initially accepted or rejected the
@@ -519,6 +524,19 @@ void ExtractUnderlines(NSAttributedString* string,
     if ([self.spellChecker preventsAutocorrectionBeforeString:trailingString
                                                      language:nil])
       return;
+
+    // Gather some info in case -doubleClickAtIndex: throws an exception.
+    // This change will eventually be reverted.
+    NSString* info = [NSString
+        stringWithFormat:@"%lu == %lu %lu %@ %@ %@ %@", changeNumber,
+                         _availableTextChangeCounter, attString.string.length,
+                         NSStringFromRange(availableTextRange),
+                         NSStringFromRange(correction.range),
+                         NSStringFromRange(trailingRange),
+                         NSStringFromRange(trailingRangeInAvailableText)];
+    SCOPED_CRASH_KEY_STRING256("RenderWidgetHostViewCocoa", "didAcceptTR",
+                               base::SysNSStringToUTF8(info));
+
     if ([attString doubleClickAtIndex:trailingRangeInAvailableText.location]
             .location < trailingRangeInAvailableText.location)
       return;
@@ -639,6 +657,7 @@ void ExtractUnderlines(NSAttributedString* string,
                        range:(gfx::Range)range {
   _availableText = text;
   _availableTextOffset = offset;
+  _availableTextChangeCounter++;
   _textSelectionRange = range;
   _substitutionWasApplied = NO;
   [NSSpellChecker.sharedSpellChecker dismissCorrectionIndicatorForView:self];

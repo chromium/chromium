@@ -448,24 +448,10 @@ class AuthenticatorSelectAccountSheetModel
     kPostUserVerification,
   };
 
-  // Whether the user needs to select an account from a list of many or they
-  // merely need to confirm a single possible choice.
-  enum SelectionType {
-    kSingleAccount,
-    kMultipleAccounts,
-  };
-
   AuthenticatorSelectAccountSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
-      UserVerificationMode mode,
-      SelectionType type);
+      UserVerificationMode mode);
   ~AuthenticatorSelectAccountSheetModel() override;
-
-  SelectionType selection_type() const;
-
-  // Returns the single available credential if `type()` is
-  // `kSingleAccount` and must not be called otherwise.
-  const device::DiscoverableCredentialMetadata& SingleCredential() const;
 
   // Set the index of the currently selected row. Only valid to call for
   // `kMultipleAccount`.
@@ -482,7 +468,6 @@ class AuthenticatorSelectAccountSheetModel
   std::u16string GetAcceptButtonLabel() const override;
 
   const UserVerificationMode user_verification_mode_;
-  const SelectionType selection_type_;
   size_t selected_ = 0;
 };
 

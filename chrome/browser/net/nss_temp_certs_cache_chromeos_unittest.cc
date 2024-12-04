@@ -27,13 +27,13 @@ namespace {
 
 class NSSTempCertsCacheChromeOSTest : public testing::Test {
  public:
-  NSSTempCertsCacheChromeOSTest() {}
+  NSSTempCertsCacheChromeOSTest() = default;
 
   NSSTempCertsCacheChromeOSTest(const NSSTempCertsCacheChromeOSTest&) = delete;
   NSSTempCertsCacheChromeOSTest& operator=(
       const NSSTempCertsCacheChromeOSTest&) = delete;
 
-  ~NSSTempCertsCacheChromeOSTest() override {}
+  ~NSSTempCertsCacheChromeOSTest() override = default;
 
  protected:
   // Checks if the certificate stored in |pem_cert_file| can be found in the
@@ -110,7 +110,7 @@ TEST_F(NSSTempCertsCacheChromeOSTest, CertMadeAvailable) {
     ASSERT_TRUE(base::ReadFileToString(cert_file_path, &x509_authority_cert));
     net::CertificateList x509_authority_certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            base::as_bytes(base::make_span(x509_authority_cert)),
+            base::as_byte_span(x509_authority_cert),
             net::X509Certificate::Format::FORMAT_AUTO);
 
     NSSTempCertsCacheChromeOS cache(x509_authority_certs);

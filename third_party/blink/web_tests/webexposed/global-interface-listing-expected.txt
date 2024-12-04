@@ -85,8 +85,14 @@ interface AITranslator
     method constructor
     method destroy
     method translate
+interface AITranslatorCapabilities
+    attribute @@toStringTag
+    getter available
+    method constructor
+    method languagePairAvailable
 interface AITranslatorFactory
     attribute @@toStringTag
+    method capabilities
     method constructor
     method create
 interface AIWriter

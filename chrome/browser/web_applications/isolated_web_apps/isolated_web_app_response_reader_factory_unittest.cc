@@ -111,10 +111,10 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
 
     auto signature_info_ed25519 =
         web_package::mojom::SignatureInfoEd25519::New();
-    signature_info_ed25519->public_key = web_package::Ed25519PublicKey::Create(
-        base::make_span(kEd25519PublicKey));
-    signature_info_ed25519->signature = web_package::Ed25519Signature::Create(
-        base::make_span(kEd25519Signature));
+    signature_info_ed25519->public_key =
+        web_package::Ed25519PublicKey::Create(base::span(kEd25519PublicKey));
+    signature_info_ed25519->signature =
+        web_package::Ed25519Signature::Create(base::span(kEd25519Signature));
 
     web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
         signature_stack_entry =

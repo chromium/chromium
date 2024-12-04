@@ -52,6 +52,20 @@ _OVERRIDES = [
     #('androidx_core_core/core-1.9.0-SNAPSHOT.aar',
     # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
+    ('androidx_appsearch_appsearch/appsearch-1.1.0-SNAPSHOT.aar',
+     'https://androidx.dev/snapshots/builds/12697990/artifacts/repository/'
+     'androidx/appsearch/appsearch/1.1.0-SNAPSHOT/'
+     'appsearch-1.1.0-20241122.045036-1.aar'),
+    ('androidx_appsearch_appsearch_builtin_types/'
+     'appsearch-builtin-types-1.1.0-SNAPSHOT.aar',
+     'https://androidx.dev/snapshots/builds/12697990/artifacts/repository/'
+     'androidx/appsearch/appsearch-builtin-types/1.1.0-SNAPSHOT/'
+     'appsearch-builtin-types-1.1.0-20241122.045036-1.aar'),
+    ('androidx_appsearch_appsearch_platform_storage/'
+     'appsearch-platform-storage-1.1.0-SNAPSHOT.aar',
+     'https://androidx.dev/snapshots/builds/12697990/artifacts/repository/'
+     'androidx/appsearch/appsearch-platform-storage/1.1.0-SNAPSHOT/'
+     'appsearch-platform-storage-1.1.0-20241122.045036-1.aar'),
 ]
 
 

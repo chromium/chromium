@@ -20,7 +20,7 @@ TEST(DohProviderListTest, GetDohProviderList) {
 }
 
 TEST(DohProviderListTest, ProviderNamesAreUnique) {
-  std::set<std::string> names;
+  base::flat_set<std::string_view> names;
   for (const DohProviderEntry* entry : DohProviderEntry::GetList()) {
     EXPECT_FALSE(entry->provider.empty());
     auto [_, did_insert] = names.insert(entry->provider);
@@ -29,7 +29,7 @@ TEST(DohProviderListTest, ProviderNamesAreUnique) {
 }
 
 TEST(DohProviderListTest, UiNamesAreUniqueOrEmpty) {
-  std::set<std::string> ui_names;
+  std::set<std::string_view> ui_names;
   for (const DohProviderEntry* entry : DohProviderEntry::GetList()) {
     if (entry->ui_name.empty())
       continue;
@@ -41,7 +41,7 @@ TEST(DohProviderListTest, UiNamesAreUniqueOrEmpty) {
 TEST(DohProviderListTest, NonEmptyDnsOverTlsHostnames) {
   for (const DohProviderEntry* entry : DohProviderEntry::GetList()) {
     SCOPED_TRACE(entry->provider);
-    for (const std::string& s : entry->dns_over_tls_hostnames) {
+    for (const auto s : entry->dns_over_tls_hostnames) {
       EXPECT_FALSE(s.empty());
     }
   }

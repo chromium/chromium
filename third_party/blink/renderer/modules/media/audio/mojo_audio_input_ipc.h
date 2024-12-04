@@ -81,7 +81,7 @@ class MODULES_EXPORT MojoAudioInputIPC
       mojo::PendingRemote<media::mojom::blink::AudioInputStream> stream,
       mojo::PendingReceiver<media::mojom::blink::AudioInputStreamClient>
           stream_client_receiver,
-      media::mojom::blink::ReadOnlyAudioDataPipePtr data_pipe,
+      media::mojom::blink::ReadWriteAudioDataPipePtr data_pipe,
       bool initially_muted,
       const std::optional<base::UnguessableToken>& stream_id) override;
   void OnError(media::mojom::InputStreamErrorCode code) override;

@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlFencedFrameBrowserTest,
   // Ensure nothing was created for the fencedframe element. Only a single
   // RenderFrameHost, the `main_document`, should exist.
   int num_documents = 0;
-  main_document->ForEachRenderFrameHost(
+  main_document->ForEachRenderFrameHostImpl(
       [&](RenderFrameHostImpl* rfh) { num_documents++; });
   EXPECT_EQ(1, num_documents);
 }

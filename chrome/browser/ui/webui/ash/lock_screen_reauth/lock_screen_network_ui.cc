@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_ui.h"
 
 #include <memory>
@@ -87,8 +82,7 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
   ui::network_element::AddOncLocalizedStrings(html);
   html->UseStringsJs();
 
-  html->AddResourcePaths(base::make_span(kLockScreenReauthResources,
-                                         kLockScreenReauthResourcesSize));
+  html->AddResourcePaths(kLockScreenReauthResources);
   html->SetDefaultResource(IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_NETWORK_HTML);
 }
 

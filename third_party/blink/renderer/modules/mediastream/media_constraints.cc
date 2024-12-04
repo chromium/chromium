@@ -574,7 +574,7 @@ const Vector<MediaTrackConstraintSetPlatform>& MediaConstraints::Advanced()
 
 const String MediaConstraints::ToString() const {
   if (IsNull()) {
-    return String("");
+    return g_empty_string;
   }
   return private_->ToString();
 }

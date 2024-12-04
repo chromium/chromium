@@ -733,7 +733,7 @@ void DidUpdatePrefetchStatus(
 }
 
 void OnPrefetchRequestWillBeSent(
-    FrameTreeNode* frame_tree_node,
+    FrameTreeNode& ftn,
     const std::string& request_id,
     const GURL& initiator,
     const network::ResourceRequest& request,
@@ -742,10 +742,10 @@ void OnPrefetchRequestWillBeSent(
         redirect_info) {
   auto timestamp = base::TimeTicks::Now();
   std::string frame_token =
-      frame_tree_node->current_frame_host()->devtools_frame_token().ToString();
-  DispatchToAgents(
-      frame_tree_node, &protocol::NetworkHandler::PrefetchRequestWillBeSent,
-      request_id, request, initiator, frame_token, timestamp, redirect_info);
+      ftn.current_frame_host()->devtools_frame_token().ToString();
+  DispatchToAgents(&ftn, &protocol::NetworkHandler::PrefetchRequestWillBeSent,
+                   request_id, request, initiator, frame_token, timestamp,
+                   redirect_info);
 }
 
 void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
@@ -1060,11 +1060,12 @@ void OnSignedExchangeCertificateRequestSent(
   auto timestamp = base::TimeTicks::Now();
   network::mojom::URLRequestDevToolsInfoPtr request_info =
       network::ExtractDevToolsInfo(request);
-  DispatchToAgents(
-      frame_tree_node, &protocol::NetworkHandler::RequestSent,
-      request_id.ToString(), loader_id.ToString(), request.headers,
-      *request_info, protocol::Network::Initiator::TypeEnum::SignedExchange,
-      signed_exchange_url, /*initiator_devtools_request_id=*/"", timestamp);
+  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::RequestSent,
+                   request_id.ToString(), loader_id.ToString(), request.headers,
+                   *request_info,
+                   protocol::Network::Initiator::TypeEnum::SignedExchange,
+                   signed_exchange_url, /*initiator_devtools_request_id=*/"",
+                   /*frame_token=*/std::nullopt, timestamp);
 
   auto value = std::make_unique<base::trace_event::TracedValue>();
   value->SetString("requestId", request_id.ToString());
@@ -1546,7 +1547,8 @@ void OnAuctionWorkletNetworkRequestWillBeSent(
         /*loader_id=*/loader_id, request.headers, *request_info,
         /*initiator_type=*/protocol::Network::Initiator::TypeEnum::Other,
         initiator_url,
-        /*initiator_devtools_request_id=*/"", timestamp);
+        /*initiator_devtools_request_id=*/"", /*frame_token=*/std::nullopt,
+        timestamp);
   }
 }
 
@@ -2230,12 +2232,13 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
   MaybeAssignResourceRequestId(agent_host, request_id, request);
   for (auto* network_handler :
        protocol::NetworkHandler::ForAgentHost(agent_host)) {
-    network_handler->RequestSent(
-        request_id,
-        /*loader_id=*/"", request.headers, *request_info,
-        protocol::Network::Initiator::TypeEnum::Other,
-        requesting_frame->GetLastCommittedURL(),
-        /*initiator_devtools_request_id=*/"", timestamp);
+    network_handler->RequestSent(request_id,
+                                 /*loader_id=*/"", request.headers,
+                                 *request_info,
+                                 protocol::Network::Initiator::TypeEnum::Other,
+                                 requesting_frame->GetLastCommittedURL(),
+                                 /*initiator_devtools_request_id=*/"",
+                                 /*frame_token=*/std::nullopt, timestamp);
   }
 }
 
@@ -2257,21 +2260,11 @@ void OnWorkerMainScriptLoadingFailed(
                    protocol::Network::ResourceTypeEnum::Other, status);
 }
 
-void OnWorkerMainScriptLoadingFinished(
-    FrameTreeNode* ftn,
-    const base::UnguessableToken& worker_token,
-    const network::URLLoaderCompletionStatus& status) {
-  DCHECK(ftn);
-  DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete,
-                   worker_token.ToString(),
-                   protocol::Network::ResourceTypeEnum::Other, status);
-}
-
 void OnWorkerMainScriptRequestWillBeSent(
-    FrameTreeNode* ftn,
+    RenderFrameHostImpl& ancestor_frame_host,
     const base::UnguessableToken& worker_token,
     network::ResourceRequest& request) {
-  DCHECK(ftn);
+  FrameTreeNode* ftn = ancestor_frame_host.frame_tree_node();
 
   auto timestamp = base::TimeTicks::Now();
   network::mojom::URLRequestDevToolsInfoPtr request_info =
@@ -2301,7 +2294,8 @@ void OnWorkerMainScriptRequestWillBeSent(
       ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
       /*loader_id=*/"", request.headers, *request_info,
       protocol::Network::Initiator::TypeEnum::Other, ftn->current_url(),
-      /*initiator_devtools_request_id*/ "", timestamp);
+      /*initiator_devtools_request_id*/ "",
+      ancestor_frame_host.devtools_frame_token(), timestamp);
 }
 
 void LogWorkletMessage(RenderFrameHostImpl& frame_host,

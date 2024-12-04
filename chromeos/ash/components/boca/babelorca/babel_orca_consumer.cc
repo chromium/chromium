@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/service_process_host.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -96,7 +97,7 @@ std::unique_ptr<TachyonAuthedClient> CreateStreamingClient(
 std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    std::string gaia_id,
+    GaiaId gaia_id,
     std::unique_ptr<CaptionController> caption_controller,
     std::unique_ptr<BabelOrcaCaptionTranslator> translator,
     PrefService* pref_service,
@@ -114,7 +115,7 @@ std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
 BabelOrcaConsumer::BabelOrcaConsumer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     std::unique_ptr<CaptionController> caption_controller,
     TokenManager* tachyon_oauth_token_manager,
     TachyonRequestDataProvider* tachyon_request_data_provider,

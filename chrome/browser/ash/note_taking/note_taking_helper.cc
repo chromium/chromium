@@ -93,9 +93,7 @@ const char* const kDefaultAllowedAppIds[] = {
     NoteTakingHelper::kNoteTakingWebAppIdTest,
 };
 
-// Types of App Service apps that support note taking. Note that Note Taking
-// Chrome Apps are not supported in Lacros, so kStandaloneBrowserChromeApp is
-// not included.
+// Types of App Service apps that support note taking.
 // TODO (crbug.com/1336120): Add Android here.
 const apps::AppType kNoteTakingAppTypes[] = {apps::AppType::kWeb,
                                              apps::AppType::kChromeApp};

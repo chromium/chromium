@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 
 #include "base/functional/callback_helpers.h"
@@ -71,9 +66,8 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
       profile, chrome::kChromeUIBatchUploadHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kBatchUploadResources, kBatchUploadResourcesSize),
-      IDR_BATCH_UPLOAD_BATCH_UPLOAD_HTML);
+  webui::SetupWebUIDataSource(source, kBatchUploadResources,
+                              IDR_BATCH_UPLOAD_BATCH_UPLOAD_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"batchUploadTitle", IDS_BATCH_UPLOAD_TITLE},

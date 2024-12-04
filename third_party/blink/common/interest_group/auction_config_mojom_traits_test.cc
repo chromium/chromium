@@ -797,6 +797,13 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromiseDirectFromSellerSignals) {
   }
 }
 
+TEST(AuctionConfigMojomTraitsTest, AggregationCoordinatorNotHttps) {
+  AuctionConfig auction_config = CreateFullAuctionConfig();
+  auction_config.aggregation_coordinator_origin =
+      url::Origin::Create(GURL("http://example.com"));
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+}
+
 TEST(AuctionConfigMojomTraitsTest, ServerResponseConfig) {
   {
     AuctionConfig::ServerResponseConfig config;

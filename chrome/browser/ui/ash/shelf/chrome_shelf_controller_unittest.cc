@@ -5574,7 +5574,7 @@ TEST_F(ChromeShelfControllerWithArcTest, PinAtIndex) {
 
 class ChromeShelfControllerWebAppTest : public ChromeShelfControllerTestBase {
  protected:
-  ChromeShelfControllerWebAppTest() {}
+  ChromeShelfControllerWebAppTest() = default;
 
   ~ChromeShelfControllerWebAppTest() override = default;
 };

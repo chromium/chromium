@@ -11,6 +11,8 @@ struct WebuiUrlInfo {
   url.mojom.Url url;
   // Whether the WebUI is enabled.
   bool enabled;
+  // Whether the WebUI is an internal debugging UI.
+  bool internal;
 };
 
 struct ChromeUrlsData {
@@ -19,6 +21,8 @@ struct ChromeUrlsData {
   array<WebuiUrlInfo> webui_urls;
   // chrome:// URLs corresponding to commands (not UIs), e.g. chrome://kill
   array<url.mojom.Url> command_urls;
+  // Whether internal debugging WebUIs are enabled.
+  bool internal_debugging_uis_enabled;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

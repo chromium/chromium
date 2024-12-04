@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -71,9 +66,7 @@ EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kEnterpriseReportingResources,
-                      kEnterpriseReportingResourcesSize),
+      html_source, kEnterpriseReportingResources,
       IDR_ENTERPRISE_REPORTING_ENTERPRISE_REPORTING_HTML);
 }
 

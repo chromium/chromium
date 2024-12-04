@@ -134,7 +134,10 @@ if (is_android) {
   java_cpp_enum("messaging_enums_java") {
     visibility = [ ":*" ]
 
-    sources = [ "messaging/message.h" ]
+    sources = [
+      "messaging/activity_log.h",
+      "messaging/message.h",
+    ]
   }
 
   robolectric_library("junit_messaging") {

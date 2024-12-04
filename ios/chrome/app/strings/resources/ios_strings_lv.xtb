@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Ieslēgt drošības pārbaudes paziņojumus…</translation>
 <translation id="1652333207707886577">Pielāgojiet savu izvēlni.</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Atlikušais laiks: {TIME} sekunžu}=1{Atlikušais laiks: {TIME} sekunde}zero{Atlikušais laiks: {TIME} sekunžu}one{Atlikušais laiks: {TIME} sekunde}other{Atlikušais laiks: {TIME} sekundes}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{Virs tastatūras ir pieejama {count} saglabāta parole.}zero{Virs tastatūras ir pieejamas {count} saglabātas paroles.}one{Virs tastatūras ir pieejama {count} saglabāta parole.}other{Virs tastatūras ir pieejamas {count} saglabātas paroles.}}</translation>
 <translation id="1654232554734641711">Piekļuve mikrofonam ir atļauta</translation>
 <translation id="16554782717487656">Mērvienību noteikšana</translation>
 <translation id="1657011748321897393">Nevarēja kopīgot, jo nav izveidots savienojums ar tīklu.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Atveriet ciļņu režģi.</translation>
 <translation id="20485545164632846">jauns vienums</translation>
 <translation id="2049727122989709386">Vēl <ph name="COUNT" /> kontos tiek izmantota tā pati parole.</translation>
-<translation id="2050196510205866090">{count,plural, =1{Virs tastatūras ir pieejams {count} saglabāts maksājuma veids.}zero{Virs tastatūras ir pieejami {count} saglabāti maksājuma veidi.}one{Virs tastatūras ir pieejams {count} saglabāts maksājuma veids.}other{Virs tastatūras ir pieejami {count} saglabāti maksājuma veidi.}}</translation>
 <translation id="2059166748188874810">Pašvaldība</translation>
 <translation id="20638360198452347">Mērvienību veidu atlasītājs</translation>
 <translation id="2067852168641682340">Katru reizi saglabāt šajā kontā</translation>
@@ -329,7 +327,6 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2390457533592708044">Paslēpt moduli “<ph name="MODULE_NAME" />”</translation>
 <translation id="2403129868389095715">Nevar piegādāt</translation>
 <translation id="2410754283952462441">Konta izvēle</translation>
-<translation id="2411749908844615428">{count,plural, =1{Virs tastatūras ir pieejama {count} saglabāta adrese.}zero{Virs tastatūras ir pieejamas {count} saglabātas adreses.}one{Virs tastatūras ir pieejama {count} saglabāta adrese.}other{Virs tastatūras ir pieejamas {count} saglabātas adreses.}}</translation>
 <translation id="2424805048070062787">Turpināšana šajā cilnē</translation>
 <translation id="2426805022920575512">Izvēlēties citu kontu</translation>
 <translation id="243275146591958220">Atcelt lejupielādi</translation>
@@ -757,7 +754,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4525629404718770519">Saišu priekšskatījumu parādīšana</translation>
 <translation id="452750746583162491">Pārskatīt sinhronizētos datus</translation>
 <translation id="4532845899244822526">Mapes izvēlēšanās</translation>
-<translation id="4539187448429948815">{count,plural, =1{Virs tastatūras ir pieejams {count} saglabāts automātiskās pabeigšanas ieteikums.}zero{Virs tastatūras ir pieejami {count} saglabāti automātiskās pabeigšanas ieteikumi.}one{Virs tastatūras ir pieejams {count} saglabāts automātiskās pabeigšanas ieteikums.}other{Virs tastatūras ir pieejami {count} saglabāti automātiskās pabeigšanas ieteikumi.}}</translation>
 <translation id="4547181496285029457">Atgriešanās uz cilni “Nesenās”</translation>
 <translation id="4552042254369397518">Notiek kopēšana…</translation>
 <translation id="4564893319561643483">Paslēpt moduli “<ph name="TITLE" />”</translation>
@@ -770,6 +766,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4597892826846980979">Saņemiet paziņojumus par cilnēm</translation>
 <translation id="4601095002996233687">Detalizēta aizdomīgu lejupielāžu pārbaude.</translation>
 <translation id="4606247758155004938">Pārlūku pārvalda jūsu organizācija.</translation>
+<translation id="4607887340472970274">Cenu izsekošana</translation>
 <translation id="4611811151908969241">Paslēpt vienumu Nesekot domēnam <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Google meklēšana</translation>
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
@@ -1274,7 +1271,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6710079714193676716">Pārvalda jūsu organizācija. Dažas funkcijas var nebūt pieejamas. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="671310123089116995">Pāriet uz plūsmu</translation>
 <translation id="6713676799463473249">Pārveidots: <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Izsekot cenu</translation>
 <translation id="6722623263381062480">Saņemtās cilnes</translation>
 <translation id="6723740634201835758">Google kontā</translation>
 <translation id="672735642903863329">Iegūstiet grāmatzīmes, paroles un citus datus visās savās ierīcēs.</translation>
@@ -1440,7 +1436,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="75362970626182391">Jauna ciļņu grupa</translation>
 <translation id="7537586195939242955">Diemžēl pašlaik jūsu atļauju nevar instalēt lietotnē Passbook.</translation>
 <translation id="754655535278952384">Pārbaudes laiks: <ph name="TIME" /></translation>
-<translation id="755255281989213264">Izvēlnes pielāgošana</translation>
 <translation id="7553234618121028547">Lai to izslēgtu, atveriet sadaļu <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" /> un pārejiet uz iestatījumu Paroles iespējas.</translation>
 <translation id="7557508262441527045">Izrakstījies</translation>
 <translation id="7561196759112975576">Vienmēr</translation>

@@ -11,6 +11,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
@@ -60,12 +61,18 @@
   _view.displayedOnNTP = _displayedOnNTP;
   _view.incognito = incognito;
   _view.toolbarHeightDelegate = self.toolbarHeightDelegate;
+  _view.facePileParentViewController = self.parentViewController;
   ProfileIOS* profile = browser->GetProfile();
+
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+
   _mediator = [[TabGroupIndicatorMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
                   shareKitService:ShareKitServiceFactory::GetForProfile(profile)
+             collaborationService:collaborationService
                          consumer:_view
                      webStateList:browser->GetWebStateList()
                         URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)

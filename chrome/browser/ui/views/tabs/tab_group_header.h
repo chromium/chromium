@@ -57,8 +57,10 @@ class TabGroupHeader : public TabSlotView,
   void OnThemeChanged() override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
+  void OnGroupChanged() override;
+
+  void UpdateTooltipText();
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -94,6 +96,9 @@ class TabGroupHeader : public TabSlotView,
   FRIEND_TEST_ALL_PREFIXES(TabStripBrowsertest,
                            TabGroupHeaderAccessibleProperties);
   FRIEND_TEST_ALL_PREFIXES(TabStripSaveBrowsertest, AttentionIndicatorIsShown);
+  FRIEND_TEST_ALL_PREFIXES(TabContainerTest, TabGroupHeaderTooltipText);
+  FRIEND_TEST_ALL_PREFIXES(TabContainerTest,
+                           TabGroupHeaderTooltipTextAccessibility);
 
   // Calculate the width for this View.
   int GetDesiredWidth() const;
@@ -150,6 +155,8 @@ class TabGroupHeader : public TabSlotView,
 
   // Determines if the tab group should show the attention indicator.
   bool needs_attention_ = false;
+
+  base::CallbackListSubscription title_text_changed_subscription_;
 
   // Tracks whether our editor bubble is open. At most one can be open
   // at once.

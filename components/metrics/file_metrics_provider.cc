@@ -502,7 +502,7 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
     if (amount != kTestSize)
       return ACCESS_RESULT_INVALID_CONTENTS;
 
-    char zeros[kTestSize] = {0};
+    char zeros[kTestSize] = {};
     file.Write(0, zeros, kTestSize);
     file.Flush();
 

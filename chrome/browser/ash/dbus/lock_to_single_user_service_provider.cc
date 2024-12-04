@@ -11,8 +11,8 @@
 
 namespace ash {
 
-LockToSingleUserServiceProvider::LockToSingleUserServiceProvider() {}
-LockToSingleUserServiceProvider::~LockToSingleUserServiceProvider() {}
+LockToSingleUserServiceProvider::LockToSingleUserServiceProvider() = default;
+LockToSingleUserServiceProvider::~LockToSingleUserServiceProvider() = default;
 
 void LockToSingleUserServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {

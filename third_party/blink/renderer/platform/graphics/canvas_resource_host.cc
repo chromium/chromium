@@ -52,17 +52,6 @@ void CanvasResourceHost::DiscardResourceProvider() {
   UpdateMemoryUsage();
 }
 
-void CanvasResourceHost::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  filter_quality_ = filter_quality;
-  if (resource_provider_) {
-    resource_provider_->SetFilterQuality(filter_quality);
-  }
-  if (cc_layer_) {
-    cc_layer_->SetFilterQuality(filter_quality);
-  }
-}
-
 void CanvasResourceHost::SetPreferred2DRasterMode(RasterModeHint hint) {
   // TODO(junov): move code that switches between CPU and GPU rasterization
   // to here.
@@ -161,11 +150,11 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
   }
   if (!cc_layer_) [[unlikely]] {
     cc_layer_ = cc::TextureLayer::CreateForMailbox(this);
+    InitializeLayerWithCSSProperties(cc_layer_.get());
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);
     cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
-    cc_layer_->SetFilterQuality(FilterQuality());
   }
   return cc_layer_.get();
 }

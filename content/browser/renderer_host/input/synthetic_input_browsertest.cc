@@ -78,7 +78,8 @@ class SyntheticInputTest : public ContentBrowserTest {
 
 class GestureScrollObserver : public RenderWidgetHost::InputEventObserver {
  public:
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin)
       gesture_scroll_seen_ = true;
   }

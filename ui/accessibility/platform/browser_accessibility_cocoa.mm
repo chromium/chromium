@@ -540,7 +540,6 @@ bool ui::IsNSRange(id value) {
       {NSAccessibilityMinValueAttribute, @"minValue"},
       {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
       {NSAccessibilityOrientationAttribute, @"orientation"},
-      {NSAccessibilityParentAttribute, @"parent"},
       {NSAccessibilityPositionAttribute, @"position"},
       {NSAccessibilityRoleAttribute, @"role"},
       {NSAccessibilityRowHeaderUIElementsAttribute, @"rowHeaders"},
@@ -978,9 +977,10 @@ bool ui::IsNSRange(id value) {
   return nil;
 }
 
-- (id)parent {
-  if (![self instanceActive])
+- (id)accessibilityParent {
+  if (![self instanceActive]) {
     return nil;
+  }
   if (_owner->PlatformGetParent()) {
     id unignored_parent = NSAccessibilityUnignoredAncestor(
         _owner->PlatformGetParent()->GetNativeViewAccessible());
@@ -1199,31 +1199,6 @@ bool ui::IsNSRange(id value) {
   if (row && rowspan)
     return [NSValue valueWithRange:NSMakeRange(*row, *rowspan)];
   return nil;
-}
-
-- (NSArray*)accessibilityRows {
-  if (![self instanceActive])
-    return nil;
-  NSMutableArray* ret = [[NSMutableArray alloc] init];
-
-  std::vector<int32_t> node_id_list;
-  if (_owner->GetRole() == ax::mojom::Role::kTree)
-    [self getTreeItemDescendantNodeIds:&node_id_list];
-  else if (ui::IsTableLike(_owner->GetRole()))
-    node_id_list = _owner->node()->GetTableRowNodeIds();
-  // Rows attribute for a column is the list of all the elements in that column
-  // at each row.
-  else if ([self internalRole] == ax::mojom::Role::kColumn)
-    node_id_list = _owner->GetIntListAttribute(
-        ax::mojom::IntListAttribute::kIndirectChildIds);
-
-  for (int32_t node_id : node_id_list) {
-    BrowserAccessibility* rowElement = _owner->manager()->GetFromID(node_id);
-    if (rowElement)
-      [ret addObject:rowElement->GetNativeViewAccessible()];
-  }
-
-  return ret;
 }
 
 - (NSArray*)selectedChildren {
@@ -1579,11 +1554,13 @@ bool ui::IsNSRange(id value) {
 }
 // LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityVisibleColumns)
 
+// LINT.IfChange(accessibilityVisibleRows)
 - (NSArray*)visibleRows {
   if (![self instanceActive])
     return nil;
   return [self accessibilityRows];
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityVisibleRows)
 
 - (id)window {
   if (![self instanceActive])
@@ -1606,18 +1583,6 @@ bool ui::IsNSRange(id value) {
     return nil;
   }
   return root_manager->GetWindow();  // Can be null for inactive tabs.
-}
-
-- (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)tree_item_ids {
-  for (auto it = _owner->PlatformChildrenBegin();
-       it != _owner->PlatformChildrenEnd(); ++it) {
-    const BrowserAccessibilityCocoa* child = it->GetNativeViewAccessible();
-
-    if ([child internalRole] == ax::mojom::Role::kTreeItem) {
-      tree_item_ids->push_back([child hash]);
-    }
-    [child getTreeItemDescendantNodeIds:tree_item_ids];
-  }
 }
 
 - (NSString*)methodNameForAttribute:(NSString*)attribute {

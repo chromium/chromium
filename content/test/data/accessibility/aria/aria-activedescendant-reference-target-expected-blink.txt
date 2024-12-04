@@ -5,10 +5,9 @@ rootWebArea
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'
-++++++++genericContainer
-++++++++++menuItemCheckBox name='Active descendant' checkedState=false
-++++++++++++staticText name='Active descendant'
-++++++++++++++inlineTextBox name='Active descendant'
+++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++staticText name='Active descendant'
+++++++++++++inlineTextBox name='Active descendant'
 ++++++++menuItemRadio name='Inactive descendant' checkedState=false
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'

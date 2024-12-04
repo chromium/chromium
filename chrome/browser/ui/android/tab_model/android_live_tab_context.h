@@ -34,7 +34,7 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   AndroidLiveTabContext(const AndroidLiveTabContext&) = delete;
   AndroidLiveTabContext& operator=(const AndroidLiveTabContext&) = delete;
 
-  ~AndroidLiveTabContext() override {}
+  ~AndroidLiveTabContext() override = default;
 
   // Overridden from LiveTabContext:
   void ShowBrowserWindow() override;

@@ -349,6 +349,7 @@ component("base") {
     "macros/uniquify.h",
     "memory/aligned_memory.cc",
     "memory/aligned_memory.h",
+    "memory/asan_interface.h",
     "memory/free_deleter.h",
     "memory/memory_pressure_listener.cc",
     "memory/memory_pressure_listener.h",
@@ -894,6 +895,7 @@ component("base") {
     "types/optional_ref.h",
     "types/optional_util.h",
     "types/pass_key.h",
+    "types/same_as_any.h",
     "types/strong_alias.h",
     "types/supports_ostream_operator.h",
     "types/to_address.h",
@@ -1259,10 +1261,10 @@ component("base") {
     }
     if (current_cpu == "arm") {
       sources += [
-        "profiler/chrome_unwind_info_android.cc",
-        "profiler/chrome_unwind_info_android.h",
-        "profiler/chrome_unwinder_android.cc",
-        "profiler/chrome_unwinder_android.h",
+        "profiler/chrome_unwind_info_android_32.cc",
+        "profiler/chrome_unwind_info_android_32.h",
+        "profiler/chrome_unwinder_android_32.cc",
+        "profiler/chrome_unwinder_android_32.h",
       ]
     }
 
@@ -3556,6 +3558,7 @@ test("base_unittests") {
     "types/optional_unittest.cc",
     "types/optional_util_unittest.cc",
     "types/pass_key_unittest.cc",
+    "types/same_as_any_unittest.cc",
     "types/strong_alias_unittest.cc",
     "types/supports_ostream_operator_unittest.cc",
     "types/to_address_unittest.cc",
@@ -3593,6 +3596,8 @@ test("base_unittests") {
   if (use_safe_libcxx || use_safe_libstdcxx) {
     sources += [ "libcpp_hardening_test.cc" ]
   }
+
+  fuzztests = [ "JSONReaderTest.CanParseAnythingWithoutCrashing" ]
 
   defines = []
   frameworks = []
@@ -3837,8 +3842,8 @@ test("base_unittests") {
     }
     if (current_cpu == "arm") {
       sources += [
-        "profiler/chrome_unwind_info_android_unittest.cc",
-        "profiler/chrome_unwinder_android_unittest.cc",
+        "profiler/chrome_unwind_info_android_32_unittest.cc",
+        "profiler/chrome_unwinder_android_32_unittest.cc",
       ]
     }
     if (current_cpu == "arm64") {

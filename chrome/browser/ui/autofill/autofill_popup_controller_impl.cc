@@ -815,9 +815,7 @@ void AutofillPopupControllerImpl::HideSubPopup() {
 bool AutofillPopupControllerImpl::
     ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
   return should_ignore_mouse_observed_outside_item_bounds_check_ ||
-         !IsRootPopup() ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillPopupDisablePaintChecks);
+         !IsRootPopup();
 }
 
 void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(

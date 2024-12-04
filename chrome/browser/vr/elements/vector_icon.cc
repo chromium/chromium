@@ -16,12 +16,12 @@ namespace vr {
 
 class VectorIconTexture : public UiTexture {
  public:
-  VectorIconTexture() {}
+  VectorIconTexture() = default;
 
   VectorIconTexture(const VectorIconTexture&) = delete;
   VectorIconTexture& operator=(const VectorIconTexture&) = delete;
 
-  ~VectorIconTexture() override {}
+  ~VectorIconTexture() override = default;
 
   void SetColor(SkColor color) { SetAndDirty(&color_, color); }
 
@@ -55,7 +55,7 @@ class VectorIconTexture : public UiTexture {
 VectorIcon::VectorIcon(int texture_width)
     : texture_(std::make_unique<VectorIconTexture>()),
       texture_width_(texture_width) {}
-VectorIcon::~VectorIcon() {}
+VectorIcon::~VectorIcon() = default;
 
 void VectorIcon::SetColor(SkColor color) {
   texture_->SetColor(color);

@@ -45,6 +45,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace tab_groups {
 namespace {
@@ -534,12 +535,11 @@ std::optional<std::string> SavedTabGroupSyncBridge::GetLocalCacheGuid() const {
   return change_processor()->TrackedCacheGuid();
 }
 
-std::optional<std::string> SavedTabGroupSyncBridge::GetTrackedAccountId()
-    const {
+std::optional<GaiaId> SavedTabGroupSyncBridge::GetTrackedAccountId() const {
   if (!change_processor()->IsTrackingMetadata()) {
     return std::nullopt;
   }
-  return change_processor()->TrackedAccountId();
+  return GaiaId(change_processor()->TrackedAccountId());
 }
 
 bool SavedTabGroupSyncBridge::IsSyncing() const {
@@ -647,7 +647,8 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
           GetCreatorCacheGuidFromSpecifics(specifics),
           GetLastUpdaterCacheGuidFromSpecifics(specifics),
           TimeFromWindowsEpochMicros(
-              specifics.update_time_windows_epoch_micros()));
+              specifics.update_time_windows_epoch_micros()),
+          /*updated_by=*/GaiaId());
       proto::SavedTabGroupData updated_data =
           SavedTabGroupToData(*existing_group);
 

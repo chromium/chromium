@@ -942,6 +942,7 @@
 <translation id="5316947901395241499">Запазването на паролите е изключено от администратора ви</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5319359161174645648">Google препоръчва Chrome</translation>
+<translation id="5326246328175179736">Не можете да влезете с този профил</translation>
 <translation id="5328542107300944283">Използване чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Искания за разрешение</translation>
 <translation id="534580735623577507">Няма сайтове от <ph name="TIME_PERIOD" /></translation>
@@ -951,6 +952,7 @@
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Излизане от режим „инкогнито“</translation>
 <translation id="5395376160638294582">Уверете се, че винаги можете да използвате данните в Chrome в профила си в Google</translation>
+<translation id="5397794290049113714">Вие</translation>
 <translation id="539881862970320163">Предложена бе надеждна парола. Клавиатурата е скрита.</translation>
 <translation id="5409881200985013443">Да се изпрати ли еднократният код <ph name="ONE_TIME_CODE" /> до <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) иска да се присъедините към група раздели. Всеки, който разполага с връзката, може да редактира всички раздели, затова се присъединявайте внимателно. Връзката изтича след 48 ч.</translation>
@@ -978,6 +980,7 @@
 <translation id="5514904542973294328">Деактивирано от администратора на това устройство</translation>
 <translation id="5515439363601853141">Отключете, за да видите паролата си</translation>
 <translation id="5517095782334947753">Имате отметки, история, пароли и други настройки от <ph name="FROM_ACCOUNT" /></translation>
+<translation id="5517326820028369152">Долен лист със скорошна активност</translation>
 <translation id="5524843473235508879">Блокирано бе пренасочване.</translation>
 <translation id="5526281268548144413">Затварянето в няколко прозореца не е възможно</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Преди # мин}other{Преди # мин}}</translation>
@@ -1004,6 +1007,7 @@
 <translation id="562289928968387744">Управление на реакциите</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5628604359369369630">Непрочетено – налице офлайн</translation>
+<translation id="5631483240431073854">Управление на отворените раздели</translation>
 <translation id="5641456720590409793">Възможно е <ph name="BEGIN_LINK1" />историята на търсенията<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други видове активност<ph name="END_LINK2" /> да се запазват в профила ви в Google</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5655963694829536461">Търсете в изтеглянията</translation>
@@ -1280,6 +1284,7 @@
 <translation id="6817747507826986771">Бързо споделяне на страницата. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="6820686453637990663">Код за сигурност</translation>
 <translation id="6820942662346226299">Предупреждението за актуализиране на Google Мениджър на пароли е затворено</translation>
+<translation id="6824933543577433709">Долният лист със скорошна активност е затворен</translation>
 <translation id="6828070228333235514">Проследяване на цената: Спиране</translation>
 <translation id="6830728435402077660">Няма защита</translation>
 <translation id="6831043979455480757">Превод</translation>
@@ -1498,6 +1503,7 @@
 <translation id="7691043218961417207">Разгледайте съдържание, което да следите</translation>
 <translation id="7697383401610880082">Манипулатор за преместване с плъзгане</translation>
 <translation id="7698359219371678927">Създайте имейл в <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">Долният лист със скорошна активност е отворен на пълната височина</translation>
 <translation id="7707922173985738739">Използване на мобилни данни</translation>
 <translation id="7709918231054955894">Преглед на всичките ви раздели</translation>
 <translation id="7733878270780732638">Няма достатъчно място на устройството.</translation>

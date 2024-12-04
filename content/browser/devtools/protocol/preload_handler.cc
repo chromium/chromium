@@ -514,7 +514,7 @@ void PreloadHandler::SendCurrentPreloadStatus() {
 
   std::vector<RenderFrameHostImpl*> documents_in_local_subtree;
   RenderFrameHostImpl* root = host_;
-  host_->ForEachRenderFrameHostWithAction(
+  host_->ForEachRenderFrameHostImplWithAction(
       [&documents_in_local_subtree, root](
           RenderFrameHostImpl* rfh) -> RenderFrameHost::FrameIterationAction {
         if (rfh != root &&

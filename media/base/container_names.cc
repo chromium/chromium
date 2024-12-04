@@ -352,7 +352,7 @@ static bool CheckDV(const uint8_t* buffer, int buffer_size) {
 
   int offset = 0;
   int current_sequence_number = -1;
-  int last_block_number[6] = {0};
+  int last_block_number[6] = {};
   while (offset + 11 < buffer_size) {
     BitReader reader(buffer + offset, 11);
 

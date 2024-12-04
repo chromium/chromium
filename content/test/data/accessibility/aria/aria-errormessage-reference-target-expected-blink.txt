@@ -10,19 +10,15 @@ rootWebArea
 ++++++++++genericContainer
 ++++++++textField name='Invalid is not set'
 ++++++++++genericContainer
-++++++genericContainer
-++++++++paragraph
-++++++++++staticText name='Error for invalid input'
-++++++++++++inlineTextBox name='Error for invalid input'
-++++++genericContainer
-++++++++paragraph
-++++++++++staticText name='Another error for invalid input'
-++++++++++++inlineTextBox name='Another error for invalid input'
-++++++genericContainer
-++++++++paragraph
-++++++++++staticText name='Error for input which is not invalid'
-++++++++++++inlineTextBox name='Error for input which is not invalid'
-++++++genericContainer
-++++++++paragraph
-++++++++++staticText name='Error for input with invalid not set'
-++++++++++++inlineTextBox name='Error for input with invalid not set'
+++++++paragraph
+++++++++staticText name='Error for invalid input'
+++++++++++inlineTextBox name='Error for invalid input'
+++++++paragraph
+++++++++staticText name='Another error for invalid input'
+++++++++++inlineTextBox name='Another error for invalid input'
+++++++paragraph
+++++++++staticText name='Error for input which is not invalid'
+++++++++++inlineTextBox name='Error for input which is not invalid'
+++++++paragraph
+++++++++staticText name='Error for input with invalid not set'
+++++++++++inlineTextBox name='Error for input with invalid not set'

@@ -49,10 +49,6 @@ BASE_FEATURE(kApiEnterpriseReportingPrivateReportDataMaskingEvent,
 
 // For historical reasons, this includes some APIs. Please don't add more.
 
-BASE_FEATURE(kAllowSharedArrayBuffersUnconditionally,
-             "AllowSharedArrayBuffersUnconditionally",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall,
              "AllowWithholdingExtensionPermissionsOnInstall",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -575,8 +575,7 @@ TEST_F(WebCryptoAesCbcTest, ImportJwkUnknownKeyOps) {
         })";
 
   EXPECT_EQ(Status::Success(),
-            ImportKey(blink::kWebCryptoKeyFormatJwk,
-                      base::as_bytes(base::make_span(jwk)),
+            ImportKey(blink::kWebCryptoKeyFormatJwk, base::as_byte_span(jwk),
                       CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc),
                       false, blink::kWebCryptoKeyUsageEncrypt, &key));
 }
@@ -591,11 +590,11 @@ TEST_F(WebCryptoAesCbcTest, ImportJwkInvalidJson) {
 
   // Fail on invalid JSON.
   const std::string bad_json = R"({ "kty": "oct", "alg": "HS256", "use": )";
-  EXPECT_EQ(Status::ErrorJwkNotDictionary(),
-            ImportKey(blink::kWebCryptoKeyFormatJwk,
-                      base::as_bytes(base::make_span(bad_json)),
-                      CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc),
-                      false, blink::kWebCryptoKeyUsageEncrypt, &key));
+  EXPECT_EQ(
+      Status::ErrorJwkNotDictionary(),
+      ImportKey(blink::kWebCryptoKeyFormatJwk, base::as_byte_span(bad_json),
+                CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc), false,
+                blink::kWebCryptoKeyUsageEncrypt, &key));
 }
 
 // Fail on inconsistent key_ops - asking for "encrypt" however JWK contains

@@ -30,7 +30,7 @@ class TestLoaderTestCase(unittest.TestCase):
         self.fs.write_text_file(
             self.finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps({
-                'version': 8,
+                'version': 9,
                 'items': {
                     'testharness': {
                         'variant.html': [

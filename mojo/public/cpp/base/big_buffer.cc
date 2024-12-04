@@ -183,9 +183,9 @@ base::span<const uint8_t> BigBufferView::data() const {
     return bytes_;
   } else if (storage_type_ == BigBuffer::StorageType::kSharedMemory) {
     DCHECK(shared_memory_.has_value());
-    return base::make_span(static_cast<const uint8_t*>(const_cast<const void*>(
-                               shared_memory_->memory())),
-                           shared_memory_->size());
+    return base::span(static_cast<const uint8_t*>(
+                          const_cast<const void*>(shared_memory_->memory())),
+                      shared_memory_->size());
   }
 
   return base::span<const uint8_t>();

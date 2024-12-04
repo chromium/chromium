@@ -114,9 +114,10 @@ void GridMediatorTestClass::SetUp() {
   OCMStub([scene_state_ sceneSessionID]).andReturn(@(kIdentifier));
   browser_ = std::make_unique<TestBrowser>(
       profile_.get(), scene_state_,
-      std::make_unique<BrowserWebStateListDelegate>());
+      std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
   other_browser_ = std::make_unique<TestBrowser>(
-      profile_.get(), nil, std::make_unique<BrowserWebStateListDelegate>());
+      profile_.get(), nil,
+      std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
   scene_loader_ = std::make_unique<TestSceneUrlLoadingService>();
   scene_loader_->current_browser_ = browser_.get();
   url_loading_delegate_ = [[FakeURLLoadingDelegate alloc] init];

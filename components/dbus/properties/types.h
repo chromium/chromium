@@ -25,7 +25,7 @@ namespace base {
 class RefCountedMemory;
 }
 
-class COMPONENT_EXPORT(DBUS) DbusType {
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusType {
  public:
   virtual ~DbusType();
 
@@ -133,7 +133,7 @@ template <typename T,
           void (dbus::MessageWriter::*WriteFn)(PassT),
           bool (dbus::MessageReader::*ReadFn)(T*),
           char Signature>
-class COMPONENT_EXPORT(DBUS) DbusPrimitiveType final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusPrimitiveType final
     : public DbusTypeImpl<
           DbusPrimitiveType<T, PassT, WriteFn, ReadFn, Signature>> {
  public:
@@ -163,7 +163,7 @@ class COMPONENT_EXPORT(DBUS) DbusPrimitiveType final
 
 #define DEFINE_DBUS_TYPE(TYPE, PRIMITIVE, PASS_PRIMITIVE, WRITE, READ, \
                          SIGNATURE)                                    \
-  template class COMPONENT_EXPORT(DBUS)                                \
+  template class COMPONENT_EXPORT(COMPONENTS_DBUS)                     \
       DbusPrimitiveType<PRIMITIVE, PASS_PRIMITIVE,                     \
                         &dbus::MessageWriter::WRITE,                   \
                         &dbus::MessageReader::READ, SIGNATURE>;        \
@@ -199,7 +199,7 @@ DEFINE_DBUS_REF_TYPE(DbusObjectPath,
 
 // This is not a DbusTypeImpl because this class stores a base::ScopedFD, but
 // the DBus write interface takes an int.
-class COMPONENT_EXPORT(DBUS) DbusUnixFd final : public DbusType {
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusUnixFd final : public DbusType {
  public:
   DbusUnixFd();
   explicit DbusUnixFd(base::ScopedFD fd);
@@ -226,7 +226,7 @@ class COMPONENT_EXPORT(DBUS) DbusUnixFd final : public DbusType {
   base::ScopedFD value_;
 };
 
-class COMPONENT_EXPORT(DBUS) DbusVariant final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusVariant final
     : public DbusTypeImpl<DbusVariant> {
  public:
   DbusVariant();
@@ -274,7 +274,7 @@ DbusVariant MakeDbusVariant(T&& t) {
 }
 
 template <typename T>
-class COMPONENT_EXPORT(DBUS) DbusArray final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusArray final
     : public DbusTypeImpl<DbusArray<T>> {
  public:
   DbusArray() = default;
@@ -346,7 +346,7 @@ auto MakeDbusArray(Ts&&... ts) {
 
 // This is the same as DbusArray<DbusByte>.  This class avoids having to create
 // a bunch of heavy virtual objects just to wrap individual bytes.
-class COMPONENT_EXPORT(DBUS) DbusByteArray final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusByteArray final
     : public DbusTypeImpl<DbusByteArray> {
  public:
   DbusByteArray();
@@ -369,7 +369,7 @@ class COMPONENT_EXPORT(DBUS) DbusByteArray final
 };
 
 template <typename... Ts>
-class COMPONENT_EXPORT(DBUS) DbusStruct final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusStruct final
     : public DbusTypeImpl<DbusStruct<Ts...>> {
  public:
   DbusStruct() = default;
@@ -439,7 +439,7 @@ auto MakeDbusStruct(Ts&&... ts) {
 // the parameters. This is meant to be used for parameters to method calls, or
 // for return values from method calls or signals.
 template <typename... Ts>
-class COMPONENT_EXPORT(DBUS) DbusParameters final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusParameters final
     : public DbusTypeImpl<DbusParameters<Ts...>> {
  public:
   DbusParameters() = default;
@@ -497,7 +497,7 @@ class COMPONENT_EXPORT(DBUS) DbusParameters final
 
 // Template specialization for empty parameters.
 template <>
-class COMPONENT_EXPORT(DBUS) DbusParameters<> final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusParameters<> final
     : public DbusTypeImpl<DbusParameters<>> {
  public:
   DbusParameters() = default;
@@ -526,7 +526,7 @@ auto MakeDbusParameters(Ts&&... ts) {
 }
 
 template <typename K, typename V>
-class COMPONENT_EXPORT(DBUS) DbusDictEntry final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusDictEntry final
     : public DbusTypeImpl<DbusDictEntry<K, V>> {
  public:
   DbusDictEntry() = default;
@@ -593,7 +593,7 @@ auto MakeDbusDictEntry(K&& k, V&& v) {
 //   1. Duplicate keys are not allowed.
 //   2. You cannot control the ordering of keys.  They will always be in sorted
 //      order.
-class COMPONENT_EXPORT(DBUS) DbusDictionary final
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusDictionary final
     : public DbusTypeImpl<DbusDictionary> {
  public:
   DbusDictionary();
@@ -633,7 +633,7 @@ class COMPONENT_EXPORT(DBUS) DbusDictionary final
   std::map<std::string, DbusVariant> value_;
 };
 
-COMPONENT_EXPORT(DBUS)
+COMPONENT_EXPORT(COMPONENTS_DBUS)
 DbusDictionary MakeDbusDictionary();
 
 template <typename V, typename... Args>

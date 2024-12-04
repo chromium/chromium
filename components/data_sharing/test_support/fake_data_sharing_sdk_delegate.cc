@@ -75,7 +75,7 @@ void FakeDataSharingSDKDelegate::RemoveMember(
 }
 
 void FakeDataSharingSDKDelegate::AddAccount(const std::string& email,
-                                            const std::string& gaia_id) {
+                                            const GaiaId& gaia_id) {
   email_to_gaia_id_[email] = gaia_id;
 }
 
@@ -250,7 +250,7 @@ void FakeDataSharingSDKDelegate::AddAccessToken(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void FakeDataSharingSDKDelegate::SetUserGaiaId(const std::string& gaia_id) {
+void FakeDataSharingSDKDelegate::SetUserGaiaId(const GaiaId& gaia_id) {
   user_gaia_id_ = gaia_id;
 }
 

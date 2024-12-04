@@ -36,7 +36,7 @@ class WebFrame : public base::SupportsUserData {
   // TODO(crbug.com/40216361): Rename IsMainFrame to IsAnyMainFrame
   virtual bool IsMainFrame() const = 0;
   // The security origin associated with this frame.
-  virtual GURL GetSecurityOrigin() const = 0;
+  virtual GURL GetSecurityOriginDeprecated() const = 0;
 
   // Returns the BrowserState associated with this WebFrame.
   virtual BrowserState* GetBrowserState() = 0;

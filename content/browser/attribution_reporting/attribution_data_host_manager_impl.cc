@@ -288,6 +288,22 @@ Registrar ConvertToRegistrar(AttributionReportingOsRegistrar os_registrar) {
   }
 }
 
+void RecordRegistrationTimeDelta(
+    std::optional<base::Time>& last_registration_time,
+    const base::Time startup_time) {
+  base::Time now = base::Time::Now();
+  if (last_registration_time) {
+    base::UmaHistogramLongTimes100(
+        "Conversions.RegistrationProcessed.TimeSinceLastRegistration",
+        now - *last_registration_time);
+  } else {
+    base::UmaHistogramLongTimes100(
+        "Conversions.RegistrationProcessed.TimeSinceManagerStartup",
+        now - startup_time);
+  }
+  last_registration_time = now;
+}
+
 }  // namespace
 
 struct AttributionDataHostManagerImpl::SequentialTimeoutsTimer::Timeout {
@@ -1169,6 +1185,7 @@ void AttributionDataHostManagerImpl::HandleRegistrationData(
     base::flat_set<Registrations>::iterator it,
     PendingRegistrationData pending_registration_data) {
   CHECK(it != registrations_.end());
+  RecordRegistrationTimeDelta(last_registration_time_, manager_startup_time_);
 
   it->pending_registration_data().emplace_back(
       std::move(pending_registration_data));
@@ -1685,6 +1702,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       attribution_reporting::mojom::DataAvailableCallsite::kBrowser);
   // LINT.ThenChange(//third_party/blink/renderer/core/frame/attribution_src_loader.cc:DataAvailableCallSource)
   // This is validated by the Mojo typemapping.
+  RecordRegistrationTimeDelta(last_registration_time_, manager_startup_time_);
   CHECK(reporting_origin.IsValid());
 
   const RegistrationContext* context =
@@ -1737,6 +1755,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
       attribution_reporting::mojom::DataAvailableCallsite::kBrowser);
   // LINT.ThenChange(//third_party/blink/renderer/core/frame/attribution_src_loader.cc:DataAvailableCallTrigger)
   // This is validated by the Mojo typemapping.
+  RecordRegistrationTimeDelta(last_registration_time_, manager_startup_time_);
   CHECK(reporting_origin.IsValid());
 
   const RegistrationContext* context =
@@ -1770,6 +1789,7 @@ void AttributionDataHostManagerImpl::OsDataAvailable(
   base::UmaHistogramEnumeration(
       data_available_call_metric,
       attribution_reporting::mojom::DataAvailableCallsite::kBrowser);
+  RecordRegistrationTimeDelta(last_registration_time_, manager_startup_time_);
 
   if (!context || registration_items.empty()) {
     return;

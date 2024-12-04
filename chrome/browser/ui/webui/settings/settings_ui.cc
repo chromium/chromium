@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 
 #include <stddef.h>
@@ -358,10 +353,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       (!chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild());
   html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
 
-  html_source->AddBoolean(
-      "enableCbdTimeframeRequired",
-      base::FeatureList::IsEnabled(features::kCbdTimeframeRequired));
-
   html_source->AddBoolean("enableHandTrackingContentSetting",
 #if BUILDFLAG(ENABLE_VR)
                           device::features::IsHandTrackingEnabled());
@@ -470,13 +461,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),
-      IDR_SETTINGS_SETTINGS_HTML);
+  webui::SetupWebUIDataSource(html_source, kSettingsResources,
+                              IDR_SETTINGS_SETTINGS_HTML);
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
-  html_source->AddResourcePaths(
-      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+  html_source->AddResourcePaths(kSettingsSharedResources);
 #endif
 
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());

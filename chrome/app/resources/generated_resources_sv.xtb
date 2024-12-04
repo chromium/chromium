@@ -1132,7 +1132,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1769157454356586138">Genomsökningen misslyckades. Den här uppdateringen blockeras av administratören</translation>
 <translation id="1770407692401984718">Dra en bild hit eller</translation>
 <translation id="177053719077591686">Säkerhetskopiera Android-appar till Google Drive.</translation>
-<translation id="1771075623623424448">Letar du webbläsarens enhetslogg? Besök<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Skapa en wifi-surfzon med mobildata från <ph name="DEVICE_TYPE" /> för att ansluta till internet från andra enheter. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Appdata som har en värd</translation>
 <translation id="177529472352014190">Anslut till OneDrive</translation>
@@ -3141,6 +3140,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3166443275568926403">Prestanda och batteristatus</translation>
 <translation id="3167446923957429259">Rör på munnen åt vänster</translation>
 <translation id="3167562202484086668">Radera all data för <ph name="BRAND" /></translation>
+<translation id="3169901410527787002">Läs alltid upp tangentbordsinmatningar i adressfältet</translation>
 <translation id="3169930038976362151">Välj det tema som passar dina behov. Du kan ändra tema, bakgrund, skärmsläckare med mera genom att trycka länge på skrivbordet.</translation>
 <translation id="3170072451822350649">Du kan även hoppa över inloggningen och <ph name="LINK_START" />surfa som gäst<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Brödtext</translation>
@@ -3152,6 +3152,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3179982752812949580">Textens teckensnitt</translation>
 <translation id="3180284704187420717">Spara bokmärken, lösenord och annat med synkronisering</translation>
 <translation id="3180990259147710757">Flytta käken åt vänster</translation>
+<translation id="3181825792072797598">Aktivera synkronisering</translation>
 <translation id="3181954750937456830">Säker webbsökning (skyddar dig och enheten från skadliga webbplatser)</translation>
 <translation id="3182749001423093222">Stavningskontroll</translation>
 <translation id="3183139917765991655">Profilimportör</translation>
@@ -4339,7 +4340,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3988124842897276887">Den här fliken är ansluten till en USB-enhet</translation>
 <translation id="3988996860813292272">Välj tidszon</translation>
 <translation id="3989635538409502728">Logga ut</translation>
-<translation id="3991055816270226534">Hantera tredjepartscookies och spårningsskydd</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />När Platsangivelsens exakthet är aktiverad används information om trådlösa signaler, som wifi-åtkomstpunkter och mobilnätverksmaster, tillsammans med enheters sensordata, som accelerometer och gyroskop, för att uppskatta mer exakta enhetsplatser som appar och tjänster använder för att tillhandahålla platsbaserade funktioner. För att göra detta samlar Google med jämna mellanrum in information om enhetssensorer och trådlösa signaler i närheten av enheten för att bidra till identifiering av platser för trådlösa signaler som fastställs med hjälp av massinsamling.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google använder informationen som samlas in från enheten för att förbättra platsangivelsens exakthet och platsbaserade tjänster samt i allmänhet förbättra, tillhandahålla och underhålla Googles tjänster. Vi behandlar informationen utifrån Googles och tredje parts berättigade intresse för att tillgodose användarnas behov. Informationen används inte för att identifiera någon person.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan när som helst inaktivera platsangivelsens exakthet i platsinställningarna på den här enheten under Inställningar &gt; Integritet och säkerhet &gt; Integritetsinställningar &gt; Platsåtkomst &gt; Avancerade platsinställningar. Om platsangivelsens exakthet har inaktiverats samlas ingen data in. För Android-appar och Android-tjänster används endast IP-adress, om en sådan är tillgänglig, för att fastställa enhetens plats. Det kan påverka tillgängligheten och exaktheten för platser för Android-appar och Android-tjänster som Google Maps.<ph name="END_PARAGRAPH3" />
@@ -6982,7 +6982,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5927132638760172455">Castar till en okänd mottagare</translation>
 <translation id="592740088639760830">Avbryt behållaren</translation>
 <translation id="592880897588170157">Ladda ned PDF-filer i stället för att låta dem öppnas automatiskt i Chrome</translation>
-<translation id="5928969282301718193">Allt är klart</translation>
 <translation id="5930567261594625340">Natthimmel</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> omedelbart.</translation>
 <translation id="5932224571077948991">Påträngande eller vilseledande annonser visas på webbplatsen</translation>
@@ -7553,7 +7552,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6344170822609224263">Få åtkomst till en lista med nätverksanslutningar</translation>
 <translation id="6344576354370880196">Sparade skrivare</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />Webbläsaren hanteras<ph name="END_LINK" /> av din förälder</translation>
-<translation id="6344622098450209924">Spårningsskydd</translation>
 <translation id="6345418402353744910">Ditt användarnamn och lösenord krävs för proxyservern <ph name="PROXY" />, så att administratören kan konfigurera nätverket.</translation>
 <translation id="6345566021391290381">Det finns lösenord som delas med dig för <ph name="WEBSITE_NAME" />. Du kan använda dem i inloggningsformuläret.</translation>
 <translation id="6345878117466430440">Markera som läst</translation>
@@ -10148,7 +10146,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8195920051450756553">Fördröjning innan samma tangent aktiveras igen</translation>
 <translation id="8197673340773315084">Lägg till ett namn eller en etikett, till exempel Jobb eller Privat</translation>
 <translation id="8198456017687137612">Castar flik</translation>
-<translation id="8198457270656084773">Letar du systemets enhetslogg? Besök<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Nätverkstjänst och enhetsegenskaper</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8202160505685531999">Ange lösenordet på nytt om du vill uppdatera din profil på <ph name="DEVICE_TYPE" />.</translation>

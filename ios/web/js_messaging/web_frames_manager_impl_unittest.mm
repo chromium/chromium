@@ -95,8 +95,8 @@ TEST_F(WebFramesManagerImplTest, MainWebFrame) {
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_EQ(main_frame_ptr, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
-  EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
-            main_frame->GetSecurityOrigin());
+  EXPECT_EQ(main_frame_ptr->GetSecurityOriginDeprecated(),
+            main_frame->GetSecurityOriginDeprecated());
 
   const std::map<std::string, WebFrame*> observed_frames = observer_.frames();
   ASSERT_EQ(1ul, observed_frames.size());
@@ -139,8 +139,8 @@ TEST_F(WebFramesManagerImplTest, DuplicateMainWebFrame) {
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_EQ(main_frame_ptr, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
-  EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
-            main_frame->GetSecurityOrigin());
+  EXPECT_EQ(main_frame_ptr->GetSecurityOriginDeprecated(),
+            main_frame->GetSecurityOriginDeprecated());
 
   const std::map<std::string, WebFrame*> observed_frames = observer_.frames();
   ASSERT_EQ(1ul, observed_frames.size());
@@ -209,8 +209,8 @@ TEST_F(WebFramesManagerImplTest, RemoveNonexistantFrame) {
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_EQ(main_frame_ptr, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
-  EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
-            main_frame->GetSecurityOrigin());
+  EXPECT_EQ(main_frame_ptr->GetSecurityOriginDeprecated(),
+            main_frame->GetSecurityOriginDeprecated());
 
   const std::map<std::string, WebFrame*> observed_frames = observer_.frames();
   ASSERT_EQ(1ul, observed_frames.size());

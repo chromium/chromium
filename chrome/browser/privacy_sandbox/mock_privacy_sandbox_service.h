@@ -47,10 +47,11 @@ class MockPrivacySandboxService : public PrivacySandboxService {
       HoldQueueHandle,
       (user_education::RequiredNoticePriorityHandle messaging_priority_handle),
       (override));
-  MOCK_METHOD(void, MaybeQueueNotice, (), (override));
+  MOCK_METHOD(void, MaybeQueueNotice, (NoticeQueueState), (override));
   MOCK_METHOD(bool, IsHoldingHandle, (), (override));
   MOCK_METHOD(bool, IsNoticeQueued, (), (override));
-  MOCK_METHOD(void, MaybeUnqueueNotice, (), (override));
+  MOCK_METHOD(void, SetSuppressQueue, (bool), (override));
+  MOCK_METHOD(void, MaybeUnqueueNotice, (NoticeQueueState), (override));
 #endif  // !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override));
   // Mock this method to enable opening the settings page in tests.

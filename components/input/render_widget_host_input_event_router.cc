@@ -2221,14 +2221,13 @@ void RenderWidgetHostInputEventRouter::ForwardDelegatedInkPoint(
     const blink::WebInputEvent& input_event,
     const blink::WebPointerProperties& pointer_properties,
     bool hovering) {
-  const std::optional<cc::DelegatedInkBrowserMetadata>& metadata =
+  std::optional<bool> delegated_ink_hovering =
       target_view->GetViewRenderInputRouter()
           ->delegate()
-          ->GetLastRenderFrameMetadata()
-          .delegated_ink_metadata;
+          ->IsDelegatedInkHovering();
 
-  if (IsMoveEvent(input_event.GetTypeAsUiEventType()) && metadata &&
-      hovering == metadata.value().delegated_ink_is_hovering) {
+  if (IsMoveEvent(input_event.GetTypeAsUiEventType()) &&
+      delegated_ink_hovering && hovering == *delegated_ink_hovering) {
     gfx::PointF position = pointer_properties.PositionInWidget();
     root_view->TransformPointToRootSurface(&position);
     position.Scale(target_view->GetDeviceScaleFactor());

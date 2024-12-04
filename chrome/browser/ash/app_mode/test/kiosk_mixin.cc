@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
+#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -187,6 +188,9 @@ KioskMixin::KioskMixin(InProcessBrowserTestMixinHost* host,
     : InProcessBrowserTestMixin(host),
       cached_configuration_(std::move(cached_configuration)),
       skip_splash_screen_override_(KioskTestHelper::SkipSplashScreenWait()),
+      network_wait_override_(
+          NetworkUiController::SetNetworkWaitTimeoutForTesting(
+              base::TimeDelta())),
       web_server_(host, GURL(kDefaultWebAppOrigin), kDefaultWebAppPath),
       fake_cws_mixin_(host, FakeCwsMixin::kPublic),
       device_state_(

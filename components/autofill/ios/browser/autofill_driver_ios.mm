@@ -174,8 +174,8 @@ bool AutofillDriverIOS::HasSharedAutofillPermission() const {
   // frame on the same origin as the main frame.
   if (parent_ && parent_->web_frame() && parent_->IsInAnyMainFrame() &&
       web_frame()) {
-    return parent_->web_frame()->GetSecurityOrigin() ==
-           web_frame()->GetSecurityOrigin();
+    return parent_->web_frame()->GetSecurityOriginDeprecated() ==
+           web_frame()->GetSecurityOriginDeprecated();
   }
 
   // Return false as share-autofill is not allowed.

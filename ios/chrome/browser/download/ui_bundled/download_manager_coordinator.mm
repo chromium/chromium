@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller.h"
 #import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_protocol.h"
-#import "ios/chrome/browser/download/ui_bundled/legacy_download_manager_view_controller.h"
 #import "ios/chrome/browser/download/ui_bundled/unopened_downloads_tracker.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
@@ -120,9 +119,7 @@
                       object:nil];
 
   BOOL isIncognito = self.browser->GetProfile()->IsOffTheRecord();
-  _viewController = base::FeatureList::IsEnabled(kIOSSaveToDrive)
-                        ? [[DownloadManagerViewController alloc] init]
-                        : [[LegacyDownloadManagerViewController alloc] init];
+  _viewController = [[DownloadManagerViewController alloc] init];
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _viewController.incognito = isIncognito;
@@ -133,7 +130,6 @@
     [_viewController setFullscreenController:fullscreenController];
   }
 
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     _mediator.SetIsIncognito(isIncognito);
     ProfileIOS* profile = self.browser->GetProfile();
     _mediator.SetIdentityManager(
@@ -141,7 +137,6 @@
     _mediator.SetDriveService(
         drive::DriveServiceFactory::GetForProfile(profile));
     _mediator.SetPrefService(profile->GetPrefs());
-  }
 
   _mediator.SetDownloadTask(_downloadTask);
   _mediator.SetConsumer(_viewController);
@@ -390,7 +385,6 @@
 
 - (void)downloadManagerViewControllerDidOpenInDriveApp:
     (UIViewController*)controller {
-  CHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
   UploadTask* uploadTask = _mediator.GetUploadTask();
   if (!uploadTask) {
     // While it should not be possible that uploadTask is nil at this point,
@@ -513,9 +507,7 @@
       "Download.IOSDownloadFileUIGoogleDrive",
       DownloadFileUIGoogleDrive::GoogleDriveInstalledAfterDisplay,
       DownloadFileUIGoogleDrive::Count);
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    _mediator.SetGoogleDriveAppInstalled(true);
-  }
+  _mediator.SetGoogleDriveAppInstalled(true);
   _mediator.UpdateConsumer();
 }
 
@@ -532,12 +524,6 @@
     };
   }
   [_storeKitCoordinator start];
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
-      [_viewController respondsToSelector:@selector
-                       (setInstallDriveButtonVisible:animated:)]) {
-    [_viewController setInstallDriveButtonVisible:NO animated:YES];
-  }
-
   [[InstallationNotifier sharedInstance]
       registerForInstallationNotifications:self
                               withSelector:@selector(didInstallGoogleDriveApp)

@@ -626,7 +626,7 @@ class LocalAndDriveFileSystemExtensionApiTest
 class FileSystemExtensionApiTestWithApps
     : public LocalFileSystemExtensionApiTest {
  public:
-  FileSystemExtensionApiTestWithApps() {}
+  FileSystemExtensionApiTestWithApps() = default;
 
   // FileManagerPrivateApiTest:
   void SetUpOnMainThread() override {

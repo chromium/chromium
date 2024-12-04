@@ -82,15 +82,14 @@ TEST(Ed25519SignatureTest, ValidSignatureFromVector) {
 }
 
 TEST(Ed25519SignatureTest, ValidSignatureFromArray) {
-  auto signature = Ed25519Signature::Create(base::make_span(kSignature));
-  EXPECT_TRUE(
-      base::ranges::equal(base::make_span(kSignature), signature.bytes()));
+  auto signature = Ed25519Signature::Create(base::span(kSignature));
+  EXPECT_TRUE(base::ranges::equal(base::span(kSignature), signature.bytes()));
 }
 
 TEST(Ed25519SignatureTest, Equality) {
-  auto signature1a = Ed25519Signature::Create(base::make_span(kSignature));
-  auto signature1b = Ed25519Signature::Create(base::make_span(kSignature));
-  auto signature2 = Ed25519Signature::Create(base::make_span(kOtherSignature));
+  auto signature1a = Ed25519Signature::Create(base::span(kSignature));
+  auto signature1b = Ed25519Signature::Create(base::span(kSignature));
+  auto signature2 = Ed25519Signature::Create(base::span(kOtherSignature));
   EXPECT_TRUE(signature1a == signature1a);
   EXPECT_TRUE(signature1a == signature1b);
   EXPECT_FALSE(signature1a == signature2);
@@ -111,15 +110,14 @@ TEST(Ed25519SignatureTest, InvalidSignature) {
 }
 
 TEST(Ed25519SignatureTest, Verify) {
-  auto signature = Ed25519Signature::Create(base::make_span(kSignature));
+  auto signature = Ed25519Signature::Create(base::span(kSignature));
 
-  EXPECT_TRUE(
-      signature.Verify(base::make_span(kMessage),
-                       Ed25519PublicKey::Create(base::make_span(kPublicKey))));
+  EXPECT_TRUE(signature.Verify(
+      base::span(kMessage), Ed25519PublicKey::Create(base::span(kPublicKey))));
 
   EXPECT_FALSE(
-      signature.Verify(base::make_span(kOtherMessage),
-                       Ed25519PublicKey::Create(base::make_span(kPublicKey))));
+      signature.Verify(base::span(kOtherMessage),
+                       Ed25519PublicKey::Create(base::span(kPublicKey))));
 }
 
 }  // namespace web_package

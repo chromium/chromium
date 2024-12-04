@@ -127,7 +127,7 @@ FieldType GetStorableTypeCollapsingGroups(FieldType type,
 // example, if the profile is going to fill ADDRESS_HOME_ZIP, it should
 // prioritize showing that over ADDRESS_HOME_STATE in the suggestion sublabel.
 int SpecificityForType(FieldType type, bool use_improved_labels_order) {
-  // TODO(crbug.com/40274514): Clean up after launch. To make `kDefaultOrder`
+  // TODO(crbug.com/380273791): Clean up after launch. To make `kDefaultOrder`
   // and `kImprovedOrder` have the same size/type, an `EMPTY_TYPE` dummy value
   // is added to the end of `kImprovedOrder`. It can be removed together with
   // the CHECK() after launch.
@@ -203,7 +203,7 @@ void GetFieldsForDistinguishingProfiles(
   // `NAME_FULL` or `PHONE_HOME_WHOLE_NUMBER` in the list of distinguishing
   // fields as a last-ditch fallback. This allows us to distinguish between
   // profiles that are identical except for the name or phone number.
-  // TODO(crbug.com/320475288): Clean up this special case. It might be possible
+  // TODO(crbug.com/380273791): Clean up this special case. It might be possible
   // to just append `PHONE_HOME_WHOLE_NUMBER` at the end.
   for (FieldType excluded_field : excluded_fields) {
     FieldType effective_excluded_type =
@@ -847,13 +847,11 @@ void AutofillProfile::CreateInferredLabels(
     const std::string& app_locale,
     std::vector<std::u16string>* labels,
     bool use_improved_labels_order) {
-  // TODO(crbug.com/40274514): Clean up after launch.
+  // TODO(crbug.com/380273791): Clean up after launch.
   CHECK(!triggering_field_type ||
-        base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable));
+        base::FeatureList::IsEnabled(features::kAutofillImprovedLabels));
   CHECK(!use_improved_labels_order ||
-        base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable));
+        base::FeatureList::IsEnabled(features::kAutofillImprovedLabels));
 
   std::vector<FieldType> fields_to_use;
   std::vector<FieldType> suggested_fields_types =

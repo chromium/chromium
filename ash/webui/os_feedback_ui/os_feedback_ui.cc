@@ -166,9 +166,8 @@ OSFeedbackUI::OSFeedbackUI(
       "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(source);
 
-  const auto resources =
-      base::make_span(kAshOsFeedbackResources, kAshOsFeedbackResourcesSize);
-  SetUpWebUIDataSource(source, resources, IDR_ASH_OS_FEEDBACK_INDEX_HTML);
+  SetUpWebUIDataSource(source, kAshOsFeedbackResources,
+                       IDR_ASH_OS_FEEDBACK_INDEX_HTML);
   AddLocalizedStrings(source);
 
   // Register common permissions for chrome-untrusted:// pages.

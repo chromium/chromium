@@ -1958,7 +1958,9 @@ wtf_size_t PopulateIntegerRepeater(CSSValueList* list,
                                : track_list.RepeatSize(repeater_index);
 
   repeated_values = MakeGarbageCollected<cssvalue::CSSGridIntegerRepeatValue>(
-      number_of_repetitions);
+      CSSNumericLiteralValue::Create(number_of_repetitions,
+                                     CSSPrimitiveValue::UnitType::kNumber),
+      /*extra_clamp=*/std::nullopt);
 
   // Line names for integer repeats get expanded and interspersed with
   // non-repeaters in the track list.
@@ -2612,7 +2614,9 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
       // Canonical form of step timing function is step(n, type) or step(n) even
       // if initially parsed as step-start or step-end.
       return MakeGarbageCollected<cssvalue::CSSStepsTimingFunctionValue>(
-          steps, position);
+          CSSNumericLiteralValue::Create(
+              steps, CSSNumericLiteralValue::UnitType::kNumber),
+          position);
     }
 
     default:

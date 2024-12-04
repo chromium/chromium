@@ -72,7 +72,7 @@ ffmpeg.dll: %(VersionDir)s\
 [TOUCH]
 
 [GOOGLE_CHROME]
-# The elevation service is only installed for Google Chrome builds.
+elevated_tracing_service.exe: %(VersionDir)s\
 elevation_service.exe: %(VersionDir)s\
 os_update_handler.exe: %(VersionDir)s\
 

@@ -23,6 +23,8 @@ BASE_DECLARE_FEATURE(kAboutThisSiteAsyncFetching);
 // Enables the privacy policy insights Learning Experiment UI.
 BASE_DECLARE_FEATURE(kPrivacyPolicyInsights);
 
+bool IsMerchantTrustFeatureEnabled();
+
 }  // namespace page_info
 
 #endif  // CHROME_BROWSER_PAGE_INFO_PAGE_INFO_FEATURES_H_

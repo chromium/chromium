@@ -134,7 +134,7 @@ bool GetResumableUploadMetadata(
 
 class FakeBinaryFCMService : public BinaryFCMService {
  public:
-  FakeBinaryFCMService() {}
+  FakeBinaryFCMService() = default;
 
   void GetInstanceID(GetInstanceIDCallback callback) override {
     std::move(callback).Run("test_instance_id");

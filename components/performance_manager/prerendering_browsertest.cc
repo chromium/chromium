@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   const FrameNode* initial_main_frame_node = nullptr;
   int64_t initial_navigation_id = 0;
-  RunInGraph([&](Graph*) {
+  RunInGraph([&] {
     ASSERT_TRUE(page_node);
     EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
     initial_main_frame_node = page_node->GetMainFrameNode();
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   base::WeakPtr<PageNode> page_node2 =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   const FrameNode* prerender_main_frame_node = nullptr;
-  RunInGraph([&](Graph*) {
+  RunInGraph([&] {
     ASSERT_TRUE(page_node);
     ASSERT_EQ(page_node.get(), page_node2.get());
     EXPECT_EQ(page_node->GetMainFrameNodes().size(), 2U);
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
   ASSERT_TRUE(prerender_observer.was_activated());
   deleted_observer.WaitUntilDeleted();
-  RunInGraph([&](Graph*) {
+  RunInGraph([&] {
     ASSERT_TRUE(page_node);
     EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
     EXPECT_EQ(page_node->GetMainFrameNode(), prerender_main_frame_node);
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   const FrameNode* initial_main_frame_node = nullptr;
   int64_t initial_navigation_id = 0;
-  RunInGraph([&](Graph*) {
+  RunInGraph([&] {
     ASSERT_TRUE(page_node);
     EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
     initial_main_frame_node = page_node->GetMainFrameNode();
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   base::WeakPtr<PageNode> page_node2 =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   const FrameNode* prerender_main_frame_node = nullptr;
-  RunInGraph([&](Graph*) {
+  RunInGraph([&] {
     ASSERT_TRUE(page_node);
     ASSERT_EQ(page_node.get(), page_node2.get());
     EXPECT_EQ(page_node->GetMainFrameNodes().size(), 2U);
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
           ->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kFinalUrl));
   deleted_observer.WaitUntilDeleted();
-  RunInGraph([&](Graph*) {
+  RunInGraph([&] {
     ASSERT_TRUE(page_node);
     EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
     // The RenderFrameHost might change after the navigation if RenderDocument

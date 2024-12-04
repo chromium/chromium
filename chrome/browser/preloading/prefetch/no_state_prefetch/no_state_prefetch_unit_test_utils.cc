@@ -55,7 +55,7 @@ UnitTestNoStatePrefetchManager::UnitTestNoStatePrefetchManager(Profile* profile)
   set_rate_limit_enabled(false);
 }
 
-UnitTestNoStatePrefetchManager::~UnitTestNoStatePrefetchManager() {}
+UnitTestNoStatePrefetchManager::~UnitTestNoStatePrefetchManager() = default;
 
 void UnitTestNoStatePrefetchManager::Shutdown() {
   if (next_no_state_prefetch_contents())

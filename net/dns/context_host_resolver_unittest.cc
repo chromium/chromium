@@ -349,7 +349,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver) {
   EXPECT_FALSE(callback1.have_result());
 }
 
-TEST_F(ContextHostResolverTest, DestroyResolverCompletedRequests) {
+TEST_F(ContextHostResolverTest, DestroyResolver_CompletedRequests) {
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsAddressResponse(
@@ -383,7 +383,7 @@ TEST_F(ContextHostResolverTest, DestroyResolverCompletedRequests) {
 }
 
 // Test a request created before resolver destruction but not yet started.
-TEST_F(ContextHostResolverTest, DestroyResolverDelayedStartRequest) {
+TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartRequest) {
   // Set up delayed result for "example.com".
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
@@ -415,7 +415,7 @@ TEST_F(ContextHostResolverTest, DestroyResolverDelayedStartRequest) {
   EXPECT_FALSE(request->GetAddressResults());
 }
 
-TEST_F(ContextHostResolverTest, DestroyResolverDelayedStartDohProbeRequest) {
+TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartDohProbeRequest) {
   // Set empty MockDnsClient rules to ensure DnsClient is mocked out.
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));
@@ -435,7 +435,7 @@ TEST_F(ContextHostResolverTest, DestroyResolverDelayedStartDohProbeRequest) {
   EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
 }
 
-TEST_F(ContextHostResolverTest, OnShutdownPendingRequest) {
+TEST_F(ContextHostResolverTest, OnShutdown_PendingRequest) {
   // Set up delayed result for "example.com".
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
@@ -471,7 +471,7 @@ TEST_F(ContextHostResolverTest, OnShutdownPendingRequest) {
   EXPECT_FALSE(callback.have_result());
 }
 
-TEST_F(ContextHostResolverTest, OnShutdownCompletedRequests) {
+TEST_F(ContextHostResolverTest, OnShutdown_CompletedRequests) {
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsAddressResponse(
@@ -505,7 +505,7 @@ TEST_F(ContextHostResolverTest, OnShutdownCompletedRequests) {
               testing::ElementsAre(kEndpoint));
 }
 
-TEST_F(ContextHostResolverTest, OnShutdownSubsequentRequests) {
+TEST_F(ContextHostResolverTest, OnShutdown_SubsequentRequests) {
   auto context = CreateTestURLRequestContextBuilder()->Build();
   auto resolve_context = std::make_unique<ResolveContext>(
       context.get(), false /* enable_caching */);
@@ -537,7 +537,7 @@ TEST_F(ContextHostResolverTest, OnShutdownSubsequentRequests) {
   EXPECT_FALSE(request2->GetAddressResults());
 }
 
-TEST_F(ContextHostResolverTest, OnShutdownSubsequentDohProbeRequest) {
+TEST_F(ContextHostResolverTest, OnShutdown_SubsequentDohProbeRequest) {
   // Set empty MockDnsClient rules to ensure DnsClient is mocked out.
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));
@@ -557,7 +557,7 @@ TEST_F(ContextHostResolverTest, OnShutdownSubsequentDohProbeRequest) {
 }
 
 // Test a request created before shutdown but not yet started.
-TEST_F(ContextHostResolverTest, OnShutdownDelayedStartRequest) {
+TEST_F(ContextHostResolverTest, OnShutdown_DelayedStartRequest) {
   // Set up delayed result for "example.com".
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
@@ -590,7 +590,7 @@ TEST_F(ContextHostResolverTest, OnShutdownDelayedStartRequest) {
   EXPECT_FALSE(request->GetAddressResults());
 }
 
-TEST_F(ContextHostResolverTest, OnShutdownDelayedStartDohProbeRequest) {
+TEST_F(ContextHostResolverTest, OnShutdown_DelayedStartDohProbeRequest) {
   // Set empty MockDnsClient rules to ensure DnsClient is mocked out.
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));

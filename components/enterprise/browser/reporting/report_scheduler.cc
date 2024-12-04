@@ -13,7 +13,6 @@
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
@@ -150,7 +149,7 @@ void ReportScheduler::OnReportEnabledPrefChanged() {
   // For Chrome OS, it needn't register the cloud policy client here. The
   // |dm_token| and |client_id| should have already existed after the client is
   // initialized, and will keep valid during whole life-cycle.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!SetupBrowserPolicyClientRegistration()) {
     Stop();
     return;
@@ -202,7 +201,7 @@ bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
     client_id = delegate_->GetProfileClientId();
   } else {
     // Get token for browser reporting
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 #else
     NOTREACHED();
@@ -404,7 +403,7 @@ ReportType ReportScheduler::TriggerToReportType(
 }
 
 policy::DMToken ReportScheduler::GetDMToken() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return policy::DMToken::CreateValidToken(cloud_policy_client_->dm_token());
 #else
   if (profile_request_generator_) {

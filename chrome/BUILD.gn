@@ -245,6 +245,7 @@ if (!is_android && !is_mac) {
           "//chrome/chrome_proxy",
           "//chrome/elevation_service",
           "//chrome/notification_helper",
+          "//chrome/windows_services/elevated_tracing_service",
         ]
 
         if (enable_platform_experience) {

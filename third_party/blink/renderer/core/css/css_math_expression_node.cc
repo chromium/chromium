@@ -809,21 +809,23 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
                               /*has_explicit_percent=*/false);
     case kCalcPercent:
       DCHECK(value_->IsPercentage());
-      return PixelsAndPercent(0.0f, value_->GetDoubleValueWithoutClamping(),
+      return PixelsAndPercent(0.0f, value_->DoubleValue(),
                               /*has_explicit_pixels=*/false,
                               /*has_explicit_percent=*/true);
     case kCalcNumber:
       // TODO(alancutter): Stop treating numbers like pixels unconditionally
       // in calcs to be able to accomodate border-image-width
       // https://drafts.csswg.org/css-backgrounds-3/#the-border-image-width
-      return PixelsAndPercent(value_->GetFloatValue() * length_resolver.Zoom(),
-                              0.0f, /*has_explicit_pixels=*/true,
-                              /*has_explicit_percent=*/false);
+      return PixelsAndPercent(
+          ClampTo<float>(value_->ClampedDoubleValue()) * length_resolver.Zoom(),
+          0.0f, /*has_explicit_pixels=*/true,
+          /*has_explicit_percent=*/false);
     case kCalcAngle:
       // Treat angles as pixels to support calc() expressions on hue angles in
       // relative color syntax. This allows converting such expressions to
       // CalculationValues.
-      return PixelsAndPercent(value_->GetFloatValue(), 0.0f,
+      return PixelsAndPercent(ClampTo<float>(value_->ClampedDoubleValue()),
+                              0.0f,
                               /*has_explicit_pixels=*/true,
                               /*has_explicit_percent=*/false);
     default:

@@ -131,7 +131,7 @@ TEST_P(PlatformVideoFramePoolTest, SingleFrameReuse) {
   ASSERT_TRUE(fourcc.has_value());
   ASSERT_TRUE(Initialize(fourcc.value()));
   scoped_refptr<FrameResource> frame = GetFrame(10);
-  gfx::GenericSharedMemoryId id = frame->GetSharedMemoryId();
+  base::UnguessableToken id = frame->tracking_token();
 
   // Clear frame reference to return the frame to the pool.
   frame = nullptr;
@@ -139,7 +139,7 @@ TEST_P(PlatformVideoFramePoolTest, SingleFrameReuse) {
 
   // Verify that the next frame from the pool uses the same memory.
   scoped_refptr<FrameResource> new_frame = GetFrame(20);
-  EXPECT_EQ(id, new_frame->GetSharedMemoryId());
+  EXPECT_EQ(id, new_frame->tracking_token());
 }
 
 TEST_P(PlatformVideoFramePoolTest, MultipleFrameReuse) {
@@ -148,18 +148,18 @@ TEST_P(PlatformVideoFramePoolTest, MultipleFrameReuse) {
   ASSERT_TRUE(Initialize(fourcc.value()));
   scoped_refptr<FrameResource> frame1 = GetFrame(10);
   scoped_refptr<FrameResource> frame2 = GetFrame(20);
-  gfx::GenericSharedMemoryId id1 = frame1->GetSharedMemoryId();
-  gfx::GenericSharedMemoryId id2 = frame2->GetSharedMemoryId();
+  base::UnguessableToken id1 = frame1->tracking_token();
+  base::UnguessableToken id2 = frame2->tracking_token();
 
   frame1 = nullptr;
   task_environment_.RunUntilIdle();
   frame1 = GetFrame(30);
-  EXPECT_EQ(id1, frame1->GetSharedMemoryId());
+  EXPECT_EQ(id1, frame1->tracking_token());
 
   frame2 = nullptr;
   task_environment_.RunUntilIdle();
   frame2 = GetFrame(40);
-  EXPECT_EQ(id2, frame2->GetSharedMemoryId());
+  EXPECT_EQ(id2, frame2->tracking_token());
 
   frame1 = nullptr;
   frame2 = nullptr;
@@ -274,7 +274,7 @@ TEST_P(PlatformVideoFramePoolTest,
   constexpr gfx::Rect kInitialVisibleRect(kCodedSize);
   ASSERT_TRUE(Initialize(kCodedSize, kInitialVisibleRect, fourcc.value()));
   scoped_refptr<FrameResource> frame1 = GetFrame(10);
-  gfx::GenericSharedMemoryId id1 = frame1->GetSharedMemoryId();
+  base::UnguessableToken id1 = frame1->tracking_token();
 
   // Clear frame references to return the frames to the pool.
   frame1 = nullptr;
@@ -293,7 +293,7 @@ TEST_P(PlatformVideoFramePoolTest,
   ASSERT_TRUE(Initialize(kCodedSize, kDifferentVisibleRect, fourcc.value()));
 
   scoped_refptr<FrameResource> frame2 = GetFrame(20);
-  gfx::GenericSharedMemoryId id2 = frame2->GetSharedMemoryId();
+  base::UnguessableToken id2 = frame2->tracking_token();
   EXPECT_EQ(id1, id2);
 }
 

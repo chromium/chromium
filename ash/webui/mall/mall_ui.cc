@@ -38,14 +38,12 @@ MallUI::MallUI(content::WebUI* web_ui, std::unique_ptr<MallUIDelegate> delegate)
       web_ui->GetWebContents()->GetBrowserContext(), ash::kChromeUIMallHost);
   source->SetDefaultResource(IDR_ASH_MALL_CROS_APP_INDEX_HTML);
   source->AddLocalizedString("message", IDS_ERRORPAGES_HEADING_YOU_ARE_OFFLINE);
-  source->AddResourcePaths(
-      base::make_span(kAshMallCrosAppResources, kAshMallCrosAppResourcesSize));
+  source->AddResourcePaths(kAshMallCrosAppResources);
 
   // We need a CSP override to be able to embed the Mall website, and to handle
   // cros-apps:// links to install apps.
   std::string csp = base::StrCat({"frame-src ", GetMallBaseUrl().spec(), " ",
-                                  chromeos::kAppInstallUriScheme, ": ",
-                                  chromeos::kLegacyAppInstallUriScheme, ":;"});
+                                  chromeos::kAppInstallUriScheme, ":;"});
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
 }

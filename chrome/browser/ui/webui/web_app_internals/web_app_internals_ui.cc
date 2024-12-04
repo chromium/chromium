@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 
 #include "base/functional/bind.h"
@@ -31,10 +26,8 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
   // Set up the chrome://web-app-internals source.
   content::WebUIDataSource* internals = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIWebAppInternalsHost);
-  webui::SetupWebUIDataSource(
-      internals,
-      base::make_span(kWebAppInternalsResources, kWebAppInternalsResourcesSize),
-      IDR_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(internals, kWebAppInternalsResources,
+                              IDR_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HTML);
   internals->UseStringsJs();
   internals->AddBoolean("isIwaDevModeEnabled",
                         web_app::IsIwaDevModeEnabled(profile));

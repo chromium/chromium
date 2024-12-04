@@ -1810,6 +1810,13 @@ std::vector<SVCScalabilityMode> VaapiWrapper::GetSupportedScalabilityModes(
       scalability_modes.push_back(SVCScalabilityMode::kL1T3);
     }
   }
+
+  if (base::FeatureList::IsEnabled(kVaapiAV1TemporalLayerHWEncoding)) {
+    if (media_profile == AV1PROFILE_PROFILE_MAIN) {
+      scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+      scalability_modes.push_back(SVCScalabilityMode::kL1T3);
+    }
+  }
 #endif
   return scalability_modes;
 }

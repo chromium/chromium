@@ -131,27 +131,29 @@ void CreditCardAccessManagerTestBase::ClearCards() {
 }
 
 void CreditCardAccessManagerTestBase::CreateLocalCard(std::string guid,
-                                                      std::string number) {
+                                                      std::string number,
+                                                      const char16_t* cvc) {
   CreditCard local_card = CreditCard();
   test::SetCreditCardInfo(&local_card, "Elvis Presley", number.c_str(),
                           test::NextMonth().c_str(), test::NextYear().c_str(),
-                          "1", kTestCvc16);
+                          "1", cvc);
   local_card.set_guid(guid);
   local_card.set_record_type(CreditCard::RecordType::kLocalCard);
 
   personal_data().payments_data_manager().AddCreditCard(local_card);
 }
-
-CreditCard* CreditCardAccessManagerTestBase::CreateServerCard(
+const CreditCard* CreditCardAccessManagerTestBase::CreateServerCard(
     std::string guid,
     std::string number,
-    std::string server_id) {
+    std::string server_id,
+    const char16_t* cvc,
+    CreditCard::RecordType record_type) {
   CreditCard server_card = CreditCard();
   test::SetCreditCardInfo(&server_card, "Elvis Presley", number.c_str(),
                           test::NextMonth().c_str(), test::NextYear().c_str(),
-                          "1", kTestCvc16);
+                          "1", cvc);
   server_card.set_guid(guid);
-  server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+  server_card.set_record_type(record_type);
   server_card.set_server_id(server_id);
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
   return personal_data().payments_data_manager().GetCreditCardByGUID(guid);
@@ -345,10 +347,10 @@ void CreditCardAccessManagerTestBase::
         bool is_user_verifiable,
         const std::vector<CardUnmaskChallengeOption>& challenge_options,
         int selected_index) {
-  CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard* virtual_card =
+  CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+                   CreditCard::RecordType::kVirtualCard);
+  const CreditCard* virtual_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   fido_authenticator().set_is_user_opted_in(

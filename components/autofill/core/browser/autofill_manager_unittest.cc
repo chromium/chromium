@@ -45,6 +45,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Property;
@@ -183,8 +184,6 @@ class AutofillManagerTest_OnLoadedServerPredictionsObserver
 
   void SetUp() override {
     AutofillManagerTest::SetUp();
-    client_.set_crowdsourcing_manager(
-        std::make_unique<MockAutofillCrowdsourcingManager>(&client_));
     manager().AddObserver(&observer_);
   }
 
@@ -195,7 +194,7 @@ class AutofillManagerTest_OnLoadedServerPredictionsObserver
 
   MockAutofillCrowdsourcingManager& crowdsourcing_manager() {
     return static_cast<MockAutofillCrowdsourcingManager&>(
-        *client_.GetCrowdsourcingManager());
+        client_.GetCrowdsourcingManager());
   }
 
   MockAutofillManagerObserver observer_;
@@ -317,6 +316,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   FormData form = forms[0];
   FormData other_form = forms[1];
   FormFieldData field = form.fields().front();
+  FormGlobalId id_to_remove = test::MakeFormGlobalId();
 
   // Shorthands for matchers to reduce visual noise.
   using enum AutofillManager::LifecycleState;
@@ -324,7 +324,6 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   auto f = Eq(form.global_id());
   auto g = Eq(other_form.global_id());
   auto ff = Eq(field.global_id());
-  auto ff_property = Property(&FormFieldData::global_id, field.global_id());
   auto heuristics = Eq(FieldTypeSource::kHeuristicsOrAutocomplete);
 
   MockAutofillManagerObserver observer;
@@ -376,47 +375,38 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(manager(), OnBeforeProcessParsedForms).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnFormProcessed).Times(AtLeast(0));
 
-  // Reset the manager, the observers should stick around.
+  // Reset the manager and transition from kInactive to kActive. The observers
+  // should stick around.
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kInactive, kPendingReset));
-  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kPendingReset);
-  test_api(manager()).Reset();
   EXPECT_CALL(observer,
-              OnAutofillManagerStateChanged(m, kPendingReset, kActive));
+              OnAutofillManagerStateChanged(m, kPendingReset, kInactive));
+  test_api(client_.GetAutofillDriverFactory()).Reset(*driver_);
+  EXPECT_CALL(observer, OnAutofillManagerStateChanged(m, kInactive, kActive));
+  test_api(client_.GetAutofillDriverFactory())
+      .SetLifecycleStateAndNotifyObservers(*driver_, kActive);
+
+  // Test that not changing the LifecycleState does not fire events.
   test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
 
-  // If the lifecycle does not change, SetLifecycleStateAndNotifyObservers()
-  // does not fire an event.
-  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
+  // Test that even if the vector of new forms is too large, events are still
+  // fired for the removed form.
+  EXPECT_CALL(observer,
+              OnBeforeFormsSeen(m, IsEmpty(), ElementsAre(id_to_remove)));
+  EXPECT_CALL(observer,
+              OnAfterFormsSeen(m, IsEmpty(), ElementsAre(id_to_remove)));
+  manager().OnFormsSeen(std::vector<FormData>(kMaxListSize + 10),
+                        {id_to_remove});
 
-  std::vector<FormData> invalid_form_array(kMaxListSize + 10, FormData());
-  FormGlobalId id_to_remove = test::MakeFormGlobalId();
-
-  testing::MockFunction<void(int)> check;
-  {
-    testing::InSequence s;
-    EXPECT_CALL(observer, OnBeforeFormsSeen(m, testing::IsEmpty(),
-                                            ElementsAre(id_to_remove)));
-    EXPECT_CALL(observer, OnAfterFormsSeen(m, testing::IsEmpty(),
-                                           ElementsAre(id_to_remove)));
-    EXPECT_CALL(check, Call(1));
-    EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g),
-                                            ElementsAre(id_to_remove)));
-    EXPECT_CALL(check, Call(2));
-    EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g),
-                                           ElementsAre(id_to_remove)));
-  }
-
-  // Invalid `updated_forms` will trigger a call to the observer with empty
-  // `updated_forms`.
-  manager().OnFormsSeen(invalid_form_array, {id_to_remove});
-  check.Call(1);
-  // Since the manager doesn't currently have any form structures cached, no
-  // forms will actually be removed, but calls to
-  // `AutofillManager::Observer::OnBeforeFormsSeen()` and
-  // `AutofillManager::Observer::OnAfterFormsSeen()` should use `id_to_remove`.
+  // Test that seeing a normal amount of new forms triggers all events. Parsing
+  // is asynchronous, so the OnAfterFoo() events are asynchronous, too.
+  EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g),
+                                          ElementsAre(id_to_remove)));
+  EXPECT_CALL(observer, OnBeforeLoadedServerPredictions(m));
   manager().OnFormsSeen(forms, {id_to_remove});
-  check.Call(2);
+  EXPECT_CALL(observer, OnAfterLoadedServerPredictions(m));
+  EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g),
+                                         ElementsAre(id_to_remove)));
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
   task_environment_.RunUntilIdle();
@@ -470,9 +460,6 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
 
   EXPECT_CALL(observer, OnFormSubmitted(m, Ref(form)));
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
-
-  // OnBeforeLoadedServerPredictions(), OnAfterLoadedServerPredictions() are
-  // tested in AutofillManagerTest_OnLoadedServerPredictionsObserver.
 
   // Reset the manager, the observers should stick around.
   EXPECT_CALL(observer,

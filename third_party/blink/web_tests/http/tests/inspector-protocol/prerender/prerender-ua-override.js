@@ -42,6 +42,6 @@
 
   // Success
   const resultSuccess = await dp2.Preload.oncePrerenderStatusUpdated();
-  testRunner.log(resultSuccess, '', ['loaderId', 'sessionId']);
+  testRunner.log(resultSuccess);
   testRunner.completeTest();
 });

@@ -784,6 +784,18 @@ NavigationRequest* ServiceWorkerClient::GetOngoingNavigationRequestBeforeCommit(
   return frame_tree_node ? frame_tree_node->navigation_request() : nullptr;
 }
 
+std::string ServiceWorkerClient::GetFrameTreeNodeTypeStringBeforeCommit()
+    const {
+  CHECK(!is_response_committed());
+  if (FrameTreeNode* frame_tree_node = FrameTreeNode::GloballyFindByID(
+          ongoing_navigation_frame_tree_node_id_)) {
+    CHECK(IsContainerForWindowClient());
+    return frame_tree_node->IsOutermostMainFrame() ? "OutermostMainFrame"
+                                                   : "NotOutermostMainFrame";
+  }
+  return "Unknown";
+}
+
 const std::string& ServiceWorkerClient::client_uuid() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return client_uuid_;

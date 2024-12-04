@@ -58,8 +58,8 @@ TEST(SignedWebBundleSignatureStack,
   SignedWebBundleSignatureStackEntry entry(
       /*attributes_cbor=*/{4, 5},
       SignedWebBundleSignatureInfoEd25519(
-          Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
-          Ed25519Signature::Create(base::make_span(kTestSignature1))));
+          Ed25519PublicKey::Create(base::span(kTestPublicKey1)),
+          Ed25519Signature::Create(base::span(kTestSignature1))));
 
   std::vector<SignedWebBundleSignatureStackEntry> entries = {entry};
   ASSERT_OK_AND_ASSIGN(auto result,
@@ -73,13 +73,13 @@ TEST(SignedWebBundleSignatureStack,
   SignedWebBundleSignatureStackEntry entry1(
       /*attributes_cbor=*/{4, 5},
       SignedWebBundleSignatureInfoEd25519(
-          Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
-          Ed25519Signature::Create(base::make_span(kTestSignature1))));
+          Ed25519PublicKey::Create(base::span(kTestPublicKey1)),
+          Ed25519Signature::Create(base::span(kTestSignature1))));
   SignedWebBundleSignatureStackEntry entry2(
       /*attributes_cbor=*/{8, 9, 0},
       SignedWebBundleSignatureInfoEd25519(
-          Ed25519PublicKey::Create(base::make_span(kTestPublicKey2)),
-          Ed25519Signature::Create(base::make_span(kTestSignature2))));
+          Ed25519PublicKey::Create(base::span(kTestPublicKey2)),
+          Ed25519Signature::Create(base::span(kTestSignature2))));
 
   std::vector<SignedWebBundleSignatureStackEntry> entries = {entry1, entry2};
   ASSERT_OK_AND_ASSIGN(auto result,
@@ -96,9 +96,9 @@ TEST(SignedWebBundleSignatureStack,
 
   auto ed25519_signature_info = mojom::SignatureInfoEd25519::New();
   ed25519_signature_info->public_key =
-      Ed25519PublicKey::Create(base::make_span(kTestPublicKey1));
+      Ed25519PublicKey::Create(base::span(kTestPublicKey1));
   ed25519_signature_info->signature =
-      Ed25519Signature::Create(base::make_span(kTestSignature1));
+      Ed25519Signature::Create(base::span(kTestSignature1));
 
   entry->signature_info =
       mojom::SignatureInfo::NewEd25519(std::move(ed25519_signature_info));

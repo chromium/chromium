@@ -196,7 +196,10 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "fuchsia_standard_tests",
+            # Passthrough is used since these emulators use SwiftShader, which
+            # forces use of the passthrough decoder even if validating is
+            # specified.
+            "fuchsia_standard_passthrough_tests",
         ],
         additional_compile_targets = [
             "all",
@@ -287,7 +290,10 @@ ci.builder(
     # removing targets.
     targets = targets.bundle(
         targets = [
-            "fuchsia_standard_tests",
+            # Passthrough is used since these emulators use SwiftShader, which
+            # forces use of the passthrough decoder even if validating is
+            # specified.
+            "fuchsia_standard_passthrough_tests",
         ],
         additional_compile_targets = [
             "all",

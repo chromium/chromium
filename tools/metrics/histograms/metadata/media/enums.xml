@@ -1106,6 +1106,13 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="MEDIA_CODEC_ZERO_SUBSAMPLES"/>
   <int value="19" label="MEDIA_CODEC_UNKNOWN_CIPHER_MODE"/>
   <int value="20" label="MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED"/>
+  <int value="21" label="MEDIA_CODEC_INSUFFICIENT_RESOURCE"/>
+  <int value="22" label="MEDIA_CODEC_RECLAIMED"/>
+  <int value="23" label="MEDIA_CODEC_INPUT_SLOT_UNAVAILABLE"/>
+  <int value="24" label="MEDIA_CODEC_ILLEGAL_STATE"/>
+  <int value="25" label="MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION"/>
+  <int value="26" label="MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION"/>
+  <int value="27" label="MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION"/>
 </enum>
 
 <enum name="MediaContainers">

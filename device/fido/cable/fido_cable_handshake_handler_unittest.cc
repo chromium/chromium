@@ -154,8 +154,8 @@ std::vector<uint8_t> ConstructAuthenticatorHelloReply(
     return std::vector<uint8_t>();
   }
 
-  fido_parsing_utils::Append(
-      &reply, base::make_span(authenticator_hello_mac).first(16u));
+  fido_parsing_utils::Append(&reply,
+                             base::span(authenticator_hello_mac).first<16>());
   return reply;
 }
 

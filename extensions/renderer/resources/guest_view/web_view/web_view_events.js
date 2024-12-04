@@ -262,17 +262,14 @@ WebViewEvents.prototype.handleFullscreenExitEvent = function(event, eventName) {
 };
 
 WebViewEvents.prototype.handleLoadAbortEvent = function(event, eventName) {
-  var showWarningMessage = function(code, reason) {
+  var webViewEvent = this.makeDomEvent(event, eventName);
+  if (this.view.dispatchEvent(webViewEvent)) {
     window.console.warn(tagLogMessage(
         this.view.getLogTag(),
         $String.replace(
             $String.replace(
-                WebViewConstants.WARNING_MSG_LOAD_ABORTED, '%1', code),
-            '%2', reason)));
-  };
-  var webViewEvent = this.makeDomEvent(event, eventName);
-  if (this.view.dispatchEvent(webViewEvent)) {
-    showWarningMessage(event.code, event.reason);
+                WebViewConstants.WARNING_MSG_LOAD_ABORTED, '%1', event.code),
+            '%2', event.reason)));
   }
 };
 

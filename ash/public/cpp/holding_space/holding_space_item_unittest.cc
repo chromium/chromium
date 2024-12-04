@@ -180,7 +180,6 @@ TEST_P(HoldingSpaceItemTest, IsScreenCapture) {
     case HoldingSpaceItem::Type::kDiagnosticsLog:
     case HoldingSpaceItem::Type::kDownload:
     case HoldingSpaceItem::Type::kDriveSuggestion:
-    case HoldingSpaceItem::Type::kLacrosDownload:
     case HoldingSpaceItem::Type::kLocalSuggestion:
     case HoldingSpaceItem::Type::kNearbyShare:
     case HoldingSpaceItem::Type::kPhoneHubCameraRoll:

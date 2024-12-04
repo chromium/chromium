@@ -29,7 +29,7 @@ ArcErrorNotificationItem::ArcErrorNotificationItem(
     const std::string& notification_id)
     : bridge_(bridge), notification_id_(notification_id) {}
 
-ArcErrorNotificationItem::~ArcErrorNotificationItem() {}
+ArcErrorNotificationItem::~ArcErrorNotificationItem() = default;
 
 void ArcErrorNotificationItem::Bind(
     mojo::PendingRemote<arc::mojom::ErrorNotificationItem>* remote) {

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -58,7 +57,7 @@ class MockTracker : public Tracker {
   MOCK_METHOD1(UnregisterPriorityNotificationHandler,
                void(const base::Feature&));
   MOCK_METHOD1(AddOnInitializedCallback, void(OnInitializedCallback callback));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD2(UpdateConfig,
                void(const base::Feature& feature,
                     const ConfigurationProvider* provider));

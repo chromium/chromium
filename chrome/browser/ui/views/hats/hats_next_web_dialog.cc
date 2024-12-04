@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
-#include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/pref_names.h"
@@ -164,9 +163,7 @@ HatsNextWebDialog::HatsNextWebDialog(
           trigger_id,
           hats_histogram_name,
           hats_survey_ukm_id,
-          base::FeatureList::IsEnabled(features::kHaTSWebUI)
-              ? GURL(chrome::kChromeUIUntrustedHatsURL)
-              : GURL(features::kHappinessTrackingSurveysHostedUrl.Get()),
+          GURL(features::kHappinessTrackingSurveysHostedUrl.Get()),
           base::Seconds(10),
           std::move(success_callback),
           std::move(failure_callback),
@@ -185,35 +182,6 @@ gfx::Size HatsNextWebDialog::CalculatePreferredSize(
 void HatsNextWebDialog::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile, otr_profile_);
   otr_profile_ = nullptr;
-}
-
-std::string HatsNextWebDialog::GetTriggerId() {
-  return trigger_id_;
-}
-
-bool HatsNextWebDialog::GetEnableTesting() {
-  return base::FeatureList::IsEnabled(
-      features::kHappinessTrackingSurveysForDesktopDemo);
-}
-
-std::vector<std::string> HatsNextWebDialog::GetLanguageList() {
-  // The HaTS backend service accepts a list of preferred languages, although
-  // only the application locale is provided here to ensure that the survey
-  // matches the native UI language.
-  return std::vector<std::string>({g_browser_process->GetApplicationLocale()});
-}
-
-base::Value::Dict HatsNextWebDialog::GetProductSpecificDataJson() {
-  // Append any Product Specific Data to the query. This will be interpreted
-  // by the wrapper website and provided to the HaTS backend service.
-  base::Value::Dict dict;
-  for (const auto& field_value : product_specific_bits_data_) {
-    dict.Set(field_value.first, field_value.second ? "true" : "false");
-  }
-  for (const auto& field_value : product_specific_string_data_) {
-    dict.Set(field_value.first, field_value.second);
-  }
-  return dict;
 }
 
 std::optional<std::string> HatsNextWebDialog::GetHistogramName() {
@@ -424,16 +392,7 @@ HatsNextWebDialog::HatsNextWebDialog(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   web_view_ =
       AddChildView(std::make_unique<HatsWebView>(otr_profile_, browser, this));
-  if (base::FeatureList::IsEnabled(features::kHaTSWebUI)) {
-    web_view_->LoadInitialURL(hats_survey_url_);
-    web_view_->web_contents()
-        ->GetWebUI()
-        ->GetController()
-        ->GetAs<HatsUI>()
-        ->SetHatsPageHandlerDelegate(this);
-  } else {
-    web_view_->LoadInitialURL(GetParameterizedHatsURL());
-  }
+  web_view_->LoadInitialURL(GetParameterizedHatsURL());
   web_view_->EnableSizingFromWebContents(kMinSize, kMaxSize);
 
   set_margins(gfx::Insets());

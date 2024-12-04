@@ -1543,6 +1543,9 @@ class InterestGroupAuction::BuyerHelper
 
     // Request processes for all bidder worklets.
     for (auto& bid_state : bid_states_) {
+      bid_state->BeginTracing();
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidder_worklet_generate_bid",
+                                        *bid_state->trace_id);
       auto worklet_key = auction_->BidderWorkletKey(*bid_state);
       auction_->auction_metrics_recorder_->ReportBidderWorkletKey(worklet_key);
       auction_->auction_worklet_manager_->RequestWorkletByKey(
@@ -1552,7 +1555,7 @@ class InterestGroupAuction::BuyerHelper
           base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
                          base::Unretained(this), bid_state.get()),
           bid_state->worklet_handle, number_of_bidder_threads,
-          auction_->auction_metrics_recorder_);
+          auction_->auction_metrics_recorder_, bid_state->trace_id);
     }
   }
 
@@ -2178,10 +2181,6 @@ class InterestGroupAuction::BuyerHelper
     const blink::InterestGroup& interest_group =
         bid_state->bidder->interest_group;
 
-    bid_state->BeginTracing();
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidder_worklet_generate_bid",
-                                      *bid_state->trace_id);
-
     mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
         pending_remote;
     bid_state->generate_bid_client_receiver_id =
@@ -2531,9 +2530,7 @@ class InterestGroupAuction::BuyerHelper
     }
 
     if (base::FeatureList::IsEnabled(
-            blink::features::kFledgeRealTimeReporting) &&
-        !base::FeatureList::IsEnabled(
-            features::kCookieDeprecationFacilitatedTesting)) {
+            blink::features::kFledgeRealTimeReporting)) {
       if (!base::ranges::all_of(real_time_contributions,
                                 HasValidRealTimeBucket)) {
         mojo_bids.clear();
@@ -5703,9 +5700,7 @@ void InterestGroupAuction::OnScoreAdComplete(
     }
 
     if (base::FeatureList::IsEnabled(
-            blink::features::kFledgeRealTimeReporting) &&
-        !base::FeatureList::IsEnabled(
-            features::kCookieDeprecationFacilitatedTesting)) {
+            blink::features::kFledgeRealTimeReporting)) {
       // Only keep real time reporting contributions when the seller is
       // opted-in.
       if (config_->non_shared_params.seller_real_time_reporting_type

@@ -118,7 +118,7 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
   ~AudioInputDevice() override;
 
   // AudioInputIPCDelegate implementation.
-  void OnStreamCreated(base::ReadOnlySharedMemoryRegion shared_memory_region,
+  void OnStreamCreated(base::UnsafeSharedMemoryRegion shared_memory_region,
                        base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override;
   void OnError(AudioCapturerSource::ErrorCode code) override;

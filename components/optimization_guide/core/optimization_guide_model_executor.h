@@ -180,6 +180,9 @@ enum class OnDeviceModelEligibilityReason {
   kMaxValue = kNoOnDeviceFeatureUsed,
 };
 
+std::ostream& operator<<(std::ostream& out,
+                         const OnDeviceModelEligibilityReason& val);
+
 // Observer that is notified when the on-device model availability changes for
 // the on-device eligible features.
 class OnDeviceModelAvailabilityObserver : public base::CheckedObserver {

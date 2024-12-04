@@ -79,7 +79,7 @@ namespace extensions {
 
 class LoginScreenStorageApiUnittest : public ExtensionApiUnittest {
  public:
-  LoginScreenStorageApiUnittest() {}
+  LoginScreenStorageApiUnittest() = default;
 
   LoginScreenStorageApiUnittest(const LoginScreenStorageApiUnittest&) = delete;
   LoginScreenStorageApiUnittest& operator=(

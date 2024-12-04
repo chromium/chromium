@@ -615,7 +615,7 @@ class EventRewriterTestBase : public ChromeAshTestBase {
   EventRewriterTestBase()
       : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
-  ~EventRewriterTestBase() override {}
+  ~EventRewriterTestBase() override = default;
 
   void SetUp() override {
     ui::ResourceBundle::SetLottieParsingFunctions(
@@ -4435,7 +4435,7 @@ class StickyKeysOverlayTest
  public:
   StickyKeysOverlayTest() : overlay_(nullptr) {}
 
-  ~StickyKeysOverlayTest() override {}
+  ~StickyKeysOverlayTest() override = default;
 
   void SetUp() override {
     auto [enable_keyboard_rewriter_fix, enable_modifier_split] = GetParam();

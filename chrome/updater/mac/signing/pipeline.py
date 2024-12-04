@@ -114,6 +114,8 @@ def _package_and_sign_pkg(paths, config):
                      '%s.app' % config.app_product),
         '--scripts',
         os.path.join(paths.input, config.packaging_dir, 'signing', 'pkg'),
+        '--version',
+        config.version,
         '--timestamp',
         pkg_path,
     ]

@@ -44,7 +44,7 @@ CrashUploadListAndroid::CrashUploadListAndroid(
     const base::FilePath& upload_log_path)
     : TextLogUploadList(upload_log_path) {}
 
-CrashUploadListAndroid::~CrashUploadListAndroid() {}
+CrashUploadListAndroid::~CrashUploadListAndroid() = default;
 
 // static
 bool CrashUploadListAndroid::BrowserCrashMetricsInitialized() {

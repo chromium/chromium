@@ -44,6 +44,7 @@
 #include "android_webview/common/devtools_instrumentation.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/android/build_info.h"
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -1494,7 +1495,8 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
 void AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
-    const base::android::JavaParamRef<jobject>& prefetch_params) {
+    const base::android::JavaParamRef<jobject>& prefetch_params,
+    const base::android::JavaParamRef<jobject>& activation_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Cancel existing prerendering before starting a new one to avoid hitting the
@@ -1526,6 +1528,12 @@ void AwContents::StartPrerendering(
       content::PreloadingHoldbackStatus::kUnspecified,
       /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{});
+
+  if (prerender_handle_ && activation_callback) {
+    prerender_handle_->SetActivationCallback(
+        base::BindOnce(&base::android::RunRunnableAndroid,
+                       ScopedJavaGlobalRef<jobject>(env, activation_callback)));
+  }
 }
 
 void AwContents::CancelAllPrerendering(JNIEnv* env) {

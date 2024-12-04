@@ -62,7 +62,8 @@ class AuthenticationFlowPerformerTest : public PlatformTest {
     authentication_flow_performer_delegate_mock_ =
         OCMStrictProtocolMock(@protocol(AuthenticationFlowPerformerDelegate));
     authentication_flow_performer_ = [[AuthenticationFlowPerformer alloc]
-        initWithDelegate:authentication_flow_performer_delegate_mock_];
+            initWithDelegate:authentication_flow_performer_delegate_mock_
+        changeProfileHandler:nil];
   }
 
   void TearDown() override {

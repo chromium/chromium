@@ -34,7 +34,7 @@ CGFloat ModuleNarrowerWidthToAllowPeekingForTraitCollection(
   // the inter-module spacing so the UICollectionView renders the adjacent
   // module(s).
   return isLargerWidthLayout ? kMagicStackPeekInsetLandscape
-                             : kMagicStackSpacing + 1;
+                             : kMagicStackPeekInset;
 }
 
 bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,

@@ -42,7 +42,7 @@ class PrintingOAuth2HttpExchangeTest : public testing::Test {
   PrintingOAuth2HttpExchangeTest()
       : url_loader_factory_(),
         http_exchange_(url_loader_factory_.GetSafeWeakWrapper()) {}
-  ~PrintingOAuth2HttpExchangeTest() override {}
+  ~PrintingOAuth2HttpExchangeTest() override = default;
   // Helper method calling http_exchange_.Exchange("GET", ...).
   printing::oauth2::StatusCode Exchange(
       HttpExchangeDefinition def,

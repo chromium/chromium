@@ -284,11 +284,6 @@ extern const char kDataSharingJoinOnlyDescription[];
 extern const char kDefaultBrowserBannerPromoName[];
 extern const char kDefaultBrowserBannerPromoDescription[];
 
-// Title and description for the flag to show the default browser tutorial from
-// an external app.
-extern const char kDefaultBrowserIntentsShowSettingsName[];
-extern const char kDefaultBrowserIntentsShowSettingsDescription[];
-
 // Title and description for default browser promo trigger criteria experiment.
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
@@ -508,14 +503,6 @@ extern const char kIOSQuickDeleteDescription[];
 extern const char kIOSChooseFromDriveName[];
 extern const char kIOSChooseFromDriveDescription[];
 
-// Title and description for the flag to enable the Save to Drive feature.
-extern const char kIOSSaveToDriveName[];
-extern const char kIOSSaveToDriveDescription[];
-
-// Title and description for the flag to enable the Save to Photos feature.
-extern const char kIOSSaveToPhotosName[];
-extern const char kIOSSaveToPhotosDescription[];
-
 // Title and description for the flag to enable the Save to Photos feature
 // improvements.
 extern const char kIOSSaveToPhotosImprovementsName[];
@@ -632,6 +619,11 @@ extern const char kLockBottomToolbarDescription[];
 // in the Home Surface,
 extern const char kMagicStackName[];
 extern const char kMagicStackDescription[];
+
+// Title and description for the flag that controls displaying the updated
+// screens for managed profile creation.
+extern const char kManagedProfileCreationUpdatedScreenName[];
+extern const char kManagedProfileCreationUpdatedScreenDescription[];
 
 // Title and description for the flag that controls sending metrickit non-crash
 // reports.
@@ -756,10 +748,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 // Title and description for omnibox on device tail suggest.
 extern const char kOmniboxOnDeviceTailSuggestionsName[];
 extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
-
-// Title and description for omnibox rich inline autocompletion.
-extern const char kOmniboxRichAutocompletionName[];
-extern const char kOmniboxRichAutocompletionDescription[];
 
 // Title and description for omnibox suggestion answer migration.
 extern const char kOmniboxSuggestionAnswerMigrationName[];
@@ -1031,6 +1019,10 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 // Title and description for the flag to enable Lens Overlay.
 extern const char kEnableLensOverlayName[];
 extern const char kEnableLensOverlayDescription[];
+
+// Title and description for the flag to enable Lens View Finder unification
+extern const char kEnableLensViewFinderUnifiedExperienceName[];
+extern const char kEnableLensViewFinderUnifiedExperienceDescription[];
 
 // Title and description for the flag to enable the new transitions in the
 // TabGrid.

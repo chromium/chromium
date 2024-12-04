@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">När detta är aktiverat kan webbplatser be om att få se text och bilder som har sparats i urklipp. När detta är inaktiverat får webbplatser inte läsa text och bilder som du har sparat i urklipp.</translation>
 <translation id="5853982612236235577">När detta är aktiverat kan webbplatser be om att få skicka aviseringar. När detta är inaktiverat får webbplatser inte skicka aviseringar.</translation>
 <translation id="5860033963881614850">Av</translation>
+<translation id="5860491529813859533">Aktivera</translation>
 <translation id="5876056640971328065">Pausa video</translation>
 <translation id="5877248419911025165">Komprimera alla förfrågningar</translation>
 <translation id="5884085660368669834">Webbplatsinställning</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">Ange webbadress</translation>
 <translation id="5975083100439434680">Zooma ut</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Nu kan du snabbt komma åt föreslagna flikar från enhetens applista och i enhetens sökresultat. Du kan när som helst inaktivera detta via inställningarna i Chrome.</translation>
 <translation id="6015775454662021376">Styr webbplatsens åtkomst till enheten</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6042308850641462728">Mer</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">Fråga först</translation>
 <translation id="7423538860840206698">Läsbehörighet till Urklipp har nekats</translation>
 <translation id="7425915948813553151">Mörkt tema för webbplatser</translation>
+<translation id="7488573225650545859">Dölj Visa flikar i applistan</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">När detta är aktiverat kan webbplatser visa inloggningspromptar. När detta är inaktiverat får webbplatser inte visa inloggningspromptar.</translation>
 <translation id="7553211568594248088">Avsluta hubbsökning</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">Innehållet kommer från <ph name="DOMAIN_NAME" /> via Google.</translation>
 <translation id="8088603949666785339">Fler alternativ i <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Minskar prestandan men gör V8 mer motståndskraftig mot attacker</translation>
+<translation id="8112925981674547014">Visa flikar i applistan</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome begränsar cookies igen i morgon}other{# dagar tills Chrome begränsar cookies igen}}</translation>
 <translation id="8116925261070264013">Ljudet avstängt</translation>
 <translation id="8117244575099414087">När detta är aktiverat kan webbplatser använda enhetens sensorer. När detta är inaktiverat får webbplatser inte använda sensorer.</translation>

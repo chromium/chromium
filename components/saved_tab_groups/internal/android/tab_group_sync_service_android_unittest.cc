@@ -379,4 +379,16 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabId) {
       j_tab_id, 4);
 }
 
+TEST_F(TabGroupSyncServiceAndroidTest, OnTabSelected) {
+  auto* env = AttachCurrentThread();
+  LocalTabID tab_id = 5;
+
+  EXPECT_CALL(tab_group_sync_service_,
+              OnTabSelected(Eq(test_tab_group_id_), Eq(tab_id)));
+  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabSelected(
+      AttachCurrentThread(), j_test_,
+      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_),
+      tab_id);
+}
+
 }  // namespace tab_groups

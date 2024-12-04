@@ -23,7 +23,7 @@ constexpr char16_t kSuggestUrl[] = u"http://google.com";
 
 class TestNavigationDelegate : public content::WebContentsDelegate {
  public:
-  ~TestNavigationDelegate() override {}
+  ~TestNavigationDelegate() override = default;
   // content::WebContentsDelegate:
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,

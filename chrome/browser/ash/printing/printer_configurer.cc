@@ -208,7 +208,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   PrinterConfigurerImpl(const PrinterConfigurerImpl&) = delete;
   PrinterConfigurerImpl& operator=(const PrinterConfigurerImpl&) = delete;
 
-  ~PrinterConfigurerImpl() override {}
+  ~PrinterConfigurerImpl() override = default;
 
   void SetUpPrinterInCups(const Printer& printer,
                           PrinterSetupCallback callback) override {

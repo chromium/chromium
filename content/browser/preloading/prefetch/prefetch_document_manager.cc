@@ -121,8 +121,7 @@ PrefetchDocumentManager* PrefetchDocumentManager::FromDocumentToken(
 }
 
 void PrefetchDocumentManager::ProcessCandidates(
-    std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
-    base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
+    std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
   // Filter out candidates that can be handled by |PrefetchService| and
   // determine the type of prefetch required.
   // TODO(crbug.com/40215782): Once this code becomes enabled by default
@@ -201,7 +200,7 @@ void PrefetchDocumentManager::ProcessCandidates(
     PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
                 /*planned_max_preloading_type=*/PreloadingType::kPrefetch,
                 referrer, no_vary_search_expected,
-                base::MakeRefCounted<PreloadPipelineInfo>(), devtools_observer);
+                base::MakeRefCounted<PreloadPipelineInfo>());
   }
 
   if (PrefetchService* prefetch_service = GetPrefetchService()) {
@@ -211,8 +210,7 @@ void PrefetchDocumentManager::ProcessCandidates(
 
 bool PrefetchDocumentManager::MaybePrefetch(
     blink::mojom::SpeculationCandidatePtr candidate,
-    const PreloadingPredictor& enacting_predictor,
-    base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
+    const PreloadingPredictor& enacting_predictor) {
   if (candidate->action != blink::mojom::SpeculationAction::kPrefetch) {
     return false;
   }
@@ -222,7 +220,7 @@ bool PrefetchDocumentManager::MaybePrefetch(
   PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
               /*planned_max_preloading_type=*/PreloadingType::kPrefetch,
               referrer, no_vary_search_expected,
-              base::MakeRefCounted<PreloadPipelineInfo>(), devtools_observer);
+              base::MakeRefCounted<PreloadPipelineInfo>());
   return true;
 }
 
@@ -235,10 +233,7 @@ void PrefetchDocumentManager::PrefetchAheadOfPrerender(
   PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
               /*planned_max_preloading_type=*/PreloadingType::kPrerender,
               referrer, no_vary_search_expected,
-              std::move(preload_pipeline_info),
-              // TODO(crbug.com/342537094): Emit CDP events for prefetch
-              // ahead of prerender.
-              /*devtools_observer=*/nullptr);
+              std::move(preload_pipeline_info));
 }
 
 void PrefetchDocumentManager::PrefetchUrl(
@@ -248,8 +243,7 @@ void PrefetchDocumentManager::PrefetchUrl(
     PreloadingType planned_max_preloading_type,
     const blink::mojom::Referrer& referrer,
     const network::mojom::NoVarySearchPtr& mojo_no_vary_search_expected,
-    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
-    base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info) {
   const std::pair<GURL, PreloadingType> all_prefetches_key =
       std::make_pair(url, planned_max_preloading_type);
 
@@ -311,7 +305,6 @@ void PrefetchDocumentManager::PrefetchUrl(
       url, prefetch_type, referrer, std::move(no_vary_search_expected),
       weak_method_factory_.GetWeakPtr(), std::move(preload_pipeline_info),
       attempt->GetWeakPtr());
-  container->SetDevToolsObserver(std::move(devtools_observer));
   DVLOG(1) << *container << ": created";
   all_prefetches_[all_prefetches_key] = container->GetWeakPtr();
 

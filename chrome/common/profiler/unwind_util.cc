@@ -46,7 +46,7 @@
 #include "base/android/apk_assets.h"
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/profiler/chrome_unwinder_android.h"
+#include "base/profiler/chrome_unwinder_android_32.h"
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
 
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
@@ -91,8 +91,8 @@ class ChromeUnwinderCreator {
   ChromeUnwinderCreator& operator=(const ChromeUnwinderCreator&) = delete;
 
   std::unique_ptr<base::Unwinder> Create() {
-    return std::make_unique<base::ChromeUnwinderAndroid>(
-        base::CreateChromeUnwindInfoAndroid(
+    return std::make_unique<base::ChromeUnwinderAndroid32>(
+        base::CreateChromeUnwindInfoAndroid32(
             {chrome_cfi_file_.data(), chrome_cfi_file_.length()}),
         /* chrome_module_base_address= */
         reinterpret_cast<uintptr_t>(&__executable_start),

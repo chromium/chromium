@@ -898,6 +898,9 @@ enum HeaderBehaviour {
   [self.contentArea addGestureRecognizer:self.contentAreaGestureRecognizer];
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  if (_isOffTheRecord) {
+    self.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  }
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);

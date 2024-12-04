@@ -32,12 +32,8 @@ AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
       return AppType::kBorealis;
     case apps::AppType::kSystemWeb:
       return AppType::kSystemWeb;
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      return AppType::kStandaloneBrowserChromeApp;
     case apps::AppType::kExtension:
       return AppType::kExtension;
-    case apps::AppType::kStandaloneBrowserExtension:
-      return AppType::kStandaloneBrowserExtension;
     case apps::AppType::kBruschetta:
       return AppType::kBruschetta;
   }
@@ -79,14 +75,8 @@ bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
     case AppType::kSystemWeb:
       *output = apps::AppType::kSystemWeb;
       return true;
-    case AppType::kStandaloneBrowserChromeApp:
-      *output = apps::AppType::kStandaloneBrowserChromeApp;
-      return true;
     case AppType::kExtension:
       *output = apps::AppType::kExtension;
-      return true;
-    case AppType::kStandaloneBrowserExtension:
-      *output = apps::AppType::kStandaloneBrowserExtension;
       return true;
     case AppType::kBruschetta:
       *output = apps::AppType::kBruschetta;

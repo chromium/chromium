@@ -79,7 +79,7 @@ IconStore::IconTypeBundleMap CreateIcons() {
 
 class MockNotificationStore : public CollectionStore<NotificationEntry> {
  public:
-  MockNotificationStore() {}
+  MockNotificationStore() = default;
   MockNotificationStore(const MockNotificationStore&) = delete;
   MockNotificationStore& operator=(const MockNotificationStore&) = delete;
 
@@ -99,7 +99,7 @@ class MockNotificationStore : public CollectionStore<NotificationEntry> {
 
 class MockIconStore : public IconStore {
  public:
-  MockIconStore() {}
+  MockIconStore() = default;
   MockIconStore(const MockIconStore&) = delete;
   MockIconStore& operator=(const MockIconStore&) = delete;
 

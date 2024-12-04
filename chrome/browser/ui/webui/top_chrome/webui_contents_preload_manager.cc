@@ -34,6 +34,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/models/menu_model.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -119,6 +120,30 @@ content::WebUIController* GetWebUIController(
   return webui->GetController();
 }
 
+class WebUIContentsPreloadState
+    : public content::WebContentsUserData<WebUIContentsPreloadState> {
+ public:
+  // Whether the WebUI was preloaded.
+  bool preloaded = false;
+
+  // Whether the WebUI is ready to be shown. This is set to true when the WebUI
+  // calls TopChromeWebUIController::Embedder::ShowUI().
+  bool ready_to_show = false;
+
+  // The timeticks when Request() is called. If nullopt, the WebUI is not yet
+  // requested.
+  std::optional<base::TimeTicks> request_time;
+
+ private:
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  friend class content::WebContentsUserData<WebUIContentsPreloadState>;
+
+  explicit WebUIContentsPreloadState(content::WebContents* web_contents)
+      : WebContentsUserData(*web_contents) {}
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebUIContentsPreloadState);
+
 }  // namespace
 
 // A stub WebUI page embdeder that captures the ready-to-show signal.
@@ -133,7 +158,10 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
   void ShowContextMenu(gfx::Point point,
                        std::unique_ptr<ui::MenuModel> menu_model) override {}
   void HideContextMenu() override {}
-  void ShowUI() override { is_ready_to_show_ = true; }
+  void ShowUI() override {
+    CHECK(preload_state_);
+    preload_state_->ready_to_show = true;
+  }
 
   // Attach this stub as the embedder of `web_contents`, assuming that the
   // contents is not yet ready to be shown.
@@ -150,7 +178,8 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
         static_cast<TopChromeWebUIController*>(webui_controller);
     bubble_controller->set_embedder(this->GetWeakPtr());
     web_contents_ = web_contents;
-    is_ready_to_show_ = false;
+    preload_state_ = WebUIContentsPreloadState::FromWebContents(web_contents);
+    CHECK(preload_state_);
   }
 
   // Detach from the previously attached `web_contents`.
@@ -169,9 +198,8 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
         static_cast<TopChromeWebUIController*>(webui_controller);
     bubble_controller->set_embedder(nullptr);
     web_contents_ = nullptr;
+    preload_state_ = nullptr;
   }
-
-  bool is_ready_to_show() const { return is_ready_to_show_; }
 
   base::WeakPtr<WebUIControllerEmbedderStub> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -179,7 +207,7 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
 
  private:
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  bool is_ready_to_show_ = false;
+  raw_ptr<WebUIContentsPreloadState> preload_state_ = nullptr;
   base::WeakPtrFactory<WebUIControllerEmbedderStub> weak_ptr_factory_{this};
 };
 
@@ -362,6 +390,8 @@ void WebUIContentsPreloadManager::SetPreloadedContents(
     webui_controller_embedder_stub_->AttachTo(preloaded_web_contents_.get());
     profile_observation_.Observe(Profile::FromBrowserContext(
         preloaded_web_contents_->GetBrowserContext()));
+    WebUIContentsPreloadState::FromWebContents(preloaded_web_contents_.get())
+        ->preloaded = true;
   }
 }
 
@@ -370,7 +400,6 @@ RequestResult WebUIContentsPreloadManager::Request(
     content::BrowserContext* browser_context) {
   const base::TimeTicks request_time = base::TimeTicks::Now();
   std::unique_ptr<content::WebContents> web_contents_ret;
-  bool is_ready_to_show = false;
   WebUIPreloadResult preload_result = preloaded_web_contents_
                                           ? WebUIPreloadResult::kMiss
                                           : WebUIPreloadResult::kNoPreload;
@@ -390,11 +419,9 @@ RequestResult WebUIContentsPreloadManager::Request(
       LoadURLForContents(preloaded_web_contents_.get(), webui_url);
     }
     web_contents_ret = std::move(preloaded_web_contents_);
-    is_ready_to_show = webui_controller_embedder_stub_->is_ready_to_show();
     SetPreloadedContents(nullptr);
   } else {
     web_contents_ret = CreateNewContents(browser_context, webui_url);
-    is_ready_to_show = false;
   }
 
   // Navigate to path if the request URL has a different path.
@@ -415,19 +442,27 @@ RequestResult WebUIContentsPreloadManager::Request(
   }
 
   task_manager::WebContentsTags::ClearTag(web_contents_ret.get());
-  request_time_map_[web_contents_ret.get()] = request_time;
+
+  auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_contents_ret.get());
+  CHECK(preload_state);
+  preload_state->request_time = request_time;
 
   RequestResult result;
   result.web_contents = std::move(web_contents_ret);
-  result.is_ready_to_show = is_ready_to_show;
+  result.is_ready_to_show = preload_state->ready_to_show;
   return result;
 }
 
 std::optional<base::TimeTicks> WebUIContentsPreloadManager::GetRequestTime(
     content::WebContents* web_contents) {
-  return base::Contains(request_time_map_, web_contents)
-             ? std::make_optional(request_time_map_[web_contents])
-             : std::nullopt;
+  auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_contents);
+  if (!preload_state) {
+    return std::nullopt;
+  }
+
+  return preload_state->request_time;
 }
 
 void WebUIContentsPreloadManager::DisableNavigationForTesting() {
@@ -445,7 +480,7 @@ WebUIContentsPreloadManager::CreateNewContents(
   // Propagates user prefs to web contents.
   // This is needed by, for example, text selection color on ChromeOS.
   PrefsTabHelper::CreateForWebContents(web_contents.get());
-
+  WebUIContentsPreloadState::CreateForWebContents(web_contents.get());
   task_manager::WebContentsTags::CreateForToolContents(
       web_contents.get(), IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI);
   InitializePageLoadMetricsForWebContents(web_contents.get());
@@ -512,7 +547,6 @@ void WebUIContentsPreloadManager::OnWebContentsDestroyed(
   } else {
     MaybePreloadForBrowserContext(web_contents->GetBrowserContext());
   }
-  request_time_map_.erase(web_contents);
 }
 
 void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(

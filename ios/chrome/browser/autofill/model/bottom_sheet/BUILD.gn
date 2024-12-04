@@ -47,6 +47,7 @@ source_set("unit_tests") {
   deps = [
     ":bottom_sheet",
     "//base/test:test_support",
+    "//components/autofill/core/common:test_support",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/infobars/core",

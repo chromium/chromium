@@ -1380,12 +1380,7 @@ source_set("extensions") {
           "global_shortcut_listener_linux.cc",
           "global_shortcut_listener_linux.h",
         ]
-        deps += [
-          "//components/dbus/properties",
-          "//components/dbus/thread_linux",
-          "//components/dbus/utils",
-          "//components/dbus/xdg",
-        ]
+        deps += [ "//components/dbus" ]
       }
     }
 

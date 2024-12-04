@@ -183,6 +183,7 @@ TEST_F(BatchUploadServiceTest, NoLocalDataReturned) {
   EXPECT_CALL(sync_service_mock(),
               GetLocalDataDescriptions(
                   syncer::DataTypeSet{syncer::DataType::PASSWORDS,
+                                      syncer::DataType::BOOKMARKS,
                                       syncer::DataType::CONTACT_INFO},
                   _))
       .Times(1);

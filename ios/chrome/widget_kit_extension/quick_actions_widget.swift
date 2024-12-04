@@ -17,16 +17,6 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     ConfigureQuickActionsWidgetEntry(date: Date(), useLens: false, useColorLensAndVoiceIcons: false)
   }
 
-  func shouldUseLens() -> Bool {
-    let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
-    let useLens: Bool =
-      sharedDefaults.bool(
-        forKey: WidgetConstants.QuickActionsWidget.isGoogleDefaultSearchEngineKey)
-      && sharedDefaults.bool(
-        forKey: WidgetConstants.QuickActionsWidget.enableLensInWidgetKey)
-    return useLens
-  }
-
   func shouldUseColorLensAndVoiceIcons() -> Bool {
     // On iOS 15, color icons are not supported in widget, always return false
     // as no icon would be displayed.
@@ -72,7 +62,7 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
 }
 
 struct QuickActionsWidget: Widget {
-  // Changing |kind| or deleting this widget will cause all installed instances of this widget to
+  // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
   // stop updating and show the placeholder state.
   let kind: String = "QuickActionsWidget"
 
@@ -92,6 +82,87 @@ struct QuickActionsWidget: Widget {
     .crContentMarginsDisabled()
     .crContainerBackgroundRemovable(false)
   }
+}
+
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  @available(iOS 17, *)
+  struct QuickActionsWidgetConfigurable: Widget {
+    // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
+    // stop updating and show the placeholder state.
+    let kind: String = "QuickActionsWidget"
+
+    var body: some WidgetConfiguration {
+      AppIntentConfiguration(
+        kind: kind,
+        intent: SelectProfileIntent.self,
+        provider: ConfigurableQuickActionsWidgetEntryProvider()
+      ) { entry in
+        QuickActionsWidgetEntryView(entry: entry)
+      }
+      .configurationDisplayName(
+        Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME")
+      )
+      .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION"))
+      .supportedFamilies([.systemMedium])
+      .crDisfavoredLocations()
+      .crContentMarginsDisabled()
+      .crContainerBackgroundRemovable(false)
+    }
+  }
+
+  // Advises WidgetKit when to update a widget’s display.
+  @available(iOS 17, *)
+  struct ConfigurableQuickActionsWidgetEntryProvider: AppIntentTimelineProvider {
+
+    func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
+      ConfigureQuickActionsWidgetEntry(
+        date: Date(), useLens: false, useColorLensAndVoiceIcons: false)
+    }
+
+    func shouldUseColorLensAndVoiceIcons() -> Bool {
+      guard shouldUseLens() else { return false }
+
+      let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+      let useColorLensAndVoiceIcons: Bool =
+        sharedDefaults.bool(
+          forKey: WidgetConstants.QuickActionsWidget.enableColorLensAndVoiceIconsInWidgetKey)
+      return useColorLensAndVoiceIcons
+    }
+
+    func snapshot(for configuration: SelectProfileIntent, in context: Context) async
+      -> ConfigureQuickActionsWidgetEntry
+    {
+      let entry = ConfigureQuickActionsWidgetEntry(
+        date: Date(),
+        useLens: shouldUseLens(),
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+      )
+      return entry
+    }
+
+    func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
+      ConfigureQuickActionsWidgetEntry
+    > {
+      let entry = ConfigureQuickActionsWidgetEntry(
+        date: Date(),
+        useLens: shouldUseLens(),
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+      )
+      let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
+      let timeline: Timeline = Timeline(entries: entries, policy: .never)
+      return timeline
+    }
+  }
+#endif
+
+func shouldUseLens() -> Bool {
+  let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+  let useLens: Bool =
+    sharedDefaults.bool(
+      forKey: WidgetConstants.QuickActionsWidget.isGoogleDefaultSearchEngineKey)
+    && sharedDefaults.bool(
+      forKey: WidgetConstants.QuickActionsWidget.enableLensInWidgetKey)
+  return useLens
 }
 
 struct QuickActionsWidgetEntryView: View {

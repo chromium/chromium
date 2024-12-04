@@ -23,7 +23,7 @@ base::span<const char* const> GetControlledFrameFeatureList() {
       "controlledFrameInternal", "chromeWebViewInternal", "guestViewInternal",
       "webRequestInternal",      "webViewInternal",
   };
-  return base::make_span(feature_list);
+  return base::span(feature_list);
 }
 
 namespace controlled_frame {

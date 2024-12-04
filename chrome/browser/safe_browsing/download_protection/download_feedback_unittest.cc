@@ -39,7 +39,7 @@ class FakeUploader : public MultipartUploadRequest {
                uint64_t file_size,
                Callback finish_callback,
                const net::NetworkTrafficAnnotationTag& traffic_annotation);
-  ~FakeUploader() override {}
+  ~FakeUploader() override = default;
 
   void Start() override { start_called_ = true; }
 
@@ -74,9 +74,6 @@ FakeUploader::FakeUploader(
 
 class FakeUploaderFactory : public ConnectorUploadRequestFactory {
  public:
-  FakeUploaderFactory() : uploader_(nullptr) {}
-  ~FakeUploaderFactory() override {}
-
   std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
@@ -103,7 +100,7 @@ class FakeUploaderFactory : public ConnectorUploadRequestFactory {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override;
 
-  raw_ptr<FakeUploader, DanglingUntriaged> uploader_;
+  raw_ptr<FakeUploader, DanglingUntriaged> uploader_ = nullptr;
 };
 
 std::unique_ptr<ConnectorUploadRequest>

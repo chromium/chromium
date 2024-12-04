@@ -410,7 +410,7 @@ TEST_P(ReportingServiceTest, ProcessReportToHeaderPathAbsolute) {
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
 }
 
-TEST_P(ReportingServiceTest, ProcessReportToHeaderTooLong) {
+TEST_P(ReportingServiceTest, ProcessReportToHeader_TooLong) {
   const std::string header_too_long =
       "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
       "\"}],"
@@ -426,7 +426,7 @@ TEST_P(ReportingServiceTest, ProcessReportToHeaderTooLong) {
   EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
 }
 
-TEST_P(ReportingServiceTest, ProcessReportToHeaderTooDeep) {
+TEST_P(ReportingServiceTest, ProcessReportToHeader_TooDeep) {
   const std::string header_too_deep = "{\"endpoints\":[{\"url\":\"" +
                                       kEndpoint_.spec() +
                                       "\"}],"

@@ -6,10 +6,17 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/string_value.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
 option java_outer_classname = "PromptApi";
+
+message PromptApiLoggingData {
+  PromptApiRequest request = 1;
+  StringValue response = 2;
+}
 
 enum PromptApiRole {
   PROMPT_API_ROLE_UNSPECIFIED = 0;
@@ -40,4 +47,7 @@ message PromptApiMetadata {
   // A version for config changes that require implementor updates.
   // Version 0->2 Changes from using StringValue -> PromptApiRequest.
   uint32 version = 1;
+  // A boolean flag telling if the prompt API model execution config sets
+  // the streaming behavior to chunk-by-chunk.
+  bool is_streaming_chunk_by_chunk = 2;
 }

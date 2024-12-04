@@ -443,6 +443,13 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
     return false;
   }
 
+  // Private aggregation coordinator must be HTTPS. This also excludes opaque
+  // origins, for which scheme() returns an empty string.
+  if (out->aggregation_coordinator_origin &&
+      out->aggregation_coordinator_origin->scheme() != url::kHttpsScheme) {
+    return false;
+  }
+
   return true;
 }
 

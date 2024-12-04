@@ -41,7 +41,7 @@ void FileCallbackTest::OnFileIOComplete(int bytes_copied) {
 
 }  // namespace
 
-TEST_F(DiskCacheTest, MappedFileSyncIO) {
+TEST_F(DiskCacheTest, MappedFile_SyncIO) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
   auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));
@@ -56,7 +56,7 @@ TEST_F(DiskCacheTest, MappedFileSyncIO) {
   EXPECT_STREQ(buffer1, buffer2);
 }
 
-TEST_F(DiskCacheTest, MappedFileAsyncIO) {
+TEST_F(DiskCacheTest, MappedFile_AsyncIO) {
   base::FilePath filename = cache_path_.AppendASCII("a_test");
   auto file = base::MakeRefCounted<disk_cache::MappedFile>();
   ASSERT_TRUE(CreateCacheTestFile(filename));

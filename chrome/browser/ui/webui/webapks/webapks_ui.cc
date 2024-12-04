@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/webapks/webapks_ui.h"
 
 #include <memory>
@@ -30,8 +25,7 @@ void CreateAndAddWebApksUIDataSource(Profile* profile) {
       WebUIDataSource::CreateAndAdd(profile, chrome::kChromeUIWebApksHost);
   html_source->UseStringsJs();
 
-  html_source->AddResourcePaths(
-      base::make_span(kWebapksResources, kWebapksResourcesSize));
+  html_source->AddResourcePaths(kWebapksResources);
   html_source->SetDefaultResource(IDR_WEBAPKS_ABOUT_WEBAPKS_HTML);
 }
 

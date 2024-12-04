@@ -28,7 +28,7 @@
 
 class TestChromeColorsService : public BrowserWithTestWindowTest {
  protected:
-  TestChromeColorsService() {}
+  TestChromeColorsService() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

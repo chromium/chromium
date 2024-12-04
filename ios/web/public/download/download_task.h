@@ -91,6 +91,9 @@ class DownloadTask {
   // differ from the final download URL if there were redirects.
   virtual const GURL& GetOriginalUrl() const = 0;
 
+  // The host of the frame that initiated the download (if available).
+  virtual NSString* GetOriginatingHost() const = 0;
+
   // HTTP method for this download task (only @"GET" and @"POST" are currently
   // supported).
   virtual NSString* GetHttpMethod() const = 0;

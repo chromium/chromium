@@ -73,8 +73,8 @@ const char* StringForAllocatorType(uint32_t type) {
 // placeholder to allow the stack-viewing UI to be shown.
 base::Value::Dict BuildAllocatorsSummary(const AllocationMap& allocations) {
   // Aggregate stats for each allocator type.
-  size_t total_size[kAllocatorCount] = {0};
-  size_t total_count[kAllocatorCount] = {0};
+  size_t total_size[kAllocatorCount] = {};
+  size_t total_count[kAllocatorCount] = {};
   for (const auto& alloc_pair : allocations) {
     int index = static_cast<int>(alloc_pair.first.allocator);
     total_size[index] += alloc_pair.second.size;

@@ -121,7 +121,7 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse) {
             std::string(reinterpret_cast<const char*>(response.payload())));
 }
 
-TEST_F(MultiplexRouterTest, BasicRequestResponseSynchronous) {
+TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(), {},
       base::SingleThreadTaskRunner::GetCurrentDefault(), 0u, kTestInterfaceName,

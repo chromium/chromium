@@ -146,14 +146,10 @@ void PageInfoSecurityContentView::SetIdentityInfo(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER);
     certificate_button_->SetTooltipText(tooltip);
-    certificate_button_->title()->SetTextStyle(
-        views::style::STYLE_BODY_3_MEDIUM);
-    certificate_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
-    if (certificate_button_->subtitle()) {
-      certificate_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
-      certificate_button_->subtitle()->SetEnabledColorId(
-          kColorPageInfoSubtitleForeground);
-    }
+    certificate_button_->SetTitleTextStyleAndColor(
+        views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
+    certificate_button_->SetSubtitleTextStyleAndColor(
+        views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
   }
 
   if (identity_info.show_change_password_buttons) {

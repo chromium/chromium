@@ -5,8 +5,7 @@
 #ifndef CONTENT_BROWSER_TRACING_TRIGGERS_DATA_SOURCE_H_
 #define CONTENT_BROWSER_TRACING_TRIGGERS_DATA_SOURCE_H_
 
-#include <string>
-
+#include "content/browser/tracing/background_tracing_rule.h"
 #include "content/common/content_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/data_source.h"
 
@@ -16,7 +15,7 @@ class CONTENT_EXPORT TriggersDataSource
     : public perfetto::DataSource<TriggersDataSource> {
  public:
   static void Register();
-  static void EmitTrigger(const std::string& trigger_name);
+  static void EmitTrigger(const BackgroundTracingRule* triggered_rule);
 
   void OnStart(const StartArgs&) override;
   void OnStop(const StopArgs&) override;

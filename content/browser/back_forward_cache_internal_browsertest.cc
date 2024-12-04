@@ -99,10 +99,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BackForwardCacheFlush) {
   delete_observer_rfh_b.WaitUntilDeleted();
 }
 
-// Tests that |RenderFrameHost::ForEachRenderFrameHost| and
-// |WebContents::ForEachRenderFrameHost| behave correctly with bfcached
+// Tests that `RenderFrameHostImpl::ForEachRenderFrameHostImpl` and
+// `WebContentsImpl::ForEachRenderFrameHostImpl` behave correctly with bfcached
 // RenderFrameHosts.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       ForEachRenderFrameHostImpl) {
   // There are sometimes unexpected messages from a renderer to the browser,
   // which caused test flakiness on macOS.
   // TODO(crbug.com/40800266): Fix the test flakiness.
@@ -164,12 +165,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
       ::testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_c, rfh_d, rfh_e));
 
   {
-    // If we stop iteration in |WebContents::ForEachRenderFrameHost|, we stop
-    // the entire iteration, not just iteration in the page being iterated at
-    // that point. In this case, if we stop iteration in the primary page, we do
-    // not continue to iterate in the bfcached page.
+    // If we stop iteration in `WebContentsImpl::ForEachRenderFrameHostImpl`, we
+    // stop the entire iteration, not just iteration in the page being iterated
+    // at that point. In this case, if we stop iteration in the primary page, we
+    // do not continue to iterate in the bfcached page.
     bool stopped = false;
-    web_contents()->ForEachRenderFrameHostWithAction(
+    web_contents()->ForEachRenderFrameHostImplWithAction(
         [&](RenderFrameHostImpl* rfh) {
           EXPECT_FALSE(stopped);
           stopped = true;
@@ -201,12 +202,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
   EXPECT_EQ(rfh_e, rfh_e->GetOutermostMainFrameOrEmbedder());
 }
 
-// Tests that |RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative|
-// and |WebContentsImpl::ForEachRenderFrameHostIncludingSpeculative|
-// behave correctly when a FrameTreeNode has both a speculative RFH and a
-// bfcached RFH.
+// Tests that
+// `RenderFrameHostImpl::ForEachRenderFrameHostImplIncludingSpeculative` and
+// `WebContentsImpl::ForEachRenderFrameHostImplIncludingSpeculative` behave
+// correctly when a FrameTreeNode has both a speculative RFH and a bfcached RFH.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       ForEachRenderFrameHostWithSpeculative) {
+                       ForEachRenderFrameHostImplWithSpeculative) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));

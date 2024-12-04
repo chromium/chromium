@@ -369,6 +369,7 @@ def main_win(output_directory, results_collector, size_path):
       'chrome_elf.dll',
       'chrome_proxy.exe',
       'chrome_watcher.dll',
+      'elevated_tracing_service.exe',
       'elevation_service.exe',
       'libEGL.dll',
       'libGLESv2.dll',

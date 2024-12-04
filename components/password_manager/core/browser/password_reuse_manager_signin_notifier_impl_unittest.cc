@@ -11,6 +11,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -84,7 +85,7 @@ TEST_F(PasswordReuseManagerSigninNotifierImplTest, SignOutContentArea) {
   // processed in this testing context.
   identity_test_env()->EnableRemovalOfExtendedAccountInfo();
   identity_manager->GetAccountsMutator()->RemoveAccount(
-      CoreAccountId::FromGaiaId("secondary_account_id"),
+      CoreAccountId::FromGaiaId(GaiaId("secondary_account_id")),
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
 

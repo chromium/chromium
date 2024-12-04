@@ -1198,12 +1198,21 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     }
   }
 
+  NSString* originatingHost = nil;
+#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
+  if (@available(iOS 18.2, *)) {
+    WKDownload* download = bridge.download;
+    originatingHost = download.originatingFrame.securityOrigin.host;
+  }
+#endif
+
   NSString* HTTPMethod = bridge.download.originalRequest.HTTPMethod;
   web::DownloadController::FromBrowserState(
       self.webStateImpl->GetBrowserState())
       ->CreateNativeDownloadTask(self.webStateImpl, [NSUUID UUID].UUIDString,
-                                 responseURL, HTTPMethod, contentDisposition,
-                                 contentLength, MIMEType, bridge);
+                                 responseURL, originatingHost, HTTPMethod,
+                                 contentDisposition, contentLength, MIMEType,
+                                 bridge);
   return YES;
 }
 

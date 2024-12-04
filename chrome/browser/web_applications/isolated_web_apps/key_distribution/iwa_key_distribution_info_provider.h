@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 
 namespace base {
@@ -50,19 +51,12 @@ class IwaKeyDistributionInfoProvider {
 
   using KeyRotations = base::flat_map<std::string, KeyRotationInfo>;
 
-  enum class ComponentUpdateError {
-    kStaleVersion,
-    kFileNotFound,
-    kProtoParsingFailure,
-    kMalformedBase64Key,
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnComponentUpdateSuccess(const base::Version& version,
                                           bool is_preloaded) {}
     virtual void OnComponentUpdateError(const base::Version& version,
-                                        ComponentUpdateError error) {}
+                                        IwaComponentUpdateError error) {}
   };
 
   static IwaKeyDistributionInfoProvider* GetInstance();
@@ -117,13 +111,13 @@ class IwaKeyDistributionInfoProvider {
   void OnKeyDistributionDataLoaded(
       const base::Version& version,
       bool is_preloaded,
-      base::expected<KeyRotations, ComponentUpdateError>);
+      base::expected<KeyRotations, IwaComponentUpdateError>);
 
   void DispatchComponentUpdateSuccess(const base::Version& version,
                                       bool is_preloaded) const;
 
   void DispatchComponentUpdateError(const base::Version& version,
-                                    ComponentUpdateError error) const;
+                                    IwaComponentUpdateError error) const;
 
   // Component data protobuf parsing tasks are posted to a sequenced runner
   // instead of a thread pool to prevent possible version races.

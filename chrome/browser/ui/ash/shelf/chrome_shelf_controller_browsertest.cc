@@ -324,7 +324,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
   ShelfAppBrowserTest() = default;
   ShelfAppBrowserTest(const ShelfAppBrowserTest&) = delete;
   ShelfAppBrowserTest& operator=(const ShelfAppBrowserTest&) = delete;
-  ~ShelfAppBrowserTest() override {}
+  ~ShelfAppBrowserTest() override = default;
 
   ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
 
@@ -438,12 +438,12 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
 
 class ShelfAppBrowserTestNoDefaultBrowser : public ShelfAppBrowserTest {
  protected:
-  ShelfAppBrowserTestNoDefaultBrowser() {}
+  ShelfAppBrowserTestNoDefaultBrowser() = default;
   ShelfAppBrowserTestNoDefaultBrowser(
       const ShelfAppBrowserTestNoDefaultBrowser&) = delete;
   ShelfAppBrowserTestNoDefaultBrowser& operator=(
       const ShelfAppBrowserTestNoDefaultBrowser&) = delete;
-  ~ShelfAppBrowserTestNoDefaultBrowser() override {}
+  ~ShelfAppBrowserTestNoDefaultBrowser() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ShelfAppBrowserTest::SetUpCommandLine(command_line);

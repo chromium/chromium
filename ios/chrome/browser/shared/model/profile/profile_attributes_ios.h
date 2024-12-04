@@ -25,6 +25,9 @@ class ProfileAttributesIOS {
   // Represents a set of gaia ids.
   using GaiaIdSet = std::set<std::string, std::less<>>;
 
+  // Represents a set of session ids.
+  using SessionIds = std::set<std::string>;
+
   // Creates a ProfileAttributesIOS for a new profile named `profile_name`.
   static ProfileAttributesIOS CreateNew(std::string_view profile_name);
 
@@ -49,6 +52,7 @@ class ProfileAttributesIOS {
   GaiaIdSet GetAttachedGaiaIds() const;
   base::Time GetLastActiveTime() const;
   bool IsAuthenticated() const;
+  SessionIds GetDiscardedSessions() const;
 
   // Sets information related to the profile.
   void ClearIsNewProfile();
@@ -57,6 +61,7 @@ class ProfileAttributesIOS {
   void SetHasAuthenticationError(bool value);
   void SetAttachedGaiaIds(const GaiaIdSet& gaia_ids);
   void SetLastActiveTime(base::Time time);
+  void SetDiscardedSessions(const SessionIds& session_ids);
 
   // Returns the storage.
   base::Value::Dict GetStorage() &&;

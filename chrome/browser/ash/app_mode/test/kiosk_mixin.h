@@ -13,6 +13,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
@@ -204,6 +205,9 @@ class KioskMixin : public InProcessBrowserTestMixin {
 
   // Used to skip the splash screen timer during launching. Improves test speed.
   base::AutoReset<bool> skip_splash_screen_override_;
+
+  // Used to display the network dialog sooner when there is no network.
+  base::AutoReset<base::TimeDelta> network_wait_override_;
 
   // Holds the embedded test server for the default web app.
   FakeOriginTestServerMixin web_server_;

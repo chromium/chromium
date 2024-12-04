@@ -24,7 +24,6 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/response_head_update_params.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -136,6 +135,8 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
       frame_tree_node_id_(frame_tree_node_id),
       is_browser_startup_completed_(
           GetContentClient()->browser()->IsBrowserStartupComplete()),
+      frame_tree_node_type_(
+          service_worker_client_->GetFrameTreeNodeTypeStringBeforeCommit()),
       find_registration_start_time_(std::move(find_registration_start_time)),
       fetch_event_client_id_(std::move(fetch_event_client_id)) {
   TRACE_EVENT_WITH_FLOW0(
@@ -159,16 +160,6 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
           "ServiceWorkerIsStopped.WaitingForWarmUp",
           core->IsWaitingForWarmUp(active_worker->key()));
     }
-  }
-
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-  if (!frame_tree_node) {
-    frame_tree_node_type_ = FrameTreeNodeType::kUnknown;
-  } else {
-    frame_tree_node_type_ = frame_tree_node->IsOutermostMainFrame()
-                                ? FrameTreeNodeType::kOutermostMainFrame
-                                : FrameTreeNodeType::kNotOutermostMainFrame;
   }
 
   response_head_->load_timing.request_start = base::TimeTicks::Now();
@@ -287,7 +278,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       router_info->matched_source_type = source_type;
 
       switch (source_type) {
-        case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+        case network::mojom::ServiceWorkerRouterSourceType::kNetwork: {
           // Network fallback is requested.
           // URLLoader in |fallback_callback_|, in other words |url_loader_|
           // which is referred in
@@ -306,23 +297,21 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           // `initial_service_worker_status_` should be set if `active_worker`
           // exists.
           CHECK(initial_service_worker_status_.has_value());
+          ResponseHeadUpdateParams head_update_params;
+          head_update_params.router_info =
+              std::move(response_head_->service_worker_router_info);
+          head_update_params.load_timing_info = response_head_->load_timing;
+          head_update_params.initial_service_worker_status =
+              initial_service_worker_status_.value();
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
-                  [](NavigationLoaderInterceptor::FallbackCallback
-                         fallback_callback,
+                  [](base::WeakPtr<ServiceWorkerMainResourceLoader> self,
                      scoped_refptr<ServiceWorkerVersion> active_worker,
-                     network::mojom::ServiceWorkerRouterInfoPtr router_info,
-                     net::LoadTimingInfo load_timing_info,
-                     network::mojom::ServiceWorkerStatus
-                         initial_service_worker_status) {
-                    ResponseHeadUpdateParams head_update_params;
-                    head_update_params.router_info = std::move(router_info);
-                    head_update_params.load_timing_info = load_timing_info;
-                    head_update_params.initial_service_worker_status =
-                        initial_service_worker_status;
-                    std::move(fallback_callback)
-                        .Run(std::move(head_update_params));
+                     ResponseHeadUpdateParams head_update_params) {
+                    if (self) {
+                      self->Fallback(std::move(head_update_params));
+                    }
                     if (active_worker->running_status() !=
                             blink::EmbeddedWorkerStatus::kRunning &&
                         base::FeatureList::IsEnabled(
@@ -333,11 +322,10 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                           base::DoNothing());
                     }
                   },
-                  std::move(fallback_callback_), active_worker,
-                  std::move(response_head_->service_worker_router_info),
-                  response_head_->load_timing,
-                  initial_service_worker_status_.value()));
+                  weak_factory_.GetWeakPtr(), active_worker,
+                  std::move(head_update_params)));
           return;
+        }
         case network::mojom::ServiceWorkerRouterSourceType::kRace:
           race_network_request_mode = RaceNetworkRequestMode::kForced;
           race_source = sources[0].race_source;
@@ -885,9 +873,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     // will be reset by `NavigationURLLoaderImpl` by detecting the controller
     // lost.
     service_worker_client_->NotifyControllerLost();
-    if (fallback_callback_) {
-      std::move(fallback_callback_).Run(ResponseHeadUpdateParams());
-    }
+    Fallback(ResponseHeadUpdateParams());
     return;
   }
 
@@ -925,16 +911,15 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   if (is_fallback) {
     TransitionToStatus(Status::kCompleted);
     RecordTimingMetricsForNetworkFallbackCase();
-    if (fallback_callback_) {
-      CHECK(initial_service_worker_status_.has_value());
-      ResponseHeadUpdateParams head_update_params;
-      head_update_params.load_timing_info = response_head_->load_timing;
-      head_update_params.router_info =
-          std::move(response_head_->service_worker_router_info);
-      head_update_params.initial_service_worker_status =
-          initial_service_worker_status_.value();
-      std::move(fallback_callback_).Run(std::move(head_update_params));
-    }
+
+    CHECK(initial_service_worker_status_.has_value());
+    ResponseHeadUpdateParams head_update_params;
+    head_update_params.load_timing_info = response_head_->load_timing;
+    head_update_params.router_info =
+        std::move(response_head_->service_worker_router_info);
+    head_update_params.initial_service_worker_status =
+        initial_service_worker_status_.value();
+    Fallback(std::move(head_update_params));
     return;
   }
 
@@ -967,6 +952,13 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
 
   StartResponse(std::move(response), std::move(version),
                 std::move(body_as_stream));
+}
+
+void ServiceWorkerMainResourceLoader::Fallback(
+    ResponseHeadUpdateParams response_header_params) {
+  if (fallback_callback_) {
+    std::move(fallback_callback_).Run(std::move(response_header_params));
+  }
 }
 
 void ServiceWorkerMainResourceLoader::StartResponse(
@@ -1228,14 +1220,7 @@ ServiceWorkerMainResourceLoader::GetInitialServiceWorkerStatusString() {
 }
 
 std::string ServiceWorkerMainResourceLoader::GetFrameTreeNodeTypeString() {
-  switch (frame_tree_node_type_) {
-    case FrameTreeNodeType::kOutermostMainFrame:
-      return "OutermostMainFrame";
-    case FrameTreeNodeType::kNotOutermostMainFrame:
-      return "NotOutermostMainFrame";
-    case FrameTreeNodeType::kUnknown:
-      return "Unknown";
-  }
+  return frame_tree_node_type_;
 }
 
 void ServiceWorkerMainResourceLoader::RecordFindRegistrationTiming(

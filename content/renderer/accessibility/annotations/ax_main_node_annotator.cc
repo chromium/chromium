@@ -158,7 +158,7 @@ void AXMainNodeAnnotator::ComputeAuthorStatus(ui::AXTreeUpdate* update) {
   if (author_status_ != AXMainNodeAnnotatorAuthorStatus::kUnconfirmed) {
     return;
   }
-  for (ui::AXNodeData node : update->nodes) {
+  for (ui::AXNodeData& node : update->nodes) {
     if (node.role == ax::mojom::Role::kMain) {
       author_status_ = AXMainNodeAnnotatorAuthorStatus::kAuthorProvidedMain;
       return;

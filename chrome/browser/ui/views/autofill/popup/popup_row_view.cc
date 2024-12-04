@@ -132,31 +132,6 @@ std::u16string GetSuggestionA11yString(const Suggestion& suggestion,
   return base::JoinString(text, u". ");
 }
 
-// Returns whether the expand subpopup icon can have its visibility updated on
-// hover/select. This method will return true when the following
-// conditions are met:
-// 1. The suggestion has children (otherwise a subpopup does not exist for it).
-// 2. A suggestion is acceptable.
-// 3. The `FillingProduct` is `FillingProduct::kAddress` (to avoid interfering
-// with `FillingProduct::kCompose` suggestions).
-// 4. The respective feature and feature param is enabled. This is currently
-// done as part of an experiment arm to understand users behaviour.
-//
-// Note that when a suggestion is not acceptable, the only
-// possible action the user can take is opening the subpopup and accepting a
-// suggestion in it, therefore the icon is always visible in this case.
-bool CanUpdateOpenSubPopupIconVisibilityOnHover(const Suggestion& suggestion) {
-  CHECK(suggestion.children.size() > 0);
-  return suggestion.IsAcceptable() &&
-         GetFillingProductFromSuggestionType(suggestion.type) ==
-             FillingProduct::kAddress &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillGranularFillingAvailable) &&
-         features::
-             kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
-                 .Get();
-}
-
 }  // namespace
 
 EnterExitHandler::EnterExitHandler(base::RepeatingClosure enter_callback,
@@ -289,19 +264,16 @@ PopupRowView::PopupRowView(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
             gfx::Insets(kExpandChildSuggestionsViewHorizontalPadding)));
-    expand_child_suggestions_view_icon_ =
-        expand_child_suggestions_view_->AddChildView(
-            std::make_unique<views::ImageView>(
-                popup_cell_utils::ImageModelFromVectorIcon(
-                    popup_cell_utils::GetExpandableMenuIcon(suggestion.type),
-                    kExpandChildSuggestionsIconWidth)));
+    expand_child_suggestions_view_->AddChildView(
+        std::make_unique<views::ImageView>(
+            popup_cell_utils::ImageModelFromVectorIcon(
+                popup_cell_utils::GetExpandableMenuIcon(suggestion.type),
+                kExpandChildSuggestionsIconWidth)));
     expand_child_suggestions_view_observer_.Observe(
         expand_child_suggestions_view_);
     control_event_handler_ = set_exit_enter_callbacks(
         CellType::kControl, *expand_child_suggestions_view_);
     layout->SetFlexForView(expand_child_suggestions_view_.get(), 0);
-
-    UpdateOpenSubPopupIconVisibility();
   }
 }
 
@@ -430,14 +402,14 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     content_view_->GetViewAccessibility().SetIsSelected(false);
   }
 
-  UpdateUI();
+  UpdateBackground();
 }
 
 void PopupRowView::SetChildSuggestionsDisplayed(
     bool child_suggestions_displayed) {
   child_suggestions_displayed_ = child_suggestions_displayed;
 
-  UpdateUI();
+  UpdateBackground();
 }
 
 gfx::RectF PopupRowView::GetControlCellBounds() const {
@@ -491,11 +463,6 @@ void PopupRowView::OnCellSelected(std::optional<CellType> type,
       source);
 }
 
-void PopupRowView::UpdateUI() {
-  UpdateBackground();
-  UpdateOpenSubPopupIconVisibility();
-}
-
 void PopupRowView::UpdateBackground() {
   const bool is_highlighted = [&]() {
     if (!highlight_on_select_) {
@@ -518,19 +485,6 @@ void PopupRowView::UpdateBackground() {
                      : ui::kColorDropdownBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kMedium)));
-}
-
-void PopupRowView::UpdateOpenSubPopupIconVisibility() {
-  if (!expand_child_suggestions_view_icon_ ||
-      line_number_ >= controller_->GetLineCount() ||
-      controller_->GetSuggestionAt(line_number_).children.size() == 0 ||
-      !CanUpdateOpenSubPopupIconVisibilityOnHover(
-          controller_->GetSuggestionAt(line_number_))) {
-    return;
-  }
-
-  expand_child_suggestions_view_icon_->SetVisible(selected_cell_ ||
-                                                  child_suggestions_displayed_);
 }
 
 bool PopupRowView::IsViewVisibleEnough() const {

@@ -942,6 +942,7 @@
 <translation id="5316947901395241499">Адміністратар адключыў магчымасць захоўваць паролі</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319359161174645648">Google рэкамендуе браўзер Chrome</translation>
+<translation id="5326246328175179736">Вы не можаце ўвайсці праз гэты ўліковы запіс</translation>
 <translation id="5328542107300944283">Выкарыстоўвайце праз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Запыты дазволаў</translation>
 <translation id="534580735623577507">Няма сайтаў за <ph name="TIME_PERIOD" /></translation>
@@ -951,6 +952,7 @@
 <translation id="5375577065097716013">Шукаць праз Аб’ектыў <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Выйсці з рэжыму інкогніта</translation>
 <translation id="5395376160638294582">Падбайце аб тым, каб заўсёды мець доступ да даных Chrome ва Уліковым запісе Google</translation>
+<translation id="5397794290049113714">Вы</translation>
 <translation id="539881862970320163">Прапанаваны надзейны пароль. Клавіятура схавана.</translation>
 <translation id="5409881200985013443">Адправіць код <ph name="ONE_TIME_CODE" /> на прыладу "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) прапануе вам далучыцца да групы ўкладак. Любы карыстальнік, які мае спасылку, можа рэдагаваць усе ўкладкі, таму будзьце асцярожныя пры далучэнні. Тэрмін дзеяння спасылкі скончыцца праз 48 гадз.</translation>
@@ -978,6 +980,7 @@
 <translation id="5514904542973294328">Выключана адміністратарам гэтай прылады</translation>
 <translation id="5515439363601853141">Каб паглядзець пароль, трэба зняць блакіроўку</translation>
 <translation id="5517095782334947753">У вас ёсць закладкі, гісторыя, паролі і іншыя налады з уліковага запісу <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="5517326820028369152">Ніжні аркуш з нядаўнімі дзеяннямі</translation>
 <translation id="5524843473235508879">Перанакіраванне заблакіравана.</translation>
 <translation id="5526281268548144413">Нельга закрыць у некалькіх вокнах</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# хв таму}one{# хв таму}few{# хв таму}many{# хв таму}other{# хв таму}}</translation>
@@ -1280,6 +1283,7 @@
 <translation id="6817747507826986771">Хуткае абагульванне гэтай старонкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Акно для абнаўлення Менеджара пароляў Google закрыта</translation>
+<translation id="6824933543577433709">Ніжні аркуш з нядаўнімі дзеяннямі закрыты</translation>
 <translation id="6828070228333235514">Спыніць адсочванне цаны</translation>
 <translation id="6830728435402077660">Не абаронена</translation>
 <translation id="6831043979455480757">Перакласці</translation>
@@ -1498,6 +1502,7 @@
 <translation id="7691043218961417207">Шукайце змесціва, на якое варта падпісацца</translation>
 <translation id="7697383401610880082">Маркер перацягвання</translation>
 <translation id="7698359219371678927">Напісаць электронны ліст у праграме "<ph name="APP_NAME" />"</translation>
+<translation id="7702420606070050505">Ніжні аркуш з нядаўнімі дзеяннямі адкрыты на ўсю вышыню</translation>
 <translation id="7707922173985738739">Выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="7709918231054955894">Праглядайце ўсе свае ўкладкі</translation>
 <translation id="7733878270780732638">Недастаткова месца на прыладзе.</translation>

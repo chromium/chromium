@@ -140,7 +140,16 @@ bool g_disallow_for_testing = false;
 // during test runs. Doesn't affect public session.
 bool g_arc_blocked_due_to_incompatible_filesystem_for_testing = false;
 
-// Indicates whether the ARCVM DLC image is available on the device.
+// Indicates whether the ARCVM DLC image is available on the device with the
+// arcvm_dlc USE flag. This value must be updated before calling
+// IsArcAllowedForProfile() to maintain consistency.
+//
+// 1. Regular login: The check is performed in UserSessionManager when the user
+// logs in.
+// 2. Chrome restart: On ash-chrome restart, the session bypasses
+// UserSessionManager. In this case, the check is done in
+// ArcServiceLauncher, blocking the main thread to ensure the check
+// completes before calling IsArcAllowedForProfile().
 std::optional<bool> g_is_arcvm_dlc_image_available;
 
 // TODO(kinaba): Temporary workaround for crbug.com/729034.
@@ -764,7 +773,7 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
 }
 
 void CheckArcVmDlcImageExist(base::OnceClosure callback) {
-  if (!ash::switches::IsRevenBranding()) {
+  if (!arc::IsArcVmDlcEnabled()) {
     std::move(callback).Run();
     return;
   }
@@ -775,6 +784,10 @@ void CheckArcVmDlcImageExist(base::OnceClosure callback) {
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&IsArcVmDlcImageExist),
       base::BindOnce(&StoreArcVmDlcImageCheckResult, std::move(callback)));
+}
+
+void SetArcvmDlcImageStatus(bool availability) {
+  g_is_arcvm_dlc_image_available = availability;
 }
 
 ArcManagementTransition GetManagementTransition(const Profile* profile) {

@@ -77,7 +77,7 @@ PepperIsolatedFileSystemMessageFilter::PepperIsolatedFileSystemMessageFilter(
 }
 
 PepperIsolatedFileSystemMessageFilter::
-    ~PepperIsolatedFileSystemMessageFilter() {}
+    ~PepperIsolatedFileSystemMessageFilter() = default;
 
 scoped_refptr<base::SequencedTaskRunner>
 PepperIsolatedFileSystemMessageFilter::OverrideTaskRunnerForMessage(

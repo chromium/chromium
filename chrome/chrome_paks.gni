@@ -172,7 +172,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/downloads_resources.pak",
         "$root_gen_dir/chrome/feedback_resources.pak",
         "$root_gen_dir/chrome/gaia_auth_host_resources.pak",
-        "$root_gen_dir/chrome/hats_resources.pak",
         "$root_gen_dir/chrome/history_resources.pak",
         "$root_gen_dir/chrome/identity_internals_resources.pak",
         "$root_gen_dir/chrome/inline_login_resources.pak",
@@ -426,12 +425,10 @@ template("chrome_extra_paks") {
       sources += [
         "$root_gen_dir/chrome/intro_resources.pak",
         "$root_gen_dir/chrome/profile_picker_resources.pak",
-        "$root_gen_dir/chrome/welcome_resources.pak",
       ]
       deps += [
         "//chrome/browser/resources/intro:resources",
         "//chrome/browser/resources/signin/profile_picker:resources",
-        "//chrome/browser/resources/welcome:resources",
       ]
     }
 

@@ -57,6 +57,76 @@
 #import "base/task/bind_post_task.h"
 #import "components/browser_sync/sync_to_signin_migration.h"
 
+namespace {
+
+// Determine the WebKit storage UUID for profile.
+//
+// There are three possibilities depending on the age of the profile.
+// First for really old profiles (before the introduction of separate
+// data store in iOS 17.0) they store the data in the global unnamed
+// store, and thus use an empty UUID to represent this. For profiles
+// created between M-128 and M-133, a random UUID is generated and is
+// stored in the PrefService to use as the identifier for WebKit data.
+// Profile created in M-133+ have their name be an UUID and the name
+// can use used as the storage identifier.
+//
+// To determine which value to use for the storage identifier, proceed
+// in steps. If the profile name can be parsed as an UUID, then use it
+// as the storage identifier (this is a profile created in M-133+). If
+// not, then use the value stored in kBrowserStateStorageIdentifier if
+// it is set, otherwise do not use an UUID (the profile is legacy and
+// will use the global storage).
+//
+// Assert that the profile name is an UUID if it has just been created
+// to ensure the algorithm above correctly cover all possible cases.
+//
+// There is no WebKit API to change the storage nor to copy data from
+// one storage location to another. Until an API is provided, it will
+// not be possible to migrate users. For this reason the state is not
+// recorded as an histogram (it could be years before we can drop the
+// support for "default" storage or for storing the UUID in prefs).
+base::Uuid GetStorageUUID(const std::string& name,
+                          PrefService* prefs,
+                          bool is_new_profile) {
+  base::Uuid uuid = base::Uuid::ParseLowercase(name);
+  if (uuid.is_valid()) {
+    // M-133+ profile whose name is an UUID already. In that case use
+    // the profile name as the storage identifier.
+    return uuid;
+  }
+
+  const std::string& uuid_string =
+      prefs->GetString(prefs::kBrowserStateStorageIdentifier);
+  if (uuid_string.empty() && !is_new_profile) {
+    // Pre M-128 profile, there is no UUID stored in the prefs and the
+    // profile use the default WebKit storage, which is represented as
+    // an invalid UUID.
+    return base::Uuid();
+  }
+
+  // M-128+ profile by default.
+  //
+  // Note: `uuid_string` should be a valid UUID and `is_new_profile`
+  // should be false, but the code will still generate a random UUID
+  // if either of those assumption are incorrect.
+  //
+  // They could happen if the storage for a profile was tampered with
+  // or somehow got corrupted (e.g. the profile directory was deleted
+  // or the json data on disk modified). Another possibility is that
+  // the name was reserved in ProfileAttributesStorageIOS but for some
+  // reason the profile never created.
+  uuid = base::Uuid::ParseCaseInsensitive(uuid_string);
+  if (!uuid.is_valid()) {
+    uuid = base::Uuid::GenerateRandomV4();
+    prefs->SetString(prefs::kBrowserStateStorageIdentifier,
+                     uuid.AsLowercaseString());
+  }
+
+  return uuid;
+}
+
+}  // namespace
+
 // Helper class to create the Profile's directory.
 //
 // This is a separate class to limit how much code can be allowed to block
@@ -410,20 +480,9 @@ void ProfileIOSImpl::PrefsInitStage2(InitInfo init_info, bool success) {
 void ProfileIOSImpl::PrefsInitStage3(InitInfo init_info, bool success) {
   CHECK(success);
 
-  // Initialize `storage_uuid_` from the prefs. In case of a new Profile,
-  // generate a new value (this avoid losing data when migrating from an old
-  // Profile).
-  //
-  // TODO(crbug.com/346754380): Remove when all Profile use a non-default
-  // storage (since there is no automatic migration, this could take years).
-  const std::string& uuid_string =
-      GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
-  if (!uuid_string.empty()) {
-    storage_uuid_ = base::Uuid::ParseCaseInsensitive(uuid_string);
-    DCHECK(storage_uuid_.is_valid());
-  } else if (init_info.is_new_profile) {
-    storage_uuid_ = base::Uuid::GenerateRandomV4();
-  }
+  // Initialize the WebKit storage identifier.
+  const bool is_new_profile = init_info.is_new_profile;
+  storage_uuid_ = GetStorageUUID(GetProfileName(), GetPrefs(), is_new_profile);
 
   // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
 

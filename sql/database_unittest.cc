@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <cstring>
 #include <memory>
 #include <optional>
 #include <string>
@@ -23,6 +24,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -32,6 +34,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -55,6 +58,7 @@
 #include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -626,6 +630,87 @@ class LifeTracker {
   SEQUENCE_CHECKER(sequence_checker_);
   raw_ptr<bool> flag_ptr_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
+
+int TestVfsOpen(sqlite3_vfs* vfs,
+                const char* full_path,
+                sqlite3_file* result_file,
+                int requested_flags,
+                int* granted_flags) {
+  uint64_t* call_count = reinterpret_cast<uint64_t*>(vfs->pAppData);
+  ++*call_count;
+  return SQLITE_ERROR;
+}
+int TestVfsFullPathname(sqlite3_vfs* vfs,
+                        const char* file_path,
+                        int result_size,
+                        char* result) {
+  uint64_t* call_count = reinterpret_cast<uint64_t*>(vfs->pAppData);
+  ++*call_count;
+
+  if (result_size < 0) {
+    return SQLITE_CANTOPEN;
+  }
+
+  const size_t expected_result_size = result_size;
+  base::cstring_view file_path_view(file_path);
+  if (expected_result_size < file_path_view.size() + sizeof(*file_path)) {
+    return SQLITE_CANTOPEN;
+  }
+
+  // `copy()` returns an output iterator just past the last char copied. Write
+  // the string terminator to that location.
+  *base::ranges::copy(file_path_view,
+                      base::span(result, expected_result_size).begin()) = 0;
+  return SQLITE_OK;
+}
+
+TEST_P(SQLDatabaseTest, UseVfs) {
+  uint64_t call_count = 0;
+
+  constexpr const char kVFSName[] = "test_vfs";
+  static constexpr int kSqliteVfsApiVersion = 3;
+  static constexpr int kSqliteMaxPathSize = 512;
+
+  sqlite3_vfs vfs{
+      kSqliteVfsApiVersion,
+      sizeof(sqlite3_vfs),
+      kSqliteMaxPathSize,
+      /*pNext=*/nullptr,
+      kVFSName,
+      // Provide pointer to `call_count` so it can be modified from within calls
+      // to the VFS and used in test assertions.
+      /*pAppData=*/&call_count,
+      TestVfsOpen,
+      /*xDelete*/ nullptr,
+      /*xAccess*/ nullptr,
+      TestVfsFullPathname,
+      /*xDlOpen=*/nullptr,
+      /*xDlError=*/nullptr,
+      /*xDlSym=*/nullptr,
+      /*xDlClose=*/nullptr,
+      /*xRandomness*/ nullptr,
+      /*xSleep*/ nullptr,
+      /*xCurrentTime=*/nullptr,
+      /*xGetLastError*/ nullptr,
+      /*xCurrentTimeInt64*/ nullptr,
+      /*xSetSystemCall=*/nullptr,
+      /*xGetSystemCall=*/nullptr,
+      /*xNextSystemCall=*/nullptr,
+  };
+
+  sqlite3_vfs_register(&vfs, /*makeDflt=*/false);
+  absl::Cleanup vfs_unregisterer = [&vfs]() { sqlite3_vfs_unregister(&vfs); };
+
+  DatabaseOptions options = GetDBOptions();
+  options.vfs_name_discouraged = kVFSName;
+  Database other_db(options);
+
+  // Since the vfs's Open function is not implemented `Open()` will fail.
+  ASSERT_FALSE(other_db.Open(db_path_));
+
+  // Vfs implementation called twice, once for open and once for path name.
+  ASSERT_EQ(call_count, 2ull);
+}
 
 // base::BindRepeating() can curry arguments to be passed by const reference to
 // the callback function. If the error callback function calls

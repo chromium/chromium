@@ -15,8 +15,10 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -142,6 +144,67 @@ TEST_F(ExternalPopupMenuHrElementItemsTest, IndexMappingTest) {
   EXPECT_EQ(2, ExternalPopupMenu::ToPopupMenuItemIndex(2, *owner_element_));
   EXPECT_EQ(3, ExternalPopupMenu::ToPopupMenuItemIndex(3, *owner_element_));
 #endif
+}
+
+class FramelessExternalPopupMenuTest : public PageTestBase {};
+
+TEST_F(FramelessExternalPopupMenuTest, DescendantOption) {
+  auto* select = MakeGarbageCollected<HTMLSelectElement>(GetDocument());
+  GetDocument().body()->appendChild(select);
+
+  auto* wrapper_div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  select->appendChild(wrapper_div);
+  auto* option = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  option->setTextContent("option in wrapper_div");
+  wrapper_div->appendChild(option);
+
+  auto* wrapper_div_display_none =
+      MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  select->appendChild(wrapper_div_display_none);
+  auto* option2 = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  option2->setTextContent("option in wrapper_div_display_none");
+  wrapper_div_display_none->appendChild(option2);
+
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  int32_t item_height;
+  double font_size;
+  int32_t selected_item;
+  Vector<mojom::blink::MenuItemPtr> menu_items;
+  bool right_aligned;
+  bool allow_multiple_selection;
+  ExternalPopupMenu::GetPopupMenuInfo(
+      *select, &item_height, &font_size, &selected_item, &menu_items,
+      &right_aligned, &allow_multiple_selection);
+
+  ASSERT_EQ(2u, menu_items.size());
+  EXPECT_EQ(menu_items[0]->label, "option in wrapper_div");
+  EXPECT_EQ(menu_items[1]->label, "option in wrapper_div_display_none");
+}
+
+TEST_F(FramelessExternalPopupMenuTest, DescendantOptionIndexMapping) {
+  auto* select = MakeGarbageCollected<HTMLSelectElement>(GetDocument());
+  GetDocument().body()->appendChild(select);
+
+  auto* wrapper_div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  select->appendChild(wrapper_div);
+  auto* option = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  option->setTextContent("option in wrapper_div");
+  wrapper_div->appendChild(option);
+
+  auto* wrapper_div_display_none =
+      MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  select->appendChild(wrapper_div_display_none);
+  auto* option2 = MakeGarbageCollected<HTMLOptionElement>(GetDocument());
+  option2->setTextContent("option in wrapper_div_display_none");
+  wrapper_div_display_none->appendChild(option2);
+
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  EXPECT_EQ(0, ExternalPopupMenu::ToExternalPopupMenuItemIndex(0, *select));
+  EXPECT_EQ(1, ExternalPopupMenu::ToExternalPopupMenuItemIndex(1, *select));
+  EXPECT_EQ(0, ExternalPopupMenu::ToPopupMenuItemIndex(0, *select));
+  EXPECT_EQ(1, ExternalPopupMenu::ToPopupMenuItemIndex(1, *select));
 }
 
 class TestLocalFrameExternalPopupClient : public FakeLocalFrameHost {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
 
 #include <memory>
@@ -402,8 +397,7 @@ AccessibilityUI::AccessibilityUI(content::WebUI* web_ui)
 
   // Add required resources.
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(
-      base::make_span(kAccessibilityResources, kAccessibilityResourcesSize));
+  html_source->AddResourcePaths(kAccessibilityResources);
   html_source->SetDefaultResource(IDR_ACCESSIBILITY_ACCESSIBILITY_HTML);
   html_source->SetRequestFilter(
       base::BindRepeating(&ShouldHandleAccessibilityRequestCallback),

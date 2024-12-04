@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -29,18 +30,21 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kDateTray,
                          TrayBackgroundView::kStartRounded),
-      time_view_(tray_container()->AddChildView(
+      time_tray_item_view_(tray_container()->AddChildView(
           std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kDate))),
       unified_system_tray_(tray) {
   SetID(VIEW_ID_SA_DATE_TRAY);
   SetCallback(
       base::BindRepeating(&DateTray::OnButtonPressed, base::Unretained(this)));
+  SubscribeCallbacksForAccessibility();
 
   tray_container()->SetMargin(
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       /*cross_axis_margin=*/0);
   scoped_unified_system_tray_observer_.Observe(unified_system_tray_.get());
+
+  GetViewAccessibility().SetName(CalculateAccessibleName());
 }
 
 DateTray::~DateTray() = default;
@@ -49,26 +53,16 @@ std::u16string DateTray::GetAccessibleNameForBubble() {
   if (unified_system_tray_->IsBubbleShown())
     return unified_system_tray_->GetAccessibleNameForQuickSettingsBubble();
 
-  return GetAccessibleNameForTray();
+  return CalculateAccessibleName();
 }
 
 void DateTray::HandleLocaleChange() {
-  time_view_->HandleLocaleChange();
-}
-
-std::u16string DateTray::GetAccessibleNameForTray() {
-  base::Time now = base::Time::Now();
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_DATE_TRAY_ACCESSIBLE_DESCRIPTION,
-      base::TimeFormatFriendlyDate(now),
-      base::TimeFormatTimeOfDayWithHourClockType(
-          now, Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
-          base::kKeepAmPm));
+  time_tray_item_view_->HandleLocaleChange();
 }
 
 void DateTray::UpdateLayout() {
   TrayBackgroundView::UpdateLayout();
-  time_view_->UpdateAlignmentForShelf(shelf());
+  time_tray_item_view_->UpdateAlignmentForShelf(shelf());
 }
 
 void DateTray::UpdateAfterLoginStatusChange() {
@@ -120,7 +114,7 @@ void DateTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
 }
 
 void DateTray::UpdateTrayItemColor(bool is_active) {
-  time_view_->UpdateLabelOrImageViewColor(is_active);
+  time_tray_item_view_->UpdateLabelOrImageViewColor(is_active);
 }
 
 void DateTray::OnOpeningCalendarView() {
@@ -129,6 +123,16 @@ void DateTray::OnOpeningCalendarView() {
 
 void DateTray::OnLeavingCalendarView() {
   SetIsActive(false);
+}
+
+std::u16string DateTray::CalculateAccessibleName() {
+  base::Time now = base::Time::Now();
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_DATE_TRAY_ACCESSIBLE_DESCRIPTION,
+      base::TimeFormatFriendlyDate(now),
+      base::TimeFormatTimeOfDayWithHourClockType(
+          now, Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
+          base::kKeepAmPm));
 }
 
 void DateTray::OnButtonPressed(const ui::Event& event) {
@@ -156,6 +160,11 @@ void DateTray::OnButtonPressed(const ui::Event& event) {
   }
 }
 
+void DateTray::OnTimeViewTextChanged(ax::mojom::StringAttribute attribute,
+                                     const std::optional<std::string>& name) {
+  GetViewAccessibility().SetName(CalculateAccessibleName());
+}
+
 void DateTray::ShowGlanceableBubble(bool from_keyboard) {
   bubble_ = std::make_unique<GlanceableTrayBubble>(this, from_keyboard);
   SetIsActive(true);
@@ -164,6 +173,16 @@ void DateTray::ShowGlanceableBubble(bool from_keyboard) {
 void DateTray::HideGlanceableBubble() {
   bubble_.reset();
   SetIsActive(false);
+}
+
+void DateTray::SubscribeCallbacksForAccessibility() {
+  time_view_text_changed_subscription_ =
+      time_tray_item_view_->time_view()
+          ->GetViewAccessibility()
+          .AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&DateTray::OnTimeViewTextChanged,
+                                  base::Unretained(this)));
 }
 
 BEGIN_METADATA(DateTray)

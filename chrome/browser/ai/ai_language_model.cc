@@ -175,17 +175,19 @@ AILanguageModel::AILanguageModel(
   receiver_.set_disconnect_handler(base::BindOnce(
       &AIContextBoundObject::RemoveFromSet, base::Unretained(this)));
 
+  auto metadata = ParseMetadata(session_->GetOnDeviceFeatureMetadata());
+  is_streaming_chunk_by_chunk_ = metadata.is_streaming_chunk_by_chunk();
+
   if (context.has_value()) {
     // If the context is provided, it will be used in this session.
     context_ = std::make_unique<Context>(context.value());
     return;
   }
 
-  // If the context is not provided, initialize a new context with the default
-  // configuration.
-  bool use_prompt_api_proto =
-      ParseMetadata(session_->GetOnDeviceFeatureMetadata()).version() >=
-      kMinVersionUsingProto;
+  // If the context is not provided, initialize a new context
+  // with the default configuration.
+  uint32_t version = metadata.version();
+  bool use_prompt_api_proto = version >= kMinVersionUsingProto;
   context_ =
       std::make_unique<Context>(session_->GetTokenLimits().max_context_tokens,
                                 Context::ContextItem(), use_prompt_api_proto);
@@ -283,8 +285,14 @@ void AILanguageModel::ModelExecutionCallback(
 
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::StringValue>(result.response->response);
+  if (is_streaming_chunk_by_chunk_) {
+    current_response_ += response->value();
+  } else {
+    current_response_ = response->value();
+  }
+
   if (response->has_value()) {
-    responder->OnStreaming(response->value());
+    responder->OnStreaming(current_response_);
   }
   if (result.response->is_complete) {
     // TODO(crbug.com/351935390): instead of calculating this from the
@@ -293,7 +301,7 @@ void AILanguageModel::ModelExecutionCallback(
     PromptApiRequest request;
     request.mutable_prompt_history()->CopyFrom(input.current_prompts());
     *request.add_prompt_history() =
-        MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT, response->value());
+        MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT, current_response_);
     session_->GetContextSizeInTokens(
         *context_->MaybeFormatRequest(request),
         base::BindOnce(&AILanguageModel::AddPromptHistoryAndSendCompletion,
@@ -322,6 +330,8 @@ void AILanguageModel::Prompt(
   PromptApiRequest request;
   *request.add_current_prompts() =
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
+  // Clear the response from the previous execution.
+  current_response_ = "";
   session_->ExecuteModel(
       *context_->MaybeFormatRequest(request),
       base::BindRepeating(&AILanguageModel::ModelExecutionCallback,

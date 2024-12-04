@@ -101,6 +101,8 @@ builder.
 * [android-cast-arm-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm-dbg""))
 
   Location filters:
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
   * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
   * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)
@@ -111,6 +113,8 @@ builder.
 * [android-cast-arm-rel](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm-rel""))
 
   Location filters:
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
   * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
   * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)
@@ -121,6 +125,8 @@ builder.
 * [android-cast-arm64-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm64-dbg""))
 
   Location filters:
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
   * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
   * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)
@@ -131,6 +137,8 @@ builder.
 * [android-cast-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm64-rel""))
 
   Location filters:
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
   * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
   * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)

@@ -138,7 +138,7 @@ class QuasiWebSocketHttpResponse : public net::test_server::HttpResponse {
     accept_hash_ = base::Base64Encode(
         base::SHA1HashString(key + net::websockets::kWebSocketGuid));
   }
-  ~QuasiWebSocketHttpResponse() override {}
+  ~QuasiWebSocketHttpResponse() override = default;
 
   void SendResponse(
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
@@ -280,13 +280,13 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   safe_browsing::ClientSafeBrowsingReportRequest warning_shown_report_;
 
  private:
-  ~FakeSafeBrowsingUIManager() override {}
+  ~FakeSafeBrowsingUIManager() override = default;
 };
 
 class MockObserver : public SafeBrowsingUIManager::Observer {
  public:
-  MockObserver() {}
-  ~MockObserver() override {}
+  MockObserver() = default;
+  ~MockObserver() override = default;
   MOCK_METHOD1(OnSafeBrowsingHit,
                void(const security_interstitials::UnsafeResource&));
 };
@@ -311,7 +311,7 @@ class ServiceEnabledHelper : public base::ThreadTestHelper {
   }
 
  private:
-  ~ServiceEnabledHelper() override {}
+  ~ServiceEnabledHelper() override = default;
 
   scoped_refptr<SafeBrowsingService> service_;
   const bool expected_enabled_;

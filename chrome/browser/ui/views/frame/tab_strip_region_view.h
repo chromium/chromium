@@ -12,11 +12,12 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 
+namespace glic {
+class GlicButton;
+}
 namespace views {
 class Button;
 }
-
-class GlicButton;
 class NewTabButton;
 class TabSearchButton;
 class TabStrip;
@@ -69,7 +70,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
     return product_specifications_button_;
   }
 
-  GlicButton* glic_button() { return glic_button_; }
+  glic::GlicButton* glic_button() { return glic_button_; }
 
   // May be nullptr if combo button is enabled. |Use GetNewTabButton()| to
   // access the new tab button inside the combo button.
@@ -148,7 +149,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
   raw_ptr<TabStripComboButton> tab_strip_combo_button_ = nullptr;
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
-  raw_ptr<GlicButton> glic_button_ = nullptr;
+  raw_ptr<glic::GlicButton> glic_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents

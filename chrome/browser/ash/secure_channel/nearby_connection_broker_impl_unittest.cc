@@ -272,8 +272,7 @@ class NearbyConnectionBrokerImplTest
     base::File output_file(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
                                           base::File::Flags::FLAG_WRITE);
     output_file.WriteAndCheck(
-        /*offset=*/0,
-        base::make_span(kFakeFileContent.begin(), kFakeFileContent.end()));
+        /*offset=*/0, base::span(kFakeFileContent));
     output_file.Flush();
     output_file.Close();
     base::File input_file(

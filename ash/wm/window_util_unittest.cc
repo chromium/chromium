@@ -323,7 +323,7 @@ TEST_F(WindowUtilTest, PinWindow) {
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 3);
 }
 
-TEST_F(WindowUtilTest, PinWindowTabletMode) {
+TEST_F(WindowUtilTest, PinWindow_TabletMode) {
   // Use tablet mode controller.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   auto window_state_delegate = std::make_unique<FakeWindowStateDelegate>();

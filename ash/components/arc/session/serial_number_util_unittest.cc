@@ -162,7 +162,7 @@ TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumber) {
 
 // That shouldn't happen, but verify that the function can recover the state
 // even if local state has an invalid hex salt.
-TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumberInvalidLocalState) {
+TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumber_InvalidLocalState) {
   constexpr size_t kSaltLen = 16;
   const std::string chromeos_user = "user@gmail.com";
 
@@ -217,7 +217,7 @@ TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumberInvalidLocalState) {
 
 // Verify that GetOrCreateSerialNumber uses decoded salt when computing the
 // serial number.
-TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumberSerialNumberComputation) {
+TEST_F(SerialNumberUtilTest, GetOrCreateSerialNumber_SerialNumberComputation) {
   constexpr size_t kSaltLen = 16;
   const std::string chromeos_user = "user@gmail.com";
 

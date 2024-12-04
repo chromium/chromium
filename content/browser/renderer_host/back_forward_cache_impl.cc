@@ -1154,7 +1154,7 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
   // Populate the reasons and build the tree.
   std::map<RenderFrameHostImpl*, BackForwardCacheCanStoreTreeResult*>
       parent_map;
-  root_rfh_->ForEachRenderFrameHost([&](RenderFrameHostImpl* rfh) {
+  root_rfh_->ForEachRenderFrameHostImpl([&](RenderFrameHostImpl* rfh) {
     auto rfh_result = PopulateReasons(rfh);
     parent_map[rfh] = rfh_result.get();
 
@@ -1632,7 +1632,7 @@ bool BackForwardCacheImpl::
     if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
       continue;
     }
-    entry->render_frame_host()->ForEachRenderFrameHostWithAction(
+    entry->render_frame_host()->ForEachRenderFrameHostImplWithAction(
         [&found, site_instance_group_id](RenderFrameHostImpl* rfh) {
           if (rfh->GetSiteInstance()->group()->GetId() ==
               site_instance_group_id) {

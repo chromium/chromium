@@ -35,7 +35,7 @@ IndicatorSpec::IndicatorSpec(const IndicatorSpec& other)
       potential_resource_string(other.potential_resource_string),
       signal(other.signal) {}
 
-IndicatorSpec::~IndicatorSpec() {}
+IndicatorSpec::~IndicatorSpec() = default;
 
 // clang-format off
 std::vector<IndicatorSpec> GetIndicatorSpecs() {

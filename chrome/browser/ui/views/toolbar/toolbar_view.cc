@@ -1009,7 +1009,8 @@ void ToolbarView::InitLayout() {
     toolbar_controller_ = std::make_unique<ToolbarController>(
         ToolbarController::GetDefaultResponsiveElements(browser_),
         ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
-        container_view_, overflow_button_, pinned_toolbar_actions_container_);
+        container_view_, overflow_button_, pinned_toolbar_actions_container_,
+        PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
     overflow_button_->set_toolbar_controller(toolbar_controller_.get());
   }
 
@@ -1166,8 +1167,9 @@ views::View* ToolbarView::GetAnchorView(
     std::optional<PageActionIconType> type) {
   if (features::IsToolbarPinningEnabled()) {
     if (pinned_toolbar_actions_container_ && type.has_value()) {
+      PageActionIconView* icon_view = GetPageActionIconView(type.value());
       const std::optional<actions::ActionId> action_id =
-          GetPageActionIconView(type.value())->action_id();
+          icon_view ? icon_view->action_id() : std::nullopt;
       if (action_id.has_value() &&
           pinned_toolbar_actions_container_->IsActionPinnedOrPoppedOut(
               action_id.value())) {

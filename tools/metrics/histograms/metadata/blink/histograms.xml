@@ -411,7 +411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
-    units="microseconds" expires_after="2025-04-01">
+    units="microseconds" expires_after="2025-06-01">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -1311,11 +1311,38 @@ chromium-metrics-reviews@google.com.
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the outcome of the first account chooser the user sees in a button
+    Records the outcome of the last account chooser the user sees in a button
     flow. Recorded at most once per button flow. For example, if the user
-    selects an account on the account chooser, one sample is recorded. If the
-    user clicks on the back button in the next dialog, an account chooser is
-    shown again and leaving would not record a second sample.
+    selects an account on the account chooser and then clicks on the back button
+    in the next dialog where an account chooser is shown again, leaving would
+    only record one sample.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Button.DisclosureDialogResult"
+    enum="FedCmDisclosureDialogResult" expires_after="2025-04-13">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the outcome of the last disclosure dialog the user sees in a button
+    flow. Recorded at most once per button flow. For example, if the user clicks
+    on the back button in the disclosure dialog and then clicks on an account
+    where the disclosure dialog is shown again, leaving would only record one
+    sample.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Button.LoadingDialogResult"
+    enum="FedCmLoadingDialogResult" expires_after="2025-04-13">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the outcome of the loading dialog in button flow. Button flows
+    always start with a loading dialog. Recorded once per button flow dialog
+    destroyed. For example, when the dialog gets updated into an account
+    chooser, the user can then select an account and subsequently cause the
+    dialog to be destroyed once they are signed in. Upon destroyal, this metric
+    is recorded.
   </summary>
 </histogram>
 
@@ -1640,6 +1667,17 @@ chromium-metrics-reviews@google.com.
     shown for the current FedCM request or not, and whether there were hints
     requested in the current FedCM request or not. Records every time a mismatch
     dialog is shown.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.MultipleRequestsFromDifferentIdPs" enum="Boolean"
+    expires_after="2025-04-13">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether an API call is rejected due to there's an existing in-flight
+    API call initiated by other IdPs. Recorded once per promise rejection
+    because of an existing API call.
   </summary>
 </histogram>
 
@@ -4258,7 +4296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ScanAndPreloadTime2{Task}.{FrameType}.{IsInitial}"
-    units="microseconds" expires_after="2025-03-23">
+    units="microseconds" expires_after="2025-06-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -5052,7 +5090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.{Host}.RenderTaskDuration.{Context}.{Filter}"
-    units="microseconds" expires_after="2025-04-01">
+    units="microseconds" expires_after="2025-06-01">
   <owner>junov@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>

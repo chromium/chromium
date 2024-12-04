@@ -101,7 +101,6 @@ _CONFIG = [
             'base::JobDelegate',
             'base::JobHandle',
             'base::Location',
-            'base::make_span',
             'base::MakeRefCounted',
             'base::MatcherStringPattern',
             'base::MatchPattern',

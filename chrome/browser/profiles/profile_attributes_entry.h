@@ -41,6 +41,11 @@ enum class NameForm {
   kGaiaAndLocalName,
 };
 
+// TODO(381117479): Currently we support two different OIDC enrollment flows:
+// 1. by sending both Auth and ID token through URL param and
+// 2. by sending encrypted user information in the auth header
+// Method 1 is completed but it will be deprecated once we completely implement,
+// test and rollout method 2.
 struct ProfileManagementOidcTokens {
   ProfileManagementOidcTokens();
   ProfileManagementOidcTokens(const std::string& auth_token,
@@ -49,6 +54,9 @@ struct ProfileManagementOidcTokens {
   ProfileManagementOidcTokens(const std::string& auth_token,
                               const std::string& id_token,
                               const std::string& state);
+  // This will be the new format of the `ProfileManagementOidcTokens` struct,
+  // after we fully migrate.
+  explicit ProfileManagementOidcTokens(const std::string& encrypted_user_info);
 
   ProfileManagementOidcTokens(const ProfileManagementOidcTokens& other);
   ProfileManagementOidcTokens& operator=(
@@ -61,7 +69,8 @@ struct ProfileManagementOidcTokens {
   // Authorization token from the authorization response.
   std::string auth_token;
 
-  // ID token from the authorization response.
+  // ID token from the authorization response or the encrypted user information.
+  // Field will be renamed to encrypted_user_information once we fully migrate.
   std::string id_token;
 
   // Identity name of the profile. This is only relevant after the completion of
@@ -71,6 +80,10 @@ struct ProfileManagementOidcTokens {
   // OIDC configuration state. This is only relevant during profile
   // registration.
   std::string state;
+
+  // Whether the passing ID token/user info is encrypted. This field will be
+  // removed after we fully migrate.
+  bool is_token_encrypted = false;
 };
 
 class ProfileAttributesEntry {

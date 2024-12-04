@@ -680,7 +680,7 @@ TEST_F(TransportClientSocketPoolTest, PendingRequests) {
   EXPECT_EQ(ClientSocketPoolTest::kIndexOutOfBounds, GetOrderOfRequest(17));
 }
 
-TEST_F(TransportClientSocketPoolTest, PendingRequestsNoKeepAlive) {
+TEST_F(TransportClientSocketPoolTest, PendingRequests_NoKeepAlive) {
   // First request finishes asynchronously.
   EXPECT_THAT(StartRequest("a", kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT((*requests())[0]->WaitForResult(), IsOk());

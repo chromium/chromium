@@ -30,14 +30,20 @@ HashAlgorithm GetHashAlgorithm(IntegrityAlgorithm integrity) {
       return kHashAlgorithmSha384;
     case IntegrityAlgorithm::kSha512:
       return kHashAlgorithmSha512;
+
+    // We don't parse signature algorithms, so we should never generate
+    // a parsed `Identity-Digest` header with such a prefix:
+    case IntegrityAlgorithm::kEd25519:
+      NOTREACHED();
   }
-  NOTREACHED();
 }
 
 }  // namespace
 
-IdentityDigest::IdentityDigest(IntegrityMetadataSet digests)
-    : digests_(digests) {}
+IdentityDigest::IdentityDigest(IntegrityMetadataSet integrity_metadata)
+    : integrity_metadata_(integrity_metadata) {
+  CHECK(integrity_metadata.signatures.empty());
+}
 
 std::optional<IdentityDigest> IdentityDigest::Create(
     const HTTPHeaderMap& headers) {
@@ -52,7 +58,7 @@ std::optional<IdentityDigest> IdentityDigest::Create(
     return std::nullopt;
   }
 
-  IntegrityMetadataSet digests;
+  IntegrityMetadataSet integrity_metadata;
   for (const auto& entry : dictionary.value()) {
     IntegrityMetadata parsed_digest;
     size_t expected_digest_length = 0;
@@ -91,17 +97,17 @@ std::optional<IdentityDigest> IdentityDigest::Create(
     // Store the byte sequence as a base64-encoded digest, matching CSP and
     // SRI's existing `IntegrityMetadata` implementation.
     parsed_digest.SetDigest(Base64Encode(base::as_byte_span(digest)));
-    digests.insert(parsed_digest.ToPair());
+    integrity_metadata.hashes.insert(parsed_digest.ToPair());
   }
 
-  if (digests.empty()) {
+  if (integrity_metadata.hashes.empty()) {
     return std::nullopt;
   }
-  return IdentityDigest(digests);
+  return IdentityDigest(integrity_metadata);
 }
 
 bool IdentityDigest::DoesMatch(WTF::SegmentedBuffer* data) {
-  for (const IntegrityMetadata& digest : digests_) {
+  for (const IntegrityMetadata& digest : integrity_metadata_.hashes) {
     HashAlgorithm algorithm = GetHashAlgorithm(digest.Algorithm());
     DigestValue computed_digest;
     if (!ComputeDigest(algorithm, data, computed_digest)) {

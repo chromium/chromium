@@ -24,7 +24,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -43,7 +42,6 @@ public class SigninPromoMediatorTest {
     // TODO(crbug.com/374683682): Create and use FakeIdentityManager and add tests for sign-in and
     // sign-out events.
     private @Mock IdentityManager mIdentityManager;
-    private @Mock SigninManager mSigninManager;
     private @Mock SyncService mSyncService;
     private @Mock SigninPromoDelegate mDelegate;
     private ProfileDataCache mProfileDataCache;
@@ -90,7 +88,7 @@ public class SigninPromoMediatorTest {
     @Test
     public void testSecondaryButtonShown_visibleAccountFromAccountManager() {
         doReturn(false).when(mDelegate).shouldHideSecondaryButton();
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NO_NAME);
+        mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         createSigninPromoMediator();
 
         boolean isSecondaryButtonHidden =
@@ -116,7 +114,6 @@ public class SigninPromoMediatorTest {
         mMediator =
                 new SigninPromoMediator(
                         mIdentityManager,
-                        mSigninManager,
                         mSyncService,
                         AccountManagerFacadeProvider.getInstance(),
                         mProfileDataCache,

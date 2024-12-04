@@ -65,7 +65,7 @@ std::string FakeWebFrameImpl::GetFrameId() const {
 bool FakeWebFrameImpl::IsMainFrame() const {
   return is_main_frame_;
 }
-GURL FakeWebFrameImpl::GetSecurityOrigin() const {
+GURL FakeWebFrameImpl::GetSecurityOriginDeprecated() const {
   return security_origin_;
 }
 

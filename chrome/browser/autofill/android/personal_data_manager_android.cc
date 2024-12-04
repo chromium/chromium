@@ -168,9 +168,9 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
   // Otherwise, keep the generated one.
   std::string guid =
       ConvertJavaStringToUTF8(Java_CreditCard_getGUID(env, jcard));
-  if (!guid.empty())
+  if (!guid.empty()) {
     card->set_guid(guid);
-
+  }
   if (Java_CreditCard_getIsLocal(env, jcard)) {
     card->set_record_type(CreditCard::RecordType::kLocalCard);
   } else {
@@ -187,8 +187,7 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
           Java_CreditCard_getVirtualCardEnrollmentState(env, jcard)));
   card->set_product_description(ConvertJavaStringToUTF16(
       Java_CreditCard_getProductDescription(env, jcard)));
-  card->set_cvc(ConvertJavaStringToUTF16(
-        Java_CreditCard_getCvc(env, jcard)));
+  card->set_cvc(ConvertJavaStringToUTF16(Java_CreditCard_getCvc(env, jcard)));
   ScopedJavaLocalRef<jstring> issuer_id =
       Java_CreditCard_getIssuerId(env, jcard);
   if (issuer_id) {
@@ -226,9 +225,9 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
   const AutofillProfile* profile =
       personal_data_manager_->address_data_manager().GetProfileByGUID(
           ConvertJavaStringToUTF8(env, jguid));
-  if (!profile)
+  if (!profile) {
     return ScopedJavaLocalRef<jobject>();
-
+  }
   return profile->CreateJavaObject(g_browser_process->GetApplicationLocale());
 }
 
@@ -362,9 +361,9 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardByGUID(
   const CreditCard* card =
       personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
           ConvertJavaStringToUTF8(env, jguid));
-  if (!card)
+  if (!card) {
     return ScopedJavaLocalRef<jobject>();
-
+  }
   return PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(env, *card);
 }
 
@@ -418,9 +417,9 @@ void PersonalDataManagerAndroid::DeleteAllLocalCreditCards(JNIEnv* env) {
 void PersonalDataManagerAndroid::OnPersonalDataChanged() {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto java_obj = weak_java_obj_.get(env);
-  if (java_obj.is_null())
+  if (java_obj.is_null()) {
     return;
-
+  }
   Java_PersonalDataManager_personalDataChanged(env, java_obj);
 }
 
@@ -680,10 +679,12 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
   size_t minimal_fields_shown = 2;
   if (address_only) {
     suggested_fields = FieldTypeSet();
-    if (include_name_in_label)
+    if (include_name_in_label) {
       suggested_fields.insert(NAME_FULL);
-    if (include_organization_in_label)
+    }
+    if (include_organization_in_label) {
       suggested_fields.insert(COMPANY_NAME);
+    }
     suggested_fields.insert(ADDRESS_HOME_LINE1);
     suggested_fields.insert(ADDRESS_HOME_LINE2);
     suggested_fields.insert(ADDRESS_HOME_DEPENDENT_LOCALITY);
@@ -691,8 +692,9 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
     suggested_fields.insert(ADDRESS_HOME_STATE);
     suggested_fields.insert(ADDRESS_HOME_ZIP);
     suggested_fields.insert(ADDRESS_HOME_SORTING_CODE);
-    if (include_country_in_label)
+    if (include_country_in_label) {
       suggested_fields.insert(ADDRESS_HOME_COUNTRY);
+    }
     minimal_fields_shown = suggested_fields.size();
   }
 

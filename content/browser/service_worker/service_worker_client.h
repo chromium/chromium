@@ -279,6 +279,10 @@ class CONTENT_EXPORT ServiceWorkerClient final
       base::PassKey<StoragePartitionImpl>) const;
 
   // For service worker clients.
+  // The type of `ongoing_navigation_frame_tree_node_id_` (if any) for metrics.
+  std::string GetFrameTreeNodeTypeStringBeforeCommit() const;
+
+  // For service worker clients.
   const std::string& client_uuid() const;
 
   // For service worker clients. Returns this client's controller.

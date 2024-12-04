@@ -104,7 +104,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   version_info::Channel GetChannel() const final;
   bool IsOffTheRecord() const final;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
-  AutofillCrowdsourcingManager* GetCrowdsourcingManager() final;
+  AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   AutofillOptimizationGuide* GetAutofillOptimizationGuide() const final;
   FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       final;
@@ -175,9 +175,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool IsAutofillPaymentMethodsEnabled() const final;
   bool IsAutocompleteEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
-  void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                            AutofillTriggerSource trigger_source,
-                            bool is_refill) final;
+  void DidFillForm(AutofillTriggerSource trigger_source, bool is_refill) final;
   bool IsContextSecure() const final;
   LogManager* GetLogManager() const final;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()

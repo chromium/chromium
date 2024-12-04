@@ -842,8 +842,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   EXPECT_TRUE(registration_info.has_private_key_material());
 
   std::unique_ptr<SecureBoxKeyPair> key_pair =
-      SecureBoxKeyPair::CreateByPrivateKeyImport(base::as_bytes(
-          base::make_span(registration_info.private_key_material())));
+      SecureBoxKeyPair::CreateByPrivateKeyImport(
+          base::as_byte_span(registration_info.private_key_material()));
   EXPECT_THAT(key_pair->public_key().ExportToBytes(),
               Eq(serialized_public_device_key));
 }
@@ -956,8 +956,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(registration_info.has_private_key_material());
 
   std::unique_ptr<SecureBoxKeyPair> key_pair =
-      SecureBoxKeyPair::CreateByPrivateKeyImport(base::as_bytes(
-          base::make_span(registration_info.private_key_material())));
+      SecureBoxKeyPair::CreateByPrivateKeyImport(
+          base::as_byte_span(registration_info.private_key_material()));
   EXPECT_THAT(key_pair->public_key().ExportToBytes(),
               Eq(serialized_public_device_key));
 }

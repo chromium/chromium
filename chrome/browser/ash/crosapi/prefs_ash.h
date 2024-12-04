@@ -56,9 +56,6 @@ class PrefsAsh : public mojom::Prefs,
   void GetExtensionPrefWithControl(
       mojom::PrefPath path,
       GetExtensionPrefWithControlCallback callback) override;
-  void ClearExtensionControlledPref(
-      mojom::PrefPath path,
-      ClearExtensionControlledPrefCallback callback) override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;

@@ -319,10 +319,7 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
                                            : ActivationError::kOutdatedGmsCore);
   if (HasMinGmsVersion()) {
     // GmsCore was not downgraded, no need to deactivate.
-    if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::
-                kClearLoginDatabaseForAllMigratedUPMUsers)) {
+    if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn) {
       MaybeDeleteLoginDataFiles(pref_service, login_db_directory);
     }
     return;

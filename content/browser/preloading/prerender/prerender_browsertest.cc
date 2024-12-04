@@ -675,7 +675,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     // The activated page should no longer be in the prerendering state.
     RenderFrameHostImpl* navigated_render_frame_host = current_frame_host();
     // The new page shouldn't be in the prerendering state.
-    navigated_render_frame_host->ForEachRenderFrameHost(
+    navigated_render_frame_host->ForEachRenderFrameHostImpl(
         [](RenderFrameHostImpl* rfhi) {
           // All the subframes should be transitioned to
           // LifecycleStateImpl::kActive state after activation.
@@ -2449,11 +2449,11 @@ class PrerenderAndPrefetchBrowserTest
         disabled_features.push_back(features::kPrefetchReusable);
         break;
       case PrefetchReusableForTests::kEnabled:
-        // Set the limit to the size of `/find_in_long_page.html` - 1, to check
+        // Set the limit to the size of `/cacheable_long.html` - 1, to check
         // that exceeding the limit by 1 byte disallows reuse.
         enabled_features.push_back(
             {features::kPrefetchReusable,
-             {{features::kPrefetchReusableBodySizeLimit.name, "112262"}}});
+             {{features::kPrefetchReusableBodySizeLimit.name, "102118"}}});
         break;
     }
 
@@ -2473,10 +2473,9 @@ class PrerenderAndPrefetchBrowserTest
 IN_PROC_BROWSER_TEST_P(PrerenderAndPrefetchBrowserTest,
                        SpeculationRulesPrefetchThenPrerender) {
   const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl =
-      std::get<1>(GetParam()) == BodySize::kSmall
-          ? GetUrl("/simple_page.html?prerender")
-          : GetUrl("/find_in_long_page.html?prerender");
+  const GURL kPrerenderingUrl = std::get<1>(GetParam()) == BodySize::kSmall
+                                    ? GetUrl("/cacheable.html?prerender")
+                                    : GetUrl("/cacheable_long.html?prerender");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -2558,13 +2557,13 @@ IN_PROC_BROWSER_TEST_P(PrerenderAndPrefetchBrowserTest,
 
   switch (std::get<1>(GetParam())) {
     case BodySize::kSmall:
-      EXPECT_EQ(GetBodyTextContent(), "Basic html test.");
+      EXPECT_EQ(GetBodyTextContent(), "This page is cacheable");
       break;
 
     case BodySize::kLarge:
       //  `document.body.textContent.trim().length` for
       //  `/find_in_long_page.html`
-      EXPECT_EQ(GetBodyTextContent().size(), 102076u);
+      EXPECT_EQ(GetBodyTextContent().size(), 102119u);
       break;
   }
 }
@@ -5427,9 +5426,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, SuppressOpenURL) {
   EXPECT_EQ(nullptr, new_web_contents);
 }
 
-// Tests that |RenderFrameHost::ForEachRenderFrameHost| and
-// |WebContents::ForEachRenderFrameHost| behave correctly when prerendering.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
+// Tests that `RenderFrameHostImpl::ForEachRenderFrameHostImpl` and
+// `WebContentsImpl::ForEachRenderFrameHostImpl` behave correctly when
+// prerendering.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHostImpl) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   // All frames are same-origin due to prerendering restrictions for
   // cross-origin.
@@ -5940,7 +5940,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   // 4. Collect all RenderFrameHosts in the frame tree.
   std::vector<RenderFrameHostImpl*> all_prerender_frames;
   size_t count_speculative = 0;
-  prerendered_render_frame_host->ForEachRenderFrameHostIncludingSpeculative(
+  prerendered_render_frame_host->ForEachRenderFrameHostImplIncludingSpeculative(
       [&](RenderFrameHostImpl* rfh) {
         all_prerender_frames.push_back(rfh);
         count_speculative +=
@@ -9606,13 +9606,25 @@ IN_PROC_BROWSER_TEST_P(InvisiblePageLazyLoadingImageBrowserTest, LazyLoading) {
   EXPECT_EQ(EvalJs(prerender_frame_host, "image_loaded"), true);
 }
 
+class DisabledInvisiblePageLazyLoadingImageBrowserTest
+    : public PrerenderBrowserTest {
+ public:
+  DisabledInvisiblePageLazyLoadingImageBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kEnableLazyLoadImageForInvisiblePage);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that loading=lazy doesn't prevent image load in a prerendered page.
 // This test is tested under the condition that
 // blink::features::kEnableLazyLoadImageForInvisiblePage is disabled.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LazyLoading) {
-  ASSERT_FALSE(
-      base::FeatureList::IsEnabled(
-          blink::features::kEnableLazyLoadImageForInvisiblePage));
+IN_PROC_BROWSER_TEST_F(DisabledInvisiblePageLazyLoadingImageBrowserTest,
+                       LazyLoading) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      blink::features::kEnableLazyLoadImageForInvisiblePage));
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/prerender/image_loading_lazy.html");
   const GURL kImageUrl = GetUrl("/blank.jpg");
@@ -13082,7 +13094,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
   // Since we've deferred creating the fenced frame delegate, we should see no
   // child frames.
   size_t child_frame_count = 0;
-  prerendered_rfh->ForEachRenderFrameHost([&](RenderFrameHostImpl* rfh) {
+  prerendered_rfh->ForEachRenderFrameHostImpl([&](RenderFrameHostImpl* rfh) {
     if (rfh != prerendered_rfh)
       child_frame_count++;
   });

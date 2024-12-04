@@ -7,9 +7,9 @@
  * list of certificate provisioning processes.
  */
 import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './certificate_provisioning_details_dialog.js';
 import './certificate_provisioning_entry.js';
+import './certificate_shared.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';

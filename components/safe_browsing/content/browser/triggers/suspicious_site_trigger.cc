@@ -17,6 +17,7 @@
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -94,8 +95,9 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE;
   resource.url = primary_rfh.GetLastCommittedURL();
-  resource.render_process_id = primary_rfh_id.child_id;
-  resource.render_frame_token = primary_rfh.GetFrameToken().value();
+  resource.rfh_locator =
+      security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
+          primary_rfh_id.child_id, primary_rfh.GetFrameToken().value());
 
   TriggerManagerReason reason;
   if (!trigger_manager_->StartCollectingThreatDetailsWithReason(

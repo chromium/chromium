@@ -114,7 +114,7 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateSingleDataChunk) {
   EXPECT_EQ(chunk_size.value(), test_data.size() + kAuthTagSize);
 
   auto deobfuscated_chunk = DeobfuscateDataChunk(
-      base::make_span(obfuscated_chunk.value())
+      base::span(obfuscated_chunk.value())
           .subspan(kChunkSizePrefixSize, chunk_size.value()),
       header_data.value().derived_key, header_data.value().nonce_prefix,
       kInitialChunkCounter, true);
@@ -124,7 +124,7 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateSingleDataChunk) {
   // Deobfuscation should fail when we modify the ciphertext.
   obfuscated_chunk.value()[kChunkSizePrefixSize] ^= 1;
   deobfuscated_chunk = DeobfuscateDataChunk(
-      base::make_span(obfuscated_chunk.value())
+      base::span(obfuscated_chunk.value())
           .subspan(kChunkSizePrefixSize, chunk_size.value()),
       header_data.value().derived_key, header_data.value().nonce_prefix,
       kInitialChunkCounter, true);
@@ -197,15 +197,14 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateVariableChunks) {
 
   while (offset < obfuscated_content.size()) {
     // Read chunk size
-    auto chunk_size =
-        GetObfuscatedChunkSize(base::make_span(obfuscated_content)
-                                   .subspan(offset, kChunkSizePrefixSize));
+    auto chunk_size = GetObfuscatedChunkSize(
+        base::span(obfuscated_content).subspan(offset, kChunkSizePrefixSize));
     ASSERT_TRUE(chunk_size.has_value());
     offset += kChunkSizePrefixSize;
 
     // Deobfuscate chunk
     auto deobfuscated_chunk = DeobfuscateDataChunk(
-        base::make_span(obfuscated_content).subspan(offset, chunk_size.value()),
+        base::span(obfuscated_content).subspan(offset, chunk_size.value()),
         header_data.value().derived_key, header_data.value().nonce_prefix,
         counter++, (offset + chunk_size.value() >= obfuscated_content.size()));
     ASSERT_TRUE(deobfuscated_chunk.has_value());

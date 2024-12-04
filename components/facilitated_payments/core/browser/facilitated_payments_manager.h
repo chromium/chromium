@@ -341,10 +341,6 @@ class FacilitatedPaymentsManager {
   // Measures the time take to complete the purchase action.
   base::TimeTicks purchase_action_start_time_;
 
-  // Stores the time when the FOP selector was shown to the user. This is used
-  // to calculate the entire transaction latency.
-  base::TimeTicks fop_selector_shown_time_;
-
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server. Its ownership is transferred to
   // `FacilitatedPaymentsInitiatePaymentRequest` in
@@ -361,11 +357,6 @@ class FacilitatedPaymentsManager {
 
   // Utility process validator for PIX code strings.
   data_decoder::DataDecoder utility_process_validator_;
-
-  // The source of the trigger for the facilitated payments form of payment(FOP)
-  // selector to show up. It is used for logging purposes. It is set whenever a
-  // trigger occurs and reset if the FOP selector is not shown for some reason.
-  TriggerSource trigger_source_ = TriggerSource::kUnknown;
 
   // Represents the current state of the UI or the UI state that is intended. In
   // the latter case, the UI state is always updated to reflect the current

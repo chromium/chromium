@@ -70,7 +70,7 @@ class TestNTPUserDataLogger : public NTPUserDataLogger {
   explicit TestNTPUserDataLogger(const GURL& ntp_url)
       : NTPUserDataLogger(nullptr, ntp_url, base::Time::Now()) {}
 
-  ~TestNTPUserDataLogger() override {}
+  ~TestNTPUserDataLogger() override = default;
 
   bool DefaultSearchProviderIsGoogle() const override { return is_google_; }
 

@@ -154,11 +154,7 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
 
 BASE_FEATURE(kPostQuantumKyber,
              "PostQuantumKyber",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -310,7 +306,7 @@ const base::FeatureParam<int> kAvoidEntryCreationForNoStoreCacheSize{
 // https://crbug.com/1345207
 BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
              "PrefetchFollowsNormalCacheSemantics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A flag for new Kerberos feature, that suggests new UI
 // when Kerberos authentication in browser fails on ChromeOS.
@@ -652,5 +648,12 @@ const base::FeatureParam<base::TimeDelta>
         &kSimpleCachePrioritizedCaching,
         /*name=*/"SimpleCachePrioritizedCachingPrioritizationPeriod",
         /*default_value=*/base::Days(1)};
+
+#if BUILDFLAG(USE_NSS_CERTS)
+// TODO(crbug.com/40928765): Remove this flag after a few milestones.
+BASE_FEATURE(kNewClientCertPathBuilding,
+             "NewClientCertPathBuilding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 
 }  // namespace net::features

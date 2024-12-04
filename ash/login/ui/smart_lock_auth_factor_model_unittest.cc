@@ -117,7 +117,7 @@ class SmartLockAuthFactorModelUnittest : public AshTestBase {
   bool arrow_button_tap_callback_called_ = false;
 };
 
-TEST_F(SmartLockAuthFactorModelUnittest, InitialStateConnectingToPhone) {
+TEST_F(SmartLockAuthFactorModelUnittest, InitialState_ConnectingToPhone) {
   auto initial_state = SmartLockState::kConnectingToPhone;
 
   InitializeSmartLockAuthFactorModel(initial_state);
@@ -128,7 +128,7 @@ TEST_F(SmartLockAuthFactorModelUnittest, InitialStateConnectingToPhone) {
   EXPECT_FALSE(on_state_changed_called_);
 }
 
-TEST_F(SmartLockAuthFactorModelUnittest, InitialStateInactive) {
+TEST_F(SmartLockAuthFactorModelUnittest, InitialState_Inactive) {
   auto initial_state = SmartLockState::kInactive;
 
   InitializeSmartLockAuthFactorModel(initial_state);

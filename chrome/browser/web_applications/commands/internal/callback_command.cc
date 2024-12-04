@@ -26,7 +26,7 @@ CallbackCommand<LockType>::CallbackCommand(
       callback_(std::move(callback_closure)) {}
 
 template <typename LockType>
-CallbackCommand<LockType>::~CallbackCommand() {}
+CallbackCommand<LockType>::~CallbackCommand() = default;
 
 template <typename LockType>
 void CallbackCommand<LockType>::StartWithLock(std::unique_ptr<LockType> lock) {

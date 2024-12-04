@@ -50,11 +50,11 @@ static void RunConvolveBenchmark(float (*convolve_fn)(const int,
 
 // Benchmark for the various Convolve() methods.  Make sure to build with
 // branding=Chrome so that DCHECKs are compiled out when benchmarking.
-TEST(SincResamplerPerfTest, ConvolveUnoptimizedAligned) {
+TEST(SincResamplerPerfTest, Convolve_unoptimized_aligned) {
   RunConvolveBenchmark(SincResampler::Convolve_C, true, "unoptimized_aligned");
 }
 
-TEST(SincResamplerPerfTest, ConvolveOptimizedAligned) {
+TEST(SincResamplerPerfTest, Convolve_optimized_aligned) {
 #if defined(ARCH_CPU_X86_FAMILY)
   base::CPU cpu;
   if (cpu.has_avx2()) {
@@ -69,7 +69,7 @@ TEST(SincResamplerPerfTest, ConvolveOptimizedAligned) {
 #endif
 }
 
-TEST(SincResamplerPerfTest, ConvolveOptimizedUnaligned) {
+TEST(SincResamplerPerfTest, Convolve_optimized_unaligned) {
 #if defined(ARCH_CPU_X86_FAMILY)
   base::CPU cpu;
   if (cpu.has_avx2()) {

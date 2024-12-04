@@ -348,8 +348,12 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     return this.data.views.length <= 1;
   }
 
-  protected computeDevReloadButtonHidden_(): boolean {
-    return !this.canReloadItem();
+  protected showAccountUploadButton_(): boolean {
+    return this.data.canUploadAsAccountExtension;
+  }
+
+  protected showDevReloadButton_(): boolean {
+    return this.canReloadItem();
   }
 
   protected computeExtraInspectLabel_(): string {

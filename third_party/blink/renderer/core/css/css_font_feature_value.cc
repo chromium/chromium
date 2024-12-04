@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
 
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -40,7 +41,9 @@ String CSSFontFeatureValue::CustomCSSText() const {
   builder.Append(tag_);
   builder.Append('"');
   // Omit the value if it's 1 as 1 is implied by default.
-  if (!value_->IsNumericLiteralValue() || value_->GetIntValue() != 1) {
+  if (!value_->IsNumericLiteralValue() ||
+      ClampTo<int>(To<CSSNumericLiteralValue>(*value_).ClampedDoubleValue()) !=
+          1) {
     builder.Append(' ');
     builder.Append(value_->CustomCSSText());
   }

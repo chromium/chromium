@@ -42,7 +42,7 @@ AutoSigninFirstRunDialogAndroid::AutoSigninFirstRunDialogAndroid(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents), web_contents_(web_contents) {}
 
-AutoSigninFirstRunDialogAndroid::~AutoSigninFirstRunDialogAndroid() {}
+AutoSigninFirstRunDialogAndroid::~AutoSigninFirstRunDialogAndroid() = default;
 
 void AutoSigninFirstRunDialogAndroid::ShowDialog() {
   gfx::NativeWindow native_window = web_contents_->GetTopLevelNativeWindow();

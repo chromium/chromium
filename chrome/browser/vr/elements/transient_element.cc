@@ -12,7 +12,7 @@ TransientElement::TransientElement(const base::TimeDelta& timeout)
   SetVisibleImmediately(false);
 }
 
-TransientElement::~TransientElement() {}
+TransientElement::~TransientElement() = default;
 
 void TransientElement::SetVisible(bool visible) {
   bool will_be_visible = GetTargetOpacity() == opacity_when_visible();
@@ -48,7 +48,7 @@ void TransientElement::Reset() {
 SimpleTransientElement::SimpleTransientElement(const base::TimeDelta& timeout)
     : super(timeout) {}
 
-SimpleTransientElement::~SimpleTransientElement() {}
+SimpleTransientElement::~SimpleTransientElement() = default;
 
 bool SimpleTransientElement::OnBeginFrame(const gfx::Transform& head_pose) {
   // Do nothing if we're not going to be visible.

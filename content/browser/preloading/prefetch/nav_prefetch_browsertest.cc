@@ -55,8 +55,7 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
                  network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
     candidates.push_back(std::move(candidate));
-    prefetch_document_manager->ProcessCandidates(candidates,
-                                                 /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates);
   }
 
   RenderFrameHostImpl& GetPrimaryMainFrameHost() {
@@ -122,8 +121,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(rfh);
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   // Wait for a new request, and respond to it.
   response2.WaitForRequest();

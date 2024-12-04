@@ -69,7 +69,7 @@ PermissionInfoBar::PermissionInfoBar(
     std::unique_ptr<PermissionInfoBarDelegate> delegate)
     : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
-PermissionInfoBar::~PermissionInfoBar() {}
+PermissionInfoBar::~PermissionInfoBar() = default;
 
 base::android::ScopedJavaLocalRef<jobject>
 PermissionInfoBar::CreateRenderInfoBar(

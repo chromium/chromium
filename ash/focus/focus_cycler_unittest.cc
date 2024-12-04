@@ -229,7 +229,7 @@ TEST_F(FocusCyclerTest, CycleFocusNoBrowser) {
 }
 
 // Tests that focus cycles from the active browser to the status area and back.
-TEST_F(FocusCyclerTest, ShelfCycleFocusForward) {
+TEST_F(FocusCyclerTest, Shelf_CycleFocusForward) {
   SetUpTrayFocusCycle();
   InstallFocusCycleOnShelf();
   GetPrimaryShelf()->hotseat_widget()->Hide();
@@ -254,7 +254,7 @@ TEST_F(FocusCyclerTest, ShelfCycleFocusForward) {
   EXPECT_TRUE(GetPrimaryStatusAreaWidget()->IsActive());
 }
 
-TEST_F(FocusCyclerTest, ShelfCycleFocusBackwardInvisible) {
+TEST_F(FocusCyclerTest, Shelf_CycleFocusBackwardInvisible) {
   SetUpTrayFocusCycle();
   InstallFocusCycleOnShelf();
   GetPrimaryShelf()->hotseat_widget()->Hide();
@@ -380,7 +380,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
   EXPECT_EQ(focus_manager->GetFocusedView(), view1);
 }
 
-TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanesMoveOntoNext) {
+TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes_MoveOntoNext) {
   SetUpTrayFocusCycle();
 
   InstallFocusCycleOnShelf();

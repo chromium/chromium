@@ -8,15 +8,12 @@
 
 namespace viz {
 
-OverlayCandidateTemporalTracker::OverlayCandidateTemporalTracker() = default;
-
 void OverlayCandidateTemporalTracker::Reset() {
   num_samples_ = 0;
 }
 
 int OverlayCandidateTemporalTracker::GetModeledPowerGain(
     uint64_t curr_frame,
-    const OverlayCandidateTemporalTracker::Config& config,
     int display_area,
     bool is_fullscreen) const {
   // Model of proportional power gained by hw overlay promotion.
@@ -28,18 +25,17 @@ int OverlayCandidateTemporalTracker::GetModeledPowerGain(
   }
 
   return static_cast<int>(
-      (ratio_rate_category_ - config.damage_rate_threshold) * display_area);
+      (ratio_rate_category_ - config_.damage_rate_threshold) * display_area);
 }
 
 void OverlayCandidateTemporalTracker::CategorizeDamageRatioRate(
-    uint64_t curr_frame,
-    const OverlayCandidateTemporalTracker::Config& config) {
-  float mean_ratio_rate = MeanFrameRatioRate(config);
+    uint64_t curr_frame) {
+  float mean_ratio_rate = MeanFrameRatioRate();
   // Simple implementation of hysteresis. If the value is far enough away from
   // the stored value it will be updated.
   // Hysteresis range is derived from the maximum value impact of a single
   // sample on the total mean.
-  const float damage_rate_hysteresis_range = 1.0f / config.max_num_frames_avg;
+  const float damage_rate_hysteresis_range = 1.0f / config_.max_num_frames_avg;
   if (std::abs(mean_ratio_rate - ratio_rate_category_) >=
       damage_rate_hysteresis_range) {
     ratio_rate_category_ = mean_ratio_rate;
@@ -47,22 +43,15 @@ void OverlayCandidateTemporalTracker::CategorizeDamageRatioRate(
 }
 
 bool OverlayCandidateTemporalTracker::IsActivelyChanging(
-    uint64_t curr_frame,
-    const OverlayCandidateTemporalTracker::Config& config) const {
+    uint64_t curr_frame) const {
   return LastChangeFrameCount(curr_frame) <
-         static_cast<uint64_t>(config.max_num_frames_avg);
-}
-
-float OverlayCandidateTemporalTracker::MeanFrameRatioRate(
-    const OverlayCandidateTemporalTracker::Config& config) const {
-  return damage_record_avg_;
+         static_cast<uint64_t>(config_.max_num_frames_avg);
 }
 
 void OverlayCandidateTemporalTracker::AddRecord(
     uint64_t curr_frame,
     float damage_area_ratio,
     ResourceId resource_id,
-    const OverlayCandidateTemporalTracker::Config& config,
     bool force_resource_update) {
   if ((prev_resource_id_ != resource_id || force_resource_update) &&
       frame_record_prev_ != curr_frame) {
@@ -82,9 +71,9 @@ void OverlayCandidateTemporalTracker::AddRecord(
     // average into an exponential averaging function. Unlike the mean formula,
     // the exponential smoothing formula will always remain sensitive to recent
     // sample data.
-    num_samples_ = std::min(config.max_num_frames_avg, num_samples_ + 1);
+    num_samples_ = std::min(config_.max_num_frames_avg, num_samples_ + 1);
 
-    CategorizeDamageRatioRate(curr_frame, config);
+    CategorizeDamageRatioRate(curr_frame);
   }
   absent_ = false;
 }

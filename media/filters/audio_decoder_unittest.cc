@@ -621,14 +621,14 @@ TEST_P(AudioDecoderTest, Initialize) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
 }
 
-TEST_P(AudioDecoderTest, ReinitializeAfterInitialize) {
+TEST_P(AudioDecoderTest, Reinitialize_AfterInitialize) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   SetReinitializeParams();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
-TEST_P(AudioDecoderTest, ReinitializeAfterDecode) {
+TEST_P(AudioDecoderTest, Reinitialize_AfterDecode) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
   SetReinitializeParams();
@@ -636,7 +636,7 @@ TEST_P(AudioDecoderTest, ReinitializeAfterDecode) {
   Decode();
 }
 
-TEST_P(AudioDecoderTest, ReinitializeAfterReset) {
+TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
   Reset();

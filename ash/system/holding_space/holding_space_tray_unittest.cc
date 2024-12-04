@@ -3043,7 +3043,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(HoldingSpaceItem::Type::kArcDownload,
                       HoldingSpaceItem::Type::kDiagnosticsLog,
                       HoldingSpaceItem::Type::kDownload,
-                      HoldingSpaceItem::Type::kLacrosDownload,
                       HoldingSpaceItem::Type::kNearbyShare,
                       HoldingSpaceItem::Type::kPhoneHubCameraRoll,
                       HoldingSpaceItem::Type::kPrintedPdf,

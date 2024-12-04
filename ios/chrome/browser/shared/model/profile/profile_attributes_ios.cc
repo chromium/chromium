@@ -19,6 +19,7 @@ constexpr std::string_view kIsAuthErrorKey = "is_auth_error";
 constexpr std::string_view kAttachedGaiaIdsKey = "attached_gaia_ids";
 constexpr std::string_view kUserNameKey = "user_name";
 constexpr std::string_view kNewProfile = "new_profile";
+constexpr std::string_view kDiscardedSessions = "discarded_sessions";
 
 // Retrieves a bool value from the dictionary.
 bool GetBool(const Dict& dict, std::string_view key) {
@@ -156,6 +157,11 @@ void ProfileAttributesIOS::ClearIsNewProfile() {
   SetBool(storage_, kNewProfile, false);
 }
 
+ProfileAttributesIOS::SessionIds ProfileAttributesIOS::GetDiscardedSessions()
+    const {
+  return GetStringSet<SessionIds>(storage_, kDiscardedSessions);
+}
+
 void ProfileAttributesIOS::SetAuthenticationInfo(std::string_view gaia_id,
                                                  std::string_view user_name) {
   SetString(storage_, kGaiaIdKey, gaia_id);
@@ -172,6 +178,10 @@ void ProfileAttributesIOS::SetAttachedGaiaIds(const GaiaIdSet& gaia_ids) {
 
 void ProfileAttributesIOS::SetLastActiveTime(base::Time time) {
   SetTime(storage_, kActiveTimeKey, time);
+}
+
+void ProfileAttributesIOS::SetDiscardedSessions(const SessionIds& session_ids) {
+  SetStringSet(storage_, kDiscardedSessions, session_ids);
 }
 
 base::Value::Dict ProfileAttributesIOS::GetStorage() && {

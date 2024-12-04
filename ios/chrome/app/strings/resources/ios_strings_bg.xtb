@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Включване на известията от функцията „Проверка на безопасността“…</translation>
 <translation id="1652333207707886577">Персонализиране на менюто ви</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Оставащо време: {TIME} секунди}=1{Оставащо време: {TIME} секунда}other{Оставащо време: {TIME} секунди}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} запазена парола е налице над клавиатурата ви.}other{{count} запазени пароли са налице над клавиатурата ви.}}</translation>
 <translation id="1654232554734641711">Достъпът до микрофона е разрешен</translation>
 <translation id="16554782717487656">Откриване на мерни единици</translation>
 <translation id="1657011748321897393">Споделянето не бе успешно, защото нямате връзка с мрежата.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Отворете мрежата с раздели.</translation>
 <translation id="20485545164632846">нов елемент</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> профила използват същата парола</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} запазен начин на плащане е налице над клавиатурата ви.}other{{count} запазени начина на плащане са налице над клавиатурата ви.}}</translation>
 <translation id="2059166748188874810">Община</translation>
 <translation id="20638360198452347">Инструмент за избор на тип мерна единица</translation>
 <translation id="2067852168641682340">Запазване в този профил всеки път</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">Скриване на „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Пратката ви не може да бъде доставена</translation>
 <translation id="2410754283952462441">Изберете профил</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} запазен адрес е налице над клавиатурата ви.}other{{count} запазени адреса са налице над клавиатурата ви.}}</translation>
 <translation id="2424805048070062787">Продължаване с този раздел</translation>
 <translation id="2426805022920575512">Избиране на друг профил</translation>
 <translation id="243275146591958220">Анулиране на изтеглянето</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">Показване на визуализациите на връзки</translation>
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4532845899244822526">Избиране на папка</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} запазено предложение за автоматично довършване е налице над клавиатурата ви.}other{{count} запазени предложения за автоматично довършване са налице над клавиатурата ви.}}</translation>
 <translation id="4547181496285029457">Назад към най-скорошния раздел</translation>
 <translation id="4552042254369397518">Копира се…</translation>
 <translation id="4564893319561643483">Скриване на „<ph name="TITLE" />“</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">Получаване на известия за разделите</translation>
 <translation id="4601095002996233687">Задълбочено сканиране за подозрителни изтегляния.</translation>
 <translation id="4606247758155004938">Браузърът се управлява от организацията ви.</translation>
+<translation id="4607887340472970274">Проследяване на цената</translation>
 <translation id="4611811151908969241">Скриване на „Прекратяване на следенето на <ph name="DOMAIN_NAME" />“</translation>
 <translation id="461440297010471931">Търсене с Google</translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
@@ -1274,7 +1271,6 @@
 <translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Към емисията</translation>
 <translation id="6713676799463473249">Променено на <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Проследяване на цената</translation>
 <translation id="6722623263381062480">Получени раздели</translation>
 <translation id="6723740634201835758">В профила ви в Google</translation>
 <translation id="672735642903863329">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
@@ -1440,7 +1436,6 @@
 <translation id="75362970626182391">Нова група раздели</translation>
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
 <translation id="754655535278952384">Проверихте <ph name="TIME" /></translation>
-<translation id="755255281989213264">Персонализиране на менюто</translation>
 <translation id="7553234618121028547">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и след това „Опции за паролите“.</translation>
 <translation id="7557508262441527045">Излязохте от профила си</translation>
 <translation id="7561196759112975576">Винаги</translation>

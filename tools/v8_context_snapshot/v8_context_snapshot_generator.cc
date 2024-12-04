@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
   CHECK(!file_path.empty());
   int error_code = 0;
   if (!base::WriteFile(file_path,
-                       base::as_bytes(base::make_span(
+                       base::as_bytes(base::span(
                            blob.data, static_cast<size_t>(blob.raw_size))))) {
     fprintf(stderr, "Error: WriteFile of %d snapshot has failed.\n",
             blob.raw_size);

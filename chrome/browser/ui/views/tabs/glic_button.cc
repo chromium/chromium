@@ -20,6 +20,8 @@
 #include "chrome/browser/glic/glic_window_manager.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+namespace glic {
+
 GlicButton::GlicButton(TabStripController* tab_strip_controller)
     : TabStripControlButton(tab_strip_controller,
                             PressedCallback(),
@@ -53,3 +55,5 @@ void GlicButton::NotifyClick(const ui::Event& event) {
 
 BEGIN_METADATA(GlicButton)
 END_METADATA
+
+}  // namespace glic

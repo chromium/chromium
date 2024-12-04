@@ -603,10 +603,10 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="10" label="Borealis app"/>
   <int value="11" label="System web app"/>
   <int value="12" label="Chrome browser (inc. web/Chrome apps in tabs)"/>
-  <int value="13" label="Chrome app opened in Standalone browser"/>
+  <int value="13" label="(Obsolete) Chrome app opened in Standalone browser"/>
   <int value="14" label="Browser extension"/>
-  <int value="15" label="Extension opened in Standalone browser"/>
-  <int value="16" label="Web app opened in Standalone browser"/>
+  <int value="15" label="(Obsolete) Extension opened in Standalone browser"/>
+  <int value="16" label="(Obsolete) Web app opened in Standalone browser"/>
   <int value="17" label="Bruschetta app"/>
 </enum>
 
@@ -5315,12 +5315,6 @@ Called by update_document_policy_enum.py.-->
   <int value="26" label="CRX_FETCH_URL_INVALID"/>
   <int value="27" label="OVERRIDEN_BY_SETTINGS"/>
   <int value="28" label="REPLACED_BY_SYSTEM_APP"/>
-</enum>
-
-<enum name="FacilitatedPayments.TriggerSource">
-  <int value="0" label="Payment triggered by an unknown source"/>
-  <int value="1" label="Payment triggered by finding the QR code in the DOM"/>
-  <int value="2" label="Payment triggered on user copying the QR code"/>
 </enum>
 
 <!-- LINT.IfChange(FastPairPairFailure) -->
@@ -10039,8 +10033,10 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_DialogCloseWatcherCloseSignalClosedMultiple"/>
   <int value="4425" label="NoVarySearch"/>
   <int value="4426" label="FedCmUserInfo"/>
-  <int value="4427" label="IDNA2008DeviationCharacterInHostnameOfSubresource"/>
-  <int value="4428" label="IDNA2008DeviationCharacterInHostnameOfIFrame"/>
+  <int value="4427"
+      label="OBSOLETE_IDNA2008DeviationCharacterInHostnameOfSubresource"/>
+  <int value="4428"
+      label="OBSOLETE_IDNA2008DeviationCharacterInHostnameOfIFrame"/>
   <int value="4429" label="WindowOpenPopupOnMobile"/>
   <int value="4430" label="WindowOpenedAsPopupOnMobile"/>
   <int value="4431"
@@ -12249,6 +12245,28 @@ Called by update_permissions_policy_enum.py.-->
     devices' links) in the same tab without returning to the HistoryClusters UI.
   </int>
   <int value="4" label="kRefreshTab">Refreshed the tab.</int>
+</enum>
+
+<enum name="HlsDemuxerStatus">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kNoSegmentData"/>
+  <int value="2" label="kInsufficientCryptoMetadata"/>
+  <int value="3" label="kFailedToDecryptSegment"/>
+  <int value="4" label="kUnsupportedCryptoMethod"/>
+  <int value="5" label="kUnsupportedContainer"/>
+  <int value="6" label="kRecursiveMultivariantPlaylists"/>
+  <int value="7" label="kNoRenditions"/>
+  <int value="8" label="kInvalidManifest"/>
+  <int value="9" label="kNetworkReadError"/>
+  <int value="10" label="kNetworkReadAborted"/>
+  <int value="11" label="kNetworkReadStopped"/>
+  <int value="12" label="kUpdateRequiresMediaPlaylist"/>
+  <int value="13" label="kInvalidMimeType"/>
+  <int value="14" label="kMixedVodLiveRenditions"/>
+  <int value="15" label="kInvalidLivePlaybackRate"/>
+  <int value="16" label="kInvalidLoadedRanges"/>
+  <int value="17" label="kCouldNotAppendData"/>
+  <int value="18" label="kNoDataEverAppended"/>
 </enum>
 
 <enum name="HpsTurnOnResult">
@@ -18428,6 +18446,7 @@ from previous Chrome versions.
   <int value="-761538347" label="AutofillEnableVerveCardSupport:enabled"/>
   <int value="-760729135"
       label="AutofillEnableCardArtServerSideStretching:disabled"/>
+  <int value="-760520941" label="signature-based-sri:disabled"/>
   <int value="-759830869" label="enable-tab-discarding"/>
   <int value="-758999727" label="ContentIndexingNTP:disabled"/>
   <int value="-758917191" label="AccountIdMigration:enabled"/>
@@ -20814,6 +20833,7 @@ from previous Chrome versions.
   <int value="198386935" label="OmitCorsClientCert:enabled"/>
   <int value="198719062" label="WebAssemblyLazyCompilation:disabled"/>
   <int value="198762155" label="SharingPeerConnectionSender:enabled"/>
+  <int value="199225530" label="EnableLazyLoadImageForInvisiblePage:disabled"/>
   <int value="199237368" label="RenameJourneys:disabled"/>
   <int value="200347243" label="WebVRExperimentalRendering:disabled"/>
   <int value="201203491"
@@ -21373,6 +21393,7 @@ from previous Chrome versions.
   <int value="412185345"
       label="DownloadServiceForegroundSessionIOSFeature:enabled"/>
   <int value="412957264" label="tab-close-buttons-hidden-with-touch"/>
+  <int value="412989824" label="SRIMessageSignatureEnforcement:disabled"/>
   <int value="413062443" label="MessagesForAndroidInfrastructure:disabled"/>
   <int value="413081240" label="enable-new-md-input-view"/>
   <int value="413528228" label="AutofillFixFillableFieldTypes:disabled"/>
@@ -22296,6 +22317,7 @@ from previous Chrome versions.
   <int value="781573553" label="UnifiedPasswordManagerAndroid:enabled"/>
   <int value="781785788" label="ClipboardSuggestionContentHidden:disabled"/>
   <int value="782167080" label="enable-new-qp-input-view"/>
+  <int value="782380882" label="SRIMessageSignatureEnforcement:enabled"/>
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
   <int value="784664314" label="CompanyEntityIconAdjustment:disabled"/>
   <int value="784856302" label="EnableBorderlessPrinting:disabled"/>
@@ -23710,6 +23732,7 @@ from previous Chrome versions.
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
   <int value="1355923367" label="CrOSContainer:disabled"/>
   <int value="1356161410" label="VizHitTestSurfaceLayer:enabled"/>
+  <int value="1357749568" label="EnableLazyLoadImageForInvisiblePage:enabled"/>
   <int value="1359703966" label="Prerender2InNewTab:disabled"/>
   <int value="1359972809" label="enable-gesture-deletion"/>
   <int value="1360774969"
@@ -25254,6 +25277,7 @@ from previous Chrome versions.
   <int value="1954778883" label="COLRV1Fonts:disabled"/>
   <int value="1955238689" label="OmniboxMaxURLMatches:disabled"/>
   <int value="1955669770" label="MessagesForAndroidPopupBlocked:enabled"/>
+  <int value="1956055092" label="signature-based-sri:enabled"/>
   <int value="1957192097" label="WebViewLogFirstPartyPageTimeSpent:disabled"/>
   <int value="1957273171" label="PageAlmostIdle:disabled"/>
   <int value="1957358530" label="ContextualSearchSecondTap:enabled"/>
@@ -27451,6 +27475,18 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Succeeded"/>
   <int value="1" label="Timed out"/>
 </enum>
+
+<!-- LINT.IfChange(NoticeQueueState) -->
+
+<enum name="NoticeQueueState">
+  <int value="0" label="Queued on Startup"/>
+  <int value="1" label="Queued on Tab Helper or DidFinishNav"/>
+  <int value="2" label="Released on Tab Helper or DidFinishNav"/>
+  <int value="3" label="Released on DMA"/>
+  <int value="4" label="Released on Shown"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_service.h:NoticeQueueState) -->
 
 <enum name="NotificationAppStatus">
   <int value="0" label="Undeterminable (old Android version)"/>

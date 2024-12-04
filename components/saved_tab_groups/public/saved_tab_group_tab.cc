@@ -52,6 +52,20 @@ SavedTabGroupTab& SavedTabGroupTab::operator=(SavedTabGroupTab&& other) =
     default;
 SavedTabGroupTab::~SavedTabGroupTab() = default;
 
+SavedTabGroupTab& SavedTabGroupTab::SetUpdatedByAttribution(GaiaId updated_by) {
+  if (shared_attribution_.created_by.empty()) {
+    shared_attribution_.created_by = updated_by;
+  }
+  shared_attribution_.updated_by = std::move(updated_by);
+  return *this;
+}
+
+SavedTabGroupTab& SavedTabGroupTab::SetCreatedByAttribution(GaiaId created_by) {
+  CHECK(shared_attribution_.created_by.empty());
+  shared_attribution_.created_by = std::move(created_by);
+  return *this;
+}
+
 void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
   SetURL(remote_tab.url());
   SetTitle(remote_tab.title());
@@ -59,6 +73,7 @@ void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
   SetPosition(remote_tab.position().value_or(0));
   SetCreatorCacheGuid(remote_tab.creator_cache_guid());
   SetLastUpdaterCacheGuid(remote_tab.last_updater_cache_guid());
+  SetUpdatedByAttribution(remote_tab.shared_attribution().updated_by);
   SetUpdateTimeWindowsEpochMicros(
       remote_tab.update_time_windows_epoch_micros());
 }

@@ -279,55 +279,6 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
             crosapi::mojom::DeviceSettings::OptionalBool::kTrue);
 }
 
-TEST_F(CrosapiUtilTest, IsArcAvailable) {
-  arc::SetArcAvailableCommandLineForTesting(
-      base::CommandLine::ForCurrentProcess());
-  IdleServiceAsh::DisableForTesting();
-  AddRegularUser(TestingProfile::kDefaultProfileUserName);
-
-  mojom::BrowserInitParamsPtr browser_init_params =
-      browser_util::GetBrowserInitParams(
-          browser_util::InitialBrowserAction(
-              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, std::nullopt);
-  EXPECT_TRUE(browser_init_params->device_properties->is_arc_available);
-  EXPECT_FALSE(browser_init_params->device_properties->is_tablet_form_factor);
-}
-
-TEST_F(CrosapiUtilTest, IsTabletFormFactor) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableTabletFormFactor);
-  IdleServiceAsh::DisableForTesting();
-  AddRegularUser(TestingProfile::kDefaultProfileUserName);
-
-  mojom::BrowserInitParamsPtr browser_init_params =
-      browser_util::GetBrowserInitParams(
-          browser_util::InitialBrowserAction(
-              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, std::nullopt);
-  EXPECT_FALSE(browser_init_params->device_properties->is_arc_available);
-  EXPECT_TRUE(browser_init_params->device_properties->is_tablet_form_factor);
-}
-
-TEST_F(CrosapiUtilTest, SerialNumber) {
-  IdleServiceAsh::DisableForTesting();
-  AddRegularUser(TestingProfile::kDefaultProfileUserName);
-
-  std::string expected_serial_number = "fake-serial-number";
-  statistics_provider_.SetMachineStatistic("serial_number",
-                                           expected_serial_number);
-
-  mojom::BrowserInitParamsPtr browser_init_params =
-      browser_util::GetBrowserInitParams(
-          browser_util::InitialBrowserAction(
-              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, std::nullopt);
-
-  auto serial_number = browser_init_params->device_properties->serial_number;
-  ASSERT_TRUE(serial_number.has_value());
-  EXPECT_EQ(serial_number.value(), expected_serial_number);
-}
-
 TEST_F(CrosapiUtilTest, DeviceExtensionsSystemLogEnabledFalse) {
   testing_profile_->ScopedCrosSettingsTestHelper()
       ->ReplaceDeviceSettingsProviderWithStub();

@@ -806,3 +806,10 @@
 -ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/2
 -ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/3
 
+# TODO(crbug.com/381282539): This test has been failing since
+# https://crrev.com/c/6013928.
+-ContentBrowserTest.BrowserCrashCallStack
+-ContentBrowserTest.BrowserCrashCallStack
+-ContentBrowserTest.MANUAL_BrowserCrash
+-ContentBrowserTest.MANUAL_BrowserCrash
+

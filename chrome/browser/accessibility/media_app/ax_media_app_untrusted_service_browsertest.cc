@@ -98,7 +98,7 @@ constexpr std::string_view kLoadingMessage =
 
 class AXMediaAppUntrustedServiceTest : public InProcessBrowserTest {
  public:
-  AXMediaAppUntrustedServiceTest() {}
+  AXMediaAppUntrustedServiceTest() = default;
   AXMediaAppUntrustedServiceTest(const AXMediaAppUntrustedServiceTest&) =
       delete;
   AXMediaAppUntrustedServiceTest& operator=(
@@ -457,32 +457,6 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
                                /*expected_count=*/1);
   histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.PdfLoaded",
                               /*expected_count=*/1);
-}
-
-IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
-                       CheckUMAMetricsForMostDetectedLanguageInOcrData) {
-  EnableScreenReaderForTesting();
-  base::HistogramTester histograms;
-  constexpr size_t kTestNumPages = 3u;
-  std::vector<PageMetadataPtr> fake_metadata =
-      CreateFakePageMetadata(kTestNumPages);
-  service_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
-
-  histograms.ExpectTotalCount(
-      "Accessibility.PdfOcr.MediaApp.MostDetectedLanguageInOcrData",
-      /*expected_count=*/0);
-  WaitForOcringPages(1u);
-  histograms.ExpectTotalCount(
-      "Accessibility.PdfOcr.MediaApp.MostDetectedLanguageInOcrData",
-      /*expected_count=*/1);
-  WaitForOcringPages(1u);
-  histograms.ExpectTotalCount(
-      "Accessibility.PdfOcr.MediaApp.MostDetectedLanguageInOcrData",
-      /*expected_count=*/2);
-  WaitForOcringPages(1u);
-  histograms.ExpectTotalCount(
-      "Accessibility.PdfOcr.MediaApp.MostDetectedLanguageInOcrData",
-      /*expected_count=*/3);
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,

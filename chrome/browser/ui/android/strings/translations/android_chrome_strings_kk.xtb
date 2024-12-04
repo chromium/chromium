@@ -942,6 +942,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5316947901395241499">Құпия сөздерді сақтау функциясын әкімші өшірген.</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5319359161174645648">Google қызметі Chrome браузерін ұсынады</translation>
+<translation id="5326246328175179736">Бұл аккаунтқа кіре алмайсыз.</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтымен пайдалану</translation>
 <translation id="5342314432463739672">Рұқсат сұраулары</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> ауқымында сайттар жоқ</translation>
@@ -951,6 +952,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5375577065097716013">Суретті Google Lens арқылы іздеу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Инкогнито режимінен ауысу</translation>
 <translation id="5395376160638294582">Google аккаунтыңызда Chrome деректерін үнемі пайдалана алатыныңызға көз жеткізу</translation>
+<translation id="5397794290049113714">Сіз</translation>
 <translation id="539881862970320163">Күрделі құпия сөз ұсынылған. Пернетақта жасырылды.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> коды <ph name="CLIENT_NAME" /> құрылғысына жіберілсін бе?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) сізді қойындылар тобына қосылуға шақырып жатыр. Сілтемені алған кез келген адам барлық қойындыны өзгерте алады. Сол себепті қосылмай тұрып ойланыңыз. Сілтеме мерзімі 48 сағаттан кейін аяқталады.</translation>
@@ -978,6 +980,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5514904542973294328">Құрылғының әкімшісі ажыратқан</translation>
 <translation id="5515439363601853141">Құпия сөзді көру үшін құлыпты ашыңыз</translation>
 <translation id="5517095782334947753">Сізде <ph name="FROM_ACCOUNT" /> аккаунтының бетбелгілері, тарихы, құпия сөздері және басқа да параметрлері бар.</translation>
+<translation id="5517326820028369152">"Соңғы іс-әрекеттер" төменгі парақшасы</translation>
 <translation id="5524843473235508879">Баcқа бетке бағыттау бөгелді.</translation>
 <translation id="5526281268548144413">Бірнеше терезеде жабу мүмкін емес.</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# минут бұрын}other{# минут бұрын}}</translation>
@@ -1280,6 +1283,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6817747507826986771">Осы бетті жылдам бөлісу. Бұл жылдам пәрменді өзгерту үшін оны басып тұрыңыз.</translation>
 <translation id="6820686453637990663">CVC коды</translation>
 <translation id="6820942662346226299">Google Password Manager-ді жаңарту терезесі жабылды.</translation>
+<translation id="6824933543577433709">"Соңғы іс-әрекеттер" төменгі парақшасы жабылды.</translation>
 <translation id="6828070228333235514">Бағаны бақылауды тоқтату</translation>
 <translation id="6830728435402077660">Қауіпсіз емес</translation>
 <translation id="6831043979455480757">Аудару</translation>
@@ -1498,6 +1502,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7691043218961417207">Жазылу үшін мазмұнды зерттеу</translation>
 <translation id="7697383401610880082">Сүйрейтін тетік</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> қолданбасында электрондық пошта жасау</translation>
+<translation id="7702420606070050505">"Соңғы іс-әрекеттер" төменгі парақшасы толығымен ашылды.</translation>
 <translation id="7707922173985738739">Мобильдік интернетті пайдалану</translation>
 <translation id="7709918231054955894">Барлық қойындыны көріңіз</translation>
 <translation id="7733878270780732638">Құрылғыда орын жеткіліксіз.</translation>

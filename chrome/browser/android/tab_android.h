@@ -164,6 +164,9 @@ class TabAndroid : public TabAndroidDataProvider,
           jcontext_menu_populator_factory);
   void DestroyWebContents(JNIEnv* env);
   void ReleaseWebContents(JNIEnv* env);
+  bool IsPhysicalBackingSizeEmpty(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jweb_contents);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jweb_contents,

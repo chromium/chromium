@@ -15,6 +15,7 @@ ci/mac12-arm64-updater-tester-rel
 ci/mac12-x64-updater-tester-asan-dbg
 ci/mac13-arm64-updater-tester-dbg
 ci/mac13-x64-updater-tester-rel
+ci/mac14-arm64-updater-tester-dbg
 ci/mac15-arm64-updater-tester-rel
 ci/win-updater-builder-dbg
 ci/win-updater-builder-rel

@@ -286,6 +286,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
       @"accessibilityVisibleColumns" : NSAccessibilityVisibleColumnsAttribute,
       @"accessibilityVisibleCells" : NSAccessibilityVisibleCellsAttribute,
+      @"accessibilityVisibleRows" : NSAccessibilityVisibleRowsAttribute,
       @"isAccessibilityDisclosed" : NSAccessibilityDisclosingAttribute,
       @"isAccessibilityExpanded" : NSAccessibilityExpandedAttribute,
       @"isAccessibilityFocused" : NSAccessibilityFocusedAttribute,
@@ -509,6 +510,19 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   return true;
+}
+
+- (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)treeItemIds {
+  for (auto childDelegateIterator = [self nodeDelegate]->ChildrenBegin();
+       *childDelegateIterator != *[self nodeDelegate]->ChildrenEnd();
+       ++(*childDelegateIterator)) {
+    ui::AXPlatformNodeDelegate* childDelegate = childDelegateIterator->get();
+    if (childDelegate->GetRole() == ax::mojom::Role::kTreeItem) {
+      treeItemIds->push_back(childDelegate->GetId());
+    }
+    gfx::NativeViewAccessible child = childDelegate->GetNativeViewAccessible();
+    [child getTreeItemDescendantNodeIds:treeItemIds];
+  }
 }
 
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role {
@@ -2722,10 +2736,39 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (NSArray*)accessibilityRows {
-  // TODO(accessibility) accessibilityRows is defined in
-  // browser_accessibility_cocoa.mm eventually that function definition should
-  // be moved here.
-  return nil;
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  ui::AXPlatformNodeDelegate* delegate = [self nodeDelegate];
+  if (!delegate) {
+    return nil;
+  }
+
+  NSMutableArray* rows = [[NSMutableArray alloc] init];
+
+  ax::mojom::Role role = [self internalRole];
+
+  std::vector<int32_t> nodeIds;
+  if (role == ax::mojom::Role::kTree) {
+    [self getTreeItemDescendantNodeIds:&nodeIds];
+  } else if (ui::IsTableLike(role)) {
+    nodeIds = delegate->GetRowNodeIds();
+  } else if (role == ax::mojom::Role::kColumn) {
+    // Rows attribute for a column is the list of all the elements in that
+    // column at each row.
+    nodeIds = delegate->GetIntListAttribute(
+        ax::mojom::IntListAttribute::kIndirectChildIds);
+  }
+
+  for (int32_t nodeId : nodeIds) {
+    ui::AXPlatformNode* rowNode = delegate->GetFromNodeID(nodeId);
+    if (rowNode) {
+      [rows addObject:rowNode->GetNativeViewAccessible()];
+    }
+  }
+
+  return rows;
 }
 
 - (NSAccessibilitySortDirection)accessibilitySortDirection {
@@ -3033,6 +3076,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return cells;
 }
 // LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityVisibleCells)
+
+// LINT.IfChange(accessibilityVisibleRows)
+- (NSArray*)accessibilityVisibleRows {
+  return [self accessibilityRows];
+}
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityVisibleRows)
 
 //
 // End of NSAccessibility protocol.

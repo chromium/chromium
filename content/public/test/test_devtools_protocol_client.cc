@@ -47,8 +47,7 @@ const base::Value::Dict* TestDevToolsProtocolClient::SendSessionCommand(
 
   std::string json_command;
   base::JSONWriter::Write(base::Value(std::move(command)), &json_command);
-  agent_host_->DispatchProtocolMessage(
-      this, base::as_bytes(base::make_span(json_command)));
+  agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_command));
   // Some messages are dispatched synchronously.
   // Only run loop if we are not finished yet.
   if (in_dispatch_ && wait)

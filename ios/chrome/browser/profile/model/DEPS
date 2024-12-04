@@ -85,7 +85,7 @@ specific_include_rules = {
     "+ios/chrome/browser/webauthn/model",
     "+ios/chrome/browser/webdata_services/model",
   ],
-  'profile_manager_ios_impl_unittest.mm': [
+  'test_with_profile.mm': [
     "+ios/chrome/browser/optimization_guide/model",
   ],
 }

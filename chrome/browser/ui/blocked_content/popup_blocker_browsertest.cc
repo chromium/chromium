@@ -101,12 +101,12 @@ class CloseObserver : public content::WebContentsObserver {
 
 class PopupBlockerBrowserTest : public InProcessBrowserTest {
  public:
-  PopupBlockerBrowserTest() {}
+  PopupBlockerBrowserTest() = default;
 
   PopupBlockerBrowserTest(const PopupBlockerBrowserTest&) = delete;
   PopupBlockerBrowserTest& operator=(const PopupBlockerBrowserTest&) = delete;
 
-  ~PopupBlockerBrowserTest() override {}
+  ~PopupBlockerBrowserTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {

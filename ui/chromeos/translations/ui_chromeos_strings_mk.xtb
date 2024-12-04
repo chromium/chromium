@@ -250,7 +250,7 @@
 <translation id="3003189754374775221">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, поврзи</translation>
 <translation id="3003633581067744647">Префрли се на режим за преглед со сликички</translation>
 <translation id="3016566519832145558">Внимание: датотекиве се привремени и може автоматски да се избришат за да се ослободи простор на дискот.</translation>
-<translation id="3029114385395636667">Овозможете офлајн „Документи на Google“ за да бидат документите табелите и слајдовите достапни офлајн.</translation>
+<translation id="3029114385395636667">Овозможете офлајн Google Docs за да бидат документите табелите и слајдовите достапни офлајн.</translation>
 <translation id="303198083543495566">Географија</translation>
 <translation id="3044404008258011032">За да ги вратите ставкиве, повлечете ги во нова папка надвор од корпата. Оригиналната папка „<ph name="PARENT_FOLDER_NAME" />“ за ставкава е избришана.</translation>
 <translation id="3047197340186497470">кинески даји</translation>
@@ -1080,7 +1080,7 @@
 <translation id="9171921933192916600">Љубител на книги</translation>
 <translation id="9172592259078059678">транслитерација на гуџарати</translation>
 <translation id="9173120999827300720">англиски (САД) со меѓународна тастатура</translation>
-<translation id="9183302530794969518">Документи на Google</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">казашки</translation>
 <translation id="9200427192836333033">Отпакувани се <ph name="NUMBER_OF_ITEMS" /> ставки.</translation>
 <translation id="9213073329713032541">Инсталирањето успешно започна.</translation>

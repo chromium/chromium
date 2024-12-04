@@ -5,11 +5,10 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace switches {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Enables the Chrome Browser Cloud Management integration on Chromium builds.
 // CBCM is always enabled in branded builds.
 const char kEnableChromeBrowserCloudManagement[] =

@@ -39,7 +39,7 @@ namespace media_router {
 MediaRouterE2EBrowserTest::MediaRouterE2EBrowserTest()
     : media_router_(nullptr) {}
 
-MediaRouterE2EBrowserTest::~MediaRouterE2EBrowserTest() {}
+MediaRouterE2EBrowserTest::~MediaRouterE2EBrowserTest() = default;
 
 void MediaRouterE2EBrowserTest::SetUpOnMainThread() {
   MediaRouterIntegrationBrowserTest::SetUpOnMainThread();

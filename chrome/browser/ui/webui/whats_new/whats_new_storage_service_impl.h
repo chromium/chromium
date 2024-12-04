@@ -34,22 +34,16 @@ class WhatsNewStorageServiceImpl : public WhatsNewStorageService {
   bool IsUsedEdition(std::string_view edition_name) const override;
 
   void SetModuleEnabled(std::string_view module_name) override;
-  void ClearModule(std::string_view module_name) override;
-
   void SetEditionUsed(std::string_view edition_name) override;
-  void ClearEdition(std::string_view edition_name) override;
+
+  void ClearModules(std::set<std::string_view> modules_to_clear) override;
+  void ClearEditions(std::set<std::string_view> editions_to_clear) override;
 
   void Reset() override;
 
  private:
-  ScopedListPrefUpdate enabled_order_() {
-    return ScopedListPrefUpdate(g_browser_process->local_state(),
-                                prefs::kWhatsNewFirstEnabledOrder);
-  }
-  ScopedDictPrefUpdate used_editions_() {
-    return ScopedDictPrefUpdate(g_browser_process->local_state(),
-                                prefs::kWhatsNewEditionUsed);
-  }
+  ScopedListPrefUpdate GetEnabledOrder();
+  ScopedDictPrefUpdate GetUsedEditions();
 };
 }  // namespace whats_new
 

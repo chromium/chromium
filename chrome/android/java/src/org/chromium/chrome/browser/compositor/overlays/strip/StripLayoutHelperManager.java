@@ -477,7 +477,8 @@ public class StripLayoutHelperManager
                             dragDropDelegate,
                             browserControlsStateProvider,
                             windowAndroid,
-                            toolbarManager.getTabStripHeightSupplier());
+                            toolbarManager.getTabStripHeightSupplier(),
+                            desktopWindowStateManager);
         }
 
         mToolbarManager = toolbarManager;

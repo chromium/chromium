@@ -77,7 +77,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   void OnTestStart(const testing::TestInfo& test_info) override {
     TestingBrowserProcess::CreateInstance();
     // Make sure the loaded locale is "en-US".
-    if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocaleForTesting() !=
+    if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocale() !=
         kDefaultLocale) {
       // Linux uses environment to determine locale.
       std::unique_ptr<base::Environment> env(base::Environment::Create());

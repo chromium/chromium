@@ -5,13 +5,23 @@
 #ifndef CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_
 #define CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/launcher/glic_configuration.h"
 
+class GlicController;
+class GlicStatusIcon;
 class ScopedKeepAlive;
+class StatusTray;
 
+// This is a global feature in the browser process that manages the
+// enabling/disabling of glic background mode. When background mode is enabled,
+// chrome is set to keep alive the browser process, so that this class can
+// listen to a global hotkey, and provide a status icon for triggering the UI.
 class GlicBackgroundModeManager : public GlicConfiguration::Observer {
  public:
-  GlicBackgroundModeManager();
+  explicit GlicBackgroundModeManager(StatusTray* status_tray);
   ~GlicBackgroundModeManager() override;
 
   // GlicConfiguration::Observer
@@ -23,10 +33,21 @@ class GlicBackgroundModeManager : public GlicConfiguration::Observer {
 
   void EnableLaunchOnStartup(bool should_launch);
 
+  // A helper class for observing pref changes.
   std::unique_ptr<GlicConfiguration> configuration_;
   bool enabled_ = false;
 
+  // An abstraction used to show/hide the UI.
+  std::unique_ptr<GlicController> controller_;
+
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+
+  // TODO(https://crbug.com/378139555): Figure out how to not dangle this
+  // pointer (and other instances of StatusTray).
+  raw_ptr<StatusTray, DanglingUntriaged> status_tray_;
+  // Class that represents the glic status icon. Only exists when the background
+  // mode is enabled.
+  std::unique_ptr<GlicStatusIcon> status_icon_;
 };
 
 #endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_

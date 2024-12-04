@@ -378,7 +378,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateSuccess) {
 
   scoped_refptr<net::X509Certificate> tls_cert =
       net::X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(tls_cert_der[0])));
+          base::as_byte_span(tls_cert_der[0]));
   std::string peer_cert_der;
   AuthResult result =
       VerifyTLSCertificate(*tls_cert, &peer_cert_der, tls_cert->valid_start());
@@ -393,7 +393,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooEarly) {
 
   scoped_refptr<net::X509Certificate> tls_cert =
       net::X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(tls_cert_der[0])));
+          base::as_byte_span(tls_cert_der[0]));
   std::string peer_cert_der;
   AuthResult result = VerifyTLSCertificate(
       *tls_cert, &peer_cert_der, tls_cert->valid_start() - base::Seconds(1));
@@ -410,7 +410,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooLate) {
 
   scoped_refptr<net::X509Certificate> tls_cert =
       net::X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(tls_cert_der[0])));
+          base::as_byte_span(tls_cert_der[0]));
   std::string peer_cert_der;
   AuthResult result = VerifyTLSCertificate(
       *tls_cert, &peer_cert_der, tls_cert->valid_expiry() + base::Seconds(2));

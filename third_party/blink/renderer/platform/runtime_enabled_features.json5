@@ -354,6 +354,15 @@
       status: "experimental",
     },
     {
+      name: "AllowSameSiteNoneCookiesInSandbox",
+      base_feature: "none",
+
+      // No status because this blink runtime feature doesn't work by itself.
+      // It's controlled by the corresponding Chromium feature,
+      // net::features::kAllowSameSiteNoneCookiesInSandbox, which needs to be
+      // enabled to make the whole feature work.
+    },
+    {
       name: "AllowURNsInIframes",
       base_feature: "none",
     },
@@ -365,7 +374,7 @@
     {
       // https://chromestatus.com/feature/5083257285378048
       name: "AnimationProgressAPI",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AnimationWorklet",
@@ -596,11 +605,6 @@
       status: "stable",
     },
     {
-      // crbug.com/371615505
-      name: "BreakIteratorHyphenMinus",
-      status: "stable",
-    },
-    {
       name: "BrowserVerifiedUserActivationKeyboard",
       base_feature: "none",
       public: true,
@@ -765,6 +769,8 @@
       name: "CheckVisibilityExtraProperties",
       status: "stable",
     },
+    // crbug.com/40851596: Send click to the capture pointer target instead of
+    // the common ancestor of pointerdown and pointerup targets.
     {
       name: "ClickToCapturedPointer",
       status: "experimental",
@@ -1109,7 +1115,7 @@
     },
     {
       name: "CSSNestedPseudoElements",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "CSSPaintAPIArguments",
@@ -2084,7 +2090,7 @@
     },
     {
       name: "FontationsFontBackend",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FontationsForSelectedFormats",
@@ -2319,7 +2325,8 @@
     },
     {
       name: "IdentityDigest",
-      status: "experimental"
+      status: "experimental",
+      implied_by: ["SignatureBasedIntegrity"]
     },
     {
       name: "ImplicitRootScroller",
@@ -2339,6 +2346,12 @@
     {
       name: "ImportMapIntegrity",
       status: "stable"
+    },
+    // This ensures that table tag is included in extended selection.
+    // https://crbug.com/40833812
+    {
+      name: "IncludeTableTagInExtendedSelection",
+      status: "stable",
     },
     {
       name: "IncomingCallNotifications",
@@ -2570,12 +2583,6 @@
       public: true,
     },
     {
-      // Enables long aniamtion frames as a performance API (the
-      // "long-animation-frame" timeline entry)
-      name: "LongAnimationFrameTiming",
-      status: "stable"
-    },
-    {
       // Long press on a link selects the link text instead of bringing up
       // context menu. Enabled only on Android AuthView.
       name: "LongPressLinkSelectText",
@@ -2776,8 +2783,9 @@
       // Fix HandleMouseFocus and FrameSelection to use FlatTree parent so
       // correct fallback element receives focus.
       // See https://crbug.com/41420461
+      // This feature was shipped in M133, so this flag can be removed in M135.
       name: "MouseFocusFlatTreeParent",
-      status: "experimental",
+      status: "stable",
     },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
@@ -3914,9 +3922,7 @@
     },
     {
       name: "SignatureBasedIntegrity",
-      origin_trial_feature_name: "SignatureBasedIntegrity",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "SiteInitiatedMirroring",
@@ -4215,6 +4221,11 @@
       // See: https://crbug.com/340389272.
       name: "TextSizeAdjustImprovements",
       status: "experimental",
+    },
+    {
+      // crbug.com/379254069
+      name: "TextTransformAndSecurityFix",
+      status: "stable",
     },
     {
       name: "TimerThrottlingForBackgroundTabs",
@@ -4785,11 +4796,6 @@
     {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
-    },
-    {
-      name: "WebHIDOnDedicatedWorkers",
-      status: "stable",
-      depends_on: ["WebHID"],
     },
     {
       // It is only enabled in extension environment for now.

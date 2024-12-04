@@ -117,7 +117,7 @@ TEST(AesCbcCryptoTest, PartialBlock) {
   // Try to decrypt less than a full block.
   std::vector<uint8_t> output(encrypted_block.size());
   EXPECT_FALSE(crypto.Decrypt(
-      base::make_span(encrypted_block).first(encrypted_block.size() - 5),
+      base::span(encrypted_block).first(encrypted_block.size() - 5),
       output.data()));
 }
 
@@ -165,7 +165,7 @@ TEST(AesCbcCryptoTest, BlockDecryptionWorks) {
     EXPECT_TRUE(crypto.Initialize(kKey1, kIv));
 
     std::vector<uint8_t> output(kNumBlocksInData * kBlockSize);
-    auto input = base::make_span(encrypted_data);
+    base::span input(encrypted_data);
     for (size_t offset = 0; offset < output.size(); offset += kBlockSize) {
       EXPECT_TRUE(
           crypto.Decrypt(input.subspan(offset, kBlockSize), &output[offset]));

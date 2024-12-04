@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
 
 #include <memory>
@@ -80,9 +75,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                                                        bool in_dev_mode) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIExtensionsHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kExtensionsResources, kExtensionsResourcesSize),
-      IDR_EXTENSIONS_EXTENSIONS_HTML);
+  webui::SetupWebUIDataSource(source, kExtensionsResources,
+                              IDR_EXTENSIONS_EXTENSIONS_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       // Add common strings.

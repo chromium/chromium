@@ -12,15 +12,9 @@
   // Navigate to speculation rules Prerender Page.
   session1.navigate('resources/bad-http-prerender.html');
 
-  testRunner.log(
-      await dp1.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
-  testRunner.log(
-      await dp1.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
-  testRunner.log(
-      await dp1.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
+  testRunner.log(await dp1.Preload.oncePrerenderStatusUpdated());
+  testRunner.log(await dp1.Preload.oncePrerenderStatusUpdated());
+  testRunner.log(await dp1.Preload.oncePrerenderStatusUpdated());
 
   testRunner.completeTest();
 });

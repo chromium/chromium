@@ -798,18 +798,20 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTestWithTPCD,
                       testing::_, testing::_, testing::_, "foo", "bar",
                       net::CookieAccessResult(
                           net::CookieEffectiveSameSite::NO_RESTRICTION,
-                          net::CookieInclusionStatus(
-                              net::CookieInclusionStatus::ExclusionReason::
-                                  EXCLUDE_THIRD_PARTY_PHASEOUT),
+                          net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                              /*exclusions=*/{
+                                  net::CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_THIRD_PARTY_PHASEOUT}),
                           net::CookieAccessSemantics::NONLEGACY, true)),
                   MatchesCookieAccess(
                       CookieAccessDetails::Type::kRead, testing::_, testing::_,
                       testing::_, testing::_, testing::_, "foo", "bar",
                       net::CookieAccessResult(
                           net::CookieEffectiveSameSite::NO_RESTRICTION,
-                          net::CookieInclusionStatus(
-                              net::CookieInclusionStatus::ExclusionReason::
-                                  EXCLUDE_THIRD_PARTY_PHASEOUT),
+                          net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                              /*exclusions=*/{
+                                  net::CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_THIRD_PARTY_PHASEOUT}),
                           net::CookieAccessSemantics::NONLEGACY, true))));
   cookie_tracker.cookie_accesses().clear();
 }

@@ -24,9 +24,11 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -62,18 +64,21 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 
 TabSearchBubbleHost::TabSearchBubbleHost(
     views::Button* button,
-    BrowserWindowInterface* browser_window_interface)
+    BrowserWindowInterface* browser_window_interface,
+    views::View* anchor_view,
+    base::WeakPtr<TabStrip> tab_strip)
     : button_(button),
       profile_(browser_window_interface->GetProfile()),
       webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
-          button,
+          anchor_view,
           browser_window_interface,
           GURL(chrome::kChromeUITabSearchURL),
           IDS_ACCNAME_TAB_SEARCH)),
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
                                       time_elapsed);
-      })) {
+      })),
+      tab_strip_(tab_strip) {
   auto* const tab_organization_service =
       TabOrganizationServiceFactory::GetForProfile(profile_.get());
   if (tab_organization_service) {
@@ -118,6 +123,12 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
             *bubble_created_time_,
             webui_bubble_manager_->bubble_using_cached_web_contents(),
             webui_bubble_manager_->contents_warmup_level()));
+
+    // Pause tab closing mode observation.
+    if (features::IsTabstripComboButtonEnabled()) {
+      tab_strip_->NotifyTabstripBubbleOpened();
+    }
+
     const PrefService* prefs = profile_->GetPrefs();
     const auto section = tab_search_prefs::GetTabSearchSectionFromInt(
         prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
@@ -141,6 +152,11 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
           tab_search::mojom::DeclutterCTREvent::kDeclutterShown);
     }
   } else if (!visible && bubble_created_time_.has_value()) {
+    // Re-enable tab closing mode observation.
+    if (features::IsTabstripComboButtonEnabled()) {
+      tab_strip_->NotifyTabstripBubbleClosed();
+    }
+
     const base::TimeDelta time_to_close =
         base::TimeTicks::Now() - bubble_created_time_.value();
     base::UmaHistogramMediumTimes("Tabs.TabSearch.TimeToClose", time_to_close);
@@ -229,22 +245,6 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 
-  std::optional<gfx::Rect> anchor;
-  if (button_->GetWidget()->IsFullscreen() && !button_->IsDrawn()) {
-    // Use a screen-coordinate anchor rect when the tabstrip's search button is
-    // not drawn, and potentially positioned offscreen, in fullscreen mode.
-    // Place the anchor similar to where the button would be in non-fullscreen
-    // mode.
-    const gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
-    const int offset = GetLayoutConstant(TAB_STRIP_PADDING);
-
-    const int x = tabs::GetTabSearchTrailingTabstrip(profile_)
-                      ? bounds.right() - offset
-                      : bounds.x() + offset;
-
-    anchor.emplace(gfx::Rect(x, bounds.y() + offset, 0, 0));
-  }
-
   bubble_created_time_ = base::TimeTicks::Now();
   webui_bubble_manager_->set_widget_initialization_callback(base::BindOnce(
       [](base::TimeTicks bubble_init_start_time) {
@@ -253,7 +253,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
             base::TimeTicks::Now() - bubble_init_start_time);
       },
       *bubble_created_time_));
-  webui_bubble_manager_->ShowBubble(anchor,
+
+  webui_bubble_manager_->ShowBubble(std::nullopt,
                                     tabs::GetTabSearchTrailingTabstrip(profile_)
                                         ? views::BubbleBorder::TOP_RIGHT
                                         : views::BubbleBorder::TOP_LEFT,

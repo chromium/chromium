@@ -309,6 +309,7 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& oidc_id_token,
       const std::string& client_id,
       const base::TimeDelta& timeout_duration,
+      bool is_token_encrypted,
       ResultCallback callback);
 
   // Sets information about a policy invalidation. Subsequent fetch operations

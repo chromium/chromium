@@ -132,10 +132,8 @@ enum AppType {
   kArc = 1,           // Android app.
   kWeb = 2,           // Web app.
   kSystemWeb = 3,     // System web app.
-  [MinVersion=1]
-  kStandaloneBrowserChromeApp = 4,     // Chrome app.
-  [MinVersion=17]
-  kStandaloneBrowserExtension = 5,     // Chrome extension.
+  // kStandaloneBrowserChromeApp = 4,  // Removed. No longer used.
+  // kStandaloneBrowserExtension = 5,  // Removed. No longer used.
 };
 
 // Whether an app is ready to launch, i.e. installed.

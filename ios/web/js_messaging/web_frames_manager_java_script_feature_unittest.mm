@@ -47,13 +47,13 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
     // Mock WKSecurityOrigin.
     WKSecurityOrigin* security_origin = OCMClassMock([WKSecurityOrigin class]);
     OCMStub([security_origin host])
-        .andReturn(
-            base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().host()));
+        .andReturn(base::SysUTF8ToNSString(
+            web_frame->GetSecurityOriginDeprecated().host()));
     OCMStub([security_origin port])
-        .andReturn(web_frame->GetSecurityOrigin().EffectiveIntPort());
+        .andReturn(web_frame->GetSecurityOriginDeprecated().EffectiveIntPort());
     OCMStub([security_origin protocol])
-        .andReturn(
-            base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().scheme()));
+        .andReturn(base::SysUTF8ToNSString(
+            web_frame->GetSecurityOriginDeprecated().scheme()));
 
     // Mock WKFrameInfo.
     WKFrameInfo* frame_info = OCMClassMock([WKFrameInfo class]);
@@ -82,13 +82,13 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
     // Mock WKSecurityOrigin.
     WKSecurityOrigin* security_origin = OCMClassMock([WKSecurityOrigin class]);
     OCMStub([security_origin host])
-        .andReturn(
-            base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().host()));
+        .andReturn(base::SysUTF8ToNSString(
+            web_frame->GetSecurityOriginDeprecated().host()));
     OCMStub([security_origin port])
-        .andReturn(web_frame->GetSecurityOrigin().EffectiveIntPort());
+        .andReturn(web_frame->GetSecurityOriginDeprecated().EffectiveIntPort());
     OCMStub([security_origin protocol])
-        .andReturn(
-            base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().scheme()));
+        .andReturn(base::SysUTF8ToNSString(
+            web_frame->GetSecurityOriginDeprecated().scheme()));
 
     // Mock WKFrameInfo.
     WKFrameInfo* frame_info = OCMClassMock([WKFrameInfo class]);
@@ -148,7 +148,8 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
   ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
-  EXPECT_EQ(main_frame_->GetSecurityOrigin(), main_frame->GetSecurityOrigin());
+  EXPECT_EQ(main_frame_->GetSecurityOriginDeprecated(),
+            main_frame->GetSecurityOriginDeprecated());
 
   // Add frame 1.
   SendFrameBecameAvailableMessage(frame_1_.get());
@@ -160,13 +161,15 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
   ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
-  EXPECT_EQ(main_frame_->GetSecurityOrigin(), main_frame->GetSecurityOrigin());
+  EXPECT_EQ(main_frame_->GetSecurityOriginDeprecated(),
+            main_frame->GetSecurityOriginDeprecated());
   // Check frame 1.
   WebFrame* frame_1 =
       GetPageWorldWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
   ASSERT_TRUE(frame_1);
   EXPECT_FALSE(frame_1->IsMainFrame());
-  EXPECT_EQ(frame_1_->GetSecurityOrigin(), frame_1->GetSecurityOrigin());
+  EXPECT_EQ(frame_1_->GetSecurityOriginDeprecated(),
+            frame_1->GetSecurityOriginDeprecated());
 
   // Add frame 2.
   SendFrameBecameAvailableMessage(frame_2_.get());
@@ -178,19 +181,22 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
   ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
-  EXPECT_EQ(main_frame_->GetSecurityOrigin(), main_frame->GetSecurityOrigin());
+  EXPECT_EQ(main_frame_->GetSecurityOriginDeprecated(),
+            main_frame->GetSecurityOriginDeprecated());
   // Check frame 1.
   frame_1 =
       GetPageWorldWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
   ASSERT_TRUE(frame_1);
   EXPECT_FALSE(frame_1->IsMainFrame());
-  EXPECT_EQ(frame_1_->GetSecurityOrigin(), frame_1->GetSecurityOrigin());
+  EXPECT_EQ(frame_1_->GetSecurityOriginDeprecated(),
+            frame_1->GetSecurityOriginDeprecated());
   // Check frame 2.
   WebFrame* frame_2 =
       GetPageWorldWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
   ASSERT_TRUE(frame_2);
   EXPECT_FALSE(frame_2->IsMainFrame());
-  EXPECT_EQ(frame_2_->GetSecurityOrigin(), frame_2->GetSecurityOrigin());
+  EXPECT_EQ(frame_2_->GetSecurityOriginDeprecated(),
+            frame_2->GetSecurityOriginDeprecated());
 
   // Remove frame 1.
   SendFrameBecameUnavailableMessage(frame_1_.get());
@@ -202,7 +208,8 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
   ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
-  EXPECT_EQ(main_frame_->GetSecurityOrigin(), main_frame->GetSecurityOrigin());
+  EXPECT_EQ(main_frame_->GetSecurityOriginDeprecated(),
+            main_frame->GetSecurityOriginDeprecated());
   // Check frame 1.
   frame_1 =
       GetPageWorldWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
@@ -212,7 +219,8 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
       GetPageWorldWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
   ASSERT_TRUE(frame_2);
   EXPECT_FALSE(frame_2->IsMainFrame());
-  EXPECT_EQ(frame_2_->GetSecurityOrigin(), frame_2->GetSecurityOrigin());
+  EXPECT_EQ(frame_2_->GetSecurityOriginDeprecated(),
+            frame_2->GetSecurityOriginDeprecated());
 
   // Remove main frame.
   SendFrameBecameUnavailableMessage(main_frame_.get());
@@ -232,7 +240,8 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
       GetPageWorldWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
   ASSERT_TRUE(frame_2);
   EXPECT_FALSE(frame_2->IsMainFrame());
-  EXPECT_EQ(frame_2_->GetSecurityOrigin(), frame_2->GetSecurityOrigin());
+  EXPECT_EQ(frame_2_->GetSecurityOriginDeprecated(),
+            frame_2->GetSecurityOriginDeprecated());
 
   // Remove frame 2.
   SendFrameBecameUnavailableMessage(frame_2_.get());

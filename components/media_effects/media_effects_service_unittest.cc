@@ -345,8 +345,7 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
 
   // Validate that the contents match the contents of the model file:
   std::string contents(sizeof(kFirstModelBytes), '\0');
-  ASSERT_TRUE(
-      model_file.Read(0, base::as_writable_bytes(base::make_span(contents))));
+  ASSERT_TRUE(model_file.Read(0, base::as_writable_byte_span(contents)));
   EXPECT_STREQ(contents.data(), kFirstModelBytes);
 
   // Setting the model file path for the second time propagates the model file
@@ -366,8 +365,7 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
 
   // Validate that the contents match the contents of the model file:
   contents.resize(sizeof(kSecondModelBytes));
-  ASSERT_TRUE(
-      model_file.Read(0, base::as_writable_bytes(base::make_span(contents))));
+  ASSERT_TRUE(model_file.Read(0, base::as_writable_byte_span(contents)));
   EXPECT_STREQ(contents.data(), kSecondModelBytes);
 
   // Setting the model file to a path that doesn't exist does not propagate the

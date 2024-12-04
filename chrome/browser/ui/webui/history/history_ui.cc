@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/history/history_ui.h"
 
 #include <memory>
@@ -242,9 +237,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kHistoryResources, kHistoryResourcesSize),
-      IDR_HISTORY_HISTORY_HTML);
+  webui::SetupWebUIDataSource(source, kHistoryResources,
+                              IDR_HISTORY_HISTORY_HTML);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -363,7 +357,6 @@ void HistoryUI::BindInterface(
 }
 
 void HistoryUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -375,8 +368,8 @@ void HistoryUI::CreateShoppingServiceHandler(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker,
           std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
                                                                 profile),
           nullptr);

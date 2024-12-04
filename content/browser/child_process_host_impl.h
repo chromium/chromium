@@ -62,6 +62,11 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   // Never returns MemoryDumpManager::kInvalidTracingProcessId.
   // Returns only memory_instrumentation::mojom::kServiceTracingProcessId in
   // single-process mode.
+  static uint64_t ChildProcessIdToTracingProcessId(
+      ChildProcessId child_process_id);
+
+  // TODO(crbug.com/379869738): Deprecated, please use
+  // ChildProcessIdToTracingProcessId above.
   static uint64_t ChildProcessUniqueIdToTracingProcessId(int child_process_id);
 
   // ChildProcessHost implementation

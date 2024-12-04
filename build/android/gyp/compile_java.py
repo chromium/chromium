@@ -749,6 +749,9 @@ def main(argv):
       ]
       # Treat @RecentlyNullable the same as @Nullable.
       errorprone_flags += ['-XepOpt:Nullaway:AcknowledgeAndroidRecent=true']
+      # Enable experimental checking of @Nullable generics.
+      # https://github.com/uber/NullAway/wiki/JSpecify-Support
+      errorprone_flags += ['-XepOpt:NullAway:JSpecifyMode=true']
       # Treat these the same as constructors.
       init_methods = [
           'android.app.Application.onCreate',

@@ -51,11 +51,6 @@ AutofillManager* ToMainFrameAutofillManager(
 
 }  // namespace
 
-static void JNI_AutofillProviderTestHelper_DisableCrowdsourcingForTesting(
-    JNIEnv* env_md_ctx_st) {
-  AutofillProvider::set_is_crowdsourcing_manager_disabled_for_testing();
-}
-
 static jboolean
 JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting(
     JNIEnv* env,

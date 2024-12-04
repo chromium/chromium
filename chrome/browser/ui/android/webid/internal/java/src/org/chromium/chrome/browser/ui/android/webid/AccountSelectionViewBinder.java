@@ -50,7 +50,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
@@ -266,11 +266,12 @@ class AccountSelectionViewBinder {
                     clickCallback.accept(context);
                 };
         return new SpanApplier.SpanInfo(
-                startTag, endTag, new NoUnderlineClickableSpan(context, onClickCallback));
+                startTag, endTag, new ChromeClickableSpan(context, onClickCallback));
     }
 
     /**
      * Called whenever a user data sharing consent is bound to this view.
+     *
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
@@ -382,8 +383,7 @@ class AccountSelectionViewBinder {
                     new SpanApplier.SpanInfo(
                             "<link_more_details>",
                             "</link_more_details>",
-                            new NoUnderlineClickableSpan(
-                                    context, (View clickedView) -> runnable.run()));
+                            new ChromeClickableSpan(context, (View clickedView) -> runnable.run()));
             mDescription = SpanApplier.applySpans(description, moreDetailsSpan);
         }
     }

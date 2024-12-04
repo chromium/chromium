@@ -70,11 +70,7 @@ public class RecentActivityListCoordinator {
      * @param messagingBackendService The backend for providing the recent activity list.
      * @param faviconProvider The backend for providing favicon for URLs.
      * @param avatarProvider The backend for providing avatars for users.
-     * @param focusTabCallback Callback to invoke to switch to a tab.
-     * @param reopenTabCallback Callback to invoke to reopen a removed tab from group.
-     * @param openTabGroupEditDialogCallback Callback to invoke to open the tab group title / color
-     *     editor dialog.
-     * @param manageSharingCallback Callback to invoke to open the people group management screen.
+     * @param recentActivityActionHandler Click event handler for activity rows.
      */
     public RecentActivityListCoordinator(
             Context context,
@@ -82,10 +78,7 @@ public class RecentActivityListCoordinator {
             MessagingBackendService messagingBackendService,
             FaviconProvider faviconProvider,
             AvatarProvider avatarProvider,
-            Callback<Integer> focusTabCallback,
-            Callback<String> reopenTabCallback,
-            Runnable openTabGroupEditDialogCallback,
-            Runnable manageSharingCallback) {
+            RecentActivityActionHandler recentActivityActionHandler) {
         mModelList = new ModelList();
         mBottomSheetController = bottomSheetController;
 
@@ -118,10 +111,7 @@ public class RecentActivityListCoordinator {
                         messagingBackendService,
                         faviconProvider,
                         avatarProvider,
-                        focusTabCallback,
-                        reopenTabCallback,
-                        openTabGroupEditDialogCallback,
-                        manageSharingCallback,
+                        recentActivityActionHandler,
                         this::closeBottomSheet);
     }
 

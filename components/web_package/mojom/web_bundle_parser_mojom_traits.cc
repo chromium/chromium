@@ -23,8 +23,8 @@ bool StructTraits<web_package::mojom::Ed25519PublicKeyDataView,
     return false;
   }
 
-  *public_key = web_package::Ed25519PublicKey::Create(
-      base::as_bytes(base::make_span(bytes)));
+  *public_key =
+      web_package::Ed25519PublicKey::Create(base::as_byte_span(bytes));
 
   return true;
 }
@@ -39,8 +39,7 @@ bool StructTraits<web_package::mojom::Ed25519SignatureDataView,
     return false;
   }
 
-  *signature = web_package::Ed25519Signature::Create(
-      base::as_bytes(base::make_span(bytes)));
+  *signature = web_package::Ed25519Signature::Create(base::as_byte_span(bytes));
 
   return true;
 }

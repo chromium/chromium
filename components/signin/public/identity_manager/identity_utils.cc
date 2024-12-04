@@ -88,32 +88,31 @@ bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
          !manager.HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
-base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
+base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
     const IdentityManager* identity_manager,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
   CHECK(accounts_in_cookie_jar_info.AreAccountsFresh());
   // Get all accounts in Chrome; both signed in and signed out accounts in
   // cookies.
 
-  base::flat_set<std::string> gaia_ids;
-  for (const gaia::ListedAccount& account :
-       accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()) {
-    gaia_ids.insert(account.gaia_id.ToString());
-  }
+  // `base::flat_set` has an optimized constructor from a vector.
+  base::flat_set<GaiaId> gaia_ids(base::ToVector(
+      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts(),
+      &gaia::ListedAccount::gaia_id));
 
   for (const gaia::ListedAccount& account :
        accounts_in_cookie_jar_info.GetSignedOutAccounts()) {
-    gaia_ids.insert(account.gaia_id.ToString());
+    gaia_ids.insert(account.gaia_id);
   }
 
   // If there is a Primary account, also keep it even if it was removed (not in
   // the cookie jar at all).
-  std::string primary_account_gaia_id =
+  GaiaId primary_account_gaia_id =
       identity_manager
           ? identity_manager
                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .gaia.ToString()
-          : std::string();
+                .gaia
+          : GaiaId();
   if (!primary_account_gaia_id.empty()) {
     gaia_ids.insert(primary_account_gaia_id);
   }

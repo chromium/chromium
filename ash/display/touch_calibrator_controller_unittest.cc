@@ -246,7 +246,7 @@ TEST_F(TouchCalibratorControllerTest, StartTouchscreenMapping) {
   EXPECT_TRUE(base::Contains(handlers, &touch_calibrator_controller));
 }
 
-TEST_F(TouchCalibratorControllerTest, MappingOneExternalDisplayFullFlow) {
+TEST_F(TouchCalibratorControllerTest, Mapping_OneExternalDisplay_FullFlow) {
   const display::Display& touch_display = InitDisplays();
   TouchCalibratorController touch_calibrator_controller;
   StartMappingChecks(&touch_calibrator_controller, touch_display);
@@ -277,7 +277,7 @@ TEST_F(TouchCalibratorControllerTest, MappingOneExternalDisplayFullFlow) {
   EXPECT_FALSE(touch_calibrator_controller.IsCalibrating());
 }
 
-TEST_F(TouchCalibratorControllerTest, MappingTwoExternalDisplaysFullFlow) {
+TEST_F(TouchCalibratorControllerTest, Mapping_TwoExternalDisplays_FullFlow) {
   UpdateDisplay("600x500,600x500,600x500");
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .SetFirstDisplayAsInternalDisplay();
@@ -383,7 +383,7 @@ TEST_F(TouchCalibratorControllerTest, MappingTwoExternalDisplaysFullFlow) {
   EXPECT_FALSE(touch_calibrator_controller.IsCalibrating());
 }
 
-TEST_F(TouchCalibratorControllerTest, MappingTwoExternalDisplaysSkipFirst) {
+TEST_F(TouchCalibratorControllerTest, Mapping_TwoExternalDisplays_SkipFirst) {
   UpdateDisplay("600x500,600x500,600x500");
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .SetFirstDisplayAsInternalDisplay();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 
 #include <memory>
@@ -147,9 +142,7 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
   source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kBluetoothPairingDialogResources,
-                      kBluetoothPairingDialogResourcesSize),
+      source, kBluetoothPairingDialogResources,
       IDR_BLUETOOTH_PAIRING_DIALOG_BLUETOOTH_PAIRING_DIALOG_CONTAINER_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct

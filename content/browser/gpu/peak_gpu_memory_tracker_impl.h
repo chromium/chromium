@@ -41,12 +41,9 @@ class PeakGpuMemoryTrackerImpl : public viz::PeakGpuMemoryTracker {
   // GpuService. For use by tests to synchronize work done on the UI thread.
   base::OnceClosure post_gpu_service_callback_for_testing_ = base::DoNothing();
 
-  // Provides the unique identifier for each PeakGpuMemoryTrackerImpl.
-  static uint32_t next_sequence_number_;
-
   bool canceled_ = false;
   viz::PeakGpuMemoryTracker::Usage usage_;
-  uint32_t sequence_num_ = next_sequence_number_++;
+  uint32_t sequence_num_;
 };
 
 }  // namespace content

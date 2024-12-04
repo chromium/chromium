@@ -23,7 +23,6 @@
 #include "components/prefs/pref_service.h"
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-#include "chrome/browser/password_manager/android/android_backend_with_double_deletion.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
@@ -120,19 +119,9 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
     // UPM M2: The password store proxy backend is created. No migrations are
     // needed.
     case UseUpmLocalAndSeparateStoresState::kOn:
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::
-                  kClearLoginDatabaseForAllMigratedUPMUsers)) {
-        return std::make_unique<
-            password_manager::PasswordStoreAndroidLocalBackend>(
-            prefs, password_affiliation_adapter);
-      }
-      return std::make_unique<AndroidBackendWithDoubleDeletion>(
-          CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
-                                                   os_crypt_async),
-          std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-              prefs, password_affiliation_adapter));
-
+      return std::make_unique<
+          password_manager::PasswordStoreAndroidLocalBackend>(
+          prefs, password_affiliation_adapter);
     // Old UPM: support for local passwords in GMSCore is unavailable for some
     // reason.
     case UseUpmLocalAndSeparateStoresState::kOff: {
@@ -202,27 +191,10 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
   // it will not be high enough for split stores, so the account store
   // won't be created in that case either.
   CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kClearLoginDatabaseForAllMigratedUPMUsers)) {
-    backend =
-        std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-            prefs, /*password_affiliation_adapter=*/nullptr,
-            password_manager::kAccountStore);
-  } else {
-    // Note: The built-in backend is backed by the login database and Chrome
-    // syncs it. As such, it expects local data to be cleared every time when
-    // sync is permanently disabled and thus uses
-    // WipeModelUponSyncDisabledBehavior::kAlways.
-    backend = std::make_unique<AndroidBackendWithDoubleDeletion>(
-        std::make_unique<PasswordStoreBuiltInBackend>(
-            std::move(login_db),
-            syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs,
-            os_crypt_async),
-        std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-            prefs, /*password_affiliation_adapter=*/nullptr,
-            password_manager::kAccountStore));
-  }
+  backend =
+      std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
+          prefs, /*password_affiliation_adapter=*/nullptr,
+          password_manager::kAccountStore);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

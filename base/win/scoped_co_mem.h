@@ -7,6 +7,8 @@
 
 #include <objbase.h>
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
@@ -26,6 +28,13 @@ class ScopedCoMem {
 
   ScopedCoMem(const ScopedCoMem&) = delete;
   ScopedCoMem& operator=(const ScopedCoMem&) = delete;
+
+  ScopedCoMem(ScopedCoMem&& other)
+      : mem_ptr_(std::exchange(other.mem_ptr_, nullptr)) {}
+  ScopedCoMem& operator=(ScopedCoMem&& other) {
+    Reset(std::exchange(other.mem_ptr_, nullptr));
+    return *this;
+  }
 
   ~ScopedCoMem() { Reset(nullptr); }
 

@@ -10,6 +10,9 @@
 #include <tuple>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -22,14 +25,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace arc {
 namespace internal {
 
@@ -41,7 +36,6 @@ constexpr size_t kMaxIconSizeInPx = 200;
 constexpr char kPngDataUrlPrefix[] = "data:image/png;base64,";
 
 // Returns an instance for calling RequestActivityIcons().
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Ash requests icons to ArcServiceManager.
 absl::variant<mojom::IntentHelperInstance*, ActivityIconLoader::GetResult>
 GetInstanceForRequestActivityIcons() {
@@ -77,70 +71,6 @@ GetInstanceForRequestActivityIcons() {
   }
   return instance;
 }
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-// Adapter class for wrapping crosapi::mojom::Arc used in lacros-chrome.
-// This is returned from GetInstanceForRequestActivityIcons().
-class Adapter {
- public:
-  explicit Adapter(crosapi::mojom::Arc* instance) : instance_(instance) {}
-  ~Adapter() = default;
-
-  using OnRequestActivityIconsSucceededCallback =
-      base::OnceCallback<void(std::vector<crosapi::mojom::ActivityIconPtr>)>;
-
-  // If status is not kSuccess, immediately return callback.
-  void RequestActivityIcons(
-      std::vector<crosapi::mojom::ActivityNamePtr> activities,
-      crosapi::mojom::ScaleFactor scale_factor,
-      OnRequestActivityIconsSucceededCallback cb) {
-    instance_->RequestActivityIcons(
-        std::move(activities), scale_factor,
-        base::BindOnce(
-            [](OnRequestActivityIconsSucceededCallback cb,
-               std::vector<crosapi::mojom::ActivityIconPtr> icons,
-               crosapi::mojom::RequestActivityIconsStatus status) {
-              // If status is not kSuccess, immediately return callback.
-              if (status == crosapi::mojom::RequestActivityIconsStatus::
-                                kArcNotAvailable) {
-                LOG(ERROR) << "Failed to connect to ARC in ash-chrome.";
-                std::move(cb).Run(
-                    std::vector<crosapi::mojom::ActivityIconPtr>());
-                return;
-              }
-
-              std::move(cb).Run(std::move(icons));
-            },
-            std::move(cb)));
-  }
-
- private:
-  raw_ptr<crosapi::mojom::Arc> instance_;
-};
-
-// Lacros requests icons to ash-chrome via crosapi.
-absl::variant<std::unique_ptr<Adapter>, ActivityIconLoader::GetResult>
-GetInstanceForRequestActivityIcons() {
-  auto* service = chromeos::LacrosService::Get();
-
-  if (!service || !service->IsAvailable<crosapi::mojom::Arc>()) {
-    VLOG(2) << "ARC is not supported in Lacros.";
-    return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
-  }
-
-  if (service->GetInterfaceVersion<crosapi::mojom::Arc>() <
-      int{crosapi::mojom::Arc::MethodMinVersions::
-              kRequestActivityIconsMinVersion}) {
-    VLOG(2) << "Ash Lacros-Arc version "
-            << service->GetInterfaceVersion<crosapi::mojom::Arc>()
-            << " does not support RequestActivityIcons().";
-    return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
-  }
-
-  return std::make_unique<Adapter>(
-      service->GetRemote<crosapi::mojom::Arc>().get());
-}
-
-#endif
 
 ActivityIconLoader::ActivityName GenerateActivityName(
     const ActivityIconLoader::ActivityIconPtr& icon) {
@@ -369,8 +299,6 @@ void ActivityIconLoader::OnIconsReady(
 
   // TODO(crbug.com/40131344): Remove when the adaptive icon feature is enabled
   // by default.
-  // TODO(crbug.com/40806186): Adaptive Icon is not supported in Lacros now. Do
-  // not remove this until it's supported.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ResizeAndEncodeIcons, std::move(icons), scale_factor_),

@@ -31,7 +31,7 @@ bool MaybeGetWifiSSID(const std::string& if_name, std::string* ssid_out) {
   struct iwreq wreq = {};
   strncpy(wreq.ifr_name, if_name.data(), IFNAMSIZ - 1);
 
-  char ssid[IW_ESSID_MAX_SIZE + 1] = {0};
+  char ssid[IW_ESSID_MAX_SIZE + 1] = {};
   wreq.u.essid.pointer = ssid;
   wreq.u.essid.length = IW_ESSID_MAX_SIZE;
   if (ioctl(ioctl_socket.get(), SIOCGIWESSID, &wreq) == -1) {

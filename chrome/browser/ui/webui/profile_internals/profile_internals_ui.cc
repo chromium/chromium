@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -36,9 +31,7 @@ ProfileInternalsUI::ProfileInternalsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<ProfileInternalsHandler>());
 
   // Add required resources.
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kProfileInternalsResources,
-                                              kProfileInternalsResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kProfileInternalsResources,
                               IDR_PROFILE_INTERNALS_PROFILE_INTERNALS_HTML);
 }
 

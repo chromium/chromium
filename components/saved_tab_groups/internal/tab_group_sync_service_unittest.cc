@@ -96,6 +96,10 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
   MOCK_METHOD(void,
+              OnTabSelected,
+              (const std::optional<base::Uuid>&,
+               const std::optional<base::Uuid>&));
+  MOCK_METHOD(void,
               OnTabGroupMigrated,
               (const SavedTabGroup&, const base::Uuid&, TriggerSource));
   MOCK_METHOD(void,
@@ -1000,11 +1004,28 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
                                   u"random tab title", GURL("www.google.com"),
                                   std::nullopt);
+  auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  auto* tab = group->GetTab(local_tab_id_2);
+  EXPECT_CALL(*observer_, OnTabSelected(Eq(group->saved_guid()),
+                                        Eq(tab->saved_tab_guid())));
 
   // Select tab.
   tab_group_sync_service_->OnTabSelected(local_group_id_1_, local_tab_id_2);
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin", 1u);
+}
+
+TEST_F(TabGroupSyncServiceTest, OnTabSelectedForNonExistingTab) {
+  auto local_tab_group_id_2 = test::GenerateRandomTabGroupID();
+  auto local_tab_id_2 = test::GenerateRandomTabID();
+  auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_CALL(*observer_, OnTabSelected(Eq(std::nullopt), Eq(std::nullopt)))
+      .Times(3);
+
+  // Select tab.
+  tab_group_sync_service_->OnTabSelected(local_group_id_1_, local_tab_id_2);
+  tab_group_sync_service_->OnTabSelected(local_tab_group_id_2, local_tab_id_2);
+  tab_group_sync_service_->OnTabSelected(std::nullopt, local_tab_id_2);
 }
 
 TEST_F(TabGroupSyncServiceTest, RecordTabGroupEvent) {

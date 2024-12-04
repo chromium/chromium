@@ -373,7 +373,7 @@ constexpr int ArcSystemStatCollector::kGemInfoColumns[];
 // static
 constexpr int ArcSystemStatCollector::kOneValueColumns[];
 
-ArcSystemStatCollector::ArcSystemStatCollector() {}
+ArcSystemStatCollector::ArcSystemStatCollector() = default;
 
 ArcSystemStatCollector::~ArcSystemStatCollector() {
   FreeSystemReadersContext();

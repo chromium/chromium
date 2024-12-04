@@ -166,6 +166,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     // CRX components
     "crx-components",
+    "crx-components-cohort-hashes",
 
     // sandbox/linux
     "seccomp-sigsys",

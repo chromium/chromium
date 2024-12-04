@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -20,7 +21,7 @@ class ObjectProxy;
 namespace dbus_xdg {
 
 // Error codes returned by the callback.
-enum class ResponseError {
+enum class COMPONENT_EXPORT(COMPONENTS_DBUS) ResponseError {
   kSignalConnectionFailed,
   kMethodCallFailed,
   kInvalidMethodResponse,
@@ -33,7 +34,7 @@ enum class ResponseError {
 using ResponseCallback = base::OnceCallback<void(
     /*results=*/base::expected<DbusDictionary, ResponseError>)>;
 
-class Request {
+class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
  public:
   // Makes a DBus XDG request and runs `callback` with the results. `arguments`
   // is of type DbusParameters, or can be any DbusType if there's exactly one

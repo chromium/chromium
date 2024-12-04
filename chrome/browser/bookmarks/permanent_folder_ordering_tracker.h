@@ -55,7 +55,7 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
-                         size_t new_index) override {}
+                         size_t new_index) override;
   void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
@@ -64,6 +64,7 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls,
                            const base::Location& location) override;
+  void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
   void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
                                    const base::Location& location) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
@@ -78,15 +79,21 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
 
  private:
   void SetTrackedPermanentNodes();
-  size_t GetDefaultIndexOf(const bookmarks::BookmarkNode* node) const;
+  bool IsTrackedPermanentNode(const bookmarks::BookmarkNode* node) const;
+  void ResetOrderingToDefault();
+  bool ShouldTrackOrdering() const;
+  size_t GetExpectedChildrenCount() const;
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const bookmarks::BookmarkNode::Type tracked_type_;
   raw_ptr<const bookmarks::BookmarkNode> local_or_syncable_node_ = nullptr;
   raw_ptr<const bookmarks::BookmarkNode> account_node_ = nullptr;
 
-  // Non-empty if any special ordering exists.
+  // Non-empty if both `local_or_syncable_node_` and
+  // `account_node_` have children.
   std::vector<raw_ptr<const bookmarks::BookmarkNode>> ordering_;
+
+  bool all_user_bookmarks_remove_in_progress_ = false;
 
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>

@@ -114,7 +114,7 @@ TEST_F(NdkMediaCodecWrapperTest, Create) {
   EXPECT_TRUE(wrapper);
 }
 
-TEST_F(NdkMediaCodecWrapperTest, InputsSingleInput) {
+TEST_F(NdkMediaCodecWrapperTest, Inputs_SingleInput) {
   CreateMediaCodecWrapper();
   ClearExpectations();
   EXPECT_CALL(*this, OnInputAvailable()).Times(1);
@@ -135,7 +135,7 @@ TEST_F(NdkMediaCodecWrapperTest, InputsSingleInput) {
   EXPECT_FALSE(wrapper_->HasInput());
 }
 
-TEST_F(NdkMediaCodecWrapperTest, InputsMultipleInputs) {
+TEST_F(NdkMediaCodecWrapperTest, Inputs_MultipleInputs) {
   CreateMediaCodecWrapper();
   ClearExpectations();
 
@@ -159,7 +159,7 @@ TEST_F(NdkMediaCodecWrapperTest, InputsMultipleInputs) {
   EXPECT_FALSE(wrapper_->HasInput());
 }
 
-TEST_F(NdkMediaCodecWrapperTest, OutputsSingleInput) {
+TEST_F(NdkMediaCodecWrapperTest, Outputs_SingleInput) {
   CreateMediaCodecWrapper();
   ClearExpectations();
   EXPECT_CALL(*this, OnOutputAvailable()).Times(1);
@@ -184,7 +184,7 @@ TEST_F(NdkMediaCodecWrapperTest, OutputsSingleInput) {
   EXPECT_FALSE(wrapper_->HasOutput());
 }
 
-TEST_F(NdkMediaCodecWrapperTest, OutputsMultipleOutputs) {
+TEST_F(NdkMediaCodecWrapperTest, Outputs_MultipleOutputs) {
   CreateMediaCodecWrapper();
   ClearExpectations();
 

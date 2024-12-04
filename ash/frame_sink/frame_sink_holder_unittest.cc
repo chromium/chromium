@@ -236,7 +236,7 @@ TEST_F(FrameSinkHolderTest, ObserveBeginFrameSourceOnDemand) {
   frame_sink_holder_->SetBeginFrameSource(nullptr);
 }
 
-TEST_F(FrameSinkHolderTest, ObserveBeginFrameSourceOnDemandAutoUpdate) {
+TEST_F(FrameSinkHolderTest, ObserveBeginFrameSourceOnDemand_AutoUpdate) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   frame_sink_holder_->SetAutoUpdateMode(true);
@@ -299,7 +299,7 @@ TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyWhilePendingFrameAck) {
   EXPECT_TRUE(test_api.IsPendingFrame());
 }
 
-TEST_F(FrameSinkHolderTest, HandlingAsynchronousFrameRequestsNoAutoUpdate) {
+TEST_F(FrameSinkHolderTest, HandlingAsynchronousFrameRequests_NoAutoUpdate) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());

@@ -10,6 +10,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
@@ -35,6 +36,19 @@ scoped_refptr<const Extension> PlatformTestExtensionLoader::LoadExtension(
   scoped_refptr<const Extension> extension = LoadExtensionFromDirectory(path);
   if (!extension) {
     return nullptr;
+  }
+
+  // Force file access and/or incognito state and set install param if
+  // requested.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  if (allow_file_access_.has_value()) {
+    prefs->SetAllowFileAccess(extension->id(), *allow_file_access_);
+  }
+  if (allow_incognito_access_.has_value()) {
+    prefs->SetIsIncognitoEnabled(extension->id(), *allow_incognito_access_);
+  }
+  if (install_param_.has_value()) {
+    SetInstallParam(prefs, extension->id(), *install_param_);
   }
 
   extension_id_ = extension->id();

@@ -16,25 +16,25 @@ found in the LICENSE file.
         android:id="@+id/task_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.25"
+        android:layout_weight="1"
     />
     <TextView
         android:id="@+id/memory_footprint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.25"
+        android:layout_weight="1"
     />
     <TextView
         android:id="@+id/cpu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.25"
+        android:layout_weight="1"
     />
     <TextView
         android:id="@+id/process_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.25"
+        android:layout_weight="1"
     />
 
 </LinearLayout>

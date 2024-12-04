@@ -26,7 +26,7 @@ std::unique_ptr<SecureEnclaveClient>* GetTestInstanceStorage() {
 // `wrapped_label`.
 bool CheckEqual(base::span<const uint8_t> wrapped_label,
                 const std::string& label) {
-  auto label_span = base::as_bytes(base::make_span(label));
+  auto label_span = base::as_byte_span(label);
   return base::ranges::equal(wrapped_label, label_span);
 }
 

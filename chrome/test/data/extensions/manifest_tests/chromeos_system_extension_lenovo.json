@@ -19,7 +19,8 @@
   "chromeos_system_extension": {},
   "externally_connectable": {
     "matches": [
-      "https://chromebookdiags.lenovo.com/*"
+      "https://chromebookdiags.lenovo.com/*",
+      "isolated-app://huhncggoe22ofjan6nylwijltmewmbevapiotudwgbyjbhrlphrqaaic/*"
     ]
   },
   "options_page": "options.html"

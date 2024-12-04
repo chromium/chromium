@@ -92,7 +92,7 @@ const content::BrowserContext* GetActiveContext() {
 
 class TestShellDelegateChromeOS : public ash::TestShellDelegate {
  public:
-  TestShellDelegateChromeOS() {}
+  TestShellDelegateChromeOS() = default;
 
   TestShellDelegateChromeOS(const TestShellDelegateChromeOS&) = delete;
   TestShellDelegateChromeOS& operator=(const TestShellDelegateChromeOS&) =
@@ -1391,7 +1391,7 @@ class TestWindowObserver : public aura::WindowObserver {
   TestWindowObserver(const TestWindowObserver&) = delete;
   TestWindowObserver& operator=(const TestWindowObserver&) = delete;
 
-  ~TestWindowObserver() override {}
+  ~TestWindowObserver() override = default;
 
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,

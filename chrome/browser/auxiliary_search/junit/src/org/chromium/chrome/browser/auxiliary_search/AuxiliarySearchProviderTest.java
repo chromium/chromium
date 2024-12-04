@@ -334,6 +334,7 @@ public class AuxiliarySearchProviderTest {
 
         mAuxiliarySearchProvider =
                 new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);
+        AuxiliarySearchProvider.setSkipWritingFileForTesting(true);
 
         ArrayList<Tab> tabList = new ArrayList<>();
         int count = 100;

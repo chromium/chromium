@@ -3771,8 +3771,8 @@ enum WebFeature {
   kFedCmUserInfo = 4426,
   // The items above roughly this point are available in the M110 branch.
 
-  kIDNA2008DeviationCharacterInHostnameOfSubresource = 4427,
-  kIDNA2008DeviationCharacterInHostnameOfIFrame = 4428,
+  kOBSOLETE_IDNA2008DeviationCharacterInHostnameOfSubresource = 4427,
+  kOBSOLETE_IDNA2008DeviationCharacterInHostnameOfIFrame = 4428,
   kWindowOpenPopupOnMobile = 4429,
   kWindowOpenedAsPopupOnMobile = 4430,
   kOBSOLETE_PrivateNetworkAccessIgnoredCrossOriginPreflightError = 4431,

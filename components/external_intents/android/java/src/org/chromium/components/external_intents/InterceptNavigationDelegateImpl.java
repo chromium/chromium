@@ -299,7 +299,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 pageTransition,
                 isRedirect,
                 hasUserGesture,
-                mClient.getLastUserInteractionTime(),
                 getLastCommittedEntryIndex(),
                 initialNavigation,
                 isRendererInitiated);
@@ -387,13 +386,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         @PageTransition int transition = PageTransition.LINK;
         mClient.getOrCreateRedirectHandler()
                 .updateNewUrlLoading(
-                        transition,
-                        false,
-                        true,
-                        mClient.getLastUserInteractionTime(),
-                        getLastCommittedEntryIndex(),
-                        false,
-                        true);
+                        transition, false, true, getLastCommittedEntryIndex(), false, true);
     }
 
     /**

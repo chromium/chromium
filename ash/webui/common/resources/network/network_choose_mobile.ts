@@ -184,7 +184,6 @@ export class NetworkChooseMobileElement extends NetworkChooseMobileElementBase {
     assert(this.managedProperties);
     this.getNetworkConfig_().selectCellularMobileNetwork(
         this.managedProperties.guid, target.value);
-    this.dispatchEvent(new CustomEvent('user-action-setting-change'));
   }
 }
 

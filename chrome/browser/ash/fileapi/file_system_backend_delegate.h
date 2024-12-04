@@ -32,7 +32,7 @@ namespace ash {
 // of FileSystemBackend.
 class FileSystemBackendDelegate {
  public:
-  virtual ~FileSystemBackendDelegate() {}
+  virtual ~FileSystemBackendDelegate() = default;
 
   // Called from FileSystemBackend::GetAsyncFileUtil().
   virtual storage::AsyncFileUtil* GetAsyncFileUtil(

@@ -65,8 +65,7 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           kChromeUIOSFeedbackUntrustedUrl);
 
-  untrusted_source->AddResourcePaths(base::make_span(
-      kAshOsFeedbackUntrustedResources, kAshOsFeedbackUntrustedResourcesSize));
+  untrusted_source->AddResourcePaths(kAshOsFeedbackUntrustedResources);
   untrusted_source->AddResourcePath("help_content.js",
                                     IDR_ASH_OS_FEEDBACK_HELP_CONTENT_JS);
   untrusted_source->AddResourcePath("help_content.html.js",

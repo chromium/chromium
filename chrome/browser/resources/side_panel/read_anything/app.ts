@@ -881,11 +881,14 @@ export class AppElement extends AppElementBase {
     this.updateApplicationState(lang, newVoicePackStatus);
 
     if (isVoicePackStatusError(newVoicePackStatus)) {
-      // Disable the associated language if there are no other Google voices for
-      // it.
+      // On ChromeOS, disable the associated language if there are no other
+      // Google voices for it. Otherwise, only disable it if there are no
+      // voices at all for this language.
       const availableVoicesForLang = this.getVoices_().filter(
           v => getVoicePackConvertedLangIfExists(v.lang) === lang);
-      if (!availableVoicesForLang.some(voice => isGoogle(voice))) {
+      if (!availableVoicesForLang.length ||
+          (chrome.readingMode.isChromeOsAsh &&
+           !availableVoicesForLang.some(voice => isGoogle(voice)))) {
         chrome.readingMode.onLanguagePrefChange(lang, false);
         this.enabledLangs = this.enabledLangs.filter(
             enabledLang =>

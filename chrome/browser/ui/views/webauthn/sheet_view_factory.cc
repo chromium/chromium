@@ -304,29 +304,13 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
           std::make_unique<AuthenticatorSelectAccountSheetModel>(
               dialog_model,
-              AuthenticatorSelectAccountSheetModel::kPostUserVerification,
-              AuthenticatorSelectAccountSheetModel::kMultipleAccounts));
-      break;
-    case Step::kSelectSingleAccount:
-      sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
-          std::make_unique<AuthenticatorSelectAccountSheetModel>(
-              dialog_model,
-              AuthenticatorSelectAccountSheetModel::kPostUserVerification,
-              AuthenticatorSelectAccountSheetModel::kSingleAccount));
+              AuthenticatorSelectAccountSheetModel::kPostUserVerification));
       break;
     case Step::kPreSelectAccount:
       sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
           std::make_unique<AuthenticatorSelectAccountSheetModel>(
               dialog_model,
-              AuthenticatorSelectAccountSheetModel::kPreUserVerification,
-              AuthenticatorSelectAccountSheetModel::kMultipleAccounts));
-      break;
-    case Step::kPreSelectSingleAccount:
-      sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
-          std::make_unique<AuthenticatorSelectAccountSheetModel>(
-              dialog_model,
-              AuthenticatorSelectAccountSheetModel::kPreUserVerification,
-              AuthenticatorSelectAccountSheetModel::kSingleAccount));
+              AuthenticatorSelectAccountSheetModel::kPreUserVerification));
       break;
     case Step::kSelectPriorityMechanism:
       sheet_view = std::make_unique<AuthenticatorPriorityMechanismSheetView>(

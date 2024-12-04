@@ -32,7 +32,7 @@ namespace extensions {
 
 class ExternalLogoutRequestEventHandlerUnittest : public testing::Test {
  public:
-  ExternalLogoutRequestEventHandlerUnittest() {}
+  ExternalLogoutRequestEventHandlerUnittest() = default;
 
   ExternalLogoutRequestEventHandlerUnittest(
       const ExternalLogoutRequestEventHandlerUnittest&) = delete;

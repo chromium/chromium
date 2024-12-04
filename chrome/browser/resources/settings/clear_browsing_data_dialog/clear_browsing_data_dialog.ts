@@ -46,7 +46,7 @@ import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
 import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
-import {ClearBrowsingDataBrowserProxyImpl, TimePeriod, TimePeriodExperiment} from './clear_browsing_data_browser_proxy.js';
+import {ClearBrowsingDataBrowserProxyImpl, TimePeriod} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog.html.js';
 
 /**
@@ -147,69 +147,11 @@ export class SettingsClearBrowsingDataDialogElement extends
         ],
       },
 
-      enableCbdTimeframeRequired_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableCbdTimeframeRequired');
-        },
-      },
-
       unoDesktopEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('unoDesktopEnabled');
         },
-      },
-
-      /**
-       * When CBDTimeframeRequired feature/flag is on, this will be the list
-       * of options for the dropdown menu. V2 additionally contains the "Last 15
-       * minutes" and the "Select a time range" options with "Select a time
-       * range" being always hidden in the menuOptions list in which users can
-       * chose the time range.
-       */
-      clearFromOptionsV2_: {
-        readOnly: true,
-        type: Array,
-        value: [
-          // The pref is initialized to TimePeriodExperiment.NOT_SELECTED, which
-          // is shown in the dropdown as the selected option until the user
-          // selects a different value. The menuList of options should not
-          // contain the option for TimePeriodExperiment.NOT_SELECTED, as it
-          // doesn't make sense for users to choose it.
-          {
-            value: TimePeriodExperiment.NOT_SELECTED,
-            name: loadTimeData.getString('clearPeriodNotSelected'),
-            hidden: true,
-          },
-          // The value of 15min is 6 to match the value written in the backend,
-          // Also, it comes first in the list to keep the list in ascending
-          // order.
-          {
-            value: TimePeriodExperiment.LAST_15_MINUTES,
-            name: loadTimeData.getString('clearPeriod15Minutes'),
-          },
-          {
-            value: TimePeriodExperiment.LAST_HOUR,
-            name: loadTimeData.getString('clearPeriodHour'),
-          },
-          {
-            value: TimePeriodExperiment.LAST_DAY,
-            name: loadTimeData.getString('clearPeriod24Hours'),
-          },
-          {
-            value: TimePeriodExperiment.LAST_WEEK,
-            name: loadTimeData.getString('clearPeriod7Days'),
-          },
-          {
-            value: TimePeriodExperiment.FOUR_WEEKS,
-            name: loadTimeData.getString('clearPeriod4Weeks'),
-          },
-          {
-            value: TimePeriodExperiment.ALL_TIME,
-            name: loadTimeData.getString('clearPeriodEverything'),
-          },
-        ],
       },
 
       clearingInProgress_: {
@@ -329,8 +271,6 @@ export class SettingsClearBrowsingDataDialogElement extends
   syncStatus: SyncStatus|undefined;
   private counters_: {[k: string]: string};
   private clearFromOptions_: DropdownMenuOptionList;
-  private clearFromOptionsV2_: DropdownMenuOptionList;
-  private enableCbdTimeframeRequired_: boolean;
   private unoDesktopEnabled_: boolean;
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
@@ -552,74 +492,8 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
   }
 
-  // TODO(crbug.com/40283307): Remove this after CbdTimeframeRequired finishes.
-  /** Highlight the time period dropdown in case no selection was made. */
-  private validateSelectedTimeRange_(): boolean {
-    const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
-    const timePeriod = Number(dropdownMenu.getSelectedValue());
-    if (timePeriod !== TimePeriodExperiment.NOT_SELECTED) {
-      return true;
-    }
-    // No time period is selected: the time period dropdown gets highlighted,
-    // and no clearing should happen.
-    dropdownMenu.classList.add('dropdown-error');
-    // Move the focus to the dropdown. This visually indicates the requirement
-    // to select a time period, which the dropdown clarifies via the text of its
-    // current selection. This also allows screen readers to read out this text
-    // to a11y users to indicate this requirement to them.
-    dropdownMenu.focus();
-    return false;
-  }
-
-  // TODO(crbug.com/40283307): Remove once crbug.com/1487530 completed.
-  private cbdExperimentDualWritePrefs_() {
-    // To avoid in- and out-of-experiment prefs of the CBD time range experiment
-    // (crbug.com/1487530) from diverging, the in-experiment prefs should also
-    // be written to the out-of-experiment prefs. A 15min in-experiment
-    // selection should be a 1h out-of-experiment selection. Out-of-experiment
-    // prefs should also be written to the in-experiment prefs iff the in-
-    // experiment prefs value is not TimePeriodExperiment.NOT_SELECTED.
-    const dropdownMenuBasic =
-        this.shadowRoot!.querySelector<SettingsCheckboxElement>(
-            '#clearFromBasic');
-    assert(dropdownMenuBasic);
-    const timeRangeBasic =
-        dropdownMenuBasic.pref!.value === TimePeriodExperiment.LAST_15_MINUTES ?
-        TimePeriod.LAST_HOUR :
-        dropdownMenuBasic.pref!.value;
-
-    const dropdownMenuAdvanced =
-        this.shadowRoot!.querySelector<SettingsCheckboxElement>('#clearFrom');
-    assert(dropdownMenuAdvanced);
-    const timeRangeAdvanced = dropdownMenuAdvanced.pref!.value ===
-            TimePeriodExperiment.LAST_15_MINUTES ?
-        TimePeriod.LAST_HOUR :
-        dropdownMenuAdvanced.pref!.value;
-
-    if (this.enableCbdTimeframeRequired_) {
-      this.setPrefValue('browser.clear_data.time_period_basic', timeRangeBasic);
-      this.setPrefValue('browser.clear_data.time_period', timeRangeAdvanced);
-    } else {
-      // Out-of-experiment.
-      if (this.getPref('browser.clear_data.time_period_v2_basic').value !==
-          TimePeriodExperiment.NOT_SELECTED) {
-        this.setPrefValue(
-            'browser.clear_data.time_period_v2_basic', timeRangeBasic);
-      }
-      if (this.getPref('browser.clear_data.time_period_v2').value !==
-          TimePeriodExperiment.NOT_SELECTED) {
-        this.setPrefValue(
-            'browser.clear_data.time_period_v2', timeRangeAdvanced);
-      }
-    }
-  }
-
   /** Clears browsing data and maybe shows a history notice. */
   private async clearBrowsingData_() {
-    if (!this.validateSelectedTimeRange_()) {
-      return;
-    }
-
     this.clearingInProgress_ = true;
     this.clearingDataAlertString_ = loadTimeData.getString('clearingData');
 
@@ -630,31 +504,14 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     if (this.isBasicTabSelected_()) {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
-      // For users in the CbdTimeframeRequired experiment, the selection should
-      // only be recorded the first time they clear data. This needs to be
-      // checked before the selected time range is written to prefs.
-      if (!this.enableCbdTimeframeRequired_ ||
-          this.getPref<TimePeriodExperiment>(
-                  'browser.clear_data.time_period_v2_basic')
-                  .value === TimePeriodExperiment.NOT_SELECTED) {
-        this.browserProxy_
-            .recordSettingsClearBrowsingDataBasicTimePeriodHistogram(
-                timePeriod);
-      }
+      this.browserProxy_
+          .recordSettingsClearBrowsingDataBasicTimePeriodHistogram(timePeriod);
     } else {
       // Advanced tab.
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
-      // For users in the CbdTimeframeRequired experiment, the selection should
-      // only be recorded the first time they clear data. This needs to be
-      // checked before the selected time range is written to prefs.
-      if (!this.enableCbdTimeframeRequired_ ||
-          this.getPref<TimePeriodExperiment>(
-                  'browser.clear_data.time_period_v2')
-                  .value === TimePeriodExperiment.NOT_SELECTED) {
-        this.browserProxy_
-            .recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
-                timePeriod);
-      }
+      this.browserProxy_
+          .recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
+              timePeriod);
     }
 
     this.setPrefValue(
@@ -669,9 +526,6 @@ export class SettingsClearBrowsingDataDialogElement extends
         .querySelectorAll<SettingsDropdownMenuElement>(
             'settings-dropdown-menu[no-set-pref]')
         .forEach(dropdown => dropdown.sendPrefChange());
-
-    // Dual write prefs only after the regular prefs have been written above.
-    this.cbdExperimentDualWritePrefs_();
 
     const {showHistoryNotice, showPasswordsNotice} =
         await this.browserProxy_.clearBrowsingData(
@@ -820,17 +674,8 @@ export class SettingsClearBrowsingDataDialogElement extends
   private onTimePeriodChanged_() {
     const dropdownMenu = this.getTimeRangeDropdownForCurrentPage_();
 
-    // Needed in the |enableCbdTimeframeRequired_| experiment, no-op otherwise.
-    // TODO(crbug.com/40283307): Remove when crbug.com/1487530 finished.
-    dropdownMenu.classList.remove('dropdown-error');
-
-    let timePeriod = parseInt(dropdownMenu.getSelectedValue(), 10);
+    const timePeriod = parseInt(dropdownMenu.getSelectedValue(), 10);
     assert(!Number.isNaN(timePeriod));
-
-    // If the time period is not selected, count all the data.
-    if (timePeriod === TimePeriodExperiment.NOT_SELECTED) {
-      timePeriod = TimePeriodExperiment.ALL_TIME;
-    }
 
     this.browserProxy_.restartCounters(this.isBasicTabSelected_(), timePeriod);
   }

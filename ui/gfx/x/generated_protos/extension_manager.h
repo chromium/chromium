@@ -98,11 +98,11 @@ class COMPONENT_EXPORT(X11) ExtensionManager {
   std::unique_ptr<Test> xtest_;
 
   // Event opcodes indexed by response ID.
-  uint8_t opcodes_[128] = {0};
+  uint8_t opcodes_[128] = {};
   // Event type IDs indexed by response ID.
-  uint8_t event_type_ids_[128] = {0};
+  uint8_t event_type_ids_[128] = {};
   // Generic event type IDs for all extensions.
-  uint8_t ge_type_ids_[33] = {0};
+  uint8_t ge_type_ids_[33] = {};
   ExtensionGeMap ge_extensions_[1] = {};
 };
 

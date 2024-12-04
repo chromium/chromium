@@ -7,12 +7,26 @@ package org.chromium.chrome.browser.auxiliary_search.module;
 import android.view.View.OnClickListener;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the auxiliary search module. */
 interface AuxiliarySearchModuleProperties {
-    WritableObjectPropertyKey<OnClickListener> MODULE_BUTTON_ON_CLICK_LISTENER =
+    WritableObjectPropertyKey<OnClickListener> MODULE_FIRST_BUTTON_ON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<OnClickListener> MODULE_SECOND_BUTTON_ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    PropertyKey[] ALL_KEYS = new PropertyKey[] {MODULE_BUTTON_ON_CLICK_LISTENER};
+    WritableIntPropertyKey MODULE_CONTENT_TEXT_RES_ID = new WritableIntPropertyKey();
+    WritableIntPropertyKey MODULE_FIRST_BUTTON_TEXT_RES_ID = new WritableIntPropertyKey();
+    WritableIntPropertyKey MODULE_SECOND_BUTTON_TEXT_RES_ID = new WritableIntPropertyKey();
+
+    PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                MODULE_FIRST_BUTTON_ON_CLICK_LISTENER,
+                MODULE_SECOND_BUTTON_ON_CLICK_LISTENER,
+                MODULE_CONTENT_TEXT_RES_ID,
+                MODULE_FIRST_BUTTON_TEXT_RES_ID,
+                MODULE_SECOND_BUTTON_TEXT_RES_ID
+            };
 }

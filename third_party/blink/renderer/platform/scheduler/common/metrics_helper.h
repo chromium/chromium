@@ -19,8 +19,6 @@ class TaskQueue;
 namespace blink {
 namespace scheduler {
 
-constexpr int kUkmMetricVersion = 2;
-
 // Helper class to take care of task metrics shared between main thread
 // and worker threads of the renderer process, including per-thread
 // task metrics.

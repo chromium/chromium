@@ -149,6 +149,13 @@ void TestBrowserAutofillManager::AddSeenForm(
   test_api(*form_structure).AssignSections();
   AddSeenFormStructure(std::move(form_structure));
   test_api(*this).OnFormsParsed({form});
+  // Awaits the CrowdsourcingManager's response if OnFormsParsed() started a
+  // request. This is necessary because TestAutofillManagerWaiter fails if there
+  // are pending events.
+  //
+  // This response, i.e., AutofillManager::OnLoadedServerPredictions(), is
+  // asynchronous even if crowdsourcing is disabled.
+  ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::AddSeenFormStructure(

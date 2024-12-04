@@ -80,9 +80,13 @@ class TasksTest(unittest.TestCase):
     if stdout != '':
       self.fail(f'build server should be silent but it output:\n{stdout}')
 
-  def sendTask(self, cmd):
-    _stamp_file = pathlib.Path('/tmp/.test.stamp')
+  def sendTask(self, cmd, stamp_path=None):
+    if stamp_path:
+      _stamp_file = pathlib.Path(stamp_path)
+    else:
+      _stamp_file = pathlib.Path('/tmp/.test.stamp')
     _stamp_file.touch()
+
     sendMessage({
         'name': f'test task {uuid.uuid4()}',
         'message_type': server_utils.ADD_TASK,
@@ -132,6 +136,18 @@ class TasksTest(unittest.TestCase):
     self.waitForTasksDone()
     tty_contents = self.getTtyContents()
     self.assertIn('some_output', tty_contents)
+
+  def testStampFileDeletedOnFailedTask(self):
+    stamp_file = pathlib.Path('/tmp/.failed_task.stamp')
+    self.sendTask(['echo', 'some_output'], stamp_path=stamp_file)
+    self.waitForTasksDone()
+    self.assertFalse(stamp_file.exists())
+
+  def testStampFileNotDeletedOnSuccess(self):
+    stamp_file = pathlib.Path('/tmp/.successful_task.stamp')
+    self.sendTask(['true'], stamp_path=stamp_file)
+    self.waitForTasksDone()
+    self.assertTrue(stamp_file.exists())
 
   def testRegisterBuilderMessage(self):
     sendMessage({

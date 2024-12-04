@@ -422,6 +422,12 @@ class ShowIdentityNameStateProvider : public StateProvider,
   // Shows the name in the identity pill. If the name is already showing, this
   // extends the duration.
   void ShowIdentityName() {
+    // Do not show the identity name if the enterprise badging is enabled for
+    // the avatar.
+    if (enterprise_util::CanShowEnterpriseBadgingForAvatar(&profile_.get())) {
+      return;
+    }
+
     ++show_identity_request_count_;
     waiting_for_image_ = false;
 

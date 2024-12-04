@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Aktifkan notifikasi Pemeriksaan Keamanan…</translation>
 <translation id="1652333207707886577">Sesuaikan menu Anda</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Sisa Waktu: {TIME} detik}=1{Sisa Waktu: {TIME} detik}other{Sisa Waktu: {TIME} detik}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} sandi tersimpan tersedia di atas keyboard Anda.}other{{count} sandi tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="1654232554734641711">Akses Mikrofon diizinkan</translation>
 <translation id="16554782717487656">Deteksi unit</translation>
 <translation id="1657011748321897393">Gagal berbagi karena tidak terhubung ke jaringan.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Buka petak tab</translation>
 <translation id="20485545164632846">item baru</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> akun menggunakan sandi yang sama</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} metode pembayaran tersimpan tersedia di atas keyboard Anda.}other{{count} metode pembayaran tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="2059166748188874810">Kotamadya</translation>
 <translation id="20638360198452347">Pemilih jenis satuan</translation>
 <translation id="2067852168641682340">Selalu simpan ke akun ini</translation>
@@ -329,7 +327,6 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2390457533592708044">Sembunyikan "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Paket Anda tidak dapat dikirim</translation>
 <translation id="2410754283952462441">Pilih akun</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} alamat tersimpan tersedia di atas keyboard Anda.}other{{count} alamat tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="2424805048070062787">Lanjutkan dengan tab ini</translation>
 <translation id="2426805022920575512">Pilih akun lain</translation>
 <translation id="243275146591958220">Batalkan download</translation>
@@ -757,7 +754,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4525629404718770519">Tampilkan pratinjau link</translation>
 <translation id="452750746583162491">Tinjau data Anda yang disinkronkan</translation>
 <translation id="4532845899244822526">Pilih folder</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} saran pelengkapan otomatis tersimpan tersedia di atas keyboard Anda.}other{{count} saran pelengkapan otomatis tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="4547181496285029457">Kembali ke tab terbaru</translation>
 <translation id="4552042254369397518">Menyalin…</translation>
 <translation id="4564893319561643483">Sembunyikan "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4597892826846980979">Dapatkan Notifikasi Tab</translation>
 <translation id="4601095002996233687">Pemindaian mendalam untuk download yang mencurigakan.</translation>
 <translation id="4606247758155004938">Browser dikelola oleh organisasi Anda.</translation>
+<translation id="4607887340472970274">Pemantauan Harga</translation>
 <translation id="4611811151908969241">Sembunyikan Berhenti Mengikuti <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Menelusuri dengan Google</translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
@@ -1274,7 +1271,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6710079714193676716">Dikelola oleh organisasi Anda. Beberapa fitur mungkin tidak tersedia. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Buka Feed</translation>
 <translation id="6713676799463473249">Diubah pada <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Pantau Harga</translation>
 <translation id="6722623263381062480">Tab yang Diterima</translation>
 <translation id="6723740634201835758">Di Akun Google Anda</translation>
 <translation id="672735642903863329">Dapatkan bookmark, sandi, dan lainnya di semua perangkat Anda.</translation>
@@ -1440,7 +1436,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="75362970626182391">Grup Tab Baru</translation>
 <translation id="7537586195939242955">Maaf, Pass Anda tidak dapat dipasang ke Passbook saat ini.</translation>
 <translation id="754655535278952384">Diperiksa <ph name="TIME" /></translation>
-<translation id="755255281989213264">Sesuaikan menu</translation>
 <translation id="7553234618121028547">Untuk menonaktifkan, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /> lalu buka Opsi Sandi.</translation>
 <translation id="7557508262441527045">Telah logout</translation>
 <translation id="7561196759112975576">Selalu</translation>

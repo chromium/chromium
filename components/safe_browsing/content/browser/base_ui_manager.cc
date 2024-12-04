@@ -237,20 +237,24 @@ BaseUIManager::BaseUIManager() = default;
 
 BaseUIManager::~BaseUIManager() = default;
 
-bool BaseUIManager::IsAllowlisted(const UnsafeResource& resource) {
-  NavigationEntry* entry =
-      unsafe_resource_util::GetNavigationEntryForResource(resource);
+bool BaseUIManager::IsAllowlisted(
+    const GURL& url,
+    const security_interstitials::UnsafeResourceLocator& rfh_locator,
+    const std::optional<int64_t>& navigation_id,
+    safe_browsing::SBThreatType threat_type) {
+  NavigationEntry* entry = unsafe_resource_util::GetNavigationEntryForLocator(
+      rfh_locator, navigation_id, threat_type);
 
   content::WebContents* web_contents =
-      unsafe_resource_util::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForLocator(rfh_locator);
   // |web_contents| can be null after RenderFrameHost is destroyed.
   if (!web_contents) {
     return false;
   }
 
   SBThreatType unused_threat_type;
-  return IsUrlAllowlistedOrPendingForWebContents(
-      resource.url, entry, web_contents, true, &unused_threat_type);
+  return IsUrlAllowlistedOrPendingForWebContents(url, entry, web_contents, true,
+                                                 &unused_threat_type);
 }
 
 // Check if the user has already seen and/or ignored a SB warning for this
@@ -342,7 +346,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
   // Check if the user has already ignored a SB warning for the same WebContents
   // and top-level domain.
-  if (IsAllowlisted(resource)) {
+  if (IsAllowlisted(resource.url, resource.rfh_locator, resource.navigation_id,
+                    resource.threat_type)) {
     resource.DispatchCallback(FROM_HERE, true /* proceed */,
                               false /* showed_interstitial */,
                               false /* has_post_commit_interstitial_skipped */);
@@ -399,7 +404,7 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   // - Async check: If the check is not able to complete before
   //   DidFinishNavigation, it won't hit the throttle.
   const bool load_post_commit_error_page =
-      !AsyncCheckTracker::IsMainPageLoadPending(resource) ||
+      !AsyncCheckTracker::IsMainPageResourceLoadPending(resource) ||
       resource.is_delayed_warning;
   if (!load_post_commit_error_page) {
     AddUnsafeResource(unsafe_url, resource);
@@ -419,7 +424,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   }
 
   if (load_post_commit_error_page) {
-    DCHECK(!IsAllowlisted(resource));
+    DCHECK(!IsAllowlisted(resource.url, resource.rfh_locator,
+                          resource.navigation_id, resource.threat_type));
 
     security_interstitials::SecurityInterstitialTabHelper* helper =
         security_interstitials::SecurityInterstitialTabHelper::FromWebContents(

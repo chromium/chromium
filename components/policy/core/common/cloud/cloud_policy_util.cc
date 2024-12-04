@@ -124,7 +124,7 @@ std::string GetMachineName() {
 
   return split.value().category;
 #elif BUILDFLAG(IS_WIN)
-  wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
+  wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {};
   DWORD size = std::size(computer_name);
   if (::GetComputerNameW(computer_name, &size)) {
     std::string result;

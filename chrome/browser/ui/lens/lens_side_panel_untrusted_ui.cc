@@ -94,13 +94,10 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme");
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kLensUntrustedResources, kLensUntrustedResourcesSize),
-      IDR_LENS_UNTRUSTED_SIDE_PANEL_SIDE_PANEL_HTML);
+  webui::SetupWebUIDataSource(html_source, kLensUntrustedResources,
+                              IDR_LENS_UNTRUSTED_SIDE_PANEL_SIDE_PANEL_HTML);
 
-  html_source->AddResourcePaths(
-      base::make_span(kLensSharedResources, kLensSharedResourcesSize));
+  html_source->AddResourcePaths(kLensSharedResources);
 
   // Add required resources for the searchbox.
   SearchboxHandler::SetupWebUIDataSource(html_source,

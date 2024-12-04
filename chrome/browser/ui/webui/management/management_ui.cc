@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/management/management_ui.h"
 
 #include <memory>
@@ -89,9 +84,8 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
                         l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kManagementResources, kManagementResourcesSize),
-      IDR_MANAGEMENT_MANAGEMENT_HTML);
+  webui::SetupWebUIDataSource(source, kManagementResources,
+                              IDR_MANAGEMENT_MANAGEMENT_HTML);
   return source;
 }
 

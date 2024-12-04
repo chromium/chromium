@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/fido/fido_discovery_base.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -34,8 +35,7 @@ class CONTENT_EXPORT RequestDispatcher : device::FidoDiscoveryBase::Observer {
 
   RequestDispatcher(std::unique_ptr<device::FidoDiscoveryBase> v1_discovery,
                     std::unique_ptr<device::FidoDiscoveryBase> v2_discovery,
-                    url::Origin origin,
-                    base::Value request,
+                    RequestInfo request_info,
                     CompletionCallback callback);
 
   RequestDispatcher(const RequestDispatcher&) = delete;
@@ -55,8 +55,7 @@ class CONTENT_EXPORT RequestDispatcher : device::FidoDiscoveryBase::Observer {
 
   const std::unique_ptr<device::FidoDiscoveryBase> v1_discovery_;
   const std::unique_ptr<device::FidoDiscoveryBase> v2_discovery_;
-  const url::Origin origin_;
-  base::Value request_;
+  RequestInfo request_info_;
   CompletionCallback callback_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);

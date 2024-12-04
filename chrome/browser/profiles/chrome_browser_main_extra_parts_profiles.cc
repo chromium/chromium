@@ -907,7 +907,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENABLE_GLIC)
   if (GlicEnabling::IsEnabledByFlags()) {
-    GlicKeyedServiceFactory::GetInstance();
+    glic::GlicKeyedServiceFactory::GetInstance();
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 #if !BUILDFLAG(IS_ANDROID)

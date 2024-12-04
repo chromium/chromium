@@ -401,6 +401,15 @@ const display::Display* MirrorWindowController::GetDisplayById(
   return nullptr;
 }
 
+const aura::Window* MirrorWindowController::GetMirrorWindowForDisplayIdForTest(
+    int64_t display_id) {
+  auto iter = mirroring_host_info_map_.find(display_id);
+  if (iter != mirroring_host_info_map_.end()) {
+    return iter->second->mirror_window;
+  }
+  return nullptr;
+}
+
 void MirrorWindowController::SetCurrentEventTargeterSourceHost(
     aura::WindowTreeHost* targeter_src_host) {
   current_event_targeter_src_host_ = targeter_src_host;

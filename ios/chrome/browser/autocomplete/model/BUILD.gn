@@ -34,7 +34,6 @@ source_set("model") {
     "//base",
     "//components/browser_sync",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/language/core/browser",
     "//components/omnibox/browser",

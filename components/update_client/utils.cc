@@ -103,7 +103,7 @@ bool VerifyFileHash256(const base::FilePath& filepath,
     hasher->Update(mmfile.data(), mmfile.length());
   }
 
-  uint8_t actual_hash[crypto::kSHA256Length] = {0};
+  uint8_t actual_hash[crypto::kSHA256Length] = {};
   hasher->Finish(actual_hash, sizeof(actual_hash));
 
   return memcmp(actual_hash, &expected_hash[0], sizeof(actual_hash)) == 0;

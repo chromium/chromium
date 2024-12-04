@@ -86,8 +86,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
       case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
         ShowBubbleForCardLinkedOfferAndVerify();
         break;
-      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-        break;
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         ShowBubbleForGPayPromoCodeOfferAndVerify();
         break;
@@ -149,8 +147,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         return "CardLinkedOffer";
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         return "GPayPromoCodeOffer";
-      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-        return "FreeListingCouponOffer";
       case AutofillOfferData::OfferType::UNKNOWN:
         NOTREACHED();
     }

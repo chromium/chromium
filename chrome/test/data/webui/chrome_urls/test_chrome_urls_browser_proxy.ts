@@ -13,7 +13,12 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  */
 export class TestPageHandler extends TestBrowserProxy implements
     PageHandlerInterface {
-  private testData_: ChromeUrlsData = {webuiUrls: [], commandUrls: []};
+  private testData_: ChromeUrlsData = {
+    webuiUrls: [],
+    commandUrls: [],
+    internalDebuggingUisEnabled: false,
+  };
+
   constructor() {
     super(['getUrls']);
   }

@@ -217,16 +217,6 @@ bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
                                          dst_color_space, std::move(callback));
 }
 
-void GPUCanvasContext::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (filter_quality != filter_quality_) {
-    filter_quality_ = filter_quality;
-    if (swap_buffers_) {
-      swap_buffers_->SetFilterQuality(filter_quality);
-    }
-  }
-}
-
 bool GPUCanvasContext::PushFrame() {
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
@@ -257,8 +247,7 @@ bool GPUCanvasContext::PushFrame() {
 
   auto canvas_resource = ExternalCanvasResource::Create(
       std::move(client_si), transferable_resource, std::move(release_callback),
-      GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
-      filter_quality_);
+      GetContextProviderWeakPtr(), /*resource_provider=*/nullptr);
   if (!canvas_resource)
     return false;
 
@@ -563,7 +552,6 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       this, device_->GetDawnControlClient(), device_->GetHandle(),
       swap_texture_descriptor_.usage, internal_usage,
       swap_texture_descriptor_.format, color_space_, hdr_metadata));
-  swap_buffers_->SetFilterQuality(filter_quality_);
 
   // Note: SetContentsOpaque is only an optimization hint. It doesn't
   // actually make the contents opaque.
@@ -758,6 +746,12 @@ void GPUCanvasContext::OnTextureTransferred() {
   swap_texture_ = nullptr;
 }
 
+void GPUCanvasContext::InitializeLayer(cc::Layer* layer) {
+  if (Host()) {
+    Host()->InitializeLayerWithCSSProperties(layer);
+  }
+}
+
 void GPUCanvasContext::SetNeedsCompositingUpdate() {
   if (Host()) {
     Host()->SetNeedsCompositingUpdate();
@@ -938,15 +932,15 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
     const wgpu::Texture& texture,
     const gfx::Size& size) const {
   const auto canvas_context_color = CanvasRenderingContextSkColorInfo();
-  const auto info =
-      SkImageInfo::Make(gfx::SizeToSkISize(size), canvas_context_color);
   // We tag the SharedImage inside the WebGPUImageProvider with display usages
   // since there are uncommon paths which may use this snapshot for compositing.
   // These paths are usually related to either printing or either video and
   // usually related to OffscreenCanvas; in cases where the image created from
   // this Snapshot will be sent eventually to the Display Compositor.
   auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-      info, swap_buffers_->GetSharedImageUsagesForDisplay());
+      size, canvas_context_color.colorType(), canvas_context_color.alphaType(),
+      canvas_context_color.refColorSpace(),
+      swap_buffers_->GetSharedImageUsagesForDisplay());
   if (!resource_provider)
     return nullptr;
 

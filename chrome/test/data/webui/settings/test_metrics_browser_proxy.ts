@@ -12,11 +12,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordAction',
       'recordBooleanHistogram',
       'recordSafetyCheckInteractionHistogram',
-      'recordSafetyCheckNotificationsListCountHistogram',
-      'recordSafetyCheckNotificationsModuleInteractionsHistogram',
       'recordSafetyCheckNotificationsModuleEntryPointShown',
-      'recordSafetyCheckUnusedSitePermissionsListCountHistogram',
-      'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
       'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown',
       'recordSettingsPageHistogram',
       'recordPrivacyGuideFlowLengthHistogram',
@@ -61,35 +57,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordSafetyCheckInteractionHistogram', interaction);
   }
 
-  recordSafetyCheckNotificationsListCountHistogram(suggestions: number) {
-    this.methodCalled(
-        'recordSafetyCheckNotificationsListCountHistogram', suggestions);
-  }
-
-  recordSafetyCheckNotificationsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions) {
-    this.methodCalled(
-        'recordSafetyCheckNotificationsModuleInteractionsHistogram',
-        interaction);
-  }
-
   recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean) {
     this.methodCalled(
         'recordSafetyCheckNotificationsModuleEntryPointShown', visible);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions:
-                                                               number) {
-    this.methodCalled(
-        'recordSafetyCheckUnusedSitePermissionsListCountHistogram',
-        suggestions);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
-    this.methodCalled(
-        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
-        interaction);
   }
 
   recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible:

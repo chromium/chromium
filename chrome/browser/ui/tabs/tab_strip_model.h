@@ -936,9 +936,12 @@ class TabStripModel : public TabGroupController {
   void MaybeUpdateTabGroupHeaderAccessibleName(
       std::optional<tab_groups::TabGroupId> group);
 
-  TabStripSelectionChange MaybeUpdateSelectionModel(int initial_index,
-                                                    int final_index,
-                                                    bool select_after_move);
+  void UpdateSelectionModelForMove(int initial_index,
+                                   int final_index,
+                                   bool select_after_move);
+
+  void UpdateSelectionModelForMoves(const std::vector<int>& tab_indices,
+                                    int destination_index);
 
   // Generates the MoveNotifications for `MoveTabsToIndexImpl` and updates the
   // selection model and openers.

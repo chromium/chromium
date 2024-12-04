@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -69,6 +70,8 @@ class HttpStreamPool::Group {
     return pool_->http_network_session();
   }
 
+  AttemptManager* attempt_manager() const { return attempt_manager_.get(); }
+
   const NetLogWithSource& net_log() { return net_log_; }
 
   bool force_quic() const { return force_quic_; }
@@ -78,12 +81,15 @@ class HttpStreamPool::Group {
   // properly manage the lifetime of the Job, even when StartJob() synchronously
   // calls one of the delegate's methods.
   std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
-                                 RespectLimits respect_limits,
-                                 bool enable_ip_based_pooling,
-                                 bool enable_alternative_services,
+                                 quic::ParsedQuicVersion quic_version,
                                  NextProto expected_protocol,
-                                 bool is_http1_allowed,
-                                 ProxyInfo proxy_info);
+                                 const NetLogWithSource& net_log);
+
+  // Called by `job` to see whether `job` can start.
+  bool CanStartJob(Job* job);
+
+  // Called when `job` is going to be destroyed.
+  void OnJobComplete(Job* job);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once
@@ -142,7 +148,11 @@ class HttpStreamPool::Group {
   // Returns the number of active streams.
   size_t ActiveStreamSocketCount() const;
 
+  // True when the number of active streams reached the group limit.
   bool ReachedMaxStreamLimit() const;
+
+  // Returns the number of paused jobs. See the comment of `paused_jobs_`.
+  size_t PausedJobCount() const { return paused_jobs_.size(); }
 
   // Returns the highest pending request priority if the group is stalled due to
   // the per-pool limit, not the per-group limit.
@@ -203,6 +213,8 @@ class HttpStreamPool::Group {
   static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
       const IdleStreamSocket& idle);
 
+  bool IsFailing() const;
+
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
 
@@ -225,6 +237,14 @@ class HttpStreamPool::Group {
   std::list<IdleStreamSocket> idle_stream_sockets_;
 
   std::unique_ptr<AttemptManager> attempt_manager_;
+
+  // Keeps jobs that are created while the current AttemptManager is failing.
+  // Once the AttemptManager completes notifying the failure to its jobs, we
+  // create a new AttemptManager and pass these jobs to the new AttemptManager.
+  // We call these jobs "paused". Note that there are another type of jobs that
+  // are called "pending". Pending jobs are associated with an AttemptManager
+  // but haven't attempted connections yet.
+  std::set<raw_ptr<Job>> paused_jobs_;
 
   base::WeakPtrFactory<Group> weak_ptr_factory_{this};
 };

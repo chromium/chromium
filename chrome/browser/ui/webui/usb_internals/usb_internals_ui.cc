@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 
 #include "base/functional/bind.h"
@@ -24,10 +19,8 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIUsbInternalsHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kUsbInternalsResources, kUsbInternalsResourcesSize),
-      IDR_USB_INTERNALS_USB_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(source, kUsbInternalsResources,
+                              IDR_USB_INTERNALS_USB_INTERNALS_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UsbInternalsUI)

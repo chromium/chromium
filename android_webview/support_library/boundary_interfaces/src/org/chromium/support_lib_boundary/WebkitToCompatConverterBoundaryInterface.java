@@ -72,4 +72,6 @@ public interface WebkitToCompatConverterBoundaryInterface {
     // CookieManager
     /* SupportLibWebViewCookieManager */ InvocationHandler convertCookieManager(
             Object cookieManager);
+
+    /* SupportLibWebStorage */ InvocationHandler convertWebStorage(Object webStorageManager);
 }

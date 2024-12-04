@@ -917,6 +917,7 @@
         "args": [
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_b_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_16.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

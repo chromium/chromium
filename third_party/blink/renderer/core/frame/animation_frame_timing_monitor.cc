@@ -266,11 +266,8 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     timing_info->SetDidPause();
   }
 
-  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-          frame->DomWindow())) {
-    DOMWindowPerformance::performance(*frame->DomWindow())
-        ->ReportLongAnimationFrameTiming(timing_info);
-  }
+  DOMWindowPerformance::performance(*frame->DomWindow())
+      ->ReportLongAnimationFrameTiming(timing_info);
   RecordLongAnimationFrameUKMAndTrace(*timing_info, *frame->DomWindow());
 }
 
@@ -315,10 +312,10 @@ void AnimationFrameTimingMonitor::RequestPresentationTimeForTracing(
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
   if (tracing_enabled) {
     frame.GetChromeClient().NotifyPresentationTime(
-        frame, CrossThreadBindOnce(
-                   &AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
-                   WrapCrossThreadWeakPersistent(this),
-                   current_frame_timing_info_->GetTraceId()));
+        frame,
+        BindOnce(&AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
+                 WrapWeakPersistent(this),
+                 current_frame_timing_info_->GetTraceId()));
   }
 }
 

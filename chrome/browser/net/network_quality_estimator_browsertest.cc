@@ -90,8 +90,8 @@ void CheckEffectiveConnectionType(net::EffectiveConnectionType expected) {
 
 class NetworkQualityEstimatorBrowserTest : public InProcessBrowserTest {
  public:
-  NetworkQualityEstimatorBrowserTest() {}
-  ~NetworkQualityEstimatorBrowserTest() override {}
+  NetworkQualityEstimatorBrowserTest() = default;
+  ~NetworkQualityEstimatorBrowserTest() override = default;
 
   void SetUp() override {
     // Must start listening (And get a port for the proxy) before calling
@@ -114,8 +114,8 @@ class NetworkQualityEstimatorBrowserTest : public InProcessBrowserTest {
 class NetworkQualityEstimatorEctCommandLineBrowserTest
     : public NetworkQualityEstimatorBrowserTest {
  public:
-  NetworkQualityEstimatorEctCommandLineBrowserTest() {}
-  ~NetworkQualityEstimatorEctCommandLineBrowserTest() override {}
+  NetworkQualityEstimatorEctCommandLineBrowserTest() = default;
+  ~NetworkQualityEstimatorEctCommandLineBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII("--force-effective-connection-type",
@@ -131,8 +131,8 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorEctCommandLineBrowserTest,
 class NetworkQualityEstimatorEctFieldTrialBrowserTest
     : public NetworkQualityEstimatorBrowserTest {
  public:
-  NetworkQualityEstimatorEctFieldTrialBrowserTest() {}
-  ~NetworkQualityEstimatorEctFieldTrialBrowserTest() override {}
+  NetworkQualityEstimatorEctFieldTrialBrowserTest() = default;
+  ~NetworkQualityEstimatorEctFieldTrialBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     variations::testing::ClearAllVariationParams();
@@ -154,8 +154,9 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorEctFieldTrialBrowserTest,
 class NetworkQualityEstimatorEctFieldTrialAndCommandLineBrowserTest
     : public NetworkQualityEstimatorEctFieldTrialBrowserTest {
  public:
-  NetworkQualityEstimatorEctFieldTrialAndCommandLineBrowserTest() {}
-  ~NetworkQualityEstimatorEctFieldTrialAndCommandLineBrowserTest() override {}
+  NetworkQualityEstimatorEctFieldTrialAndCommandLineBrowserTest() = default;
+  ~NetworkQualityEstimatorEctFieldTrialAndCommandLineBrowserTest() override =
+      default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     NetworkQualityEstimatorEctFieldTrialBrowserTest::SetUpCommandLine(

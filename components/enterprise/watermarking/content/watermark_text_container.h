@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_WATERMARKING_CONTENT_WATERMARK_TEXT_CONTAINER_H_
 
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/skia/include/core/SkPicture.h"
 
 namespace enterprise_watermark {
 
@@ -13,15 +14,19 @@ class WatermarkTextContainer
     : public content::WebContentsUserData<WatermarkTextContainer> {
  public:
   explicit WatermarkTextContainer(content::WebContents* contents);
-  ~WatermarkTextContainer() override = default;
+  ~WatermarkTextContainer() override;
 
-  void SetWatermarkText(std::string watermark_text);
-  const std::string& watermark_text() const;
+  void SetWatermarkText(sk_sp<SkPicture> picture,
+                        int block_width,
+                        int block_height);
 
  private:
   friend class content::WebContentsUserData<WatermarkTextContainer>;
 
-  std::string watermark_text_;
+  sk_sp<SkPicture> picture_;
+  int block_width_;
+  int block_height_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

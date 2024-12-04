@@ -15,7 +15,6 @@
 #include "base/time/tick_clock.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/scheduler/common/ukm_task_sampler.h"
 
 namespace base {
 class TaskObserver;
@@ -113,9 +112,6 @@ class PLATFORM_EXPORT SchedulerHelper
   bool GetAndClearSystemIsQuiescentBit();
   bool HasCPUTimingForEachTask() const;
 
-  bool ShouldRecordTaskUkm(bool task_has_thread_time) {
-    return ukm_task_sampler_.ShouldRecordTaskUkm(task_has_thread_time);
-  }
   bool IsInNestedRunloop() const {
     CheckOnValidThread();
     return nested_runloop_depth_ > 0;
@@ -123,9 +119,6 @@ class PLATFORM_EXPORT SchedulerHelper
 
   // Test helpers.
   void SetWorkBatchSizeForTesting(int work_batch_size);
-  void SetUkmTaskSamplingRateForTest(double rate) {
-    ukm_task_sampler_.SetUkmTaskSamplingRate(rate);
-  }
 
  protected:
   virtual void ShutdownAllQueues() {}
@@ -141,7 +134,6 @@ class PLATFORM_EXPORT SchedulerHelper
 
   raw_ptr<Observer> observer_;  // NOT OWNED
 
-  UkmTaskSampler ukm_task_sampler_;
   // Depth of nested_runloop.
   int nested_runloop_depth_ = 0;
 };

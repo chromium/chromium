@@ -160,6 +160,8 @@ public class AccountSelectionJUnitTestBase {
     View mContentView;
     IdentityProviderMetadata mIdpMetadata;
     IdentityProviderData mIdpData;
+    IdentityProviderMetadata mIdpMetadataWithUseDifferentAccount;
+    IdentityProviderData mIdpDataWithUseDifferentAccount;
     List<Account> mNewAccountsSingleReturningAccount;
     List<Account> mNewAccountsSingleNewAccount;
     List<Account> mNewAccountsMultipleAccounts;
@@ -263,12 +265,32 @@ public class AccountSelectionJUnitTestBase {
                         "https://icon-url.example",
                         mTestConfigUrl,
                         mTestLoginUrl,
-                        /* supportsAddAccount= */ false);
+                        /* showUseDifferentAccountButton= */ false);
 
         mIdpData =
                 new IdentityProviderData(
                         mTestEtldPlusOne2,
                         mIdpMetadata,
+                        new ClientIdMetadata(
+                                mTestUrlTermsOfService,
+                                mTestUrlPrivacyPolicy,
+                                mTestRpBrandIconUrl.getSpec()),
+                        RpContext.SIGN_IN,
+                        DEFAULT_DISCLOSURE_FIELDS,
+                        /* has_login_status_mismatch= */ false);
+
+        mIdpMetadataWithUseDifferentAccount =
+                new IdentityProviderMetadata(
+                        Color.BLUE,
+                        Color.GREEN,
+                        "https://icon-url.example",
+                        mTestConfigUrl,
+                        mTestLoginUrl,
+                        /* showUseDifferentAccountButton= */ true);
+        mIdpDataWithUseDifferentAccount =
+                new IdentityProviderData(
+                        mTestEtldPlusOne2,
+                        mIdpMetadataWithUseDifferentAccount,
                         new ClientIdMetadata(
                                 mTestUrlTermsOfService,
                                 mTestUrlPrivacyPolicy,

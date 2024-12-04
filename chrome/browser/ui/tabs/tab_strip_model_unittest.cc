@@ -4902,4 +4902,88 @@ TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
   observer.ClearStates();
 }
 
+TEST_P(TabStripModelTest, SelectionChangedForMoveGroupWithSelectedTab) {
+  TestTabStripModelDelegate delegate;
+  MockTabStripModelObserver observer;
+
+  std::unique_ptr<TabStripModel> tabstrip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+  tabstrip->AddObserver(&observer);
+  ASSERT_TRUE(tabstrip->empty());
+
+  // Add 6 tabs to the tabstrip model.
+  PrepareTabs(tabstrip.get(), 6);
+  ASSERT_EQ(6, tabstrip->count());
+  tabstrip->ActivateTabAt(2);
+
+  // Group tabs 1, 2, and 3 into a tab group.
+  tab_groups::TabGroupId group = tabstrip->AddToNewGroup({1, 2, 3});
+  ASSERT_EQ(group, tabstrip->GetTabAtIndex(1)->GetGroup().value());
+
+  tabstrip->ToggleSelectionAt(0);
+
+  // Verify the selection model before moving the group.
+  EXPECT_TRUE(tabstrip->selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip->selection_model().active(), 0u);
+
+  // Check selection change after moving the group.
+  tabstrip->MoveGroupTo(group, 2);
+  ObservedSelectionChange change = observer.GetLatestSelectionChange();
+
+  // Active webcontents should not change and selection model updates.
+  EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(0)->GetHandle());
+  EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(0)->GetHandle());
+
+  EXPECT_EQ(change.old_model.size(), 2u);
+
+  EXPECT_EQ(change.new_model.active(), 0u);
+  EXPECT_TRUE(change.new_model.IsSelected(3));
+  EXPECT_EQ(change.new_model.size(), 2u);
+
+  observer.ClearStates();
+}
+
+TEST_P(TabStripModelTest, SelectionChangedForMoveSelectedTabsTo) {
+  TestTabStripModelDelegate delegate;
+  MockTabStripModelObserver observer;
+
+  std::unique_ptr<TabStripModel> tabstrip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+  tabstrip->AddObserver(&observer);
+  ASSERT_TRUE(tabstrip->empty());
+
+  // Add 6 tabs to the tabstrip model.
+  PrepareTabs(tabstrip.get(), 6);
+  ASSERT_EQ(6, tabstrip->count());
+  tabstrip->ActivateTabAt(2);
+
+  tabstrip->ActivateTabAt(0);
+  tabstrip->ToggleSelectionAt(2);
+  tabstrip->ToggleSelectionAt(4);
+
+  // Verify the selection model before moving the tabs.
+  EXPECT_TRUE(tabstrip->selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip->selection_model().IsSelected(2));
+  EXPECT_TRUE(tabstrip->selection_model().IsSelected(4));
+  EXPECT_EQ(tabstrip->selection_model().active(), 4u);
+
+  // Move the selected tabs to index 3.
+  tabstrip->MoveSelectedTabsTo(3, std::nullopt);
+  ObservedSelectionChange change = observer.GetLatestSelectionChange();
+
+  // Active webcontents and selection model should update correctly.
+  EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(5)->GetHandle());
+  EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(5)->GetHandle());
+
+  EXPECT_EQ(change.old_model.size(), 3u);
+
+  EXPECT_EQ(change.new_model.active(), 5u);
+  EXPECT_TRUE(change.new_model.IsSelected(3));
+  EXPECT_TRUE(change.new_model.IsSelected(4));
+  EXPECT_TRUE(change.new_model.IsSelected(5));
+  EXPECT_EQ(change.new_model.size(), 3u);
+
+  observer.ClearStates();
+}
+
 INSTANTIATE_TEST_SUITE_P(All, TabStripModelTest, ::testing::Bool());

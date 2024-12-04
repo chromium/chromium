@@ -43,7 +43,7 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
         dialog_action_(DIALOG_TEST_ACTION_NONE),
         dialog_invocation_count_(0) {}
 
-  ~ExtensionEchoPrivateApiTest() override {}
+  ~ExtensionEchoPrivateApiTest() override = default;
 
   void SetUp() override {
     statistics_provider_.SetVpdStatus(

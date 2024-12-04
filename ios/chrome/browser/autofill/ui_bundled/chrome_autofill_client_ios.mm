@@ -138,14 +138,14 @@ AutofillDriverFactory& ChromeAutofillClientIOS::GetAutofillDriverFactory() {
   return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
 }
 
-AutofillCrowdsourcingManager*
+AutofillCrowdsourcingManager&
 ChromeAutofillClientIOS::GetCrowdsourcingManager() {
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
     crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
         this, GetChannel(), GetLogManager());
   }
-  return crowdsourcing_manager_.get();
+  return *crowdsourcing_manager_;
 }
 
 PersonalDataManager& ChromeAutofillClientIOS::GetPersonalDataManager() {
@@ -377,10 +377,8 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() const {
       password_manager::prefs::kCredentialsEnableService);
 }
 
-void ChromeAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::ActionPersistence action_persistence,
-    AutofillTriggerSource trigger_source,
-    bool is_refill) {}
+void ChromeAutofillClientIOS::DidFillForm(AutofillTriggerSource trigger_source,
+                                          bool is_refill) {}
 
 bool ChromeAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);

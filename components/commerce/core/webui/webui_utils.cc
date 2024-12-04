@@ -6,11 +6,14 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/payments/core/currency_formatter.h"
+#include "components/power_bookmarks/core/power_bookmark_utils.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/url_formatter/elide_url.h"
 #include "url/gurl.h"
 
@@ -104,11 +107,11 @@ std::string GetFormattedPriceSummary(const ProductInfo& product_info,
 
 }  // namespace
 
-shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
+shared::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
     const std::optional<const ProductInfo>& info,
     const std::string& locale) {
-  auto product_info = shopping_service::mojom::ProductInfo::New();
+  auto product_info = shared::mojom::ProductInfo::New();
 
   if (!info.has_value()) {
     return product_info;
@@ -179,6 +182,56 @@ shared::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
   }
 
   return set_ptr;
+}
+
+shared::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
+    bookmarks::BookmarkModel& model,
+    const bookmarks::BookmarkNode* node,
+    const std::string& locale) {
+  auto bookmark_info = shared::mojom::BookmarkProductInfo::New();
+  bookmark_info->bookmark_id = node->id();
+
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(&model, node);
+  const power_bookmarks::ShoppingSpecifics specifics =
+      meta->shopping_specifics();
+
+  bookmark_info->info = shared::mojom::ProductInfo::New();
+  bookmark_info->info->title = specifics.title();
+  bookmark_info->info->domain = base::UTF16ToUTF8(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL(node->url())));
+
+  bookmark_info->info->product_url = node->url();
+  bookmark_info->info->image_url = GURL(meta->lead_image().url());
+  bookmark_info->info->cluster_id = specifics.product_cluster_id();
+
+  const power_bookmarks::ProductPrice price = specifics.current_price();
+  std::string currency_code = price.currency_code();
+
+  std::unique_ptr<payments::CurrencyFormatter> formatter =
+      std::make_unique<payments::CurrencyFormatter>(currency_code, locale);
+  formatter->SetMaxFractionalDigits(2);
+
+  bookmark_info->info->current_price =
+      base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+          static_cast<float>(price.amount_micros()) / kToMicroCurrency)));
+
+  // Only send the previous price if it is higher than the current price. This
+  // is exclusively used to decide whether to show the price drop chip in the
+  // UI.
+  if (specifics.has_previous_price() &&
+      specifics.previous_price().amount_micros() >
+          specifics.current_price().amount_micros()) {
+    const power_bookmarks::ProductPrice previous_price =
+        specifics.previous_price();
+    bookmark_info->info->previous_price =
+        base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+            static_cast<float>(previous_price.amount_micros()) /
+            kToMicroCurrency)));
+  }
+
+  return bookmark_info;
 }
 
 }  // namespace commerce

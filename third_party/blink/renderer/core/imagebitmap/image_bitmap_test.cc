@@ -259,9 +259,9 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
   auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      SkImageInfo::MakeN32Premul(100, 100), cc::PaintFlags::FilterQuality::kLow,
-      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
-      RasterMode::kGPU, gpu::SharedImageUsageSet());
+      gfx::Size(100, 100), kN32_SkColorType, kPremul_SkAlphaType,
+      SkColorSpace::MakeSRGB(), CanvasResourceProvider::ShouldInitialize::kNo,
+      context_provider_wrapper, RasterMode::kGPU, gpu::SharedImageUsageSet());
 
   scoped_refptr<StaticBitmapImage> bitmap =
       resource_provider->Snapshot(FlushReason::kTesting);

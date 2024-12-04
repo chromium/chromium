@@ -98,7 +98,8 @@ class MetricsWebContentsObserver
   void DidUpdateNavigationHandleTiming(
       content::NavigationHandle* navigation_handle) override;
   void NavigationStopped() override;
-  void OnInputEvent(const blink::WebInputEvent& event) override;
+  void OnInputEvent(const content::RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;

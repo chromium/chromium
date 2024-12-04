@@ -205,8 +205,8 @@ public class CreditCardScannerManager implements CreditCardScanner.Delegate {
             mFieldsFilledByScanner.add(FieldType.YEAR);
         }
 
-        mScanResult = CreditCardScannerManager.ScanResult.SCANNED_WITHOUT_ADDITIONAL_USER_EDITS;
         mDelegate.onScanCompleted(cardholderName, cardNumber, expirationMonth, expirationYear);
+        mScanResult = CreditCardScannerManager.ScanResult.SCANNED_WITHOUT_ADDITIONAL_USER_EDITS;
     }
 
     public @ScanResult int getScanResultForTesting() {

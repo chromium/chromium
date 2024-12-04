@@ -253,7 +253,7 @@ StructTraits<device::mojom::GamepadDataView, device::Gamepad>::id(
   while (id_length < device::Gamepad::kIdLengthCap && r.id[id_length] != 0) {
     id_length++;
   }
-  return base::make_span(reinterpret_cast<const uint16_t*>(r.id), id_length);
+  return base::span(reinterpret_cast<const uint16_t*>(r.id), id_length);
 }
 
 // static

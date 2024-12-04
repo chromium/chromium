@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 
 namespace blink {
 
@@ -66,6 +67,10 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   bool IsComputationallyIndependent() const;
 
   double DoubleValue() const { return num_; }
+  double ClampedDoubleValue() const {
+    return CSSValueClampingUtils::ClampDouble(num_);
+  }
+
   double ComputeSeconds() const;
   double ComputeDegrees() const;
   double ComputeDotsPerPixel() const;

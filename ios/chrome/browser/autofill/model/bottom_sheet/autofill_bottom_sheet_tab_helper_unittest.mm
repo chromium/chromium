@@ -5,6 +5,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/infobars/core/infobar.h"
@@ -56,14 +57,6 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
   }
 
  protected:
-  class TestAutofillClient : public autofill::ChromeAutofillClientIOS {
-   public:
-    using ChromeAutofillClientIOS::ChromeAutofillClientIOS;
-    autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override {
-      return nullptr;
-    }
-  };
-
   AutofillBottomSheetTabHelperTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
     profile_ = TestProfileIOS::Builder().Build();
@@ -90,7 +83,7 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     //
     // That's why we initialize it in the constructor but put it in the
     // declaration order above `web_state_`.
-    autofill_client_ = std::make_unique<TestAutofillClient>(
+    autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
         profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
@@ -99,6 +92,8 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
+      {.disable_server_communication = true}};
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<autofill::AutofillClient> autofill_client_;

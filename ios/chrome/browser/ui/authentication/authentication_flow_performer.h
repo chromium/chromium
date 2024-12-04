@@ -7,14 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class Browser;
+@protocol ChangeProfileCommands;
 class ProfileIOS;
 @protocol SystemIdentity;
+
+using OnProfileSwitchCompletion = base::OnceCallback<void(bool success)>;
 
 // Performs the sign-in steps and user interactions as part of the sign-in flow.
 @interface AuthenticationFlowPerformer : NSObject
@@ -22,7 +26,9 @@ class ProfileIOS;
 // Initializes a new AuthenticationFlowPerformer. `delegate` will be notified
 // when each step completes.
 - (instancetype)initWithDelegate:
-    (id<AuthenticationFlowPerformerDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+                    (id<AuthenticationFlowPerformerDelegate>)delegate
+            changeProfileHandler:(id<ChangeProfileCommands>)changeProfileHandler
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -35,11 +41,16 @@ class ProfileIOS;
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
-// Signs `identity` with `hostedDomain` into `profile`.
+// Signs `identity` with `currentProfile`.
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
-      withHostedDomain:(NSString*)hostedDomain
-             toProfile:(ProfileIOS*)profile;
+        currentProfile:(ProfileIOS*)currentProfile;
+
+// Switches to the profile that `identity` is assigned, for `sceneIdentifier`.
+// `completion` is called once the switch failed or succeeded.
+- (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
+                    sceneIdentifier:(NSString*)sceneIdentifier
+                         completion:(OnProfileSwitchCompletion)completion;
 
 // Signs out of `profile` and sends `didSignOut` to the delegate when
 // complete.
@@ -52,6 +63,7 @@ class ProfileIOS;
 // `hostedDomain`. The confirmation dialog's content will be different depending
 // on the status of User Policy.
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
+                                     userEmail:(NSString*)userEmail
                                 viewController:(UIViewController*)viewController
                                        browser:(Browser*)browser;
 

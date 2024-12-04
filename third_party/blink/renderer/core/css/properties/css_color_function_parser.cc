@@ -518,9 +518,11 @@ double ColorFunctionParser::ResolveRelativeChannelValue(
           DynamicTo<CSSMathFunctionValue>(value)) {
     switch (calc_value->Category()) {
       case kCalcNumber:
-        return calc_value->GetDoubleValueWithoutClamping();
+        return calc_value->DoubleValue();
       case kCalcPercent:
-        return (calc_value->GetDoubleValue() / 100) * percentage_base;
+        return (CSSValueClampingUtils::ClampDouble(calc_value->DoubleValue()) /
+                100) *
+               percentage_base;
       case kCalcAngle:
         return calc_value->ComputeDegrees();
       default:

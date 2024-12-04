@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -53,9 +48,8 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile,
                                              chrome::kChromeUITabStripHost);
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kTabStripResources, kTabStripResourcesSize),
-      IDR_TAB_STRIP_TAB_STRIP_HTML);
+  webui::SetupWebUIDataSource(html_source, kTabStripResources,
+                              IDR_TAB_STRIP_TAB_STRIP_HTML);
 
   html_source->AddString("tabIdDataType", kWebUITabIdDataType);
   html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);

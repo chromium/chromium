@@ -55,7 +55,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -1162,8 +1162,8 @@ public class PaymentRequestUi
             }
         }
 
-        NoUnderlineClickableSpan settingsSpan =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan settingsSpan =
+                new ChromeClickableSpan(
                         mContext, (widget) -> mClient.onCardAndAddressSettingsClicked());
         SpannableString spannableMessage =
                 SpanApplier.applySpans(

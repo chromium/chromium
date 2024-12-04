@@ -215,6 +215,21 @@ void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
   }
 }
 
+void TabGroupChangeNotifierImpl::OnTabSelected(
+    const std::optional<base::Uuid>& sync_tab_group_id,
+    const std::optional<base::Uuid>& sync_tab_id) {
+  if (!is_initialized_) {
+    return;
+  }
+
+  std::optional<tab_groups::SavedTabGroupTab> selected_tab =
+      GetSelectedSharedTabForPublishing(sync_tab_group_id, sync_tab_id);
+
+  for (auto& observer : observers_) {
+    observer.OnTabSelected(selected_tab);
+  }
+}
+
 void TabGroupChangeNotifierImpl::ProcessChangesSinceStartup() {
   std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
       current_tab_groups =
@@ -305,6 +320,35 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
       }
     }
   }
+}
+
+std::optional<tab_groups::SavedTabGroupTab>
+TabGroupChangeNotifierImpl::GetSelectedSharedTabForPublishing(
+    const std::optional<base::Uuid>& sync_tab_group_id,
+    const std::optional<base::Uuid>& sync_tab_id) {
+  if (!sync_tab_group_id || !sync_tab_id) {
+    // A tab outside saved / shared tab groups was selected.
+    return std::nullopt;
+  }
+  auto group_it = last_known_tab_groups_.find(sync_tab_group_id.value());
+  if (group_it == last_known_tab_groups_.end()) {
+    // A tab in a saved (not shared) tab group was selected.
+    return std::nullopt;
+  }
+
+  // The tab is in a shared tab group.
+  const tab_groups::SavedTabGroup& group = group_it->second;
+  const tab_groups::SavedTabGroupTab* tab = group.GetTab(*sync_tab_id);
+
+  if (!tab) {
+    // If we are unable to find the tab within our shared tab group, we are
+    // unable to tell our observers about which tab was selected, so we would
+    // publish std::nullopt in that case.
+    return std::nullopt;
+  }
+
+  // A tab within a shared tab group was selected.
+  return *tab;
 }
 
 std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>

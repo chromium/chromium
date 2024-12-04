@@ -248,7 +248,7 @@ TEST_F(AliveCheckerTest, NoAliveNotificationsDetectTwice) {
 
 // Setup the checker to stop at first alive notification. Start it and notify
 // that the client is alive once. Verify that we get no dead detection.
-TEST_F(AliveCheckerTest, StopAtFirstAliveNotificationDoNotify) {
+TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DoNotify) {
   CreateAliveChecker(true, false);
 
   StartAliveChecker();
@@ -263,7 +263,7 @@ TEST_F(AliveCheckerTest, StopAtFirstAliveNotificationDoNotify) {
 
 // Setup the checker to stop at first alive notification. Start it and run until
 // it detects dead.
-TEST_F(AliveCheckerTest, StopAtFirstAliveNotificationDontNotify) {
+TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DontNotify) {
   CreateAliveChecker(true, false);
   StartAliveChecker();
   WaitUntilDetectedDead();
@@ -274,7 +274,7 @@ TEST_F(AliveCheckerTest, StopAtFirstAliveNotificationDontNotify) {
 // it doesn't detect dead. Start the checker, don't send alive notifications,
 // and and verify that it doesn't detect dead. Resume and run until it detects
 // dead.
-TEST_F(AliveCheckerTest, SuspendResumeStartBetweenSuspendAndResume) {
+TEST_F(AliveCheckerTest, SuspendResume_StartBetweenSuspendAndResume) {
   CreateAliveChecker(false, true);
   ASSERT_TRUE(mock_power_observer_helper_);
 
@@ -302,7 +302,7 @@ TEST_F(AliveCheckerTest, SuspendResumeStartBetweenSuspendAndResume) {
 // suspended. Start the checker, send one alive notifications, and verify it
 // doesn't detect dead. Suspend and verify that it doesn't detect dead. Resume
 // and and verify that it doesn't detect dead.
-TEST_F(AliveCheckerTest, SuspendResumeWithAutoStopNotifyBeforeSuspend) {
+TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyBeforeSuspend) {
   CreateAliveChecker(true, true);
   ASSERT_TRUE(mock_power_observer_helper_);
 
@@ -403,7 +403,7 @@ TEST_F(AliveCheckerTest,
 // Setup the checker to stop at first alive notification and pause checking when
 // suspended. Start the checker, suspend, resume, send one alive notification
 // and verify it doesn't detected dead.
-TEST_F(AliveCheckerTest, SuspendResumeWithAutoStopNotifyAfterResume) {
+TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyAfterResume) {
   CreateAliveChecker(true, true);
   ASSERT_TRUE(mock_power_observer_helper_);
 
@@ -429,7 +429,7 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStopNotifyAfterResume) {
 // Setup the checker to stop at first alive notification and pause checking when
 // suspended. Start the checker suspend, and and verify it doesn't detected
 // dead. Resume and run until it detects dead.
-TEST_F(AliveCheckerTest, SuspendResumeWithAutoStopDontNotify) {
+TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_DontNotify) {
   CreateAliveChecker(true, true);
   ASSERT_TRUE(mock_power_observer_helper_);
 

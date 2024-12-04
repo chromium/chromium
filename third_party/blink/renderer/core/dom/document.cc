@@ -135,6 +135,7 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/beforeunload_event_listener.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -180,6 +181,7 @@
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
@@ -713,6 +715,14 @@ ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
         MakeGarbageCollected<ExplicitlySetAttrElementsMap>();
   }
   return add_result.stored_value->value.Get();
+}
+
+bool Document::HasExplicitlySetAttrElements(const Element* element) const {
+  auto it = element_explicitly_set_attr_elements_map_.find(element);
+  if (it == element_explicitly_set_attr_elements_map_.end()) {
+    return false;
+  }
+  return !it->value->empty();
 }
 
 void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
@@ -2200,7 +2210,7 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
                                       kPseudoIdCheckMark,
                                       kPseudoIdBefore,
                                       kPseudoIdAfter,
-                                      kPseudoIdSelectArrow,
+                                      kPseudoIdPickerIcon,
                                       kPseudoIdMarker,
                                       kPseudoIdBackdrop,
                                       kPseudoIdScrollMarkerGroupBefore,
@@ -2208,10 +2218,21 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
                                       kPseudoIdScrollUpButton,
                                       kPseudoIdScrollDownButton,
                                       kPseudoIdScrollLeftButton,
-                                      kPseudoIdScrollRightButton};
+                                      kPseudoIdScrollRightButton,
+                                      kPseudoIdScrollMarker};
   for (auto pseudo_id : pseudo_ids) {
-    if (auto* pseudo_element = element.GetPseudoElement(pseudo_id))
+    if (const PseudoElement* pseudo_element =
+            element.GetPseudoElement(pseudo_id)) {
       AssertNodeClean(*pseudo_element);
+      AssertLayoutTreeUpdatedForPseudoElements(*pseudo_element);
+    }
+  }
+  if (const ColumnPseudoElementsVector* columns =
+          element.GetColumnPseudoElements()) {
+    for (const ColumnPseudoElement* column : *columns) {
+      AssertNodeClean(*column);
+      AssertLayoutTreeUpdatedForPseudoElements(*column);
+    }
   }
 }
 
@@ -3080,14 +3101,7 @@ void Document::Shutdown() {
 
   GetFrame()->DocumentDetached();
   GetFrame()->GetEventHandlerRegistry().DocumentDetached(*this);
-
-  // Signal destruction to mutation observers.
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [](SynchronousMutationObserver* observer) {
-        observer->ContextDestroyed();
-        observer->ObserverSetWillBeCleared();
-      });
-  synchronous_mutation_observer_set_.Clear();
+  GetFrame()->Selection().ContextDestroyed();
 
   cookie_jar_ = nullptr;  // Not accessible after navigated away.
   fetcher_->ClearContext();
@@ -5738,10 +5752,6 @@ void Document::DidMoveTreeToNewDocument(const Node& root) {
     for (Range* range : ranges)
       range->UpdateOwnerDocumentIfNeeded();
   }
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidMoveTreeToNewDocument(root);
-      });
 }
 
 void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
@@ -5757,10 +5767,19 @@ void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
       ni->NodeWillBeRemoved(n);
   }
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->NodeChildrenWillBeRemoved(container);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    // TODO(dbaron): Could this also be inside the IsActiveDocument test?
+    frame->Selection().NodeChildrenWillBeRemoved(container);
+    if (container.isConnected()) {
+      frame->GetEventHandler().NodeChildrenWillBeRemoved(container);
+    }
+  }
+
+  if (container.InActiveDocument()) {
+    if (Page* page = GetPage()) {
+      page->GetDragCaret().NodeChildrenWillBeRemoved(container);
+    }
+  }
 
   if (MayContainShadowRoots()) {
     for (Node& n : NodeTraversal::ChildrenOf(container))
@@ -5785,10 +5804,19 @@ void Document::NodeWillBeRemoved(Node& n) {
     }
   }
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->NodeWillBeRemoved(n);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    // TODO(dbaron): Could this also be inside the IsActiveDocument test?
+    frame->Selection().NodeWillBeRemoved(n);
+    if (n.isConnected()) {
+      frame->GetEventHandler().NodeWillBeRemoved(n);
+    }
+  }
+
+  if (n.InActiveDocument()) {
+    if (Page* page = GetPage()) {
+      page->GetDragCaret().NodeWillBeRemoved(n);
+    }
+  }
 
   if (MayContainShadowRoots())
     n.CheckSlotChangeBeforeRemoved();
@@ -5799,11 +5827,12 @@ void Document::NodeWillBeRemoved(Node& n) {
 
 void Document::NotifyUpdateCharacterData(CharacterData* character_data,
                                          const TextDiffRange& diff) {
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidUpdateCharacterData(character_data, diff.offset,
-                                         diff.old_size, diff.new_size);
-      });
+  Markers().DidUpdateCharacterData(character_data, diff.offset, diff.old_size,
+                                   diff.new_size);
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidUpdateCharacterData(character_data, diff.offset,
+                                              diff.old_size, diff.new_size);
+  }
 }
 
 void Document::NotifyChangeChildren(
@@ -5815,10 +5844,9 @@ void Document::NotifyChangeChildren(
     }
   }
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidChangeChildren(container, change);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidChangeChildren(change);
+  }
 }
 
 void Document::NotifyAttributeChanged(const Element& element,
@@ -5836,11 +5864,6 @@ void Document::NotifyAttributeChanged(const Element& element,
       }
     }
   }
-
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->AttributeChanged(element, name, old_value, new_value);
-      });
 }
 
 void Document::DidInsertText(const CharacterData& text,
@@ -5880,11 +5903,10 @@ void Document::DidMergeTextNodes(const Text& merged_node,
       range->DidMergeTextNodes(node_to_be_removed_with_index, old_length);
   }
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidMergeTextNodes(merged_node, node_to_be_removed_with_index,
-                                    old_length);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidMergeTextNodes(
+        merged_node, node_to_be_removed_with_index, old_length);
+  }
 
   // FIXME: This should update markers for spelling and grammar checking.
 }
@@ -5893,10 +5915,9 @@ void Document::DidSplitTextNode(const Text& old_node) {
   for (Range* range : ranges_)
     range->DidSplitTextNode(old_node);
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidSplitTextNode(old_node);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidSplitTextNode(old_node);
+  }
 
   // FIXME: This should update markers for spelling and grammar checking.
 }
@@ -7604,7 +7625,7 @@ void Document::UpdateAppTitle() {
   }
 
   // Handle case of meta tag being removed by setting app title to empty string.
-  GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(String(""));
+  GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(g_empty_string);
 }
 
 void Document::ColorSchemeMetaChanged() {
@@ -8804,7 +8825,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_image_observer_);
   visitor->Trace(mime_handler_view_before_unload_event_listener_);
   visitor->Trace(cookie_jar_);
-  visitor->Trace(synchronous_mutation_observer_set_);
   visitor->Trace(fragment_directive_);
   visitor->Trace(element_explicitly_set_attr_elements_map_);
   visitor->Trace(element_cached_attr_associated_elements_map_);

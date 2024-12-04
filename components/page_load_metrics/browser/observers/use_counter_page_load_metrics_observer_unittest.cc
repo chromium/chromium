@@ -138,6 +138,11 @@ class UseCounterMetricsRecorderTest
         GetUseCounterHistogramName(FeatureType::kWebFeature, true),
         static_cast<base::Histogram::Sample>(WebFeature::kPageVisits), 1);
 
+    // Verify that page visit is recorded for WebDX Feature histogram.
+    tester()->histogram_tester().ExpectBucketCount(
+        GetUseCounterHistogramName(FeatureType::kWebDXFeature, false),
+        static_cast<base::Histogram::Sample>(WebDXFeature::kPageVisits), 1);
+
     // Verify that page visit is recorded for CSS histograms.
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kCssProperty, false),
@@ -270,6 +275,10 @@ class UseCounterPageLoadMetricsObserverTest
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kWebFeature, true),
         static_cast<base::Histogram::Sample>(WebFeature::kPageVisits), 1);
+    // Verify that page visit is recorded for WebDX Feature histogram.
+    tester()->histogram_tester().ExpectBucketCount(
+        GetUseCounterHistogramName(FeatureType::kWebDXFeature),
+        static_cast<base::Histogram::Sample>(WebDXFeature::kPageVisits), 1);
     // Verify that page visit is recorded for CSS histograms.
     tester()->histogram_tester().ExpectBucketCount(
         GetUseCounterHistogramName(FeatureType::kCssProperty),

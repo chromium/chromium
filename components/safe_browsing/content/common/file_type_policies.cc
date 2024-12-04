@@ -20,6 +20,8 @@ namespace policy {
 
 using ExtensionToPolicyMap = std::map<std::string, const DownloadFileType>;
 
+// This map owns the entries used for overrides i.e. their danger level always
+// says "not dangerous".
 ExtensionToPolicyMap& GetExtensionToPolicyMap() {
   static base::NoDestructor<ExtensionToPolicyMap> ext_map;
   return *ext_map;
@@ -241,21 +243,17 @@ const DownloadFileType& FileTypePolicies::PolicyForExtension(
     return last_resort_default_;
   }
   auto itr = file_type_by_ext_.find(ascii_ext);
+  const DownloadFileType& policy_to_use = itr == file_type_by_ext_.end()
+                                              ? config_->default_file_type()
+                                              : *itr->second;
 
-  if (safe_browsing::IsInNotDangerousOverrideList(ascii_ext, source_url,
-                                                  prefs)) {
-    if (itr != file_type_by_ext_.end()) {
-      return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
-          ascii_ext, *itr->second);
-    }
+  if (ShouldOverrideFileTypePolicies(ascii_ext, source_url, prefs) ==
+      FileTypePoliciesOverrideResult::kOverrideAsNotDangerous) {
     return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
-        ascii_ext, config_->default_file_type());
+        ascii_ext, policy_to_use);
   }
 
-  if (itr != file_type_by_ext_.end())
-    return *itr->second;
-  else
-    return config_->default_file_type();
+  return policy_to_use;
 }
 
 DownloadFileType FileTypePolicies::PolicyForFile(

@@ -128,7 +128,7 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(SelectToSpeakMenuBubbleControllerTest, ShowSelectToSpeakPanelPaused) {
+TEST_F(SelectToSpeakMenuBubbleControllerTest, ShowSelectToSpeakPanel_paused) {
   ShowSelectToSpeakPanel(/*is_paused=*/true);
   EXPECT_TRUE(GetMenuView());
 

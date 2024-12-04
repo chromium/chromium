@@ -511,7 +511,11 @@ void ToolbarButton::AfterPropertyChange(const void* key, int64_t old_value) {
     // all Buttons rather than just ToolbarButtons when IPH is on.
     if (has_in_product_help_promo_) {
       suppressed_tooltip_text_ = GetCachedTooltipText();
+      SetCachedTooltipText(std::u16string());
     } else {
+      if (GetCachedTooltipText().empty()) {
+        SetCachedTooltipText(suppressed_tooltip_text_);
+      }
       suppressed_tooltip_text_ = std::u16string();
     }
     UpdateIcon();

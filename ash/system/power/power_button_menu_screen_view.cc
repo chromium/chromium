@@ -79,6 +79,14 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   ~PowerButtonMenuBackgroundView() override = default;
 
   void OnImplicitAnimationsCompleted() override {
+    // If animation was aborted and opacity is currently 0, we could get left
+    // in an inconsistent state where we're animating to nonzero opacity but
+    // the layer has been set invisible. Only act on completed animations.
+    if (!WasAnimationCompletedForProperty(
+            ui::LayerAnimationElement::AnimatableProperty::OPACITY)) {
+      return;
+    }
+
     PowerButtonController* power_button_controller =
         Shell::Get()->power_button_controller();
     if (layer()->opacity() == 0.f) {
@@ -87,6 +95,8 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
     }
 
     if (layer()->opacity() == kPowerButtonMenuOpacity) {
+      CHECK(layer()->GetTargetVisibility())
+          << "layer is invisible but we animated it to visible";
       show_animation_done_.Run();
     }
   }
@@ -397,6 +407,12 @@ gfx::Size PowerButtonMenuScreenView::GetMenuViewPreferredSize() {
   } else {
     return power_button_menu_view_->GetPreferredSize();
   }
+}
+
+ui::Layer*
+PowerButtonMenuScreenView::GetPowerButtonScreenBackgroundShieldLayerForTest()
+    const {
+  return power_button_screen_background_shield_->layer();
 }
 
 BEGIN_METADATA(PowerButtonMenuScreenView)

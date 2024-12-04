@@ -141,6 +141,10 @@ void CaptureRegionOverlayController::RemoveGlowAnimation() {
   glow_animation_ = nullptr;
 }
 
+bool CaptureRegionOverlayController::HasGlowAnimation() const {
+  return glow_animation_ != nullptr;
+}
+
 void CaptureRegionOverlayController::PaintCurrentGlowState(
     gfx::Canvas& canvas,
     const gfx::Rect& region_bounds_in_canvas,

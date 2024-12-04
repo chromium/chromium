@@ -89,9 +89,13 @@ HttpStreamPool::JobController::CalculateAlternative(
 HttpStreamPool::JobController::JobController(
     HttpStreamPool* pool,
     HttpStreamPoolRequestInfo request_info,
+    RequestPriority priority,
+    std::vector<SSLConfig::CertAndStatus> allowed_bad_certs,
     bool enable_ip_based_pooling,
     bool enable_alternative_services)
     : pool_(pool),
+      priority_(priority),
+      allowed_bad_certs_(std::move(allowed_bad_certs)),
       enable_ip_based_pooling_(enable_ip_based_pooling),
       enable_alternative_services_(enable_alternative_services),
       respect_limits_(request_info.load_flags & LOAD_IGNORE_LIMITS
@@ -122,8 +126,6 @@ HttpStreamPool::JobController::~JobController() = default;
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     HttpStreamRequest::Delegate* delegate,
-    RequestPriority priority,
-    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     const NetLogWithSource& net_log) {
   CHECK(!delegate_);
   CHECK(!stream_request_);
@@ -171,11 +173,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     alternative_job_ =
         pool_
             ->GetOrCreateGroup(alternative_->stream_key, alternative_->quic_key)
-            .CreateJob(this, respect_limits_, enable_ip_based_pooling_,
-                       enable_alternative_services_, alternative_->protocol,
-                       is_http1_allowed_, proxy_info_);
-    alternative_job_->Start(priority, allowed_bad_certs,
-                            alternative_->quic_version, net_log);
+            .CreateJob(this, alternative_->quic_version, alternative_->protocol,
+                       net_log);
+    alternative_job_->Start();
   } else {
     alternative_job_result_ = OK;
   }
@@ -184,13 +184,10 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
                                          alternative_job_result_.has_value() &&
                                          *alternative_job_result_ == OK;
   if (!alternative_job_succeeded) {
-    origin_job_ =
-        pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_)
-            .CreateJob(this, respect_limits_, enable_ip_based_pooling_,
-                       enable_alternative_services_, NextProto::kProtoUnknown,
-                       is_http1_allowed_, proxy_info_);
-    origin_job_->Start(priority, allowed_bad_certs, origin_quic_version_,
-                       net_log);
+    origin_job_ = pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_)
+                      .CreateJob(this, origin_quic_version_,
+                                 NextProto::kProtoUnknown, net_log);
+    origin_job_->Start();
   }
 
   return stream_request;
@@ -236,6 +233,36 @@ int HttpStreamPool::JobController::Preconnect(
 
   return pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_)
       .Preconnect(num_streams, origin_quic_version_, std::move(callback));
+}
+
+RequestPriority HttpStreamPool::JobController::priority() const {
+  return priority_;
+}
+
+HttpStreamPool::RespectLimits HttpStreamPool::JobController::respect_limits()
+    const {
+  return respect_limits_;
+}
+
+const std::vector<SSLConfig::CertAndStatus>&
+HttpStreamPool::JobController::allowed_bad_certs() const {
+  return allowed_bad_certs_;
+}
+
+bool HttpStreamPool::JobController::enable_ip_based_pooling() const {
+  return enable_ip_based_pooling_;
+}
+
+bool HttpStreamPool::JobController::enable_alternative_services() const {
+  return enable_alternative_services_;
+}
+
+bool HttpStreamPool::JobController::is_http1_allowed() const {
+  return is_http1_allowed_;
+}
+
+const ProxyInfo& HttpStreamPool::JobController::proxy_info() const {
+  return proxy_info_;
 }
 
 void HttpStreamPool::JobController::OnStreamReady(
@@ -333,6 +360,7 @@ int HttpStreamPool::JobController::RestartTunnelWithProxyAuth() {
 }
 
 void HttpStreamPool::JobController::SetPriority(RequestPriority priority) {
+  priority_ = priority;
   if (origin_job_) {
     origin_job_->SetPriority(priority);
   }

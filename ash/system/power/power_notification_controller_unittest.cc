@@ -844,7 +844,7 @@ TEST_F(PowerNotificationControllerTest,
       "Ash.PowerNotification.TimeToEmptyForCritialState", 1);
 }
 
-TEST_F(PowerNotificationControllerTest, HistogramTestTimeToEmptyPluggedIn) {
+TEST_F(PowerNotificationControllerTest, HistogramTest_TimeToEmptyPluggedIn) {
   // Verify no initial histogram data is recorded.
   histogram_tester_->ExpectTotalCount(
       "Ash.PowerNotification.TimeToEmptyPluggedIn", 0);

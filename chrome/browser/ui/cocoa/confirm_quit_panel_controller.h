@@ -22,7 +22,7 @@
 
 // Runs a modal loop that brings up the panel and handles the logic for if and
 // when to terminate. Returns YES if the quit should continue.
-- (BOOL)runModalLoopForApplication:(NSApplication*)app;
+- (BOOL)runModalLoop;
 
 // Shows the window.
 - (void)showWindow:(id)sender;

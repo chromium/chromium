@@ -64,9 +64,11 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
   std::unique_ptr<MockRenderViewContextMenu> menu_;
 };
 
-AccessibilityLabelsMenuObserverTest::AccessibilityLabelsMenuObserverTest() {}
+AccessibilityLabelsMenuObserverTest::AccessibilityLabelsMenuObserverTest() =
+    default;
 
-AccessibilityLabelsMenuObserverTest::~AccessibilityLabelsMenuObserverTest() {}
+AccessibilityLabelsMenuObserverTest::~AccessibilityLabelsMenuObserverTest() =
+    default;
 
 }  // namespace
 

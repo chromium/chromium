@@ -122,8 +122,8 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   EXPECT_TRUE(NavigateToURL(window, test_url));
 
   histogram_tester.ExpectUniqueSample(
-      "BrowserRenderProcessHost.NoSparePresentReason",
-      NoSpareRendererReason::kNotYetCreated, 1);
+      "BrowserRenderProcessHost.NoSparePresentReason2",
+      NoSpareRendererReason::kNotYetCreatedFirstLaunch, 1);
 }
 
 // Matches a RenderProcessHost that is ready.
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       "BrowserRenderProcessHost.SpareRendererDispatchResult",
       SpareRendererDispatchResult::kUsed, 1);
   histogram_tester.ExpectTotalCount(
-      "BrowserRenderProcessHost.NoSparePresentReason", 0);
+      "BrowserRenderProcessHost.NoSparePresentReason2", 0);
   histogram_tester.ExpectTotalCount(
       "BrowserRenderProcessHost.SpareProcessMaybeTakeTime", 1);
   histogram_tester.ExpectTotalCount(
@@ -298,15 +298,13 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       browser_context,
       static_cast<SiteInstanceImpl*>(test_site_instance.get())));
   histogram_tester.ExpectUniqueSample(
-      "BrowserRenderProcessHost.NoSparePresentReason",
+      "BrowserRenderProcessHost.NoSparePresentReason2",
       NoSpareRendererReason::kTimeout, 1);
   // The base::ElapsedTimer will record the wall time rather than the time
   // elapsed in the TestMockTimeTaskRunner. We can only verify the sample
   // count.
   histogram_tester.ExpectTotalCount(
       "BrowserRenderProcessHost.SpareProcessMaybeTakeTime", 1);
-  histogram_tester.ExpectTotalCount(
-      "BrowserRenderProcessHost.SpareProcessMaybeTakeTime.NoSparePresent", 1);
 }
 
 // Verifies that creating a spare renderer without a timeout
@@ -533,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       browser_context(),
       static_cast<SiteInstanceImpl*>(test_site_instance.get())));
   histogram_tester.ExpectUniqueSample(
-      "BrowserRenderProcessHost.NoSparePresentReason",
+      "BrowserRenderProcessHost.NoSparePresentReason2",
       NoSpareRendererReason::kProcessLimit, 1);
 
   // A spare RPH should be created with a max of 2 renderer processes.
@@ -820,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       browser_context,
       static_cast<SiteInstanceImpl*>(test_site_instance.get())));
   histogram_tester.ExpectUniqueSample(
-      "BrowserRenderProcessHost.NoSparePresentReason",
+      "BrowserRenderProcessHost.NoSparePresentReason2",
       NoSpareRendererReason::kTakenByPreviousNavigation, 1);
 }
 

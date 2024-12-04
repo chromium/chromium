@@ -30,7 +30,9 @@ class PLATFORM_EXPORT IdentityDigest {
   // `Identity-Digest` header is present, and `std::nullopt` otherwise.
   static std::optional<IdentityDigest> Create(const HTTPHeaderMap&);
 
-  const IntegrityMetadataSet& digests() const { return digests_; }
+  const WTF::HashSet<IntegrityMetadataPair>& digests() const {
+    return integrity_metadata_.hashes;
+  }
 
   // Validates |data| against all parsed digests, returning `true` if all match,
   // and `false` otherwise.
@@ -40,7 +42,7 @@ class PLATFORM_EXPORT IdentityDigest {
   IdentityDigest() = default;
   explicit IdentityDigest(IntegrityMetadataSet);
 
-  IntegrityMetadataSet digests_;
+  IntegrityMetadataSet integrity_metadata_;
 };
 
 }  // namespace blink

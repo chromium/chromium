@@ -832,4 +832,13 @@ void WindowTreeHost::OnSetPreferredRefreshRate(ui::Compositor*,
                     preferred_refresh_rate);
 }
 
+void WindowTreeHost::OnFirstSurfaceActivation(
+    ui::Compositor*,
+    const viz::SurfaceInfo& surface_info) {
+  window()->UpdateLocalSurfaceIdFromEmbeddedClient(
+      surface_info.id().local_surface_id());
+  observers_.Notify(&WindowTreeHostObserver::OnLocalSurfaceIdChanged, this,
+                    window()->GetLocalSurfaceId());
+}
+
 }  // namespace aura

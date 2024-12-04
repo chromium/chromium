@@ -791,7 +791,14 @@ template("mojom") {
       enabled_features += [ "is_apple" ]
     }
 
-    action(parser_target_name) {
+    action_outputs = []
+    foreach(base_path, output_file_base_paths) {
+      filename = get_path_info(base_path, "file")
+      dirname = get_path_info(base_path, "dir")
+      action_outputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
+    }
+
+    action("${parser_target_name}_action") {
       allow_remote = true
 
       # Use large worker to avoid OOM (b/325844324) and make it faster with
@@ -802,12 +809,7 @@ template("mojom") {
       inputs = mojom_parser_sources + ply_sources + [ build_metadata_filename ]
       sources = sources_list
       public_deps = parser_deps
-      outputs = []
-      foreach(base_path, output_file_base_paths) {
-        filename = get_path_info(base_path, "file")
-        dirname = get_path_info(base_path, "dir")
-        outputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
-      }
+      outputs = action_outputs
 
       filelist = []
       foreach(source, sources_list) {
@@ -863,6 +865,17 @@ template("mojom") {
           ]
         }
       }
+    }
+
+    # This config is to propagate mojom-module files to descendant targets'
+    # input properly.
+    config("${parser_target_name}_outputs") {
+      inputs = action_outputs
+    }
+
+    group(parser_target_name) {
+      public_configs = [ ":${parser_target_name}_outputs" ]
+      public_deps = [ ":${parser_target_name}_action" ]
     }
   }
 

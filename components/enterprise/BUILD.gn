@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 
 static_library("enterprise") {
@@ -46,7 +45,7 @@ static_library("enterprise") {
     "browser/reporting/reporting_delegate_factory.h",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "browser/controller/browser_dm_token_storage.cc",
       "browser/controller/browser_dm_token_storage.h",
@@ -66,7 +65,6 @@ static_library("enterprise") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/proto",
@@ -86,7 +84,7 @@ static_library("enterprise") {
     "//components/reporting/util:status",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "browser/controller/chrome_browser_cloud_management_controller.cc",
       "browser/controller/chrome_browser_cloud_management_controller.h",
@@ -100,7 +98,7 @@ static_library("enterprise") {
 static_library("test_support") {
   testonly = true
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources = [
       "browser/controller/fake_browser_dm_token_storage.cc",
       "browser/controller/fake_browser_dm_token_storage.h",
@@ -144,7 +142,6 @@ source_set("unit_tests") {
     ":reporting_test_support",
     "common/proto:connectors_proto",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/identifiers:test_support",
     "//components/policy/core/common:test_support",
@@ -155,7 +152,7 @@ source_set("unit_tests") {
     "//third_party/content_analysis_sdk:liblcasdk",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "browser/controller/browser_dm_token_storage_unittest.cc",
       "browser/reporting/cloud_reporting_policy_handler_unittest.cc",

@@ -27,6 +27,7 @@ using chrome_test_util::TabGridOpenTabsPanelButton;
 using chrome_test_util::TabGridTabGroupsPanelButton;
 using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
+using chrome_test_util::TabGroupSnackBar;
 using chrome_test_util::TabGroupSnackBarAction;
 using chrome_test_util::TabGroupsPanel;
 using chrome_test_util::TabGroupsPanelCellAtIndex;
@@ -301,15 +302,9 @@ void CloseGroupAtIndex(int group_cell_index) {
                   @"The number of saved tab groups should be 0.");
 }
 
-// TODO(crbug.com/376964632): Deflake test on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testCloseGroupInTabGrid DISABLED_testCloseGroupInTabGrid
-#else
-#define MAYBE_testCloseGroupInTabGrid testCloseGroupInTabGrid
-#endif
 // Tests that closing a group in the tab grid reflects the change in the
 // Tab Groups panel.
-- (void)MAYBE_testCloseGroupInTabGrid {
+- (void)testCloseGroupInTabGrid {
   [ChromeEarlGreyUI openTabGrid];
 
   // Creates a tab group with an item at 0.
@@ -335,10 +330,9 @@ void CloseGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
       assertWithMatcher:grey_nil()];
 
-  // Switch over to the third panel.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:TabGridTabGroupsPanelButton()];
-  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+  // Switch over to the third panel by tapping the snackbar action.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupSnackBar(1)];
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
       performAction:grey_tap()];
 
   // Check that the group with `kGroup1Name` still exists.

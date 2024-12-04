@@ -172,10 +172,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket);
 BASE_DECLARE_FEATURE(
     kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);
 
-// Enables collection of potential password theft data and uploads
-// telemetry reports to SB servers.
-BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
-
 // Enables remotely disabling of malicious off-store extensions identified in
 // Extension Telemetry service reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);

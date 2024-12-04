@@ -11,6 +11,10 @@ namespace on_device_translation {
 
 namespace {
 
+// Limit the number of downloadable language packs to 3 during OT to mitigate
+// the risk of fingerprinting attacks.
+constexpr size_t kTranslationAPILimitLanguagePackCountMax = 3;
+
 base::FilePath GetPathFromCommandLine(const char* switch_name) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switch_name)) {
@@ -39,6 +43,16 @@ const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
   return GetPathFromCommandLine(kTranslateKitBinaryPath);
+}
+
+size_t GetInstallablePackageCount(size_t installed_package_count) {
+  if (!kTranslationAPILimitLanguagePackCount.Get()) {
+    return std::numeric_limits<size_t>::max();
+  }
+  if (installed_package_count >= kTranslationAPILimitLanguagePackCountMax) {
+    return 0;
+  }
+  return kTranslationAPILimitLanguagePackCountMax - installed_package_count;
 }
 
 }  // namespace on_device_translation

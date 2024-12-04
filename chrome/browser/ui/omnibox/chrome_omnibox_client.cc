@@ -516,8 +516,7 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
     bool destination_url_entered_with_http_scheme,
     const std::u16string& text,
     const AutocompleteMatch& match,
-    const AutocompleteMatch& alternative_nav_match,
-    IDNA2008DeviationCharacter deviation_char_in_hostname) {
+    const AutocompleteMatch& alternative_nav_match) {
   TRACE_EVENT("omnibox", "ChromeOmniboxClient::OnAutocompleteAccept", "text",
               text, "match", match, "alternative_nav_match",
               alternative_nav_match);
@@ -532,17 +531,6 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
     auto navigation = chrome::OpenCurrentURL(browser_);
     ChromeOmniboxNavigationObserver::Create(navigation.get(), profile_, text,
                                             match, alternative_nav_match);
-
-    // If this navigation was typed by the user and the hostname contained an
-    // IDNA 2008 deviation character, record a UKM. See idn_spoof_checker.h
-    // for details about deviation characters.
-    if (deviation_char_in_hostname != IDNA2008DeviationCharacter::kNone) {
-      ukm::SourceId source_id = ukm::ConvertToSourceId(
-          navigation->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
-      ukm::builders::Navigation_IDNA2008Transition(source_id)
-          .SetCharacter(static_cast<int>(deviation_char_in_hostname))
-          .Record(ukm::UkmRecorder::Get());
-    }
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Вклучете ги известувањата за „Безбедносна проверка“…</translation>
 <translation id="1652333207707886577">Приспособете го вашето мени</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Преостанато време: {TIME} секунди}=1{Преостанато време: {TIME} секунда}one{Преостанато време: {TIME} секунда}other{Преостанато време: {TIME} секунди}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} зачувана лозинка достапна над тастатурата.}one{{count} зачувана лозинка достапни над тастатурата.}other{{count} зачувани лозинки достапни над тастатурата.}}</translation>
 <translation id="1654232554734641711">Пристапот до „Микрофонот“ е дозволен</translation>
 <translation id="16554782717487656">Откривање единици</translation>
 <translation id="1657011748321897393">Споделувањето не успеа затоа што не сте поврзани на мрежата.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Отворете ја мрежата со картички</translation>
 <translation id="20485545164632846">нова ставка</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> сметки ја користат истата лозинка</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} зачуван начин на плаќање достапен над тастатурата.}one{{count} зачуван начин на плаќање достапни над тастатурата.}other{{count} зачувани начини на плаќање достапни над тастатурата.}}</translation>
 <translation id="2059166748188874810">Општина</translation>
 <translation id="20638360198452347">Избирач на типови единици</translation>
 <translation id="2067852168641682340">Секогаш зачувувај на оваа сметка</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">Скриј „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Вашиот пакет не може да се испорача</translation>
 <translation id="2410754283952462441">Изберете сметка</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} зачувана адреса достапна над тастатурата.}one{{count} зачувана адреса достапни над тастатурата.}other{{count} зачувани адреси достапни над тастатурата.}}</translation>
 <translation id="2424805048070062787">Продолжете со картичкава</translation>
 <translation id="2426805022920575512">Изберете друга сметка</translation>
 <translation id="243275146591958220">Откажи го преземањето</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">Прикажувај прегледи на линковите</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4532845899244822526">Избери папка</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} зачуван предлог за автоматско довршување достапен над тастатурата.}one{{count} зачуван предлог за автоматско довршување достапни над тастатурата.}other{{count} зачувани предлози за автоматско довршување достапни над тастатурата.}}</translation>
 <translation id="4547181496285029457">Вратете се на неодамнешната картичка</translation>
 <translation id="4552042254369397518">Се копира…</translation>
 <translation id="4564893319561643483">Скриј „<ph name="TITLE" />“</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">Добивајте известувања во картичките</translation>
 <translation id="4601095002996233687">Детални скенирања за сомнителни преземања.</translation>
 <translation id="4606247758155004938">Вашата организација управува со прелистувачот.</translation>
+<translation id="4607887340472970274">Следење цени</translation>
 <translation id="4611811151908969241">Скриј „Поништи го следењето на <ph name="DOMAIN_NAME" />“</translation>
 <translation id="461440297010471931">Се пребарува со Google</translation>
 <translation id="4619564267100705184">Потврдете дека сте вие</translation>
@@ -1274,7 +1271,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6710079714193676716">Управувано од вашата организација. Некои функции можеби се недостапни. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Одете на активноста</translation>
 <translation id="6713676799463473249">Последно изменето: <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Следи ја цената</translation>
 <translation id="6722623263381062480">Примени картички</translation>
 <translation id="6723740634201835758">Во вашата сметка на Google</translation>
 <translation id="672735642903863329">Добијте ги обележувачите, лозинките и друго на сите ваши уреди.</translation>
@@ -1440,7 +1436,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="75362970626182391">Нова група картички</translation>
 <translation id="7537586195939242955">Pass не може да се инсталира во Passbook во моментов.</translation>
 <translation id="754655535278952384">Последна проверка: <ph name="TIME" /></translation>
-<translation id="755255281989213264">Приспособете го менито</translation>
 <translation id="7553234618121028547">За да исклучите, отворете <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" /> и одете на „Опции за лозинки“.</translation>
 <translation id="7557508262441527045">Одјавени сте</translation>
 <translation id="7561196759112975576">Секогаш</translation>

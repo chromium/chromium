@@ -224,11 +224,12 @@ bool InstallSigner::VerifySignature(const InstallSignature& signature) {
 
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-                           base::as_bytes(base::make_span(signature.signature)),
-                           base::as_bytes(base::make_span(public_key))))
+                           base::as_byte_span(signature.signature),
+                           base::as_byte_span(public_key))) {
     return false;
+  }
 
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(signed_data)));
+  verifier.VerifyUpdate(base::as_byte_span(signed_data));
   return verifier.VerifyFinal();
 }
 

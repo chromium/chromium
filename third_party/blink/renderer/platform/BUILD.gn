@@ -341,6 +341,7 @@ component("platform") {
   output_name = "blink_platform"
 
   sources = [
+    "accept_languages_watcher.h",
     "animation/animation_translation_util.cc",
     "animation/animation_translation_util.h",
     "animation/compositor_animation.cc",
@@ -2765,6 +2766,7 @@ fuzzer_test("blink_avif_decoder_fuzzer") {
   sources = [ "image-decoders/avif/avif_image_decoder_fuzzer.cc" ]
   deps = [
     ":blink_fuzzer_test_support",
+    ":blink_image_decoder_fuzzer_test_support",
     ":platform",
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
@@ -2777,6 +2779,7 @@ fuzzer_test("blink_crabbyavif_decoder_fuzzer") {
   sources = [ "image-decoders/avif/crabbyavif_image_decoder_fuzzer.cc" ]
   deps = [
     ":blink_fuzzer_test_support",
+    ":blink_image_decoder_fuzzer_test_support",
     ":platform",
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]

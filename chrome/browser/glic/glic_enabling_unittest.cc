@@ -11,6 +11,9 @@
 
 using base::test::FeatureRef;
 
+namespace glic {
+namespace {
+
 class GlicEnablingTest : public testing::Test {
  public:
   void SetUp() override {
@@ -45,3 +48,6 @@ TEST_F(GlicEnablingTest, TabStripComboButtonFeatureNotEnabledTest) {
   scoped_feature_list_.InitWithFeatures({}, {features::kTabstripComboButton});
   EXPECT_EQ(GlicEnabling::IsEnabledByFlags(), false);
 }
+
+}  // namespace
+}  // namespace glic

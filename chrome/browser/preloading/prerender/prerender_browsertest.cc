@@ -779,6 +779,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
   ExpectPrerenderPageLoad(prerender_url,
                           page_load_metrics::NavigationHandleUserData::
                               InitiatorLocation::kNewTabPage);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage", false, 1);
 }
 
 // Verify that NewTabPage prerender rejects non https url.

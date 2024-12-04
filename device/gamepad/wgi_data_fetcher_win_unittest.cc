@@ -194,6 +194,14 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
     }
   }
 
+  void TearDown() override {
+    FakeIGamepadStatics::GetInstance()->Reset();
+    wgi_fetcher_ = nullptr;
+    mock_generic_fetcher_ = nullptr;
+    polling_thread_ = nullptr;
+    DeviceServiceTestBase::TearDown();
+  }
+
   void SetUpTestEnv(WgiTestErrorCode error_code = WgiTestErrorCode::kOk) {
     wgi_environment_ = std::make_unique<FakeWinrtWgiEnvironment>(error_code);
     SetUpXInputEnv(error_code);
@@ -286,6 +294,14 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
       base::PlatformThread::Sleep(base::Milliseconds(10));
       current_version = buffer->seqlock.ReadBegin();
     } while (current_version % 2 || current_version == initial_version);
+  }
+
+  void RemoveWgiDataFetcherFromProvider() {
+    wgi_fetcher_ = nullptr;
+    provider_->RemoveSourceGamepadDataFetcher(GamepadSource::kWinWgi);
+    // Wait for the gamepad polling thread to execute
+    // GamepadProvider::DoRemoveSourceGamepadDataFetcher.
+    FlushPollingThread();
   }
 
   void ReadGamepadHardwareBuffer(const GamepadHardwareBuffer* buffer,
@@ -532,7 +548,7 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
       fake_unknown_gamepad, kUnknownHardwareProductId, kUnknownHardwareVendorId,
       kGamepadDisplayName);
 
-  // Wait for the gampad polling thread to handle the gamepad added events.
+  // Wait for the gamepad polling thread to handle the gamepad added events.
   FlushPollingThread();
 
   // Assert that the gamepads have been added to the DataFetcher.
@@ -555,7 +571,7 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
   fake_gamepad_statics->SimulateGamepadRemoved(fake_trigger_rumble_gamepad);
   fake_gamepad_statics->SimulateGamepadRemoved(fake_unknown_gamepad);
 
-  // Wait for the gampad polling thread to handle the gamepad removed event.
+  // Wait for the gamepad polling thread to handle the gamepad removed event.
   FlushPollingThread();
 
   CheckGamepadRemoved();
@@ -583,6 +599,53 @@ TEST_F(WgiDataFetcherWinTest, AddGamepadRemovedEventHandlerErrorHandling) {
             WgiDataFetcherWin::InitializationState::kAddGamepadRemovedFailed);
   auto* gamepad_statics = FakeIGamepadStatics::GetInstance();
   EXPECT_EQ(gamepad_statics->GetGamepadRemovedEventHandlerCount(), 0u);
+}
+
+TEST_F(WgiDataFetcherWinTest, RemoveGamepadAddedEventHandlerErrorHandling) {
+  // Let fake gamepad statics remove_GamepadAdded return failure code to
+  // test error handling.
+  SetUpTestEnv(WgiTestErrorCode::kGamepadRemoveGamepadAddedFailed);
+
+  // Check WGI initialization status.
+  EXPECT_EQ(fetcher().GetInitializationState(),
+            WgiDataFetcherWin::InitializationState::kInitialized);
+  auto* gamepad_statics = FakeIGamepadStatics::GetInstance();
+  EXPECT_EQ(gamepad_statics->GetGamepadAddedEventHandlerCount(), 1u);
+
+  // Lets remove the WgiDataFetcherWin instance from the GamepadProvider to
+  // trigger its destructor.
+  RemoveWgiDataFetcherFromProvider();
+}
+
+TEST_F(WgiDataFetcherWinTest, RemoveGamepadRemovedEventHandlerErrorHandling) {
+  // Let fake gamepad statics remove_GamepadRemoved return failure code to
+  // test error handling.
+  SetUpTestEnv(WgiTestErrorCode::kGamepadRemoveGamepadRemovedFailed);
+
+  // Check WGI initialization status.
+  EXPECT_EQ(fetcher().GetInitializationState(),
+            WgiDataFetcherWin::InitializationState::kInitialized);
+  auto* gamepad_statics = FakeIGamepadStatics::GetInstance();
+  EXPECT_EQ(gamepad_statics->GetGamepadRemovedEventHandlerCount(), 1u);
+
+  // Lets remove the WgiDataFetcherWin instance from the GamepadProvider to
+  // trigger its destructor.
+  RemoveWgiDataFetcherFromProvider();
+}
+
+TEST_F(WgiDataFetcherWinTest, DestructionSuccessful) {
+  SetUpTestEnv();
+
+  // Check WGI initialization status.
+  EXPECT_EQ(fetcher().GetInitializationState(),
+            WgiDataFetcherWin::InitializationState::kInitialized);
+  auto* gamepad_statics = FakeIGamepadStatics::GetInstance();
+  EXPECT_EQ(gamepad_statics->GetGamepadAddedEventHandlerCount(), 1u);
+  EXPECT_EQ(gamepad_statics->GetGamepadRemovedEventHandlerCount(), 1u);
+
+  // Lets remove the WgiDataFetcherWin instance from the GamepadProvider to
+  // trigger its destructor.
+  RemoveWgiDataFetcherFromProvider();
 }
 
 TEST_F(WgiDataFetcherWinTest, WgiGamepadActivationFactoryErrorHandling) {
@@ -829,7 +892,7 @@ TEST_F(WgiDataFetcherWinTest, ShouldNotEnumerateControllers) {
                                                vendor_id, "");
   }
 
-  // Wait for the gampad polling thread to handle the gamepad added event.
+  // Wait for the gamepad polling thread to handle the gamepad added event.
   FlushPollingThread();
 
   // Assert that the gamepad has not been added to the DataFetcher.
@@ -856,7 +919,7 @@ TEST_P(WgiDataFetcherTriggerRumbleSupportTest,
       GamepadIdList::Get().GetDeviceIdsFromGamepadId(gamepad_id);
   fake_gamepad_statics->SimulateGamepadAdded(fake_gamepad, product_id,
                                              vendor_id, "");
-  // Wait for the gampad polling thread to handle the gamepad added event.
+  // Wait for the gamepad polling thread to handle the gamepad added event.
   FlushPollingThread();
 
   // Assert that the gamepad has been added to the DataFetcher.
@@ -878,7 +941,7 @@ class WgiDataFetcherWinErrorTest
 
 // This test simulates OS errors that prevent the controller from being
 // enumerated by WgiDataFetcherWin.
-TEST_P(WgiDataFetcherWinErrorTest, GamepadShouldNotbeEnumerated) {
+TEST_P(WgiDataFetcherWinErrorTest, GamepadShouldNotBeEnumerated) {
   const WgiTestErrorCode error_code = GetParam();
   SetUpTestEnv(error_code);
   const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
@@ -887,7 +950,7 @@ TEST_P(WgiDataFetcherWinErrorTest, GamepadShouldNotbeEnumerated) {
   fake_gamepad_statics->SimulateGamepadAdded(
       fake_gamepad, kHardwareProductId, kHardwareVendorId, kGamepadDisplayName);
 
-  // Wait for the gampad polling thread to handle the gamepad added event.
+  // Wait for the gamepad polling thread to handle the gamepad added event.
   FlushPollingThread();
 
   // Assert that the gamepad has not been added to the DataFetcher.
@@ -1008,7 +1071,7 @@ TEST_P(WgiDataFetcherWinGamepadIdTest, GamepadIds) {
                                                vendor_id, display_name);
   }
 
-  // Wait for the gampad polling thread to handle the gamepad added event.
+  // Wait for the gamepad polling thread to handle the gamepad added event.
   FlushPollingThread();
 
   // Assert that the gamepads have been added to the DataFetcher.

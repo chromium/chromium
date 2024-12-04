@@ -278,8 +278,8 @@
 <translation id="1473495410389165587">输入 3 个或更多字词，即可获得写作帮助</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">清洁服务</translation>
-<translation id="1475299637784133125">想要查看浏览器版本？请访问</translation>
 <translation id="1476595624592550506">更改您的密码</translation>
+<translation id="1482372785911828880">超细</translation>
 <translation id="1482879811280872320">骑车</translation>
 <translation id="1483493594462132177">发送</translation>
 <translation id="1484449009683144042">这是一项实验性 AI 写作辅助功能，有时可能会出错。
@@ -1312,6 +1312,7 @@
 <translation id="3375754925484257129">运行 Chrome 安全检查</translation>
 <translation id="3377144306166885718">服务器使用的 TLS 版本已过时。</translation>
 <translation id="3377188786107721145">策略解析错误</translation>
+<translation id="3377642479079205807">细</translation>
 <translation id="3378612801784846695">主题是系统根据您近期的浏览记录推测出来的，可供网站用以向您展示个性化广告，同时保护您的身份信息</translation>
 <translation id="3380365263193509176">未知错误</translation>
 <translation id="3380864720620200369">客户端 ID：</translation>
@@ -1416,7 +1417,6 @@
 <translation id="3552297013052089404">Sans-Serif 字体</translation>
 <translation id="3558573058928565255">日间</translation>
 <translation id="3559897352860026926">请让您的管理员验证其“<ph name="CLOUD_PROVIDER" />”配置设置。</translation>
-<translation id="3560408312959371419">有关跟踪保护措施和设备端网站数据的选项</translation>
 <translation id="3560824484345057728">查看相关网站</translation>
 <translation id="3566021033012934673">您的连接不是私密连接</translation>
 <translation id="3566336457819493938">215 x 315 毫米</translation>
@@ -2482,6 +2482,7 @@
 <translation id="5481682542063333508">提供写作帮助</translation>
 <translation id="54817484435770891">添加有效地址</translation>
 <translation id="5483838506518938965">一切都已就绪</translation>
+<translation id="5485100387355669506">超粗</translation>
 <translation id="5485973315555778056">云端设备</translation>
 <translation id="5488590678320979185">“创建记事”按钮，激活它即可在 Google Keep 中快速创建新记事</translation>
 <translation id="5490432419156082418">地址和其他信息</translation>
@@ -2591,7 +2592,6 @@
 <translation id="5675809467256309336">舞曲与电子音乐</translation>
 <translation id="5675959228867414813">按日期显示</translation>
 <translation id="567604591393105935">商务底部动作条已半屏打开</translation>
-<translation id="5677928146339483299">已阻止</translation>
 <translation id="5678007133659493065">箔</translation>
 <translation id="5680642791693447368">惊悚片、犯罪片与悬疑片</translation>
 <translation id="568292603005599551">图片 X 轴位置</translation>
@@ -2651,7 +2651,6 @@
 <translation id="57838592816432529">静音</translation>
 <translation id="5784606427469807560">确认您的信用卡时出现问题。请检查您的互联网连接，然后重试。</translation>
 <translation id="5785756445106461925">而且，此页中包含其他不安全的资源。他人能在这些资源传输过程中进行查看，攻击者也可以修改这些资源，从而改变此页的外观。</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方式将从本设备中删除</translation>
 <translation id="5794065675298686371">开启价格跟踪通知</translation>
 <translation id="5800727402210090597">手机维修和服务</translation>
@@ -2949,7 +2948,6 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 值无效，因此不会被使用。</translation>
 <translation id="6340739886198108203">管理员政策不建议在屏幕显示机密内容时截屏/录屏：</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理员政策不建议将这个文件上传到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件上传到<ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">跟踪保护</translation>
 <translation id="634500758737709758">路线</translation>
 <translation id="6348220984832452017">使用中的变体</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
@@ -3666,6 +3664,7 @@
 <translation id="7599089013883397081">下载超时</translation>
 <translation id="7608583484192556132">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />网站推荐广告<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。详细了解如何<ph name="BEGIN_LINK_3" />管理广告隐私权<ph name="END_LINK_3" />。</translation>
 <translation id="7610193165460212391">值超出了范围 (<ph name="VALUE" />)。</translation>
+<translation id="761261689936461781">粗</translation>
 <translation id="7613889955535752492">过期时间：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="7616645509853975347">您的管理员已在您的浏览器中启用了 Chrome 企业版接口。这些接口可以访问您的部分数据。</translation>
@@ -4139,6 +4138,7 @@
 <translation id="8449836157089738489">在新标签页分组中打开全部网址</translation>
 <translation id="84561192812921051">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">底部动作条已关闭。</translation>
+<translation id="8456775115498700722">您的 <ph name="CARD_ISSUER_NAME" /> 账号已关联到 Google Pay，因此您现在可以自动填充 <ph name="CARD_ISSUER_NAME" /> 卡的信息。</translation>
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">开启</translation>
@@ -4296,6 +4296,7 @@
 <translation id="8757526089434340176">有可用的 Google Pay 优惠</translation>
 <translation id="8759274551635299824">此信用卡已失效</translation>
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
+<translation id="8763226176721243078">您可以自动填充此卡的信息，因为您的 <ph name="CARD_ISSUER_NAME" /> 账号已关联到 Google Pay。</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8763986294015493060">关闭当前打开的所有无痕式窗口</translation>
 <translation id="8766943070169463815">安全付款凭据身份验证表单已打开</translation>
@@ -4385,7 +4386,6 @@
 <translation id="893332455753468063">添加名称</translation>
 <translation id="8942355029279167844">您的管理员已允许 <ph name="APP_NAME" /> 收集诊断数据以提升产品使用体验。有关详情，请参阅 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />。</translation>
 <translation id="8943282376843390568">绿黄色</translation>
-<translation id="8944485226638699751">受限</translation>
 <translation id="8949410982325929394">语气</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">某个网站刚刚请求访问您的<ph name="REQUEST_TYPE" />。只需 1 分钟即可完成调查问卷，帮助我们改进网站请求访问权限的方式。</translation>
@@ -4406,7 +4406,6 @@
 <translation id="8987663052629670333">照片打印服务</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">想要查看系统版本？请访问</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想了解您何时在主动使用此设备</translation>
 <translation id="8997023839087525404">该服务器提供了一个未通过证书透明度政策公开披露的证书。某些证书必须通过证书透明度政策进行公开披露，以确保它们值得信任且能保护用户免遭攻击。</translation>
 <translation id="9000145382638074673">您的设备</translation>

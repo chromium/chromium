@@ -990,6 +990,14 @@
       Card number:
   </message>
 
+  <!-- Buy now pay later related strings -->
+  <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_MAIN_TEXT" desc="Main text for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
+    Pay over time options
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL" desc="One line label shows the minimum qualifying amount for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
+    Available for purchases over <ph name="RANGE_MINIMUM">$1<ex>$35</ex></ph>
+  </message>
+
   <!-- Credit card benefits-related strings -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS" desc="benefit text string shown in suggestion dropdown indicating that the credit card has an applicable benefit for this purchase with `terms apply` appended.">
     <ph name="BENEFIT_DESCRIPTION">$1<ex>5% cashback on travel</ex></ph> (terms apply)

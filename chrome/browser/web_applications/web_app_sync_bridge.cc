@@ -361,10 +361,7 @@ void WebAppSyncBridge::SetUserPageOrdinal(const webapps::AppId& app_id,
   // called before the app is installed in the web apps system. Until apps are
   // no longer double-installed on both systems, ignore this case.
   // https://crbug.com/1101781
-  if (!registrar_->IsInstallState(
-          app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (registrar_->IsNotInRegistrar(app_id)) {
     return;
   }
   if (web_app) {
@@ -383,10 +380,7 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
   // called before the app is installed in the web apps system. Until apps are
   // no longer double-installed on both systems, ignore this case.
   // https://crbug.com/1101781
-  if (!registrar_->IsInstallState(
-          app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (registrar_->IsNotInRegistrar(app_id)) {
     return;
   }
   WebApp* web_app = update->UpdateApp(app_id);

@@ -1,23 +1,28 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Description: ChromeOS specific Linux code layered on top of
-// base/threading/platform_thread_linux{,_base}.cc.
+
+#include <sys/resource.h>
+
+#include <type_traits>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/process/internal_linux.h"
 #include "base/process/process.h"
+#include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/cross_process_platform_thread_delegate.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/platform_thread_internal_posix.h"
 
-#include <sys/resource.h>
+// Description: ChromeOS specific Linux code layered on top of
+// base/threading/platform_thread_linux{,_base}.cc.
 
 namespace base {
 
@@ -411,13 +416,14 @@ void PlatformThreadChromeOS::SetThreadBackgrounded(ProcessId process_id,
   SetThreadRTPrioFromType(process_id, thread_id, type.value(), backgrounded);
 }
 
-SequenceCheckerImpl&
-PlatformThreadChromeOS::GetCrossProcessThreadPrioritySequenceChecker() {
-  // In order to use a NoDestructor instance, use SequenceCheckerImpl instead of
-  // SequenceCheckerDoNothing because SequenceCheckerImpl is trivially
-  // destructible but SequenceCheckerDoNothing isn't.
-  static NoDestructor<SequenceCheckerImpl> instance;
-  return *instance;
+void PlatformThreadChromeOS::DcheckCrossProcessThreadPrioritySequence() {
+  // The `NoDestructor` instantiation here must be guarded, since with DCHECKs
+  // disabled, `SequenceChecker` is trivially destructible, which triggers a
+  // `static_assert` in `NoDestructor`.
+#if DCHECK_IS_ON()
+  static NoDestructor<SequenceChecker> instance;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(*instance);
+#endif
 }
 
 namespace internal {
@@ -430,8 +436,7 @@ void SetThreadTypeChromeOS(ProcessId process_id,
   // Should not be called concurrently with
   // other functions like SetThreadBackgrounded.
   if (via_ipc) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(
-        PlatformThread::GetCrossProcessThreadPrioritySequenceChecker());
+    PlatformThreadChromeOS::DcheckCrossProcessThreadPrioritySequence();
   }
 
   auto proc = Process::Open(process_id);

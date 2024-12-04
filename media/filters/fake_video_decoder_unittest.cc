@@ -267,14 +267,14 @@ TEST_P(FakeVideoDecoderTest, SimulateFailureToInitialize) {
   EXPECT_THAT(last_decode_status_, IsDecodeErrorStatus());
 }
 
-TEST_P(FakeVideoDecoderTest, ReadAllFrames) {
+TEST_P(FakeVideoDecoderTest, Read_AllFrames) {
   Initialize();
   ReadAllFrames();
   EXPECT_EQ(kTotalBuffers, num_decoded_frames_);
   EXPECT_EQ(total_bytes_in_buffers_, num_bytes_decoded_);
 }
 
-TEST_P(FakeVideoDecoderTest, ReadDecodingDelay) {
+TEST_P(FakeVideoDecoderTest, Read_DecodingDelay) {
   Initialize();
 
   while (num_input_buffers_ < kTotalBuffers) {
@@ -284,7 +284,7 @@ TEST_P(FakeVideoDecoderTest, ReadDecodingDelay) {
   }
 }
 
-TEST_P(FakeVideoDecoderTest, ReadZeroDelay) {
+TEST_P(FakeVideoDecoderTest, Read_ZeroDelay) {
   decoder_ = std::make_unique<FakeVideoDecoder>(
       999, 0, 1,
       base::BindRepeating(&FakeVideoDecoderTest::OnBytesDecoded,
@@ -297,7 +297,7 @@ TEST_P(FakeVideoDecoderTest, ReadZeroDelay) {
   }
 }
 
-TEST_P(FakeVideoDecoderTest, ReadPendingNotEnoughData) {
+TEST_P(FakeVideoDecoderTest, Read_Pending_NotEnoughData) {
   if (GetParam().decoding_delay < 1)
     return;
 
@@ -311,13 +311,13 @@ TEST_P(FakeVideoDecoderTest, ReadPendingNotEnoughData) {
   EXPECT_FALSE(last_decoded_frame_.get());
 }
 
-TEST_P(FakeVideoDecoderTest, ReadPendingOK) {
+TEST_P(FakeVideoDecoderTest, Read_Pending_OK) {
   Initialize();
   EnterPendingReadState();
   SatisfyDecodeAndExpect(OK);
 }
 
-TEST_P(FakeVideoDecoderTest, ReadParallel) {
+TEST_P(FakeVideoDecoderTest, Read_Parallel) {
   if (GetParam().max_decode_requests < 2)
     return;
 
@@ -334,7 +334,7 @@ TEST_P(FakeVideoDecoderTest, ReadParallel) {
           : NOT_ENOUGH_DATA);
 }
 
-TEST_P(FakeVideoDecoderTest, ReadWithHoldDecodingDelay) {
+TEST_P(FakeVideoDecoderTest, ReadWithHold_DecodingDelay) {
   Initialize();
 
   // Hold all decodes and satisfy one decode at a time.
@@ -370,7 +370,7 @@ TEST_P(FakeVideoDecoderTest, SimulateFailureToReinitialize) {
 
 // Reinitializing the decoder during the middle of the decoding process can
 // cause dropped frames.
-TEST_P(FakeVideoDecoderTest, ReinitializeFrameDropped) {
+TEST_P(FakeVideoDecoderTest, Reinitialize_FrameDropped) {
   if (GetParam().decoding_delay < 1)
     return;
 
@@ -387,20 +387,20 @@ TEST_P(FakeVideoDecoderTest, Reset) {
   ResetAndExpect(OK);
 }
 
-TEST_P(FakeVideoDecoderTest, ResetDuringPendingRead) {
+TEST_P(FakeVideoDecoderTest, Reset_DuringPendingRead) {
   Initialize();
   EnterPendingReadState();
   ResetAndExpect(PENDING);
   SatisfyDecodeAndExpect(ABORTED);
 }
 
-TEST_P(FakeVideoDecoderTest, ResetPending) {
+TEST_P(FakeVideoDecoderTest, Reset_Pending) {
   Initialize();
   EnterPendingResetState();
   SatisfyReset();
 }
 
-TEST_P(FakeVideoDecoderTest, ResetPendingDuringPendingRead) {
+TEST_P(FakeVideoDecoderTest, Reset_PendingDuringPendingRead) {
   Initialize();
   EnterPendingReadState();
   EnterPendingResetState();
@@ -415,24 +415,24 @@ TEST_P(FakeVideoDecoderTest, Destroy) {
   Destroy();
 }
 
-TEST_P(FakeVideoDecoderTest, DestroyDuringPendingInitialization) {
+TEST_P(FakeVideoDecoderTest, Destroy_DuringPendingInitialization) {
   EnterPendingInitState();
   Destroy();
 }
 
-TEST_P(FakeVideoDecoderTest, DestroyDuringPendingRead) {
+TEST_P(FakeVideoDecoderTest, Destroy_DuringPendingRead) {
   Initialize();
   EnterPendingReadState();
   Destroy();
 }
 
-TEST_P(FakeVideoDecoderTest, DestroyDuringPendingReset) {
+TEST_P(FakeVideoDecoderTest, Destroy_DuringPendingReset) {
   Initialize();
   EnterPendingResetState();
   Destroy();
 }
 
-TEST_P(FakeVideoDecoderTest, DestroyDuringPendingReadAndPendingReset) {
+TEST_P(FakeVideoDecoderTest, Destroy_DuringPendingReadAndPendingReset) {
   Initialize();
   EnterPendingReadState();
   EnterPendingResetState();

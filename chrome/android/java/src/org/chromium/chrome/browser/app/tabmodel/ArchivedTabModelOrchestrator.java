@@ -441,7 +441,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         mTabArchiver =
                 new TabArchiver(
-                        mTabModelSelector.getModel(false),
+                        mTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(/* isIncognito= */ false),
                         mArchivedTabCreator,
                         TabWindowManagerSingleton.getInstance(),
                         mTabArchiveSettings,

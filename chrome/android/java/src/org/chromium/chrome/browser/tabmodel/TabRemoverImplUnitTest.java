@@ -70,6 +70,7 @@ public class TabRemoverImplUnitTest {
     @Mock private Callback<Integer> mOnResult;
     @Mock private DataSharingService mDataSharingService;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private Callback<TabClosureParams> mTabClosureCallback;
 
     @Captor private ArgumentCaptor<TabModelRemoverFlowHandler> mHandlerCaptor;
     @Captor private ArgumentCaptor<Callback<Integer>> mOnResultCaptor;
@@ -99,6 +100,26 @@ public class TabRemoverImplUnitTest {
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
         mTabRemoverImpl.forceCloseTabs(params);
         verify(mTabGroupModelFilter).closeTabs(params);
+    }
+
+    @Test
+    public void testPrepareCloseTabs() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        TabClosureParams params = TabClosureParams.closeAllTabs().build();
+
+        mTabRemoverImpl.prepareCloseTabs(
+                params, /* allowDialog= */ false, /* listener= */ null, mTabClosureCallback);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(false));
+        TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
+
+        GroupsPendingDestroy groupsPendingDestroy = handler.computeGroupsPendingDestroy();
+        assertTrue(groupsPendingDestroy.isEmpty());
+
+        // No placeholder created.
+
+        handler.performAction();
+        verify(mTabClosureCallback).onResult(eq(params));
     }
 
     @Test

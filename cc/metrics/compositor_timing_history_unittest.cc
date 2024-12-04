@@ -68,7 +68,7 @@ base::TimeTicks TestCompositorTimingHistory::Now() const {
   return test_->Now();
 }
 
-TEST_F(CompositorTimingHistoryTest, AllSequentialCommit) {
+TEST_F(CompositorTimingHistoryTest, AllSequential_Commit) {
   base::TimeDelta one_second = base::Seconds(1);
 
   // Critical BeginMainFrames are faster than non critical ones,
@@ -117,7 +117,7 @@ TEST_F(CompositorTimingHistoryTest, AllSequentialCommit) {
   EXPECT_EQ(draw_duration, timing_history_.DrawDurationEstimate());
 }
 
-TEST_F(CompositorTimingHistoryTest, AllSequentialBeginMainFrameAborted) {
+TEST_F(CompositorTimingHistoryTest, AllSequential_BeginMainFrameAborted) {
   base::TimeDelta one_second = base::Seconds(1);
 
   base::TimeDelta begin_main_frame_queue_duration = base::Milliseconds(1);
@@ -155,7 +155,7 @@ TEST_F(CompositorTimingHistoryTest, AllSequentialBeginMainFrameAborted) {
   EXPECT_EQ(draw_duration, timing_history_.DrawDurationEstimate());
 }
 
-TEST_F(CompositorTimingHistoryTest, BeginMainFrameCriticalFaster) {
+TEST_F(CompositorTimingHistoryTest, BeginMainFrame_CriticalFaster) {
   // Critical BeginMainFrames are faster than non critical ones.
   base::TimeDelta begin_main_frame_queue_duration_critical =
       base::Milliseconds(1);
@@ -186,7 +186,7 @@ TEST_F(CompositorTimingHistoryTest, BeginMainFrameCriticalFaster) {
             timing_history_.BeginMainFrameQueueDurationNotCriticalEstimate());
 }
 
-TEST_F(CompositorTimingHistoryTest, BeginMainFramesOldCriticalSlower) {
+TEST_F(CompositorTimingHistoryTest, BeginMainFrames_OldCriticalSlower) {
   // Critical BeginMainFrames are slower than non critical ones,
   // which is unexpected, but could occur if one type of frame
   // hasn't been sent for a significant amount of time.
@@ -225,7 +225,7 @@ TEST_F(CompositorTimingHistoryTest, BeginMainFramesOldCriticalSlower) {
             timing_history_.BeginMainFrameQueueDurationNotCriticalEstimate());
 }
 
-TEST_F(CompositorTimingHistoryTest, BeginMainFramesNewCriticalSlower) {
+TEST_F(CompositorTimingHistoryTest, BeginMainFrames_NewCriticalSlower) {
   // Critical BeginMainFrames are slower than non critical ones,
   // which is unexpected, but could occur if one type of frame
   // hasn't been sent for a significant amount of time.

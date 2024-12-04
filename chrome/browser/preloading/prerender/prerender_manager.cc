@@ -40,6 +40,10 @@ const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
     "Prerender.Experimental.PredictionStatus.DefaultSearchEngine";
 const char kHistogramPrerenderPredictionStatusDirectUrlInput[] =
     "Prerender.Experimental.PredictionStatus.DirectUrlInput";
+const char kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl[] =
+    "Prerender.IsPrerenderingSRPUrl.Embedder_BookmarkBar";
+const char kHistogramPrerenderNTPIsPrerenderingSrpUrl[] =
+    "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage";
 }  // namespace internal
 
 namespace {
@@ -193,9 +197,13 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       content::PreloadingData::GetSameURLMatcher(prerendering_url);
 
   if (IsSearchUrl(*web_contents(), prerendering_url)) {
+    base::UmaHistogramBoolean(
+        internal::kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl, true);
     return nullptr;
   }
 
+  base::UmaHistogramBoolean(
+      internal::kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl, false);
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this prerendering attempt for Prerender.
   content::PreloadingAttempt* preloading_attempt =
@@ -255,9 +263,13 @@ PrerenderManager::StartPrerenderNewTabPage(
     const GURL& prerendering_url,
     content::PreloadingPredictor predictor) {
   if (IsSearchUrl(*web_contents(), prerendering_url)) {
+    base::UmaHistogramBoolean(
+        internal::kHistogramPrerenderNTPIsPrerenderingSrpUrl, true);
     return nullptr;
   }
 
+  base::UmaHistogramBoolean(
+      internal::kHistogramPrerenderNTPIsPrerenderingSrpUrl, false);
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents());

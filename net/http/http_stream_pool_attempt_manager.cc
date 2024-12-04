@@ -163,6 +163,21 @@ struct HttpStreamPool::AttemptManager::PreconnectEntry {
   int result = OK;
 };
 
+// static
+std::string_view HttpStreamPool::AttemptManager::TcpBasedAttemptStateToString(
+    TcpBasedAttemptState state) {
+  switch (state) {
+    case TcpBasedAttemptState::kNotStarted:
+      return "NotStarted";
+    case TcpBasedAttemptState::kAttempting:
+      return "Attempting";
+    case TcpBasedAttemptState::kSucceededAtLeastOnce:
+      return "SucceededAtLeastOnce";
+    case TcpBasedAttemptState::kAllAttemptsFailed:
+      return "AllAttemptsFailed";
+  }
+}
+
 HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
     : group_(group),
       net_log_(NetLogWithSource::Make(
@@ -198,6 +213,8 @@ void HttpStreamPool::AttemptManager::StartJob(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  CHECK(!is_failing_);
+
   MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB, [&] {
@@ -241,14 +258,6 @@ void HttpStreamPool::AttemptManager::StartJob(
       /*is_websocket=*/false, net_log));
 
   jobs_.Insert(job, priority);
-
-  if (is_failing_) {
-    // `this` is failing, notify the failure.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfFailure,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
 
   RestrictAllowedProtocols(job->allowed_alpns());
 
@@ -328,6 +337,15 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
   service_endpoint_request_finished_ = true;
   dns_resolution_end_time_ = base::TimeTicks::Now();
   resolve_error_info_ = service_endpoint_request_->GetResolveErrorInfo();
+
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED,
+      [&] {
+        base::Value::Dict dict;
+        dict.Set("net_error", rv);
+        dict.Set("resolve_error", resolve_error_info_.error);
+        return dict;
+      });
 
   if (rv != OK) {
     error_to_notify_ = rv;
@@ -445,7 +463,7 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
     for (JobQueue::Pointer pointer = jobs_.FirstMax(); !pointer.is_null();
          pointer = jobs_.GetNextTowardsLastMin(pointer)) {
       if (pointer.value() == job) {
-        jobs_.Erase(pointer);
+        RemoveJobFromQueue(pointer);
         break;
       }
     }
@@ -614,6 +632,10 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
         if (rv != 0) {
           dict.Set("net_error", rv);
         }
+        if (net_error_details_.quic_connection_error != quic::QUIC_NO_ERROR) {
+          dict.Set("quic_error", quic::QuicErrorCodeToString(
+                                     net_error_details_.quic_connection_error));
+        }
         return dict;
       });
 
@@ -637,7 +659,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
     return;
   }
 
-  if (rv != OK || should_block_stream_attempt_) {
+  if (has_jobs && (rv != OK || should_block_stream_attempt_)) {
     should_block_stream_attempt_ = false;
     stream_attempt_delay_timer_.Stop();
     MaybeAttemptConnection();
@@ -650,25 +672,68 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
 
 base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   base::Value::Dict dict;
-  dict.Set("pending_job_count", static_cast<int>(PendingJobCount()));
-  dict.Set("pending_preconnect_count",
+  dict.Set("job_count_all", static_cast<int>(jobs_.size()));
+  dict.Set("job_count_pending", static_cast<int>(PendingJobCount()));
+  dict.Set("job_count_limit_ignoring",
+           static_cast<int>(limit_ignoring_jobs_.size()));
+  dict.Set("preconnect_count_all", static_cast<int>(preconnects_.size()));
+  dict.Set("preconnect_count_pending",
            static_cast<int>(PendingPreconnectCount()));
   dict.Set("in_flight_attempt_count", static_cast<int>(InFlightAttemptCount()));
   dict.Set("slow_attempt_count", static_cast<int>(slow_attempt_count_));
+  dict.Set("is_failing", is_failing_);
   dict.Set("is_stalled", IsStalledByPoolLimit());
+  dict.Set("service_endpoint_request_finished",
+           service_endpoint_request_finished_);
+  dict.Set("tcp_based_attempt_state",
+           TcpBasedAttemptStateToString(tcp_based_attempt_state_));
+  dict.Set("stream_attempt_delay_ms",
+           static_cast<int>(stream_attempt_delay_.InMilliseconds()));
+  dict.Set("should_block_stream_attempt", should_block_stream_attempt_);
 
-  base::Value::List in_flight_attempts;
-  for (const auto& entry : in_flight_attempts_) {
-    base::Value::Dict attempt_dict;
-    attempt_dict.Set("ip_endpoint", entry->attempt()->ip_endpoint().ToString());
-    attempt_dict.Set("is_slow", entry->is_slow());
-    attempt_dict.Set("is_aborted", entry->is_aborted());
-    base::TimeDelta elapsed = base::TimeTicks::Now() - entry->start_time();
-    attempt_dict.Set("elapsed_ms", static_cast<int>(elapsed.InMilliseconds()));
-    in_flight_attempts.Append(std::move(attempt_dict));
-  }
-  if (!in_flight_attempts.empty()) {
+  dict.Set("ssl_config_is_avaliable", ssl_config_.has_value());
+  dict.Set("ssl_config_num_waiting_callbacks",
+           static_cast<int>(ssl_config_waiting_callbacks_.size()));
+
+  if (!in_flight_attempts_.empty()) {
+    base::Value::List in_flight_attempts;
+    for (const auto& entry : in_flight_attempts_) {
+      base::Value::Dict attempt_dict;
+      if (entry->attempt()) {
+        attempt_dict.Set("attempt_state", entry->attempt()->GetInfoAsValue());
+        attempt_dict.Set("ip_endpoint",
+                         entry->attempt()->ip_endpoint().ToString());
+      }
+      attempt_dict.Set("is_slow", entry->is_slow());
+      attempt_dict.Set("is_aborted", entry->is_aborted());
+      base::TimeDelta elapsed = base::TimeTicks::Now() - entry->start_time();
+      attempt_dict.Set("elapsed_ms",
+                       static_cast<int>(elapsed.InMilliseconds()));
+      in_flight_attempts.Append(std::move(attempt_dict));
+    }
     dict.Set("in_flight_attempts", std::move(in_flight_attempts));
+  }
+
+  if (!failed_ip_endpoints_.empty()) {
+    base::Value::List failed_ip_endpoints;
+    for (const auto& ip_endpoint : failed_ip_endpoints_) {
+      failed_ip_endpoints.Append(ip_endpoint.ToString());
+    }
+    dict.Set("ip_endpoints_failed", std::move(failed_ip_endpoints));
+  }
+  if (!slow_ip_endpoints_.empty()) {
+    base::Value::List slow_ip_endpoints;
+    for (const auto& ip_endpoint : slow_ip_endpoints_) {
+      slow_ip_endpoints.Append(ip_endpoint.ToString());
+    }
+    dict.Set("ip_endpoints_slow", std::move(slow_ip_endpoints));
+  }
+
+  if (quic_task_) {
+    dict.Set("quic_task", quic_task_->GetInfoAsValue());
+  }
+  if (quic_task_result_.has_value()) {
+    dict.Set("quic_task_result", ErrorToString(*quic_task_result_));
   }
 
   return dict;
@@ -1389,11 +1454,17 @@ HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {
   if (jobs_.empty()) {
     return nullptr;
   }
-  raw_ptr<Job> job = jobs_.Erase(jobs_.FirstMax());
+  raw_ptr<Job> job = RemoveJobFromQueue(jobs_.FirstMax());
   Job* job_raw_ptr = job.get();
+  notified_jobs_.emplace(std::move(job));
+  return job_raw_ptr;
+}
 
+raw_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::RemoveJobFromQueue(
+    JobQueue::Pointer job_pointer) {
   // If the extracted job is the last job that ignores the limit, cancel
   // in-flight attempts until the active stream count goes down to the limit.
+  raw_ptr<Job> job = jobs_.Erase(job_pointer);
   limit_ignoring_jobs_.erase(job);
   if (ShouldRespectLimits()) {
     while (group_->ActiveStreamSocketCount() >
@@ -1407,9 +1478,7 @@ HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {
       attempt.reset();
     }
   }
-
-  notified_jobs_.emplace(std::move(job));
-  return job_raw_ptr;
+  return job;
 }
 
 void HttpStreamPool::AttemptManager::SetJobPriority(Job* job,
@@ -1736,13 +1805,13 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams() {
   return dict;
 }
 
-void HttpStreamPool::AttemptManager::MaybeComplete() {
-  if (!jobs_.empty() || !notified_jobs_.empty() || !preconnects_.empty() ||
-      !in_flight_attempts_.empty()) {
-    return;
-  }
+bool HttpStreamPool::AttemptManager::CanComplete() const {
+  return jobs_.empty() && notified_jobs_.empty() && preconnects_.empty() &&
+         in_flight_attempts_.empty() && !quic_task_;
+}
 
-  if (quic_task_) {
+void HttpStreamPool::AttemptManager::MaybeComplete() {
+  if (!CanComplete()) {
     return;
   }
 

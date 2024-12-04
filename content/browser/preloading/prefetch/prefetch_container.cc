@@ -50,6 +50,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "url/gurl.h"
@@ -1383,13 +1384,9 @@ void PrefetchContainer::OnPrefetchComplete(
   }
 
   // TODO(crbug.com/40250089): Call
-  // SpeculationHostDevToolsObserver::OnPrefetchBodyDataReceived with body of
-  // the response.
-  const auto& devtools_observer = GetDevToolsObserver();
-  if (devtools_observer) {
-    devtools_observer->OnPrefetchRequestComplete(RequestId(),
-                                                 completion_status);
-  }
+  // `devtools_instrumentation::OnPrefetchBodyDataReceived()` with body of the
+  // response.
+  NotifyPrefetchRequestComplete(completion_status);
 
   int net_error = completion_status.error_code;
   int64_t body_length = completion_status.decoded_body_length;
@@ -1851,10 +1848,10 @@ void PrefetchContainer::MakeResourceRequest(
   AddClientHintsHeaders(origin, &request->headers);
   AddXClientDataHeader(*request.get());
 
-  const auto& devtools_observer = GetDevToolsObserver();
-  if (devtools_observer && !IsDecoy()) {
+  if (std::optional<mojo::PendingRemote<network::mojom::DevToolsObserver>>
+          devtools_observer = MakeSelfOwnedNetworkServiceDevToolsObserver()) {
     request->trusted_params->devtools_observer =
-        devtools_observer->MakeSelfOwnedNetworkServiceDevToolsObserver();
+        std::move(devtools_observer.value());
   }
 
   resource_request_ = std::move(request);
@@ -2140,6 +2137,88 @@ void PrefetchContainer::MigrateNewlyAdded(
   inherited_preload_pipeline_infos_.push_back(
       std::move(added->preload_pipeline_info_));
   is_likely_ahead_of_prerender_ |= added->is_likely_ahead_of_prerender_;
+}
+
+void PrefetchContainer::NotifyPrefetchRequestWillBeSent(
+    const network::mojom::URLResponseHeadPtr* redirect_head) {
+  if (IsDecoy()) {
+    return;
+  }
+
+  auto* rfh = RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
+  auto* ftn = FrameTreeNode::From(rfh);
+  // Don't emit CDP events if the trigger is not Spec Rules or the document
+  // isn't alive.
+  if (!rfh) {
+    return;
+  }
+  CHECK(ftn);
+
+  if (redirect_head && *redirect_head) {
+    const network::mojom::URLResponseHeadDevToolsInfoPtr info =
+        network::ExtractDevToolsInfo(**redirect_head);
+    const GURL url = GetPreviousURL();
+    std::pair<const GURL&, const network::mojom::URLResponseHeadDevToolsInfo&>
+        redirect_info{url, *info.get()};
+    devtools_instrumentation::OnPrefetchRequestWillBeSent(
+        *ftn, RequestId(), rfh->GetLastCommittedURL(), *GetResourceRequest(),
+        std::move(redirect_info));
+  } else {
+    devtools_instrumentation::OnPrefetchRequestWillBeSent(
+        *ftn, RequestId(), rfh->GetLastCommittedURL(), *GetResourceRequest(),
+        std::nullopt);
+  }
+}
+
+void PrefetchContainer::NotifyPrefetchResponseReceived(
+    const network::mojom::URLResponseHead& head) {
+  // Ensured by the caller `PrefetchService::OnPrefetchResponseStarted()`.
+  CHECK(!IsDecoy());
+
+  auto* ftn = FrameTreeNode::From(
+      RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
+  // Don't emit CDP events if the trigger is not Spec Rules or the document
+  // isn't alive.
+  if (!ftn) {
+    return;
+  }
+
+  devtools_instrumentation::OnPrefetchResponseReceived(ftn, RequestId(),
+                                                       GetCurrentURL(), head);
+}
+
+void PrefetchContainer::NotifyPrefetchRequestComplete(
+    const network::URLLoaderCompletionStatus& completion_status) {
+  // Ensured by the caller `PrefetchService::OnPrefetchResponseStarted()`.
+  CHECK(!IsDecoy());
+
+  auto* ftn = FrameTreeNode::From(
+      RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
+  // Don't emit CDP events if the trigger is not Spec Rules or the document
+  // isn't alive.
+  if (!ftn) {
+    return;
+  }
+
+  devtools_instrumentation::OnPrefetchRequestComplete(ftn, RequestId(),
+                                                      completion_status);
+}
+
+std::optional<mojo::PendingRemote<network::mojom::DevToolsObserver>>
+PrefetchContainer::MakeSelfOwnedNetworkServiceDevToolsObserver() {
+  if (IsDecoy()) {
+    return std::nullopt;
+  }
+
+  auto* ftn = FrameTreeNode::From(
+      RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
+  // Return nullopt if the trigger is not Spec Rules or the document isn't
+  // alive.
+  if (!ftn) {
+    return std::nullopt;
+  }
+
+  return NetworkServiceDevToolsObserver::MakeSelfOwned(ftn);
 }
 
 void PrefetchContainer::MaybeRecordPrefetchStatusToUMA(

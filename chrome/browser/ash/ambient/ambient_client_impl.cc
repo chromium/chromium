@@ -179,9 +179,8 @@ void AmbientClientImpl::DownloadImage(
     ash::ImageDownloader::DownloadCallback callback) {
   RequestAccessToken(base::BindOnce(
       [](const std::string& url,
-         ash::ImageDownloader::DownloadCallback callback,
-         const std::string& gaia_id, const std::string& access_token,
-         const base::Time& expiration_time) {
+         ash::ImageDownloader::DownloadCallback callback, const GaiaId& gaia_id,
+         const std::string& access_token, const base::Time& expiration_time) {
         if (access_token.empty()) {
           std::move(callback).Run({});
           return;
@@ -233,7 +232,7 @@ void AmbientClientImpl::OnGetAccessToken(
     GetAccessTokenCallback callback,
     base::UnguessableToken fetcher_id,
 
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   if (error.state() == GoogleServiceAuthError::NONE) {

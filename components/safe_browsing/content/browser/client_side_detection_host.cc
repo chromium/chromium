@@ -38,6 +38,7 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1134,9 +1135,13 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
           SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
-      resource.render_process_id = primary_main_frame_id.child_id;
-      resource.render_frame_token = primary_main_frame->GetFrameToken().value();
-      if (!ui_manager_->IsAllowlisted(resource)) {
+      resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
+          CreateForRenderFrameToken(
+              primary_main_frame_id.child_id,
+              primary_main_frame->GetFrameToken().value());
+      if (!ui_manager_->IsAllowlisted(resource.url, resource.rfh_locator,
+                                      resource.navigation_id,
+                                      resource.threat_type)) {
         // We need to stop any pending navigations, otherwise the interstitial
         // might not get created properly.
         web_contents()->GetController().DiscardNonCommittedEntries();

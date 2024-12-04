@@ -384,7 +384,7 @@ class FFmpegDemuxerTest : public testing::Test {
   }
 };
 
-TEST_F(FFmpegDemuxerTest, InitializeOpenFails) {
+TEST_F(FFmpegDemuxerTest, Initialize_OpenFails) {
   // Simulate avformat_open_input() failing.
   CreateDemuxer("ten_byte_file");
   WaitableMessageLoopEvent event;
@@ -392,7 +392,7 @@ TEST_F(FFmpegDemuxerTest, InitializeOpenFails) {
   event.RunAndWaitForStatus(DEMUXER_ERROR_COULD_NOT_OPEN);
 }
 
-TEST_F(FFmpegDemuxerTest, InitializeNoStreams) {
+TEST_F(FFmpegDemuxerTest, Initialize_NoStreams) {
   // Open a file with no streams whatsoever.
   CreateDemuxer("no_streams.webm");
   WaitableMessageLoopEvent event;
@@ -400,7 +400,7 @@ TEST_F(FFmpegDemuxerTest, InitializeNoStreams) {
   event.RunAndWaitForStatus(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
 }
 
-TEST_F(FFmpegDemuxerTest, InitializeNoAudioVideo) {
+TEST_F(FFmpegDemuxerTest, Initialize_NoAudioVideo) {
   // Open a file containing streams but none of which are audio/video streams.
   CreateDemuxer("no_audio_video.webm");
   WaitableMessageLoopEvent event;
@@ -408,7 +408,7 @@ TEST_F(FFmpegDemuxerTest, InitializeNoAudioVideo) {
   event.RunAndWaitForStatus(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
 }
 
-TEST_F(FFmpegDemuxerTest, InitializeSuccessful) {
+TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
 
@@ -448,7 +448,7 @@ TEST_F(FFmpegDemuxerTest, InitializeSuccessful) {
   EXPECT_EQ(2u, demuxer_->GetAllStreams().size());
 }
 
-TEST_F(FFmpegDemuxerTest, InitializeMultitrack) {
+TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   // Open a file containing the following streams:
   //   Stream #0: Video (VP8)
   //   Stream #1: Audio (Vorbis)
@@ -523,7 +523,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Track_Disabled) {
 }
 #endif
 
-TEST_F(FFmpegDemuxerTest, InitializeEncrypted) {
+TEST_F(FFmpegDemuxerTest, Initialize_Encrypted) {
   EXPECT_CALL(*this,
               OnEncryptedMediaInitData(
                   EmeInitDataType::WEBM,
@@ -536,7 +536,7 @@ TEST_F(FFmpegDemuxerTest, InitializeEncrypted) {
   InitializeDemuxer();
 }
 
-TEST_F(FFmpegDemuxerTest, InitializeNoConfigChangeSupport) {
+TEST_F(FFmpegDemuxerTest, Initialize_NoConfigChangeSupport) {
   // Will create one audio, one video, and one text stream.
   CreateDemuxer("bear-vp8-webvtt.webm");
   InitializeDemuxer();
@@ -580,7 +580,7 @@ TEST_F(FFmpegDemuxerTest, AbortPendingReads) {
   demuxer_.reset();
 }
 
-TEST_F(FFmpegDemuxerTest, ReadAudio) {
+TEST_F(FFmpegDemuxerTest, Read_Audio) {
   // We test that on a successful audio packet read.
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
@@ -592,7 +592,7 @@ TEST_F(FFmpegDemuxerTest, ReadAudio) {
   EXPECT_EQ(GetExpectedMemoryUsage(182, 166866), demuxer_->GetMemoryUsage());
 }
 
-TEST_F(FFmpegDemuxerTest, ReadVideo) {
+TEST_F(FFmpegDemuxerTest, Read_Video) {
   // We test that on a successful video packet read.
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
@@ -604,7 +604,7 @@ TEST_F(FFmpegDemuxerTest, ReadVideo) {
   EXPECT_EQ(GetExpectedMemoryUsage(193, 148778), demuxer_->GetMemoryUsage());
 }
 
-TEST_F(FFmpegDemuxerTest, SeekInitializedNoVideoStartTime) {
+TEST_F(FFmpegDemuxerTest, SeekInitialized_NoVideoStartTime) {
   CreateDemuxer("audio-start-time-only.webm");
   InitializeDemuxer();
   // Video would normally be preferred, but not if it's a zero packet
@@ -613,7 +613,7 @@ TEST_F(FFmpegDemuxerTest, SeekInitializedNoVideoStartTime) {
   EXPECT_EQ(expected_stream, preferred_seeking_stream(base::TimeDelta()));
 }
 
-TEST_F(FFmpegDemuxerTest, SeekingPreferredStreamSelection) {
+TEST_F(FFmpegDemuxerTest, Seeking_PreferredStreamSelection) {
   const int64_t kTimelineOffsetMs = 1352550896000LL;
 
   // Test the start time is the first timestamp of the video and audio stream.
@@ -659,7 +659,7 @@ TEST_F(FFmpegDemuxerTest, SeekingPreferredStreamSelection) {
   EXPECT_EQ(audio, preferred_seeking_stream(video_start_time));
 }
 
-TEST_F(FFmpegDemuxerTest, ReadVideoPositiveStartTime) {
+TEST_F(FFmpegDemuxerTest, Read_VideoPositiveStartTime) {
   const int64_t kTimelineOffsetMs = 1352550896000LL;
 
   // Test the start time is the first timestamp of the video and audio stream.
@@ -694,7 +694,7 @@ TEST_F(FFmpegDemuxerTest, ReadVideoPositiveStartTime) {
   }
 }
 
-TEST_F(FFmpegDemuxerTest, ReadAudioNoStartTime) {
+TEST_F(FFmpegDemuxerTest, Read_AudioNoStartTime) {
   // FFmpeg does not set timestamps when demuxing wave files.  Ensure that the
   // demuxer sets a start time of zero in this case.
   CreateDemuxer("sfx_s24le.wav");
@@ -715,7 +715,7 @@ TEST_F(FFmpegDemuxerTest, ReadAudioNoStartTime) {
 // Same test above, but using sync2.ogv which has video stream muxed before the
 // audio stream, so seeking based only on start time will fail since ffmpeg is
 // essentially just seeking based on file position.
-TEST_F(FFmpegDemuxerTest, ReadAudioNegativeStartTimeAndOggDiscardSync) {
+TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Sync) {
   // Many ogg files have negative starting timestamps, so ensure demuxing and
   // seeking work correctly with a negative start time.
   CreateDemuxer("sync2.ogv");
@@ -749,7 +749,7 @@ TEST_F(FFmpegDemuxerTest, ReadAudioNegativeStartTimeAndOggDiscardSync) {
 
 // Similar to the test above, but using an opus clip with a large amount of
 // pre-skip, which ffmpeg encodes as negative timestamps.
-TEST_F(FFmpegDemuxerTest, ReadAudioNegativeStartTimeAndOpusDiscardSync) {
+TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOpusDiscard_Sync) {
   CreateDemuxer("opus-trimming-video-test.webm");
   InitializeDemuxer();
 
@@ -875,7 +875,7 @@ TEST_F(FFmpegDemuxerTest, Read_AudioVideoNegativeStartTime) {
 
 // Similar to the test above, but using sfx-opus.ogg, which has a much smaller
 // amount of discard padding and no |start_time| set on the AVStream.
-TEST_F(FFmpegDemuxerTest, ReadAudioNegativeStartTimeAndOpusSfxDiscardSync) {
+TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOpusSfxDiscard_Sync) {
   CreateDemuxer("sfx-opus.ogg");
   InitializeDemuxer();
 
@@ -903,7 +903,7 @@ TEST_F(FFmpegDemuxerTest, ReadAudioNegativeStartTimeAndOpusSfxDiscardSync) {
   }
 }
 
-TEST_F(FFmpegDemuxerTest, ReadDiscardDisabledVideoStream) {
+TEST_F(FFmpegDemuxerTest, Read_DiscardDisabledVideoStream) {
   // Verify that disabling the video stream properly marks it as AVDISCARD_ALL
   // in FFmpegDemuxer. The AVDISCARD_ALL flag allows FFmpeg to ignore key frame
   // requirements for the disabled stream and thus allows to select the seek
@@ -932,14 +932,14 @@ TEST_F(FFmpegDemuxerTest, ReadDiscardDisabledVideoStream) {
   EXPECT_LT(bytes_read_with_video_disabled, bytes_read_with_video_enabled);
 }
 
-TEST_F(FFmpegDemuxerTest, ReadEndOfStream) {
+TEST_F(FFmpegDemuxerTest, Read_EndOfStream) {
   // Verify that end of stream buffers are created.
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
   ReadUntilEndOfStream(GetStream(DemuxerStream::AUDIO));
 }
 
-TEST_F(FFmpegDemuxerTest, ReadEndOfStreamNoDuration) {
+TEST_F(FFmpegDemuxerTest, Read_EndOfStream_NoDuration) {
   // Verify that end of stream buffers are created.
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
@@ -949,7 +949,7 @@ TEST_F(FFmpegDemuxerTest, ReadEndOfStreamNoDuration) {
   ReadUntilEndOfStream(GetStream(DemuxerStream::VIDEO));
 }
 
-TEST_F(FFmpegDemuxerTest, ReadEndOfStreamNoDurationVideoOnly) {
+TEST_F(FFmpegDemuxerTest, Read_EndOfStream_NoDuration_VideoOnly) {
   // Verify that end of stream buffers are created.
   CreateDemuxer("bear-320x240-video-only.webm");
   InitializeDemuxer();
@@ -958,7 +958,7 @@ TEST_F(FFmpegDemuxerTest, ReadEndOfStreamNoDurationVideoOnly) {
   ReadUntilEndOfStream(GetStream(DemuxerStream::VIDEO));
 }
 
-TEST_F(FFmpegDemuxerTest, ReadEndOfStreamNoDurationAudioOnly) {
+TEST_F(FFmpegDemuxerTest, Read_EndOfStream_NoDuration_AudioOnly) {
   // Verify that end of stream buffers are created.
   CreateDemuxer("bear-320x240-audio-only.webm");
   InitializeDemuxer();
@@ -967,7 +967,7 @@ TEST_F(FFmpegDemuxerTest, ReadEndOfStreamNoDurationAudioOnly) {
   ReadUntilEndOfStream(GetStream(DemuxerStream::AUDIO));
 }
 
-TEST_F(FFmpegDemuxerTest, ReadEndOfStreamNoDurationUnsupportedStream) {
+TEST_F(FFmpegDemuxerTest, Read_EndOfStream_NoDuration_UnsupportedStream) {
   // Verify that end of stream buffers are created and we don't crash
   // if there are streams in the file that we don't support.
   CreateDemuxer("vorbis_audio_wmv_video.mkv");
@@ -1482,7 +1482,7 @@ TEST_F(FFmpegDemuxerTest, XHE_AAC) {
 
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-TEST_F(FFmpegDemuxerTest, ReadWebmMultipleTracks) {
+TEST_F(FFmpegDemuxerTest, Read_Webm_Multiple_Tracks) {
   CreateDemuxer("multitrack-3video-2audio.webm");
   InitializeDemuxer();
 
@@ -1509,7 +1509,7 @@ TEST_F(FFmpegDemuxerTest, ReadWebmMultipleTracks) {
   EXPECT_EQ(audio_track2.stream_id(), 5);
 }
 
-TEST_F(FFmpegDemuxerTest, ReadWebmMediaTrackInfo) {
+TEST_F(FFmpegDemuxerTest, Read_Webm_Media_Track_Info) {
   CreateDemuxer("bear.webm");
   InitializeDemuxer();
 
@@ -1532,7 +1532,7 @@ TEST_F(FFmpegDemuxerTest, ReadWebmMediaTrackInfo) {
 
 // UTCDateToTime_* tests here assume FFmpegDemuxer's ExtractTimelineOffset
 // helper uses base::Time::FromUTCString() for conversion.
-TEST_F(FFmpegDemuxerTest, UTCDateToTimeValid) {
+TEST_F(FFmpegDemuxerTest, UTCDateToTime_Valid) {
   base::Time result;
   EXPECT_TRUE(
       base::Time::FromUTCString("2012-11-10T12:34:56.987654Z", &result));
@@ -1550,7 +1550,7 @@ TEST_F(FFmpegDemuxerTest, UTCDateToTimeValid) {
   EXPECT_EQ(654, (result - without_fractional_ms).InMicroseconds());
 }
 
-TEST_F(FFmpegDemuxerTest, UTCDateToTimeInvalid) {
+TEST_F(FFmpegDemuxerTest, UTCDateToTime_Invalid) {
   const char* invalid_date_strings[] = {
       "",
       "12:34:56",
@@ -1589,7 +1589,7 @@ static void VerifyFlacStream(DemuxerStream* stream,
   EXPECT_EQ(expected_sample_format, audio_config.sample_format());
 }
 
-TEST_F(FFmpegDemuxerTest, ReadFlac) {
+TEST_F(FFmpegDemuxerTest, Read_Flac) {
   CreateDemuxer("sfx.flac");
   InitializeDemuxer();
 
@@ -1600,7 +1600,7 @@ TEST_F(FFmpegDemuxerTest, ReadFlac) {
                    44100, kSampleFormatS32);
 }
 
-TEST_F(FFmpegDemuxerTest, ReadFlacMp4) {
+TEST_F(FFmpegDemuxerTest, Read_Flac_Mp4) {
   CreateDemuxer("bear-flac.mp4");
   InitializeDemuxer();
 
@@ -1611,7 +1611,7 @@ TEST_F(FFmpegDemuxerTest, ReadFlacMp4) {
                    44100, kSampleFormatS32);
 }
 
-TEST_F(FFmpegDemuxerTest, ReadFlac192kHzMp4) {
+TEST_F(FFmpegDemuxerTest, Read_Flac_192kHz_Mp4) {
   CreateDemuxer("bear-flac-192kHz.mp4");
   InitializeDemuxer();
 
@@ -1624,7 +1624,7 @@ TEST_F(FFmpegDemuxerTest, ReadFlac192kHzMp4) {
 
 // Verify that FFmpeg demuxer falls back to choosing disabled streams for
 // seeking if there's no suitable enabled stream found.
-TEST_F(FFmpegDemuxerTest, SeekFallbackToDisabledVideoStream) {
+TEST_F(FFmpegDemuxerTest, Seek_FallbackToDisabledVideoStream) {
   // Input has only video stream, no audio.
   CreateDemuxer("bear-320x240-video-only.webm");
   InitializeDemuxer();
@@ -1642,7 +1642,7 @@ TEST_F(FFmpegDemuxerTest, SeekFallbackToDisabledVideoStream) {
   EXPECT_EQ(vstream, preferred_seeking_stream(base::TimeDelta()));
 }
 
-TEST_F(FFmpegDemuxerTest, SeekFallbackToDisabledAudioStream) {
+TEST_F(FFmpegDemuxerTest, Seek_FallbackToDisabledAudioStream) {
   CreateDemuxer("bear-320x240-audio-only.webm");
   InitializeDemuxer();
   FFmpegDemuxerStream* astream =

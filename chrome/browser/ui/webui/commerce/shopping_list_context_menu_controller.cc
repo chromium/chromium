@@ -6,12 +6,12 @@
 
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
-#include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,10 +45,10 @@ bool IsBookmarkPriceTrackedFromCache(ShoppingService* service,
 ShoppingListContextMenuController::ShoppingListContextMenuController(
     bookmarks::BookmarkModel* bookmark_model,
     ShoppingService* shopping_service,
-    ShoppingServiceHandler* shopping_list_hander)
+    PriceTrackingHandler* price_tracking_handler)
     : bookmark_model_(bookmark_model),
       shopping_service_(shopping_service),
-      shopping_list_hander_(shopping_list_hander) {}
+      price_tracking_handler_(price_tracking_handler) {}
 
 void ShoppingListContextMenuController::AddPriceTrackingItemForBookmark(
     ui::SimpleMenuModel* menu_model,
@@ -68,16 +68,16 @@ bool ShoppingListContextMenuController::ExecuteCommand(
     int command_id,
     const bookmarks::BookmarkNode* bookmark_node) {
   switch (command_id) {
-    // Use APIs from ShoppingServiceHandler for price tracking and untracking
+    // Use APIs from PriceTrackingHandler for price tracking and untracking
     // because these APIs already have subscription error handling so we don't
     // need to handle it here.
     case IDC_BOOKMARK_BAR_TRACK_PRICE_FOR_SHOPPING_BOOKMARK:
-      shopping_list_hander_->TrackPriceForBookmark(bookmark_node->id());
+      price_tracking_handler_->TrackPriceForBookmark(bookmark_node->id());
       base::RecordAction(base::UserMetricsAction(
           "Commerce.PriceTracking.SidePanel.Track.ContextMenu"));
       return true;
     case IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK:
-      shopping_list_hander_->UntrackPriceForBookmark(bookmark_node->id());
+      price_tracking_handler_->UntrackPriceForBookmark(bookmark_node->id());
       base::RecordAction(base::UserMetricsAction(
           "Commerce.PriceTracking.SidePanel.Untrack.ContextMenu"));
       return true;

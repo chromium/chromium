@@ -48,11 +48,6 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
-    public void readAllGroups(Callback<GroupsDataSetOrFailureOutcome> callback) {
-        DataSharingServiceImplJni.get().readAllGroups(mNativePtr, callback);
-    }
-
-    @Override
     public void readGroup(String groupId, Callback<GroupDataOrFailureOutcome> callback) {
         DataSharingServiceImplJni.get().readGroup(mNativePtr, groupId, callback);
     }
@@ -138,10 +133,6 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     @NativeMethods
     interface Natives {
-        void readAllGroups(
-                long nativeDataSharingServiceAndroid,
-                Callback<GroupsDataSetOrFailureOutcome> callback);
-
         void readGroup(
                 long nativeDataSharingServiceAndroid,
                 String groupId,

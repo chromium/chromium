@@ -11,6 +11,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"

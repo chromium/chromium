@@ -6,7 +6,7 @@
 
 namespace safe_browsing {
 
-TelemetryService::TelemetryService() {}
+TelemetryService::TelemetryService() = default;
 
 TelemetryService::~TelemetryService() {
   weak_factory_.InvalidateWeakPtrs();

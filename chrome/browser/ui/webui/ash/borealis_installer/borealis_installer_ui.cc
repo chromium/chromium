@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -58,9 +53,7 @@ BorealisInstallerUI::BorealisInstallerUI(content::WebUI* web_ui)
   };
   html_source->AddLocalizedStrings(kStrings);
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kBorealisInstallerResources,
-                                              kBorealisInstallerResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kBorealisInstallerResources,
                               IDR_BOREALIS_INSTALLER_BOREALIS_INSTALLER_HTML);
 }
 

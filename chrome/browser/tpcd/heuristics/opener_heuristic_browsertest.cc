@@ -1025,9 +1025,8 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicInteractionTypesBrowserTest,
             final_url);
   // The time between *popup_url* committing and the click.
   EXPECT_EQ(entries[0].metrics["SecondsSinceCommitted"],
-            Bucketize3PCDHeuristicTimeDelta(
-                base::Minutes(2), base::Minutes(3),
-                base::BindRepeating(&base::TimeDelta::InSeconds)));
+            Bucketize3PCDHeuristicSample(base::Minutes(2).InSeconds(),
+                                         base::Minutes(3).InSeconds()));
   // The user clicked on *final_url*, which was the third URL.
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 3);
   EXPECT_EQ(entries[0].metrics["InteractionType"],
@@ -1182,9 +1181,8 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
             popup_url);
   // The uncommitted navigation was ignored. UrlIndex is still 1.
   EXPECT_EQ(entries[0].metrics["SecondsSinceCommitted"],
-            Bucketize3PCDHeuristicTimeDelta(
-                base::Minutes(2), base::Minutes(3),
-                base::BindRepeating(&base::TimeDelta::InSeconds)));
+            Bucketize3PCDHeuristicSample(base::Minutes(2).InSeconds(),
+                                         base::Minutes(3).InSeconds()));
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 1);
 }
 

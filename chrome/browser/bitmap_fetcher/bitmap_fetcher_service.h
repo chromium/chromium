@@ -37,7 +37,7 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called whenever the image changes. Called with an empty image if the
     // fetch failed or the request ended for any reason.

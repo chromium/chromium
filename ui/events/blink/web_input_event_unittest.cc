@@ -12,8 +12,10 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/event.h"
@@ -423,6 +425,96 @@ TEST(WebInputEventTest, TestMakeWebMouseEventWithMultiButtons) {
   }
 }
 
+TEST(WebInputEventTest, TestMakeWebMouseEventNoisyButtonState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kClickToCapturedPointer);
+
+  {
+    // Left pressed but the modifier doesn't reflect it.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(EventType::kMousePressed, gfx::Point(1, 1),
+                        gfx::Point(1, 1), timestamp, 0, EF_LEFT_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(blink::WebInputEvent::kLeftButtonDown,
+              webkit_event.GetModifiers());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kLeft, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, webkit_event.GetType());
+  }
+  {
+    // Left released but the modifier doesn't reflect it.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(EventType::kMouseReleased, gfx::Point(1, 1),
+                        gfx::Point(1, 1), timestamp, EF_LEFT_MOUSE_BUTTON,
+                        EF_LEFT_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(0, webkit_event.GetModifiers());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kLeft, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseUp, webkit_event.GetType());
+  }
+  {
+    // Middle pressed while left and right depressed but the modifier doesn't
+    // reflect middle press.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(
+        EventType::kMousePressed, gfx::Point(1, 1), gfx::Point(1, 1), timestamp,
+        EF_LEFT_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON, EF_MIDDLE_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(blink::WebInputEvent::kLeftButtonDown +
+                  blink::WebInputEvent::kMiddleButtonDown +
+                  blink::WebInputEvent::kRightButtonDown,
+              webkit_event.GetModifiers());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kMiddle, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, webkit_event.GetType());
+  }
+  {
+    // Middle released while left and right depressed but the modifier doesn't
+    // reflect middle release.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(
+        EventType::kMouseReleased, gfx::Point(1, 1), gfx::Point(1, 1),
+        timestamp,
+        EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON,
+        EF_MIDDLE_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(blink::WebInputEvent::kLeftButtonDown +
+                  blink::WebInputEvent::kRightButtonDown,
+              webkit_event.GetModifiers());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kMiddle, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseUp, webkit_event.GetType());
+  }
+  {
+    // Right pressed while shift and control keys are depressed but the modifier
+    // doesn't reflect it.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(EventType::kMousePressed, gfx::Point(1, 1),
+                        gfx::Point(1, 1), timestamp,
+                        EF_SHIFT_DOWN | EF_CONTROL_DOWN, EF_RIGHT_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(blink::WebInputEvent::kRightButtonDown +
+                  blink::WebInputEvent::kShiftKey +
+                  blink::WebInputEvent::kControlKey,
+              webkit_event.GetModifiers());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kRight, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, webkit_event.GetType());
+  }
+  {
+    // Right released while shift and control keys are depressed but the
+    // modifier doesn't reflect it.
+    base::TimeTicks timestamp = EventTimeForNow();
+    MouseEvent ui_event(EventType::kMouseReleased, gfx::Point(1, 1),
+                        gfx::Point(1, 1), timestamp,
+                        EF_RIGHT_MOUSE_BUTTON | EF_SHIFT_DOWN | EF_CONTROL_DOWN,
+                        EF_RIGHT_MOUSE_BUTTON);
+    blink::WebMouseEvent webkit_event = MakeWebMouseEvent(ui_event);
+    EXPECT_EQ(
+        blink::WebInputEvent::kShiftKey + blink::WebInputEvent::kControlKey,
+        webkit_event.GetModifiers());
+    EXPECT_EQ(blink::WebMouseEvent::Button::kRight, webkit_event.button);
+    EXPECT_EQ(blink::WebInputEvent::Type::kMouseUp, webkit_event.GetType());
+  }
+}
+
 TEST(WebInputEventTest, TestMakeWebMouseWheelEvent) {
   {
     // Mouse wheel.
@@ -504,10 +596,10 @@ TEST(WebInputEventTest, MousePointerEvent) {
     gfx::Point screen_location;
   } tests[] = {
       {ui::EventType::kMousePressed, blink::WebInputEvent::Type::kMouseDown,
-       0x0, 0x0, gfx::Point(3, 5), gfx::Point(113, 125)},
-      {ui::EventType::kMouseReleased, blink::WebInputEvent::Type::kMouseUp,
        ui::EF_LEFT_MOUSE_BUTTON, blink::WebInputEvent::kLeftButtonDown,
-       gfx::Point(100, 1), gfx::Point(50, 1)},
+       gfx::Point(3, 5), gfx::Point(113, 125)},
+      {ui::EventType::kMouseReleased, blink::WebInputEvent::Type::kMouseUp, 0,
+       0, gfx::Point(100, 1), gfx::Point(50, 1)},
       {ui::EventType::kMouseMoved, blink::WebInputEvent::Type::kMouseMove,
        ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON,
        blink::WebInputEvent::kMiddleButtonDown |

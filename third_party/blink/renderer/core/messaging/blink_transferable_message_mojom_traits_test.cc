@@ -95,8 +95,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   ArrayBufferContents& deserialized_contents =
       out.message->GetArrayBufferContentsArray()[0];
   Vector<uint8_t> deserialized_data;
-  deserialized_data.Append(static_cast<uint8_t*>(deserialized_contents.Data()),
-                           8);
+  deserialized_data.AppendSpan(deserialized_contents.ByteSpan().first(8u));
   ASSERT_EQ(deserialized_data.size(), 8U);
   for (wtf_size_t i = 0; i < deserialized_data.size(); i++) {
     ASSERT_TRUE(deserialized_data[i] == i);

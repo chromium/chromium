@@ -71,17 +71,15 @@ def main(argv):
     # Obtain the workprofile's UI window
     workprofile = app.top_window()
 
+    workprofile.child_window(
+        title="Verify it's you", control_type="Button").click()
     # Check user identity status in the profile menu
     if "demo" in FLAGS.account:
-      workprofile.child_window(
-          title="Demo Test (Work)", control_type="Button").click()
       if workprofile.child_window(
           title=FLAGS.account, control_type="Text").exists():
         logging.info("Icebreaker work profile created")
 
     if "enterprise" in FLAGS.account:
-      workprofile.child_window(
-          title="Enterprise Test (Work)", control_type="Button").click()
       if workprofile.child_window(
           title=FLAGS.account, control_type="Text").exists():
         logging.info("Dasherless work profile created")

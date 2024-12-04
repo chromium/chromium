@@ -639,8 +639,12 @@ bool HTMLOptionElement::SpatialNavigationFocused() const {
   return select->SpatialNavigationFocusedOption() == this;
 }
 
-bool HTMLOptionElement::IsDisplayNone() const {
+bool HTMLOptionElement::IsDisplayNone(bool ensure_style) {
   const ComputedStyle* style = GetComputedStyle();
+  if (!style && ensure_style &&
+      RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    style = EnsureComputedStyle();
+  }
   return !style || style->Display() == EDisplay::kNone;
 }
 

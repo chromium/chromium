@@ -25,13 +25,17 @@ export class ChromeUrlsAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      internalUrlInfos_: {type: Array},
       webuiUrlInfos_: {type: Array},
       commandUrls_: {type: Array},
+      internalUisEnabled_: {type: Boolean},
     };
   }
 
   protected webuiUrlInfos_: WebuiUrlInfo[] = [];
+  protected internalUrlInfos_: WebuiUrlInfo[] = [];
   protected commandUrls_: Url[] = [];
+  protected internalUisEnabled_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -42,11 +46,22 @@ export class ChromeUrlsAppElement extends CrLitElement {
       function getPrettyUrl(url: Url): Url {
         return {url: url.url.replace(/\/$/, '')};
       }
-      this.webuiUrlInfos_ = urlsData.webuiUrls.map(info => {
-        return {enabled: info.enabled, url: getPrettyUrl(info.url)};
+      urlsData.webuiUrls.forEach(info => {
+        info.url = getPrettyUrl(info.url);
       });
+      this.webuiUrlInfos_ = urlsData.webuiUrls.filter(info => !info.internal);
+      this.internalUrlInfos_ = urlsData.webuiUrls.filter(info => info.internal);
       this.commandUrls_ = urlsData.commandUrls.map(url => getPrettyUrl(url));
+      this.internalUisEnabled_ = urlsData.internalDebuggingUisEnabled;
     });
+  }
+
+  protected getDebugPagesEnabledText_(): string {
+    return this.internalUisEnabled_ ? 'enabled' : 'disabled';
+  }
+
+  protected isInternalUiEnabled_(info: WebuiUrlInfo): boolean {
+    return info.enabled && this.internalUisEnabled_;
   }
 }
 

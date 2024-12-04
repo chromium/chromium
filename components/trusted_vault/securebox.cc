@@ -44,7 +44,7 @@ const char kHkdfInfoWithoutPublicKey[] = "SHARED HKDF-SHA-256 AES-128-GCM";
 
 // Returns bytes representation of |str| (without trailing \0).
 base::span<const uint8_t> StringToBytes(std::string_view str) {
-  return base::as_bytes(base::make_span(str));
+  return base::as_byte_span(str);
 }
 
 // Concatenates spans in |bytes_spans|.

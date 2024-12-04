@@ -24,16 +24,13 @@ constexpr std::array<uint8_t, 32> kPublicKey2 = {
 }  // namespace
 
 TEST(Ed25519PublicKeyTest, ValidPublicKey) {
-  const auto public_key1 =
-      Ed25519PublicKey::Create(base::make_span(kPublicKey1));
+  const auto public_key1 = Ed25519PublicKey::Create(base::span(kPublicKey1));
   EXPECT_EQ(public_key1.bytes(), kPublicKey1);
 }
 
 TEST(Ed25519PublicKeyTest, Comparators) {
-  const auto public_key1 =
-      Ed25519PublicKey::Create(base::make_span(kPublicKey1));
-  const auto public_key2 =
-      Ed25519PublicKey::Create(base::make_span(kPublicKey2));
+  const auto public_key1 = Ed25519PublicKey::Create(base::span(kPublicKey1));
+  const auto public_key2 = Ed25519PublicKey::Create(base::span(kPublicKey2));
 
   EXPECT_TRUE(public_key1 == public_key1);
   EXPECT_TRUE(public_key1 != public_key2);

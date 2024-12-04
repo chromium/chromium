@@ -27,7 +27,7 @@ CommerceInternalsUI::CommerceInternalsUI(web::WebUIIOS* web_ui,
       web::WebUIIOSDataSource::Create(kChromeUICommerceInternalsHost);
   source->SetDefaultResource(IDR_COMMERCE_INTERNALS_COMMERCE_INTERNALS_HTML);
   source->UseStringsJs();
-  const base::span<const webui::ResourcePath> resources = base::make_span(
+  const base::span<const webui::ResourcePath> resources(
       kCommerceInternalsResources, kCommerceInternalsResourcesSize);
 
   for (const auto& resource : resources) {

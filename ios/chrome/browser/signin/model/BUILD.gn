@@ -374,11 +374,10 @@ source_set("trusted_vault_factory") {
   deps = [
     ":trusted_vault",
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
   ]
   frameworks = [ "Foundation.framework" ]

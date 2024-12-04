@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo ogled besedila in slik, shranjenih v odložišču. Če je ta možnost izklopljena, si spletna mesta ne smejo ogledati besedila ali slik, shranjenih v odložišču.</translation>
 <translation id="5853982612236235577">Če je ta možnost vklopljena, spletna mesta lahko vprašajo, ali želite, da vam pošiljajo obvestila. Če je ta možnost izklopljena, spletna mesta ne smejo pošiljati obvestil.</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
+<translation id="5860491529813859533">Vklopi</translation>
 <translation id="5876056640971328065">Začasna zaustavitev videa</translation>
 <translation id="5877248419911025165">Strni vse zahteve</translation>
 <translation id="5884085660368669834">Nastavitve spletnega mesta</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">Vnesite spletni naslov</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Zdaj lahko na seznamu aplikacij v napravi in v rezultatih iskanja naprave hitro dostopate do predlaganih zavihkov. To lahko kadar koli izklopite v nastavitvah za Chrome.</translation>
 <translation id="6015775454662021376">Nadziranje dostopa spletnega mesta do naprave</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6042308850641462728">Več</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">Najprej vprašaj</translation>
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
 <translation id="7425915948813553151">Temna tema za spletna mesta</translation>
+<translation id="7488573225650545859">Skrij Ogled zavihkov na seznamu aplikacij</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Če je ta možnost vklopljena, spletna mesta lahko prikazujejo pozive za prijavo. Če je ta možnost izklopljena, spletna mesta ne smejo prikazovati pozivov za prijavo.</translation>
 <translation id="7553211568594248088">Izhod iz iskanja v središču</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">Ta vsebina je iz domene <ph name="DOMAIN_NAME" /> in jo prikazuje Google.</translation>
 <translation id="8088603949666785339">Več možnosti v pasici <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Zmanjša učinkovitost delovanja, vendar je mehanizem V8 odpornejši proti napadom</translation>
+<translation id="8112925981674547014">Ogled zavihkov na seznamu aplikacij</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome bo jutri znova omejil piškotke}one{Še # dan in Chrome bo znova omejil piškotke}two{Še # dneva in Chrome bo znova omejil piškotke}few{Še # dni in Chrome bo znova omejil piškotke}other{Še # dni in Chrome bo znova omejil piškotke}}</translation>
 <translation id="8116925261070264013">Prezrto</translation>
 <translation id="8117244575099414087">Če je ta možnost vklopljena, spletna mesta lahko uporabljajo tipala naprave. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati tipal.</translation>

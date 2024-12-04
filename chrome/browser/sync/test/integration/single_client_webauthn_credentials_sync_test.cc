@@ -87,7 +87,7 @@ bool PublicKeyForPasskeyEquals(
   CHECK(webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
       trusted_vault_key, passkey, &encrypted_data));
   auto ec_key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
-      base::as_bytes(base::make_span(encrypted_data.private_key())));
+      base::as_byte_span(encrypted_data.private_key()));
   CHECK(ec_key);
   std::vector<uint8_t> ec_key_pub;
   CHECK(ec_key->ExportPublicKey(&ec_key_pub));
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     expected_sync_ids.push_back(specifics2.sync_id());
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
         /*client_tag_hash=*/base::HexEncode(
-            base::as_bytes(base::make_span(specifics2.sync_id()))),
+            base::as_byte_span(specifics2.sync_id())),
         specifics2));
   }
 
@@ -862,8 +862,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     sync_pb::WebauthnCredentialSpecifics specifics3 = NewPasskey();
     expected_sync_ids.push_back(specifics3.sync_id());
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
-        /*client_tag_hash=*/base::ToLowerASCII(base::HexEncode(
-            base::as_bytes(base::make_span(specifics3.sync_id())))),
+        /*client_tag_hash=*/base::ToLowerASCII(
+            base::HexEncode(base::as_byte_span(specifics3.sync_id()))),
         specifics3));
   }
 
@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     sync_pb::WebauthnCredentialSpecifics specifics6 = NewPasskey();
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
         /*client_tag_hash=*/base::HexEncode(
-            base::as_bytes(base::make_span(specifics6.sync_id()))),
+            base::as_byte_span(specifics6.sync_id())),
         specifics5));
   }
 
@@ -918,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     expected_sync_ids.push_back(specifics2.sync_id());
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
         /*client_tag_hash=*/base::HexEncode(
-            base::as_bytes(base::make_span(specifics2.sync_id()))),
+            base::as_byte_span(specifics2.sync_id())),
         specifics2));
   }
 
@@ -928,8 +928,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     sync_pb::WebauthnCredentialSpecifics specifics3 = NewPasskey();
     expected_sync_ids.push_back(specifics3.sync_id());
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
-        /*client_tag_hash=*/base::ToLowerASCII(base::HexEncode(
-            base::as_bytes(base::make_span(specifics3.sync_id())))),
+        /*client_tag_hash=*/base::ToLowerASCII(
+            base::HexEncode(base::as_byte_span(specifics3.sync_id()))),
         specifics3));
   }
 
@@ -947,7 +947,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     sync_pb::WebauthnCredentialSpecifics specifics6 = NewPasskey();
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
         /*client_tag_hash=*/base::HexEncode(
-            base::as_bytes(base::make_span(specifics6.sync_id()))),
+            base::as_byte_span(specifics6.sync_id())),
         specifics5));
   }
 

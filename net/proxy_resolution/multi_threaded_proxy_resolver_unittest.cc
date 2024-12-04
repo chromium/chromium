@@ -275,7 +275,7 @@ class MultiThreadedProxyResolverTest : public TestWithTaskEnvironment {
   std::unique_ptr<ProxyResolver> resolver_;
 };
 
-TEST_F(MultiThreadedProxyResolverTest, SingleThreadBasic) {
+TEST_F(MultiThreadedProxyResolverTest, SingleThread_Basic) {
   const size_t kNumThreads = 1u;
   ASSERT_NO_FATAL_FAILURE(Init(kNumThreads));
 
@@ -433,7 +433,7 @@ TEST_F(MultiThreadedProxyResolverTest,
 
 // Cancel a request which is in progress, and then cancel a request which
 // is pending.
-TEST_F(MultiThreadedProxyResolverTest, SingleThreadCancelRequest) {
+TEST_F(MultiThreadedProxyResolverTest, SingleThread_CancelRequest) {
   const size_t kNumThreads = 1u;
   ASSERT_NO_FATAL_FAILURE(Init(kNumThreads));
 
@@ -541,7 +541,7 @@ TEST_F(MultiThreadedProxyResolverTest,
 
 // Test that deleting MultiThreadedProxyResolver while requests are
 // outstanding cancels them (and doesn't leak anything).
-TEST_F(MultiThreadedProxyResolverTest, SingleThreadCancelRequestByDeleting) {
+TEST_F(MultiThreadedProxyResolverTest, SingleThread_CancelRequestByDeleting) {
   const size_t kNumThreads = 1u;
   ASSERT_NO_FATAL_FAILURE(Init(kNumThreads));
 
@@ -600,7 +600,7 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThreadCancelRequestByDeleting) {
 
 // Tests setting the PAC script once, lazily creating new threads, and
 // cancelling requests.
-TEST_F(MultiThreadedProxyResolverTest, ThreeThreadsBasic) {
+TEST_F(MultiThreadedProxyResolverTest, ThreeThreads_Basic) {
   const size_t kNumThreads = 3u;
   ASSERT_NO_FATAL_FAILURE(Init(kNumThreads));
 

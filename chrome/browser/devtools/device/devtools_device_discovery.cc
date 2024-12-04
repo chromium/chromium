@@ -133,15 +133,14 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
   }
 
   void OnFrameRead(const std::string& message) override {
-    proxy_->DispatchOnClientHost(base::as_bytes(base::make_span(message)));
+    proxy_->DispatchOnClientHost(base::as_byte_span(message));
   }
 
   void OnSocketClosed() override {
     constexpr char kMsg[] =
         "{\"method\":\"Inspector.detached\",\"params\":"
         "{\"reason\":\"Connection lost.\"}}";
-    proxy_->DispatchOnClientHost(
-        base::as_bytes(base::make_span(kMsg, strlen(kMsg))));
+    proxy_->DispatchOnClientHost(base::byte_span_with_nul_from_cstring(kMsg));
     web_socket_.reset();
     socket_opened_ = false;
     proxy_->ConnectionClosed();  // Deletes |this|.

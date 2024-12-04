@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 
 #include "base/i18n/time_formatting.h"
@@ -106,9 +101,7 @@ BrowsingTopicsInternalsUI::BrowsingTopicsInternalsUI(content::WebUI* web_ui)
   AddTopicsConsentStrings(source, Profile::FromWebUI(web_ui));
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kBrowsingTopicsInternalsResources,
-                      kBrowsingTopicsInternalsResourcesSize),
+      source, kBrowsingTopicsInternalsResources,
       IDR_BROWSING_TOPICS_INTERNALS_BROWSING_TOPICS_INTERNALS_HTML);
 }
 

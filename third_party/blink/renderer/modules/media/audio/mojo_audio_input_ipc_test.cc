@@ -82,7 +82,7 @@ class MockDelegate : public media::AudioInputIPCDelegate {
   MockDelegate() = default;
   ~MockDelegate() override = default;
 
-  void OnStreamCreated(base::ReadOnlySharedMemoryRegion mem_handle,
+  void OnStreamCreated(base::UnsafeSharedMemoryRegion mem_handle,
                        base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override {
     GotOnStreamCreated(initially_muted);
@@ -129,8 +129,7 @@ class FakeStreamCreator {
     factory_client_->StreamCreated(
         receiver_.BindNewPipeAndPassRemote(),
         stream_client_.BindNewPipeAndPassReceiver(),
-        {std::in_place,
-         base::ReadOnlySharedMemoryRegion::Create(kMemoryLength).region,
+        {std::in_place, base::UnsafeSharedMemoryRegion::Create(kMemoryLength),
          mojo::PlatformHandle(foreign_socket.Take())},
         initially_muted_, base::UnguessableToken::Create());
   }

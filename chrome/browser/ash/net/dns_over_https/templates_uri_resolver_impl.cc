@@ -23,7 +23,6 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "crypto/sha2.h"
 
 namespace {
@@ -247,19 +246,11 @@ void StripUnknownEffectivePlaceholders(std::string& templates) {
 // `kDeviceNotManaged`; e.g for `hash_variable`=true
 // ${DEVICE_ASSET_ID} is replaced by hash(VALUE_NOT_AVAILABLE+salt).
 std::string ReplaceVariables(std::string templates,
+                             const user_manager::User& user,
                              const std::string& salt,
                              policy::DeviceAttributes* attributes,
                              bool hash_variable) {
-  if (!user_manager::UserManager::IsInitialized()) {
-    return std::string();
-  }
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  if (!user) {
-    return std::string();
-  }
-
-  std::string user_email = user->GetAccountId().GetUserEmail();
+  std::string user_email = user.GetAccountId().GetUserEmail();
   std::string user_email_domain = EmailDomain(user_email);
   std::string user_email_name = EmailName(user_email);
   std::string original_templates = templates;
@@ -278,7 +269,7 @@ std::string ReplaceVariables(std::string templates,
   std::string device_serial_number = kDeviceNotManaged;
   std::string device_annotated_location = kDeviceNotManaged;
 
-  if (user->IsAffiliated() && attributes) {
+  if (user.IsAffiliated() && attributes) {
     device_directory_id = attributes->GetDirectoryApiID();
     device_asset_id = attributes->GetDeviceAssetID();
     device_serial_number = attributes->GetDeviceSerialNumber();
@@ -308,7 +299,7 @@ std::string ReplaceVariables(std::string templates,
   // the DNS server) or as a human-readable string used for privacy disclosure.
   base::ReplaceSubstringsAfterOffset(
       &templates, 0, kDeviceIpPlaceholder,
-      GetIpReplacementValue(/*use_network_byte_order=*/hash_variable, *user));
+      GetIpReplacementValue(/*use_network_byte_order=*/hash_variable, user));
 
   bool is_display_mode = !hash_variable;
   if (is_display_mode) {
@@ -330,22 +321,23 @@ TemplatesUriResolverImpl::TemplatesUriResolverImpl() {
 
 TemplatesUriResolverImpl::~TemplatesUriResolverImpl() = default;
 
-void TemplatesUriResolverImpl::Update(PrefService* pref_service) {
+void TemplatesUriResolverImpl::Update(const PrefService& local_state,
+                                      const user_manager::User& user) {
   doh_with_identifiers_active_ = false;
 
-  const std::string& mode = pref_service->GetString(prefs::kDnsOverHttpsMode);
+  const std::string& mode = local_state.GetString(prefs::kDnsOverHttpsMode);
   if (mode == SecureDnsConfig::kModeOff) {
     return;
   }
 
-  effective_templates_ = pref_service->GetString(prefs::kDnsOverHttpsTemplates);
+  effective_templates_ = local_state.GetString(prefs::kDnsOverHttpsTemplates);
   // In ChromeOS only, the DnsOverHttpsTemplatesWithIdentifiers policy will
   // overwrite the DnsOverHttpsTemplates policy. For privacy reasons, the
   // replacement only happens if the is a salt specified which will be used to
   // hash the identifiers in the template URI.
   std::string templates_with_identifiers =
-      pref_service->GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
-  std::string salt = pref_service->GetString(prefs::kDnsOverHttpsSalt);
+      local_state.GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  std::string salt = local_state.GetString(prefs::kDnsOverHttpsSalt);
 
   if (!salt.empty() &&
       (salt.size() < kMinSaltSize || salt.size() > kMaxSaltSize)) {
@@ -355,11 +347,11 @@ void TemplatesUriResolverImpl::Update(PrefService* pref_service) {
     return;
   }
 
-  std::string effective_templates =
-      ReplaceVariables(templates_with_identifiers, salt, attributes_.get(),
-                       /*hash_variable=*/true);
+  std::string effective_templates = ReplaceVariables(
+      templates_with_identifiers, user, salt, attributes_.get(),
+      /*hash_variable=*/true);
   std::string display_templates =
-      ReplaceVariables(templates_with_identifiers, "", attributes_.get(),
+      ReplaceVariables(templates_with_identifiers, user, "", attributes_.get(),
                        /*hash_variable=*/false);
   if (effective_templates.empty() || display_templates.empty()) {
     return;

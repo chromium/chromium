@@ -101,7 +101,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       return ash::EXTENSION_APP;
     case apps::AppType::kStandaloneBrowser:
       return ash::LACROS;
@@ -112,7 +111,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kBruschetta:
       return ash::BRUSCHETTA_APP;
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kUnknown:
       NOTREACHED();
   }
@@ -141,8 +139,6 @@ void AppServiceAppResult::Launch(int event_flags,
         if (update.AppType() == apps::AppType::kCrostini ||
             update.AppType() == apps::AppType::kWeb ||
             update.AppType() == apps::AppType::kSystemWeb ||
-            (update.AppType() == apps::AppType::kStandaloneBrowserChromeApp &&
-             !update.IsPlatformApp().value_or(true)) ||
             (update.AppType() == apps::AppType::kChromeApp &&
              update.IsPlatformApp().value_or(true))) {
           is_active_app = true;

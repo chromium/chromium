@@ -136,8 +136,7 @@ CreateIncomingPasswordSharingInvitation(const std::string& invitation_guid,
       cryptographer->GetCrossUserSharingKeyPair(/*version=*/0);
   std::optional<std::vector<uint8_t>> encrypted_data =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(serialized_data)),
-          key_pair.GetRawPublicKey());
+          base::as_byte_span(serialized_data), key_pair.GetRawPublicKey());
   CHECK(encrypted_data);
 
   invitation.set_encrypted_password_sharing_invitation_data(

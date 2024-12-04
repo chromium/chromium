@@ -47,8 +47,6 @@ class XrImageTransportBase {
   // If false, use Surface transport aka SUBMIT_AS_MAILBOX_HOLDER.
   static bool UseSharedBuffer();
 
-  static GLuint SharedBufferTextureTarget();
-
   explicit XrImageTransportBase(
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
 

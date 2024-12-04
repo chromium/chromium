@@ -23,7 +23,7 @@ namespace {
 
 struct TestStruct {
   uint32_t one;
-  uint8_t two;
+  uint8_t two, three, four, five;
 };
 
 bool operator==(const TestStruct& lhs, const TestStruct& rhs) {
@@ -31,10 +31,7 @@ bool operator==(const TestStruct& lhs, const TestStruct& rhs) {
 }
 
 TestStruct CreateTestStruct() {
-  TestStruct expected;
-  expected.one = 0xabcdef12;
-  expected.two = 0x34;
-  return expected;
+  return {0xabcdef12, 0x34, 0x56, 0x78, 0x90};
 }
 
 TEST(BufferIteratorTest, Object) {
@@ -67,9 +64,7 @@ TEST(BufferIteratorTest, MutableObject) {
 
   {
     // Write the object.
-    TestStruct* actual = iterator.MutableObject<TestStruct>();
-    actual->one = expected.one;
-    actual->two = expected.two;
+    *iterator.MutableObject<TestStruct>() = expected;
   }
 
   // Rewind the iterator.

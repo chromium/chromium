@@ -7,6 +7,10 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_mediator.h"
 
+namespace collaboration::messaging {
+class MessagingBackendService;
+}  // namespace collaboration::messaging
+
 // Mediates between model layer and regular grid UI layer.
 @interface RegularGridMediator : BaseGridMediator
 
@@ -15,6 +19,15 @@
 // as it also close all inactives tabs.
 // TODO(crbug.com/40273478): Refactor these to be a mutator.
 @property(nonatomic, weak) id<GridCommands> inactiveTabsGridCommands;
+
+// Designated initialized. `messagingService` can be nil.
+- (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder
+                  messagingService:
+                      (collaboration::messaging::MessagingBackendService*)
+                          messagingService NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder
+    NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

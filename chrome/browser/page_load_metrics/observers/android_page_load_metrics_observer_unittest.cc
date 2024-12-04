@@ -114,7 +114,7 @@ class TestAndroidPageLoadMetricsObserver
 class AndroidPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
-  AndroidPageLoadMetricsObserverTest() {}
+  AndroidPageLoadMetricsObserverTest() = default;
 
   void SetUp() override {
     PageLoadMetricsObserverTestHarness::SetUp();

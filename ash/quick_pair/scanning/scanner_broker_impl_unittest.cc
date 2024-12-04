@@ -273,7 +273,7 @@ class ScannerBrokerImplTest : public AshTestBase,
   std::unique_ptr<ScannerBroker> scanner_broker_;
 };
 
-TEST_F(ScannerBrokerImplTest, RegularUserDiscoverableFound) {
+TEST_F(ScannerBrokerImplTest, RegularUser_DiscoverableFound) {
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
@@ -291,7 +291,7 @@ TEST_F(ScannerBrokerImplTest, RegularUserDiscoverableFound) {
   EXPECT_TRUE(device_found_);
 }
 
-TEST_F(ScannerBrokerImplTest, ChildUserDiscoverableFound) {
+TEST_F(ScannerBrokerImplTest, ChildUser_DiscoverableFound) {
   Login(user_manager::UserType::kChild);
   base::RunLoop().RunUntilIdle();
 
@@ -309,7 +309,7 @@ TEST_F(ScannerBrokerImplTest, ChildUserDiscoverableFound) {
   EXPECT_TRUE(device_found_);
 }
 
-TEST_F(ScannerBrokerImplTest, RegularUserNotDiscoverableFound) {
+TEST_F(ScannerBrokerImplTest, RegularUser_NotDiscoverableFound) {
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
@@ -327,7 +327,7 @@ TEST_F(ScannerBrokerImplTest, RegularUserNotDiscoverableFound) {
   EXPECT_TRUE(device_found_);
 }
 
-TEST_F(ScannerBrokerImplTest, GuestUserDiscoverableFound) {
+TEST_F(ScannerBrokerImplTest, GuestUser_DiscoverableFound) {
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
 
@@ -344,7 +344,7 @@ TEST_F(ScannerBrokerImplTest, GuestUserDiscoverableFound) {
   EXPECT_TRUE(device_found_);
 }
 
-TEST_F(ScannerBrokerImplTest, GuestUserNotDiscoverableNotCreated) {
+TEST_F(ScannerBrokerImplTest, GuestUser_NotDiscoverableNotCreated) {
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
 
@@ -357,7 +357,7 @@ TEST_F(ScannerBrokerImplTest, GuestUserNotDiscoverableNotCreated) {
   EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
 }
 
-TEST_F(ScannerBrokerImplTest, GuestUserRegularUserLogsIn) {
+TEST_F(ScannerBrokerImplTest, GuestUser_RegularUserLogsIn) {
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
 
@@ -375,7 +375,7 @@ TEST_F(ScannerBrokerImplTest, GuestUserRegularUserLogsIn) {
   EXPECT_TRUE(not_discoverable_scanner_factory_->create_instance());
 }
 
-TEST_F(ScannerBrokerImplTest, RegularUserGuestUserLogsIn) {
+TEST_F(ScannerBrokerImplTest, RegularUser_GuestUserLogsIn) {
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
@@ -393,7 +393,7 @@ TEST_F(ScannerBrokerImplTest, RegularUserGuestUserLogsIn) {
   EXPECT_TRUE(not_discoverable_scanner_factory_->create_instance());
 }
 
-TEST_F(ScannerBrokerImplTest, PublicUserNotDiscoverableNotCreated) {
+TEST_F(ScannerBrokerImplTest, PublicUser_NotDiscoverableNotCreated) {
   Login(user_manager::UserType::kPublicAccount);
   base::RunLoop().RunUntilIdle();
 
@@ -406,7 +406,7 @@ TEST_F(ScannerBrokerImplTest, PublicUserNotDiscoverableNotCreated) {
   EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
 }
 
-TEST_F(ScannerBrokerImplTest, KioskNotDiscoverableNotCreated) {
+TEST_F(ScannerBrokerImplTest, Kiosk_NotDiscoverableNotCreated) {
   Login(user_manager::UserType::kKioskApp);
   base::RunLoop().RunUntilIdle();
 
@@ -419,7 +419,7 @@ TEST_F(ScannerBrokerImplTest, KioskNotDiscoverableNotCreated) {
   EXPECT_TRUE(discoverable_scanner_factory_->create_instance());
 }
 
-TEST_F(ScannerBrokerImplTest, RegularUserDiscoverableLost) {
+TEST_F(ScannerBrokerImplTest, RegularUser_DiscoverableLost) {
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
@@ -437,7 +437,7 @@ TEST_F(ScannerBrokerImplTest, RegularUserDiscoverableLost) {
   EXPECT_TRUE(device_lost_);
 }
 
-TEST_F(ScannerBrokerImplTest, RegularUserNotDiscoverableLost) {
+TEST_F(ScannerBrokerImplTest, RegularUser_NotDiscoverableLost) {
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 
@@ -455,7 +455,7 @@ TEST_F(ScannerBrokerImplTest, RegularUserNotDiscoverableLost) {
   EXPECT_TRUE(device_lost_);
 }
 
-TEST_F(ScannerBrokerImplTest, GuestUserDiscoverableLost) {
+TEST_F(ScannerBrokerImplTest, GuestUser_DiscoverableLost) {
   Login(user_manager::UserType::kGuest);
   base::RunLoop().RunUntilIdle();
 
@@ -472,7 +472,7 @@ TEST_F(ScannerBrokerImplTest, GuestUserDiscoverableLost) {
   EXPECT_TRUE(device_lost_);
 }
 
-TEST_F(ScannerBrokerImplTest, StopScanningRegular) {
+TEST_F(ScannerBrokerImplTest, StopScanning_Regular) {
   Login(user_manager::UserType::kRegular);
   base::RunLoop().RunUntilIdle();
 

@@ -322,7 +322,7 @@ class SSLInterstitialTimerObserver {
 class ChromeContentBrowserClientForMixedContentTest
     : public ChromeContentBrowserClient {
  public:
-  ChromeContentBrowserClientForMixedContentTest() {}
+  ChromeContentBrowserClientForMixedContentTest() = default;
 
   ChromeContentBrowserClientForMixedContentTest(
       const ChromeContentBrowserClientForMixedContentTest&) = delete;
@@ -1031,7 +1031,7 @@ class SameDocumentNavigationObserver : public content::WebContentsObserver {
  public:
   explicit SameDocumentNavigationObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
-  ~SameDocumentNavigationObserver() override {}
+  ~SameDocumentNavigationObserver() override = default;
 
   void WaitForSameDocumentNavigation() { run_loop_.Run(); }
 
@@ -1759,7 +1759,7 @@ class ClientCertStoreStub : public net::ClientCertStore {
   explicit ClientCertStoreStub(net::ClientCertIdentityList list)
       : list_(std::move(list)) {}
 
-  ~ClientCertStoreStub() override {}
+  ~ClientCertStoreStub() override = default;
 
   // net::ClientCertStore:
   void GetClientCerts(
@@ -3049,7 +3049,7 @@ class SSLUIWorkerFetchTest
   SSLUIWorkerFetchTest(const SSLUIWorkerFetchTest&) = delete;
   SSLUIWorkerFetchTest& operator=(const SSLUIWorkerFetchTest&) = delete;
 
-  ~SSLUIWorkerFetchTest() override {}
+  ~SSLUIWorkerFetchTest() override = default;
 
   void SetUpOnMainThread() override { SSLUITestBase::SetUpOnMainThread(); }
 
@@ -6530,7 +6530,7 @@ class SSLUIMITMSoftwareTest : public CertVerifierBrowserTest {
   SSLUIMITMSoftwareTest(const SSLUIMITMSoftwareTest&) = delete;
   SSLUIMITMSoftwareTest& operator=(const SSLUIMITMSoftwareTest&) = delete;
 
-  ~SSLUIMITMSoftwareTest() override {}
+  ~SSLUIMITMSoftwareTest() override = default;
 
   void SetUpOnMainThread() override {
     CertVerifierBrowserTest::SetUpOnMainThread();
@@ -6665,7 +6665,7 @@ class SSLUIMITMSoftwareEnabledTest : public SSLUIMITMSoftwareTest {
   SSLUIMITMSoftwareEnabledTest& operator=(const SSLUIMITMSoftwareEnabledTest&) =
       delete;
 
-  ~SSLUIMITMSoftwareEnabledTest() override {}
+  ~SSLUIMITMSoftwareEnabledTest() override = default;
 
   void SetUpOnMainThread() override {
     SSLUIMITMSoftwareTest::SetUpOnMainThread();
@@ -6686,7 +6686,7 @@ class SSLUIMITMSoftwareDisabledTest : public SSLUIMITMSoftwareTest {
   SSLUIMITMSoftwareDisabledTest& operator=(
       const SSLUIMITMSoftwareDisabledTest&) = delete;
 
-  ~SSLUIMITMSoftwareDisabledTest() override {}
+  ~SSLUIMITMSoftwareDisabledTest() override = default;
 
   void SetUpOnMainThread() override {
     SSLUIMITMSoftwareTest::SetUpOnMainThread();
@@ -7047,7 +7047,7 @@ class SSLUIDynamicInterstitialTest : public CertVerifierBrowserTest {
   SSLUIDynamicInterstitialTest& operator=(const SSLUIDynamicInterstitialTest&) =
       delete;
 
-  ~SSLUIDynamicInterstitialTest() override {}
+  ~SSLUIDynamicInterstitialTest() override = default;
 
   void SetUpCertVerifier() {
     scoped_refptr<net::X509Certificate> cert(https_server_.GetCertificate());

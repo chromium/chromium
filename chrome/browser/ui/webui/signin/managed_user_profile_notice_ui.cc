@@ -109,7 +109,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   };
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kResources),
+      source, kResources,
       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_HTML);
 
   source->AddResourcePath("images/left-banner.svg",

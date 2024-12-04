@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/ml/webnn/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -96,7 +97,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    ExceptionState& exception_state);
   MLOperand* constant(ScriptState* script_state,
                       const MLOperandDescriptor* desc,
-                      NotShared<DOMArrayBufferView> buffer_view,
+                      AllowSharedBufferSource* buffer,
                       ExceptionState& exception_state);
 
   // The order of operations declaration is the same as spec.

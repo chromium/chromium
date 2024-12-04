@@ -42,7 +42,7 @@ class AppObserver : public extensions::AppWindowRegistry::Observer {
   AppObserver(const AppObserver&) = delete;
   AppObserver& operator=(const AppObserver&) = delete;
 
-  ~AppObserver() override {}
+  ~AppObserver() override = default;
 
   // AppWindowRegistry::Observer overrides:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {

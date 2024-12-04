@@ -114,8 +114,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kPrerender2,
     &browsing_data::features::kBrowsingDataModel,
     &commerce::kCommerceMerchantViewer,
-    &commerce::kCommercePriceTracking,
     &commerce::kEnableDiscountInfoApi,
+    &commerce::kPriceAnnotations,
     &commerce::kPriceInsights,
     &commerce::kShoppingList,
     &commerce::kShoppingPDPMetrics,
@@ -374,7 +374,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics,
     &privacy_sandbox::kPrivacySandboxPrivacyPolicy,
-    &privacy_sandbox::kTrackingProtection3pcdUx,
     &privacy_sandbox::kPrivacySandboxSentimentSurvey,
     &privacy_sandbox::kTrackingProtectionUserBypassPwa,
     &privacy_sandbox::kTrackingProtectionUserBypassPwaTrigger,
@@ -529,7 +528,7 @@ BASE_FEATURE(kAsyncNotificationManager,
 
 BASE_FEATURE(kAutomotiveFullscreenToolbarImprovements,
              "AutomotiveFullscreenToolbarImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuxiliarySearchDonation,
              "AuxiliarySearchDonation",

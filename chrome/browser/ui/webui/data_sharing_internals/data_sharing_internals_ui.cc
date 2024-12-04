@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
@@ -31,9 +26,7 @@ DataSharingInternalsUI::DataSharingInternalsUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIDataSharingInternalsHost);
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kDataSharingInternalsResources,
-                      kDataSharingInternalsResourcesSize),
+      source, kDataSharingInternalsResources,
       IDR_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_HTML);
 }
 

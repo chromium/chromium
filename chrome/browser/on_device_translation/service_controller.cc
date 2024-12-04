@@ -55,10 +55,6 @@ using mojom::OnDeviceTranslationServiceConfigPtr;
 
 namespace {
 
-// Limit the number of downloadable language packs to 3 during OT to mitigate
-// the risk of fingerprinting attacks.
-constexpr size_t kTranslationAPILimitLanguagePackCountMax = 3;
-
 // Prefix for the display name of the on-device translation service. The origin
 // is appended to the prefix.
 const char kOnDeviceTranslationServiceDisplayNamePrefix[] =
@@ -156,18 +152,18 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     CalculateLanguagePackRequirements(source_lang, target_lang, required_packs,
                                       required_not_installed_packs,
                                       to_be_registered_packs);
+
     if (!to_be_registered_packs.empty()) {
-      if (kTranslationAPILimitLanguagePackCount.Get()) {
-        if (to_be_registered_packs.size() +
-                ComponentManager::GetRegisteredLanguagePacks().size() >
-            kTranslationAPILimitLanguagePackCountMax) {
-          RecordLanguagePairUma(
-              "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
-              source_lang, target_lang);
-          std::move(callback).Run(base::unexpected(
-              CreateTranslatorError::kExceedsLanguagePackCountLimitation));
-          return;
-        }
+      if (kTranslationAPILimitLanguagePackCount.Get() &&
+          to_be_registered_packs.size() >
+              GetInstallablePackageCount(
+                  ComponentManager::GetRegisteredLanguagePacks().size())) {
+        RecordLanguagePairUma(
+            "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
+            source_lang, target_lang);
+        std::move(callback).Run(base::unexpected(
+            CreateTranslatorError::kExceedsLanguagePackCountLimitation));
+        return;
       }
 
       for (const auto& language_pack : to_be_registered_packs) {
@@ -317,9 +313,9 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
 
   if (!to_be_registered_packs.empty() &&
       kTranslationAPILimitLanguagePackCount.Get() &&
-      to_be_registered_packs.size() +
-              ComponentManager::GetRegisteredLanguagePacks().size() >
-          kTranslationAPILimitLanguagePackCountMax) {
+      to_be_registered_packs.size() >
+          GetInstallablePackageCount(
+              ComponentManager::GetRegisteredLanguagePacks().size())) {
     // The number of installed language packs will exceed the limitation if the
     // new required language packs are installed.
     return CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation;

@@ -131,7 +131,7 @@ class MockNetworkChangeManagerClient
   MockNetworkChangeManagerClient& operator=(
       const MockNetworkChangeManagerClient&) = delete;
 
-  ~MockNetworkChangeManagerClient() override {}
+  ~MockNetworkChangeManagerClient() override = default;
 
   // NetworkChangeManagerClient implementation:
   MOCK_METHOD(void,

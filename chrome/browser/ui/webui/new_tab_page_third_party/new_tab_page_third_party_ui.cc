@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 
 #include <memory>
@@ -153,9 +148,7 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
   source->AddString("urlField", "");
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kNewTabPageThirdPartyResources,
-                      kNewTabPageThirdPartyResourcesSize),
+      source, kNewTabPageThirdPartyResources,
       IDR_NEW_TAB_PAGE_THIRD_PARTY_NEW_TAB_PAGE_THIRD_PARTY_HTML);
 }
 }  // namespace

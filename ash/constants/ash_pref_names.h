@@ -1845,14 +1845,6 @@ inline constexpr char kNextImeShortcutReminderDismissed[] =
 inline constexpr char kDeviceI18nShortcutsEnabled[] =
     "ash.device_i18n_shortcuts_enabled";
 
-// If a user installs an extension which controls the proxy settings in the
-// primary profile of Chrome OS, this dictionary will contain information about
-// the extension controlling the proxy (name, id and if it can be disabled by
-// the user). Used to show the name and icon of the extension in the "Proxy"
-// section of the OS Settings>Network dialog.
-inline constexpr char kLacrosProxyControllingExtension[] =
-    "ash.lacros_proxy_controlling_extension";
-
 // A boolean pref which is true if Fast Pair is enabled.
 inline constexpr char kFastPairEnabled[] = "ash.fast_pair.enabled";
 

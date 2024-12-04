@@ -24,6 +24,9 @@ class CONTENT_EXPORT SharedStorageLockManager
  public:
   using SharedStorageUpdateCallback =
       base::OnceCallback<void(const std::string&)>;
+  using LockGrantedCallback =
+      base::OnceCallback<void(mojo::AssociatedRemote<blink::mojom::LockHandle>,
+                              mojo::Remote<blink::mojom::LockManager>)>;
 
   enum AccessScope {
     kWindow,
@@ -47,6 +50,19 @@ class CONTENT_EXPORT SharedStorageLockManager
   void SharedStorageUpdate(
       network::mojom::SharedStorageModifierMethodWithOptionsPtr
           method_with_options,
+      const url::Origin& shared_storage_origin,
+      AccessScope scope,
+      FrameTreeNodeId main_frame_id,
+      SharedStorageUpdateCallback callback);
+
+  // First, acquires the batch-level lock if requested (`with_lock` is present).
+  // Then, under the batch-level lock, handles each method with any necessary
+  // individual lock. Finally, releases the batch-level lock and invokes
+  // `callback`.
+  void SharedStorageBatchUpdate(
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      std::optional<std::string> with_lock,
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,
@@ -77,23 +93,90 @@ class CONTENT_EXPORT SharedStorageLockManager
   // State for each client held in `lock_request_receivers_`.
   struct LockRequestReceiverState {
     LockRequestReceiverState(
-        base::OnceClosure lock_granted_callback,
+        LockGrantedCallback lock_granted_callback,
         mojo::Remote<blink::mojom::LockManager> lock_manager);
     LockRequestReceiverState();
     LockRequestReceiverState(const LockRequestReceiverState& other) = delete;
     LockRequestReceiverState(LockRequestReceiverState&& other);
     ~LockRequestReceiverState();
 
-    base::OnceClosure lock_granted_callback;
+    LockGrantedCallback lock_granted_callback;
     mojo::Remote<blink::mojom::LockManager> lock_manager;
   };
+
+  struct BatchUpdateState {
+    BatchUpdateState(
+        size_t pending_updates_count,
+        SharedStorageUpdateCallback callback,
+        mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
+        mojo::Remote<blink::mojom::LockManager> lock_manager);
+    BatchUpdateState();
+    BatchUpdateState(const BatchUpdateState& other) = delete;
+    BatchUpdateState(BatchUpdateState&& other);
+    ~BatchUpdateState();
+
+    // The number of methods within the batch that haven't been sent to the
+    // `SharedStorageManager` yet. This includes methods waiting for the batch
+    // lock or the individual method lock.
+    size_t unstarted_updates_count;
+
+    // The number of methods within the batch that haven't received a final
+    // response from the `SharedStorageManager`. This is always greater than or
+    // equal to `unstarted_updates_count`.
+    size_t unfinished_updates_count;
+
+    // Indicates whether any method within the batch encountered an error during
+    // processing by the `SharedStorageManager`.
+    bool has_error = false;
+
+    // The original callback provided by the client to be invoked after all
+    // methods within the batch have been processed by the
+    // `SharedStorageManager`.
+    SharedStorageUpdateCallback callback;
+
+    // The Mojo remote handle and lock manager used to acquire and hold the
+    // batch lock. These are reset to release the lock after all methods within
+    // the batch have been sent to the `SharedStorageManager`. If the lock isn't
+    // needed, these will remain unbound.
+    mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle;
+    mojo::Remote<blink::mojom::LockManager> lock_manager;
+  };
+
+  void SharedStorageUpdateHelper(
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr
+          method_with_options,
+      const url::Origin& shared_storage_origin,
+      AccessScope scope,
+      FrameTreeNodeId main_frame_id,
+      SharedStorageUpdateCallback callback,
+      std::optional<int> batch_update_id);
 
   void OnReadyToHandleUpdate(
       network::mojom::SharedStorageModifierMethodPtr method,
       url::Origin shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,
-      SharedStorageUpdateCallback callback);
+      SharedStorageUpdateCallback callback,
+      std::optional<int> batch_update_id,
+      mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
+      mojo::Remote<blink::mojom::LockManager> lock_manager);
+
+  void OnReadyToHandleBatchUpdate(
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      url::Origin shared_storage_origin,
+      AccessScope scope,
+      FrameTreeNodeId main_frame_id,
+      SharedStorageUpdateCallback callback,
+      mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
+      mojo::Remote<blink::mojom::LockManager> lock_manager);
+
+  void OnMethodWithinBatchFinished(int batch_update_id,
+                                   const std::string& error_message);
+
+  void RequestLock(const url::Origin& shared_storage_origin,
+                   const std::string& lock_name,
+                   LockGrantedCallback lock_granted_callback);
 
   // `storage_partition_` indirectly owns `this`, and thus outlives `this`.
   raw_ref<StoragePartitionImpl> storage_partition_;
@@ -105,6 +188,17 @@ class CONTENT_EXPORT SharedStorageLockManager
   mojo::AssociatedReceiverSet<blink::mojom::LockRequest,
                               LockRequestReceiverState>
       lock_request_receivers_;
+
+  // A monotonically increasing ID assigned to each non-trivial
+  // `SharedStorageBatchUpdate` (i.e., those with non-empty
+  // `methods_with_options`). This ID is assigned during
+  // `OnReadyToHandleBatchUpdate`, so may not correspond to the
+  // original order of `SharedStorageBatchUpdate` requests.
+  int next_batch_update_id_ = 0;
+
+  // Stores the state of unfinished batch updates. The map is keyed by the batch
+  // update ID.
+  std::map<int, BatchUpdateState> pending_batch_updates_;
 
   base::WeakPtrFactory<SharedStorageLockManager> weak_ptr_factory_{this};
 };

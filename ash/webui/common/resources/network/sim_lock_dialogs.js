@@ -457,8 +457,6 @@ class SimLockDialogsElement extends SimLockDialogsElementBase {
         this.closeDialogs_();
       }
     });
-    this.dispatchEvent(new CustomEvent(
-        'user-action-setting-change', {bubbles: true, composed: true}));
   }
 
   /**

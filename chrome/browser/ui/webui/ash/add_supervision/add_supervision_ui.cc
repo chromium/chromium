@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 
 #include <memory>
@@ -218,10 +213,8 @@ void AddSupervisionUI::SetUpResources() {
   source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.
-  source->AddResourcePaths(
-      base::make_span(kAddSupervisionResources, kAddSupervisionResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kSupervisionResources, kSupervisionResourcesSize));
+  source->AddResourcePaths(kAddSupervisionResources);
+  source->AddResourcePaths(kSupervisionResources);
 
   source->AddLocalizedString("pageTitle", IDS_ADD_SUPERVISION_PAGE_TITLE);
   source->AddLocalizedString("webviewLoadingMessage",

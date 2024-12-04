@@ -18,6 +18,7 @@
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/xdg/request.h"
+#include "components/dbus/xdg/systemd.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -49,9 +50,9 @@ GlobalShortcutListenerLinux::GlobalShortcutListenerLinux(
       base::BindOnce(&GlobalShortcutListenerLinux::OnSignalConnected,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  dbus_utils::CheckForServiceAndStart(
-      bus_.get(), kPortalServiceName,
-      base::BindOnce(&GlobalShortcutListenerLinux::OnServiceStarted,
+  dbus_xdg::SetSystemdScopeUnitNameForXdgPortal(
+      bus_.get(),
+      base::BindOnce(&GlobalShortcutListenerLinux::OnSystemdUnitStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -70,6 +71,15 @@ GlobalShortcutListenerLinux::~GlobalShortcutListenerLinux() {
 
   dbus_thread_linux::GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
+}
+
+void GlobalShortcutListenerLinux::OnSystemdUnitStarted(
+    dbus_xdg::SystemdUnitStatus) {
+  // Intentionally ignoring the status.
+  dbus_utils::CheckForServiceAndStart(
+      bus_.get(), kPortalServiceName,
+      base::BindOnce(&GlobalShortcutListenerLinux::OnServiceStarted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GlobalShortcutListenerLinux::OnServiceStarted(

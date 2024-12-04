@@ -59,7 +59,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.lang.annotation.Retention;
@@ -554,7 +554,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private void updateSigninDetailsDescription(boolean addSettingsLink) {
         final @Nullable Object settingsLinkSpan =
                 addSettingsLink
-                        ? new NoUnderlineClickableSpan(getContext(), this::onSettingsLinkClicked)
+                        ? new ChromeClickableSpan(getContext(), this::onSettingsLinkClicked)
                         : null;
         final SpanApplier.SpanInfo spanInfo =
                 new SpanApplier.SpanInfo(SETTINGS_LINK_OPEN, SETTINGS_LINK_CLOSE, settingsLinkSpan);

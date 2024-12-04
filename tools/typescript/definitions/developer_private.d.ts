@@ -269,6 +269,7 @@ declare global {
         pinnedToToolbar?: boolean;
         isAffectedByMV2Deprecation: boolean;
         didAcknowledgeMV2DeprecationNotice: boolean;
+        canUploadAsAccountExtension: boolean;
       }
 
       export interface ProfileInfo {

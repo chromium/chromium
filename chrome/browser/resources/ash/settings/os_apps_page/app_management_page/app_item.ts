@@ -64,9 +64,6 @@ export class AppManagementAppItemElement extends
         return AppManagementEntryPoint.MAIN_VIEW_ARC;
       case AppType.kChromeApp:
       case AppType.kStandaloneBrowser:
-      case AppType.kStandaloneBrowserChromeApp:
-        // TODO(crbug.com/40188614): Figure out appropriate behavior for
-        // Lacros-hosted chrome-apps.
         return AppManagementEntryPoint.MAIN_VIEW_CHROME_APP;
       case AppType.kWeb:
         return AppManagementEntryPoint.MAIN_VIEW_WEB_APP;

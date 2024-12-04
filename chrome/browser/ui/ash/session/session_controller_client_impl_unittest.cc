@@ -67,7 +67,7 @@ class SessionControllerClientImplTest : public testing::Test {
 
  protected:
   SessionControllerClientImplTest() = default;
-  ~SessionControllerClientImplTest() override {}
+  ~SessionControllerClientImplTest() override = default;
 
   void SetUp() override {
     ash::LoginState::Initialize();

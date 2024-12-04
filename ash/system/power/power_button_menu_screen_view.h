@@ -62,6 +62,7 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
 
  private:
   class PowerButtonMenuBackgroundView;
+  friend class PowerButtonControllerTestApi;
 
   // views::View:
   void Layout(PassKey) override;
@@ -92,6 +93,8 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   gfx::Size GetMenuViewPreferredSize();
 
   PowerButtonMenuCurtainView* GetOrCreateCurtainView();
+
+  ui::Layer* GetPowerButtonScreenBackgroundShieldLayerForTest() const;
 
   // Created by PowerButtonMenuScreenView. Owned by views hierarchy. Only
   // power_button_menu_view_ or power_button_menu_curtain_view_ will be

@@ -1895,7 +1895,8 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletLoadError) {
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_bidding_signals_coordinator=*/std::nullopt,
-      worklet_available2.GetCallback(), load_error_helper.Callback(), handle2,
+      worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle2,
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetBidderWorklet());
@@ -2040,7 +2041,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
-      worklet_available2.GetCallback(), load_error_helper.Callback(), handle2,
+      worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle2,
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetSellerWorklet());
@@ -2094,7 +2096,8 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCrash) {
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
       /*trusted_bidding_signals_coordinator=*/std::nullopt,
-      worklet_available2.GetCallback(), load_error_helper.Callback(), handle2,
+      worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle2,
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetBidderWorklet());
@@ -2144,7 +2147,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
       kAuction2, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_scoring_signals_coordinator=*/std::nullopt,
-      worklet_available2.GetCallback(), load_error_helper.Callback(), handle2,
+      worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle2,
       auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetSellerWorklet());

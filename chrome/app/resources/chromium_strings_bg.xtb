@@ -258,6 +258,7 @@
 <translation id="4510853178268397146">За това разширение не са публикувани практики за поверителност, като например как събира и използва данни. Chromium препоръчва да го премахнете.</translation>
 <translation id="452711251841752011">Добре дошли в Chromium. Отворен е нов прозорец на браузъра</translation>
 <translation id="4531137820806573936">Chromium се нуждае от разрешение да картографира заобикалящата ви среда и да проследява ръцете ви</translation>
+<translation id="4534145890176164066">Chromium разпознава формулярите по-добре и може да ги попълва по-бързо вместо вас</translation>
 <translation id="4536805923587466102">Вече сте влезли като <ph name="USER_EMAIL_ADDRESS" /> в друг потребителски профил в Chromium</translation>
 <translation id="4544142686420020088">Chromium не се актуализира, защото нещо се обърка. <ph name="BEGIN_LINK" />Отстранете проблеми с актуализирането на Chromium и неуспешни актуализации<ph name="END_LINK" />.</translation>
 <translation id="4545268686623374213">Chromium може да деактивира този раздел, за да подобри сърфирането ви и да работи все така бързо.</translation>
@@ -472,6 +473,7 @@
 <translation id="7349591376906416160">Системният ви администратор е конфигурирал Chromium да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium блокира това изтегляне, защото файлът може да навреди на личния ви профил и на профилите ви в социалните мрежи, включително <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Това разширение вече не се поддържа. Chromium препоръчва да го премахнете.</translation>
+<translation id="7389750180956889333">Chromium разпознава формулярите по-добре и може да ги попълва по-бързо вместо вас. Научете повече за <ph name="BEGIN_LINK" />автоматичното попълване в Chrome<ph name="END_LINK" /></translation>
 <translation id="7398989605938454041">С помощта на потребителските профили в Chromium можете да разделите нещата си в браузъра. Това улеснява разграничаването на работата и забавленията.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Текстът е копиран</translation>

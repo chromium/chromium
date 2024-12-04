@@ -1365,6 +1365,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7425037327577270384">Aiutami a scrivere</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN <ph name="ATTACH" /> abilitati siano disattivati o rimossi.</translation>
+<translation id="7453118953486228603">Fai clic per riassumere il testo selezionato</translation>
 <translation id="7458970041932198923">Connettiti a una rete e ricarica la pagina per visualizzare e impostare gli avatar.</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7481312909269577407">Avanti</translation>
@@ -1723,6 +1724,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="9133772297793293778">Premi 1-4 tasti di modifica e 1 altro tasto della tastiera. Per uscire dalla modalità di modifica, premi Alt + Esc.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Maiusc sinistro</translation>
+<translation id="9147928237330776930">Numero insufficiente di parole per riassumere</translation>
 <translation id="9149391708638971077">Esegui test memoria</translation>
 <translation id="9159524746324788320">hamburger</translation>
 <translation id="9161276708550942948">spazio</translation>

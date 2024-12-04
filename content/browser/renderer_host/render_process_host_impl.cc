@@ -1423,8 +1423,14 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     }
   }
 #if BUILDFLAG(IS_WIN)
-  if (site_instance && GetContentClient()->browser()->ShouldUseFontDataManager(
-                           site_instance->GetSiteURL())) {
+  // kControlWithoutSpareRenderer is a control bucket w/o spare renderer for the
+  // FontDataService experiment i.e. Both SpareRenderer and FontDataManager are
+  // not used.
+  if (site_instance &&
+      GetContentClient()->browser()->ShouldUseFontDataManager(
+          site_instance->GetSiteURL()) &&
+      features::kFontDataServiceTypefaceType.Get() !=
+          features::FontDataServiceTypefaceType::kControlWithoutSpareRenderer) {
     flags |= RenderProcessFlags::kFontDataManager;
   }
 #endif

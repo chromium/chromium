@@ -52,15 +52,10 @@ WhatsNewStorageServiceImpl::FindEditionForCurrentVersion() const {
 void WhatsNewStorageServiceImpl::SetModuleEnabled(
     std::string_view module_name) {
   // Ensure active feature is in local state.
-  if (!base::Contains(*enabled_order_(), module_name)) {
-    enabled_order_()->Append(module_name);
+  const base::Value::List& enabled_modules = ReadModuleData();
+  if (!base::Contains(enabled_modules, module_name)) {
+    GetEnabledOrder()->Append(module_name);
   }
-}
-
-void WhatsNewStorageServiceImpl::ClearModule(std::string_view module_name) {
-  // Remove rolled feature from prefs. Order no longer matters for
-  // rolled modules.
-  enabled_order_()->EraseValue(base::Value(module_name));
 }
 
 bool WhatsNewStorageServiceImpl::IsUsedEdition(
@@ -84,17 +79,41 @@ void WhatsNewStorageServiceImpl::SetEditionUsed(std::string_view edition_name) {
     return;
   }
 
-  used_editions_()->Set(edition_name, CHROME_VERSION_MAJOR);
+  GetUsedEditions()->Set(edition_name, CHROME_VERSION_MAJOR);
 }
 
-void WhatsNewStorageServiceImpl::ClearEdition(std::string_view edition_name) {
+void WhatsNewStorageServiceImpl::ClearModules(
+    std::set<std::string_view> modules_to_clear) {
+  // Remove rolled feature from prefs. Order no longer matters for
+  // rolled modules.
+  auto enabled_modules = GetEnabledOrder();
+  for (const auto module : modules_to_clear) {
+    enabled_modules->EraseValue(base::Value(module));
+  }
+}
+
+void WhatsNewStorageServiceImpl::ClearEditions(
+    std::set<std::string_view> editions_to_clear) {
   // Remove edition from prefs.
-  used_editions_()->Remove(edition_name);
+  auto used_editions = GetUsedEditions();
+  for (const auto edition : editions_to_clear) {
+    used_editions->Remove(edition);
+  }
 }
 
 void WhatsNewStorageServiceImpl::Reset() {
-  enabled_order_()->clear();
-  used_editions_()->clear();
+  GetEnabledOrder()->clear();
+  GetUsedEditions()->clear();
+}
+
+ScopedListPrefUpdate WhatsNewStorageServiceImpl::GetEnabledOrder() {
+  return ScopedListPrefUpdate(g_browser_process->local_state(),
+                              prefs::kWhatsNewFirstEnabledOrder);
+}
+
+ScopedDictPrefUpdate WhatsNewStorageServiceImpl::GetUsedEditions() {
+  return ScopedDictPrefUpdate(g_browser_process->local_state(),
+                              prefs::kWhatsNewEditionUsed);
 }
 
 WhatsNewStorageServiceImpl::~WhatsNewStorageServiceImpl() = default;

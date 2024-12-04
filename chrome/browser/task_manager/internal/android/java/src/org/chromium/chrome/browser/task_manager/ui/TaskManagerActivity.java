@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.task_manager.ui;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,10 +37,10 @@ public class TaskManagerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.task_manager_activity);
+        View taskManagerView = findViewById(android.R.id.content);
 
         mCoordinator =
-                new TaskManagerCoordinator(
-                        findViewById(android.R.id.content), mHeaderModel, mTasksModel, mMediator);
+                new TaskManagerCoordinator(taskManagerView, mHeaderModel, mTasksModel, mMediator);
     }
 
     @Override

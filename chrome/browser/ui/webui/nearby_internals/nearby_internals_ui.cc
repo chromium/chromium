@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 
 #include <memory>
@@ -38,10 +33,8 @@ NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           Profile::FromWebUI(web_ui), chrome::kChromeUINearbyInternalsHost);
 
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kNearbyInternalsResources, kNearbyInternalsResourcesSize),
-      IDR_NEARBY_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(html_source, kNearbyInternalsResources,
+                              IDR_NEARBY_INTERNALS_INDEX_HTML);
 
   content::BrowserContext* context =
       web_ui->GetWebContents()->GetBrowserContext();

@@ -17,9 +17,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_paths_lacros.h"
-#include "components/drive/file_system_core_util.h"
 #endif
 
 namespace download_dir_util {
@@ -61,10 +58,6 @@ bool ExpandDrivePolicyVariable(Profile* profile,
   if (!integration_service || !integration_service->is_enabled())
     return false;
   google_drive = integration_service->GetMountPointPath();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool drivefs_mounted = chrome::GetDriveFsMountPointPath(&google_drive);
-  if (!drivefs_mounted)
-    return false;
 #endif
 
   base::FilePath::StringType google_drive_root =
@@ -90,12 +83,6 @@ bool ExpandOneDrivePolicyVariable(Profile* profile,
   base::FilePath onedrive_path;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::GetTempDir(&onedrive_path)) {
-    return false;
-  }
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool onedrive_mounted = chrome::GetOneDriveMountPointPath(&onedrive_path);
-  if (!onedrive_mounted) {
     return false;
   }
 #endif

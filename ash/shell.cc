@@ -1544,8 +1544,8 @@ void Shell::Init(
 
   // AcceleratorTracker should be placed before AcceleratorFilter to make sure
   // the accelerators won't be filtered out before getting AcceleratorTracker.
-  accelerator_tracker_ = std::make_unique<AcceleratorTracker>(
-      base::make_span(kAcceleratorTrackerList, kAcceleratorTrackerListLength));
+  accelerator_tracker_ =
+      std::make_unique<AcceleratorTracker>(kAcceleratorTrackerList);
   AddPreTargetHandler(accelerator_tracker_.get());
 
   accelerator_filter_ = std::make_unique<::wm::AcceleratorFilter>(

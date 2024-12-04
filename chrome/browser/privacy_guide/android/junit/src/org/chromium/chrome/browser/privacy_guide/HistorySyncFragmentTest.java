@@ -22,17 +22,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.sync.SyncService;
@@ -43,7 +38,6 @@ import java.util.Set;
 
 /** JUnit tests of the class {@link HistorySyncFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class HistorySyncFragmentTest {
     private static final String CHANGE_HISTORY_SYNC_ON_USER_ACTION =
             "Settings.PrivacyGuide.ChangeHistorySyncOn";
@@ -53,8 +47,6 @@ public class HistorySyncFragmentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SyncService mSyncService;
-
-    @Captor private ArgumentCaptor<Set<Integer>> mSetCaptor;
 
     private FragmentScenario mScenario;
     private MaterialSwitchWithText mHistorySyncButton;
@@ -73,8 +65,8 @@ public class HistorySyncFragmentTest {
         mActionTester.tearDown();
     }
 
-    private void initFragmentWithSyncState(boolean syncAll, boolean historySync) {
-        initSyncState(syncAll, historySync);
+    private void initFragmentWithSyncState(boolean historySync) {
+        initSyncState(historySync);
         mScenario =
                 FragmentScenario.launchInContainer(
                         HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
@@ -84,17 +76,7 @@ public class HistorySyncFragmentTest {
                                 fragment.getView().findViewById(R.id.history_sync_switch));
     }
 
-    private void initSyncState(boolean syncAll, boolean historySync) {
-        // With the flag enabled, hasKeepEverythingSynced() will always return false.
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            when(mSyncService.hasKeepEverythingSynced()).thenReturn(syncAll);
-
-            if (syncAll) {
-                historySync = true;
-            }
-        }
-
+    private void initSyncState(boolean historySync) {
         Set<Integer> syncTypes = new HashSet<>();
         if (historySync) {
             syncTypes.add(UserSelectableType.HISTORY);
@@ -104,63 +86,25 @@ public class HistorySyncFragmentTest {
 
     @Test
     public void testIsSwitchOffWhenHistorySyncOff() {
-        initFragmentWithSyncState(false, false);
+        initFragmentWithSyncState(false);
         assertFalse(mHistorySyncButton.isChecked());
     }
 
     @Test
     public void testIsSwitchOnWhenHistorySyncOnSyncAllOff() {
-        initFragmentWithSyncState(false, true);
+        initFragmentWithSyncState(true);
         assertTrue(mHistorySyncButton.isChecked());
     }
 
     @Test
     public void testIsSwitchOnWhenHistorySyncOnSyncAllOn() {
-        initFragmentWithSyncState(true, true);
+        initFragmentWithSyncState(true);
         assertTrue(mHistorySyncButton.isChecked());
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testTurnHistorySyncOffWhenSyncAllOn() {
-        initFragmentWithSyncState(true, true);
-        mHistorySyncButton.performClick();
-        verify(mSyncService).setSelectedTypes(eq(false), mSetCaptor.capture());
-        assertFalse(mSetCaptor.getValue().contains(UserSelectableType.HISTORY));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testTurnHistorySyncOn() {
-        initFragmentWithSyncState(false, false);
-        mHistorySyncButton.performClick();
-        verify(mSyncService).setSelectedTypes(eq(false), mSetCaptor.capture());
-        assertTrue(mSetCaptor.getValue().contains(UserSelectableType.HISTORY));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testTurnHistorySyncOffThenOnWhenSyncAllOn() {
-        initFragmentWithSyncState(true, true);
-        mHistorySyncButton.performClick();
-        mHistorySyncButton.performClick();
-        verify(mSyncService).setSelectedTypes(eq(true), mSetCaptor.capture());
-        assertTrue(mSetCaptor.getValue().contains(UserSelectableType.HISTORY));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testTurnHistorySyncOffThenOnWhenSyncAllOff() {
-        initFragmentWithSyncState(false, true);
-        mHistorySyncButton.performClick();
-        mHistorySyncButton.performClick();
-        verify(mSyncService, times(2)).setSelectedTypes(eq(false), mSetCaptor.capture());
-        assertTrue(mSetCaptor.getAllValues().get(1).contains(UserSelectableType.HISTORY));
-    }
-
-    @Test
     public void testToggleOn() throws Exception {
-        initFragmentWithSyncState(false, false);
+        initFragmentWithSyncState(false);
         assertFalse(mHistorySyncButton.isChecked());
 
         mHistorySyncButton.performClick();
@@ -170,7 +114,7 @@ public class HistorySyncFragmentTest {
 
     @Test
     public void testToggleOff() throws Exception {
-        initFragmentWithSyncState(false, true);
+        initFragmentWithSyncState(true);
         assertTrue(mHistorySyncButton.isChecked());
 
         mHistorySyncButton.performClick();
@@ -180,28 +124,28 @@ public class HistorySyncFragmentTest {
 
     @Test
     public void testTurnHistorySyncOn_changeHistorySyncOnUserAction() {
-        initFragmentWithSyncState(false, false);
+        initFragmentWithSyncState(false);
         mHistorySyncButton.performClick();
         assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_ON_USER_ACTION));
     }
 
     @Test
     public void testTurnHistorySyncOffWhenSyncAllOn_changeHistorySyncOffUserAction() {
-        initFragmentWithSyncState(true, true);
+        initFragmentWithSyncState(true);
         mHistorySyncButton.performClick();
         assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
     }
 
     @Test
     public void testTurnHistorySyncOffWhenSyncAllOff_changeHistorySyncOffUserAction() {
-        initFragmentWithSyncState(false, true);
+        initFragmentWithSyncState(true);
         mHistorySyncButton.performClick();
         assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
     }
 
     @Test
     public void testTurnHistorySyncOffThenOnWhenSyncAllOn_changeHistorySyncOffOnUserAction() {
-        initFragmentWithSyncState(true, true);
+        initFragmentWithSyncState(true);
         mHistorySyncButton.performClick();
         assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
         mHistorySyncButton.performClick();
@@ -210,7 +154,7 @@ public class HistorySyncFragmentTest {
 
     @Test
     public void testTurnHistorySyncOffThenOnWhenSyncAllOff_changeHistorySyncOffOnUserAction() {
-        initFragmentWithSyncState(false, true);
+        initFragmentWithSyncState(true);
         mHistorySyncButton.performClick();
         assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
         mHistorySyncButton.performClick();
@@ -218,33 +162,8 @@ public class HistorySyncFragmentTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testStringsWhenReplaceSyncPromosWithSignInPromosFlagIsDisabled() throws Exception {
-        initSyncState(true, true);
-        mScenario =
-                FragmentScenario.launchInContainer(
-                        HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
-        mScenario.onFragment(
-                fragment -> {
-                    mHistorySyncButton = fragment.getView().findViewById(R.id.history_sync_switch);
-                    assertEquals(
-                            ((TextView) mHistorySyncButton.findViewById(R.id.switch_text))
-                                    .getText(),
-                            fragment.getContext()
-                                    .getString(R.string.privacy_guide_history_sync_toggle));
-                    assertEquals(
-                            ((PrivacyGuideExplanationItem)
-                                            fragment.getView()
-                                                    .findViewById(R.id.history_sync_item_one))
-                                    .getSummaryTextForTesting(),
-                            fragment.getContext()
-                                    .getString(R.string.privacy_guide_history_sync_item_one));
-                });
-    }
-
-    @Test
     public void testStrings() throws Exception {
-        initSyncState(true, true);
+        initSyncState(true);
         mScenario =
                 FragmentScenario.launchInContainer(
                         HistorySyncFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);

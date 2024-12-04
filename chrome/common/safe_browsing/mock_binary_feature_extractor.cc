@@ -6,8 +6,8 @@
 
 namespace safe_browsing {
 
-MockBinaryFeatureExtractor::MockBinaryFeatureExtractor() {}
+MockBinaryFeatureExtractor::MockBinaryFeatureExtractor() = default;
 
-MockBinaryFeatureExtractor::~MockBinaryFeatureExtractor() {}
+MockBinaryFeatureExtractor::~MockBinaryFeatureExtractor() = default;
 
 }  // namespace safe_browsing

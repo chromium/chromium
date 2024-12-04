@@ -16,7 +16,7 @@ namespace extensions {
 class SpeechRecognitionPrivateApiTest
     : public SpeechRecognitionPrivateBaseTest {
  protected:
-  SpeechRecognitionPrivateApiTest() {}
+  SpeechRecognitionPrivateApiTest() = default;
   ~SpeechRecognitionPrivateApiTest() override = default;
   SpeechRecognitionPrivateApiTest(const SpeechRecognitionPrivateApiTest&) =
       delete;

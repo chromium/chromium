@@ -3193,7 +3193,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   has_fragment_precision_high_ =
       PrecisionMeetsSpecForHighpFloat(range[0], range[1], precision);
 
-  GLint viewport_params[4] = { 0 };
+  GLint viewport_params[4] = {};
   api()->glGetIntegervFn(GL_MAX_VIEWPORT_DIMS, viewport_params);
   viewport_max_width_ = viewport_params[0];
   viewport_max_height_ = viewport_params[1];
@@ -3688,8 +3688,7 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
     // hash. However, in practice, this seems to cause some tests to fail. See
     // https://crbug.com/963889.
     resources.HashFunction = +[](const char* data, size_t size) {
-      return base::legacy::CityHash64(
-          base::as_bytes(base::make_span(data, size)));
+      return base::legacy::CityHash64(base::as_bytes(base::span(data, size)));
     };
   } else {
     resources.HashFunction = nullptr;

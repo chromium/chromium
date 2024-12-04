@@ -635,9 +635,8 @@ std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
       (file_length > bytes_to_read) ? file_length - bytes_to_read : 0;
 
   std::vector<uint8_t> buffer(bytes_to_read);
-  return file.ReadAndCheck(offset, base::make_span(buffer))
-             ? buffer
-             : std::vector<uint8_t>();
+  return file.ReadAndCheck(offset, base::span(buffer)) ? buffer
+                                                       : std::vector<uint8_t>();
 }
 
 std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {

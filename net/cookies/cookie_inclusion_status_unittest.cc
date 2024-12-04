@@ -39,7 +39,9 @@ TEST(CookieInclusionStatusTest, ExcludeStatus) {
                        EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) {
       continue;
     }
-    CookieInclusionStatus status_one_reason(reason1);
+    CookieInclusionStatus status_one_reason =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            /*exclusions=*/{reason1});
     EXPECT_FALSE(status_one_reason.IsInclude());
     EXPECT_TRUE(status_one_reason.HasExclusionReason(reason1));
     EXPECT_TRUE(status_one_reason.HasOnlyExclusionReason(reason1));
@@ -75,7 +77,9 @@ TEST(CookieInclusionStatusTest,
       static_cast<int>(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
   CookieInclusionStatus::ExclusionReason reason1 =
       CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT;
-  const CookieInclusionStatus status_one_reason(reason1);
+  const CookieInclusionStatus status_one_reason =
+      CookieInclusionStatus::MakeFromReasonsForTesting(
+          /*exclusions=*/{reason1});
   ASSERT_FALSE(status_one_reason.IsInclude());
   ASSERT_TRUE(status_one_reason.HasOnlyExclusionReason(reason1));
 
@@ -206,7 +210,9 @@ TEST(CookieInclusionStatusTest, CheckEachWarningReason) {
 }
 
 TEST(CookieInclusionStatusTest, RemoveExclusionReason) {
-  CookieInclusionStatus status(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
+  CookieInclusionStatus status =
+      CookieInclusionStatus::MakeFromReasonsForTesting(
+          /*exclusions=*/{CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR});
   ASSERT_TRUE(
       status.HasExclusionReason(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR));
 
@@ -223,9 +229,10 @@ TEST(CookieInclusionStatusTest, RemoveExclusionReason) {
 }
 
 TEST(CookieInclusionStatusTest, RemoveWarningReason) {
-  CookieInclusionStatus status(
-      CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
-      CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
+  CookieInclusionStatus status =
+      CookieInclusionStatus::MakeFromReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR},
+          {CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE});
   EXPECT_TRUE(status.ShouldWarn());
   ASSERT_TRUE(status.HasWarningReason(
       CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE));

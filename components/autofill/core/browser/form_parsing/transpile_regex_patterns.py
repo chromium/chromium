@@ -242,7 +242,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
         if ids_with_the_same_patternrefs != []:
           other_id = ids_with_the_same_patternrefs[0]
           yield (f'constexpr auto {kPatterns(id, name, lang)} = '
-                 f'base::make_span({kPatterns(other_id, name, lang)});')
+                 f'base::span({kPatterns(other_id, name, lang)});')
         else:
           yield (f'constexpr MatchPatternRef {kPatterns(id, name, lang)}[] {{' +
                  f', '.join(

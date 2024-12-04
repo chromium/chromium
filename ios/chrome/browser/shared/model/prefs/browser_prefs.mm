@@ -130,11 +130,6 @@
 namespace {
 
 // Deprecated 09/2023.
-const char kObsoleteIosSettingsPromoAlreadySeen[] =
-    "ios.settings.promo_already_seen";
-const char kObsoleteIosSettingsSigninPromoDisplayedCount[] =
-    "ios.settings.signin_promo_displayed_count";
-// Deprecated 09/2023.
 // Synced boolean that indicates if a user has manually toggled the settings
 // associated with the PrivacySandboxSettings feature.
 inline constexpr char kPrivacySandboxManuallyControlled[] =
@@ -987,10 +982,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kIosParcelTrackingOptInPromptSwipedDown,
                                 false);
 
-  registry->RegisterBooleanPref(kObsoleteIosSettingsPromoAlreadySeen, false);
-  registry->RegisterIntegerPref(kObsoleteIosSettingsSigninPromoDisplayedCount,
-                                0);
-
   registry->RegisterBooleanPref(kPrivacySandboxManuallyControlled, false);
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
   history_sync::RegisterProfilePrefs(registry);
@@ -1213,8 +1204,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   invalidation::FCMInvalidationService::ClearDeprecatedPrefs(prefs);
 
   // Added 09/2023.
-  prefs->ClearPref(kObsoleteIosSettingsPromoAlreadySeen);
-  prefs->ClearPref(kObsoleteIosSettingsSigninPromoDisplayedCount);
   prefs->ClearPref(kPrivacySandboxManuallyControlled);
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];

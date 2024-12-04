@@ -73,19 +73,15 @@ AndroidAutofillClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-autofill::AutofillCrowdsourcingManager*
+autofill::AutofillCrowdsourcingManager&
 AndroidAutofillClient::GetCrowdsourcingManager() {
-  if (autofill::AutofillProvider::
-          is_crowdsourcing_manager_disabled_for_testing()) {
-    return nullptr;
-  }
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
     crowdsourcing_manager_ =
         std::make_unique<autofill::AutofillCrowdsourcingManager>(
             this, GetChannel(), GetLogManager());
   }
-  return crowdsourcing_manager_.get();
+  return *crowdsourcing_manager_;
 }
 
 autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
@@ -230,8 +226,7 @@ bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   NOTREACHED();
 }
 
-void AndroidAutofillClient::DidFillOrPreviewForm(
-    autofill::mojom::ActionPersistence action_persistence,
+void AndroidAutofillClient::DidFillForm(
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {}
 

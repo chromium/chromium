@@ -95,7 +95,8 @@ public class CloseAllTabsHelper {
         archiver.unarchiveAndRestoreTabs(
                 regularTabCreator,
                 TabModelUtils.convertTabListToListOfTabs(archivedTabModel),
-                /* updateTimestamp= */ true);
+                /* updateTimestamp= */ true,
+                /* areTabsBeingOpened= */ false);
         return previouslyArchivedTabIds;
     }
 

@@ -21,25 +21,11 @@ about:version template page
 <if expr="is_android or is_ios">
     <link rel="stylesheet" href="about_version_mobile.css">
 </if>
-<if expr="is_chromeos">
-    <link rel="stylesheet" href="chrome://resources/css/os_header.css">
-</if>
 
     <script type ="module" src="about_version.js"></script>
   </head>
 
   <body>
-<if expr="is_chromeos">
-    <div class="os-link-container-container" id="os-link-container" hidden>
-      <div class="os-link-container">
-        <span class="os-link-icon"></span>
-        <span aria-hidden="true" id="os-link-desc">$i18n{os-version-text1}</span>
-        $i18nRaw{os-version-link}
-        <span aria-hidden="true">$i18n{os-version-text2}</span>
-      </div>
-    </div>
-</if>
-
     <div id="outer">
       <div id="logo">
 <if expr="not is_android and not is_ios">
@@ -87,7 +73,7 @@ about:version template page
             <span>$i18n{cl}</span>
           </td>
         </tr>
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
         <tr>
           <td class="label">$i18n{os_name}</td>
           <td class="version" id="os_type">
@@ -96,15 +82,10 @@ about:version template page
 <if expr="is_android">
               <span>$i18n{os_version}</span>
 </if>
-<if expr="chromeos_lacros or is_win or is_macosx">
+<if expr="is_win or is_macosx">
               <span id="os_version"></span>
 </if>
             </span>
-<if expr="chromeos_lacros">
-            <button id="copy-os-content-to-clipboard" aria-label="$i18n{copy_label}">
-              <div id="copy-to-clipboard-icon"></div>
-            </button>
-</if>
           </td>
         </tr>
 </if>

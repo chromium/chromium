@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/viz/common/resources/peak_gpu_memory_callback.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
@@ -21,12 +22,11 @@ std::unique_ptr<viz::PeakGpuMemoryTracker> PeakGpuMemoryTrackerFactory::Create(
   return std::make_unique<PeakGpuMemoryTrackerImpl>(usage);
 }
 
-// static
-uint32_t PeakGpuMemoryTrackerImpl::next_sequence_number_ = 0;
-
 PeakGpuMemoryTrackerImpl::PeakGpuMemoryTrackerImpl(
     viz::PeakGpuMemoryTracker::Usage usage)
-    : usage_(usage) {
+    : usage_(usage),
+      sequence_num_(
+          viz::GetNextSequenceNumber(viz::SequenceLocation::kBrowserProcess)) {
   // Actually performs request to GPU service to begin memory tracking for
   // |sequence_number_|.
   auto* host =

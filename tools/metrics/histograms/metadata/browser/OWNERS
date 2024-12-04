@@ -6,4 +6,7 @@ ckitagawa@chromium.org
 # For Browser.Tabs.* histograms:
 joenotcharles@google.com
 
+# For BrowserRenderProcessHost.* histograms:
+gjc@google.com
+
 # For other histograms use chromium-metrics-reviews@google.com.

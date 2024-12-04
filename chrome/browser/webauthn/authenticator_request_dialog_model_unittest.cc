@@ -409,7 +409,7 @@ class FakeEnclaveController : public AuthenticatorRequestDialogModel::Observer {
         model_->SetStep(Step::kGPMEnterPin);
       }
     } else {
-      model_->SetStep(Step::kSelectSingleAccount);
+      model_->SetStep(Step::kSelectAccount);
     }
   }
 
@@ -541,8 +541,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 #else
       Step::kCableV2QRCode;
 #endif
-  [[maybe_unused]] const auto use_pk = Step::kPreSelectSingleAccount;
-  [[maybe_unused]] const auto use_pk_multi = Step::kPreSelectAccount;
+  [[maybe_unused]] const auto use_pk = Step::kPreSelectAccount;
   const auto qr = Step::kCableV2QRCode;
   const auto pconf = Step::kPhoneConfirmationSheet;
   const auto hero = Step::kSelectPriorityMechanism;
@@ -2423,7 +2422,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
     if (has_empty_allow_list) {
       EXPECT_EQ(model->step(), Step::kSelectPriorityMechanism);
     } else {
-      EXPECT_EQ(model->step(), Step::kPreSelectSingleAccount);
+      EXPECT_EQ(model->step(), Step::kPreSelectAccount);
     }
     task_environment()->RunUntilIdle();
 
@@ -3045,7 +3044,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(mech1.name, base::UTF8ToUTF16(*kUser1.name));
   EXPECT_EQ(mech1.short_name, base::UTF8ToUTF16(*kUser1.name));
   EXPECT_EQ(mech1.description,
-            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE));
+            l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY));
   EXPECT_EQ(mech1.icon, vector_icons::kPasskeyIcon);
   mech1.callback.Run();
   device::DiscoverableCredentialMetadata result =
@@ -3065,7 +3064,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
       model->mechanisms[1];
   EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kUser2.name));
   EXPECT_EQ(mech2.short_name, base::UTF8ToUTF16(*kUser2.name));
-  EXPECT_EQ(mech2.description, u"Use device sign-in");
+  EXPECT_EQ(mech2.description,
+            l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY));
   EXPECT_EQ(mech2.icon, vector_icons::kPasskeyIcon);
   mech2.callback.Run();
   result = account_preselected_callback.WaitForResult();

@@ -369,11 +369,6 @@ class ShoppingService : public KeyedService,
   // enabled country and locale.
   virtual bool IsMerchantViewerEnabled();
 
-  // This is a feature check for the "price tracking", which will return true
-  // if the user has the feature flag enabled or (if applicable) is in an
-  // enabled country and locale.
-  virtual bool IsCommercePriceTrackingEnabled();
-
   // This is a feature check for the "price insights", which will return true
   // if the user has the feature flag enabled, has MSBB enabled, and (if
   // applicable) is in an eligible country and locale. The value returned by

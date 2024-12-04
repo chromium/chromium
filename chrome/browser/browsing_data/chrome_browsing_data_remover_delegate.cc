@@ -1584,10 +1584,9 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
     should_clear_sync_account_settings_ = false;
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_);
-    base::flat_set<std::string> gaia_ids =
-        signin::GetAllGaiaIdsForKeyedPreferences(
-            identity_manager,
-            signin::AccountsInCookieJarInfo() /* empty_cookies */);
+    base::flat_set<GaiaId> gaia_ids = signin::GetAllGaiaIdsForKeyedPreferences(
+        identity_manager,
+        signin::AccountsInCookieJarInfo() /* empty_cookies */);
     if (syncer::SyncService* sync_service =
             SyncServiceFactory::GetForProfile(profile_);
         sync_service) {

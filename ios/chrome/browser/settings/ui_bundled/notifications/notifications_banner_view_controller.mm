@@ -142,7 +142,8 @@ bool TooNarrowForBanner(UIView* view) {
                        constant:-kContentWidthConstant],
   ]];
 
-  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -293,12 +294,6 @@ bool TooNarrowForBanner(UIView* view) {
   [self.modelDelegate didSelectItem:tableItem];
 }
 
-- (void)tableView:(UITableView*)tableView
-      willDisplayCell:(UITableViewCell*)cell
-    forRowAtIndexPath:(NSIndexPath*)indexPath {
-  cell.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-}
-
 #pragma mark - Private
 
 // Creates the table view.
@@ -361,7 +356,6 @@ bool TooNarrowForBanner(UIView* view) {
       lastRow ? kTableViewSeparatorInsetHide : kTableViewSeparatorInset;
   cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
   return cell;
 }
@@ -422,7 +416,7 @@ bool TooNarrowForBanner(UIView* view) {
   if (!_tableViewStyler) {
     _tableViewStyler = [[ChromeTableViewStyler alloc] init];
     _tableViewStyler.cellBackgroundColor =
-        [UIColor colorNamed:kPrimaryBackgroundColor];
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   }
   return _tableViewStyler;
 }

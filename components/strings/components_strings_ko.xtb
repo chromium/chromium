@@ -278,8 +278,8 @@
 <translation id="1473495410389165587">작성 지원 기능을 이용하려면 3개 이상의 단어를 입력하세요.</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">청소 서비스</translation>
-<translation id="1475299637784133125">브라우저 버전을 찾는다면 다음으로 이동하세요.</translation>
 <translation id="1476595624592550506">비밀번호 변경</translation>
+<translation id="1482372785911828880">매우 가늘게</translation>
 <translation id="1482879811280872320">사이클</translation>
 <translation id="1483493594462132177">보내기</translation>
 <translation id="1484449009683144042">실험용 AI 작성 보조 기능이며, 항상 정확하지는 않습니다.
@@ -1314,6 +1314,7 @@
 <translation id="3375754925484257129">Chrome 안전 확인 실행</translation>
 <translation id="3377144306166885718">서버에서 지원 중단된 TLS 버전을 사용했습니다.</translation>
 <translation id="3377188786107721145">정책 파싱 오류</translation>
+<translation id="3377642479079205807">가늘게</translation>
 <translation id="3378612801784846695">주제는 사용자의 최근 방문 기록을 기반으로 하며, 사이트에서 사용자의 신원을 보호하면서 개인 맞춤 광고를 표시하는 데 사용됩니다.</translation>
 <translation id="3380365263193509176">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="3380864720620200369">클라이언트 ID:</translation>
@@ -1419,7 +1420,6 @@
 <translation id="3552297013052089404">산세리프 글꼴</translation>
 <translation id="3558573058928565255">낮</translation>
 <translation id="3559897352860026926">관리자에게 <ph name="CLOUD_PROVIDER" /> 구성 설정을 확인해 달라고 요청하세요.</translation>
-<translation id="3560408312959371419">보호 조치 및 기기 내 사이트 데이터 추적을 위한 옵션</translation>
 <translation id="3560824484345057728">관련 사이트 보기</translation>
 <translation id="3566021033012934673">연결이 비공개로 설정되어 있지 않습니다.</translation>
 <translation id="3566336457819493938">215x315mm</translation>
@@ -2486,6 +2486,7 @@
 <translation id="5481682542063333508">작성 도움 제공</translation>
 <translation id="54817484435770891">유효한 주소 추가</translation>
 <translation id="5483838506518938965">준비 완료</translation>
+<translation id="5485100387355669506">매우 굵게</translation>
 <translation id="5485973315555778056">Cloud 머신</translation>
 <translation id="5488590678320979185">메모 만들기 버튼, Google Keep에서 빠르게 새 메모를 만들려면 활성화하세요.</translation>
 <translation id="5490432419156082418">주소 및 기타</translation>
@@ -2595,7 +2596,6 @@
 <translation id="5675809467256309336">댄스 및 일렉트로닉 음악</translation>
 <translation id="5675959228867414813">날짜별로 표시</translation>
 <translation id="567604591393105935">상거래 하단 시트가 절반 높이로 열림</translation>
-<translation id="5677928146339483299">차단됨</translation>
 <translation id="5678007133659493065">호일</translation>
 <translation id="5680642791693447368">스릴러, 범죄, 미스터리 영화</translation>
 <translation id="568292603005599551">이미지 X 위치</translation>
@@ -2655,7 +2655,6 @@
 <translation id="57838592816432529">음소거</translation>
 <translation id="5784606427469807560">카드 확인 중에 문제가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.</translation>
 <translation id="5785756445106461925">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 모양을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
 <translation id="5794065675298686371">가격 추적 알림 사용 설정</translation>
 <translation id="5800727402210090597">휴대전화 수리 및 서비스</translation>
@@ -2954,7 +2953,6 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 값이 잘못되었으므로 사용되지 않습니다.</translation>
 <translation id="6340739886198108203">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 스크린샷을 찍거나 녹화하지 않는 것이 좋습니다.</translation>
 <translation id="6341434961864773665">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에 업로드하지 않는 것이 좋습니다.}}</translation>
-<translation id="6344622098450209924">추적 보호</translation>
 <translation id="634500758737709758">경로</translation>
 <translation id="6348220984832452017">활성 버전</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
@@ -3670,6 +3668,7 @@
 <translation id="7599089013883397081">다운로드 시간 초과</translation>
 <translation id="7608583484192556132">이 설정, <ph name="BEGIN_LINK_1" />사이트 추천 광고<ph name="END_LINK_1" />, 내 <ph name="BEGIN_LINK_2" />쿠키 설정<ph name="END_LINK_2" />, 보고 있는 사이트의 광고 맞춤설정 여부 등 다양한 요인에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라질 수 있습니다. <ph name="BEGIN_LINK_3" />광고 개인 정보 보호 관리<ph name="END_LINK_3" />에 대해 자세히 알아보세요.</translation>
 <translation id="7610193165460212391">값(<ph name="VALUE" />)이 범위를 벗어났습니다.</translation>
+<translation id="761261689936461781">굵게</translation>
 <translation id="7613889955535752492">만료일: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 비밀번호를 확인하고 관리하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="7616645509853975347">관리자가 브라우저에 Chrome Enterprise 커넥터를 사용 설정했습니다. 커넥터가 내 데이터 중 일부에 액세스할 수 있습니다.</translation>
@@ -4143,6 +4142,7 @@
 <translation id="8449836157089738489">새로운 탭 그룹에서 모두 열기</translation>
 <translation id="84561192812921051">관리자는 프로필과 브라우저를 원격으로 변경하고, 보고를 통해 브라우저에 대한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">하단 시트가 닫혔습니다.</translation>
+<translation id="8456775115498700722">이제 <ph name="CARD_ISSUER_NAME" /> 계정이 Google Pay에 연결되어 있으므로 <ph name="CARD_ISSUER_NAME" /> 카드를 자동 완성할 수 있습니다.</translation>
 <translation id="8457125768502047971">무기한</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">사용 설정</translation>
@@ -4299,6 +4299,7 @@
 <translation id="8757526089434340176">Google Pay 쿠폰 이용 가능</translation>
 <translation id="8759274551635299824">만료된 카드입니다.</translation>
 <translation id="87601671197631245">이 사이트에서는 오래된 보안 설정을 사용하므로 개인정보(예: 비밀번호, 메시지 또는 신용카드)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
+<translation id="8763226176721243078"><ph name="CARD_ISSUER_NAME" /> 계정이 Google Pay에 연결되어 있으므로 이 카드를 자동 완성할 수 있습니다.</translation>
 <translation id="8763927697961133303">USB 기기</translation>
 <translation id="8763986294015493060">현재 열려 있는 시크릿 창 모두 닫기</translation>
 <translation id="8766943070169463815">보안 결제 사용자 인증 정보 승인 시트가 열림</translation>
@@ -4388,7 +4389,6 @@
 <translation id="893332455753468063">이름 추가</translation>
 <translation id="8942355029279167844">관리자가 <ph name="APP_NAME" /> 앱에서 제품 환경 개선을 위한 진단 데이터를 수집하도록 허용했습니다. 자세한 내용은 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="8943282376843390568">라임색</translation>
-<translation id="8944485226638699751">제한됨</translation>
 <translation id="8949410982325929394">말투</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">웹사이트에서 <ph name="REQUEST_TYPE" /> 액세스 권한을 요청했습니다. 웹사이트에서 액세스 권한을 요청하는 방식을 개선할 수 있도록 1분 길이의 설문조사에 참여해 주세요.</translation>
@@ -4409,7 +4409,6 @@
 <translation id="8987663052629670333">사진 인화 서비스</translation>
 <translation id="8987927404178983737">월</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">시스템 버전을 찾는다면 다음으로 이동하세요.</translation>
 <translation id="899688752321268742">사용자가 현재 기기를 사용 중인지 <ph name="URL" />에서 알고자 합니다.</translation>
 <translation id="8997023839087525404">서버에서 인증서 투명성 정책을 사용하여 공개되지 않은 인증서를 제시했습니다. 인증서 투명성 정책은 인증서가 신뢰할 수 있으며 공격자로부터 사용자를 보호하고 있음을 보장하기 위한 것으로 일부 인증서의 경우 필수사항입니다.</translation>
 <translation id="9000145382638074673">내 기기</translation>

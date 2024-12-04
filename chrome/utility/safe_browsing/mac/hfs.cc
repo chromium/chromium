@@ -287,7 +287,7 @@ HFSIterator::HFSIterator(ReadStream* stream)
       volume_header_() {
 }
 
-HFSIterator::~HFSIterator() {}
+HFSIterator::~HFSIterator() = default;
 
 bool HFSIterator::Open() {
   if (stream_->Seek(1024, SEEK_SET) != 1024)

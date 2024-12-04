@@ -27,7 +27,9 @@ class VectorWStream : public SkWStream {
 
   bool write(const void* buffer, size_t size) override {
     DCHECK_LE(size, std::numeric_limits<wtf_size_t>::max());
-    dst_->Append((const unsigned char*)buffer, static_cast<wtf_size_t>(size));
+    // SAFETY: Skia encoders guarantees `buffer` and `size` are safe.
+    dst_->AppendSpan(UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<const unsigned char*>(buffer), size)));
     return true;
   }
 

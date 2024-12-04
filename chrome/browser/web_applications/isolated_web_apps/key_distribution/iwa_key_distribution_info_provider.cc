@@ -9,10 +9,12 @@
 #include "base/base64.h"
 #include "base/containers/map_util.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 
 namespace web_app {
@@ -26,18 +28,16 @@ IwaKeyDistributionInfoProvider::KeyRotations& GetDevModeKeyRotationData() {
 }
 
 base::expected<IwaKeyDistributionInfoProvider::KeyRotations,
-               IwaKeyDistributionInfoProvider::ComponentUpdateError>
+               IwaComponentUpdateError>
 LoadKeyDistributionDataImpl(const base::FilePath& file_path) {
   std::string key_distribution_data;
   if (!base::ReadFileToString(file_path, &key_distribution_data)) {
-    return base::unexpected(
-        IwaKeyDistributionInfoProvider::ComponentUpdateError::kFileNotFound);
+    return base::unexpected(IwaComponentUpdateError::kFileNotFound);
   }
 
   IwaKeyDistribution key_distribution;
   if (!key_distribution.ParseFromString(key_distribution_data)) {
-    return base::unexpected(IwaKeyDistributionInfoProvider::
-                                ComponentUpdateError::kProtoParsingFailure);
+    return base::unexpected(IwaComponentUpdateError::kProtoParsingFailure);
   }
 
   IwaKeyDistributionInfoProvider::KeyRotations key_rotations;
@@ -53,8 +53,7 @@ LoadKeyDistributionDataImpl(const base::FilePath& file_path) {
       std::optional<std::vector<uint8_t>> decoded_public_key =
           base::Base64Decode(kr_info.expected_key());
       if (!decoded_public_key) {
-        return base::unexpected(IwaKeyDistributionInfoProvider::
-                                    ComponentUpdateError::kMalformedBase64Key);
+        return base::unexpected(IwaComponentUpdateError::kMalformedBase64Key);
       }
       key_rotations.emplace(web_bundle_id,
                             IwaKeyDistributionInfoProvider::KeyRotationInfo(
@@ -112,8 +111,18 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
           base::FindOrNull(GetDevModeKeyRotationData(), web_bundle_id)) {
     return kr_info;
   }
-  return data_ ? base::FindOrNull(data_->key_rotations, web_bundle_id)
-               : nullptr;
+
+  if (data_) {
+    base::UmaHistogramEnumeration(kIwaKeyRotationInfoSource,
+                                  data_->is_preloaded
+                                      ? KeyRotationInfoSource::kPreloaded
+                                      : KeyRotationInfoSource::kDownloaded);
+    return base::FindOrNull(data_->key_rotations, web_bundle_id);
+  }
+
+  base::UmaHistogramEnumeration(kIwaKeyRotationInfoSource,
+                                KeyRotationInfoSource::kNone);
+  return nullptr;
 }
 
 void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
@@ -122,7 +131,7 @@ void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
     bool is_preloaded) {
   if (data_ && data_->version > component_version) {
     DispatchComponentUpdateError(component_version,
-                                 ComponentUpdateError::kStaleVersion);
+                                 IwaComponentUpdateError::kStaleVersion);
     return;
   }
   // `base::Unretained(this)` is fine as this is a singleton that never goes
@@ -143,17 +152,17 @@ IwaKeyDistributionInfoProvider::~IwaKeyDistributionInfoProvider() = default;
 void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
     const base::Version& component_version,
     bool is_preloaded,
-    base::expected<KeyRotations, ComponentUpdateError> result) {
+    base::expected<KeyRotations, IwaComponentUpdateError> result) {
   if (data_ && data_->version > component_version) {
     // This might happen if two tasks with different versions have been posted
     // to the task runner in `LoadKeyDistributionData()`.
     DispatchComponentUpdateError(component_version,
-                                 ComponentUpdateError::kStaleVersion);
+                                 IwaComponentUpdateError::kStaleVersion);
     return;
   }
 
   ASSIGN_OR_RETURN(auto key_rotations, std::move(result),
-                   [&](ComponentUpdateError error) {
+                   [&](IwaComponentUpdateError error) {
                      DispatchComponentUpdateError(component_version, error);
                    });
 
@@ -206,16 +215,27 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
-    const base::Version& component_version,
+    const base::Version& version,
     bool is_preloaded) const {
+  if (data_ && version.IsValid()) {
+    // Custom key rotations via chrome://web-app-internals (indicated by an
+    // invalid version) should not be logged.
+    base::UmaHistogramEnumeration(kIwaKeyDistributionComponentUpdateSource,
+                                  data_->is_preloaded
+                                      ? IwaComponentUpdateSource::kPreloaded
+                                      : IwaComponentUpdateSource::kDownloaded);
+  }
+
   for (auto& observer : observers_) {
-    observer.OnComponentUpdateSuccess(component_version, is_preloaded);
+    observer.OnComponentUpdateSuccess(version, is_preloaded);
   }
 }
 
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateError(
     const base::Version& component_version,
-    ComponentUpdateError error) const {
+    IwaComponentUpdateError error) const {
+  base::UmaHistogramEnumeration(kIwaKeyDistributionComponentUpdateError, error);
+
   for (auto& observer : observers_) {
     observer.OnComponentUpdateError(component_version, error);
   }

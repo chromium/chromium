@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +41,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -55,7 +59,8 @@ public class PriceChangeModuleBuilderUnitTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private Callback<ModuleProvider> mBuildCallback;
-    @Mock FaviconHelper.Natives mFaviconHelperJniMock;
+    @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
 
     private PriceChangeModuleBuilder mModuleBuilder;
 
@@ -65,6 +70,8 @@ public class PriceChangeModuleBuilderUnitTest {
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mProfile.isOffTheRecord()).thenReturn(false);
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isPriceAnnotationsEnabled(anyLong());
 
         mModuleBuilder =
                 new PriceChangeModuleBuilder(
@@ -90,6 +97,7 @@ public class PriceChangeModuleBuilderUnitTest {
     @Test
     @SmallTest
     public void testBuildModule_NotEligible() {
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isPriceAnnotationsEnabled(anyLong());
         assertFalse(PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile));
 
         assertFalse(mModuleBuilder.build(mModuleDelegate, mBuildCallback));

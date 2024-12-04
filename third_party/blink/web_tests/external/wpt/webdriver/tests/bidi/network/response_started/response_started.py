@@ -605,7 +605,7 @@ async def test_destination_initiator(
         context=top_context["context"], url=page_url, wait="complete"
     )
 
-    assert len(events) == 5
+    assert len(events) == 6
 
     def assert_initiator_destination(url, initiator_type, destination):
         event = next(e for e in events if url in e["request"]["url"])
@@ -617,11 +617,12 @@ async def test_destination_initiator(
             },
         )
 
-    assert_initiator_destination(PAGE_INITIATOR["HTML"], "browser", "document")
+    assert_initiator_destination(PAGE_INITIATOR["HTML"], None, "")
     assert_initiator_destination(PAGE_INITIATOR["SCRIPT"], "script", "script")
     assert_initiator_destination(PAGE_INITIATOR["STYLESHEET"], "link", "style")
     assert_initiator_destination(PAGE_INITIATOR["IMAGE"], "img", "image")
     assert_initiator_destination(PAGE_INITIATOR["BACKGROUND"], "css", "image")
+    assert_initiator_destination(PAGE_EMPTY_HTML, "iframe", "iframe")
 
     # Perform an additional fetch, and check its destination.
     on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)

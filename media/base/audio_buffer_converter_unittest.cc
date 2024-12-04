@@ -113,13 +113,13 @@ TEST_F(AudioBufferConverterTest, Upsample) {
 }
 
 // Test resampling a buffer smaller than the SincResampler's kernel size.
-TEST_F(AudioBufferConverterTest, ResampleTinyBuffer) {
+TEST_F(AudioBufferConverterTest, Resample_TinyBuffer) {
   AddInput(MakeTestBuffer(48000, CHANNEL_LAYOUT_STEREO, 2,
                           SincResampler::kMinKernelSize - 1));
   ConsumeAllOutput();
 }
 
-TEST_F(AudioBufferConverterTest, ResampleDifferingBufferSizes) {
+TEST_F(AudioBufferConverterTest, Resample_DifferingBufferSizes) {
   const int input_sample_rate = 48000;
   AddInput(MakeTestBuffer(
       input_sample_rate, kOutChannelLayout, kOutChannelCount, 100));
@@ -155,25 +155,25 @@ TEST_F(AudioBufferConverterTest, ResampleAndRemix) {
   ConsumeAllOutput();
 }
 
-TEST_F(AudioBufferConverterTest, ConfigChangeSampleRate) {
+TEST_F(AudioBufferConverterTest, ConfigChange_SampleRate) {
   AddInput(MakeTestBuffer(48000, kOutChannelLayout, kOutChannelCount, 512));
   AddInput(MakeTestBuffer(44100, kOutChannelLayout, kOutChannelCount, 512));
   ConsumeAllOutput();
 }
 
-TEST_F(AudioBufferConverterTest, ConfigChangeChannelLayout) {
+TEST_F(AudioBufferConverterTest, ConfigChange_ChannelLayout) {
   AddInput(MakeTestBuffer(kOutSampleRate, CHANNEL_LAYOUT_STEREO, 2, 512));
   AddInput(MakeTestBuffer(kOutSampleRate, CHANNEL_LAYOUT_MONO, 1, 512));
   ConsumeAllOutput();
 }
 
-TEST_F(AudioBufferConverterTest, ConfigChangeSampleRateAndChannelLayout) {
+TEST_F(AudioBufferConverterTest, ConfigChange_SampleRateAndChannelLayout) {
   AddInput(MakeTestBuffer(44100, CHANNEL_LAYOUT_STEREO, 2, 512));
   AddInput(MakeTestBuffer(48000, CHANNEL_LAYOUT_MONO, 1, 512));
   ConsumeAllOutput();
 }
 
-TEST_F(AudioBufferConverterTest, ConfigChangeMultiple) {
+TEST_F(AudioBufferConverterTest, ConfigChange_Multiple) {
   AddInput(MakeTestBuffer(44100, CHANNEL_LAYOUT_STEREO, 2, 512));
   AddInput(MakeTestBuffer(48000, CHANNEL_LAYOUT_MONO, 1, 512));
   AddInput(MakeTestBuffer(44100, CHANNEL_LAYOUT_5_1, 6, 512));

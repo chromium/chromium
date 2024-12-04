@@ -467,14 +467,6 @@ extern int GetLensOverlayMaxSignificantRegions();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double GetLensOverlayPostSelectionComparisonThreshold();
 
-// The radius of the live page / underlying tab contents blur in pixels.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetLensOverlayLivePageBlurRadiusPixels();
-
-// Enables our custom blur layer instead of that built into the ui::Layer.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetLensOverlayUseCustomBlur();
-
 // The radius of blur in pixels for the custom blur. This is separate from
 // LivePageBlurRadiusPixels because the custom blur applies a lower blur since
 // it is being applied to a downsampled image.
@@ -579,6 +571,10 @@ extern std::string GetLensOverlayTranslateEndpointURL();
 // Returns whether to show the ghost loader in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShowContextualSearchboxGhostLoaderLoadingState();
+
+// The timeout set for autocomplete for lens searchboxes.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern base::TimeDelta GetLensSearchboxAutocompleteTimeout();
 
 // The list of source languages supported by Lens.
 COMPONENT_EXPORT(LENS_FEATURES)

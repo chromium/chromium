@@ -1041,7 +1041,6 @@ public class ExternalNavigationHandler {
         // Ensure the navigation was started with a user gesture so that inactive pages can't launch
         // apps unexpectedly, unless we trust the calling app for a CCT/TWA.
         if (initialState.isRendererInitiated && !initialState.hasUserGesture) {
-            if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
             if (debug()) Log.i(TAG, "Navigation chain started without a gesture.");
             return NavigationChainResult.REQUIRES_PROMPT;
         }

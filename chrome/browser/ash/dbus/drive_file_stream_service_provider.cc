@@ -14,7 +14,7 @@
 
 namespace ash {
 
-DriveFileStreamServiceProvider::DriveFileStreamServiceProvider() {}
+DriveFileStreamServiceProvider::DriveFileStreamServiceProvider() = default;
 
 DriveFileStreamServiceProvider::~DriveFileStreamServiceProvider() = default;
 

@@ -99,6 +99,12 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type);
 
+// Returns a suggestion list with a BNPL suggestion added at the end (but
+// before footer items) of the given suggestion list `current_suggestions`.
+// If no BNPL chip can be added, an empty list will be returned.
+std::vector<Suggestion> MaybeCreateNewSuggestionsWithBnpl(
+    const base::span<const Suggestion>& current_suggestions);
+
 // Generates touch-to-fill suggestions for all available credit cards to be
 // used in the bottom sheet. Benefits information, containing instrument IDs and
 // issuer IDs, will be added to the `metadata_logging_context` and assigned to
@@ -139,6 +145,12 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
 bool IsCardSuggestionAcceptable(const CreditCard& card,
                                 const AutofillClient& client);
 
+// Returns `true` if the item at `line_number` is a credit card footer
+// suggestion. For separators, the result is that of the next item.
+bool IsCreditCardFooterSuggestion(
+    const base::span<const Suggestion>& suggestions,
+    size_t line_number);
+
 // Exposes `GetOrderedCardsToSuggest` in tests.
 std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     const AutofillClient& client,
@@ -159,6 +171,13 @@ Suggestion CreateCreditCardSuggestionForTest(
     bool card_linked_offer_available,
     base::optional_ref<autofill_metrics::CardMetadataLoggingContext>
         metadata_logging_context = std::nullopt);
+
+// Exposes `GetCreditCardFooterSuggestions` in tests.
+std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
+    bool should_show_scan_credit_card,
+    bool should_show_cards_from_account,
+    bool is_autofilled,
+    bool with_gpay_logo);
 
 // Exposes `ShouldShowVirtualCardOption` in tests.
 bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,

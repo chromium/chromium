@@ -256,8 +256,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       std::vector<device::AuthenticatorGetAssertionResponse> responses;
 
       for (const auto& info : infos) {
-        static const uint8_t kAppParam[32] = {0};
-        static const uint8_t kSignatureCounter[4] = {0};
+        static const uint8_t kAppParam[32] = {};
+        static const uint8_t kSignatureCounter[4] = {};
         device::AuthenticatorData auth_data(kAppParam, 0 /* flags */,
                                             kSignatureCounter, std::nullopt);
         device::AuthenticatorGetAssertionResponse response(
@@ -321,8 +321,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       std::vector<device::AuthenticatorGetAssertionResponse> responses;
 
       for (const auto& info : infos) {
-        static const uint8_t kAppParam[32] = {0};
-        static const uint8_t kSignatureCounter[4] = {0};
+        static const uint8_t kAppParam[32] = {};
+        static const uint8_t kSignatureCounter[4] = {};
         device::AuthenticatorData auth_data(kAppParam, 0 /* flags */,
                                             kSignatureCounter, std::nullopt);
         device::AuthenticatorGetAssertionResponse response(

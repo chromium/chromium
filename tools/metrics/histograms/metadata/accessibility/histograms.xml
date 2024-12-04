@@ -1988,16 +1988,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.PdfOcr.MediaApp.MostDetectedLanguageInOcrData"
-    enum="LocaleCodeISO639" expires_after="2025-06-30">
-  <owner>kyungjunlee@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the language that is detected most in each OCR data when MediaApp
-    (i.e. AXMediaAppUntrustedHandler) receives the OCR data from the OCR model.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.PdfOcr.MediaApp.PdfLoaded" enum="BooleanExists"
     expires_after="2025-06-30">
   <owner>nektar@chromium.org</owner>
@@ -2016,16 +2006,6 @@ even if they fit the naming pattern. -->
     Records the reading progression of a11y users in OCRed content in MediaApp
     in percentage. The reading progression (RP) is calculated with the following
     formula: RP = greatest visited page number / page count * 100.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.PdfOcr.MostDetectedLanguageInOcrData2"
-    enum="LocaleCodeISO639" expires_after="2025-06-30">
-  <owner>kyungjunlee@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the language that is detected most in each OCR data when a PDF
-    accessibility tree receives the OCR data from the OCR model.
   </summary>
 </histogram>
 
@@ -2899,6 +2879,16 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the number of lines that OCR recognized for an image sent from PDF.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF"
+    enum="LocaleCodeISO639" expires_after="2025-12-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the language that is detected most when OCR is performed on a PDF
+    page.
   </summary>
 </histogram>
 

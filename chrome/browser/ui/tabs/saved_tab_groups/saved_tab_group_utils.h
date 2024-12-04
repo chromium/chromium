@@ -155,6 +155,9 @@ class SavedTabGroupUtils {
 
   // Returns true if the sync setting is on for saved tab groups.
   static bool AreSavedTabGroupsSyncedForProfile(Profile* profile);
+
+  // Returns true if shared tab groups are supported.
+  static bool SupportsSharedTabGroups();
 };
 
 }  // namespace tab_groups

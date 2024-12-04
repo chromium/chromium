@@ -120,6 +120,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     bool discard_output = false;
     std::optional<int> qp;
     uint32_t frame_id;
+    base::TimeDelta timestamp;
   };
 
   // Encoder state.
@@ -231,6 +232,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // EncodeOutput needs to be copied into a BitstreamBufferRef as a FIFO.
   base::circular_deque<std::unique_ptr<EncodeOutput>> encoder_output_queue_;
 
+  // True if the last ProcessInput() returns MF_E_NOTACCEPTING.
+  bool has_not_accepted_sample_ = false;
+
   // Counter of inputs which is used to assign temporal layer indexes
   // according to the corresponding layer pattern. Reset for every key frame.
   uint32_t input_since_keyframe_count_ = 0;
@@ -275,6 +279,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Video encoder info that includes accelerator name, QP validity, etc.
   VideoEncoderInfo encoder_info_;
+  bool encoder_info_sent_ = false;
 
   ComMFActivate activate_;
   ComMFTransform encoder_;
@@ -340,6 +345,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Max supported framerate and resolution combinations.
   std::vector<FramerateAndResolution> max_framerate_and_resolutions_;
+
+  // Min supported resolution.
+  gfx::Size min_resolution_;
 
   bool encoder_produces_svc_spec_compliant_bitstream_ = false;
 

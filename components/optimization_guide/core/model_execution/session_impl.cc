@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
+#include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -491,6 +492,7 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
   on_device_state_->current_response += chunk->text;
   on_device_state_->num_unchecked_response_tokens++;
+  on_device_state_->num_response_tokens++;
 
   if (HasRepeatingSuffix(on_device_state_->current_response)) {
     // If a repeat is detected, halt the response, and cancel/finish early.
@@ -509,9 +511,10 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     return;
   }
 
-  uint32_t interval = on_device_state_->opts.safety_checker->TokenInterval();
-  if (interval == 0 ||
-      on_device_state_->num_unchecked_response_tokens < interval) {
+  if (!on_device_state_->opts.safety_checker->safety_cfg()
+           .CanCheckPartialOutput(
+               on_device_state_->num_response_tokens,
+               on_device_state_->num_unchecked_response_tokens)) {
     // Not enough new data to be worth re-evaluating yet.
     return;
   }
@@ -677,8 +680,10 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   std::string safe_response = on_device_state_->current_response.substr(
       0, on_device_state_->latest_safe_raw_output.length);
   on_device_state_->MutableLoggedResponse()->set_output_string(safe_response);
+  on_device_state_->latest_response_pos =
+      on_device_state_->latest_safe_raw_output.length;
   on_device_state_->opts.adapter->ParseResponse(
-      *last_message_, safe_response,
+      *last_message_, safe_response, on_device_state_->latest_response_pos,
       base::BindOnce(&SessionImpl::OnParsedResponse,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
                      is_complete));
@@ -934,6 +939,7 @@ void SessionImpl::OnDeviceState::ResetRequestState() {
   receiver.reset();
   callback.Reset();
   current_response.clear();
+  latest_response_pos = 0;
   start = base::TimeTicks();
   histogram_logger.reset();
   log_ai_data_request.reset();

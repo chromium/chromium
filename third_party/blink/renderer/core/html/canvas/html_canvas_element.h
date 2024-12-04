@@ -182,6 +182,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void DoDeferredPaintInvalidation();
 
+  void InitializeLayerWithCSSProperties(cc::Layer* layer) override;
   void PreFinalizeFrame() override;
   void PostFinalizeFrame(FlushReason) override;
 
@@ -225,7 +226,6 @@ class CORE_EXPORT HTMLCanvasElement final
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
   bool IsPrinting() const override;
-  void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality) override;
   bool IsHibernating() const override;
   void SetTransferToGPUTextureWasInvoked() override;
   bool TransferToGPUTextureWasInvoked() override;
@@ -433,6 +433,11 @@ class CORE_EXPORT HTMLCanvasElement final
   mutable intptr_t externally_allocated_memory_;
 
   scoped_refptr<StaticBitmapImage> transparent_image_;
+
+  // Paint flags set based on CSS properties, which must be propagated to the
+  // cc::Layer.
+  cc::PaintFlags::FilterQuality filter_quality_ =
+      cc::PaintFlags::FilterQuality::kLow;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };

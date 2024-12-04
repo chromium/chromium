@@ -17,9 +17,7 @@
 
 namespace arc {
 
-// This class provides API to use mojo connection.
-// For ash-chrome, it connects to ARC. For lacros-chrome, it connects to
-// ash-chrome which forwards to ARC.
+// This class provides API to use mojo connection, which connects to ARC.
 class ArcIntentHelperMojoDelegate {
  public:
   virtual ~ArcIntentHelperMojoDelegate() = default;
@@ -29,9 +27,13 @@ class ArcIntentHelperMojoDelegate {
   using ActivityName = internal::ActivityIconLoader::ActivityName;
 
   // Following structs basically refer to //ash/components/arc/mojom.
-  // Convert arc::mojom and crosapi::mojom into common structs available from
-  // both ash and lacros.
+  // Convert arc::mojom into general structs.
+  //
   // Some unnecessary parameters are dropped here.
+  //
+  // TODO(crbug.com/381270283): it might make sense to remove this intermediate
+  // struct to avoid unnecessary copies, but it's in the scope of the bigger
+  // refactory.
 
   // Describes an intent.
   // See //ash/components/arc/mojom/intent_helper.mojom for more details.

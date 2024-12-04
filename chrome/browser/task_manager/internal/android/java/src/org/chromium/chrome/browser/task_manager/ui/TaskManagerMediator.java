@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.task_manager.ui;
 
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.ALL_COLUMN_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_KILLABLE;
@@ -30,6 +31,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -40,7 +43,6 @@ class TaskManagerMediator {
     private final int mRefreshTimeMillis;
     private final TaskManagerServiceBridge mBridge = new TaskManagerServiceBridge();
     private TaskManagerServiceBridge.ObserverHandle mObserverHandle;
-    private final PropertyKey[] mColumnKeys;
 
     private final PropertyModel mHeader;
     // The list containing the properties representing tasks. Sorted by task id.
@@ -56,19 +58,19 @@ class TaskManagerMediator {
      * @param refreshTimeMillis How often the model should be refreshed.
      * @param header The model for the header. The model must accept COLUMNS as a key.
      * @param tasks The model for tasks.
-     * @param columnKeys The columns to be updated. TASK_ID must not be set.
+     * @param initialColumnKeys The initial columns to be shown. Must be a subsequence of
+     *     ALL_COLUMN_KEYS.
      */
     TaskManagerMediator(
             int refreshTimeMillis,
             PropertyModel header,
             ModelList tasks,
-            PropertyKey... columnKeys) {
+            PropertyKey... initialColumnKeys) {
         mRefreshTimeMillis = refreshTimeMillis;
         mHeader = header;
         mTasks = tasks;
-        mColumnKeys = columnKeys;
 
-        mHeader.set(COLUMNS, columnKeys);
+        mHeader.set(COLUMNS, initialColumnKeys);
         mHeader.set(SORT_DESCRIPTOR, null);
     }
 
@@ -79,7 +81,7 @@ class TaskManagerMediator {
             // TODO(crbug.com/380154740): Update only the refreshType when columns are
             // added/removed.
             @RefreshType int refreshType = 0;
-            for (PropertyKey columnKey : mColumnKeys) {
+            for (PropertyKey columnKey : ALL_COLUMN_KEYS) {
                 refreshType |= getRequiredRefreshType(columnKey);
             }
             mObserverHandle = mBridge.addObserver(tmObserver, mRefreshTimeMillis, refreshType);
@@ -152,6 +154,40 @@ class TaskManagerMediator {
         }
     }
 
+    /**
+     * Toggles the state of whether the column is filtered or not. It will not filter out all the
+     * columns.
+     *
+     * @return Whether the request was fulfilled.
+     */
+    boolean toggleColumnFiltering(PropertyKey columnKey) {
+        HashSet<PropertyKey> keysToSelect = new HashSet<>(List.of(mHeader.get(COLUMNS)));
+        if (keysToSelect.contains(columnKey)) {
+            keysToSelect.remove(columnKey);
+        } else {
+            keysToSelect.add(columnKey);
+        }
+        // Ensure at least one column is visible at any given time.
+        if (keysToSelect.isEmpty()) {
+            return false;
+        }
+
+        PropertyKey[] newKeys = new PropertyKey[keysToSelect.size()];
+        int i = 0;
+        // Keep the ordering the same as ALL_COLUMN_KEYS.
+        for (PropertyKey key : ALL_COLUMN_KEYS) {
+            if (keysToSelect.contains(key)) {
+                newKeys[i++] = key;
+            }
+        }
+        mHeader.set(COLUMNS, newKeys);
+
+        // TODO(crbug.com/380165957): Consider stopping getting task properties for the keys that
+        // are not in newKeys.
+
+        return true;
+    }
+
     private @RefreshType int getRequiredRefreshType(PropertyKey columnKey) {
         if (columnKey == TASK_NAME) {
             return 0;
@@ -168,7 +204,7 @@ class TaskManagerMediator {
     private ListItem createTaskModel(long taskId) {
         PropertyKey[] keys =
                 PropertyModel.concatKeys(
-                        mColumnKeys, new PropertyKey[] {TASK_ID, IS_SELECTED, IS_KILLABLE});
+                        ALL_COLUMN_KEYS, new PropertyKey[] {TASK_ID, IS_SELECTED, IS_KILLABLE});
         return new ListItem(
                 RowType.TASK,
                 new PropertyModel.Builder(keys)
@@ -181,7 +217,7 @@ class TaskManagerMediator {
     // TODO(crbug.com/380165957): Confirm pid and task name never change and stop
     // refreshing them.
     private void updateTaskModel(ListItem task, long taskId) {
-        for (PropertyKey columnKey : mColumnKeys) {
+        for (PropertyKey columnKey : ALL_COLUMN_KEYS) {
             if (columnKey == TASK_NAME) {
                 task.model.set(TASK_NAME, mBridge.getTitle(taskId));
             } else if (columnKey == MEMORY_FOOTPRINT) {

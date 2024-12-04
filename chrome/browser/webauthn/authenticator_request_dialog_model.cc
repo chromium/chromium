@@ -21,13 +21,17 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace {
@@ -84,6 +88,46 @@ content::WebContents* GetWebContentsFromFrameHostId(
 AUTHENTICATOR_EVENTS
 #undef AUTHENTICATOR_REQUEST_EVENT_0
 #undef AUTHENTICATOR_REQUEST_EVENT_1
+
+// static
+std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
+    device::AuthenticatorType type,
+    const std::optional<std::string>& phone_name) {
+  if (type == device::AuthenticatorType::kPhone) {
+    return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
+                                      base::UTF8ToUTF16(*phone_name));
+  }
+  int message;
+  const bool gpm_enabled =
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
+  switch (type) {
+    case device::AuthenticatorType::kWinNative:
+      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
+                            : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
+      break;
+    case device::AuthenticatorType::kTouchID:
+      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW
+                            : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
+      break;
+    case device::AuthenticatorType::kICloudKeychain:
+      // TODO(crbug.com/40265798): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
+      // third party providers.
+      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
+                            : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
+      break;
+    case device::AuthenticatorType::kEnclave:
+      CHECK(gpm_enabled);
+      message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
+      break;
+    case device::AuthenticatorType::kOther:
+      // "Other" is USB security keys and the virtual authenticator.
+      message = IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY;
+      break;
+    default:
+      message = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
+  }
+  return l10n_util::GetStringUTF16(message);
+}
 
 AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
     content::RenderFrameHost* render_frame_host)
@@ -252,9 +296,7 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kResidentCredentialConfirmation,
        "kResidentCredentialConfirmation"},
       {Step::kSelectAccount, "kSelectAccount"},
-      {Step::kSelectSingleAccount, "kSelectSingleAccount"},
       {Step::kPreSelectAccount, "kPreSelectAccount"},
-      {Step::kPreSelectSingleAccount, "kPreSelectSingleAccount"},
       {Step::kSelectPriorityMechanism, "kSelectPriorityMechanism"},
       {Step::kGPMChangePin, "kGPMChangePin"},
       {Step::kGPMCreatePin, "kGPMCreatePin"},

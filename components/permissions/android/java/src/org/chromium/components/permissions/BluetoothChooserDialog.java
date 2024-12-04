@@ -35,7 +35,7 @@ import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.PermissionCallback;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.util.ColorUtils;
@@ -388,9 +388,8 @@ public class BluetoothChooserDialog
         return false;
     }
 
-    private NoUnderlineClickableSpan createLinkSpan(@LinkType int linkType) {
-        return new NoUnderlineClickableSpan(
-                mContext, (view) -> onBluetoothLinkClick(view, linkType));
+    private ChromeClickableSpan createLinkSpan(@LinkType int linkType) {
+        return new ChromeClickableSpan(mContext, (view) -> onBluetoothLinkClick(view, linkType));
     }
 
     private void onBluetoothLinkClick(View view, @LinkType int linkType) {

@@ -1,9 +1,3 @@
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -243,9 +237,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 
   source->AddString("acceptedPaths",
                     allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kPolicyResources, kPolicyResourcesSize),
-      IDR_POLICY_POLICY_HTML);
+  webui::SetupWebUIDataSource(source, kPolicyResources, IDR_POLICY_POLICY_HTML);
 
   webui::EnableTrustedTypesCSP(source);
 }

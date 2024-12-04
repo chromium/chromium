@@ -145,7 +145,7 @@ class DesksClient::LaunchPerformanceTracker
 
   LaunchPerformanceTracker(const LaunchPerformanceTracker&) = delete;
   LaunchPerformanceTracker& operator=(const LaunchPerformanceTracker&) = delete;
-  ~LaunchPerformanceTracker() override {}
+  ~LaunchPerformanceTracker() override = default;
 
   // Removes window ID from tracked set because the window has been launched.
   // app_restore::AppRestoreInfo::Observer:

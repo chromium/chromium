@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 
 #include <string>
@@ -77,13 +72,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelReadingListResources,
-                      kSidePanelReadingListResourcesSize),
-      IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kSidePanelReadingListResources,
+                              IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
+  source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 ReadingListUI::~ReadingListUI() = default;

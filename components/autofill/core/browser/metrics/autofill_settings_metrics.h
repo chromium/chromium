@@ -17,8 +17,7 @@ enum class AutofillPreferenceSetter {
   kUnknown = 0,
   // The pref was set by the user.
   kUserSetting = 1,
-  // ChromeOS only. The pref is set by a standalone browser (lacros).
-  kStandaloneBrowser = 2,
+  // kStandaloneBrowser = 2,  // Removed. No longer used.
   // The pref was set by an extension.
   kExtension = 3,
   // The pref was set by the custodian of the (supervised) user.

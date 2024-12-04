@@ -2347,7 +2347,13 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       ScriptForbiddenScope::AllowUserAgentScript allow_script;
       base::AutoReset<DocumentLifecycle::LifecycleState> saved_target_state(
           &target_state_, DocumentLifecycle::kUninitialized);
-      needs_to_repeat_lifecycle = RunResizeObserverSteps(target_state);
+
+      ForAllNonThrottledLocalFrameViews(
+          [&needs_to_repeat_lifecycle,
+           &target_state](LocalFrameView& frame_view) {
+            bool result = frame_view.RunResizeObserverSteps(target_state);
+            needs_to_repeat_lifecycle = needs_to_repeat_lifecycle || result;
+          });
     }
     // Only run the rest of the steps here if resize observer is done.
     if (needs_to_repeat_lifecycle)
@@ -2473,12 +2479,7 @@ bool LocalFrameView::RunResizeObserverSteps(
   bool re_run_lifecycles =
       engine.UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift();
 
-  ForAllNonThrottledLocalFrameViews(
-      [&re_run_lifecycles](LocalFrameView& frame_view) {
-        bool result = frame_view.NotifyResizeObservers();
-        re_run_lifecycles = re_run_lifecycles || result;
-      });
-  return re_run_lifecycles;
+  return NotifyResizeObservers() || re_run_lifecycles;
 }
 
 void LocalFrameView::ClearResizeObserverLimit() {

@@ -67,8 +67,7 @@ const std::string GetTransferUrl() {
 
 void AddResources(content::WebUIDataSource* source) {
   source->SetDefaultResource(IDR_ASH_GRADUATION_INDEX_HTML);
-  source->AddResourcePaths(
-      base::make_span(kAshGraduationResources, kAshGraduationResourcesSize));
+  source->AddResourcePaths(kAshGraduationResources);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appTitle", IDS_GRADUATION_APP_TITLE},
       {"backButtonLabel", IDS_GRADUATION_APP_BACK_BUTTON_LABEL},

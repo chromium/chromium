@@ -145,8 +145,7 @@ GURL MerchantTrustSidePanelCoordinator::GetOpenInNewTabUrl() {
 std::optional<page_info::MerchantData>
 MerchantTrustSidePanelCoordinator::GetMerchantTrustInfo(const GURL& url) const {
   auto* service = MerchantTrustServiceFactory::GetForProfile(GetProfile());
-  return service->GetMerchantTrustInfo(
-      url, web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  return service->GetMerchantTrustInfo(url);
 }
 
 void MerchantTrustSidePanelCoordinator::DidFinishNavigation(

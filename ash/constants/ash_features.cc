@@ -2282,7 +2282,7 @@ BASE_FEATURE(kParentAccessJelly,
 // (This feature is only available for consumer users)
 BASE_FEATURE(kPasswordlessGaiaForConsumers,
              "PasswordlessGaiaForConsumers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.

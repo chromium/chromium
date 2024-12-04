@@ -198,6 +198,9 @@ class TestingBrowserProcess : public BrowserProcess {
   TestingBrowserProcessPlatformPart* GetTestPlatformPart();
   void SetStatusTray(std::unique_ptr<StatusTray> status_tray);
 #if !BUILDFLAG(IS_ANDROID)
+  void SetComponentUpdater(
+      std::unique_ptr<component_updater::ComponentUpdateService>
+          component_updater);
   void SetHidSystemTrayIcon(
       std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon);
   void SetUsbSystemTrayIcon(
@@ -281,6 +284,7 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
+  std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
   BuildState build_state_;
 #endif
 

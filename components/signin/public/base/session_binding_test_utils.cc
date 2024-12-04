@@ -103,7 +103,7 @@ testing::AssertionResult VerifyJwtSignature(
   std::vector<uint8_t> signature(signature_str.begin(), signature_str.end());
   if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
     std::optional<std::vector<uint8_t>> der_signature =
-        ConvertRawSignatureToDER(base::as_bytes(base::make_span(signature)));
+        ConvertRawSignatureToDER(base::as_byte_span(signature));
     if (!der_signature) {
       return testing::AssertionFailure()
              << "Failed to convert raw signature to DER: " << signature_str;
@@ -116,11 +116,11 @@ testing::AssertionResult VerifyJwtSignature(
     return testing::AssertionFailure()
            << "Failed to initialize the signature verifier";
   }
-  verifier.VerifyUpdate(base::as_bytes(
-      base::make_span(parts[static_cast<size_t>(JwtPart::kHeader)])));
+  verifier.VerifyUpdate(
+      base::as_byte_span(parts[static_cast<size_t>(JwtPart::kHeader)]));
   verifier.VerifyUpdate(kJwtSeparatorArray);
-  verifier.VerifyUpdate(base::as_bytes(
-      base::make_span(parts[static_cast<size_t>(JwtPart::kPayload)])));
+  verifier.VerifyUpdate(
+      base::as_byte_span(parts[static_cast<size_t>(JwtPart::kPayload)]));
   return verifier.VerifyFinal()
              ? testing::AssertionSuccess()
              : (testing::AssertionFailure() << "Invalid signature");

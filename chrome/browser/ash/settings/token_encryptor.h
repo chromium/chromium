@@ -19,7 +19,7 @@ namespace ash {
 // system salt.
 class TokenEncryptor {
  public:
-  virtual ~TokenEncryptor() {}
+  virtual ~TokenEncryptor() = default;
 
   // Encrypts |token| with the system salt key (stable for the lifetime
   // of the device).  Useful to avoid storing plain text in place like

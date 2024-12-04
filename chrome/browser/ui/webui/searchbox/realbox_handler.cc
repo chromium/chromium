@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/lens/lens_features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -120,8 +121,7 @@ class RealboxOmniboxClient final : public OmniboxClient {
       bool destination_url_entered_with_http_scheme,
       const std::u16string& text,
       const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match,
-      IDNA2008DeviationCharacter deviation_char_in_hostname) override;
+      const AutocompleteMatch& alternative_nav_match) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
   void SetLensSearchboxClientForTesting(  // IN-TEST
@@ -299,8 +299,7 @@ void RealboxOmniboxClient::OnAutocompleteAccept(
     bool destination_url_entered_with_http_scheme,
     const std::u16string& text,
     const AutocompleteMatch& match,
-    const AutocompleteMatch& alternative_nav_match,
-    IDNA2008DeviationCharacter deviation_char_in_hostname) {
+    const AutocompleteMatch& alternative_nav_match) {
   if (lens_searchbox_client_) {
     lens_searchbox_client_->OnSuggestionAccepted(
         destination_url, match.type,
@@ -342,8 +341,9 @@ RealboxHandler::RealboxHandler(
         /*view=*/nullptr,
         std::make_unique<RealboxOmniboxClient>(profile_, web_contents_,
                                                lens_searchbox_client),
-        lens_searchbox_client ? base::Milliseconds(3000)
-                              : kAutocompleteDefaultStopTimerDuration);
+        lens_searchbox_client
+            ? lens::features::GetLensSearchboxAutocompleteTimeout()
+            : kAutocompleteDefaultStopTimerDuration);
     controller_ = owned_controller_.get();
   }
 

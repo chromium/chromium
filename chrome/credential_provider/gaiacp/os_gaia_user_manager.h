@@ -27,7 +27,7 @@ class OSGaiaUserManager {
   void SetFakesForTesting(FakesForTesting* fakes);
 
  protected:
-  OSGaiaUserManager() {}
+  OSGaiaUserManager() = default;
 
   // Returns the storage used for the instance pointer.
   static OSGaiaUserManager** GetInstanceStorage();

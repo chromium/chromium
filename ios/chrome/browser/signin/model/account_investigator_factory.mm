@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/signin/model/account_investigator_factory.h"
 
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service_factory.h"
 #import "components/signin/core/browser/account_investigator.h"
@@ -24,14 +22,14 @@ AccountInvestigatorFactory* AccountInvestigatorFactory::GetInstance() {
 // static
 AccountInvestigator* AccountInvestigatorFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<AccountInvestigator*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<AccountInvestigator>(
+      profile, /*create=*/true);
 }
 
 AccountInvestigatorFactory::AccountInvestigatorFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AccountInvestigator",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AccountInvestigator",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -51,14 +49,6 @@ AccountInvestigatorFactory::BuildServiceInstanceFor(
 void AccountInvestigatorFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   AccountInvestigator::RegisterPrefs(registry);
-}
-
-bool AccountInvestigatorFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
-}
-
-bool AccountInvestigatorFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace ios

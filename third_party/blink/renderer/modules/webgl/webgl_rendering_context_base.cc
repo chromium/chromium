@@ -821,20 +821,19 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   // custom resource provider. This avoids consuming compositing-specific
   // resources (e.g. GpuMemoryBuffer). We tag the SharedImage with display usage
   // since there are uncommon paths which may use this snapshot for compositing.
-  const auto image_info =
-      SkImageInfo::Make(SkISize::Make(size.width(), size.height()),
-                        CanvasRenderingContextSkColorInfo());
+  const auto color_info = CanvasRenderingContextSkColorInfo();
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          image_info, GetDrawingBuffer()->FilterQuality(), kShouldInitialize,
+          size, color_info.colorType(), color_info.alphaType(),
+          color_info.refColorSpace(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        size, image_info.colorType(), image_info.alphaType(),
-        image_info.refColorSpace(), GetDrawingBuffer()->FilterQuality(),
+        size, color_info.colorType(), color_info.alphaType(),
+        color_info.refColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
@@ -1323,7 +1322,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       std::move(context_provider), graphics_info, using_swap_chain, this,
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, desynchronized,
-      preserve, web_gl_version, chromium_image_usage, Host()->FilterQuality(),
+      preserve, web_gl_version, chromium_image_usage,
       drawing_buffer_color_space_,
       PowerPreferenceToGpuPreference(attrs.power_preference));
 }
@@ -7202,13 +7201,6 @@ void WebGLRenderingContextBase::SetHdrMetadata(
   }
 }
 
-void WebGLRenderingContextBase::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (!isContextLost() && GetDrawingBuffer()) {
-    GetDrawingBuffer()->SetFilterQuality(filter_quality);
-  }
-}
-
 Extensions3DUtil* WebGLRenderingContextBase::ExtensionsUtil() {
   if (!extensions_util_) {
     gpu::gles2::GLES2Interface* gl = ContextGL();
@@ -7354,6 +7346,11 @@ void WebGLRenderingContextBase::
   if (reason) {
     PrintWarningToConsole(reason);
   }
+}
+
+void WebGLRenderingContextBase::DrawingBufferClientInitializeLayer(
+    cc::Layer* layer) {
+  Host()->InitializeLayerWithCSSProperties(layer);
 }
 
 ScriptValue WebGLRenderingContextBase::GetBooleanParameter(
@@ -8611,7 +8608,6 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     temp = CanvasResourceProvider::CreateBitmapProvider(
         gfx::Size(info.width(), info.height()), info.colorType(),
         info.alphaType(), info.refColorSpace(),
-        cc::PaintFlags::FilterQuality::kLow,
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }

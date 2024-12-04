@@ -1067,7 +1067,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
 
       PseudoId pseudo_id = CSSSelector::GetPseudoId(pseudo_type);
       if (pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
-          pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdSelectArrow ||
+          pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdPickerIcon ||
           pseudo_id == kPseudoIdFirstLetter ||
           pseudo_id == kPseudoIdFirstLine) {
         return pseudo_id;
@@ -1213,11 +1213,16 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
     case CSSSelector::kPseudoScrollMarker:
-    case CSSSelector::kPseudoScrollButton:
       // TODO(crbug.com/40824273): User action pseudos should be allowed more
       // generally after pseudo elements.
       return pseudo_class == CSSSelector::kPseudoFocus ||
              pseudo_class == CSSSelector::kPseudoTargetCurrent;
+    case CSSSelector::kPseudoScrollButton:
+      // TODO(crbug.com/40824273): User action pseudos should be allowed more
+      // generally after pseudo elements.
+      return pseudo_class == CSSSelector::kPseudoFocus ||
+             pseudo_class == CSSSelector::kPseudoDisabled ||
+             pseudo_class == CSSSelector::kPseudoEnabled;
     default:
       return false;
   }
@@ -1232,7 +1237,7 @@ bool IsSimpleSelectorValidAfterPseudoElement(
              CSSSelector::kPseudoScrollMarker;
     case CSSSelector::kPseudoUnknown:
       return true;
-    case CSSSelector::kPseudoSelectArrow:
+    case CSSSelector::kPseudoPickerIcon:
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoBefore:
     case CSSSelector::kPseudoCheckMark:

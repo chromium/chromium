@@ -1162,6 +1162,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SessionRestore.TabCount{TabType}" units="tabs"
+    expires_after="2025-03-30">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of {TabType} available to restore in a session. Logged once per
+    session restore. Not all of the tabs in the session will ultimately be
+    loaded.
+
+    This metric has several variants with suffixes for tabs with different
+    properties. The properties aren't mutually exclusive so the sum of all
+    variants won't equal SessionRestore.TabCount, which covers all tabs.
+  </summary>
+  <token key="TabType">
+    <variant name="" summary="tabs"/>
+    <variant name=".Active" summary="active tabs"/>
+    <variant name=".App" summary="tabs whose browser window is an app"/>
+    <variant name=".BackgroundNotificationPermission"
+        summary="tabs with background notification permission"/>
+    <variant name=".Grouped" summary="tabs that are part of tab groups"/>
+    <variant name=".InternalPage" summary="tabs hosting internal WebUI pages"/>
+    <variant name=".LowSiteEngagement"
+        summary="tabs with site engagement below the restore threshold"/>
+    <variant name=".LowSiteEngagementWithBackgroundCommunication"
+        summary="tabs with LowSiteEngagement but either
+                 BackgroundNotificationPermission or
+                 UpdatesTitleOrFaviconInBackground"/>
+    <variant name=".Pinned" summary="pinned tabs"/>
+    <variant name=".UpdatesTitleOrFaviconInBackground"
+        summary="tabs that update their title or favicon in the background"/>
+  </token>
+</histogram>
+
 <histogram name="SessionRestore.UnrecoverableWriteErrorCount"
     units="operations" expires_after="2022-08-07">
   <owner>sky@chromium.org</owner>

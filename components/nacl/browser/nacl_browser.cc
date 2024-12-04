@@ -81,9 +81,7 @@ void ReadCache(const base::FilePath& filename, std::string* data) {
 }
 
 void WriteCache(const base::FilePath& filename, const base::Pickle* pickle) {
-  base::WriteFile(filename,
-                  base::make_span(static_cast<const uint8_t*>(pickle->data()),
-                                  pickle->size()));
+  base::WriteFile(filename, base::span(*pickle));
 }
 
 void RemoveCache(const base::FilePath& filename, base::OnceClosure callback) {

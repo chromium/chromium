@@ -44,7 +44,7 @@ class DisplayStyle {
       case kPseudoIdCheckMark:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
-      case kPseudoIdSelectArrow:
+      case kPseudoIdPickerIcon:
       case kPseudoIdScrollUpButton:
       case kPseudoIdScrollDownButton:
       case kPseudoIdScrollLeftButton:

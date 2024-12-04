@@ -135,15 +135,15 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
                            CreateWebSocketHandshakeStream);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponseDirect);
+                           SetProxyInfoInResponse_Direct);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponseProxied);
+                           SetProxyInfoInResponse_Proxied);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponseEmpty);
+                           SetProxyInfoInResponse_Empty);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponseIpProtectionProxied);
+                           SetProxyInfoInResponse_IpProtectionProxied);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponseIpProtectionDirect);
+                           SetProxyInfoInResponse_IpProtectionDirect);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateReceived);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateSent);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateOverflow);

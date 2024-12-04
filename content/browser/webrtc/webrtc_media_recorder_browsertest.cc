@@ -34,10 +34,10 @@ static const EncodingParameters kProprietaryEncodingParameters[] = {
     {true, "video/mp4;codecs=avc1"},
     {false, "video/mp4;codecs=avc1"},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    {true, "video/x-matroska;codecs=hvc1"},
-    {false, "video/x-matroska;codecs=hvc1"},
-    {true, "video/mp4;codecs=hvc1"},
-    {false, "video/mp4;codecs=hvc1"},
+    {true, "video/x-matroska;codecs=hvc1.1.6.L186.B0"},
+    {false, "video/x-matroska;codecs=hvc1.1.6.L186.B0"},
+    {true, "video/mp4;codecs=hvc1.1.6.L186.B0"},
+    {false, "video/mp4;codecs=hvc1.1.6.L186.B0"},
 #endif
 };
 

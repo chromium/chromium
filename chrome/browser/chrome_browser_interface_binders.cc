@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/webui/chrome_urls/chrome_urls_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
-#include "chrome/browser/ui/webui/internals/internals_ui.h"
 #include "chrome/browser/ui/webui/location_internals/location_internals.mojom.h"
 #include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
@@ -163,6 +162,7 @@
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#include "chrome/browser/ui/webui/internals/internals_ui.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
@@ -176,7 +176,6 @@
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing.mojom.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
-#include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
@@ -1176,6 +1175,10 @@ void PopulateChromeWebUIFrameBinders(
       commerce::ProductSpecificationsUI, HistoryUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
+      commerce::price_tracking::mojom::PriceTrackingHandlerFactory,
+      ShoppingInsightsSidePanelUI, BookmarksSidePanelUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
       side_panel::mojom::CustomizeChromePageHandlerFactory, CustomizeChromeUI>(
       map);
 
@@ -1817,9 +1820,6 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   }
   registry.ForWebUI<ReadAnythingUntrustedUI>()
       .Add<color_change_listener::mojom::PageHandler>();
-  if (base::FeatureList::IsEnabled(features::kHaTSWebUI)) {
-    registry.ForWebUI<HatsUI>().Add<hats::mojom::PageHandlerFactory>();
-  }
 
   if (base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature)) {

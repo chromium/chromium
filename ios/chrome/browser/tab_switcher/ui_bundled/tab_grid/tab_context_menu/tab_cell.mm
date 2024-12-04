@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_cell.h"
 
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 
@@ -15,11 +16,20 @@ const CGFloat kNewActivityLabelBottomOffset = 10;
 }  // namespace
 
 @implementation TabCell {
+  ActivityLabelData* _activityLabelData;
   ActivityLabelView* _activityLabelView;
 }
 
-- (void)showActivityLabel {
-  [self setupActivityLabel];
+- (void)setActivityLabelData:(ActivityLabelData*)data {
+  if (!data) {
+    _activityLabelData = nil;
+    [self hideActivityLabel];
+    return;
+  }
+
+  _activityLabelData = data;
+  [self showActivityLabel];
+  // TODO(crbug.com/371113934): Set the string in the data to the label.
 }
 
 #pragma mark - UITableViewCell
@@ -30,6 +40,18 @@ const CGFloat kNewActivityLabelBottomOffset = 10;
 }
 
 #pragma mark - Private
+
+- (void)showActivityLabel {
+  if (_activityLabelView) {
+    _activityLabelView.hidden = NO;
+  } else {
+    [self setupActivityLabel];
+  }
+}
+
+- (void)hideActivityLabel {
+  _activityLabelView.hidden = YES;
+}
 
 - (void)setupActivityLabel {
   _activityLabelView = [[ActivityLabelView alloc] init];

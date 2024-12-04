@@ -265,15 +265,8 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
           ->AppRegistryCache();
   const auto app_type = app_registry_cache.GetAppType(app_id);
 
-  // Get the window id needed to fetch app launch info. For chrome apps in
-  // lacros, the window id needs to be fetched from the `LacrosSaveHandler`. See
-  // https://crbug.com/1335491 for more details.
-  const int32_t window_id =
-      app_type == apps::AppType::kStandaloneBrowserChromeApp
-          ? full_restore::FullRestoreSaveHandler::GetInstance()
-                ->GetLacrosChromeAppWindowId(window)
-          : window->GetProperty(app_restore::kWindowIdKey);
-
+  // Get the window id needed to fetch app launch info.
+  const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
   auto app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
 
@@ -301,7 +294,6 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
 
   if (app_id != app_constants::kChromeAppId &&
       (app_type == apps::AppType::kChromeApp ||
-       app_type == apps::AppType::kStandaloneBrowserChromeApp ||
        app_type == apps::AppType::kWeb)) {
     // If these values are not present, we will not be able to restore the
     // application. See http://crbug.com/1232520 for more information.

@@ -6,6 +6,51 @@
 
 namespace optimization_guide {
 
+std::ostream& operator<<(std::ostream& out,
+                         const OnDeviceModelEligibilityReason& val) {
+  switch (val) {
+    case OnDeviceModelEligibilityReason::kUnknown:
+      return out << "Unknown";
+    case OnDeviceModelEligibilityReason::kSuccess:
+      return out << "Success";
+    case OnDeviceModelEligibilityReason::kFeatureNotEnabled:
+      return out << "FeatureNotEnabled";
+    case OnDeviceModelEligibilityReason::kDeprecatedModelNotAvailable:
+      return out << "ModelNotAvailable";
+    case OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature:
+      return out << "ConfigNotAvailableForFeature";
+    case OnDeviceModelEligibilityReason::kGpuBlocked:
+      return out << "GpuBlocked";
+    case OnDeviceModelEligibilityReason::kTooManyRecentCrashes:
+      return out << "TooManyRecentCrashes";
+    case OnDeviceModelEligibilityReason::kTooManyRecentTimeouts:
+      return out << "TooManyRecentTimeouts";
+    case OnDeviceModelEligibilityReason::kSafetyModelNotAvailable:
+      return out << "SafetyModelNotAvailable";
+    case OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature:
+      return out << "SafetyConfigNotAvailableForFeature";
+    case OnDeviceModelEligibilityReason::kLanguageDetectionModelNotAvailable:
+      return out << "LanguageDetectionModelNotAvailable";
+    case OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled:
+      return out << "FeatureExecutionNotEnabled";
+    case OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable:
+      return out << "ModelAdaptationNotAvailable";
+    case OnDeviceModelEligibilityReason::kValidationPending:
+      return out << "ValidationPending";
+    case OnDeviceModelEligibilityReason::kValidationFailed:
+      return out << "ValidationFailed";
+    case OnDeviceModelEligibilityReason::kModelToBeInstalled:
+      return out << "ModelToBeInstalled";
+    case OnDeviceModelEligibilityReason::kModelNotEligible:
+      return out << "ModelNotEligible";
+    case OnDeviceModelEligibilityReason::kInsufficientDiskSpace:
+      return out << "InsufficientDiskSpace";
+    case OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed:
+      return out << "NoOnDeviceFeatureUsed";
+  }
+  return out;
+}
+
 OptimizationGuideModelExecutionResult::OptimizationGuideModelExecutionResult() =
     default;
 

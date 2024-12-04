@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/app_home/app_home_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -68,9 +63,8 @@ AppHomeUI::AppHomeUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIAppLauncherPageHost);
   AddAppHomeLocalizedStrings(source);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kAppHomeResources, kAppHomeResourcesSize),
-      IDR_APP_HOME_APP_HOME_HTML);
+  webui::SetupWebUIDataSource(source, kAppHomeResources,
+                              IDR_APP_HOME_APP_HOME_HTML);
 }
 
 void AppHomeUI::BindInterface(

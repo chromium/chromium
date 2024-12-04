@@ -42,7 +42,6 @@ BASE_DECLARE_FEATURE(kEnableVirtioBlkMultipleWorkers);
 BASE_DECLARE_FEATURE(kExtendIntentAnrTimeout);
 BASE_DECLARE_FEATURE(kExtendServiceAnrTimeout);
 BASE_DECLARE_FEATURE(kExternalStorageAccess);
-BASE_DECLARE_FEATURE(kFilePickerExperimentFeature);
 BASE_DECLARE_FEATURE(kGmsCoreLowMemoryKillerProtection);
 BASE_DECLARE_FEATURE(kGuestSwap);
 BASE_DECLARE_FEATURE_PARAM(int, kGuestSwapSize);

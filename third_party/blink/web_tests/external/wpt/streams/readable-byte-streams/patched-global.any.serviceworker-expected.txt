@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Patched then() sees byobRequest after filling all pending pull-into descriptors
+  assert_equals: byobRequest should be null after filling both views expected null but got object "[object ReadableStreamBYOBRequest]"
+Harness: the test ran to completion.

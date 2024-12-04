@@ -52,7 +52,7 @@ class MockMerchantTrustService : public page_info::MerchantTrustService {
       : MerchantTrustService(nullptr, false, nullptr) {}
   MOCK_METHOD(std::optional<page_info::MerchantData>,
               GetMerchantTrustInfo,
-              (const GURL&, ukm::SourceId),
+              (const GURL&),
               (const, override));
 };
 
@@ -76,13 +76,13 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
                                 base::Unretained(this))));
 
     // Mock GetMerchanTrustInfo based on the requested URL.
-    ON_CALL(*service(), GetMerchantTrustInfo(_, _))
-        .WillByDefault([](const GURL& url, ukm::SourceId source_id)
-                           -> std::optional<page_info::MerchantData> {
-          return url == GURL(kUrlWithMerchantTrustData)
-                     ? std::make_optional(CreateValidMerchantData())
-                     : std::nullopt;
-        });
+    ON_CALL(*service(), GetMerchantTrustInfo(_))
+        .WillByDefault(
+            [](const GURL& url) -> std::optional<page_info::MerchantData> {
+              return url == GURL(kUrlWithMerchantTrustData)
+                         ? std::make_optional(CreateValidMerchantData())
+                         : std::nullopt;
+            });
   }
 
   GURL CreateUrl(const std::string& host) {
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
             SidePanelEntry::Id::kMerchantTrust);
 
   // Refresh the page and check that the side panel is still open.
-  EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
+  EXPECT_CALL(*service(), GetMerchantTrustInfo(_))
       .WillRepeatedly(Return(std::nullopt));
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));

@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -337,7 +338,7 @@ TEST_F(ShapeResultBloberizerTest, MixedBlobRotation) {
 TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   // "/. ." with an accent mark over the first dot.
   const UChar kStr[] = {0x2F, 0x301, 0x2E, 0x20, 0x2E};
-  TextRun text_run(kStr, base::make_span(kStr).size());
+  TextRun text_run(kStr, std::size(kStr));
   TextRunPaintInfo run_info(text_run);
   run_info.to = 3;
 
@@ -387,7 +388,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
 TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
   // "[] []" with an accent mark over the last square bracket.
   const UChar kStr[] = {0x5B, 0x5D, 0x20, 0x5B, 0x301, 0x5D};
-  TextRun text_run(kStr, base::make_span(kStr).size());
+  TextRun text_run(kStr, std::size(kStr));
   text_run.SetDirection(TextDirection::kRtl);
   TextRunPaintInfo run_info(text_run);
   run_info.from = 1;
@@ -629,7 +630,7 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
 TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
   // "Foo &zwnj; bar"
   const UChar kStr[] = {0x46, 0x6F, 0x6F, 0x20, 0x200C, 0x20, 0x62, 0x61, 0x71};
-  TextRun text_run(kStr, base::make_span(kStr).size());
+  TextRun text_run(kStr, std::size(kStr));
 
   Font font(font_description);
   CachingWordShaper shaper(font);

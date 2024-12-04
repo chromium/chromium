@@ -41,7 +41,7 @@ import java.util.concurrent.Semaphore;
 
 /** Tests the deferred startup of {@link ShoppingPersistedTabData} */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING, ChromeFeatureList.PRICE_CHANGE_MODULE})
+@EnableFeatures({ChromeFeatureList.PRICE_ANNOTATIONS, ChromeFeatureList.PRICE_CHANGE_MODULE})
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataDeferredStartupTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
@@ -71,8 +71,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING
-                    + ":return_empty_price_drops_until_init/false")
+            ChromeFeatureList.PRICE_ANNOTATIONS + ":return_empty_price_drops_until_init/false")
     public void testDeferredStartup() {
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
@@ -103,7 +102,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
+            ChromeFeatureList.PRICE_ANNOTATIONS + ":return_empty_price_drops_until_init/true")
     public void testReturnEmptyPriceDropsUntilInit() {
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
@@ -150,7 +149,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
+            ChromeFeatureList.PRICE_ANNOTATIONS + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_NotSkip() {
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
@@ -173,7 +172,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
+            ChromeFeatureList.PRICE_ANNOTATIONS + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_Skip() {
         final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
@@ -202,7 +201,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
+            ChromeFeatureList.PRICE_ANNOTATIONS + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_SkipForNullTab() {
         final Semaphore semaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(
@@ -221,7 +220,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @EnableFeatures(
-            ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":return_empty_price_drops_until_init/true")
+            ChromeFeatureList.PRICE_ANNOTATIONS + ":return_empty_price_drops_until_init/true")
     public void testSkipDelayedInitialization_SkipForDestroyedTab() {
         final Tab tab = mock(Tab.class);
         doReturn(true).when(tab).isDestroyed();

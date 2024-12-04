@@ -19,7 +19,7 @@ class SimpleMenuModel;
 namespace commerce {
 
 class ShoppingService;
-class ShoppingServiceHandler;
+class PriceTrackingHandler;
 
 // Helper class for shopping-related items in side panel context menu. This
 // class is created and owned by BookmarksSidePanelUI so that it can be used for
@@ -29,7 +29,7 @@ class ShoppingListContextMenuController {
   ShoppingListContextMenuController(
       bookmarks::BookmarkModel* bookmark_model,
       ShoppingService* shopping_service,
-      ShoppingServiceHandler* shopping_list_hander);
+      PriceTrackingHandler* price_tracking_handler);
   ShoppingListContextMenuController(const ShoppingListContextMenuController&) =
       delete;
   ShoppingListContextMenuController& operator=(
@@ -46,7 +46,7 @@ class ShoppingListContextMenuController {
  private:
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ShoppingService> shopping_service_;
-  raw_ptr<ShoppingServiceHandler, DanglingUntriaged> shopping_list_hander_;
+  raw_ptr<PriceTrackingHandler> price_tracking_handler_;
 };
 
 }  // namespace commerce

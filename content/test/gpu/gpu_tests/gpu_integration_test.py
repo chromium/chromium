@@ -15,12 +15,14 @@ import os
 import pkgutil
 import re
 import types
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple, Type
+from typing import (Any, Dict, Generator, Iterable, List, Optional, Set, Tuple,
+                    Type)
 import unittest
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from telemetry.internal.browser import browser_options as bo
+from telemetry.internal.platform import gpu_info as telemetry_gpu_info
 from telemetry.internal.platform import system_info as si_module
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
 from telemetry.testing import serially_executed_browser_test_case
@@ -54,6 +56,12 @@ _SUPPORTED_WIN_GPU_VENDORS = [
     constants.GpuVendor.NVIDIA,
     constants.GpuVendor.QUALCOMM,
 ]
+
+_ARGS_TO_PREEMPT = (
+    '--use-angle',
+    '--use-vulkan',
+    '--use-webgpu-adapter',
+)
 
 _ARGS_TO_CONSOLIDATE = frozenset([
     '--enable-features',
@@ -131,6 +139,12 @@ class GpuIntegrationTest(
   _is_first_browser_start = True
 
   _is_asan = False
+
+  # Used to verify that command line arguments are actually taking effect.
+  _gl_backend = ''
+  _angle_backend = ''
+  _command_decoder = ''
+  _graphite_status = ''
 
   tab: Optional[ct.Tab] = None
 
@@ -318,7 +332,7 @@ class GpuIntegrationTest(
     if cba.DISABLE_GPU in browser_args:
       # Some platforms require GPU process, so browser fails to launch with
       # --disable-gpu mode, therefore, even test expectations fail to evaluate.
-      os_name = cls.browser.platform.GetOSName()
+      os_name = cls.platform.GetOSName()
       if os_name in ('android', 'chromeos'):
         browser_args.remove(cba.DISABLE_GPU)
 
@@ -363,6 +377,10 @@ class GpuIntegrationTest(
     # If requested, disable uploading of failure logs to cloud storage.
     if cls._disable_log_uploads:
       browser_options.logs_cloud_bucket = None
+
+    # Remove any suite-wide browser args that conflict with the test-specific
+    # browser args.
+    _PreemptArguments(browser_options, browser_args)
 
     # Append the new arguments.
     browser_options.AppendExtraBrowserArgs(browser_args)
@@ -460,6 +478,7 @@ class GpuIntegrationTest(
   @classmethod
   def StartBrowser(cls) -> None:
     cls._ModifyBrowserEnvironment()
+    cls._DetermineExpectedFeatureValues()
     # We still need to retry the browser's launch even though
     # desktop_browser_finder does so too, because it wasn't possible
     # to push the fetch of the first tab into the lower retry loop
@@ -476,6 +495,7 @@ class GpuIntegrationTest(
         # when running many small tests like for WebGPU.
         cls._EnsureScreenOn()
         cls._CheckBrowserVersion()
+        cls._VerifyBrowserFeaturesMatchExpectedValues()
         return
       except Exception as e:  # pylint: disable=broad-except
         last_exception = e
@@ -548,6 +568,130 @@ class GpuIntegrationTest(
       cls.platform.RestartTsProxyServerOnRemotePlatforms()
       cls.SetBrowserOptions(cls._finder_options)
       cls.StartBrowser()
+
+  @classmethod
+  def _ClearFeatureValues(cls) -> None:
+    cls._gl_backend = ''
+    cls._angle_backend = ''
+    cls._command_decoder = ''
+    cls._graphite_status = ''
+
+  @classmethod
+  def _DetermineExpectedFeatureValues(cls) -> None:
+    """Determines and stores the expected features.
+
+    This is later used to verify that the features are actually enabled in the
+    browser.
+    """
+    cls._ClearFeatureValues()
+    browser_options = cls._finder_options.browser_options
+
+    if not browser_options or not browser_options.extra_browser_args:
+      return
+
+    for arg in browser_options.extra_browser_args:
+      if arg == cba.DISABLE_GPU:
+        cls._ClearFeatureValues()
+        return
+      if arg.startswith('--use-gl='):
+        cls._gl_backend = arg[len('--use-gl='):]
+      elif arg.startswith('--use-angle='):
+        cls._angle_backend = arg[len('--use-angle='):]
+      elif arg.startswith('--use-cmd-decoder='):
+        cls._command_decoder = arg[len('--use-cmd-decoder='):]
+      elif arg.startswith('--enable-features='):
+        values = arg[len('--enable-features='):]
+        for feature in values.split(','):
+          if feature == 'SkiaGraphite':
+            cls._graphite_status = 'graphite-enabled'
+      elif arg.startswith('--disable-features='):
+        values = arg[len('--disable-features='):]
+        for feature in values.split(','):
+          if feature == 'SkiaGraphite':
+            cls._graphite_status = 'graphite-disabled'
+
+  @classmethod
+  def _VerifyBrowserFeaturesMatchExpectedValues(cls) -> None:
+    """Verifies that the browser's enabled features match expectations."""
+    assert cls.browser
+    gpu_info = cls.browser.GetSystemInfo().gpu
+    cls._VerifyGLBackend(gpu_info)
+    cls._VerifyANGLEBackend(gpu_info)
+    cls._VerifyCommandDecoder(gpu_info)
+    cls._VerifySkiaGraphite(gpu_info)
+
+  @classmethod
+  def _VerifyGLBackend(cls, gpu_info: telemetry_gpu_info.GPUInfo) -> None:
+    """Verifies that Chrome's GL backend matches the requested one."""
+    if not cls._gl_backend:
+      return
+
+    if (cls._gl_backend == 'angle'
+        and gpu_helper.GetANGLERenderer(gpu_info) == 'angle-disabled'):
+      raise RuntimeError(
+          f'Requested GL backend ({cls._gl_backend}) had no effect on the '
+          f'browser: {_GetGPUInfoErrorString(gpu_info)}')
+
+  @classmethod
+  def _VerifyANGLEBackend(cls, gpu_info: telemetry_gpu_info.GPUInfo) -> None:
+    """Verifies that Chrome's ANGLE backend matches the requested one."""
+    if not cls._angle_backend:
+      return
+
+    # GPU exepections use slightly different names for the angle backends
+    # than the Chrome flags
+    known_backend_flag_map = {
+        'angle-d3d11': ['d3d11'],
+        'angle-d3d9': ['d3d9'],
+        'angle-opengl': ['gl'],
+        'angle-opengles': ['gles'],
+        'angle-metal': ['metal'],
+        'angle-vulkan': ['vulkan'],
+        # Support setting VK_ICD_FILENAMES for swiftshader when requesting
+        # the 'vulkan' backend.
+        'angle-swiftshader': ['swiftshader', 'vulkan'],
+    }
+    current_angle_backend = gpu_helper.GetANGLERenderer(gpu_info)
+
+    if (current_angle_backend not in known_backend_flag_map
+        or cls._angle_backend
+        not in known_backend_flag_map[current_angle_backend]):
+      raise RuntimeError(
+          f'Requested ANGLE backend ({cls._angle_backend}) had no effect on '
+          f'the browser: {_GetGPUInfoErrorString(gpu_info)}')
+
+  @classmethod
+  def _VerifyCommandDecoder(cls, gpu_info: telemetry_gpu_info.GPUInfo) -> None:
+    """Verifies that Chrome's command decoder matches the requested one."""
+    if not cls._command_decoder:
+      return
+
+    # GPU exepections use slightly different names for the command decoders
+    # than the Chrome flags
+    known_command_decoder_flag_map = {
+        'passthrough': 'passthrough',
+        'no_passthrough': 'validating',
+    }
+    current_command_decoder = gpu_helper.GetCommandDecoder(gpu_info)
+
+    if (current_command_decoder not in known_command_decoder_flag_map
+        or known_command_decoder_flag_map[current_command_decoder]
+        != cls._command_decoder):
+      raise RuntimeError(
+          f'Requested command decoder ({cls._command_decoder}) had no effect '
+          f'on the browser: {_GetGPUInfoErrorString(gpu_info)}')
+
+  @classmethod
+  def _VerifySkiaGraphite(cls, gpu_info: telemetry_gpu_info.GPUInfo) -> None:
+    """Verifies that Chrome's Skia Graphite status matches the requested one."""
+    if not cls._graphite_status:
+      return
+
+    status = gpu_helper.GetSkiaGraphiteStatus(gpu_info)
+    if cls._graphite_status != status:
+      raise RuntimeError(
+          f'Requested Skia Graphite status ({cls._graphite_status}) had no '
+          f'effect on the browser: {_GetGPUInfoErrorString(gpu_info)}')
 
   @classmethod
   def _EnsureScreenOn(cls) -> None:
@@ -1121,6 +1265,42 @@ class GpuIntegrationTest(
     return gpu_path_util.CHROMIUM_SRC_DIR
 
 
+def _PreemptArguments(browser_options: bo.BrowserOptions,
+                      extra_browser_args: Iterable[str]) -> None:
+  """Removes existing args that would conflict with extra args.
+
+  Certain args such as --use-angle are liable to be specified both at the
+  suite level and on a per-test basis. If such args are specified multiple
+  times. we want the per-test value to take precedence.
+
+  Args:
+    browser_options: The BrowserOptions that will be used to start the browser.
+        The browser args contained within may be modified in place if any
+        conflicting args are found.
+    extra_browser_args: Extra per-test browser args that will be added for this
+        particular browser start.
+  """
+
+  def _GetMatchingArg(arg_to_look_for: str,
+                      all_args: Iterable[str]) -> Optional[str]:
+    for arg in all_args:
+      # Per the comments in BrowserOptions.ConsolidateValuesForArg, only the
+      # --flag=value format for browser args is supported.
+      if '=' not in arg:
+        continue
+      if arg.split('=', 1)[0] == arg_to_look_for:
+        return arg
+    return None
+
+  for arg_to_look_for in _ARGS_TO_PREEMPT:
+    existing_instance = _GetMatchingArg(arg_to_look_for,
+                                        browser_options.extra_browser_args)
+    new_instance = _GetMatchingArg(arg_to_look_for, extra_browser_args)
+    if existing_instance and new_instance:
+      browser_options.RemoveExtraBrowserArg(existing_instance)
+      # Adding the new one will be handled automatically by the caller.
+
+
 def _TagConflictChecker(tag1: str, tag2: str) -> bool:
   # This conflict check takes into account both driver tag matching and
   # cases of tags being subsets of others, e.g. win10 being a subset of win.
@@ -1173,6 +1353,22 @@ def _GetExpectedBrowserVersion() -> str:
     version_info[k] = v
   return (f'{version_info["MAJOR"]}.{version_info["MINOR"]}.'
           f'{version_info["BUILD"]}.{version_info["PATCH"]}')
+
+
+def _GetGPUInfoErrorString(gpu_info: telemetry_gpu_info.GPUInfo) -> str:
+  primary_gpu = gpu_info.devices[0]
+  error_str = f'primary gpu={primary_gpu.device_string}'
+  if gpu_info.aux_attributes:
+    gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
+    if gl_renderer:
+      error_str += f', gl_renderer={gl_renderer}'
+  if gpu_info.feature_status:
+    pairs = []
+    for key in sorted(gpu_info.feature_status.keys()):
+      pairs.append(f'{key}={gpu_info.feature_status[key]}')
+    if pairs:
+      error_str += f', feature_statuses={",".join(pairs)}'
+  return error_str
 
 
 def LoadAllTestsInModule(module: types.ModuleType) -> unittest.TestSuite:

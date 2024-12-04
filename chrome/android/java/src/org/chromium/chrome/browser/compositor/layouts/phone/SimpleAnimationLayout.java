@@ -13,6 +13,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.sensitive_content.SensitiveContentClient;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
@@ -504,6 +506,13 @@ public class SimpleAnimationLayout extends Layout {
                 && ChromeFeatureList.isEnabled(
                         SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
             if (sourceTabId != TabModel.INVALID_TAB_INDEX) {
+                // This code can be reached from both {@link SimpleAnimationLayout.onTabCreating}
+                // and {@link SimpleAnimationLayout.onTabCreated}. If the content container is
+                // already sensitive, there is no need to mark it as sensitive again.
+                if (mContentContainer.getContentSensitivity()
+                        == View.CONTENT_SENSITIVITY_SENSITIVE) {
+                    return;
+                }
                 TabModel sourceModel = mTabModelSelector.getModelForTabId(sourceTabId);
                 if (sourceModel == null) {
                     return;
@@ -513,6 +522,10 @@ public class SimpleAnimationLayout extends Layout {
                     return;
                 }
                 mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "SensitiveContent.SensitiveTabSwitchingAnimations",
+                        SensitiveContentClient.TabSwitchingAnimation.NEW_TAB_IN_BACKGROUND,
+                        SensitiveContentClient.TabSwitchingAnimation.COUNT);
             } else {
                 mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
             }

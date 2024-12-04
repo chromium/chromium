@@ -2293,6 +2293,12 @@ class ComputedStyle final : public ComputedStyleBase {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter &&
              IsScrollContainer();
     }
+    if (pseudo == kPseudoIdScrollUpButton ||
+        pseudo == kPseudoIdScrollDownButton ||
+        pseudo == kPseudoIdScrollLeftButton ||
+        pseudo == kPseudoIdScrollRightButton) {
+      return HasPseudoElementStyle(kPseudoIdScrollButton);
+    }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
     }
@@ -2303,7 +2309,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // ::after, but the rest of the pseudo-elements should only be used for
     // elements with an actual layout object.
     return pseudo == kPseudoIdCheckMark || pseudo == kPseudoIdBefore ||
-           pseudo == kPseudoIdAfter || pseudo == kPseudoIdSelectArrow;
+           pseudo == kPseudoIdAfter || pseudo == kPseudoIdPickerIcon;
   }
 
   bool HasScrollMarkerGroupBefore() const {

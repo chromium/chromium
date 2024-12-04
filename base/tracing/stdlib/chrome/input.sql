@@ -3,6 +3,7 @@
 -- found in the LICENSE file.
 
 INCLUDE PERFETTO MODULE slices.with_context;
+INCLUDE PERFETTO MODULE chrome.android_input;
 
 -- Processing steps of the Chrome input pipeline.
 CREATE PERFETTO TABLE _chrome_input_pipeline_steps_no_input_type(
@@ -126,3 +127,24 @@ JOIN chrome_input_pipeline_steps touch_move_step
 WHERE scroll_update_step.step = 'STEP_SEND_INPUT_EVENT_UI'
 AND scroll_update_step.input_type = 'GESTURE_SCROLL_UPDATE_EVENT'
 AND touch_move_step.step = 'STEP_TOUCH_EVENT_HANDLED';
+
+-- Matches Android input id to the corresponding touch move event.
+CREATE PERFETTO TABLE chrome_dispatch_android_input_event_to_touch_move(
+  -- Input id (assigned by the system, used by InputReader and InputDispatcher)
+  android_input_id STRING,
+  -- Latency id.
+  touch_move_latency_id LONG
+) AS
+SELECT
+  chrome_deliver_android_input_event.android_input_id,
+  latency_id AS touch_move_latency_id
+FROM
+  chrome_deliver_android_input_event
+LEFT JOIN
+  chrome_input_pipeline_steps USING (utid)
+WHERE
+  chrome_input_pipeline_steps.input_type = 'TOUCH_MOVE_EVENT'
+  AND chrome_input_pipeline_steps.step = 'STEP_SEND_INPUT_EVENT_UI'
+  AND chrome_deliver_android_input_event.ts <= chrome_input_pipeline_steps.ts
+  AND chrome_deliver_android_input_event.ts + chrome_deliver_android_input_event.dur >=
+    chrome_input_pipeline_steps.ts + chrome_input_pipeline_steps.dur;

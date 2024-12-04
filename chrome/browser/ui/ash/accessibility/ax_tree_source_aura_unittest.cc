@@ -58,12 +58,12 @@ size_t GetSize(AXAuraObjWrapper* tree) {
 // AXTreeSourceViewsTest.
 class AXTreeSourceAuraTest : public ChromeViewsTestBase {
  public:
-  AXTreeSourceAuraTest() {}
+  AXTreeSourceAuraTest() = default;
 
   AXTreeSourceAuraTest(const AXTreeSourceAuraTest&) = delete;
   AXTreeSourceAuraTest& operator=(const AXTreeSourceAuraTest&) = delete;
 
-  ~AXTreeSourceAuraTest() override {}
+  ~AXTreeSourceAuraTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();

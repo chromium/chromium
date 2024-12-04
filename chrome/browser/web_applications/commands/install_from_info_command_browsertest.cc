@@ -82,10 +82,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
       WebAppInstallParams());
   loop.Run();
 
-  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
-  // correctness.
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      result_app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(result_app_id));
 
   // Ensure histogram is only measured once.
 
@@ -117,8 +115,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
 
   base::RunLoop loop;
   webapps::AppId result_app_id;
-  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
-  // correctness.
   provider().scheduler().InstallFromInfoWithParams(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false,
@@ -126,8 +122,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-                app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+            EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                      provider().registrar_unsafe().GetInstallState(app_id));
             result_app_id = app_id;
             loop.Quit();
           }),

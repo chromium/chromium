@@ -33,7 +33,7 @@ TestSafeBrowsingService::TestSafeBrowsingService()
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
-TestSafeBrowsingService::~TestSafeBrowsingService() {}
+TestSafeBrowsingService::~TestSafeBrowsingService() = default;
 
 V4ProtocolConfig TestSafeBrowsingService::GetV4ProtocolConfig() const {
   if (v4_protocol_config_)
@@ -177,7 +177,7 @@ TestSafeBrowsingService::GetURLLoaderFactory(
 TestSafeBrowsingServiceFactory::TestSafeBrowsingServiceFactory()
     : test_safe_browsing_service_(nullptr), use_v4_local_db_manager_(false) {}
 
-TestSafeBrowsingServiceFactory::~TestSafeBrowsingServiceFactory() {}
+TestSafeBrowsingServiceFactory::~TestSafeBrowsingServiceFactory() = default;
 
 SafeBrowsingService*
 TestSafeBrowsingServiceFactory::CreateSafeBrowsingService() {
@@ -239,5 +239,5 @@ std::list<std::string>* TestSafeBrowsingUIManager::GetThreatDetails() {
   return &details_;
 }
 
-TestSafeBrowsingUIManager::~TestSafeBrowsingUIManager() {}
+TestSafeBrowsingUIManager::~TestSafeBrowsingUIManager() = default;
 }  // namespace safe_browsing

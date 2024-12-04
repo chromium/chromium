@@ -237,8 +237,8 @@ MATCHER_P(IsBoundSessionCookieController, bound_session_params, "") {
                    bound_session_params.site()),
           Property("wrapped_key()",
                    &FakeBoundSessionCookieController::wrapped_key,
-                   ElementsAreArray(base::as_bytes(
-                       base::make_span(bound_session_params.wrapped_key())))),
+                   ElementsAreArray(
+                       base::as_byte_span(bound_session_params.wrapped_key()))),
           Property("bound_cookie_names()",
                    &FakeBoundSessionCookieController::bound_cookie_names,
                    UnorderedPointwise(IsCookieCredential(),

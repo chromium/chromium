@@ -210,6 +210,9 @@ NSString* DisplayName() {
   self.snackbarMessage = messageText;
 }
 
+- (void)dismissAllSnackbars {
+}
+
 @end
 
 // Unit tests for PasswordIssuesTableViewController.

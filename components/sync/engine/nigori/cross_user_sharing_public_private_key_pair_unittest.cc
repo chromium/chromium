@@ -104,9 +104,8 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest, ShouldEncryptAndDecrypt) {
   const std::string plaintext = "Sharing is caring";
 
   std::optional<std::vector<uint8_t>> encrypted_message =
-      sender_key_pair.HpkeAuthEncrypt(
-          base::as_bytes(base::make_span(plaintext)),
-          recipient_key_pair.GetRawPublicKey(), {});
+      sender_key_pair.HpkeAuthEncrypt(base::as_byte_span(plaintext),
+                                      recipient_key_pair.GetRawPublicKey(), {});
 
   EXPECT_TRUE(encrypted_message.has_value());
 
@@ -144,9 +143,8 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
                                                   0x00);
 
   std::optional<std::vector<uint8_t>> encrypted_message =
-      sender_key_pair.HpkeAuthEncrypt(
-          base::as_bytes(base::make_span("Sharing is caring")),
-          recipient_public_key, {});
+      sender_key_pair.HpkeAuthEncrypt(base::as_byte_span("Sharing is caring"),
+                                      recipient_public_key, {});
 
   EXPECT_FALSE(encrypted_message.has_value());
 }
@@ -162,9 +160,8 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
   const std::vector<uint8_t> sender_public_key(X25519_PUBLIC_VALUE_LEN, 0xDE);
 
   std::optional<std::vector<uint8_t>> encrypted_message =
-      sender_key_pair.HpkeAuthEncrypt(
-          base::as_bytes(base::make_span("Sharing is caring")),
-          recipient_key_pair.GetRawPublicKey(), {});
+      sender_key_pair.HpkeAuthEncrypt(base::as_byte_span("Sharing is caring"),
+                                      recipient_key_pair.GetRawPublicKey(), {});
 
   ASSERT_TRUE(encrypted_message.has_value());
 
@@ -184,9 +181,8 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 
   std::optional<std::vector<uint8_t>> encrypted_message =
-      sender_key_pair.HpkeAuthEncrypt(
-          base::as_bytes(base::make_span("Sharing is caring")),
-          recipient_key_pair.GetRawPublicKey(), {});
+      sender_key_pair.HpkeAuthEncrypt(base::as_byte_span("Sharing is caring"),
+                                      recipient_key_pair.GetRawPublicKey(), {});
 
   ASSERT_TRUE(encrypted_message.has_value());
 

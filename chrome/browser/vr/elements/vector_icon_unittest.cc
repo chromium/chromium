@@ -30,7 +30,7 @@ class TestVectorIcon : public VectorIcon {
   TestVectorIcon(const TestVectorIcon&) = delete;
   TestVectorIcon& operator=(const TestVectorIcon&) = delete;
 
-  ~TestVectorIcon() override {}
+  ~TestVectorIcon() override = default;
 
   UiTexture* GetTexture() const override { return VectorIcon::GetTexture(); }
 };

@@ -150,8 +150,7 @@ void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
             std::string file_contents = LoadBinaryProtoFromDisk(pb_path);
             if (file_contents.size()) {
               return mojo_base::ProtoWrapper(
-                  base::as_bytes(base::make_span(file_contents)),
-                  kChromeRootStoreProto,
+                  base::as_byte_span(file_contents), kChromeRootStoreProto,
                   mojo_base::ProtoWrapperBytes::GetPassKey());
             }
             return std::nullopt;
@@ -449,8 +448,7 @@ PKIMetadataComponentInstallerPolicy::BytesArrayFromProtoBytes(
   bytes.reserve(proto_bytes.size());
   base::ranges::transform(
       proto_bytes, std::back_inserter(bytes), [](std::string element) {
-        const auto bytes =
-            base::as_bytes(base::make_span(element.data(), element.length()));
+        const auto bytes = base::as_byte_span(element);
         return std::vector<uint8_t>(bytes.begin(), bytes.end());
       });
   return bytes;

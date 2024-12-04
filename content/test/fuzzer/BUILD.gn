@@ -518,6 +518,7 @@ if (use_fuzzing_engine) {
     testonly = true
     deps = [
       "//base",
+      "//base:i18n",
       "//content/browser",
       "//content/public/browser:browser_sources",
       "//third_party/fuzztest:fuzztest_gtest_main",

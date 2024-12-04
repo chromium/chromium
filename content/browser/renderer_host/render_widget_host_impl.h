@@ -368,7 +368,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // RenderInputRouterDelegate implementation.
   input::RenderWidgetHostViewInput* GetPointerLockView() override;
-  const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() override;
+  std::optional<bool> IsDelegatedInkHovering() override;
   std::unique_ptr<input::RenderInputRouterIterator>
   GetEmbeddedRenderInputRouters() override;
   input::RenderWidgetHostInputEventRouter* GetInputEventRouter() override;

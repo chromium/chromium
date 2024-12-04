@@ -48,9 +48,9 @@ GetExtensionInfoPrivateRemote() {
 
 namespace extensions {
 
-ChromeosInfoPrivateGetFunction::ChromeosInfoPrivateGetFunction() {}
+ChromeosInfoPrivateGetFunction::ChromeosInfoPrivateGetFunction() = default;
 
-ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() {}
+ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() = default;
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(!args().empty() && args()[0].is_list());
@@ -84,9 +84,9 @@ void ChromeosInfoPrivateGetFunction::RespondWithResult(base::Value result) {
   Respond(WithArguments(std::move(result)));
 }
 
-ChromeosInfoPrivateSetFunction::ChromeosInfoPrivateSetFunction() {}
+ChromeosInfoPrivateSetFunction::ChromeosInfoPrivateSetFunction() = default;
 
-ChromeosInfoPrivateSetFunction::~ChromeosInfoPrivateSetFunction() {}
+ChromeosInfoPrivateSetFunction::~ChromeosInfoPrivateSetFunction() = default;
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
@@ -143,10 +143,10 @@ void ChromeosInfoPrivateSetFunction::RespondWithResult(bool found) {
 }
 
 ChromeosInfoPrivateIsTabletModeEnabledFunction::
-    ChromeosInfoPrivateIsTabletModeEnabledFunction() {}
+    ChromeosInfoPrivateIsTabletModeEnabledFunction() = default;
 
 ChromeosInfoPrivateIsTabletModeEnabledFunction::
-    ~ChromeosInfoPrivateIsTabletModeEnabledFunction() {}
+    ~ChromeosInfoPrivateIsTabletModeEnabledFunction() = default;
 
 ExtensionFunction::ResponseAction
 ChromeosInfoPrivateIsTabletModeEnabledFunction::Run() {
@@ -173,10 +173,10 @@ void ChromeosInfoPrivateIsTabletModeEnabledFunction::RespondWithResult(
 }
 
 ChromeosInfoPrivateIsRunningOnLacrosFunction::
-    ChromeosInfoPrivateIsRunningOnLacrosFunction() {}
+    ChromeosInfoPrivateIsRunningOnLacrosFunction() = default;
 
 ChromeosInfoPrivateIsRunningOnLacrosFunction::
-    ~ChromeosInfoPrivateIsRunningOnLacrosFunction() {}
+    ~ChromeosInfoPrivateIsRunningOnLacrosFunction() = default;
 
 ExtensionFunction::ResponseAction
 ChromeosInfoPrivateIsRunningOnLacrosFunction::Run() {

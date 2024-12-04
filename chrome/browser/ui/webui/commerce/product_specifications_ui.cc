@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -64,9 +59,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kCommerceProductSpecificationsResources,
-                      kCommerceProductSpecificationsResourcesSize),
+      source, kCommerceProductSpecificationsResources,
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
   // Set up chrome://compare/disclosure
@@ -160,12 +153,11 @@ void ProductSpecificationsUI::BindInterface(
     mojo::PendingReceiver<
         product_specifications::mojom::ProductSpecificationsHandlerFactory>
         receiver) {
-  product_specifications_handler_factory_receiver_.reset();
-  product_specifications_handler_factory_receiver_.Bind(std::move(receiver));
+  product_specifications_factory_receiver_.reset();
+  product_specifications_factory_receiver_.Bind(std::move(receiver));
 }
 
 void ProductSpecificationsUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -179,8 +171,8 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker,
           std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
                                                                 profile),
           optimization_guide_keyed_service

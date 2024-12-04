@@ -178,7 +178,6 @@ class SavedDeskBrowserBuilder {
   SavedDeskBrowserBuilder& SetFirstNonPinnedTabIndex(int index);
   SavedDeskBrowserBuilder& SetActiveTabIndex(int index);
   SavedDeskBrowserBuilder& SetUrls(std::vector<GURL> urls);
-  SavedDeskBrowserBuilder& SetIsLacros(bool is_lacros);
   SavedDeskBrowserBuilder& SetLacrosProfileId(uint64_t lacros_profile_id);
   SavedDeskBrowserBuilder& AddTabGroupBuilder(
       SavedDeskTabGroupBuilder tab_group);

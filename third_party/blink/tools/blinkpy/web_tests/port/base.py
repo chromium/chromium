@@ -491,16 +491,6 @@ class Port(object):
             re.search(r'^\s*incremental_install\s*=\s*true\s*(#.*)?$',
                       contents, re.MULTILINE))
 
-    @memoized
-    def _build_is_chrome_branded(self):
-        chrome_branded = self.get_option('chrome_branded')
-        if chrome_branded:
-            return bool(chrome_branded)
-        contents = self._build_args_gn_content()
-        return bool(
-            re.search(r'^\s*is_chrome_branded\s*=\s*true\s*(#.*)?$', contents,
-                      re.MULTILINE))
-
     def driver_stop_timeout(self):
         """Returns the amount of time in seconds to wait before killing the process in driver.stop()."""
         # We want to wait for at least 3 seconds, but if we are really slow, we
@@ -2038,10 +2028,6 @@ class Port(object):
         return self.results_directory()
 
     def inspector_build_directory(self):
-        if self._build_is_chrome_branded():
-            return self.build_path('gen', 'third_party',
-                                   'devtools-frontend-internal',
-                                   'devtools-frontend', 'front_end')
         return self.build_path('gen', 'third_party', 'devtools-frontend',
                                'src', 'front_end')
 

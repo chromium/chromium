@@ -226,6 +226,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     SuggestionType item_id) {
   switch (item_id) {
     case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddresses:
@@ -484,8 +485,7 @@ bool AutofillExternalDelegate::HasActiveScreenReader() const {
   return false;
 #else
   // Note: This always returns false if ChromeVox is in use because the
-  // process-wide AXMode is not updated in that case; except for Lacros, where
-  // kScreenReader mirrors the spoken feedback preference.
+  // process-wide AXMode is not updated in that case.
   return ui::AXPlatform::GetInstance().GetMode().has_mode(
       ui::AXMode::kScreenReader);
 #endif
@@ -670,6 +670,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       // TODO(crbug.com/361414075): Implement previewing prediction
       // improvements.
       break;
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -879,6 +880,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
       break;
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kPasswordEntry:
@@ -1000,6 +1002,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
           .OnRemoveCurrentSingleFieldSuggestion(
               query_field_.name(), suggestion.main_text.value, suggestion.type);
       return true;
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:

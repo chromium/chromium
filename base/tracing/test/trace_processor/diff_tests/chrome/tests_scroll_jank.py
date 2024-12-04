@@ -607,4 +607,30 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280194,0.000000,0,0,1,0,1292554263653270,"[NULL]","[NULL]",1292554264600257,1292554264879257,"[NULL]",279000,1292554266795210,1292554266988210,1915953,193000,1292554276544210,1292554276677210,9556000,133000,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]"
         -2143831735395280183,0.000000,0,0,0,1,1292554034979270,1292554038935257,3955987,1292554039221257,1292554039362257,286000,141000,1292554039380210,1292554039504210,17953,124000,1292554043444210,1292554043545210,3940000,101000,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]"
         -2143831735395280179,11.111000,1,0,0,1,1292554029441270,1292554037281257,7839987,1292554037618257,1292554037785257,337000,167000,1292554038237210,1292554038326210,451953,89000,1292554042749210,1292554043429210,4423000,680000,1292554043721210,292000,1292554044172210,1292554044487210,451000,315000,1292554044656633,1292554045326633,169423,670000,1292554047111633,1785000,1292554048159633,1048000,1292554049700131,1292554050158131,1540498,458000,1292554058809270,1292554065670270,1292554074705270,8651139,6861000,9035000
+  """))
+
+  # A trace from M132 (ToT as of adding this test) has the necessary
+  # events/arguments (including the ones from the 'view' atrace category).
+  def test_chrome_input_dispatch_step(self):
+        return DiffTestBlueprint(
+        trace=DataPath('scroll_m132_with_atrace.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.android_input;
+
+        SELECT
+          input_reader_processing_start_ts,
+          input_reader_processing_end_ts,
+          input_reader_utid,
+          input_dispatcher_processing_start_ts,
+          input_dispatcher_processing_end_ts,
+          input_dispatcher_utid,
+          deliver_input_event_start_ts,
+          deliver_input_event_end_ts,
+          deliver_input_event_utid
+        FROM chrome_android_input
+        WHERE android_input_id = '0x35f0bf2b'
+        """,
+        out=Csv("""
+        "input_reader_processing_start_ts","input_reader_processing_end_ts","input_reader_utid","input_dispatcher_processing_start_ts","input_dispatcher_processing_end_ts","input_dispatcher_utid","deliver_input_event_start_ts","deliver_input_event_end_ts","deliver_input_event_utid"
+        1295608261171203,1295608261380838,1404,1295608261495462,1295608262021300,1403,1295608261771463,1295608262613138,7
         """))

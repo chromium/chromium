@@ -39,6 +39,13 @@ BASE_DECLARE_FEATURE(kMerchantTrust);
 extern const char kMerchantTrustEnabledWithSampleDataName[];
 extern const base::FeatureParam<bool> kMerchantTrustEnabledWithSampleData;
 
+extern const char kMerchantTrustForceShowUIForTestingName[];
+extern const base::FeatureParam<bool> kMerchantTrustForceShowUIForTesting;
+
+// Whether the merchant trust section for Page Info based on country and locale.
+extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
+                                          const std::string& locale);
+
 }  // namespace page_info
 
 #endif  // COMPONENTS_PAGE_INFO_CORE_FEATURES_H_

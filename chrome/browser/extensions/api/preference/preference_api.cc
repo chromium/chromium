@@ -46,7 +46,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 using extensions::mojom::APIPermissionID;

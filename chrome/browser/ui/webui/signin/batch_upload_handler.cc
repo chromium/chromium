@@ -50,6 +50,18 @@ std::string ComputeBatchUploadSubtitle(syncer::DataType first_type,
         IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS, first_type_item_count);
   }
 
+  if (first_type == syncer::DataType::BOOKMARKS) {
+    if (number_of_types > 1) {
+      // Returns "bookmarks + other items" combo string.
+      return l10n_util::GetPluralStringFUTF8(
+          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO,
+          first_type_item_count);
+    }
+    // Returns the bookmarks only string.
+    return l10n_util::GetPluralStringFUTF8(
+        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS, first_type_item_count);
+  }
+
   // Returns the generic items string.
   return l10n_util::GetPluralStringFUTF8(
       IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS, total_item_count);
@@ -239,6 +251,8 @@ int BatchUploadHandler::GetTypeSectionTitleId(syncer::DataType type) {
   switch (type) {
     case syncer::DataType::PASSWORDS:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS;
+    case syncer::DataType::BOOKMARKS:
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_BOOKMARKS;
     case syncer::DataType::CONTACT_INFO:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES;
     default:

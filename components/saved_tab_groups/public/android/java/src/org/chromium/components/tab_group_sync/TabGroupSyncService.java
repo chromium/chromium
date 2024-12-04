@@ -175,7 +175,9 @@ public interface TabGroupSyncService {
     void moveTab(LocalTabGroupId tabGroupId, int tabId, int newIndexInGroup);
 
     /**
-     * Called to notify the backend that a tab was selected in the UI. Metrics purposes only.
+     * Called to notify the backend that a tab was selected in the UI. Used by the messaging backend
+     * to keep track of currently selected tab. TODO(crbug.com/362092886): Invoke this for
+     * non-grouped tabs as well.
      *
      * @param tabGroupId The local group ID of the corresponding tab group.
      * @param tabId The local ID of the corresponding tab.

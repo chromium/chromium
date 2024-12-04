@@ -90,7 +90,6 @@ inline constexpr char kChromeUIDefaultHost[] = "version";
 inline constexpr char kChromeUIDelayedHangUIHost[] = "delayeduithreadhang";
 inline constexpr char kChromeUIDeviceLogHost[] = "device-log";
 inline constexpr char kChromeUIDeviceLogUrl[] = "chrome://device-log";
-inline constexpr char16_t kChromeUIDeviceLogUrl16[] = u"chrome://device-log";
 inline constexpr char kChromeUIDevToolsBlankPath[] = "blank";
 inline constexpr char kChromeUIDevToolsBundledPath[] = "bundled";
 inline constexpr char kChromeUIDevToolsCustomPath[] = "custom";
@@ -302,8 +301,6 @@ inline constexpr char kChromeUIVersionURL[] = "chrome://version/";
 inline constexpr char16_t kChromeUIVersionURL16[] = u"chrome://version/";
 inline constexpr char kChromeUIWebRtcLogsHost[] = "webrtc-logs";
 inline constexpr char kChromeUIWebuiGalleryHost[] = "webui-gallery";
-inline constexpr char kChromeUIWelcomeHost[] = "welcome";
-inline constexpr char kChromeUIWelcomeURL[] = "chrome://welcome/";
 
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr char kChromeUIInternalsQueryTilesPath[] = "query-tiles";
@@ -363,8 +360,6 @@ inline constexpr char kChromeUIUntrustedCompanionSidePanelHost[] =
 inline constexpr char kChromeUIUntrustedCompanionSidePanelURL[] =
     "chrome-untrusted://companion-side-panel.top-chrome/";
 inline constexpr char kChromeUIUntrustedFeedURL[] = "chrome-untrusted://feed/";
-inline constexpr char kChromeUIUntrustedHatsHost[] = "hats";
-inline constexpr char kChromeUIUntrustedHatsURL[] = "chrome-untrusted://hats/";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelHost[] =
     "read-anything-side-panel.top-chrome";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelURL[] =
@@ -714,8 +709,6 @@ inline constexpr char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/40647483): Remove when issue is resolved.
-inline constexpr char kChromeUIWelcomeWin10Host[] = "welcome-win10";
 inline constexpr char kCleanupSubPage[] = "cleanup";
 #endif
 

@@ -655,8 +655,6 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
                        AddAcceleratorDisruptive) {
-  ui::Accelerator default_accel =
-      GetDefaultAcceleratorForAction(AcceleratorAction::kToggleCalendar);
   ui::Accelerator feedback_accel =
       GetDefaultAcceleratorForAction(AcceleratorAction::kOpenFeedbackPage);
 

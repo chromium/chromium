@@ -68,7 +68,7 @@ enum PseudoId : uint8_t {
   kPseudoIdCheckMark,
   kPseudoIdBefore,
   kPseudoIdAfter,
-  kPseudoIdSelectArrow,
+  kPseudoIdPickerIcon,
   kPseudoIdMarker,
   kPseudoIdBackdrop,
   kPseudoIdSelection,

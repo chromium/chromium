@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
 
 #include "ash/webui/common/trusted_types_util.h"
@@ -70,10 +65,8 @@ ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
       l10n_util::GetStringFUTF16(IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION,
                                  ui::GetChromeOSDeviceName()));
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kExtendedUpdatesResources, kExtendedUpdatesResourcesSize),
-      IDR_EXTENDED_UPDATES_EXTENDED_UPDATES_HTML);
+  webui::SetupWebUIDataSource(source, kExtendedUpdatesResources,
+                              IDR_EXTENDED_UPDATES_EXTENDED_UPDATES_HTML);
 
   // For OOBE Adaptive Dialog.
   OobeUI::AddOobeComponents(source);

@@ -164,7 +164,11 @@ enum class ProfileKeepAliveOrigin {
   // command handler, which does not belong to any window.
   kHeadlessCommand = 39,
 
-  kMaxValue = kHeadlessCommand,
+  // Used by glic to ensure that the profile associated with the glic view is
+  // not destroyed while visible.
+  kGlicView = 40,
+
+  kMaxValue = kGlicView,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml)
 

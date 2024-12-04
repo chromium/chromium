@@ -356,8 +356,8 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdAfter;
   }
-  DISABLE_CFI_PERF bool IsSelectArrowPseudoElement() const {
-    return GetPseudoId() == kPseudoIdSelectArrow;
+  DISABLE_CFI_PERF bool IsPickerIconPseudoElement() const {
+    return GetPseudoId() == kPseudoIdPickerIcon;
   }
   DISABLE_CFI_PERF bool IsScrollMarkerGroupBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollMarkerGroupBefore;

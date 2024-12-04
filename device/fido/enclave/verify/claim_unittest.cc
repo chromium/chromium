@@ -9,6 +9,7 @@
 
 #include "device/fido/enclave/verify/claim.h"
 
+#include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
 #include "device/fido/enclave/verify/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,21 +97,18 @@ TEST(ClaimTest, VerifyValidityDuration_ValidityIsCurrent_ReturnsTrue) {
 
 TEST(ClaimTest, ParseEndorsement_ValidJsonFile_SuccessfullyReturnsValue) {
   std::string endorsement = GetContentsFromFile("endorsement.json");
-  auto endorsement_statement = ParseEndorsementStatement(
-      base::make_span(reinterpret_cast<const uint8_t*>(endorsement.data()),
-                      endorsement.size()));
+  auto endorsement_statement =
+      ParseEndorsementStatement(base::as_byte_span(endorsement));
   ASSERT_TRUE(endorsement_statement.has_value());
   ASSERT_TRUE(ValidateEndorsement(*endorsement_statement));
 }
 
 TEST(ClaimTest, ParseEndorsement_InvalidJsonFile_ReturnsErrorMessage) {
   std::string endorsement = GetContentsFromFile("endorsement_novalidity.json");
-  auto endorsement_statement = ParseEndorsementStatement(
-      base::make_span(reinterpret_cast<const uint8_t*>(endorsement.data()),
-                      endorsement.size()));
-  ASSERT_FALSE(endorsement_statement.has_value());
-  ASSERT_EQ(endorsement_statement.error(),
-            "can't parse predicate from endorsement.");
+  auto endorsement_statement =
+      ParseEndorsementStatement(base::as_byte_span(endorsement));
+  EXPECT_THAT(endorsement_statement,
+              base::test::ErrorIs("can't parse predicate from endorsement."));
 }
 
 }  // namespace device::enclave

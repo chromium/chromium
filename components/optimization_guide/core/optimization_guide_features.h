@@ -471,10 +471,6 @@ bool GetOnDeviceModelRetractUnsafeContent();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldUseTextSafetyClassifierModel();
 
-// Number of tokens between each text safety update.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-uint32_t GetOnDeviceModelTextSafetyTokenInterval();
-
 // This is the minimum required reliability threshold for language detection to
 // be considered reliable enough for the text safety classifier. Clamped to the
 // range [0, 1].

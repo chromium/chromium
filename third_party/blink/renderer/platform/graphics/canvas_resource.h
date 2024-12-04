@@ -94,8 +94,9 @@ class PLATFORM_EXPORT CanvasResource
   // outstanding references).
   virtual bool IsRecycleable() const = 0;
 
-  // Returns true if the resource can be used with accelerated compositing.
-  virtual bool SupportsAcceleratedCompositing() const = 0;
+  // Returns true if this instance creates TransferableResources for usage with
+  // GPU compositing.
+  virtual bool CreatesAcceleratedTransferableResources() const = 0;
 
   // Transfers ownership of the resource's vix::ReleaseCallback.  This is useful
   // prior to transferring a resource to another thread, to retain the release
@@ -173,14 +174,6 @@ class PLATFORM_EXPORT CanvasResource
   // should not be recycled for writing again but can be safely read from.
   virtual void NotifyResourceLost() = 0;
 
-  void SetFilterQuality(cc::PaintFlags::FilterQuality filter) {
-    filter_quality_ = filter;
-  }
-  // The filter quality to use when the resource is drawn by the compositor.
-  cc::PaintFlags::FilterQuality FilterQuality() const {
-    return filter_quality_;
-  }
-
   SkImageInfo CreateSkImageInfo() const;
 
   bool is_cross_thread() const {
@@ -191,7 +184,6 @@ class PLATFORM_EXPORT CanvasResource
 
  protected:
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
-                 cc::PaintFlags::FilterQuality,
                  gfx::Size size,
                  viz::SharedImageFormat format,
                  SkAlphaType alpha_type,
@@ -216,9 +208,9 @@ class PLATFORM_EXPORT CanvasResource
       bool needs_verified_synctoken);
 
   // Prepares GPU TransferableResource for resources for which
-  // SupportsAcceleratedCompositing() is true but UsesClientSharedImage()
-  // returns false. Subclasses that match these conditions *must* override this
-  // method.
+  // CreatesAcceleratedTransferableResources() is true but
+  // UsesClientSharedImage() returns false. Subclasses that match these
+  // conditions *must* override this method.
   virtual bool PrepareAcceleratedTransferableResourceWithoutClientSI(
       viz::TransferableResource* out_resource) {
     NOTREACHED();
@@ -249,7 +241,6 @@ class PLATFORM_EXPORT CanvasResource
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
-  cc::PaintFlags::FilterQuality filter_quality_;
   LastUnrefCallback last_unref_callback_;
 };
 
@@ -262,12 +253,11 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       SkAlphaType alpha_type,
       gfx::ColorSpace color_space,
       base::WeakPtr<CanvasResourceProvider>,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
-      cc::PaintFlags::FilterQuality);
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
   ~CanvasResourceSharedBitmap() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const final;
-  bool SupportsAcceleratedCompositing() const final { return false; }
+  bool CreatesAcceleratedTransferableResources() const final { return false; }
   bool UsesClientSharedImage() final { return true; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
     return shared_image_;
@@ -297,8 +287,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       SkAlphaType alpha_type,
       gfx::ColorSpace color_space,
       base::WeakPtr<CanvasResourceProvider>,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
-      cc::PaintFlags::FilterQuality);
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
   bool UsesAcceleratedRaster() const final { return false; }
 
@@ -318,13 +307,12 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       gfx::ColorSpace color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags);
   ~CanvasResourceSharedImage() override;
 
   bool IsRecycleable() const final { return true; }
-  bool SupportsAcceleratedCompositing() const override { return true; }
+  bool CreatesAcceleratedTransferableResources() const override { return true; }
   bool IsValid() const final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   void Transfer() final;
@@ -405,7 +393,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
                             gfx::ColorSpace color_space,
                             base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                             base::WeakPtr<CanvasResourceProvider>,
-                            cc::PaintFlags::FilterQuality,
                             bool is_accelerated,
                             gpu::SharedImageUsageSet shared_image_usage_flags);
 
@@ -462,13 +449,12 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       const viz::TransferableResource& transferable_resource,
       viz::ReleaseCallback release_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality);
+      base::WeakPtr<CanvasResourceProvider>);
 
   ~ExternalCanvasResource() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
-  bool SupportsAcceleratedCompositing() const override { return true; }
+  bool CreatesAcceleratedTransferableResources() const override { return true; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   void NotifyResourceLost() override { resource_is_lost_ = true; }
@@ -498,8 +484,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
                          const viz::TransferableResource& transferable_resource,
                          viz::ReleaseCallback out_callback,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                         base::WeakPtr<CanvasResourceProvider>,
-                         cc::PaintFlags::FilterQuality);
+                         base::WeakPtr<CanvasResourceProvider>);
 
   scoped_refptr<gpu::ClientSharedImage> client_si_;
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -518,12 +503,11 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
       SkAlphaType alpha_type,
       gfx::ColorSpace color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality);
+      base::WeakPtr<CanvasResourceProvider>);
   ~CanvasResourceSwapChain() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
-  bool SupportsAcceleratedCompositing() const override { return true; }
+  bool CreatesAcceleratedTransferableResources() const override { return true; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   void NotifyResourceLost() override {
@@ -555,8 +539,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
                           SkAlphaType alpha_type,
                           gfx::ColorSpace color_space,
                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                          base::WeakPtr<CanvasResourceProvider>,
-                          cc::PaintFlags::FilterQuality);
+                          base::WeakPtr<CanvasResourceProvider>);
 
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;

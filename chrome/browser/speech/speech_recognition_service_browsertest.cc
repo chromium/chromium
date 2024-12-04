@@ -488,7 +488,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
 
   // TODO(crbug.com/40753481): Check implementation / sandbox policy on Mac and
   // Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/381960795): Re-enable test on Linux once bug is fixed.
+#if BUILDFLAG(IS_CHROMEOS)
   // Check that Start begins audio recording.
   // TODO(crbug.com/40166991): Try to mock audio input, maybe with
   // TestStreamFactory::stream_, to test end-to-end.

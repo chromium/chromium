@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <array>
 #include <concepts>
+#include <functional>
 #include <initializer_list>
 #include <iosfwd>
 #include <iterator>
@@ -27,6 +28,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/cstring_view.h"
 #include "base/types/to_address.h"
 
 // A span is a view of contiguous elements that can be accessed like an array,
@@ -229,13 +231,10 @@
 //   (non-range) objects to spans.
 // - For convenience, provides `[byte_]span_[with_nul_]from_cstring()` to
 //   convert `const char[]` literals to spans.
+// - For convenience, provides `[byte_]span_with_nul_from_cstring_view()` to
+//   convert `basic_cstring_view<T>` to spans, preserving the null terminator.
 // - For convenience, provides `as_[writable_]byte_span()` to convert
 //   spanifiable objects directly to byte spans.
-//
-// Because `span` predated C++17 and CTAD, there are also (deprecated)
-// type-deducing `make_span()` utility functions. Avoid these; use CTAD
-// (`span(...)` without explicit template args) or relevant helper methods.
-// TODO(crbug.com/341907909): Remove these.
 
 namespace base {
 
@@ -340,15 +339,6 @@ inline constexpr size_t kComputedExtentImpl<span<T, N, InternalPtrType>> = N;
 template <typename T>
 inline constexpr size_t kComputedExtent =
     kComputedExtentImpl<std::remove_cvref_t<T>>;
-
-// Converts an iterator to an integral value.
-//
-// This is necessary when comparing iterators from different spans, since
-// comparing pointers from different allocations is UB.
-template <typename T>
-constexpr uintptr_t AsUintptrT(const T& t) {
-  return reinterpret_cast<uintptr_t>(to_address(t));
-}
 
 template <typename ByteType,
           typename ElementType,
@@ -503,10 +493,21 @@ class GSL_POINTER span {
   constexpr void copy_from(span<const element_type, extent> other)
     requires(!std::is_const_v<element_type>)
   {
-    if (internal::AsUintptrT(begin()) <= internal::AsUintptrT(other.begin())) {
-      std::ranges::copy(other, begin());
+    if (std::is_constant_evaluated()) {
+      // Comparing pointers to different objects at compile time yields
+      // unspecified behavior, which would halt compilation. Instead,
+      // unconditionally use a separate buffer in the constexpr context. This
+      // would be inefficient at runtime, but that's irrelevant.
+      std::vector<element_type> vec(other.begin(), other.end());
+      std::ranges::copy(vec, begin());
     } else {
-      std::ranges::copy_backward(other, end());
+      // Using `<=` to compare pointers to different allocations is UB, but
+      // using `std::less_equal` is well-defined ([comparisons.general]).
+      if (std::less_equal{}(to_address(begin()), to_address(other.begin()))) {
+        std::ranges::copy(other, begin());
+      } else {
+        std::ranges::copy_backward(other, end());
+      }
     }
   }
   template <typename R, size_t N = internal::kComputedExtent<R>>
@@ -530,8 +531,18 @@ class GSL_POINTER span {
       span<const element_type, extent> other)
     requires(!std::is_const_v<element_type>)
   {
-    DCHECK(internal::AsUintptrT(end()) <= internal::AsUintptrT(other.begin()) ||
-           internal::AsUintptrT(begin()) >= internal::AsUintptrT(other.end()));
+    // Comparing pointers to different objects at compile time yields
+    // unspecified behavior, which would halt compilation. Instead implement in
+    // terms of the guaranteed-safe behavior; performance is irrelevant in the
+    // constexpr context.
+    if (std::is_constant_evaluated()) {
+      copy_from(other);
+      return;
+    }
+
+    // See comments in `copy_from()` re: use of templated comparison objects.
+    DCHECK(std::less_equal{}(to_address(end()), to_address(other.begin())) ||
+           std::greater_equal{}(to_address(begin()), to_address(other.end())));
     std::ranges::copy(other, begin());
   }
   template <typename R, size_t N = internal::kComputedExtent<R>>
@@ -958,10 +969,21 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     requires(!std::is_const_v<element_type>)
   {
     CHECK_EQ(size(), other.size());
-    if (internal::AsUintptrT(begin()) <= internal::AsUintptrT(other.begin())) {
-      std::ranges::copy(other, begin());
+    if (std::is_constant_evaluated()) {
+      // Comparing pointers to different objects at compile time yields
+      // unspecified behavior, which would halt compilation. Instead,
+      // unconditionally use a separate buffer in the constexpr context. This
+      // would be inefficient at runtime, but that's irrelevant.
+      std::vector<element_type> vec(other.begin(), other.end());
+      std::ranges::copy(vec, begin());
     } else {
-      std::ranges::copy_backward(other, end());
+      // Using `<=` to compare pointers to different allocations is UB, but
+      // using `std::less_equal` is well-defined ([comparisons.general]).
+      if (std::less_equal{}(to_address(begin()), to_address(other.begin()))) {
+        std::ranges::copy(other, begin());
+      } else {
+        std::ranges::copy_backward(other, end());
+      }
     }
   }
 
@@ -972,9 +994,19 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   constexpr void copy_from_nonoverlapping(span<const element_type> other)
     requires(!std::is_const_v<element_type>)
   {
+    // Comparing pointers to different objects at compile time yields
+    // unspecified behavior, which would halt compilation. Instead implement in
+    // terms of the guaranteed-safe behavior; performance is irrelevant in the
+    // constexpr context.
+    if (std::is_constant_evaluated()) {
+      copy_from(other);
+      return;
+    }
+
     CHECK_EQ(size(), other.size());
-    DCHECK(internal::AsUintptrT(end()) <= internal::AsUintptrT(other.begin()) ||
-           internal::AsUintptrT(begin()) >= internal::AsUintptrT(other.end()));
+    // See comments in `copy_from()` re: use of templated comparison objects.
+    DCHECK(std::less_equal{}(to_address(end()), to_address(other.begin())) ||
+           std::greater_equal{}(to_address(begin()), to_address(other.end())));
     std::ranges::copy(other, begin());
   }
 
@@ -1422,6 +1454,17 @@ constexpr auto span_with_nul_from_cstring(
   return span(str);
 }
 
+// Converts a `basic_cstring_view` instance to a `span<const CharT>`, preserving
+// the trailing '\0'.
+//
+// (Not in `std::`; explicitly includes the trailing nul, which would be omitted
+// by calling the range constructor.)
+template <typename CharT>
+constexpr auto span_with_nul_from_cstring_view(basic_cstring_view<CharT> str) {
+  // SAFETY: It is safe to read the guaranteed null-terminator in `str`.
+  return UNSAFE_BUFFERS(span(str.data(), str.size() + 1));
+}
+
 // Like `span_from_cstring()`, but returns a byte span.
 //
 // (Not in `std::`.)
@@ -1447,6 +1490,15 @@ constexpr auto byte_span_with_nul_from_cstring(
   // do not carry through the function call, so the `ENABLE_IF_ATTR` will not be
   // satisfied.
   return as_bytes(span(str));
+}
+
+// Like `span_with_nul_from_cstring_view()`, but returns a byte span.
+//
+// (Not in `std::`.)
+template <typename CharT>
+constexpr auto byte_span_with_nul_from_cstring_view(
+    basic_cstring_view<CharT> str) {
+  return as_bytes(span_with_nul_from_cstring_view(str));
 }
 
 // Converts an object which can already explicitly convert to some kind of span
@@ -1486,32 +1538,6 @@ template <int&... ExplicitArgumentBarrier, typename ElementType, size_t Extent>
 constexpr auto as_writable_byte_span(
     ElementType (&arr LIFETIME_BOUND)[Extent]) {
   return as_writable_bytes(span<ElementType, Extent>(arr));
-}
-
-// Type-deducing helper to construct a span.
-// Deprecated: Use CTAD (i.e. use `span()` directly without template arguments).
-// TODO(crbug.com/341907909): Remove.
-template <int&... ExplicitArgumentBarrier, typename It, typename EndOrSize>
-  requires(std::contiguous_iterator<It>)
-// SAFETY: `it` must point to the first of a (possibly-empty) series of
-// contiguous valid elements. If `end_or_size` is a size, the series must
-// contain at least that many valid elements; if it is an iterator or sentinel,
-// it must refer to the same allocation, and all elements in the range [it,
-// end_or_size) must be valid. Otherwise, the span will allow access to invalid
-// elements, resulting in UB.
-UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, EndOrSize end_or_size) {
-  return UNSAFE_BUFFERS(span(it, end_or_size));
-}
-template <int&... ExplicitArgumentBarrier, typename R>
-  requires(internal::SpanConstructibleFrom<R &&>)
-constexpr auto make_span(R&& r LIFETIME_BOUND) {
-  return span(std::forward<R>(r));
-}
-template <int&... ExplicitArgumentBarrier, typename R>
-  requires(internal::SpanConstructibleFrom<R &&> &&
-           std::ranges::borrowed_range<R>)
-constexpr auto make_span(R&& r) {
-  return span(std::forward<R>(r));
 }
 
 }  // namespace base

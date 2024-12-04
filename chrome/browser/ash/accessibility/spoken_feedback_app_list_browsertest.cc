@@ -196,7 +196,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
         {features::kProductivityLauncherImageSearch,
          features::kLauncherSearchControl,
          features::kFeatureManagementLocalImageSearch},
-        {});
+        {features::kScannerDogfood});
 
     LoggedInSpokenFeedbackTest::SetUp();
   }

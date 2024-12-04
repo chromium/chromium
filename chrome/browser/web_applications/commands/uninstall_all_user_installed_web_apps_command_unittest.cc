@@ -132,10 +132,8 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, NoUserInstalledWebApps) {
           *profile(), future.GetCallback()));
   EXPECT_EQ(future.Get(), std::nullopt);
 
-  EXPECT_TRUE(registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            registrar_unsafe().GetInstallState(app_id));
 }
 
 TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
@@ -166,10 +164,8 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
           *profile(), future.GetCallback()));
   EXPECT_EQ(future.Get(), std::nullopt);
 
-  EXPECT_TRUE(registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            registrar_unsafe().GetInstallState(app_id));
   EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kPolicy));
   EXPECT_FALSE(web_app->GetSources().Has(WebAppManagement::kSync));
 }
@@ -230,26 +226,11 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
           *profile(), future.GetCallback()));
   EXPECT_EQ(future.Get(), std::nullopt);
 
-  EXPECT_FALSE(registrar_unsafe().IsInstallState(
-      app_id1, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_FALSE(registrar_unsafe().IsInstallState(
-      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_FALSE(registrar_unsafe().IsInstallState(
-      app_id3, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_FALSE(registrar_unsafe().IsInstallState(
-      app_id4, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_FALSE(registrar_unsafe().IsInstallState(
-      app_id5, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id1));
+  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id2));
+  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id3));
+  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id4));
+  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id5));
 }
 
 class UninstallAllUserInstalledWebAppsCommandWithIconManagerTest
@@ -292,10 +273,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandWithIconManagerTest,
           *profile(), future.GetCallback()));
   EXPECT_EQ(future.Get(), app_id + "[Sync]: kError");
 
-  EXPECT_FALSE(registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
 }
 
 }  // namespace web_app

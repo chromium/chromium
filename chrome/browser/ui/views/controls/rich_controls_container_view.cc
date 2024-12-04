@@ -144,6 +144,13 @@ gfx::Size RichControlsContainerView::CalculatePreferredSize(
                    GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
+void RichControlsContainerView::SetTitleTextStyleAndColor(
+    int style,
+    ui::ColorId color_id) {
+  title_->SetTextStyle(style);
+  title_->SetEnabledColorId(color_id);
+}
+
 const std::u16string& RichControlsContainerView::GetTitleForTesting() {
   return title_->GetText();
 }

@@ -66,7 +66,7 @@ class TextTexture : public UiTexture {
   TextTexture(const TextTexture&) = delete;
   TextTexture& operator=(const TextTexture&) = delete;
 
-  ~TextTexture() override {}
+  ~TextTexture() override = default;
 
   void SetFontHeightInDmm(float font_height_dmms) {
     SetAndDirty(&font_height_dmms_, font_height_dmms);
@@ -110,7 +110,7 @@ Text::Text(float font_height_dmms)
   texture_->SetFontHeightInDmm(font_height_dmms);
 }
 
-Text::~Text() {}
+Text::~Text() = default;
 
 void Text::SetText(const std::u16string& text) {
   texture_->SetText(text);

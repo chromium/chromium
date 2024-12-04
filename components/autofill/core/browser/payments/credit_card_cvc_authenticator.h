@@ -125,8 +125,14 @@ class CreditCardCvcAuthenticator
   base::WeakPtr<payments::FullCardRequest::UIDelegate>
   GetAsFullCardRequestUIDelegate();
 
+  // TODO(crbug.com/40100455): Introduce TestApi instead?
+  payments::FullCardRequest& full_card_request_for_testing() {
+    return *full_card_request_;
+  }
+
  private:
-  friend class BrowserAutofillManagerTest;
+  // TODO(crbug.com/40100455): Eliminate friendships. Introduce TestApi if
+  // necessary.
   friend class AutofillMetricsTest;
   friend class autofill_metrics::AutofillMetricsBaseTest;
   friend class CreditCardAccessManagerTestBase;

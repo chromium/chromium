@@ -4234,6 +4234,15 @@ Ambas têm o mesmo efeito no comportamento do navegador.</translation>
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
 <translation id="4030152268425532846">Desativar o descarte do login automático</translation>
 <translation id="4043796890723386527">Impedir que os usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
+<translation id="4047633048700722778">Se a política for definida, será possível controlar o filtro de URL SafeSites, que usa a API Google Safe Search para classificar URLs como sendo pornográficos ou não.
+
+Quando a política for definida para:
+
+* não filtrar sites com conteúdo adulto ou for deixada sem definição: os sites não serão filtrados;
+
+* filtrar sites com conteúdo adulto: sites pornográficos serão filtrados.
+
+A política se aplica ao URL que o usuário acessa e aos iframes. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre esta e pode ser usada para substituir os vereditos da API Google Safe Search.</translation>
 <translation id="4051723201852944592">Ativar oclusão de janelas</translation>
 <translation id="4052529125939620019">Carregar a extensão do componente do CryptoToken na inicialização</translation>
 <translation id="4053157306171963473">Desativar relatórios sobre o horário das atividades do dispositivo</translation>
@@ -8809,6 +8818,15 @@ O host da Área de trabalho remota do Google Chrome é um serviço nativo execut
 Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome não está instalada.</translation>
 <translation id="7202925763179776247">Permitir restrições de downloads</translation>
 <translation id="7203243973351251622">Gravador (compatível desde a versão 130)</translation>
+<translation id="7205989349935313324">Com a sobreposição do Lens, os usuários podem fazer pesquisas no Google interagindo com uma captura de tela da página atual sobreposta ao conteúdo da Web. Além disso, ela permite que os usuários façam pesquisas no Google relacionadas ao contexto da página atual. Para fornecer respostas contextuais, a sobreposição do Lens envia o conteúdo da página ao Google para responder à consulta do usuário com o contexto da página em que ele está.
+
+Não há uma configuração para o usuário controlar esse recurso. Ele geralmente fica disponível para todos os usuários que têm o Google como mecanismo de pesquisa padrão, a menos que seja desativado por esta política.
+
+0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = desativa o recurso.</translation>
 <translation id="7207095846245296855">Forçar o Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar o fuso horário automaticamente</translation>
 <translation id="721617466745658461">Permitir que os usuários selecionem o binário <ph name="LACROS_NAME" /> do navegador</translation>
@@ -10006,6 +10024,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
       Se a política for definida como "Desativada" ou não for definida, nenhum pacote será enviado.</translation>
 <translation id="8168359201203671567">Luz de fundo em arco-íris do teclado</translation>
 <translation id="8169452762291746260">Desativar o monitoramento de integridade do dispositivo</translation>
+<translation id="8170359860920320269">Filtrar sites com conteúdo adulto</translation>
 <translation id="8171262216089271568">Ativar o cursor grande na tela de login</translation>
 <translation id="8171924760436219650">Usar o botão direito do mouse como o principal na tela de login</translation>
 <translation id="81724933026241365">Permitir que o dispositivo seja desligado com o ícone de encerramento ou o botão liga/desliga</translation>

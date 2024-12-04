@@ -315,6 +315,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
     const url::Origin& data_origin,
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
+    blink::mojom::SharedStorageWorkletCreationMethod creation_method,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
@@ -333,6 +334,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
           storage_partition_->GetSharedStorageRuntimeManager()),
       browser_context_(
           document_service.render_frame_host().GetBrowserContext()),
+      creation_method_(creation_method),
       shared_storage_origin_(data_origin),
       shared_storage_site_(net::SchemefulSite(shared_storage_origin_)),
       main_frame_origin_(document_service.main_frame_origin()),

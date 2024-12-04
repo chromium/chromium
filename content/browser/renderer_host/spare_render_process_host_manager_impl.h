@@ -54,7 +54,9 @@ enum class NoSpareRendererReason {
   kMemoryPressure,
   kProcessExited,
   kProcessHostDestroyed,
-  kMaxValue = kProcessHostDestroyed
+  kNotYetCreatedFirstLaunch,
+  kNotYetCreatedAfterWarmup,
+  kMaxValue = kNotYetCreatedAfterWarmup
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:NoSpareRendererReason)
 
@@ -214,7 +216,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 
   // The reason for there being no spare render process present.
   NoSpareRendererReason no_spare_renderer_reason_ =
-      NoSpareRendererReason::kNotYetCreated;
+      NoSpareRendererReason::kNotYetCreatedFirstLaunch;
 
   // Indicates if the browser is not currently loading content.
   bool is_browser_idle_ = true;

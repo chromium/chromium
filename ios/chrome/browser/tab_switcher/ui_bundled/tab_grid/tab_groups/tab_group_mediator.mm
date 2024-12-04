@@ -292,6 +292,14 @@ constexpr CGFloat kFacePileAvatarSize = 24;
                                 DragItemOrigin::kOther);
 }
 
+// Overrides the parent to return the data if there is a new message for a tab
+// in a group.
+- (ActivityLabelData*)activityLabelDataForTab:(web::WebStateID)webStateID {
+  // TODO(crbug.com/375594458): return ActivityLabelData with the string "Added"
+  // or "Changed" and the user icon view.
+  return nil;
+}
+
 #pragma mark - TabCollectionDragDropHandler override
 
 // Overrides the parent as the given destination index do not take into account

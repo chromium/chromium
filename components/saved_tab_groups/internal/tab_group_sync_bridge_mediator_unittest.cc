@@ -66,6 +66,8 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
             syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
+    ON_CALL(mock_shared_processor_, IsTrackingMetadata)
+        .WillByDefault(Return(true));
     InitializeModelAndMediator();
   }
 

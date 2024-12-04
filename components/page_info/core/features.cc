@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -59,5 +60,23 @@ const char kMerchantTrustEnabledWithSampleDataName[] =
 const base::FeatureParam<bool> kMerchantTrustEnabledWithSampleData{
     &kMerchantTrust, kMerchantTrustEnabledWithSampleDataName, false};
 
+const char kMerchantTrustEnabledForCountry[] = "us";
+const char kMerchantTrustEnabledForLocale[] = "en-us";
+
+const char kMerchantTrustForceShowUIForTestingName[] =
+    "force-show-ui-for-testing";
+const base::FeatureParam<bool> kMerchantTrustForceShowUIForTesting{
+    &kMerchantTrust, kMerchantTrustForceShowUIForTestingName, false};
+
+extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
+                                          const std::string& locale) {
+  if (kMerchantTrustForceShowUIForTesting.Get()) {
+    return true;
+  }
+
+  return base::FeatureList::IsEnabled(kMerchantTrust) &&
+         base::ToLowerASCII(country_code) == kMerchantTrustEnabledForCountry &&
+         base::ToLowerASCII(locale) == kMerchantTrustEnabledForLocale;
+}
 
 }  // namespace page_info

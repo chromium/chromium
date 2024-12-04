@@ -72,8 +72,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeOne) {
   std::vector<SubsampleEntry> subsamples;
 
   // Decode frame.
-  accelerator_->ProcessSPS(&sps, base::make_span(kSPS0));
-  accelerator_->ProcessPPS(&pps, base::make_span(kPPS0));
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
   accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
                                     ref_pic_list, pic);
   accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic,
@@ -109,8 +109,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo) {
   std::vector<SubsampleEntry> subsamples;
 
   // First frame.
-  accelerator_->ProcessSPS(&sps, base::make_span(kSPS0));
-  accelerator_->ProcessPPS(&pps, base::make_span(kPPS0));
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
   accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
                                     ref_pic_list, pic0);
   accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic0,
@@ -122,8 +122,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo) {
   accelerator_->SubmitDecode(pic0);
 
   // Second frame.
-  accelerator_->ProcessSPS(&sps, base::make_span(kSPS0));
-  accelerator_->ProcessPPS(&pps, base::make_span(kPPS0));
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
   accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
                                     ref_pic_list, pic1);
   accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic1,
@@ -139,7 +139,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo) {
             CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
-TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoReset) {
+TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_Reset) {
   scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
   scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
   H264SPS sps;
@@ -150,8 +150,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoReset) {
   std::vector<SubsampleEntry> subsamples;
 
   // First frame.
-  accelerator_->ProcessSPS(&sps, base::make_span(kSPS0));
-  accelerator_->ProcessPPS(&pps, base::make_span(kPPS0));
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
   accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
                                     ref_pic_list, pic0);
   accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic0,
@@ -166,8 +166,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoReset) {
   accelerator_->Reset();
 
   // Second frame.
-  accelerator_->ProcessSPS(&sps, base::make_span(kSPS0));
-  accelerator_->ProcessPPS(&pps, base::make_span(kPPS0));
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
   accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
                                     ref_pic_list, pic1);
   accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic1,
@@ -183,7 +183,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoReset) {
             CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
-TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoConfigChange) {
+TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_ConfigChange) {
   scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
   scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
   H264SPS sps;
@@ -194,8 +194,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoConfigChange) {
   std::vector<SubsampleEntry> subsamples;
 
   // First frame.
-  accelerator_->ProcessSPS(&sps, base::make_span(kSPS0));
-  accelerator_->ProcessPPS(&pps, base::make_span(kPPS0));
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
   accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
                                     ref_pic_list, pic0);
   accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic0,
@@ -207,8 +207,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoConfigChange) {
   accelerator_->SubmitDecode(pic0);
 
   // Second frame.
-  accelerator_->ProcessSPS(&sps, base::make_span(kSPS1));
-  accelerator_->ProcessPPS(&pps, base::make_span(kPPS1));
+  accelerator_->ProcessSPS(&sps, base::span(kSPS1));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS1));
   accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
                                     ref_pic_list, pic1);
   accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic1,

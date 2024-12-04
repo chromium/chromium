@@ -10,8 +10,8 @@ import android.util.AttributeSet;
 
 import androidx.fragment.app.Fragment;
 
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 
 import java.util.ArrayList;
 

@@ -34,6 +34,12 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const {
     return column_pseudo_elements_;
   }
+  ColumnPseudoElement* GetColumnPseudoElement(wtf_size_t idx) const {
+    if (!column_pseudo_elements_ || idx >= column_pseudo_elements_->size()) {
+      return nullptr;
+    }
+    return column_pseudo_elements_->at(idx);
+  }
   void AddColumnPseudoElement(ColumnPseudoElement& column_pseudo_element) {
     if (!column_pseudo_elements_) {
       column_pseudo_elements_ =
@@ -42,11 +48,15 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     DCHECK(column_pseudo_elements_->Find(column_pseudo_element) == kNotFound);
     column_pseudo_elements_->push_back(column_pseudo_element);
   }
-  void ClearColumnPseudoElements() {
+  void ClearColumnPseudoElements(wtf_size_t to_keep) {
     if (!column_pseudo_elements_) {
       return;
     }
-    column_pseudo_elements_->clear();
+    if (to_keep) {
+      column_pseudo_elements_->Shrink(to_keep);
+    } else {
+      column_pseudo_elements_->clear();
+    }
   }
 
   bool HasPseudoElements() const;
@@ -55,7 +65,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_check_);
     visitor->Trace(generated_before_);
     visitor->Trace(generated_after_);
-    visitor->Trace(generated_select_arrow_);
+    visitor->Trace(generated_picker_icon_);
     visitor->Trace(generated_marker_);
     visitor->Trace(generated_first_letter_);
     visitor->Trace(generated_scroll_marker_group_before_);
@@ -75,7 +85,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_check_;
   Member<PseudoElement> generated_before_;
   Member<PseudoElement> generated_after_;
-  Member<PseudoElement> generated_select_arrow_;
+  Member<PseudoElement> generated_picker_icon_;
   Member<PseudoElement> generated_marker_;
   Member<PseudoElement> generated_first_letter_;
   Member<PseudoElement> generated_scroll_marker_group_before_;
@@ -98,7 +108,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 
 inline bool PseudoElementData::HasPseudoElements() const {
   return generated_check_ || generated_before_ || generated_after_ ||
-         generated_select_arrow_ || generated_marker_ || backdrop_ ||
+         generated_picker_icon_ || generated_marker_ || backdrop_ ||
          generated_first_letter_ || transition_data_ ||
          generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
@@ -111,7 +121,7 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdCheckMark, nullptr);
   SetPseudoElement(kPseudoIdBefore, nullptr);
   SetPseudoElement(kPseudoIdAfter, nullptr);
-  SetPseudoElement(kPseudoIdSelectArrow, nullptr);
+  SetPseudoElement(kPseudoIdPickerIcon, nullptr);
   SetPseudoElement(kPseudoIdMarker, nullptr);
   SetPseudoElement(kPseudoIdBackdrop, nullptr);
   SetPseudoElement(kPseudoIdFirstLetter, nullptr);
@@ -149,9 +159,9 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = generated_after_;
       generated_after_ = element;
       break;
-    case kPseudoIdSelectArrow:
-      previous_element = generated_select_arrow_;
-      generated_select_arrow_ = element;
+    case kPseudoIdPickerIcon:
+      previous_element = generated_picker_icon_;
+      generated_picker_icon_ = element;
       break;
     case kPseudoIdMarker:
       previous_element = generated_marker_;
@@ -225,8 +235,8 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
     return generated_before_.Get();
   if (kPseudoIdAfter == pseudo_id)
     return generated_after_.Get();
-  if (kPseudoIdSelectArrow == pseudo_id) {
-    return generated_select_arrow_.Get();
+  if (kPseudoIdPickerIcon == pseudo_id) {
+    return generated_picker_icon_.Get();
   }
   if (kPseudoIdMarker == pseudo_id)
     return generated_marker_.Get();
@@ -278,8 +288,8 @@ PseudoElementData::GetPseudoElements() const {
     result.push_back(generated_before_);
   if (generated_after_)
     result.push_back(generated_after_);
-  if (generated_select_arrow_) {
-    result.push_back(generated_select_arrow_);
+  if (generated_picker_icon_) {
+    result.push_back(generated_picker_icon_);
   }
   if (generated_marker_)
     result.push_back(generated_marker_);

@@ -9,7 +9,6 @@ import android.content.Context;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -40,12 +39,10 @@ public final class SigninPromoCoordinator {
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         mMediator =
                 new SigninPromoMediator(
                         identityManager,
-                        signinManager,
                         syncService,
                         AccountManagerFacadeProvider.getInstance(),
                         profileDataCache,

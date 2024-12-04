@@ -7,6 +7,7 @@
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -22,7 +25,10 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/performance_manager/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +37,54 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+
+using collaboration::messaging::MessagingBackendService;
+using collaboration::messaging::MessagingBackendServiceFactory;
+using collaboration::messaging::PersistentMessage;
+
+std::optional<PersistentMessage> GetSavedTabGroupRecentActivity(
+    const tabs::TabInterface* tab,
+    Profile* profile) {
+  if (!tab) {
+    return std::nullopt;
+  }
+
+  const auto group = tab->GetGroup();
+  if (!group) {
+    return std::nullopt;
+  }
+
+  const auto* tab_group_sync_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+  if (!tab_group_sync_service) {
+    return std::nullopt;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_sync_service->GetGroup(*group);
+  if (!saved_group || !saved_group->is_shared_tab_group()) {
+    return std::nullopt;
+  }
+
+  MessagingBackendService* service =
+      MessagingBackendServiceFactory::GetForProfile(profile);
+  if (!service || !service->IsInitialized()) {
+    return std::nullopt;
+  }
+
+  auto messages = service->GetMessagesForTab(
+      tab->GetHandle().raw_value(),
+      collaboration::messaging::PersistentNotificationType::CHIP);
+  if (messages.empty()) {
+    return std::nullopt;
+  }
+
+  return messages.front();
+}
+
+}  // namespace
 
 // static
 TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
@@ -77,6 +131,11 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
     data.thumbnail = thumbnail_tab_helper->thumbnail();
   }
   data.is_tab_discarded = contents->WasDiscarded();
+
+  if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    data.recent_activity = GetSavedTabGroupRecentActivity(
+        model->GetTabAtIndex(index), model->profile());
+  }
   data.network_state = TabNetworkStateForWebContents(contents);
   data.title = tab_ui_helper->GetTitle();
   data.visible_url = contents->GetVisibleURL();

@@ -55,7 +55,7 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
   PopupOpenerTabHelperTest(const PopupOpenerTabHelperTest&) = delete;
   PopupOpenerTabHelperTest& operator=(const PopupOpenerTabHelperTest&) = delete;
 
-  ~PopupOpenerTabHelperTest() override {}
+  ~PopupOpenerTabHelperTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();

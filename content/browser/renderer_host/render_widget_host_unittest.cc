@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -335,7 +334,9 @@ FakeRenderFrameMetadataObserver::FakeRenderFrameMetadataObserver(
 // MockInputEventObserver -------------------------------------------------
 class MockInputEventObserver : public RenderWidgetHost::InputEventObserver {
  public:
-  MOCK_METHOD1(OnInputEvent, void(const blink::WebInputEvent&));
+  MOCK_METHOD2(OnInputEvent,
+               void(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent&));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(OnImeTextCommittedEvent, void(const std::u16string& text_str));
   MOCK_METHOD1(OnImeSetComposingTextEvent,
@@ -2400,7 +2401,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
-  EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
+  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(1);
   host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       native_event, &latency_info, &event_latency_metadata);
 
@@ -2408,7 +2409,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   host_->RemoveInputEventObserver(&observer);
 
   // Confirm InputEventObserver is removed.
-  EXPECT_CALL(observer, OnInputEvent(_)).Times(0);
+  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(0);
   latency_info = ui::LatencyInfo();
   event_latency_metadata = ui::EventLatencyMetadata();
   host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
@@ -2431,7 +2432,7 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
-  EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
+  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(1);
   host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       native_event, &latency_info, &event_latency_metadata);
 
@@ -2439,7 +2440,7 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   scoped_observation.Reset();
 
   // Confirm InputEventObserver is removed.
-  EXPECT_CALL(observer, OnInputEvent(_)).Times(0);
+  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(0);
   latency_info = ui::LatencyInfo();
   event_latency_metadata = ui::EventLatencyMetadata();
   host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(

@@ -121,7 +121,7 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
 
   std::unique_ptr<crypto::ECPrivateKey> ec_private_key =
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
-          base::as_bytes(base::make_span(asymmetric_key.private_key())));
+          base::as_byte_span(asymmetric_key.private_key()));
   if (!ec_private_key) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle() << ". "
@@ -140,8 +140,8 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
 
   std::string to_sign = salt + payload;
   std::vector<uint8_t> key_proof;
-  bool success = ec_signature_creator->Sign(
-      base::as_bytes(base::make_span(to_sign)), &key_proof);
+  bool success =
+      ec_signature_creator->Sign(base::as_byte_span(to_sign), &key_proof);
   if (!success) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle();

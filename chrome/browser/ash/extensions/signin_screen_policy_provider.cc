@@ -28,9 +28,9 @@ namespace {
 bool g_bypass_checks_for_testing = false;
 }  // namespace
 
-SigninScreenPolicyProvider::SigninScreenPolicyProvider() {}
+SigninScreenPolicyProvider::SigninScreenPolicyProvider() = default;
 
-SigninScreenPolicyProvider::~SigninScreenPolicyProvider() {}
+SigninScreenPolicyProvider::~SigninScreenPolicyProvider() = default;
 
 std::string SigninScreenPolicyProvider::GetDebugPolicyProviderName() const {
 #if DCHECK_IS_ON()

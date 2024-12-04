@@ -35,19 +35,7 @@ allocation_recorder::Payload CreatePayloadWithProcessingFailures(
 inline allocation_recorder::Payload CreatePayloadWithProcessingFailures(
     std::string_view error_message) {
   return CreatePayloadWithProcessingFailures(
-      base::make_span(&error_message, 1ul));
-}
-
-// Create a payload with the ProcessingFailures set from the passed
-// |error_messages|.
-template <size_t Extent>
-inline allocation_recorder::Payload CreatePayloadWithProcessingFailures(
-    base::span<const std::string_view, Extent> error_messages) {
-  base::span<const std::string_view, base::dynamic_extent>
-      error_messages_as_dynamic_span =
-          base::make_span(std::begin(error_messages), Extent);
-
-  return CreatePayloadWithProcessingFailures(error_messages_as_dynamic_span);
+      base::span_from_ref(error_message));
 }
 
 }  // namespace allocation_recorder::crash_handler

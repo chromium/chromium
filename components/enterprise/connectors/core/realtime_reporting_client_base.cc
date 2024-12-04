@@ -16,7 +16,7 @@
 namespace enterprise_connectors {
 
 namespace {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kPolicyClientDescription[] = "any";
 #else
 const char kChromeBrowserCloudManagementClientDescription[] =
@@ -74,7 +74,7 @@ void RealtimeReportingClientBase::InitRealtimeReportingClient(
 
   policy::CloudPolicyClient* client = nullptr;
   std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
       InitBrowserReportingClient(settings.dm_token);
 #else
@@ -95,7 +95,7 @@ std::pair<std::string, policy::CloudPolicyClient*>
 RealtimeReportingClientBase::InitBrowserReportingClient(
     const std::string& dm_token) {
   std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy_client_desc = kPolicyClientDescription;
 #else
   policy_client_desc = kChromeBrowserCloudManagementClientDescription;

@@ -114,6 +114,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     DrawingBufferClientUserAllocatedMultisampledRenderbuffers() = 0;
     virtual void DrawingBufferClientForceLostContextWithAutoRecovery(
         const char* reason) = 0;
+    virtual void DrawingBufferClientInitializeLayer(cc::Layer* layer) = 0;
   };
 
   enum PreserveDrawingBuffer {
@@ -145,7 +146,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       PreserveDrawingBuffer,
       WebGLVersion,
       ChromiumImageUsage,
-      cc::PaintFlags::FilterQuality,
       PredefinedColorSpace color_space,
       gl::GpuPreference);
 
@@ -222,11 +222,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool BufferClearNeeded() const;
 
   void SetIsInHiddenPage(bool);
-  void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
-  cc::PaintFlags::FilterQuality FilterQuality() const {
-    return filter_quality_;
-  }
 
   // Whether the target for draw operations has format GL_RGBA, but is
   // emulating format GL_RGB. When the target's storage is first
@@ -341,7 +337,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 bool wants_depth,
                 bool wants_stencil,
                 ChromiumImageUsage,
-                cc::PaintFlags::FilterQuality,
                 PredefinedColorSpace color_space,
                 gl::GpuPreference gpu_preference);
 
@@ -700,8 +695,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool has_eqaa_support = false;
 
   gfx::HDRMetadata hdr_metadata_;
-  cc::PaintFlags::FilterQuality filter_quality_ =
-      cc::PaintFlags::FilterQuality::kLow;
 
   GLenum draw_buffer_ = GL_COLOR_ATTACHMENT0;
 

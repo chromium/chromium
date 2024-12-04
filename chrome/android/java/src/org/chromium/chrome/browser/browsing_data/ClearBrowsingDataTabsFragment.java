@@ -9,8 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -71,9 +71,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment
 
         // Get the ViewPager and set its PagerAdapter so that it can display items.
         ViewPager2 viewPager = view.findViewById(R.id.clear_browsing_data_viewpager);
-        viewPager.setAdapter(
-                new ClearBrowsingDataPagerAdapter(
-                        mFetcher, (FragmentActivity) getActivity(), referrer));
+        viewPager.setAdapter(new ClearBrowsingDataPagerAdapter(mFetcher, this, referrer));
 
         // Give the TabLayout the ViewPager.
         TabLayout tabLayout = view.findViewById(R.id.clear_browsing_data_tabs);
@@ -146,8 +144,8 @@ public class ClearBrowsingDataTabsFragment extends Fragment
         private final String mReferrer;
 
         ClearBrowsingDataPagerAdapter(
-                ClearBrowsingDataFetcher fetcher, FragmentActivity activity, String referrer) {
-            super(activity);
+                ClearBrowsingDataFetcher fetcher, Fragment fragment, String referrer) {
+            super(fragment);
             mFetcher = fetcher;
             mReferrer = referrer;
         }
@@ -157,6 +155,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment
             return CBD_TAB_COUNT;
         }
 
+        @NonNull
         @Override
         public Fragment createFragment(int position) {
             ClearBrowsingDataFragment fragment;

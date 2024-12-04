@@ -116,6 +116,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kPlusAddress";
     case Suggestion::Icon::kNoIcon:
       return "kNoIcon";
+    case Suggestion::Icon::kBnpl:
+      return "kBnpl";
   }
   NOTREACHED();
 }

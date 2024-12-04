@@ -10,8 +10,9 @@ std::array<GURL, kNtpBackgroundsCount> GetNtpBackgrounds() {
   // A set of whitelisted NTP background image URLs that are always considered
   // to be valid URLs that are shown to the user as part of the welcome flow.
   // These backgrounds were handpicked from the Backdrop API based on popularity
-  // and those requiring minimum maintenance and translation work. This list
-  // matches with chrome/browser/ui/webui/welcome/nux/ntp_background_handler.cc.
+  // and those requiring minimum maintenance and translation work.
+  // TODO(crbug.com/40253961): Remove this, since `chrome://welcome` has been
+  // removed.
   const std::array<GURL, kNtpBackgroundsCount> kNtpBackgrounds = {{
       // Art
       GURL("https://lh5.googleusercontent.com/proxy/"

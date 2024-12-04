@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 
 #include <memory>
@@ -79,12 +74,9 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("shouldShowFeedback",
                      commerce::kPriceInsightsShowFeedback.Get());
 
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kSidePanelCommerceResources,
-                                              kSidePanelCommerceResourcesSize),
+  webui::SetupWebUIDataSource(source, kSidePanelCommerceResources,
                               IDR_SIDE_PANEL_COMMERCE_SHOPPING_INSIGHTS_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 ShoppingInsightsSidePanelUI::~ShoppingInsightsSidePanelUI() = default;
@@ -103,8 +95,15 @@ void ShoppingInsightsSidePanelUI::BindInterface(
   shopping_service_factory_receiver_.Bind(std::move(receiver));
 }
 
+void ShoppingInsightsSidePanelUI::BindInterface(
+    mojo::PendingReceiver<
+        commerce::price_tracking::mojom::PriceTrackingHandlerFactory>
+        receiver) {
+  price_tracking_factory_receiver_.reset();
+  price_tracking_factory_receiver_.Bind(std::move(receiver));
+}
+
 void ShoppingInsightsSidePanelUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -116,10 +115,26 @@ void ShoppingInsightsSidePanelUI::CreateShoppingServiceHandler(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker,
           std::make_unique<commerce::ShoppingUiHandlerDelegate>(this, profile),
           nullptr);
+}
+
+void ShoppingInsightsSidePanelUI::CreatePriceTrackingHandler(
+    mojo::PendingRemote<commerce::price_tracking::mojom::Page> page,
+    mojo::PendingReceiver<commerce::price_tracking::mojom::PriceTrackingHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  feature_engagement::Tracker* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
+      std::move(page), std::move(receiver), web_ui(), shopping_service, tracker,
+      bookmark_model);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShoppingInsightsSidePanelUI)

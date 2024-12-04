@@ -846,9 +846,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
               kBackDiscardPadding);
     EXPECT_EQ(decoder_buffer_to_send->is_key_frame(), kIsKeyFrame);
     ASSERT_EQ(decoder_buffer_to_send->size(), std::size(kEncodedData));
-    EXPECT_EQ(base::make_span(decoder_buffer_to_send->data(),
-                              decoder_buffer_to_send->size()),
-              base::make_span(kEncodedData, std::size(kEncodedData)));
+    EXPECT_EQ(base::span(*decoder_buffer_to_send), base::span(kEncodedData));
     ASSERT_TRUE(decoder_buffer_to_send->has_side_data());
     EXPECT_EQ(decoder_buffer_to_send->side_data()->secure_handle,
               kSecureHandle);

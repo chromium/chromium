@@ -295,6 +295,15 @@ RenderInputRouterSupportBase* InputManager::GetRootRenderInputRouterSupport(
   return nullptr;
 }
 
+const CompositorFrameMetadata* InputManager::GetLastActivatedFrameMetadata(
+    const FrameSinkId& frame_sink_id) {
+  auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
+  if (!IsFrameMetadataAvailable(support)) {
+    return nullptr;
+  }
+  return support->GetLastActivatedFrameMetadata();
+}
+
 std::unique_ptr<input::RenderInputRouterIterator>
 InputManager::GetEmbeddedRenderInputRouters(const FrameSinkId& id) {
   auto rirs = std::make_unique<RenderInputRouterIteratorImpl>(
@@ -327,6 +336,16 @@ void InputManager::OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
       ->OnInvalidInputEventSource(frame_sink_id);
 }
 
+std::optional<bool> InputManager::IsDelegatedInkHovering(
+    const FrameSinkId& frame_sink_id) {
+  auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
+  if (!IsFrameMetadataAvailable(support)) {
+    return std::nullopt;
+  }
+  return support->GetLastActivatedFrameMetadata()
+      ->delegated_ink_metadata->is_hovering();
+}
+
 void InputManager::SetupRenderInputRouterDelegateConnection(
     uint32_t grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
@@ -335,6 +354,10 @@ void InputManager::SetupRenderInputRouterDelegateConnection(
   rir_delegate_remote_map_[grouping_id].set_disconnect_handler(
       base::BindOnce(&InputManager::OnRIRDelegateClientDisconnected,
                      base::Unretained(this), grouping_id));
+}
+
+GpuServiceImpl* InputManager::GetGpuService() {
+  return frame_sink_manager_->GetGpuService();
 }
 
 input::RenderInputRouter* InputManager::GetRenderInputRouterFromFrameSinkId(

@@ -837,7 +837,7 @@ void GpuWatchdogThread::UpdateActiveTTY() {
   last_active_tty_ = active_tty_;
 
   active_tty_ = -1;
-  char tty_string[8] = {0};
+  char tty_string[8] = {};
   if (tty_file_ && !fseek(tty_file_.get(), 0, SEEK_SET) &&
       fread(tty_string, 1, 7, tty_file_.get())) {
     int tty_number;

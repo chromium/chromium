@@ -254,16 +254,16 @@ class DecryptingVideoDecoderTest : public testing::Test {
   scoped_refptr<VideoFrame> null_video_frame_;
 };
 
-TEST_F(DecryptingVideoDecoderTest, InitializeNormal) {
+TEST_F(DecryptingVideoDecoderTest, Initialize_Normal) {
   Initialize();
 }
 
-TEST_F(DecryptingVideoDecoderTest, InitializeCdmWithoutDecryptor) {
+TEST_F(DecryptingVideoDecoderTest, Initialize_CdmWithoutDecryptor) {
   SetCdmType(CDM_WITHOUT_DECRYPTOR);
   InitializeAndExpectResult(TestVideoConfig::NormalEncrypted(), false);
 }
 
-TEST_F(DecryptingVideoDecoderTest, InitializeFailure) {
+TEST_F(DecryptingVideoDecoderTest, Initialize_Failure) {
   SetCdmType(CDM_WITH_DECRYPTOR);
   EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).WillOnce([&](auto cb) {
     event_cb_ = cb;
@@ -275,14 +275,14 @@ TEST_F(DecryptingVideoDecoderTest, InitializeFailure) {
   InitializeAndExpectResult(TestVideoConfig::NormalEncrypted(), false);
 }
 
-TEST_F(DecryptingVideoDecoderTest, ReinitializeEncryptedToEncrypted) {
+TEST_F(DecryptingVideoDecoderTest, Reinitialize_EncryptedToEncrypted) {
   Initialize();
   EnterNormalDecodingState();
   Reinitialize(TestVideoConfig::LargeEncrypted());
 }
 
 // Test reinitializing decode with a new clear config.
-TEST_F(DecryptingVideoDecoderTest, ReinitializeEncryptedToClear) {
+TEST_F(DecryptingVideoDecoderTest, Reinitialize_EncryptedToClear) {
   Initialize();
   EnterNormalDecodingState();
   Reinitialize(TestVideoConfig::Normal());
@@ -323,7 +323,7 @@ TEST_F(DecryptingVideoDecoderTest, EncryptedBuffersNoMediaLog) {
   DecodeAndExpect(CreateFakeEncryptedBuffer(), DecoderStatus::Codes::kOk);
 }
 
-TEST_F(DecryptingVideoDecoderTest, ReinitializeFailure) {
+TEST_F(DecryptingVideoDecoderTest, Reinitialize_Failure) {
   Initialize();
   EnterNormalDecodingState();
 
@@ -337,13 +337,13 @@ TEST_F(DecryptingVideoDecoderTest, ReinitializeFailure) {
 }
 
 // Test normal decrypt and decode case.
-TEST_F(DecryptingVideoDecoderTest, DecryptAndDecodeNormal) {
+TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_Normal) {
   Initialize();
   EnterNormalDecodingState();
 }
 
 // Test the case where the decryptor errors for mismatched subsamples
-TEST_F(DecryptingVideoDecoderTest, DecryptAndDecodeSubsampleError) {
+TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_SubsampleError) {
   Initialize();
 
   scoped_refptr<media::DecoderBuffer> mismatched_encrypted_buffer =
@@ -363,7 +363,7 @@ TEST_F(DecryptingVideoDecoderTest, DecryptAndDecodeSubsampleError) {
 
 // Test the case where the decryptor returns error when doing decrypt and
 // decode.
-TEST_F(DecryptingVideoDecoderTest, DecryptAndDecodeDecodeError) {
+TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_DecodeError) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
@@ -379,7 +379,7 @@ TEST_F(DecryptingVideoDecoderTest, DecryptAndDecodeDecodeError) {
 }
 
 // Test the case where the decryptor receives end-of-stream buffer.
-TEST_F(DecryptingVideoDecoderTest, DecryptAndDecodeEndOfStream) {
+TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_EndOfStream) {
   Initialize();
   EnterNormalDecodingState();
   EnterEndOfStreamState();
@@ -387,7 +387,7 @@ TEST_F(DecryptingVideoDecoderTest, DecryptAndDecodeEndOfStream) {
 
 // Test the case where the a key is added when the decryptor is in
 // kWaitingForKey state.
-TEST_F(DecryptingVideoDecoderTest, KeyAddedDuringWaitingForKey) {
+TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringWaitingForKey) {
   Initialize();
   EXPECT_MEDIA_LOG(HasSubstr("DecryptingVideoDecoder: no key for key"));
   EnterWaitingForKeyState();
@@ -406,7 +406,7 @@ TEST_F(DecryptingVideoDecoderTest, KeyAddedDuringWaitingForKey) {
 
 // Test the case where the a key is added when the decryptor is in
 // kPendingDecode state.
-TEST_F(DecryptingVideoDecoderTest, KeyAddedDuringPendingDecode) {
+TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringPendingDecode) {
   Initialize();
   EXPECT_MEDIA_LOG(HasSubstr("DecryptingVideoDecoder: no key for key"));
   EnterPendingDecodeState();
@@ -428,21 +428,21 @@ TEST_F(DecryptingVideoDecoderTest, KeyAddedDuringPendingDecode) {
 
 // Test resetting when the decoder is in kIdle state but has not decoded any
 // frame.
-TEST_F(DecryptingVideoDecoderTest, ResetDuringIdleAfterInitialization) {
+TEST_F(DecryptingVideoDecoderTest, Reset_DuringIdleAfterInitialization) {
   Initialize();
   Reset();
 }
 
 // Test resetting when the decoder is in kIdle state after it has decoded one
 // frame.
-TEST_F(DecryptingVideoDecoderTest, ResetDuringIdleAfterDecodedOneFrame) {
+TEST_F(DecryptingVideoDecoderTest, Reset_DuringIdleAfterDecodedOneFrame) {
   Initialize();
   EnterNormalDecodingState();
   Reset();
 }
 
 // Test resetting when the decoder is in kPendingDecode state.
-TEST_F(DecryptingVideoDecoderTest, ResetDuringPendingDecode) {
+TEST_F(DecryptingVideoDecoderTest, Reset_DuringPendingDecode) {
   Initialize();
   EnterPendingDecodeState();
 
@@ -452,7 +452,7 @@ TEST_F(DecryptingVideoDecoderTest, ResetDuringPendingDecode) {
 }
 
 // Test resetting when the decoder is in kWaitingForKey state.
-TEST_F(DecryptingVideoDecoderTest, ResetDuringWaitingForKey) {
+TEST_F(DecryptingVideoDecoderTest, Reset_DuringWaitingForKey) {
   Initialize();
   EXPECT_MEDIA_LOG(HasSubstr("DecryptingVideoDecoder: no key for key"));
   EnterWaitingForKeyState();
@@ -464,7 +464,7 @@ TEST_F(DecryptingVideoDecoderTest, ResetDuringWaitingForKey) {
 
 // Test resetting when the decoder has hit end of stream and is in
 // kDecodeFinished state.
-TEST_F(DecryptingVideoDecoderTest, ResetAfterDecodeFinished) {
+TEST_F(DecryptingVideoDecoderTest, Reset_AfterDecodeFinished) {
   Initialize();
   EnterNormalDecodingState();
   EnterEndOfStreamState();
@@ -472,7 +472,7 @@ TEST_F(DecryptingVideoDecoderTest, ResetAfterDecodeFinished) {
 }
 
 // Test resetting after the decoder has been reset.
-TEST_F(DecryptingVideoDecoderTest, ResetAfterReset) {
+TEST_F(DecryptingVideoDecoderTest, Reset_AfterReset) {
   Initialize();
   EnterNormalDecodingState();
   Reset();
@@ -480,7 +480,7 @@ TEST_F(DecryptingVideoDecoderTest, ResetAfterReset) {
 }
 
 // Test destruction when the decoder is in kPendingDecoderInit state.
-TEST_F(DecryptingVideoDecoderTest, DestroyDuringPendingDecoderInit) {
+TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingDecoderInit) {
   SetCdmType(CDM_WITH_DECRYPTOR);
   EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).WillOnce([&](auto cb) {
     event_cb_ = cb;
@@ -499,21 +499,21 @@ TEST_F(DecryptingVideoDecoderTest, DestroyDuringPendingDecoderInit) {
 
 // Test destruction when the decoder is in kIdle state but has not decoded any
 // frame.
-TEST_F(DecryptingVideoDecoderTest, DestroyDuringIdleAfterInitialization) {
+TEST_F(DecryptingVideoDecoderTest, Destroy_DuringIdleAfterInitialization) {
   Initialize();
   Destroy();
 }
 
 // Test destruction when the decoder is in kIdle state after it has decoded one
 // frame.
-TEST_F(DecryptingVideoDecoderTest, DestroyDuringIdleAfterDecodedOneFrame) {
+TEST_F(DecryptingVideoDecoderTest, Destroy_DuringIdleAfterDecodedOneFrame) {
   Initialize();
   EnterNormalDecodingState();
   Destroy();
 }
 
 // Test destruction when the decoder is in kPendingDecode state.
-TEST_F(DecryptingVideoDecoderTest, DestroyDuringPendingDecode) {
+TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingDecode) {
   Initialize();
   EnterPendingDecodeState();
 
@@ -523,7 +523,7 @@ TEST_F(DecryptingVideoDecoderTest, DestroyDuringPendingDecode) {
 }
 
 // Test destruction when the decoder is in kWaitingForKey state.
-TEST_F(DecryptingVideoDecoderTest, DestroyDuringWaitingForKey) {
+TEST_F(DecryptingVideoDecoderTest, Destroy_DuringWaitingForKey) {
   Initialize();
   EXPECT_MEDIA_LOG(HasSubstr("DecryptingVideoDecoder: no key for key"));
   EnterWaitingForKeyState();
@@ -535,7 +535,7 @@ TEST_F(DecryptingVideoDecoderTest, DestroyDuringWaitingForKey) {
 
 // Test destruction when the decoder has hit end of stream and is in
 // kDecodeFinished state.
-TEST_F(DecryptingVideoDecoderTest, DestroyAfterDecodeFinished) {
+TEST_F(DecryptingVideoDecoderTest, Destroy_AfterDecodeFinished) {
   Initialize();
   EnterNormalDecodingState();
   EnterEndOfStreamState();
@@ -545,7 +545,7 @@ TEST_F(DecryptingVideoDecoderTest, DestroyAfterDecodeFinished) {
 // Test destruction when there is a pending reset on the decoder.
 // Reset is pending because it cannot complete when the video decode callback
 // is pending.
-TEST_F(DecryptingVideoDecoderTest, DestroyDuringPendingReset) {
+TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingReset) {
   Initialize();
   EnterPendingDecodeState();
 
@@ -557,7 +557,7 @@ TEST_F(DecryptingVideoDecoderTest, DestroyDuringPendingReset) {
 }
 
 // Test destruction after the decoder has been reset.
-TEST_F(DecryptingVideoDecoderTest, DestroyAfterReset) {
+TEST_F(DecryptingVideoDecoderTest, Destroy_AfterReset) {
   Initialize();
   EnterNormalDecodingState();
   Reset();

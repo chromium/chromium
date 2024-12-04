@@ -40,7 +40,7 @@ To produce an executable built with a custom PGO profile:
 
   ```
   python3 tools/pgo/generate_profile.py -C out/builddir \
-      --android-browser android-trichrome-bundle
+      --android-browser android-trichrome-chrome-google-bundle
   ```
 
   You can find available browsers using:
@@ -49,22 +49,23 @@ To produce an executable built with a custom PGO profile:
   tools/perf/run_benchmark run --browser=list
   ```
 
-  By default, some benchmark replay archives require special access permissions. For more
-  details and to request access, please refer to [Telemetry documentation][telemetry_docs].
-  You can also choose to run `generate_profile.py` without these benchmarks, using the
-  `--run-public-benchmarks-only` flag. However, note that doing so may produce a profile
-  that isn't fully representative.
+  By default, some benchmark replay archives require special access permissions.
+  For more details and to request access, please refer to [Telemetry
+  documentation][telemetry_docs].  You can also choose to run
+  `generate_profile.py` without these benchmarks, using the
+  `--run-public-benchmarks-only` flag. However, note that doing so may produce a
+  profile that isn't fully representative.
 
    ```
   python3 tools/pgo/generate_profile.py -C out/builddir \
-      --android-browser android-trichrome-bundle \
+      --android-browser android-trichrome-chrome-google-bundle \
       --run-public-benchmarks-only
   ```
 
-  If `generate_profile.py` fails with `ServiceException: 401 Anonymous caller does not have
-  storage.objects.get access to the Google Cloud Storage object.`, then run
-  `download_from_google_storage --config` (with your @google address; enter 0 as
-  project-id).
+  If `generate_profile.py` fails with `ServiceException: 401 Anonymous caller
+  does not have storage.objects.get access to the Google Cloud Storage object.`,
+  then run `download_from_google_storage --config` (with your @google address;
+  enter 0 as project-id).
 
   This will produce `out/builddir/profile.profdata`
 

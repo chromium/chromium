@@ -16,7 +16,7 @@ class TouchLogSource : public SystemLogsSource {
   TouchLogSource(const TouchLogSource&) = delete;
   TouchLogSource& operator=(const TouchLogSource&) = delete;
 
-  ~TouchLogSource() override {}
+  ~TouchLogSource() override = default;
 
  private:
   // Overridden from SystemLogsSource:

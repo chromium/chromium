@@ -5,7 +5,6 @@
 package org.chromium.ui.modaldialog;
 
 import android.util.SparseArray;
-import android.view.View;
 
 import androidx.activity.ComponentDialog;
 import androidx.annotation.IntDef;
@@ -54,13 +53,6 @@ public class ModalDialogManager {
         default void onDialogCreated(PropertyModel model, @Nullable ComponentDialog dialog) {}
 
         /**
-         * A notification that the manager showed a modal dialog.
-         *
-         * @param dialogView The view associated with the modal dialog.
-         */
-        default void onDialogShown(View dialogView) {}
-
-        /**
          * A notification that the manager dismisses a modal dialog.
          *
          * @param model The model that describes the dialog that was dismissed.
@@ -90,8 +82,7 @@ public class ModalDialogManager {
         private void setDialogModel(
                 @Nullable PropertyModel model,
                 @Nullable Callback<Integer> dismissCallback,
-                @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
-                @Nullable Callback<View> onDialogShownCallback) {
+                @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
             if (model == null) {
                 removeDialogView(mDialogModel);
                 mDialogModel = null;
@@ -101,7 +92,7 @@ public class ModalDialogManager {
                         : "Should call setDialogModel(null) before setting a dialog model.";
                 mDialogModel = model;
                 mDismissCallback = dismissCallback;
-                addDialogView(model, onDialogCreatedCallback, onDialogShownCallback);
+                addDialogView(model, onDialogCreatedCallback);
             }
         }
 
@@ -141,13 +132,9 @@ public class ModalDialogManager {
          * @param onDialogCreatedCallback The callback that notifies observers when the dialog is
          *     created but not shown yet, providing the ComponentDialog associated with the {@link
          *     AppModalPresenter} implementation of this modal dialog.
-         * @param onDialogShownCallback The callback that notifies observers after triggering
-         *     `showDialog`.
          */
         protected abstract void addDialogView(
-                PropertyModel model,
-                @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
-                @Nullable Callback<View> onDialogShownCallback);
+                PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback);
 
         /**
          * Removes the view created for the specified model from a container.
@@ -495,11 +482,6 @@ public class ModalDialogManager {
                     for (ModalDialogManagerObserver o : mObserverList) {
                         o.onDialogCreated(model, dialog);
                     }
-                },
-                (dialogView) -> {
-                    for (ModalDialogManagerObserver o : mObserverList) {
-                        o.onDialogShown(dialogView);
-                    }
                 });
         for (ModalDialogManagerObserver o : mObserverList) o.onDialogAdded(model);
     }
@@ -539,7 +521,7 @@ public class ModalDialogManager {
         if (mDismissingCurrentDialog) return;
         mDismissingCurrentDialog = true;
         model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, dismissalCause);
-        mCurrentPresenter.setDialogModel(null, null, null, null);
+        mCurrentPresenter.setDialogModel(null, null, null);
         for (ModalDialogManagerObserver o : mObserverList) o.onDialogDismissed(model);
         mCurrentPresenter = null;
         mCurrentPriority = ModalDialogPriority.LOW;
@@ -667,7 +649,7 @@ public class ModalDialogManager {
     private void suspendCurrentDialog() {
         assert isShowing();
         PropertyModel dialogView = mCurrentPresenter.getDialogModel();
-        mCurrentPresenter.setDialogModel(null, null, null, null);
+        mCurrentPresenter.setDialogModel(null, null, null);
         mCurrentPresenter = null;
         mPendingDialogContainer.put(
                 mCurrentType, mCurrentPriority, dialogView, /* showAsNext= */ true);

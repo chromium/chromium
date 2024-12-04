@@ -5,13 +5,13 @@
 #ifndef REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_PROXY_H_
 #define REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_PROXY_H_
 
-#include "remoting/host/chromeos/ash_proxy.h"
-
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "remoting/host/chromeos/ash_proxy.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 
 namespace remoting::test {
 

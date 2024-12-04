@@ -14,7 +14,7 @@ constexpr size_t kSizeKolySignatureInBytes = sizeof(kKolySignature);
 
 }  // namespace
 
-DiskImageTypeSnifferMac::DiskImageTypeSnifferMac() {}
+DiskImageTypeSnifferMac::DiskImageTypeSnifferMac() = default;
 
 // static
 bool DiskImageTypeSnifferMac::IsAppleDiskImage(const base::FilePath& dmg_file) {

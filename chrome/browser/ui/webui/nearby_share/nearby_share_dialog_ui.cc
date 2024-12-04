@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 
 #include <string>
@@ -49,7 +44,8 @@
 
 namespace nearby_share {
 
-// Keep in sync with //chrome/browser/resources/nearby_share/shared/types.js
+// Keep in sync with
+// chrome/browser/resources/chromeos/nearby_share/shared/types.ts
 enum class CloseReason {
   kUnknown = 0,
   kTransferStarted = 1,
@@ -82,9 +78,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kNearbyShareDialogResources,
-                                              kNearbyShareDialogResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kNearbyShareDialogResources,
                               IDR_NEARBY_SHARE_DIALOG_NEARBY_SHARE_DIALOG_HTML);
 
   // To use lottie, the worker-src CSP needs to be updated for the web ui that

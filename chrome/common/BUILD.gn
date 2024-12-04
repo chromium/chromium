@@ -614,18 +614,7 @@ static_library("constants") {
     # implemented in //ui/base, so we need that dependency.
     deps += [ "//ui/base" ]
   }
-  if (is_chromeos_lacros) {
-    sources += [
-      "chrome_paths_lacros.cc",
-      "chrome_paths_lacros.h",
-    ]
-    deps += [
-      "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/lacros:lacros_paths",
-      "//chromeos/startup",
-    ]
-    public_deps += [ "//chromeos/crosapi/mojom" ]
-  } else if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos) {
     sources += [ "chrome_paths_linux.cc" ]
     deps += [ ":channel_info" ]
   }

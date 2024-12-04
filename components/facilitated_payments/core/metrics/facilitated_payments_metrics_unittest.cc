@@ -170,68 +170,6 @@ TEST(FacilitatedPaymentsMetricsTest,
   }
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogFopSelectorShown) {
-  base::HistogramTester histogram_tester;
-
-  LogFopSelectorShown(true);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.FopSelector.Shown",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-}
-
-TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Success) {
-  base::HistogramTester histogram_tester;
-
-  LogTransactionResult(TransactionResult::kSuccess, TriggerSource::kDOMSearch,
-                       base::Milliseconds(10),
-                       ukm::UkmRecorder::GetNewSourceID());
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Result",
-      /*sample=*/TransactionResult::kSuccess,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Success.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-}
-
-TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Failed) {
-  base::HistogramTester histogram_tester;
-
-  LogTransactionResult(TransactionResult::kFailed, TriggerSource::kDOMSearch,
-                       base::Milliseconds(10),
-                       ukm::UkmRecorder::GetNewSourceID());
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Result",
-      /*sample=*/TransactionResult::kFailed,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Failed.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-}
-
-TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Abandoned) {
-  base::HistogramTester histogram_tester;
-
-  LogTransactionResult(TransactionResult::kAbandoned, TriggerSource::kDOMSearch,
-                       base::Milliseconds(10),
-                       ukm::UkmRecorder::GetNewSourceID());
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Result",
-      /*sample=*/TransactionResult::kAbandoned,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Abandoned.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-}
-
 TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectorShownLatency) {
   base::HistogramTester histogram_tester;
 
@@ -293,7 +231,7 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
 }
 
-TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShown) {
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShownUkm) {
   LogFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID());
 
   auto ukm_entries = ukm_recorder_.GetEntries(
@@ -332,24 +270,6 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogInitiatePurchaseActionResult) {
     EXPECT_EQ(ukm_entries[index++].metrics.at("Result"),
               ConvertPurchaseActionResultToEnumValue(result));
   }
-}
-
-TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
-  LogTransactionResult(TransactionResult::kSuccess, TriggerSource::kDOMSearch,
-                       base::Milliseconds(10),
-                       ukm::UkmRecorder::GetNewSourceID());
-  task_environment_.RunUntilIdle();
-
-  // Verify UKM histograms logged.
-  auto ukm_entries = ukm_recorder_.GetEntries(
-      ukm::builders::FacilitatedPayments_Pix_Transaction::kEntryName,
-      {ukm::builders::FacilitatedPayments_Pix_Transaction::kResultName,
-       ukm::builders::FacilitatedPayments_Pix_Transaction::kTriggerSourceName});
-  ASSERT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
-            static_cast<uint8_t>(TransactionResult::kSuccess));
-  EXPECT_EQ(ukm_entries[0].metrics.at("TriggerSource"),
-            static_cast<uint8_t>(TriggerSource::kDOMSearch));
 }
 
 class FacilitatedPaymentsMetricsTestForUiScreens

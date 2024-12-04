@@ -23,14 +23,14 @@ namespace {
 // accesses resources.
 class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
  public:
-  SpellingOptionsSubMenuObserverTest() {}
+  SpellingOptionsSubMenuObserverTest() = default;
 
   SpellingOptionsSubMenuObserverTest(
       const SpellingOptionsSubMenuObserverTest&) = delete;
   SpellingOptionsSubMenuObserverTest& operator=(
       const SpellingOptionsSubMenuObserverTest&) = delete;
 
-  ~SpellingOptionsSubMenuObserverTest() override {}
+  ~SpellingOptionsSubMenuObserverTest() override = default;
 
   void SetUpOnMainThread() override {
     menu_ = std::make_unique<MockRenderViewContextMenu>(false);

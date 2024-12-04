@@ -1237,7 +1237,7 @@ void SavePackage::GetSavableResourceLinks() {
   wait_state_ = RESOURCES_LIST;
 
   DCHECK_EQ(0, number_of_frames_pending_response_);
-  page_->GetMainDocument().ForEachRenderFrameHost(
+  page_->GetMainDocument().ForEachRenderFrameHostImpl(
       [this](RenderFrameHostImpl* rfh) {
         GetSavableResourceLinksForRenderFrameHost(rfh);
       });

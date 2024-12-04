@@ -123,12 +123,12 @@ const EffectPaintPropertyNode& FrameSelection::CaretEffectNode() const {
 }
 
 bool FrameSelection::IsAvailable() const {
-  return SynchronousMutationObserver::GetDocument();
+  return document_.Get();
 }
 
 Document& FrameSelection::GetDocument() const {
   DCHECK(IsAvailable());
-  return *SynchronousMutationObserver::GetDocument();
+  return *document_.Get();
 }
 
 VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTree() const {
@@ -396,23 +396,52 @@ void FrameSelection::SetSelectionForAccessibility(
     DidSetSelectionDeprecated(selection, options);
 }
 
+void FrameSelection::DidChangeChildren(
+    const ContainerNode::ChildrenChange& change) {
+  selection_editor_->DidChangeChildren(change);
+}
+
+void FrameSelection::DidMergeTextNodes(
+    const Text& merged_node,
+    const NodeWithIndex& node_to_be_removed_with_index,
+    unsigned old_length) {
+  selection_editor_->DidMergeTextNodes(
+      merged_node, node_to_be_removed_with_index, old_length);
+}
+
+void FrameSelection::DidSplitTextNode(const Text& text) {
+  selection_editor_->DidSplitTextNode(text);
+}
+
+void FrameSelection::DidUpdateCharacterData(CharacterData* data,
+                                            unsigned offset,
+                                            unsigned old_length,
+                                            unsigned new_length) {
+  selection_editor_->DidUpdateCharacterData(data, offset, old_length,
+                                            new_length);
+}
+
 void FrameSelection::NodeChildrenWillBeRemoved(ContainerNode& container) {
-  if (!container.InActiveDocument())
-    return;
-  // TODO(yosin): We should move to call |TypingCommand::CloseTypingIfNeeded()|
-  // to |Editor| class.
-  TypingCommand::CloseTypingIfNeeded(frame_);
+  selection_editor_->NodeChildrenWillBeRemoved(container);
+
+  if (container.InActiveDocument()) {
+    // TODO(yosin): We should move to call
+    // |TypingCommand::CloseTypingIfNeeded()| to |Editor| class.
+    TypingCommand::CloseTypingIfNeeded(frame_);
+  }
 }
 
 void FrameSelection::NodeWillBeRemoved(Node& node) {
+  selection_editor_->NodeWillBeRemoved(node);
+
   // There can't be a selection inside a fragment, so if a fragment's node is
   // being removed, the selection in the document that created the fragment
   // needs no adjustment.
-  if (!node.InActiveDocument())
-    return;
-  // TODO(yosin): We should move to call |TypingCommand::CloseTypingIfNeeded()|
-  // to |Editor| class.
-  TypingCommand::CloseTypingIfNeeded(frame_);
+  if (node.InActiveDocument()) {
+    // TODO(yosin): We should move to call
+    // |TypingCommand::CloseTypingIfNeeded()| to |Editor| class.
+    TypingCommand::CloseTypingIfNeeded(frame_);
+  }
 }
 
 void FrameSelection::DidChangeFocus() {
@@ -632,15 +661,18 @@ bool FrameSelection::IsHidden() const {
 void FrameSelection::DidAttachDocument(Document* document) {
   DCHECK(document);
   selection_editor_->DidAttachDocument(document);
-  SetDocument(document);
+  document_ = document;
 }
 
 void FrameSelection::ContextDestroyed() {
   granularity_ = TextGranularity::kCharacter;
 
   layout_selection_->ContextDestroyed();
+  selection_editor_->ContextDestroyed();
 
   frame_->GetEditor().ClearTypingStyle();
+
+  document_ = nullptr;
 }
 
 void FrameSelection::LayoutBlockWillBeDestroyed(const LayoutBlock& block) {
@@ -1256,10 +1288,10 @@ void FrameSelection::ShowTreeForThis() const {
 
 void FrameSelection::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(document_);
   visitor->Trace(layout_selection_);
   visitor->Trace(selection_editor_);
   visitor->Trace(frame_caret_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 void FrameSelection::ScheduleVisualUpdate() const {

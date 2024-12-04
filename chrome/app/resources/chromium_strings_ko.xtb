@@ -261,6 +261,7 @@
 <translation id="4510853178268397146">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chromium에서 삭제할 것을 권장합니다.</translation>
 <translation id="452711251841752011">Chromium에 오신 것을 환영합니다. 새 브라우저 창이 열렸습니다</translation>
 <translation id="4531137820806573936">Chromium에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
+<translation id="4534145890176164066">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다.</translation>
 <translation id="4536805923587466102">이미 다른 Chromium 프로필에 <ph name="USER_EMAIL_ADDRESS" /> 계정으로 로그인되어 있습니다</translation>
 <translation id="4544142686420020088">문제가 발생하여 Chromium을 업데이트할 수 없습니다. <ph name="BEGIN_LINK" />Chromium 업데이트 문제 및 업데이트 실패 문제 해결하기<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium은 이 탭을 비활성화하여 탐색 환경을 개선하고 빠른 속도를 유지할 수 있습니다.</translation>
@@ -479,6 +480,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7349591376906416160">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 <ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열도록 Chromium을 구성했습니다.</translation>
 <translation id="7355355292030546812">파일이 <ph name="USER_EMAIL" /> 등의 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chromium에서 이 다운로드를 차단했습니다</translation>
 <translation id="7384121030444253939">이 확장 프로그램은 더 이상 지원되지 않습니다. 대신 Chromium에서는 이 프로그램을 삭제할 것을 권장합니다.</translation>
+<translation id="7389750180956889333">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다. <ph name="BEGIN_LINK" />Chrome 자동 완성<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="7398989605938454041">Chromium 프로필을 사용하면 모든 Chromium 데이터를 분리할 수 있습니다. 업무용 데이터와 개인용 데이터를 더 쉽게 분리해 보세요.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - 개발자용 Chromium</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>

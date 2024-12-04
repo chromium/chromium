@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AndroidOperationResult2.{Operation}"
-    enum="ConversionAndroidOperationResult" expires_after="2025-03-23">
+    enum="ConversionAndroidOperationResult" expires_after="2025-06-01">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -704,6 +704,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.HttpResponseOrNetErrorCode.AppBackgrounded"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-03">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each report sent
+    on an android device while the chrome application state is 'destroyed'. The
+    HTTP response code is recorded if there is no net error code for the
+    request, or the net error code indicates there was a response code failure.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.HttpResponseOrNetErrorCode.AppDestroyed"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-03">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each report sent
+    on an android device while the chrome application state is 'stopped'. The
+    HTTP response code is recorded if there is no net error code for the
+    request, or the net error code indicates there was a response code failure.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.HttpResponseOrNetErrorCodeEventLevel"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-30">
   <owner>johnidel@chromium.org</owner>
@@ -1038,6 +1062,28 @@ chromium-metrics-reviews@google.com.
     registrations items. There is negligible probability that items won't reach
     the manager for the case where the AttributionDataHostManager is destroyed
     before flushing the buffer.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegistrationProcessed.TimeSinceLastRegistration"
+    units="ms" expires_after="2025-03-30">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the amount of time passed between the last received registration and
+    a new incoming registration. Recorded when a valid header with at least one
+    registration is received.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegistrationProcessed.TimeSinceManagerStartup"
+    units="ms" expires_after="2025-03-30">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the amount of time passed the initialization of AttributionManager
+    and the first incoming registration within the session. Recorded when a
+    valid header with at least one registration is received.
   </summary>
 </histogram>
 

@@ -89,7 +89,7 @@ CoreTabHelper::CoreTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<CoreTabHelper>(*web_contents) {}
 
-CoreTabHelper::~CoreTabHelper() {}
+CoreTabHelper::~CoreTabHelper() = default;
 
 // static
 std::u16string CoreTabHelper::GetDefaultTitle() {

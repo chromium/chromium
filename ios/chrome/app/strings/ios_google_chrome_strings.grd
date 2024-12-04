@@ -321,6 +321,9 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE" desc="The signout dialog title when forced sign-in is enabled. (Force Sign In) [iOS only]">
         Sign out of Chrome?
       </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+       Signing in adds your account to Chrome for work-related browsing.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE_WITH_UNO" desc="Message displayed in a prompt when saving data (like bookmarks/reading list/passwords...) is disabled due to an enterprise policy. Related with IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_UNO.">
         Your organization turned off the ability to use and save Chrome data in your Google Account. New bookmarks, passwords, and more will be saved only to this device.
       </message>
@@ -987,7 +990,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Keep up with content and helpful Chrome tips.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TIPS_TITLE" desc="Title for the Set Up List (a variation that mentions Tips) - a list of tasks the user might want to complete when first using Chromium.">
-        Chrome tips
+        Chrome Tips
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TITLE" desc="Title for the Set Up List - a list of tasks the user might want to complete when first using Chrome.">
         Get the most out of Chrome

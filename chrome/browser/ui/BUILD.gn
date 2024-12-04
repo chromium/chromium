@@ -206,8 +206,6 @@ static_library("ui") {
     "webui/internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h",
     "webui/internal_webui_config.cc",
     "webui/internal_webui_config.h",
-    "webui/internals/internals_ui.cc",
-    "webui/internals/internals_ui.h",
     "webui/interstitials/interstitial_ui.cc",
     "webui/interstitials/interstitial_ui.h",
     "webui/local_state/local_state_ui.cc",
@@ -912,8 +910,6 @@ static_library("ui") {
       "webui/feed_internals/feed_internals_ui.h",
       "webui/feed_internals/feedv2_internals_page_handler.cc",
       "webui/feed_internals/feedv2_internals_page_handler.h",
-      "webui/internals/notifications/notifications_internals_ui_message_handler.cc",
-      "webui/internals/notifications/notifications_internals_ui_message_handler.h",
       "webui/offline/offline_internals_ui.cc",
       "webui/offline/offline_internals_ui.h",
       "webui/offline/offline_internals_ui_message_handler.cc",
@@ -1397,10 +1393,6 @@ static_library("ui") {
       "webui/feedback/feedback_handler.h",
       "webui/feedback/feedback_ui.cc",
       "webui/feedback/feedback_ui.h",
-      "webui/hats/hats_page_handler.cc",
-      "webui/hats/hats_page_handler.h",
-      "webui/hats/hats_ui.cc",
-      "webui/hats/hats_ui.h",
       "webui/help/version_updater.h",
       "webui/history/browsing_history_handler.cc",
       "webui/history/browsing_history_handler.h",
@@ -1418,6 +1410,8 @@ static_library("ui") {
       "webui/identity_internals_ui.h",
       "webui/inspect_ui.cc",
       "webui/inspect_ui.h",
+      "webui/internals/internals_ui.cc",
+      "webui/internals/internals_ui.h",
       "webui/internals/user_education/user_education_internals_page_handler_impl.cc",
       "webui/internals/user_education/user_education_internals_page_handler_impl.h",
       "webui/managed_ui_handler.cc",
@@ -1888,6 +1882,7 @@ static_library("ui") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome:impl",
 
@@ -3243,24 +3238,6 @@ static_library("ui") {
         "webui/signin/dice_web_signin_intercept_ui.h",
         "webui/signin/inline_login_handler_impl.cc",
         "webui/signin/inline_login_handler_impl.h",
-        "webui/welcome/bookmark_handler.cc",
-        "webui/welcome/bookmark_handler.h",
-        "webui/welcome/bookmark_item.cc",
-        "webui/welcome/bookmark_item.h",
-        "webui/welcome/google_apps_handler.cc",
-        "webui/welcome/google_apps_handler.h",
-        "webui/welcome/helpers.cc",
-        "webui/welcome/helpers.h",
-        "webui/welcome/ntp_background_fetcher.cc",
-        "webui/welcome/ntp_background_fetcher.h",
-        "webui/welcome/ntp_background_handler.cc",
-        "webui/welcome/ntp_background_handler.h",
-        "webui/welcome/set_as_default_handler.cc",
-        "webui/welcome/set_as_default_handler.h",
-        "webui/welcome/welcome_handler.cc",
-        "webui/welcome/welcome_handler.h",
-        "webui/welcome/welcome_ui.cc",
-        "webui/welcome/welcome_ui.h",
       ]
 
       deps += [ "webui/signin/batch_upload:mojo_bindings" ]
@@ -3622,10 +3599,7 @@ static_library("ui") {
         "views/status_icons/status_icon_linux_dbus.cc",
         "views/status_icons/status_icon_linux_dbus.h",
       ]
-      deps += [
-        "//components/dbus/menu",
-        "//components/dbus/thread_linux",
-      ]
+      deps += [ "//components/dbus" ]
     }
 
     # TODO(crbug.com/40193891): ozone_platform_x11 should not be leaked outside
@@ -4244,6 +4218,8 @@ static_library("ui") {
       "views/location_bar/location_bar_view.h",
       "views/location_bar/location_icon_view.cc",
       "views/location_bar/location_icon_view.h",
+      "views/location_bar/merchant_trust_chip_button_controller.cc",
+      "views/location_bar/merchant_trust_chip_button_controller.h",
       "views/location_bar/omnibox_chip_button.cc",
       "views/location_bar/omnibox_chip_button.h",
       "views/location_bar/omnibox_chip_theme.h",
@@ -4350,11 +4326,6 @@ static_library("ui") {
       "views/overlay/toggle_microphone_button.h",
       "views/overlay/video_overlay_window_views.cc",
       "views/overlay/video_overlay_window_views.h",
-      "views/page_action/action_ids.h",
-      "views/page_action/page_action_container_view.cc",
-      "views/page_action/page_action_container_view.h",
-      "views/page_action/page_action_controller.cc",
-      "views/page_action/page_action_controller.h",
       "views/page_action/page_action_icon_container.cc",
       "views/page_action/page_action_icon_container.h",
       "views/page_action/page_action_icon_controller.cc",
@@ -4366,11 +4337,6 @@ static_library("ui") {
       "views/page_action/page_action_icon_view.cc",
       "views/page_action/page_action_icon_view.h",
       "views/page_action/page_action_icon_view_observer.h",
-      "views/page_action/page_action_model.cc",
-      "views/page_action/page_action_model.h",
-      "views/page_action/page_action_model_observer.h",
-      "views/page_action/page_action_view.cc",
-      "views/page_action/page_action_view.h",
       "views/page_action/pwa_install_view.cc",
       "views/page_action/pwa_install_view.h",
       "views/page_action/zoom_view.cc",
@@ -4582,6 +4548,9 @@ static_library("ui") {
       "views/profiles/avatar_toolbar_button.h",
       "views/profiles/avatar_toolbar_button_delegate.cc",
       "views/profiles/avatar_toolbar_button_delegate.h",
+      "views/promos/ios_promo_bubble.cc",
+      "views/promos/ios_promo_bubble.h",
+      "views/promos/ios_promo_constants.h",
       "views/qrcode_generator/qrcode_generator_bubble.cc",
       "views/qrcode_generator/qrcode_generator_bubble.h",
       "views/relaunch_notification/relaunch_notification_controller.cc",
@@ -5002,10 +4971,12 @@ static_library("ui") {
       "//chrome/browser/ui/autofill/payments",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:impl",
+      "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
       "//chrome/browser/ui/qrcode_generator:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
       "//components/commerce/core:metrics",
       "//components/commerce/core:pref_names",
@@ -5038,6 +5009,7 @@ static_library("ui") {
       "//components/power_bookmarks/common",
       "//components/power_bookmarks/core:core",
       "//components/power_bookmarks/storage",
+      "//components/prefs",
       "//components/reading_list/features:flags",
       "//components/segmentation_platform/embedder/default_model:default_model",
       "//components/services/app_service",
@@ -5069,17 +5041,10 @@ static_library("ui") {
 
     if (is_chrome_branded && !is_android) {
       sources += [
-        "views/promos/ios_promo_bubble.cc",
-        "views/promos/ios_promo_bubble.h",
-        "views/promos/ios_promo_constants.h",
         "views/promos/ios_promo_password_bubble.cc",
         "views/promos/ios_promo_password_bubble.h",
         "views/user_education/low_usage_promo.cc",
         "views/user_education/low_usage_promo.h",
-      ]
-      deps += [
-        "//chrome/browser/ui/promos:utils",
-        "//components/prefs",
       ]
     }
 
@@ -5183,7 +5148,7 @@ static_library("ui") {
           "views/dark_mode_manager_linux.h",
         ]
         deps += [
-          "//components/dbus/thread_linux",
+          "//components/dbus",
           "//dbus",
         ]
       }
@@ -5254,10 +5219,19 @@ static_library("ui") {
       deps += [ "//components/compose/core/browser" ]
     }
 
+    if (enable_dice_support) {
+      sources += [
+        "views/autofill/address_sign_in_promo_view.cc",
+        "views/autofill/address_sign_in_promo_view.h",
+      ]
+    }
+
     if (enable_glic) {
       sources += [
         "views/glic/glic_view.cc",
         "views/glic/glic_view.h",
+        "views/glic/glic_web_view.cc",
+        "views/glic/glic_web_view.h",
       ]
       deps += [
         "//chrome/browser/glic:enabling",

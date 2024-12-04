@@ -38,6 +38,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/account_pref_utils.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace tab_groups {
 namespace {
@@ -281,6 +282,13 @@ void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
       !sync_bridge_mediator_->IsSavedBridgeSyncing());
   group.SetCreatorCacheGuid(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
+  if (group.is_shared_tab_group()) {
+    std::optional<GaiaId> account_id =
+        sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+    if (account_id.has_value()) {
+      group.SetUpdatedByAttribution(std::move(account_id.value()));
+    }
+  }
 
   std::optional<LocalTabGroupID> local_group_id = group.local_group_id();
 
@@ -469,24 +477,47 @@ void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabGroupTabsReordered, group_id, std::nullopt);
 }
 
-void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
-                                            const LocalTabID& tab_id) {
-  VLOG(2) << __func__;
-  const SavedTabGroup* group = model_->Get(group_id);
+void TabGroupSyncServiceImpl::OnTabSelected(
+    const std::optional<LocalTabGroupID>& group_id,
+    const LocalTabID& tab_id) {
+  if (!group_id) {
+    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    NotifyTabSelected();
+    return;
+  }
+
+  const SavedTabGroup* group = model_->Get(*group_id);
   if (!group) {
-    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
+    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    NotifyTabSelected();
     return;
   }
 
   const SavedTabGroupTab* tab = group->GetTab(tab_id);
   if (!tab) {
-    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
+    currently_selected_tab_id_ = {std::nullopt, std::nullopt};
+    NotifyTabSelected();
     return;
   }
 
-  UpdateAttributions(group_id);
-  model_->UpdateLastUserInteractionTimeLocally(group_id);
-  LogEvent(TabGroupEvent::kTabSelected, group_id, tab_id);
+  UpdateAttributions(*group_id);
+  model_->UpdateLastUserInteractionTimeLocally(*group_id);
+  LogEvent(TabGroupEvent::kTabSelected, *group_id, tab_id);
+
+  currently_selected_tab_id_ = {group->saved_guid(), tab->saved_tab_guid()};
+  NotifyTabSelected();
+}
+
+std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+TabGroupSyncServiceImpl::GetCurrentlySelectedTabID() {
+  return currently_selected_tab_id_;
+}
+
+void TabGroupSyncServiceImpl::NotifyTabSelected() {
+  for (auto& observer : observers_) {
+    observer.OnTabSelected(currently_selected_tab_id_.first,
+                           currently_selected_tab_id_.second);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -516,7 +547,12 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   // tab groups, and without migration of local IDs.
   SavedTabGroup shared_group = saved_group->CloneAsSharedTabGroup(
       CollaborationId(std::string(collaboration_id)));
-  for (auto& tab : shared_group.saved_tabs()) {
+  std::optional<std::string> account_id =
+      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+  if (account_id.has_value()) {
+    shared_group.SetUpdatedByAttribution(std::move(account_id.value()));
+  }
+  for (SavedTabGroupTab& tab : shared_group.saved_tabs()) {
     UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_,
                            stats::TitleSanitizationType::kShareTabGroup);
   }
@@ -679,7 +715,7 @@ bool TabGroupSyncServiceImpl::IsRemoteDevice(
 
 bool TabGroupSyncServiceImpl::WasTabGroupClosedLocally(
     const base::Uuid& sync_tab_group_id) const {
-  std::optional<std::string> account_id =
+  std::optional<GaiaId> account_id =
       sync_bridge_mediator_->GetAccountIdForSavedBridge();
   if (account_id) {
     return syncer::GetAccountKeyedPrefDictEntry(
@@ -1020,7 +1056,7 @@ void TabGroupSyncServiceImpl::RemoveDeletedGroupIdFromPref(
 
 void TabGroupSyncServiceImpl::AddLocallyClosedGroupIdToPref(
     const base::Uuid& sync_id) {
-  std::optional<std::string> account_id =
+  std::optional<GaiaId> account_id =
       sync_bridge_mediator_->GetAccountIdForSavedBridge();
   if (!account_id) {
     // If there's no signed-in account, nothing to do.
@@ -1034,7 +1070,7 @@ void TabGroupSyncServiceImpl::AddLocallyClosedGroupIdToPref(
 
 void TabGroupSyncServiceImpl::RemoveLocallyClosedGroupIdFromPref(
     const base::Uuid& sync_id) {
-  std::optional<std::string> account_id =
+  std::optional<GaiaId> account_id =
       sync_bridge_mediator_->GetAccountIdForSavedBridge();
   if (!account_id) {
     // If there's no signed-in account, nothing to do. Most notably, this

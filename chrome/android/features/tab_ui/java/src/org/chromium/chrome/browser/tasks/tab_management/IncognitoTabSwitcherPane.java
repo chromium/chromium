@@ -257,7 +257,9 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
                 TabUiUtils.updateViewContentSensitivityForTabs(
-                        filter.getTabModel(), coordinator::setTabSwitcherContentSensitivity);
+                        filter.getTabModel(),
+                        coordinator::setTabSwitcherContentSensitivity,
+                        "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity");
             }
             coordinator.resetWithTabList(tabList);
             finishWaitForTabStateInitializedTimer();

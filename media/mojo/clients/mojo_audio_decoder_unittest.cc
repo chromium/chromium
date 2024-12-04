@@ -293,11 +293,11 @@ class MojoAudioDecoderTest : public ::testing::Test {
   int decode_count_ = 0;
 };
 
-TEST_F(MojoAudioDecoderTest, InitializeSuccess) {
+TEST_F(MojoAudioDecoderTest, Initialize_Success) {
   Initialize();
 }
 
-TEST_F(MojoAudioDecoderTest, ReinitializeSuccess) {
+TEST_F(MojoAudioDecoderTest, Reinitialize_Success) {
   Initialize();
   DecodeMultipleTimes(10);
   ResetAndWaitUntilFinish();
@@ -308,7 +308,7 @@ TEST_F(MojoAudioDecoderTest, ReinitializeSuccess) {
 
 // Makes sure all callbacks and client calls are called in order. See
 // http://crbug.com/646054
-TEST_F(MojoAudioDecoderTest, DecodeMultipleTimes) {
+TEST_F(MojoAudioDecoderTest, Decode_MultipleTimes) {
   Initialize();
 
   // Choose a large number of decodes per test on purpose to expose potential
@@ -316,12 +316,12 @@ TEST_F(MojoAudioDecoderTest, DecodeMultipleTimes) {
   DecodeMultipleTimes(100);
 }
 
-TEST_F(MojoAudioDecoderTest, ResetDuringDecode) {
+TEST_F(MojoAudioDecoderTest, Reset_DuringDecode) {
   Initialize();
   DecodeAndReset();
 }
 
-TEST_F(MojoAudioDecoderTest, ResetDuringDecodeChunkedWrite) {
+TEST_F(MojoAudioDecoderTest, Reset_DuringDecode_ChunkedWrite) {
   // Use a small writer capacity to force chunked write.
   SetWriterCapacity(10);
   Initialize();

@@ -1264,9 +1264,7 @@ TEST_P(GLES2DecoderTest2, Uniform1fValidArgs) {
 TEST_P(GLES2DecoderTest2, Uniform1fvImmediateValidArgs) {
   cmds::Uniform1fvImmediate& cmd = *GetImmediateAs<cmds::Uniform1fvImmediate>();
   SpecializedSetup<cmds::Uniform1fvImmediate, 0>(true);
-  GLfloat temp[1 * 2] = {
-      0,
-  };
+  GLfloat temp[1 * 2] = {};
   EXPECT_CALL(*gl_, Uniform1fv(1, 2, PointsToArray(temp, 1)));
   cmd.Init(1, 2, &temp[0]);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));
@@ -1285,9 +1283,7 @@ TEST_P(GLES2DecoderTest2, Uniform2fValidArgs) {
 TEST_P(GLES2DecoderTest2, Uniform2fvImmediateValidArgs) {
   cmds::Uniform2fvImmediate& cmd = *GetImmediateAs<cmds::Uniform2fvImmediate>();
   SpecializedSetup<cmds::Uniform2fvImmediate, 0>(true);
-  GLfloat temp[2 * 2] = {
-      0,
-  };
+  GLfloat temp[2 * 2] = {};
   EXPECT_CALL(*gl_, Uniform2fv(1, 2, PointsToArray(temp, 2)));
   cmd.Init(1, 2, &temp[0]);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));
@@ -1306,9 +1302,7 @@ TEST_P(GLES2DecoderTest2, Uniform2iValidArgs) {
 TEST_P(GLES2DecoderTest2, Uniform2ivImmediateValidArgs) {
   cmds::Uniform2ivImmediate& cmd = *GetImmediateAs<cmds::Uniform2ivImmediate>();
   SpecializedSetup<cmds::Uniform2ivImmediate, 0>(true);
-  GLint temp[2 * 2] = {
-      0,
-  };
+  GLint temp[2 * 2] = {};
   EXPECT_CALL(*gl_, Uniform2iv(1, 2, PointsToArray(temp, 2)));
   cmd.Init(1, 2, &temp[0]);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));
@@ -1327,9 +1321,7 @@ TEST_P(GLES2DecoderTest2, Uniform3fValidArgs) {
 TEST_P(GLES2DecoderTest2, Uniform3fvImmediateValidArgs) {
   cmds::Uniform3fvImmediate& cmd = *GetImmediateAs<cmds::Uniform3fvImmediate>();
   SpecializedSetup<cmds::Uniform3fvImmediate, 0>(true);
-  GLfloat temp[3 * 2] = {
-      0,
-  };
+  GLfloat temp[3 * 2] = {};
   EXPECT_CALL(*gl_, Uniform3fv(1, 2, PointsToArray(temp, 3)));
   cmd.Init(1, 2, &temp[0]);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));
@@ -1348,9 +1340,7 @@ TEST_P(GLES2DecoderTest2, Uniform3iValidArgs) {
 TEST_P(GLES2DecoderTest2, Uniform3ivImmediateValidArgs) {
   cmds::Uniform3ivImmediate& cmd = *GetImmediateAs<cmds::Uniform3ivImmediate>();
   SpecializedSetup<cmds::Uniform3ivImmediate, 0>(true);
-  GLint temp[3 * 2] = {
-      0,
-  };
+  GLint temp[3 * 2] = {};
   EXPECT_CALL(*gl_, Uniform3iv(1, 2, PointsToArray(temp, 3)));
   cmd.Init(1, 2, &temp[0]);
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));

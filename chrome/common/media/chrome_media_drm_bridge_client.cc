@@ -4,9 +4,9 @@
 
 #include "chrome/common/media/chrome_media_drm_bridge_client.h"
 
-ChromeMediaDrmBridgeClient::ChromeMediaDrmBridgeClient() {}
+ChromeMediaDrmBridgeClient::ChromeMediaDrmBridgeClient() = default;
 
-ChromeMediaDrmBridgeClient::~ChromeMediaDrmBridgeClient() {}
+ChromeMediaDrmBridgeClient::~ChromeMediaDrmBridgeClient() = default;
 
 media::MediaDrmBridgeDelegate*
 ChromeMediaDrmBridgeClient::GetMediaDrmBridgeDelegate(

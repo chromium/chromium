@@ -52,7 +52,7 @@ SSLClientAuthRequestorMock::SSLClientAuthRequestorMock(
     : cert_request_info_(cert_request_info) {
 }
 
-SSLClientAuthRequestorMock::~SSLClientAuthRequestorMock() {}
+SSLClientAuthRequestorMock::~SSLClientAuthRequestorMock() = default;
 
 std::unique_ptr<content::ClientCertificateDelegate>
 SSLClientAuthRequestorMock::CreateDelegate() {

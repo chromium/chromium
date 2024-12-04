@@ -356,7 +356,7 @@ void FromGWSPageLoadMetricsLogger::SetProvisionalUrl(const GURL& url) {
       page_load_metrics::IsGoogleSearchHostname(url);
 }
 
-FromGWSPageLoadMetricsObserver::FromGWSPageLoadMetricsObserver() {}
+FromGWSPageLoadMetricsObserver::FromGWSPageLoadMetricsObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 FromGWSPageLoadMetricsObserver::OnStart(

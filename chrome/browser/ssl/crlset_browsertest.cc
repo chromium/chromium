@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(CRLSetBrowserTest, TestCRLSetRevoked) {
   }
   base::RunLoop run_loop;
   content::GetCertVerifierServiceFactory()->UpdateCRLSet(
-      base::as_bytes(base::make_span(crl_set_bytes)), run_loop.QuitClosure());
+      base::as_byte_span(crl_set_bytes), run_loop.QuitClosure());
   run_loop.Run();
 
   bool interstitial_expected =
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(CRLSetBrowserTest, TestCRLSetBlockedInterception) {
   }
   base::RunLoop run_loop;
   content::GetCertVerifierServiceFactory()->UpdateCRLSet(
-      base::as_bytes(base::make_span(crl_set_bytes)), run_loop.QuitClosure());
+      base::as_byte_span(crl_set_bytes), run_loop.QuitClosure());
   run_loop.Run();
 
   bool interstitial_expected =
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(CRLSetBrowserTest, TestCRLSetKnownInterception) {
   }
   base::RunLoop run_loop;
   content::GetCertVerifierServiceFactory()->UpdateCRLSet(
-      base::as_bytes(base::make_span(crl_set_bytes)), run_loop.QuitClosure());
+      base::as_byte_span(crl_set_bytes), run_loop.QuitClosure());
   run_loop.Run();
 
   // Navigate to the page. It should not cause an interstitial, but should

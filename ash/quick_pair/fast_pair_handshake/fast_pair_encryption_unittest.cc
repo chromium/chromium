@@ -27,7 +27,7 @@ std::string DecodeKey(const std::string& encoded_key) {
 
 class FastPairEncryptionTest : public testing::Test {};
 
-TEST_F(FastPairEncryptionTest, EncryptBytesSuccess) {
+TEST_F(FastPairEncryptionTest, EncryptBytes_Success) {
   std::array<uint8_t, kBlockSizeBytes> input = {
       0xF3, 0x0F, 0x4E, 0x78, 0x6C, 0x59, 0xA7, 0xBB,
       0xF3, 0x87, 0x3B, 0x5A, 0x49, 0xBA, 0x97, 0xEA};
@@ -39,7 +39,7 @@ TEST_F(FastPairEncryptionTest, EncryptBytesSuccess) {
   EXPECT_EQ(EncryptBytes(aes_key_bytes, input), expected);
 }
 
-TEST_F(FastPairEncryptionTest, EncryptBytesFailure) {
+TEST_F(FastPairEncryptionTest, EncryptBytes_Failure) {
   std::array<uint8_t, kBlockSizeBytes> input = {
       0xF3, 0x0F, 0x4E, 0x78, 0x6C, 0x59, 0xA7, 0xBA,
       0xF3, 0x87, 0x3B, 0x5A, 0x49, 0xBA, 0x97, 0xEA};
@@ -51,15 +51,15 @@ TEST_F(FastPairEncryptionTest, EncryptBytesFailure) {
   EXPECT_NE(EncryptBytes(aes_key_bytes, input), expected);
 }
 
-TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreementEmptyKey) {
+TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreement_EmptyKey) {
   EXPECT_FALSE(GenerateKeysWithEcdhKeyAgreement("").has_value());
 }
 
-TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreementShortKey) {
+TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreement_ShortKey) {
   EXPECT_FALSE(GenerateKeysWithEcdhKeyAgreement("too_short").has_value());
 }
 
-TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreementInvalidKey) {
+TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreement_InvalidKey) {
   EXPECT_FALSE(
       GenerateKeysWithEcdhKeyAgreement(
           DecodeKey("U2PWc3FHTxah/o0YT9n1VRvtm57SNIRSXOEBXm4fdtMo+06tNoFlt8D0/"
@@ -67,7 +67,7 @@ TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreementInvalidKey) {
           .has_value());
 }
 
-TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreementValidKey) {
+TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreement_ValidKey) {
   EXPECT_TRUE(
       GenerateKeysWithEcdhKeyAgreement(
           DecodeKey("U2PWc3FHTxah/o0YU9n1VRvtm57SNIRSXOEBXm4fdtMo+06tNoFlt8D0/"
@@ -79,7 +79,7 @@ TEST_F(FastPairEncryptionTest, GenerateKeysWithEcdhKeyAgreementValidKey) {
 // https://developers.google.com/nearby/fast-pair/specifications/appendix/testcases#hmac-sha256
 // The spec concatenates `nonce` || `input` into a single input vector which are
 // distinct here.
-TEST_F(FastPairEncryptionTest, GenerateHmacSha256Success) {
+TEST_F(FastPairEncryptionTest, GenerateHmacSha256_Success) {
   const std::vector<uint8_t> input = {0xEE, 0x4A, 0x24, 0x83, 0x73, 0x80, 0x52,
                                       0xE4, 0x4E, 0x9B, 0x2A, 0x14, 0x5E, 0x5D,
                                       0xDF, 0xAA, 0x44, 0xB9, 0xE5, 0x53, 0x6A,
@@ -100,7 +100,7 @@ TEST_F(FastPairEncryptionTest, GenerateHmacSha256Success) {
   EXPECT_EQ(GenerateHmacSha256(secret_key, nonce, input), expected);
 }
 
-TEST_F(FastPairEncryptionTest, GenerateHmacSha256Failure) {
+TEST_F(FastPairEncryptionTest, GenerateHmacSha256_Failure) {
   // The first byte is 0xFF in place of 0xEE.
   const std::vector<uint8_t> input = {0xFF, 0x4A, 0x24, 0x83, 0x73, 0x80, 0x52,
                                       0xE4, 0x4E, 0x9B, 0x2A, 0x14, 0x5E, 0x5D,
@@ -122,7 +122,7 @@ TEST_F(FastPairEncryptionTest, GenerateHmacSha256Failure) {
   EXPECT_NE(GenerateHmacSha256(secret_key, nonce, input), expected);
 }
 
-TEST_F(FastPairEncryptionTest, GenerateHmacSha256EmptyParamCombosNoCrash) {
+TEST_F(FastPairEncryptionTest, GenerateHmacSha256_EmptyParamCombos_NoCrash) {
   const std::vector<uint8_t> input = {0xEE, 0x4A, 0x24, 0x83, 0x73, 0x80, 0x52,
                                       0xE4, 0x4E, 0x9B, 0x2A, 0x14, 0x5E, 0x5D,
                                       0xDF, 0xAA, 0x44, 0xB9, 0xE5, 0x53, 0x6A,
@@ -147,7 +147,7 @@ TEST_F(FastPairEncryptionTest, GenerateHmacSha256EmptyParamCombosNoCrash) {
   }
 }
 
-TEST_F(FastPairEncryptionTest, GenerateHmacSha256OneByteData) {
+TEST_F(FastPairEncryptionTest, GenerateHmacSha256_OneByteData) {
   const std::vector<uint8_t> input = {};
 
   const std::array<uint8_t, kNonceSizeBytes> nonce = {0x00};
@@ -167,7 +167,7 @@ TEST_F(FastPairEncryptionTest, GenerateHmacSha256OneByteData) {
 // `input`, `secret_key`, `nonce`, and `expected` values taken from the Fast
 // Pair spec:
 // https://developers.google.com/nearby/fast-pair/specifications/appendix/testcases#aes_encryption
-TEST_F(FastPairEncryptionTest, EncryptAdditionalDataSuccess) {
+TEST_F(FastPairEncryptionTest, EncryptAdditionalData_Success) {
   const std::vector<uint8_t> input = {0x53, 0x6F, 0x6D, 0x65, 0x6F, 0x6E, 0x65,
                                       0x27, 0x73, 0x20, 0x47, 0x6F, 0x6F, 0x67,
                                       0x6C, 0x65, 0x20, 0x48, 0x65, 0x61, 0x64,
@@ -188,7 +188,7 @@ TEST_F(FastPairEncryptionTest, EncryptAdditionalDataSuccess) {
   EXPECT_EQ(EncryptAdditionalData(secret_key, nonce, input), expected);
 }
 
-TEST_F(FastPairEncryptionTest, EncryptAdditionalDataFailure) {
+TEST_F(FastPairEncryptionTest, EncryptAdditionalData_Failure) {
   // The first byte is 0x54 instead of 0x53
   const std::vector<uint8_t> input = {0x54, 0x6F, 0x6D, 0x65, 0x6F, 0x6E, 0x65,
                                       0x27, 0x73, 0x20, 0x47, 0x6F, 0x6F, 0x67,
@@ -210,7 +210,7 @@ TEST_F(FastPairEncryptionTest, EncryptAdditionalDataFailure) {
   EXPECT_NE(EncryptAdditionalData(secret_key, nonce, input), expected);
 }
 
-TEST_F(FastPairEncryptionTest, EncryptAdditionalDataEmptyData) {
+TEST_F(FastPairEncryptionTest, EncryptAdditionalData_EmptyData) {
   const std::vector<uint8_t> input = {};
 
   const std::array<uint8_t, kSecretKeySizeBytes> secret_key = {
@@ -225,7 +225,7 @@ TEST_F(FastPairEncryptionTest, EncryptAdditionalDataEmptyData) {
   EXPECT_EQ(EncryptAdditionalData(secret_key, nonce, input), expected);
 }
 
-TEST_F(FastPairEncryptionTest, EncryptAdditionalDataEmptyParamCombosNoCrash) {
+TEST_F(FastPairEncryptionTest, EncryptAdditionalData_EmptyParamCombos_NoCrash) {
   std::vector<uint8_t> input = {0x53, 0x6F, 0x6D, 0x65, 0x6F, 0x6E, 0x65,
                                 0x27, 0x73, 0x20, 0x47, 0x6F, 0x6F, 0x67,
                                 0x6C, 0x65, 0x20, 0x48, 0x65, 0x61, 0x64,
@@ -248,7 +248,7 @@ TEST_F(FastPairEncryptionTest, EncryptAdditionalDataEmptyParamCombosNoCrash) {
   }
 }
 
-TEST_F(FastPairEncryptionTest, EncryptAdditionalDataOneByteData) {
+TEST_F(FastPairEncryptionTest, EncryptAdditionalData_OneByteData) {
   const std::vector<uint8_t> input = {0x00};
 
   const std::array<uint8_t, kSecretKeySizeBytes> secret_key = {

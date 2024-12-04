@@ -7,7 +7,6 @@ import json
 import logging
 import os
 import subprocess
-import sys
 import time
 import typing
 
@@ -16,11 +15,6 @@ import test_runner
 import test_runner_errors
 import mac_util
 
-THIS_DIR = os.path.abspath(os.path.dirname(__file__))
-CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
-sys.path.append(
-    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
-import measures
 
 LOGGER = logging.getLogger(__name__)
 
@@ -530,18 +524,6 @@ def delete_simulator_runtime_and_wait(ios_version):
     return
 
   delete_simulator_runtime(runtime_to_delete['identifier'], True)
-
-
-def delete_other_ios18_runtimes(current_runtime_build_id: str):
-  runtimes = get_simulator_runtime_list()
-  runtime_delete_skipped_count = measures.count('iOS18_runtimes_not_deleted')
-  for runtime in runtimes.values():
-    if (runtime['runtimeIdentifier'] == IOS18_SIM_RUNTIME_ID and
-        runtime['build'] != current_runtime_build_id):
-      # TODO(crbug.com/349660173): Skip deleting, but log to metricsDB so we
-      # can associate any infra regressions with the removal of this logic
-      LOGGER.info(f'Skip deleting iOS18 runtime with build: {runtime["build"]}')
-      runtime_delete_skipped_count.record()
 
 
 def disable_hardware_keyboard(udid: str) -> None:

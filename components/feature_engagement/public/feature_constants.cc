@@ -496,10 +496,13 @@ BASE_FEATURE(kIPHRestoreTabsOnFREFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kIPHBottomToolbarTipFeature,
              "IPH_BottomToolbarTip",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kIPHLongPressToolbarTipFeature,
              "IPH_LongPressToolbarTip",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -685,7 +688,7 @@ BASE_FEATURE(kIPHPlusAddressCreateSuggestionFeature,
         // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kIPHGrowthFramework,
              "IPH_GrowthFramework",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -807,18 +810,10 @@ BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunch,
 BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
              "IPH_DesktopPWAsLinkCapturingLaunchAppInTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This can be enabled by default, as the kManagementToolbarButton
-// flag is needed for the IPH linked to this feature to work, and
-// use-cases to show the IPH are guarded by that flag. This feature is
-// also available when either EnterpriseLogoUrl or EnterpriseCustomLabel is set.
-BASE_FEATURE(kIPHToolbarManagementButtonFeature,
-             "IPH_ToolbarManagementButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_LINUX)
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kIPHiOSPasswordPromoDesktopFeature,
              "IPH_iOSPasswordPromoDesktop",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -828,7 +823,6 @@ BASE_FEATURE(kIPHiOSAddressPromoDesktopFeature,
 BASE_FEATURE(kIPHiOSPaymentPromoDesktopFeature,
              "IPH_iOSPaymentPromoDesktop",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) &&
-        // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace feature_engagement

@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
 class Profile;
@@ -41,6 +42,7 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   void SetUp() override;
   void SetUpOnMainThread() override;
   void TearDown() override;
+  void TearDownOnMainThread() override;
 
   const Extension* LoadExtension(const base::FilePath& path);
   const Extension* LoadExtension(const base::FilePath& path,
@@ -54,6 +56,10 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   // switches the active tab, this will return the WebContents of the new active
   // tab.
   content::WebContents* GetActiveWebContents();
+
+  // Opens `url` in an incognito browser window with the incognito profile of
+  // `profile`, blocking until the navigation finishes.
+  void PlatformOpenURLOffTheRecord(Profile* profile, const GURL& url);
 
   // Lower case to match the style of InProcessBrowserTest.
   Profile* profile();
@@ -78,6 +84,11 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   base::WeakPtr<content::WebContents> web_contents_;
 
   ExtensionId last_loaded_extension_id_;
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  class TestTabModel;
+  std::unique_ptr<TestTabModel> tab_model_;
+#endif
 };
 
 }  // namespace extensions

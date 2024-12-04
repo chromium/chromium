@@ -40,7 +40,6 @@
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/perfetto/system_producer.h"
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 #include "services/tracing/public/cpp/perfetto/track_event_thread_local_event_sink.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
@@ -843,18 +842,11 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   perfetto::TraceWriter* writer;
   bool privacy_filtering_enabled;
   base::trace_event::TraceRecordMode record_mode;
-#if BUILDFLAG(IS_ANDROID)
-  bool is_system_producer;
-#endif  // BUILDFLAG(IS_ANDROID)
   {
     AutoLockWithDeferredTaskPosting lock(lock_);
     writer = trace_writer_.get();
     privacy_filtering_enabled = privacy_filtering_enabled_;
     record_mode = record_mode_;
-#if BUILDFLAG(IS_ANDROID)
-    is_system_producer =
-        producer_ == PerfettoTracedProcess::Get()->system_producer();
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   if (!writer) {
@@ -926,7 +918,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // setting is set to true and privacy filtering is disabled or this is a
   // system trace.
   if (TraceLog::GetInstance()->ShouldRecordHostAppPackageName() &&
-      (!privacy_filtering_enabled || is_system_producer)) {
+      !privacy_filtering_enabled) {
     // Host app package name is used to group information from different
     // processes that "belong" to the same WebView app.
     if (process_type == ChromeProcessDescriptor::PROCESS_RENDERER ||

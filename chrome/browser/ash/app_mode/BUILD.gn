@@ -299,6 +299,7 @@ source_set("browser_tests") {
 
     # Test from sub-directories
     "//chrome/browser/ash/app_mode/auto_sleep:browser_tests",
+    "//chrome/browser/ash/app_mode/test:browser_tests",
     "//chrome/browser/ash/app_mode/web_app:browser_tests",
   ]
 }

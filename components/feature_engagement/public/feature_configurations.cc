@@ -15,9 +15,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/feature_engagement/public/ios_promo_feature_configuration.h"
 #endif  // BUILDFLAG(IS_IOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/feature_engagement/public/scalable_iph_feature_configurations.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -616,7 +616,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
   if (kIPHiOSPasswordPromoDesktopFeature.name == feature->name) {
     // A config for allowing other IPH's to explicitly block the iOS password
     // promo bubble on desktop if needed. Blocked and blocking by default, so
@@ -679,7 +679,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                   Comparator(ANY, 0), 0, 0);
     return config;
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 
@@ -744,6 +744,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(EventConfig("app_specific_history_iph_trigger",
                                              Comparator(LESS_THAN, 1), 7, 360));
     config->used = EventConfig("history_toolbar_search_menu_item_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+  if (kIPHBottomToolbarTipFeature.name == feature->name) {
+    // A config that allows the Bottom Toolbar IPH to be shown once
+    // a week, up to 3 times, unless the user interacts with Bottom Toolbar
+    // controls.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+
+    config->trigger = EventConfig("bottom_toolbar_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->event_configs.insert(EventConfig("bottom_toolbar_iph_trigger",
+                                             Comparator(LESS_THAN, 1), 7, 360));
+    config->used = EventConfig("bottom_toolbar_menu_triggered",
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }
@@ -2274,14 +2291,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 #endif  // BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (std::optional<FeatureConfig> scalable_iph_feature_config =
           GetScalableIphFeatureConfig(feature)) {
     return scalable_iph_feature_config;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (kIPHLauncherSearchHelpUiFeature.name == feature->name) {
     // A config that allows the ChromeOS Ash Launcher search IPH to be shown.
     std::optional<FeatureConfig> config = FeatureConfig();
@@ -2304,7 +2321,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         kMaxStoragePeriod, kMaxStoragePeriod));
     return config;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this

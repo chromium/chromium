@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -337,7 +338,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   bool tablet_mode = false;
   std::string wifi_connection_state = "";
   bool debug_mode = true;
-  std::string gaia_id = "";
+  std::string gaia_id;
   std::string device_type = "";
   std::string os_version = "";
   std::string channel = "";

@@ -73,7 +73,7 @@ SearchAndAssistantEnabledChecker::SearchAndAssistantEnabledChecker(
     Delegate* delegate)
     : url_loader_factory_(url_loader_factory), delegate_(delegate) {}
 
-SearchAndAssistantEnabledChecker::~SearchAndAssistantEnabledChecker() {}
+SearchAndAssistantEnabledChecker::~SearchAndAssistantEnabledChecker() = default;
 
 void SearchAndAssistantEnabledChecker::SyncSearchAndAssistantState() {
   auto resource_request = std::make_unique<network::ResourceRequest>();

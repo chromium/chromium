@@ -126,6 +126,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmShowFilteredAccounts);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmUseOtherAccount);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmWithoutWellKnownEnforcement);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFencedFramesEnforceFocus);
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kFocusRenderWidgetHostViewAndroidOnActionDown);
+#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kForwardMemoryPressureToBlinkIsolates);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityDigitalCredentials);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityDigitalCredentialsCreation);
@@ -241,6 +245,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontDataService);
 enum class FontDataServiceTypefaceType {
   kDwrite,
   kInternal,
+  kControlWithoutSpareRenderer,
 };
 extern const base::FeatureParam<FontDataServiceTypefaceType>
     kFontDataServiceTypefaceType;

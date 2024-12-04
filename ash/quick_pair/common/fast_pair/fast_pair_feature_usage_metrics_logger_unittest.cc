@@ -88,7 +88,7 @@ class FastPairFeatureUsageMetricsLoggerTest : public ::testing::Test {
       this};
 };
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEligibleEligible) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEligible_Eligible) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
 
   SetBluetoothIsPresent(/*present=*/true);
@@ -99,7 +99,7 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEligibleEligible) {
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEligibleIneligible) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEligible_Ineligible) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
 
   SetBluetoothIsPresent(/*present=*/false);
@@ -110,7 +110,7 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEligibleIneligible) {
   EXPECT_FALSE(feature_usage_metrics.IsEligible());
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEnabledEnabled) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEnabled_Enabled) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
 
   SetBluetoothIsPresent(/*present=*/true);
@@ -120,7 +120,7 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEnabledEnabled) {
   EXPECT_TRUE(feature_usage_metrics.IsEnabled());
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEnabledNotEnabled) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsEnabled_NotEnabled) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
 
   SetBluetoothIsPresent(/*present=*/true);
@@ -165,7 +165,7 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, RecordUsage) {
       feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 1);
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleUnmanagedEnabled) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Unmanaged_Enabled) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
   SetBluetoothIsPresent(/*present=*/true);
   SetHardwareOffloadingStatus(
@@ -176,7 +176,7 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleUnmanagedEnabled) {
   EXPECT_TRUE(feature_usage_metrics.IsEnabled());
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleUnmanagedDisabled) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Unmanaged_Disabled) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
 
   SetBluetoothIsPresent(/*present=*/true);
@@ -188,7 +188,7 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleUnmanagedDisabled) {
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleManagedEnabled) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Managed_Enabled) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
 
   SetBluetoothIsPresent(/*present=*/true);
@@ -200,7 +200,7 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleManagedEnabled) {
   EXPECT_TRUE(feature_usage_metrics.IsEnabled());
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleManagedDisabled) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Managed_Disabled) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
 
   SetBluetoothIsPresent(/*present=*/true);
@@ -212,7 +212,7 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleManagedDisabled) {
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
 }
 
-TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessibleIneligibleEnabled) {
+TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Ineligible_Enabled) {
   FastPairFeatureUsageMetricsLogger feature_usage_metrics;
 
   SetBluetoothIsPresent(/*present=*/false);

@@ -73,8 +73,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // left).
 - (NSRect)rectInScreen:(gfx::Rect)rect;
 
-- (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)tree_item_ids;
-
 // Return the method name for the given attribute. For testing only.
 - (NSString*)methodNameForAttribute:(NSString*)attribute;
 
@@ -111,7 +109,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 @property(nonatomic, readonly) NSNumber* minValue;
 @property(nonatomic, readonly) NSNumber* numberOfCharacters;
 @property(nonatomic, readonly) NSString* orientation;
-@property(nonatomic, readonly) id parent;
 @property(nonatomic, readonly) NSValue* position;
 // A string indicating the role of this object as far as accessibility
 // is concerned.

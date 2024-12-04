@@ -23,7 +23,7 @@ public class CommerceSubscriptionsServiceConfig {
         int defaultValue = (int) TimeUnit.DAYS.toSeconds(DEFAULT_STALE_TAB_LOWER_BOUND_DAYS);
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    ChromeFeatureList.PRICE_ANNOTATIONS,
                     STALE_TAB_LOWER_BOUND_SECONDS_PARAM,
                     defaultValue);
         }

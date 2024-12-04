@@ -207,6 +207,9 @@ specific_include_rules = {
   "web_contents_impl.cc": [
     "+components/stylus_handwriting/win/features.h"
   ],
+  "stylus_handwriting_callback_sink_win.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
   "stylus_handwriting_controller_win.cc": [
     "+components/stylus_handwriting/win/features.h"
   ],

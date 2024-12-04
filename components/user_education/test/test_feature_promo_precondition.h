@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
@@ -55,7 +56,8 @@ class TestPreconditionListProvider : public PreconditionListProvider {
 
   // PreconditionListProvider:
   FeaturePromoPreconditionList GetPreconditions(
-      const FeaturePromoSpecification& spec) const override;
+      const FeaturePromoSpecification& spec,
+      const FeaturePromoParams& params) const override;
 
  private:
   // Cache of preconditions that simulate values.
@@ -75,7 +77,7 @@ class MockPreconditionListProvider : public PreconditionListProvider {
 
   MOCK_METHOD(FeaturePromoPreconditionList,
               GetPreconditions,
-              (const FeaturePromoSpecification& spec),
+              (const FeaturePromoSpecification&, const FeaturePromoParams&),
               (const, override));
 };
 

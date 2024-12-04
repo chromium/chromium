@@ -30,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -104,6 +105,119 @@ public class AuxiliarySearchUtilsUnitTest {
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
         histogramWatcher.assertExpected();
 
-        AuxiliarySearchUtils.resetSharedTabsWithOsForTesting();
+        AuxiliarySearchUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    @SmallTest
+    public void testIncreaseModuleImpressions() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_IMPRESSION);
+
+        assertEquals(1, AuxiliarySearchUtils.incrementModuleImpressions());
+        assertEquals(2, AuxiliarySearchUtils.incrementModuleImpressions());
+
+        AuxiliarySearchUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    @SmallTest
+    public void testHasUserResponded() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_USER_RESPONDED);
+        assertFalse(AuxiliarySearchUtils.hasUserResponded());
+
+        prefsManager.writeBoolean(
+                ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_USER_RESPONDED, true);
+        assertTrue(AuxiliarySearchUtils.hasUserResponded());
+
+        AuxiliarySearchUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    @SmallTest
+    public void testExceedMaxImpressions() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_IMPRESSION);
+        assertFalse(AuxiliarySearchUtils.exceedMaxImpressions());
+
+        prefsManager.writeInt(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_IMPRESSION, 2);
+        assertFalse(AuxiliarySearchUtils.exceedMaxImpressions());
+
+        prefsManager.writeInt(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_IMPRESSION, 3);
+        assertTrue(AuxiliarySearchUtils.exceedMaxImpressions());
+
+        AuxiliarySearchUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":force_card_shown/false"
+    })
+    public void testCanShowCard() {
+        assertTrue(AuxiliarySearchUtils.canShowCard(null));
+        assertTrue(AuxiliarySearchUtils.canShowCard(false));
+
+        // Verifies Not to show the card if it has been shown in the current session.
+        assertFalse(AuxiliarySearchUtils.canShowCard(true));
+
+        // Verifies Not to show the card if it exceeds the maximum allowed impressions.
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeInt(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_IMPRESSION, 3);
+        assertFalse(AuxiliarySearchUtils.canShowCard(false));
+
+        // Verifies Not to show the card if the user has responded.
+        prefsManager.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_IMPRESSION);
+        prefsManager.writeBoolean(
+                ChromePreferenceKeys.AUXILIARY_SEARCH_MODULE_USER_RESPONDED, true);
+        assertTrue(AuxiliarySearchUtils.hasUserResponded());
+        assertFalse(AuxiliarySearchUtils.canShowCard(false));
+
+        AuxiliarySearchUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":force_card_shown/true"
+    })
+    public void testCanShowCard_ForceCardShown() {
+        assertTrue(AuxiliarySearchUtils.FORCE_CARD_SHOWN.getValue());
+
+        // Verifies that the card is always shown if the feature param
+        // AuxiliarySearchUtils.FORCE_CARD_SHOWN_PARAM is enabled.
+        assertTrue(AuxiliarySearchUtils.canShowCard(true));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":skip_device_check/false"
+    })
+    public void testIsShareTabsWithOsDefaultEnabled() {
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
+
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
+
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(false);
+        assertFalse(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":skip_device_check/true"
+    })
+    public void testIsShareTabsWithOsDefaultEnabled_SkipDeviceCheck() {
+        assertTrue(AuxiliarySearchUtils.SKIP_DEVICE_CHECK.getValue());
+
+        assertFalse(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
+        // Verifies that isShareTabsWithOsDefaultEnabled() returns true if skipping device check is
+        // enabled.
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
     }
 }

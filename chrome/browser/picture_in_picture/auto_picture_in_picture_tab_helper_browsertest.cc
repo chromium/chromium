@@ -88,9 +88,16 @@ const base::FilePath::CharType kAutopipToggleRegistrationPage[] =
     FILE_PATH_LITERAL(
         "media/picture-in-picture/autopip-toggle-registration.html");
 
+constexpr char kIframeAutoDocumentMediaPlaybackPipPage[] =
+    "/media/picture-in-picture/iframe-autopip-document-media-playback.html";
+
 class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
  public:
-  MOCK_METHOD(void, OnInputEvent, (const blink::WebInputEvent&), (override));
+  MOCK_METHOD(void,
+              OnInputEvent,
+              (const content::RenderWidgetHost& widget,
+               const blink::WebInputEvent&),
+              (override));
 };
 
 class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
@@ -172,6 +179,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -206,6 +214,12 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kAutoDocumentVideoVisibilityPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
+  }
+
+  void LoadIframeAutoDocumentMediaPlaybackPipPage(Browser* browser) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, embedded_test_server()->GetURL(
+                     "a.com", kIframeAutoDocumentMediaPlaybackPipPage)));
   }
 
   void LoadCameraMicrophonePage(Browser* browser) {
@@ -261,6 +275,12 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
             content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
+  void PlayIframeVideo(content::RenderFrameHost* rfh) {
+    ASSERT_TRUE(ExecJs(rfh, R"(
+        playVideo();
+      )"));
+  }
+
   void PauseVideo(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"pauseVideo()", base::NullCallback(),
@@ -305,6 +325,13 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     web_contents->GetPrimaryMainFrame()
         ->ExecuteJavaScriptWithUserGestureForTests(
             u"muteVideo()", base::NullCallback(),
+            content::ISOLATED_WORLD_ID_GLOBAL);
+  }
+
+  void TriggerNewPlayerCreation(content::WebContents* web_contents) {
+    web_contents->GetPrimaryMainFrame()
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            u"triggerNewPlayerCreation()", base::NullCallback(),
             content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
@@ -512,7 +539,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     auto* rwh = web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
     MockInputObserver input_observer;
     rwh->AddInputEventObserver(&input_observer);
-    EXPECT_CALL(input_observer, OnInputEvent(_)).Times(expect_events ? 4 : 0);
+    EXPECT_CALL(input_observer, OnInputEvent(_, _))
+        .Times(expect_events ? 4 : 0);
 
     blink::WebMouseEvent mouse_event(
         blink::WebMouseEvent::Type::kMouseDown, /*position=*/{},
@@ -733,6 +761,46 @@ IN_PROC_BROWSER_TEST_F(
   ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DoesNotDocumentAutopip_VideoInRemoteIFrame) {
+  // Load a page that registers for autopip.
+  LoadIframeAutoDocumentMediaPlaybackPipPage(browser());
+
+  // Get the render frame host for main_frame (a.com) and sub_frame (b.com).
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
+  auto* sub_frame = ChildFrameAt(main_frame, 0);
+
+  // Register message handler for b.com to handle `playVideo` message actions.
+  ASSERT_TRUE(ExecJs(sub_frame, R"(
+      window.addEventListener('message', (event) => {
+          console.log(`Received message: ${event.data.action}`);
+          if(event.data.action == 'playVideo') {
+            playVideo();
+          }
+      });
+  )"));
+
+  // Send a `postMessage` to b.com to start video playback.
+  PlayIframeVideo(main_frame);
+
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // There should not be a picture-in-picture window, since the video element is
+  // inside a remote iframe.
+  SwitchToNewTabAndDontExpectAutopip();
+
+  // Verify that `has_safe_url_` and `has_sufficiently_visible_video_` are both
+  // false, since the video element is within a remote iframe.
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  EXPECT_FALSE(tab_helper->get_has_safe_url_for_testing());
+  EXPECT_FALSE(tab_helper->get_has_sufficiently_visible_video_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
@@ -1672,4 +1740,98 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   SwitchToExistingTab(second_web_contents);
   WaitForAutoPip(first_web_contents);
   EXPECT_TRUE(first_web_contents->HasPictureInPictureDocument());
+}
+
+// TODO(crbug.com/382180421): Test failing on Max and Linux
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_DevToolsMediaLogsRecordedForOpener \
+  DISABLED_DevToolsMediaLogsRecordedForOpener
+#else
+#define MAYBE_DevToolsMediaLogsRecordedForOpener \
+  DevToolsMediaLogsRecordedForOpener
+#endif
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       MAYBE_DevToolsMediaLogsRecordedForOpener) {
+  LoadAutoDocumentVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+
+  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
+  ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  // Trigger the creation of a new player. This will help us test if
+  // subsequently generated media logs are correctly routed.
+  TriggerNewPlayerCreation(web_contents);
+
+  {
+    // Start watching the DevTools logs and clear the latest media notification.
+    content::DevToolsInspectorLogWatcher log_watcher(
+        web_contents, content::DevToolsInspectorLogWatcher::Domain::Media);
+    log_watcher.ClearLastMediaNotification();
+
+    // Generate media logs.
+    PlayVideo(web_contents);
+    WaitForMediaSessionPlaying(web_contents);
+
+    // Verify that media logs were recorded, since the player should be using
+    // the media element execution context of the opener document.
+    log_watcher.FlushAndStopWatching();
+    ASSERT_FALSE(log_watcher.last_media_notification().empty());
+  }
+
+  SwitchBackToOpenerAndWaitForPipToClose();
+}
+
+// TODO(crbug.com/382180421): Test failing on Max and Linux
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_DevToolsMediaLogsNotRecordedForPipWindow \
+  DISABLED_DevToolsMediaLogsNotRecordedForPipWindow
+#else
+#define MAYBE_DevToolsMediaLogsNotRecordedForPipWindow \
+  DevToolsMediaLogsNotRecordedForPipWindow
+#endif
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       MAYBE_DevToolsMediaLogsNotRecordedForPipWindow) {
+  LoadAutoDocumentVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+
+  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
+  ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  {
+    // Start watching the DevTools logs.
+    auto* pip_web_contents =
+        PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+    ASSERT_NE(nullptr, pip_web_contents);
+    content::DevToolsInspectorLogWatcher pip_log_watcher(
+        pip_web_contents, content::DevToolsInspectorLogWatcher::Domain::Media);
+
+    // Trigger the creation of a new player. This will help us test if
+    // subsequently generated media logs are correctly routed.
+    TriggerNewPlayerCreation(web_contents);
+
+    // Generate media logs.
+    PlayVideo(web_contents);
+    WaitForMediaSessionPlaying(web_contents);
+
+    // Verify that media logs were not recorded, since the player should be
+    // using the media element execution context of the opener document.
+    pip_log_watcher.FlushAndStopWatching();
+    ASSERT_TRUE(pip_log_watcher.last_media_notification().empty());
+  }
+
+  SwitchBackToOpenerAndWaitForPipToClose();
 }

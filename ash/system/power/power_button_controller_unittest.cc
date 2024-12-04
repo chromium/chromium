@@ -638,12 +638,21 @@ TEST_F(PowerButtonControllerTest,
 
   PressPowerButton();
   ReleasePowerButton();
+  // Menu background is still animating back to inivisibility,
+  // so remains open.
+  EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
+  // Once animation completes, it's hidden again.
+  ui::LayerAnimator* animator =
+      power_button_test_api_->GetPowerButtonMenuBackgroundLayer()
+          ->GetAnimator();
+  animator->StopAnimating();
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
 
   tick_clock_.Advance(base::Milliseconds(200));
   PressPowerButton();
   ReleasePowerButton();
-  // Showing menu animation should be cancelled and menu is not shown.
+  // Showing menu animation should abort and animate back to invisible.
+  animator->StopAnimating();
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
   EXPECT_FALSE(power_button_test_api_->PreShutdownTimerIsRunning());
 }
@@ -1077,7 +1086,11 @@ TEST_F(PowerButtonControllerTest, PartiallyShownMenuInTabletMode) {
   EXPECT_FALSE(power_button_test_api_->ShowMenuAnimationDone());
   ReleasePowerButton();
   EXPECT_FALSE(power_button_test_api_->ShowMenuAnimationDone());
-  // The partially shown menu should be dismissed by power button up.
+  // The partially shown menu should be dismissed by power button up, but
+  // needs to be allowed to complete animation before it is completely hidden.
+  power_button_test_api_->GetPowerButtonMenuBackgroundLayer()
+      ->GetAnimator()
+      ->StopAnimating();
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
   // Screen should not be turned off with power button released.
   EXPECT_FALSE(power_manager_client()->backlights_forced_off());

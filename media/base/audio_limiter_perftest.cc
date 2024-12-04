@@ -70,7 +70,7 @@ void RunConvertBenchmark(const AudioParameters& params,
   reporter.AddResult("", processing_ratio);
 }
 
-TEST(AudioLimiterBenchmark, LimitPeaksBenchmarkNoLimiting) {
+TEST(AudioLimiterBenchmark, LimitPeaksBenchmark_NoLimiting) {
   // Create input and output parameters to convert between the two most common
   // sets of parameters (as indicated via UMA data).
   AudioParameters input_params(
@@ -81,7 +81,7 @@ TEST(AudioLimiterBenchmark, LimitPeaksBenchmarkNoLimiting) {
   RunConvertBenchmark(input_params, 0.5, "NoLimitting");
 }
 
-TEST(AudioLimiterBenchmark, LimitPeaksBenchmarkLimiting) {
+TEST(AudioLimiterBenchmark, LimitPeaksBenchmark_Limiting) {
   // Create input and output parameters to convert between the two most common
   // sets of parameters (as indicated via UMA data).
   AudioParameters input_params(

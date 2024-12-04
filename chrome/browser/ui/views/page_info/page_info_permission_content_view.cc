@@ -180,9 +180,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON);
   subpage_manage_button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP));
-  subpage_manage_button->title()->SetTextStyle(
-      views::style::STYLE_BODY_3_MEDIUM);
-  subpage_manage_button->title()->SetEnabledColorId(kColorPageInfoForeground);
+  subpage_manage_button->SetTitleTextStyleAndColor(
+      views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 

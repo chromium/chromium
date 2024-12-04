@@ -254,16 +254,12 @@ Frame* FrameTree::FindFrameForNavigationInternal(
     return &Top();
   }
 
-  // The target _unfencedTop should only be treated as a special name in
-  // opaque-ads mode fenced frames.
   if (EqualIgnoringASCIICase(name, "_unfencedTop")) {
     // In fenced frames, we set a flag that will later indicate to the browser
     // that this is an _unfencedTop navigation, and return the current frame
     // so that the renderer-side checks will succeed.
     // TODO(crbug.com/1315802): Refactor MPArch _unfencedTop handling.
-    if (current_frame->GetDeprecatedFencedFrameMode() ==
-            blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds &&
-        request != nullptr) {
+    if (current_frame->IsInFencedFrameTree() && request != nullptr) {
       request->SetIsUnfencedTopNavigation(true);
       return current_frame;
     }

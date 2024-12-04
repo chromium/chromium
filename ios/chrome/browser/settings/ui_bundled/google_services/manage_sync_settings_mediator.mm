@@ -865,6 +865,17 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 #pragma mark - Private
 
+- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
+  if ([_signedInIdentity isEqual:identity]) {
+    [self updatePrimaryAccountDetails];
+    [self updateSyncItemsNotifyConsumer:YES];
+    [self updateSyncErrorsSection:YES];
+    [self updateBatchUploadSectionWithNotifyConsumer:YES firstLoad:NO];
+    [self updateEncryptionItem:YES];
+    [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:NO];
+  }
+}
+
 // Creates a SyncSwitchItem or TableViewInfoButtonItem instance if the item is
 // managed.
 - (TableViewItem*)tableViewItemWithDataType:
@@ -1059,6 +1070,16 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  id<SystemIdentity> identity =
+      _chromeAccountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  [self handleIdentityUpdated:identity];
+}
+
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
@@ -1077,14 +1098,11 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if ([_signedInIdentity isEqual:identity]) {
-    [self updatePrimaryAccountDetails];
-    [self updateSyncItemsNotifyConsumer:YES];
-    [self updateSyncErrorsSection:YES];
-    [self updateBatchUploadSectionWithNotifyConsumer:YES firstLoad:NO];
-    [self updateEncryptionItem:YES];
-    [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:NO];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
+    return;
   }
+  [self handleIdentityUpdated:identity];
 }
 
 - (void)onChromeAccountManagerServiceShutdown:

@@ -239,8 +239,7 @@ TEST_P(EncryptorTest, EncryptStringDecryptSpan) {
   std::string ciphertext;
   EXPECT_TRUE(encryptor.EncryptString(plaintext, &ciphertext));
 
-  auto decrypted =
-      encryptor.DecryptData(base::as_bytes(base::make_span(ciphertext)));
+  auto decrypted = encryptor.DecryptData(base::as_byte_span(ciphertext));
 
   ASSERT_TRUE(decrypted);
 
@@ -500,10 +499,9 @@ TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
   static const size_t kNonceLength = 12u;
   for (size_t i = 0; i < kNonceLength * 2; i++) {
     bad_data += "a";
-    auto decrypted =
-        encryptor.DecryptData(base::as_bytes(base::make_span(bad_data)));
+    auto decrypted = encryptor.DecryptData(base::as_byte_span(bad_data));
     EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(
-        decrypted, base::as_bytes(base::make_span(bad_data))));
+        decrypted, base::as_byte_span(bad_data)));
   }
 }
 

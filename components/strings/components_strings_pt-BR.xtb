@@ -278,8 +278,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1473495410389165587">Digite três palavras ou mais para receber ajuda com a escrita</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Serviços de limpeza</translation>
-<translation id="1475299637784133125">Procurando a versão do navegador? Acesse</translation>
 <translation id="1476595624592550506">Mude sua senha</translation>
+<translation id="1482372785911828880">Ultrafino</translation>
 <translation id="1482879811280872320">De bicicleta</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484449009683144042">Esta é uma ferramenta experimental de escrita com tecnologia de IA que nem sempre acerta.
@@ -1314,6 +1314,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3375754925484257129">Executar a confirmação de segurança do Chrome</translation>
 <translation id="3377144306166885718">Versão obsoleta do TLS usada no servidor.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
+<translation id="3377642479079205807">Fino</translation>
 <translation id="3378612801784846695">Os temas são baseados no seu histórico de navegação recente e são usados por sites para mostrar anúncios personalizados enquanto protegem sua identidade</translation>
 <translation id="3380365263193509176">Erro desconhecido</translation>
 <translation id="3380864720620200369">ID do cliente:</translation>
@@ -1419,7 +1420,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3552297013052089404">Fonte Sans-Serif</translation>
 <translation id="3558573058928565255">Dia</translation>
 <translation id="3559897352860026926">Peça ao administrador para conferir as configurações de <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560408312959371419">Opções para proteções de rastreamento e dados do site no dispositivo</translation>
 <translation id="3560824484345057728">Ver sites relacionados</translation>
 <translation id="3566021033012934673">Sua conexão não é particular</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -2486,6 +2486,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5481682542063333508">Oferecer ajuda para escrever</translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
 <translation id="5483838506518938965">Está tudo pronto</translation>
+<translation id="5485100387355669506">Ultragrosso</translation>
 <translation id="5485973315555778056">Computador na nuvem</translation>
 <translation id="5488590678320979185">Botão "Criar nota". Ative para criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="5490432419156082418">Endereços e mais</translation>
@@ -2595,7 +2596,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5675809467256309336">Dance e música eletrônica</translation>
 <translation id="5675959228867414813">Mostrar por data</translation>
 <translation id="567604591393105935">Página inferior de comércio aberta na metade da altura</translation>
-<translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5678007133659493065">Laminado</translation>
 <translation id="5680642791693447368">Filmes de suspense, crime e mistério</translation>
 <translation id="568292603005599551">Posição X da imagem</translation>
@@ -2655,7 +2655,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784606427469807560">Ocorreu um problema ao confirmar seu cartão. Verifique a conexão com a Internet e tente novamente.</translation>
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">A forma de pagamento será excluída do dispositivo</translation>
 <translation id="5794065675298686371">Ative as notificações de monitoramento de preços</translation>
 <translation id="5800727402210090597">Serviços e assistência técnica para smartphones</translation>
@@ -2954,7 +2953,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="633770708279464947">O valor <ph name="SECURE_DNS_SALT" /> é inválido e não vai ser usado.</translation>
 <translation id="6340739886198108203">A política do administrador não recomenda fazer capturas de tela ou gravações quando há conteúdo confidencial visível:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda fazer upload dos arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Proteção antirrastreamento</translation>
 <translation id="634500758737709758">Rotas</translation>
 <translation id="6348220984832452017">Variações ativas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
@@ -3671,6 +3669,7 @@ Mais detalhes:
 <translation id="7599089013883397081">O tempo de download expirou</translation>
 <translation id="7608583484192556132">A personalização de um anúncio depende de muitos fatores, incluindo essa configuração, os <ph name="BEGIN_LINK_1" />anúncios sugeridos por sites<ph name="END_LINK_1" />, as <ph name="BEGIN_LINK_2" />configurações de cookies<ph name="END_LINK_2" /> e se o site aberto personaliza os anúncios ou não. Aprenda a <ph name="BEGIN_LINK_3" />gerenciar a privacidade de anúncios<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">O valor não corresponde ao período <ph name="VALUE" />.</translation>
+<translation id="761261689936461781">Grosso</translation>
 <translation id="7613889955535752492">Data de expiração: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para ver e gerenciar suas senhas nas configurações do Chrome</translation>
 <translation id="7616645509853975347">O administrador ativou os Chrome Enterprise Connectors no seu navegador. Esses conectores têm acesso a alguns dos seus dados.</translation>
@@ -4144,6 +4143,7 @@ Mais detalhes:
 <translation id="8449836157089738489">Abrir tudo em um novo grupo de guias</translation>
 <translation id="84561192812921051">O administrador pode fazer mudanças no seu perfil e no seu navegador remotamente, analisar informações sobre o navegador com relatórios e realizar outras tarefas necessárias. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">A página inferior está fechada.</translation>
+<translation id="8456775115498700722">Agora, você pode preencher automaticamente seus cartões do <ph name="CARD_ISSUER_NAME" /> porque sua conta do <ph name="CARD_ISSUER_NAME" /> está vinculada ao Google Pay.</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Ativar</translation>
@@ -4301,6 +4301,7 @@ Mais detalhes:
 <translation id="8757526089434340176">Oferta do Google Pay disponível</translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="87601671197631245">Este site usa uma configuração de segurança desatualizada que pode expor suas informações (como senhas, mensagens ou números de cartão de crédito) quando elas forem enviadas para o site.</translation>
+<translation id="8763226176721243078">Você pode preencher automaticamente este cartão porque sua conta do <ph name="CARD_ISSUER_NAME" /> está vinculada ao Google Pay.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Fechar todas as janelas anônimas abertas</translation>
 <translation id="8766943070169463815">A página de autenticação de credenciais para pagamento seguro está aberta</translation>
@@ -4390,7 +4391,6 @@ Mais detalhes:
 <translation id="893332455753468063">Adicione um Nome</translation>
 <translation id="8942355029279167844">Seu administrador permitiu que <ph name="APP_NAME" /> coletasse dados de diagnósticos para melhorar a experiência com o produto. Veja mais informações em <ph name="BEGIN_LINK" />https://www.parallels.com/br/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Verde-limão</translation>
-<translation id="8944485226638699751">Limitado</translation>
 <translation id="8949410982325929394">Tom</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">Um site quer acessar sua <ph name="REQUEST_TYPE" />. Responda a esta pesquisa de um minuto e ajude a melhorar a forma como os sites pedem permissão de acesso.</translation>
@@ -4411,7 +4411,6 @@ Mais detalhes:
 <translation id="8987663052629670333">Serviços de impressão de fotos</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">Procurando a versão do sistema? Acesse</translation>
 <translation id="899688752321268742"><ph name="URL" /> quer saber quando você está usando este dispositivo</translation>
 <translation id="8997023839087525404">O servidor apresentou um certificado que não foi divulgado publicamente usando a política de Transparência dos certificados. Esse é um requisito para alguns certificados, a fim de garantir que eles sejam confiáveis e protejam você contra invasores.</translation>
 <translation id="9000145382638074673">Seus dispositivos</translation>

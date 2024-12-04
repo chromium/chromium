@@ -256,9 +256,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, ManifestUpdateOsIntegrationDefaultApps) {
   options.add_to_desktop = false;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
-  EXPECT_TRUE(registrar().IsInstallState(
-      result.installed_app_id,
-      {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+            registrar().GetInstallState(result.installed_app_id));
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       update_future;
@@ -267,9 +266,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, ManifestUpdateOsIntegrationDefaultApps) {
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
 
   // Post manifest update, OS integration is not triggered for default apps.
-  EXPECT_TRUE(registrar().IsInstallState(
-      result.installed_app_id,
-      {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+            registrar().GetInstallState(result.installed_app_id));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest,

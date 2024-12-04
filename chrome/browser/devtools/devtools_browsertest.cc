@@ -220,14 +220,7 @@ void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
 
 void LoadLegacyFilesInFrontend(DevToolsWindow* window) {
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
-  content::DOMMessageQueue message_queue;
-  EXPECT_TRUE(content::ExecJs(wc, "uiTests.setupLegacyFilesForTest();",
-                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-
-  std::string result;
-  EXPECT_TRUE(message_queue.WaitForMessage(&result));
-
-  ASSERT_EQ("\"[OK]\"", result);
+  EXPECT_TRUE(content::ExecJs(wc, "uiTests.setupLegacyFilesForTest();"));
 }
 
 template <typename... T>

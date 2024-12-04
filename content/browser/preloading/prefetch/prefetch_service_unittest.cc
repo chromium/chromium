@@ -344,7 +344,7 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
         prefetch_url, prefetch_type,
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
         planned_max_preloading_type, referrer, no_vary_search_hint,
-        base::MakeRefCounted<PreloadPipelineInfo>(), nullptr);
+        base::MakeRefCounted<PreloadPipelineInfo>());
   }
 
   void MakePrefetchFromEmbedder(
@@ -5380,8 +5380,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_2.Clone());
   candidates.push_back(candidate_3.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
   VerifyCommonRequestState(url_1);
 
@@ -5390,8 +5389,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
   candidates.clear();
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_3.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   // Finish prefetch of |url_1|.
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
@@ -5440,8 +5438,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_2.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // Prefetch for |url_1| should have started.
@@ -5450,8 +5447,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
   // Remove |candidate_1|.
   candidates.clear();
   candidates.push_back(candidate_2.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // The prefetch for |url_1| should be cancelled, and prefetch for |url_2|
@@ -5504,8 +5500,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_2.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // Complete prefetches for |url_1| and |url_2|.
@@ -5517,8 +5512,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
   // Remove |candidate_1|.
   candidates.clear();
   candidates.push_back(candidate_2.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
   // |prefetch_1| should have been removed.
   EXPECT_FALSE(prefetch_1);
@@ -5557,8 +5551,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchReset) {
   // Start and complete prefetch of |url|.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(candidate.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   auto prefetch = CompleteExistingPrefetch(url);
   ASSERT_TRUE(prefetch);
   EXPECT_EQ(prefetch.GetPrefetchStatus(), PrefetchStatus::kPrefetchSuccessful);
@@ -5572,8 +5565,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchReset) {
   // automatically.
   candidates.clear();
   candidates.push_back(candidate.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   // Prefetch for |url| should have started again.
   VerifyCommonRequestState(url);
 
@@ -5646,8 +5638,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_2.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // Complete |prefetch| of |url_1|.
@@ -5699,8 +5690,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchFailsAndIsReset) {
   // Start prefetch of |url|.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(candidate.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   base::RunLoop().RunUntilIdle();
   VerifyCommonRequestState(url);
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED, kHTMLMimeType,
@@ -5754,8 +5744,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_2.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   auto prefetch_1 = CompleteExistingPrefetch(url_1);
@@ -5771,8 +5760,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
   candidates.clear();
   candidates.push_back(candidate_2.Clone());
   candidates.push_back(candidate_3.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // Prefetch for |url_3| should succeed, and |prefetch_1| should be evicted.
@@ -5788,8 +5776,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_2.Clone());
   candidates.push_back(candidate_3.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // |url_1| should not be reprefetched because we are at the limit.
@@ -5799,8 +5786,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
   candidates.clear();
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_3.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // Prefetch for |url_1| should succeed, |prefetch_2| will be evicted
@@ -5905,8 +5891,7 @@ TEST_F(PrefetchServiceNewLimitsTest, RemoveCandidateForFailedPrefetch) {
   // Send canadidate to PrefetchDocumentManager.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(candidate.Clone());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // Prefetch for |url| should have started.
@@ -5918,8 +5903,7 @@ TEST_F(PrefetchServiceNewLimitsTest, RemoveCandidateForFailedPrefetch) {
 
   // Remove |candidate|.
   candidates.clear();
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
@@ -6162,7 +6146,7 @@ TEST_P(PrefetchServiceTest, CancelWhileBlockedOnHead) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  prefetch_document_manager->ProcessCandidates(candidates, nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
   // If all goes well, the service has reported that the prefetch cannot be

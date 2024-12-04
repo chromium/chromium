@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 
 #include <string>
@@ -51,9 +46,8 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUntrustedComposeUrl);
-webui::SetupWebUIDataSource(
-      source, base::make_span(kComposeResources, kComposeResourcesSize),
-      IDR_COMPOSE_COMPOSE_HTML);
+  webui::SetupWebUIDataSource(source, kComposeResources,
+                              IDR_COMPOSE_COMPOSE_HTML);
 
   // Localized strings.
   static constexpr webui::LocalizedString kStrings[] = {

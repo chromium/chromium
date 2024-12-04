@@ -109,7 +109,7 @@ void MojoAudioInputIPC::StreamCreated(
     mojo::PendingRemote<media::mojom::blink::AudioInputStream> stream,
     mojo::PendingReceiver<media::mojom::blink::AudioInputStreamClient>
         stream_client_receiver,
-    media::mojom::blink::ReadOnlyAudioDataPipePtr data_pipe,
+    media::mojom::blink::ReadWriteAudioDataPipePtr data_pipe,
     bool initially_muted,
     const std::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -127,7 +127,7 @@ void MojoAudioInputIPC::StreamCreated(
   DCHECK(data_pipe->socket.is_valid_platform_file());
   base::ScopedPlatformFile socket_handle = data_pipe->socket.TakePlatformFile();
 
-  base::ReadOnlySharedMemoryRegion& shared_memory_region =
+  base::UnsafeSharedMemoryRegion& shared_memory_region =
       data_pipe->shared_memory;
   DCHECK(shared_memory_region.IsValid());
 

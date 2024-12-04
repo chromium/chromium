@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -174,7 +175,12 @@ bool WritePixmap(PaintOpWriter& writer, const SkPixmap& pixmap) {
   // generation can fail.
   // https://crbug.com/863659, https://crbug.com/1300188
   writer.AlignMemory(GetAlignmentForColorType(pixmap.colorType()));
-  writer.WriteData(data_size, pixmap.addr());
+  // SAFETY: data_size comes from SkPixmap::computeByteSize(), which is then
+  // checked for SIZE_MAX; that's the appropriate size for the buffer returned
+  // by SkPixmap::addr().
+  auto pixmap_data = UNSAFE_BUFFERS(
+      base::span(static_cast<const uint8_t*>(pixmap.addr()), data_size));
+  writer.WriteData(pixmap_data);
   return true;
 }
 

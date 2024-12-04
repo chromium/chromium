@@ -87,7 +87,7 @@ String V8ValueToString(v8::Local<v8::Context> current_context,
   v8::Local<v8::String> v8_string;
 
   if (!value->ToDetailString(current_context).ToLocal(&v8_string)) {
-    return String("");
+    return g_empty_string;
   }
 
   return ToBlinkString<String>(isolate, v8_string, kDoNotExternalize);

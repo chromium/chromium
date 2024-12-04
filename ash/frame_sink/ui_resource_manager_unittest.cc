@@ -48,7 +48,7 @@ class UiResourceManagerTest : public testing::Test {
   std::unique_ptr<UiResourceManager> resource_manager_;
 };
 
-TEST_F(UiResourceManagerTest, ReuseResourceNoResources) {
+TEST_F(UiResourceManagerTest, ReuseResource_NoResources) {
   viz::ResourceId resource_id = resource_manager_->FindResourceToReuse(
       gfx::Size(100, 100), viz::SinglePlaneFormat::kBGRA_8888,
       kTestUiSourceId_1);
@@ -126,7 +126,7 @@ TEST_F(UiResourceManagerDeathTest,
   EXPECT_DCHECK_DEATH({ resource_manager_.reset(); });
 }
 
-TEST_F(UiResourceManagerTest, PrepareResourceForExportingInvalidIds) {
+TEST_F(UiResourceManagerTest, PrepareResourceForExporting_InvalidIds) {
   viz::ResourceId to_be_released_resource =
       resource_manager_->OfferResource(std::make_unique<UiResource>());
   resource_manager_->OfferResource(std::make_unique<UiResource>());
@@ -183,7 +183,7 @@ TEST_F(UiResourceManagerTest, CannotExportAlreadyExportedResource) {
   EXPECT_TRUE(transferable_resource.is_empty());
 }
 
-TEST_F(UiResourceManagerTest, ReleaseResourceInvalidIds) {
+TEST_F(UiResourceManagerTest, ReleaseResource_InvalidIds) {
   // We can only release a resource that we currently manage.
   const auto released_resource =
       resource_manager_->ReleaseAvailableResource(viz::ResourceId(20));

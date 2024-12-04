@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">开启安全检查通知…</translation>
 <translation id="1652333207707886577">自定义菜单</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{剩余时间：{TIME} 秒}=1{剩余时间：{TIME} 秒}other{剩余时间：{TIME} 秒}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{键盘上方显示了 {count} 个已保存的密码。}other{键盘上方显示了 {count} 个已保存的密码。}}</translation>
 <translation id="1654232554734641711">已启用麦克风使用权限</translation>
 <translation id="16554782717487656">检测单位</translation>
 <translation id="1657011748321897393">分享失败，因为您没有连接到网络。</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="20485545164632846">新项</translation>
 <translation id="2049727122989709386">有 <ph name="COUNT" /> 个账号在使用同一密码</translation>
-<translation id="2050196510205866090">{count,plural, =1{键盘上方显示了 {count} 种已保存的付款方式。}other{键盘上方显示了 {count} 种已保存的付款方式。}}</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="20638360198452347">单位类型选择器</translation>
 <translation id="2067852168641682340">每次都保存到此账号</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">隐藏“<ph name="MODULE_NAME" />”</translation>
 <translation id="2403129868389095715">您的包裹无法送达</translation>
 <translation id="2410754283952462441">选择账号</translation>
-<translation id="2411749908844615428">{count,plural, =1{键盘上方显示了 {count} 个已保存的地址。}other{键盘上方显示了 {count} 个已保存的地址。}}</translation>
 <translation id="2424805048070062787">继续使用此标签页</translation>
 <translation id="2426805022920575512">选择其他账号</translation>
 <translation id="243275146591958220">取消下载</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">显示链接预览</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4532845899244822526">选择文件夹</translation>
-<translation id="4539187448429948815">{count,plural, =1{键盘上方显示了 {count} 条已保存的自动补全建议。}other{键盘上方显示了 {count} 条已保存的自动补全建议。}}</translation>
 <translation id="4547181496285029457">返回到最近打开的标签页</translation>
 <translation id="4552042254369397518">正在复制…</translation>
 <translation id="4564893319561643483">隐藏“<ph name="TITLE" />”</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">接收标签页通知</translation>
 <translation id="4601095002996233687">针对可疑的下载内容进行深入扫描。</translation>
 <translation id="4606247758155004938">您的浏览器由贵单位管理。</translation>
+<translation id="4607887340472970274">价格跟踪</translation>
 <translation id="4611811151908969241">隐藏“取消关注‘<ph name="DOMAIN_NAME" />’”</translation>
 <translation id="461440297010471931">目前所用的搜索引擎是 Google</translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
@@ -969,14 +966,14 @@
 <translation id="5499648645977734083">管理支付方式…</translation>
 <translation id="5501346139932663133">Google 应用</translation>
 <translation id="5506763544823940561">将图片保存到…</translation>
-<translation id="5511959326926949696">可选的浏览器极端保护措施。除非您认为自己可能会受到高度复杂的网络攻击，否则不应使用此选项。</translation>
+<translation id="5511959326926949696">这是一种可选的浏览器保护措施，较为极端。除非您认为自己可能会遭受极其复杂的网络攻击，否则不建议使用此选项。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
 <translation id="5524590039848017563">已收起主工具栏按钮</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="5532545557415295622">空闲超时对话框</translation>
-<translation id="5548760955356983418">借助 Handoff 功能，您在此设备上浏览网站时，可轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
+<translation id="5548760955356983418">借助 Handoff，您可以先在此设备上浏览网站，然后轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
 
-另外，您必须在“设置”的“常规”部分启用 Handoff 功能，并且您的设备必须使用同一个 iCloud 账号。</translation>
+另外，您必须在“设置”的“常规”部分启用 Handoff，并且您的设备必须使用同一个 iCloud 账号。</translation>
 <translation id="5551825465462320939">随时掌握您感兴趣的新闻、体育赛事等资讯。</translation>
 <translation id="5555008247722361784">目前登录的账号是 <ph name="USER_EMAIL" />，Google 账号错误，打开账号菜单。</translation>
 <translation id="5556459405103347317">重新加载</translation>
@@ -1274,7 +1271,6 @@
 <translation id="6710079714193676716">由贵组织管理。未必能使用所有功能。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">打开信息流</translation>
 <translation id="6713676799463473249">上次修改日期：<ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">跟踪价格</translation>
 <translation id="6722623263381062480">已收到标签页</translation>
 <translation id="6723740634201835758">在您的 Google 账号中</translation>
 <translation id="672735642903863329">获取您在所有设备上保存的书签、密码等信息。</translation>
@@ -1440,7 +1436,6 @@
 <translation id="75362970626182391">新标签页分组</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="754655535278952384">上次检查时间：<ph name="TIME" /></translation>
-<translation id="755255281989213264">自定义菜单</translation>
 <translation id="7553234618121028547">如需关闭此功能，请打开<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />，然后进入“密码选项”部分。</translation>
 <translation id="7557508262441527045">已退出账号</translation>
 <translation id="7561196759112975576">永远</translation>
@@ -1812,7 +1807,7 @@
 <translation id="9094033019050270033">更新密码</translation>
 <translation id="9097506547406246598">无法取消关注。出了点问题。</translation>
 <translation id="9098541895599151034">删除 <ph name="NUMBER_OF_ACCOUNTS" /> 个密码？</translation>
-<translation id="9099233023029360602">每次都询问我要使用哪个账号</translation>
+<translation id="9099233023029360602">每次都询问要使用哪个账号</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="91023216973987714">支付方式</translation>
 <translation id="9106655997975673326">来自“<ph name="SOURCE_DEVICE" />”</translation>

@@ -35,7 +35,6 @@ group("resources") {
       "downloads:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
-      "hats:resources",
       "history:resources",
       "identity_internals:resources",
       "key_value_pair_viewer_shared:resources",
@@ -124,7 +123,6 @@ group("resources") {
     public_deps += [
       "inline_login:resources",
       "signin/profile_picker:resources",
-      "welcome:resources",
     ]
   }
 
@@ -253,7 +251,6 @@ group("dev_ui_resources") {
     "engagement:resources",
     "family_link_user_internals:resources",
     "internal_debug_pages_disabled:resources",
-    "internals:resources",
     "location_internals:resources",
     "media:resources",
     "memory_internals:resources",
@@ -271,6 +268,7 @@ group("dev_ui_resources") {
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/policy/resources/webui:resources",
     "//components/resources:dev_ui_components_resources",
+    "//components/signin/core/browser/resources",
     "//components/sync/service/resources",
     "//components/ukm/debug:resources",
     "//content/browser/resources/gpu:resources",
@@ -296,6 +294,7 @@ group("dev_ui_resources") {
     ]
   } else {
     public_deps += [
+      "internals:resources",
       "media_router/internals:resources",
       "on_device_internals:resources",
       "webui_js_error:resources",
@@ -320,7 +319,6 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/engagement_resources.pak",
     "$root_gen_dir/chrome/family_link_user_internals_resources.pak",
     "$root_gen_dir/chrome/internal_debug_pages_disabled_resources.pak",
-    "$root_gen_dir/chrome/internals_resources.pak",
     "$root_gen_dir/chrome/location_internals_resources.pak",
     "$root_gen_dir/chrome/media_resources.pak",
     "$root_gen_dir/chrome/memory_internals_resources.pak",
@@ -337,6 +335,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/components/ntp_tiles_internals_resources.pak",
     "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/policy_resources.pak",
+    "$root_gen_dir/components/signin_internals_resources.pak",
     "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
     "$root_gen_dir/components/ukm_resources.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
@@ -358,6 +357,7 @@ repack("dev_ui_paks") {
     ]
   } else {
     sources += [
+      "$root_gen_dir/chrome/internals_resources.pak",
       "$root_gen_dir/chrome/media_router_internals_resources.pak",
       "$root_gen_dir/chrome/on_device_internals_resources.pak",
       "$root_gen_dir/chrome/webui_js_error_resources.pak",

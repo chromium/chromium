@@ -154,15 +154,12 @@ void MouseEventManager::Clear() {
   ClearDragDataTransfer();
 }
 
-MouseEventManager::~MouseEventManager() = default;
-
 void MouseEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(scroll_manager_);
   visitor->Trace(element_under_mouse_);
   visitor->Trace(mouse_press_node_);
   visitor->Trace(mousedown_element_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 MouseEventManager::MouseEventBoundaryEventDispatcher::
@@ -808,8 +805,10 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
     const MouseEventWithHitTestResults& event) {
   TRACE_EVENT0("blink", "MouseEventManager::handleMouseDraggedEvent");
 
-  bool is_pen = event.Event().pointer_type ==
-                blink::WebPointerProperties::PointerType::kPen;
+  bool is_pen = (event.Event().pointer_type ==
+                     blink::WebPointerProperties::PointerType::kPen ||
+                 event.Event().pointer_type ==
+                     blink::WebPointerProperties::PointerType::kEraser);
 
   WebPointerProperties::Button pen_drag_button =
       WebPointerProperties::Button::kLeft;
@@ -1222,11 +1221,6 @@ void MouseEventManager::SetMousePressNode(Node* node) {
 }
 
 void MouseEventManager::SetMouseDownElement(Element* element) {
-  // TODO(mustaq): Why is SetDocument() not called earlier at
-  // LocalFrame::DidAttachDocument()?  Because this is delayed call, the methods
-  // MouseEventManager::WillBeRemoved() are not called until a mouse-press or
-  // tap!
-  SetDocument(element ? element->ownerDocument() : nullptr);
   mousedown_element_ = element;
 }
 

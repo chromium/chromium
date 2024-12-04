@@ -457,6 +457,45 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectAllOnTabToFocus) {
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 }
 
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessibleTextSelection) {
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
+  OmniboxViewViews* omnibox_view_views =
+      static_cast<OmniboxViewViews*>(omnibox_view);
+
+  // Navigate to a URL.
+  std::u16string url = u"google.com";
+  omnibox_view->SetUserText(url);
+  ui::AXNodeData data;
+  omnibox_view_views->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(static_cast<int>(url.size()),
+            data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart));
+  EXPECT_EQ(static_cast<int>(url.size()),
+            data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd));
+
+  // Move the cursor to the end of the address bar.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_END, false,
+                                              false, false, false));
+  data = ui::AXNodeData();
+  omnibox_view_views->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(static_cast<int>(url.size()),
+            data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart));
+  EXPECT_EQ(static_cast<int>(url.size()),
+            data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd));
+
+  // Press the left arrow key multiple times and log the focused character.
+  for (size_t i = 0; i < url.size(); ++i) {
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
+                                                false, false, false));
+    data = ui::AXNodeData();
+    omnibox_view_views->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(static_cast<int>(url.size() - i - 1),
+              data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart));
+    EXPECT_EQ(static_cast<int>(url.size() - i - 1),
+              data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd));
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));

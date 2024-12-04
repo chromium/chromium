@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -52,11 +48,8 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIPrivacySandboxInternalsHost);
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kPrivacySandboxInternalsResources,
-                      kPrivacySandboxInternalsResourcesSize),
-      IDR_PRIVACY_SANDBOX_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kPrivacySandboxInternalsResources,
+                              IDR_PRIVACY_SANDBOX_INTERNALS_INDEX_HTML);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {

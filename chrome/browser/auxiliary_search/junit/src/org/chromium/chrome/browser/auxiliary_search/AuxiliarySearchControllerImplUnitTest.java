@@ -147,7 +147,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         mAuxiliarySearchControllerImpl.onResumeWithNative();
 
         verify(mAuxiliarySearchDonor, never()).deleteAllTabs(any(Callback.class));
-        AuxiliarySearchUtils.resetSharedTabsWithOsForTesting();
+        AuxiliarySearchUtils.resetSharedPreferenceForTesting();
     }
 
     @Test

@@ -47,9 +47,6 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
     return placeholder_id_ != kNoPlaceholderId;
   }
 
-  void UpdateOffscreenCanvasFilterQuality(
-      cc::PaintFlags::FilterQuality filter_quality);
-
   virtual bool HasCanvasCapture() const { return false; }
 
  private:
@@ -72,7 +69,6 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
     kShouldActivateAnimation,
   };
   AnimationState animation_state_ = kActiveAnimation;
-  std::optional<cc::PaintFlags::FilterQuality> filter_quality_ = std::nullopt;
 };
 
 }  // namespace blink

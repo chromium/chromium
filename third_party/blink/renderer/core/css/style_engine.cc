@@ -1746,7 +1746,7 @@ bool HasAttributeDependentGeneratedContent(const Element& element) {
   return HasAttrFunc(element.GetPseudoElement(kPseudoIdCheckMark)) ||
          HasAttrFunc(element.GetPseudoElement(kPseudoIdBefore)) ||
          HasAttrFunc(element.GetPseudoElement(kPseudoIdAfter)) ||
-         HasAttrFunc(element.GetPseudoElement(kPseudoIdSelectArrow)) ||
+         HasAttrFunc(element.GetPseudoElement(kPseudoIdPickerIcon)) ||
          HasAttrFunc(element.GetPseudoElement(kPseudoIdScrollMarker));
 }
 

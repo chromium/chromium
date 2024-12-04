@@ -654,6 +654,16 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
+  // The distiller will call OnAXTreeDistilled when the main content extractor
+  // disconnects. If this happens during middle of a distillation, there was an
+  // error, and we should reset the model. However, this disconnect can also
+  // happen after a long time of inactivity. In this case, we shouldn't reset
+  // the model since the last state is still the correct state and clearing the
+  // model causes issues for read aloud.
+  if (IsReadAloudEnabled() && !model_.distillation_in_progress() &&
+      tree_id == ui::AXTreeIDUnknown() && content_node_ids.empty()) {
+    return;
+  }
   // If speech is playing, we don't want to redraw and disrupt speech. We will
   // re-distill once speech pauses.
   if (read_aloud_model_.speech_playing()) {
@@ -662,7 +672,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     return;
   }
   // Reset state, including the current side panel selection so we can update
-  // it based on the new main panel selection in PostProcessSelection below.
+  // it based on the new main panel selection in PostProcessSelection below.ona
   model_.Reset(content_node_ids);
   read_aloud_model_.ResetReadAloudState();
 

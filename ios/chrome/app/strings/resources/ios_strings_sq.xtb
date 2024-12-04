@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Aktivizo njoftimet e "Kontrollit të sigurisë"…</translation>
 <translation id="1652333207707886577">Personalizo menynë</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Koha e mbetur: {TIME} sekonda}=1{Koha e mbetur: {TIME} sekondë}other{Koha e mbetur: {TIME} sekonda}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} fjalëkalim i ruajtur i disponueshëm mbi tastierën tënde.}other{{count} fjalëkalime të ruajtura të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="1654232554734641711">Lejohet qasja te "Mikrofoni"</translation>
 <translation id="16554782717487656">Zbulo njësitë</translation>
 <translation id="1657011748321897393">Ndarja dështoi për shkak se nuk je i lidhur në rrjet.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Hap rrjetën e skedave</translation>
 <translation id="20485545164632846">artikull i ri</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> llogari po përdorin të njëjtin fjalëkalim</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} mënyrë e ruajtur pagese e disponueshme mbi tastierën tënde.}other{{count} mënyra të ruajtura pagese të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="2059166748188874810">Komunë</translation>
 <translation id="20638360198452347">Përzgjedhësi i llojit të njësisë</translation>
 <translation id="2067852168641682340">Ruaj gjithmonë në këtë llogari</translation>
@@ -329,7 +327,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2390457533592708044">Fshih "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Pakoja jote nuk mund të dorëzohet</translation>
 <translation id="2410754283952462441">Zgjidh një llogari</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} adresë e ruajtur e disponueshme mbi tastierën tënde.}other{{count} adresa të ruajtura të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="2424805048070062787">Vazhdo me këtë skedë</translation>
 <translation id="2426805022920575512">Zgjidh llogari tjetër</translation>
 <translation id="243275146591958220">Anulo shkarkimin</translation>
@@ -757,7 +754,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4525629404718770519">Shfaq pamjet paraprake të lidhjeve</translation>
 <translation id="452750746583162491">Rishiko të dhënat e tua të sinkronizuara</translation>
 <translation id="4532845899244822526">Zgjidh dosjen</translation>
-<translation id="4539187448429948815">{count,plural, =1{Ofrohet {count} sugjerim i ruajtur për plotësimin automatik mbi tastierën tënde.}other{Ofrohen {count} sugjerime të ruajtura për plotësimin automatik mbi tastierën tënde.}}</translation>
 <translation id="4547181496285029457">Kthehu te skeda e fundit</translation>
 <translation id="4552042254369397518">Po kopjohet…</translation>
 <translation id="4564893319561643483">Fshih "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4597892826846980979">Merr njoftime të skedave</translation>
 <translation id="4601095002996233687">Skanime të thella për shkarkime të dyshimta.</translation>
 <translation id="4606247758155004938">Shfletuesi yt menaxhohet nga organizata jote.</translation>
+<translation id="4607887340472970274">Monitorimi i çmimeve</translation>
 <translation id="4611811151908969241">Fshih "Anulo ndjekjen e <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Po kërkon me Google</translation>
 <translation id="4619564267100705184">Verifiko që je ti</translation>
@@ -1274,7 +1271,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6710079714193676716">Menaxhohet nga organizata jote. Disa veçori mund të jenë të padisponueshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Shko te "Furnizimi"</translation>
 <translation id="6713676799463473249">Modifikuar më <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Monitoro çmimin</translation>
 <translation id="6722623263381062480">Skedat e marra</translation>
 <translation id="6723740634201835758">Në "Llogarinë tënde të Google"</translation>
 <translation id="672735642903863329">Merr faqeshënuesit, fjalëkalimet etj. në të gjitha pajisjet e tua.</translation>
@@ -1440,7 +1436,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="75362970626182391">Grupi i ri i skedave</translation>
 <translation id="7537586195939242955">Na vjen keq, "Pass" nuk mund të instalohet te "Passbook" në këtë moment.</translation>
 <translation id="754655535278952384">Kontrolluar <ph name="TIME" /></translation>
-<translation id="755255281989213264">Personalizo menynë</translation>
 <translation id="7553234618121028547">Për ta çaktivizuar, hap <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> dhe shko te "Opsionet e fjalëkalimeve".</translation>
 <translation id="7557508262441527045">Ke dalë</translation>
 <translation id="7561196759112975576">Gjithmonë</translation>

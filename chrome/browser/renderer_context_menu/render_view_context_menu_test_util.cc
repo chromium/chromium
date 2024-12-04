@@ -21,7 +21,7 @@ TestRenderViewContextMenu::TestRenderViewContextMenu(
     content::ContextMenuParams params)
     : RenderViewContextMenu(render_frame_host, params) {}
 
-TestRenderViewContextMenu::~TestRenderViewContextMenu() {}
+TestRenderViewContextMenu::~TestRenderViewContextMenu() = default;
 
 // static
 std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(

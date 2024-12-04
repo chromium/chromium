@@ -229,91 +229,6 @@ void SqlDatabase::Close() {
   db_init_status_.reset();
 }
 
-bool SqlDatabase::InsertOrReplacePassages(const UrlData& url_passages) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyInit()) {
-    return false;
-  }
-
-  constexpr char kSqlInsertOrReplacePassages[] =
-      "INSERT OR REPLACE INTO passages "
-      "(url_id, visit_id, visit_time, passages_blob) "
-      "VALUES (?,?,?,?)";
-  DCHECK(db_.IsSQLValid(kSqlInsertOrReplacePassages));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplacePassages));
-  statement.BindInt64(0, url_passages.url_id);
-  statement.BindInt64(1, url_passages.visit_id);
-  statement.BindTime(2, url_passages.visit_time);
-
-  std::vector<uint8_t> blob =
-      PassagesProtoToBlob(url_passages.passages, *encryptor_);
-  if (blob.empty()) {
-    return false;
-  }
-  statement.BindBlob(3, blob);
-  bool result = statement.Run();
-
-  if (result) {
-    size_t ascii_passages_count = 0;
-    size_t non_ascii_passages_count = 0;
-    for (const std::string& passage : url_passages.passages.passages()) {
-      if (base::IsStringASCII(passage)) {
-        ascii_passages_count++;
-      } else {
-        non_ascii_passages_count++;
-      }
-    }
-    base::UmaHistogramCounts100(
-        "History.Embeddings.DatabaseStoredAsciiPassages", ascii_passages_count);
-    base::UmaHistogramCounts100(
-        "History.Embeddings.DatabaseStoredNonAsciiPassages",
-        non_ascii_passages_count);
-    base::UmaHistogramPercentage(
-        "History.Embeddings.DatabaseStoredNonAsciiPassageRatio",
-        100 * non_ascii_passages_count /
-            (ascii_passages_count + non_ascii_passages_count));
-  }
-
-  return result;
-}
-
-bool SqlDatabase::InsertOrReplaceEmbeddings(const UrlData& url_embeddings) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (url_embeddings.embeddings.size() == 0) {
-    return false;
-  }
-
-  if (!LazyInit()) {
-    return false;
-  }
-
-  constexpr char kSqlInsertOrReplaceEmbeddings[] =
-      "INSERT OR REPLACE INTO embeddings "
-      "(url_id, visit_id, visit_time, embeddings_blob) "
-      "VALUES (?,?,?,?)";
-  DCHECK(db_.IsSQLValid(kSqlInsertOrReplaceEmbeddings));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplaceEmbeddings));
-  statement.BindInt64(0, url_embeddings.url_id);
-  statement.BindInt64(1, url_embeddings.visit_id);
-  statement.BindTime(2, url_embeddings.visit_time);
-
-  proto::EmbeddingsValue value;
-  for (const Embedding& embedding : url_embeddings.embeddings) {
-    CHECK_EQ(GetEmbeddingDimensions(), embedding.Dimensions());
-    proto::EmbeddingVector* vector = value.add_vectors();
-    for (float f : embedding.GetData()) {
-      vector->add_floats(f);
-    }
-    vector->set_passage_word_count(embedding.GetPassageWordCount());
-  }
-  statement.BindBlob(3, value.SerializeAsString());
-
-  return statement.Run();
-}
-
 // Gets the passages associated with `url_id`. Returns nullopt if there's
 // nothing available.
 std::optional<proto::PassagesValue> SqlDatabase::GetPassages(
@@ -484,13 +399,29 @@ std::vector<UrlData> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   return all_url_passages;
 }
 
+bool SqlDatabase::AddAnyUrlDataForTesting(UrlData url_data) {
+  if (!LazyInit()) {
+    return false;
+  }
+  return InsertOrReplacePassages(url_data) &&
+         InsertOrReplaceEmbeddings(url_data);
+}
+
 size_t SqlDatabase::GetEmbeddingDimensions() const {
   return embedder_metadata_->output_size;
 }
 
 bool SqlDatabase::AddUrlData(UrlData url_data) {
-  return InsertOrReplacePassages(url_data) &&
-         InsertOrReplaceEmbeddings(url_data);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit()) {
+    return false;
+  }
+
+  CHECK(static_cast<size_t>(url_data.passages.passages_size()) ==
+        url_data.embeddings.size());
+  sql::Transaction transaction(&db_);
+  return transaction.Begin() && InsertOrReplacePassages(url_data) &&
+         InsertOrReplaceEmbeddings(url_data) && transaction.Commit();
 }
 
 constexpr char kSqlSelectPassagesAndEmbeddings[] =
@@ -766,6 +697,83 @@ void SqlDatabase::DeleteExpiredData(base::Time expiration_time) {
       db_.GetUniqueStatement(kSqlDeleteExpiredEmbeddings));
   expire_embeddings.BindTime(0, expiration_time);
   expire_embeddings.Run();
+}
+
+bool SqlDatabase::InsertOrReplacePassages(const UrlData& url_passages) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  constexpr char kSqlInsertOrReplacePassages[] =
+      "INSERT OR REPLACE INTO passages "
+      "(url_id, visit_id, visit_time, passages_blob) "
+      "VALUES (?,?,?,?)";
+  DCHECK(db_.IsSQLValid(kSqlInsertOrReplacePassages));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplacePassages));
+  statement.BindInt64(0, url_passages.url_id);
+  statement.BindInt64(1, url_passages.visit_id);
+  statement.BindTime(2, url_passages.visit_time);
+
+  std::vector<uint8_t> blob =
+      PassagesProtoToBlob(url_passages.passages, *encryptor_);
+  if (blob.empty()) {
+    return false;
+  }
+  statement.BindBlob(3, blob);
+  bool result = statement.Run();
+
+  if (result) {
+    size_t ascii_passages_count = 0;
+    size_t non_ascii_passages_count = 0;
+    for (const std::string& passage : url_passages.passages.passages()) {
+      if (base::IsStringASCII(passage)) {
+        ascii_passages_count++;
+      } else {
+        non_ascii_passages_count++;
+      }
+    }
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseStoredAsciiPassages", ascii_passages_count);
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseStoredNonAsciiPassages",
+        non_ascii_passages_count);
+    base::UmaHistogramPercentage(
+        "History.Embeddings.DatabaseStoredNonAsciiPassageRatio",
+        100 * non_ascii_passages_count /
+            (ascii_passages_count + non_ascii_passages_count));
+  }
+
+  return result;
+}
+
+bool SqlDatabase::InsertOrReplaceEmbeddings(const UrlData& url_embeddings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (url_embeddings.embeddings.size() == 0) {
+    return false;
+  }
+
+  constexpr char kSqlInsertOrReplaceEmbeddings[] =
+      "INSERT OR REPLACE INTO embeddings "
+      "(url_id, visit_id, visit_time, embeddings_blob) "
+      "VALUES (?,?,?,?)";
+  DCHECK(db_.IsSQLValid(kSqlInsertOrReplaceEmbeddings));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplaceEmbeddings));
+  statement.BindInt64(0, url_embeddings.url_id);
+  statement.BindInt64(1, url_embeddings.visit_id);
+  statement.BindTime(2, url_embeddings.visit_time);
+
+  proto::EmbeddingsValue value;
+  for (const Embedding& embedding : url_embeddings.embeddings) {
+    CHECK_EQ(GetEmbeddingDimensions(), embedding.Dimensions());
+    proto::EmbeddingVector* vector = value.add_vectors();
+    for (float f : embedding.GetData()) {
+      vector->add_floats(f);
+    }
+    vector->set_passage_word_count(embedding.GetPassageWordCount());
+  }
+  statement.BindBlob(3, value.SerializeAsString());
+
+  return statement.Run();
 }
 
 }  // namespace history_embeddings

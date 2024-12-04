@@ -184,8 +184,9 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
 
 // Check that a form in the background but was interacted with by the user
 // won't be discarded
+// TODO(crbug.com/40893068): Consistently flakes, re-enable this test.
 IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
-                       TabWithFormNotDiscarded) {
+                       DISABLED_TabWithFormNotDiscarded) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputIsFocused);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputValueIsUpated);
   const DeepQuery input_text_box = {"#value"};

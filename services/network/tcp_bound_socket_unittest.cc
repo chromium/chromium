@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +23,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -499,6 +501,94 @@ TEST_F(TCPBoundSocketTest, UpgradeToTLS) {
   // The response body should be the path, so make sure the response ends with
   // the path.
   EXPECT_EQ(kPath, response.substr(response.length() - strlen(kPath)));
+}
+
+// During a TLS upgrade, Chromium's SSL handling code on Windows triggers a
+// DCHECK in net::TCPClientSocket::ReadCommon due to an expectation that
+// the read_callback_ is empty. In the SSL upgrade case, the StreamSocket
+// (TCPClientSocket) is reused across SocketBIOAdapter instances, which
+// triggers this issue. This issue arises only when the
+// kTcpSocketIoCompletionPortWin experiment is enabled, causing
+// TcpSocketIoCompletionPortWin to be used by TCPClientSocket. Previously,
+// TcpSocketIoCompletionPortWin lacked an implementation for the ReadIfReady
+// function, leading to the described issue. This functionality has since been
+// added.
+//
+// This test validates that a deferred UpgradeToTLS operation completes
+// successfully when the send and receive channels on the connection are shut
+// down.
+TEST_F(TCPBoundSocketTest, UpgradeToTLSDuringShutdownWithBoundSocket) {
+  base::test::ScopedFeatureList scoped_feature_list;
+#if BUILDFLAG(IS_WIN)
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kTcpSocketIoCompletionPortWin);
+#endif  // BUILDFLAG(IS_WIN)
+  net::test_server::EmbeddedTestServer test_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  test_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_content(request.relative_url);
+        return response;
+      }));
+  ASSERT_TRUE(test_server.Start());
+
+  mojo::Remote<mojom::TCPBoundSocket> bound_socket;
+  net::IPEndPoint client_address;
+  ASSERT_EQ(net::OK,
+            BindSocket(LocalHostWithAnyPort(), &bound_socket, &client_address));
+
+  mojo::Remote<mojom::TCPConnectedSocket> client_socket;
+  TestSocketObserver socket_observer;
+  mojo::ScopedDataPipeConsumerHandle client_socket_receive_handle;
+  mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
+
+  EXPECT_EQ(net::OK,
+            Connect(std::move(bound_socket), client_address,
+                    net::IPEndPoint(net::IPAddress::IPv4Localhost(),
+                                    test_server.host_port_pair().port()),
+                    /*tcp_connected_socket_options=*/nullptr, &client_socket,
+                    socket_observer.GetObserverRemote(),
+                    &client_socket_receive_handle, &client_socket_send_handle));
+
+  // Trigger a TLS upgrade and verify the upgrade is invoked when send and
+  // receive channels are shut down.
+  base::RunLoop upgrade_run_loop;
+  mojo::Remote<mojom::TLSClientSocket> tls_client_socket;
+  bool upgrade_called = false;
+  int upgrade_result = net::ERR_FAILED;
+
+  client_socket->UpgradeToTLS(
+      test_server.host_port_pair(),
+      /*options=*/nullptr,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      tls_client_socket.BindNewPipeAndPassReceiver(),
+      /* observer */
+      mojo::NullRemote(),
+      base::BindLambdaForTesting(
+          [&](int net_error,
+              mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
+              mojo::ScopedDataPipeProducerHandle send_pipe_handle,
+              const std::optional<net::SSLInfo>& ssl_info) {
+            upgrade_called = true;
+            upgrade_result = net_error;
+            upgrade_run_loop.Quit();
+          }));
+
+  // Shut down the send and receive channels to ensure that the
+  // shutdown path in SocketDataPump is invoked, resetting the read callback.
+  client_socket_send_handle.reset();
+  client_socket_receive_handle.reset();
+
+  // Run the upgrade loop to ensure that the deferred upgrade callback is
+  // invoked.
+  upgrade_run_loop.Run();
+
+  // Verify that the upgrade callback was called and the operation was
+  // successful.
+  EXPECT_TRUE(upgrade_called);
+  EXPECT_EQ(upgrade_result, net::OK);
 }
 
 }  // namespace

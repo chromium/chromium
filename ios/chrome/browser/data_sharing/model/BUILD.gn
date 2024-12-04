@@ -54,7 +54,9 @@ source_set("ui_delegate") {
   public_deps = [ "//base" ]
   deps = [
     ":context",
+    "//components/collaboration/public",
     "//components/data_sharing/public",
+    "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",

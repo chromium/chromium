@@ -26,6 +26,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace tab_groups {
 namespace {
@@ -517,7 +518,8 @@ const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
     std::optional<size_t> position,
     std::optional<std::string> creator_cache_guid,
     std::optional<std::string> last_updater_cache_guid,
-    base::Time update_time) {
+    base::Time update_time,
+    const GaiaId& updated_by) {
   CHECK(Contains(guid));
 
   // For unpinned groups, `pinned_index` should be std::nullopt since its
@@ -531,6 +533,9 @@ const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
   saved_tab_groups_[index].MergeRemoteGroupMetadata(
       title, color, position, creator_cache_guid, last_updater_cache_guid,
       update_time);
+  if (saved_tab_groups_[index].is_shared_tab_group()) {
+    saved_tab_groups_[index].SetUpdatedByAttribution(updated_by);
+  }
   std::optional<size_t> preferred_pinned_index =
       saved_tab_groups_[index].position();
 

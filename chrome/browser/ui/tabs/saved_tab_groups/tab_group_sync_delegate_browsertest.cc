@@ -401,7 +401,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
       saved_group->saved_guid(), u"title", TabGroupColorId::kRed,
       /*position=*/std::nullopt, /*creator_cache_guid=*/std::nullopt,
       /*last_updater_cache_guid=*/std::nullopt,
-      /*update_time=*/base::Time::Now());
+      /*update_time=*/base::Time::Now(),
+      /*updated_by=*/GaiaId());
 
   // Wait for the tab group update to complete because sync updates are
   // asynchronous.

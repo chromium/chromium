@@ -29,7 +29,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/crx_verifier.h"
@@ -196,13 +195,13 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
   base::ScopedTempDir install_path_owner;
   std::ignore = install_path_owner.Set(local_install_path);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!base::SetPosixFilePermissions(local_install_path, 0755)) {
     VPLOG(0) << "SetPosixFilePermissions failed: "
              << local_install_path.value();
     return Result(InstallError::SET_PERMISSIONS_FAILED);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
   // Since components can be large and can be re-downloaded when needed, they
@@ -460,7 +459,7 @@ std::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
     return std::nullopt;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::FilePath base_dir_ = base_component_dir;
   for (const base::FilePath::StringType& component :
        installer_policy_->GetRelativeInstallDir().GetComponents()) {
@@ -470,7 +469,7 @@ std::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
       return std::nullopt;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return base_dir;
 }

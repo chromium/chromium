@@ -32,7 +32,7 @@ class AMPPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness,
       public testing::WithParamInterface<bool> {
  public:
-  AMPPageLoadMetricsObserverTest() {}
+  AMPPageLoadMetricsObserverTest() = default;
 
   AMPPageLoadMetricsObserverTest(const AMPPageLoadMetricsObserverTest&) =
       delete;

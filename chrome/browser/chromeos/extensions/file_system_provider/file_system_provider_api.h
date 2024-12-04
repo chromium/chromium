@@ -21,7 +21,7 @@ namespace extensions {
 
 class FileSystemProviderBase : public ExtensionFunction {
  protected:
-  ~FileSystemProviderBase() override {}
+  ~FileSystemProviderBase() override = default;
   std::string GetProviderId() const;
   void RespondWithError(const std::string& error);
 
@@ -50,7 +50,7 @@ class FileSystemProviderMountFunction : public FileSystemProviderBase {
                              FILESYSTEMPROVIDER_MOUNT)
 
  protected:
-  ~FileSystemProviderMountFunction() override {}
+  ~FileSystemProviderMountFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -60,7 +60,7 @@ class FileSystemProviderUnmountFunction : public FileSystemProviderBase {
                              FILESYSTEMPROVIDER_UNMOUNT)
 
  protected:
-  ~FileSystemProviderUnmountFunction() override {}
+  ~FileSystemProviderUnmountFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -71,7 +71,7 @@ class FileSystemProviderGetAllFunction : public FileSystemProviderBase {
 
  protected:
   void RespondWithInfos(std::vector<crosapi::mojom::FileSystemInfoPtr>);
-  ~FileSystemProviderGetAllFunction() override {}
+  ~FileSystemProviderGetAllFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -81,7 +81,7 @@ class FileSystemProviderGetFunction : public FileSystemProviderBase {
 
  protected:
   void RespondWithInfo(crosapi::mojom::FileSystemInfoPtr info);
-  ~FileSystemProviderGetFunction() override {}
+  ~FileSystemProviderGetFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -91,7 +91,7 @@ class FileSystemProviderNotifyFunction : public FileSystemProviderBase {
                              FILESYSTEMPROVIDER_NOTIFY)
 
  protected:
-  ~FileSystemProviderNotifyFunction() override {}
+  ~FileSystemProviderNotifyFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -101,7 +101,7 @@ class FileSystemProviderNotifyFunction : public FileSystemProviderBase {
 
 class FileSystemProviderInternal : public FileSystemProviderBase {
  protected:
-  ~FileSystemProviderInternal() override {}
+  ~FileSystemProviderInternal() override = default;
 
   // Returns the operation metadata from FileSystemProviderInternal methods via
   // output parameters.
@@ -168,7 +168,8 @@ class FileSystemProviderInternalUnmountRequestedSuccessFunction
       FILESYSTEMPROVIDERINTERNAL_UNMOUNTREQUESTEDSUCCESS)
 
  protected:
-  ~FileSystemProviderInternalUnmountRequestedSuccessFunction() override {}
+  ~FileSystemProviderInternalUnmountRequestedSuccessFunction() override =
+      default;
   ResponseAction Run() override;
 };
 
@@ -180,7 +181,8 @@ class FileSystemProviderInternalGetMetadataRequestedSuccessFunction
       FILESYSTEMPROVIDERINTERNAL_GETMETADATAREQUESTEDSUCCESS)
 
  protected:
-  ~FileSystemProviderInternalGetMetadataRequestedSuccessFunction() override {}
+  ~FileSystemProviderInternalGetMetadataRequestedSuccessFunction() override =
+      default;
   ResponseAction Run() override;
 };
 
@@ -192,7 +194,8 @@ class FileSystemProviderInternalGetActionsRequestedSuccessFunction
       FILESYSTEMPROVIDERINTERNAL_GETACTIONSREQUESTEDSUCCESS)
 
  protected:
-  ~FileSystemProviderInternalGetActionsRequestedSuccessFunction() override {}
+  ~FileSystemProviderInternalGetActionsRequestedSuccessFunction() override =
+      default;
   ResponseAction Run() override;
 };
 
@@ -204,7 +207,8 @@ class FileSystemProviderInternalReadDirectoryRequestedSuccessFunction
       FILESYSTEMPROVIDERINTERNAL_READDIRECTORYREQUESTEDSUCCESS)
 
  protected:
-  ~FileSystemProviderInternalReadDirectoryRequestedSuccessFunction() override {}
+  ~FileSystemProviderInternalReadDirectoryRequestedSuccessFunction() override =
+      default;
   ResponseAction Run() override;
 };
 
@@ -216,7 +220,8 @@ class FileSystemProviderInternalReadFileRequestedSuccessFunction
       FILESYSTEMPROVIDERINTERNAL_READFILEREQUESTEDSUCCESS)
 
  protected:
-  ~FileSystemProviderInternalReadFileRequestedSuccessFunction() override {}
+  ~FileSystemProviderInternalReadFileRequestedSuccessFunction() override =
+      default;
   ResponseAction Run() override;
 };
 
@@ -228,7 +233,8 @@ class FileSystemProviderInternalOpenFileRequestedSuccessFunction
       FILESYSTEMPROVIDERINTERNAL_OPENFILEREQUESTEDSUCCESS)
 
  protected:
-  ~FileSystemProviderInternalOpenFileRequestedSuccessFunction() override {}
+  ~FileSystemProviderInternalOpenFileRequestedSuccessFunction() override =
+      default;
   ResponseAction Run() override;
 };
 
@@ -240,7 +246,8 @@ class FileSystemProviderInternalOperationRequestedSuccessFunction
       FILESYSTEMPROVIDERINTERNAL_OPERATIONREQUESTEDSUCCESS)
 
  protected:
-  ~FileSystemProviderInternalOperationRequestedSuccessFunction() override {}
+  ~FileSystemProviderInternalOperationRequestedSuccessFunction() override =
+      default;
   ResponseAction Run() override;
 };
 
@@ -252,7 +259,8 @@ class FileSystemProviderInternalOperationRequestedErrorFunction
       FILESYSTEMPROVIDERINTERNAL_OPERATIONREQUESTEDERROR)
 
  protected:
-  ~FileSystemProviderInternalOperationRequestedErrorFunction() override {}
+  ~FileSystemProviderInternalOperationRequestedErrorFunction() override =
+      default;
   ResponseAction Run() override;
 };
 

@@ -77,16 +77,6 @@ cc::Layer* WebGPUSwapBufferProvider::CcLayer() {
   return layer_.get();
 }
 
-void WebGPUSwapBufferProvider::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (filter_quality != filter_quality_) {
-    filter_quality_ = filter_quality;
-    if (layer_) {
-      layer_->SetFilterQuality(filter_quality_);
-    }
-  }
-}
-
 void WebGPUSwapBufferProvider::ReleaseWGPUTextureAccessIfNeeded() {
   if (!current_swap_buffer_ || !current_swap_buffer_->mailbox_texture) {
     return;
@@ -233,8 +223,10 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     // Create a layer that will be used by the canvas and will ask for a
     // SharedImage each frame.
     layer_ = cc::TextureLayer::CreateForMailbox(this);
+    if (client_) {
+      client_->InitializeLayer(layer_.get());
+    }
     layer_->SetIsDrawable(true);
-    layer_->SetFilterQuality(filter_quality_);
 
     // TODO(cwallez@chromium.org): These flags aren't taken into account when
     // the layer is promoted to an overlay. Make sure we have fallback /
@@ -299,13 +291,12 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   ReleaseWGPUTextureAccessIfNeeded();
 
   // Populate the output resource.
-  uint32_t texture_target =
-      current_swap_buffer_->GetSharedImage()->GetTextureTarget();
-
   *out_resource = viz::TransferableResource::MakeGpu(
-      current_swap_buffer_->GetSharedImage(), texture_target,
+      current_swap_buffer_->GetSharedImage(),
+      current_swap_buffer_->GetSharedImage()->GetTextureTarget(),
       current_swap_buffer_->GetSyncToken(),
-      current_swap_buffer_->GetSharedImage()->size(), Format(),
+      current_swap_buffer_->GetSharedImage()->size(),
+      current_swap_buffer_->GetSharedImage()->format(),
       current_swap_buffer_->GetSharedImage()->usage().Has(
           gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);

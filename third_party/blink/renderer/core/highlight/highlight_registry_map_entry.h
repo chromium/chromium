@@ -15,15 +15,25 @@ class Highlight;
 struct HighlightRegistryMapEntry final
     : public GarbageCollected<HighlightRegistryMapEntry> {
   HighlightRegistryMapEntry(const AtomicString& highlight_name,
-                            Member<Highlight> highlight)
-      : highlight(highlight), highlight_name(highlight_name) {}
+                            Member<Highlight> highlight,
+                            uint64_t registration_position)
+      : highlight(highlight),
+        highlight_name(highlight_name),
+        registration_position(registration_position) {}
   explicit HighlightRegistryMapEntry(const HighlightRegistryMapEntry* entry)
-      : HighlightRegistryMapEntry(entry->highlight_name, entry->highlight) {}
+      : HighlightRegistryMapEntry(entry->highlight_name,
+                                  entry->highlight,
+                                  entry->registration_position) {}
 
   void Trace(blink::Visitor* visitor) const { visitor->Trace(highlight); }
 
   Member<Highlight> highlight = nullptr;
   AtomicString highlight_name = g_null_atom;
+
+  // Used to break ties when comparing two Highlights for precedence. This
+  // number means |highlight| was the |registration_position|-th Highlight
+  // registered in the HighlightRegistry.
+  uint64_t registration_position = 0;
 };
 
 // Translator used for looking up a HighlightRegistryMapEntry using only the

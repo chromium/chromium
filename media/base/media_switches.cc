@@ -734,7 +734,7 @@ BASE_FEATURE(kVaapiOnNvidiaGPUs,
 // Enable VA-API hardware low power encoder for all codecs on intel Gen9x gpu.
 BASE_FEATURE(kVaapiLowPowerEncoderGen9x,
              "VaapiLowPowerEncoderGen9x",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reject creation of encode/decode VAContexts when the requested resolution is
 // outside the enumerated minimum and maximum. TODO(b/171041334): Remove and
@@ -784,11 +784,15 @@ BASE_FEATURE(kVaapiH264TemporalLayerHWEncoding,
 // encoder on ChromeOS.
 BASE_FEATURE(kVaapiH264SWBitrateController,
              "VaapiH264SWBitrateController",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable VP8 temporal layer encoding with HW encoder on ChromeOS.
 BASE_FEATURE(kVaapiVp8TemporalLayerHWEncoding,
              "VaapiVp8TemporalLayerEncoding",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enable AV1 temporal layer encoding with HW encoder on ChromeOS.
+BASE_FEATURE(kVaapiAV1TemporalLayerHWEncoding,
+             "VaapiAv1TemporalLayerEncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable VP9 S-mode encoding with HW encoder for webrtc use case on ChromeOS.
 BASE_FEATURE(kVaapiVp9SModeHWEncoding,
              "VaapiVp9SModeHWEncoding",
@@ -1552,6 +1556,12 @@ BASE_FEATURE(kAudioFocusLossSuspendMediaSession,
              "AudioFocusMediaSession",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables an optimization where audio input stream read confirmations are
+// written to shared memory instead of being sent through socket messages.
+BASE_FEATURE(kAudioInputConfirmReadsViaShmem,
+             "AudioInputConfirmReadsViaShmem",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the internal Media Session logic without enabling the Media Session
 // service.
 BASE_FEATURE(kInternalMediaSession,
@@ -1562,13 +1572,6 @@ BASE_FEATURE(kInternalMediaSession,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// Keypress detection which serves as input to noise suppression methods
-// in WebRTC clients. This functionality is enabled by default but it can be
-// disabled experemantally by using --disable-features=KeyPressMonitoring.
-BASE_FEATURE(kKeyPressMonitoring,
-             "KeyPressMonitoring",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseFakeDeviceForMediaStream,
              "use-fake-device-for-media-stream",

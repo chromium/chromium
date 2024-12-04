@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 
 #include "base/functional/bind.h"
@@ -42,8 +37,7 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
   webui::EnableTrustedTypesCSP(html_source);
 
   // Add required resources.
-  html_source->AddResourcePaths(base::make_span(
-      kBluetoothInternalsResources, kBluetoothInternalsResourcesSize));
+  html_source->AddResourcePaths(kBluetoothInternalsResources);
   html_source->SetDefaultResource(
       IDR_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HTML);
 }

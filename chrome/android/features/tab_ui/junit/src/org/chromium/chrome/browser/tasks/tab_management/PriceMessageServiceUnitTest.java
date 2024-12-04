@@ -73,7 +73,7 @@ public class PriceMessageServiceUnitTest {
         doNothing().when(mMessageObserver).messageInvalidate(anyInt());
 
         FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
+        testValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
         FeatureList.setTestValues(testValues);
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);

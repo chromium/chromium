@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
@@ -109,7 +110,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   //
   // When enable_security_constraints is false, the alignment is 16 which is
   // the maximum alignment requirement of particular types of pixmaps (see
-  // image_transfer_data_cache.cc).
+  // image_transfer_cache_entry.cc).
   static constexpr size_t BufferAlignment(bool enable_security_constraints) {
     return enable_security_constraints ? kDefaultAlignment : kMaxAlignment;
   }
@@ -209,7 +210,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
                                     size_t serialized_size);
 
   // Write a sequence of arbitrary bytes.
-  void WriteData(size_t bytes, const void* input);
+  void WriteData(base::span<const uint8_t> data);
 
   // Returns the size of successfully written data, including paddings for
   // alignment.
@@ -355,7 +356,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
     requires(std::is_trivially_copyable_v<T>)
   void Write(const std::vector<T>& vec) {
     WriteSize(vec.size());
-    WriteData(vec.size() * sizeof(T), vec.data());
+    WriteData(base::as_byte_span(vec));
   }
 
   template <typename T, typename... Args>

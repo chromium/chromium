@@ -65,7 +65,7 @@ InfolistBorder::InfolistBorder()
   SetColor(SK_ColorTRANSPARENT);
 }
 
-InfolistBorder::~InfolistBorder() {}
+InfolistBorder::~InfolistBorder() = default;
 
 gfx::Rect InfolistBorder::GetBounds(const gfx::Rect& anchor_rect,
                                     const gfx::Size& contents_size) const {
@@ -147,7 +147,7 @@ InfolistEntryView::InfolistEntryView(const ui::InfolistEntry& entry,
   UpdateBackground();
 }
 
-InfolistEntryView::~InfolistEntryView() {}
+InfolistEntryView::~InfolistEntryView() = default;
 
 void InfolistEntryView::SetEntry(const ui::InfolistEntry& entry) {
   if (entry_ == entry) {
@@ -225,7 +225,7 @@ InfolistWindow::InfolistWindow(views::View* candidate_window,
   }
 }
 
-InfolistWindow::~InfolistWindow() {}
+InfolistWindow::~InfolistWindow() = default;
 
 void InfolistWindow::InitWidget() {
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);

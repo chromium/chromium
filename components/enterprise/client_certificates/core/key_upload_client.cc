@@ -206,7 +206,7 @@ void KeyUploadClientImpl::OnCertificateResponseReceived(
             .pem_encoded_certificate();
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            base::as_bytes(base::make_span(pem_encoded_certificate)),
+            base::as_byte_span(pem_encoded_certificate),
             net::X509Certificate::FORMAT_AUTO);
     if (!certs.empty()) {
       certificate = certs[0];

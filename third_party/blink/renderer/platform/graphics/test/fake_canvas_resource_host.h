@@ -41,9 +41,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
       RasterModeHint hint) override {
     if (ResourceProvider())
       return ResourceProvider();
-    const SkImageInfo resource_info =
-        SkImageInfo::MakeN32Premul(Size().width(), Size().height());
-    constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kMedium;
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kCallClear;
     std::unique_ptr<CanvasResourceProvider> provider;
@@ -53,7 +50,8 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
           gpu::SHARED_IMAGE_USAGE_SCANOUT;
       provider = CanvasResourceProvider::CreateSharedImageProvider(
-          resource_info, kFilterQuality, kShouldInitialize,
+          Size(), kN32_SkColorType, kPremul_SkAlphaType,
+          SkColorSpace::MakeSRGB(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(),
           hint == RasterModeHint::kPreferGPU ? RasterMode::kGPU
                                              : RasterMode::kCPU,
@@ -61,15 +59,14 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-          Size(), resource_info.colorType(), resource_info.alphaType(),
-          resource_info.refColorSpace(), kFilterQuality, kShouldInitialize,
+          Size(), kN32_SkColorType, kPremul_SkAlphaType,
+          SkColorSpace::MakeSRGB(), kShouldInitialize,
           SharedGpuContext::SharedImageInterfaceProvider(), this);
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateBitmapProvider(
-          Size(), resource_info.colorType(), resource_info.alphaType(),
-          resource_info.refColorSpace(), kFilterQuality, kShouldInitialize,
-          this);
+          Size(), kN32_SkColorType, kPremul_SkAlphaType,
+          SkColorSpace::MakeSRGB(), kShouldInitialize, this);
     }
 
     ReplaceResourceProvider(std::move(provider));

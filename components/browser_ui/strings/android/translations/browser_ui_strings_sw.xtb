@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kuona maandishi na picha zilizohifadhiwa kwenye ubao wako wa kunakili. Kikizimwa, tovuti haziwezi kuona maandishi au picha zilizohifadhiwa kwenye ubao wako wa kunakili.</translation>
 <translation id="5853982612236235577">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutuma arifa. Kikizimwa, tovuti haziwezi kutuma arifa.</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
+<translation id="5860491529813859533">Washa</translation>
 <translation id="5876056640971328065">Sitisha video</translation>
 <translation id="5877248419911025165">Kunja maombi yote</translation>
 <translation id="5884085660368669834">Mapendeleo ya tovuti</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">Weka anwani ya wavuti</translation>
 <translation id="5975083100439434680">Fifiza</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Sasa unaweza kufikia kwa haraka vichupo vilivyopendekezwa kutoka kwenye orodha ya programu ya kifaa chako na katika matokeo ya utafutaji kwenye kifaa. Funga hali hii wakati wowote katika mipangilio ya Chrome.</translation>
 <translation id="6015775454662021376">Dhibiti ufikiaji wa tovuti hii kwenye kifaa chako</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6042308850641462728">Zaidi</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">Uliza kwanza</translation>
 <translation id="7423538860840206698">Imezuiwa kusoma ubao wa kunakili</translation>
 <translation id="7425915948813553151">Mandhari meusi ya tovuti</translation>
+<translation id="7488573225650545859">Ficha sehemu ya Angalia vichupo kwenye orodha yako ya programu</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kikiwashwa, tovuti zinaweza kuonyesha vidokezo vya kuingia katika akaunti. Kikizimwa, tovuti haziwezi kuonyesha vidokezo vya kuingia katika akaunti.</translation>
 <translation id="7553211568594248088">Kuondoka kwenye utafutaji wa kituo</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">Maudhui haya yanatoka <ph name="DOMAIN_NAME" />, yamewasilishwa na Google.</translation>
 <translation id="8088603949666785339">Chaguo zaidi kwenye <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Hupunguza utendaji lakini hufanya V8 kustahimili mashambulizi zaidi</translation>
+<translation id="8112925981674547014">Angalia vichupo kwenye orodha yako ya programu</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome itadhibiti vidakuzi tena kesho}other{Zimesalia siku # kabla Chrome idhibiti vidakuzi tena}}</translation>
 <translation id="8116925261070264013">Imezimwa</translation>
 <translation id="8117244575099414087">Kikiwashwa, tovuti zinaweza kutumia vitambuzi vya kifaa chako. Kikizimwa, tovuti haziwezi kutumia vitambuzi.</translation>

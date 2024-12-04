@@ -26,7 +26,7 @@ public class EducationalTipCardProviderFactory {
         switch (cardType) {
             case EducationalTipCardType.DEFAULT_BROWSER_PROMO:
                 return new DefaultBrowserPromoCoordinator(onModuleClickedCallback, actionDelegate);
-            case EducationalTipCardType.TAB_GROUPS:
+            case EducationalTipCardType.TAB_GROUP:
                 return new TabGroupPromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
             case EducationalTipCardType.TAB_GROUP_SYNC:

@@ -8,13 +8,14 @@
 #include <memory>
 
 #include "components/keyed_service/core/keyed_service.h"
-#include "ios/web/public/browser_state.h"
+
+class ProfileIOS;
 
 namespace feature_engagement {
 
 // Util method for creating a FeatureEngagementTracker.
 std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
-    web::BrowserState* context);
+    ProfileIOS* profile);
 
 }  // namespace feature_engagement
 

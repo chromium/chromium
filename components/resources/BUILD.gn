@@ -33,6 +33,7 @@ group("resources") {
     ":dev_ui_components_resources",
     "../chrome_urls_ui/resources:resources",
     "../flags_ui/resources:resources",
+    "../signin/core/browser/resources",
     "../version_ui/resources:resources",
   ]
 }

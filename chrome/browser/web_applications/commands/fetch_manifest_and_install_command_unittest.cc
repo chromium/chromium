@@ -235,9 +235,8 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
                                true, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kSuccessNewInstall);
   auto& registrar = provider()->registrar_unsafe();
-  EXPECT_TRUE(registrar.IsInstallState(kWebAppId,
-                                       {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                                        proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            registrar.GetInstallState(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -253,9 +252,8 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider()->registrar_unsafe().IsInstallState(
-      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                  proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider()->registrar_unsafe().GetInstallState(kWebAppId));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId), "foo");
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
@@ -273,9 +271,8 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider()->registrar_unsafe().IsInstallState(
-      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                  proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider()->registrar_unsafe().GetInstallState(kWebAppId));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId),
             "test app");
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
@@ -290,9 +287,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInstallState(
-      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                  proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsNotInRegistrar(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -311,9 +306,7 @@ TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
                            CreateDialogCallback(
                                false, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kUserInstallDeclined);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInstallState(
-      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                  proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsNotInRegistrar(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -730,9 +723,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   ASSERT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInstallState(
-      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                  proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsNotInRegistrar(kWebAppId));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -987,10 +978,8 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
 
   webapps::AppId app_id = install_future.Get<webapps::AppId>();
 
-  ASSERT_TRUE(provider()->registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            provider()->registrar_unsafe().GetInstallState(app_id));
 
   auto& registrar = provider()->registrar_unsafe();
 

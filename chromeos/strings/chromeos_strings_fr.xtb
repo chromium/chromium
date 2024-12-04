@@ -1365,6 +1365,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7425037327577270384">M'aider à écrire</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de supprimer cet APN. Assurez-vous que les APN <ph name="ATTACH" /> activés sont désactivés ou supprimés.</translation>
+<translation id="7453118953486228603">Cliquer pour résumer le texte sélectionné</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7481312909269577407">Avancer</translation>
@@ -1723,6 +1724,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="9133772297793293778">Appuyez sur 1 à 4 modificateurs et sur 1 autre touche du clavier. Pour quitter le mode Édition, appuyez sur Alt+Échap.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Maj gauche</translation>
+<translation id="9147928237330776930">Pas assez de mots pour résumer</translation>
 <translation id="9149391708638971077">Lancer le test de mémoire</translation>
 <translation id="9159524746324788320">burgers</translation>
 <translation id="9161276708550942948">espace</translation>

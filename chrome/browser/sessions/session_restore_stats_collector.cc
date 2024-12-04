@@ -5,17 +5,46 @@
 #include "chrome/browser/sessions/session_restore_stats_collector.h"
 
 #include <string>
+#include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/session_restore_policy.h"
+#include "components/performance_manager/public/decorators/site_data_recorder.h"
+#include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/persistence/site_data/feature_usage.h"
+#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
 using content::RenderWidgetHost;
 using content::RenderWidgetHostView;
 using content::WebContents;
+using performance_manager::PerformanceManager;
+using performance_manager::SiteDataReader;
+using performance_manager::SiteFeatureUsage;
 
 SessionRestoreStatsCollector* g_instance = nullptr;
 
@@ -26,6 +55,66 @@ RenderWidgetHost* GetRenderWidgetHost(WebContents* web_contents) {
   if (render_widget_host_view)
     return render_widget_host_view->GetRenderWidgetHost();
   return nullptr;
+}
+
+// Returns the site engagement score of a WebContents. Copied from
+// chrome/browser/resource_coordinator/session_restore_policy.cc.
+size_t GetSiteEngagementScore(content::WebContents* contents) {
+  // Get the active navigation entry. Restored tabs should always have one.
+  auto& controller = contents->GetController();
+  auto* nav_entry =
+      controller.GetEntryAtIndex(controller.GetCurrentEntryIndex());
+  DCHECK(nav_entry);
+
+  auto* engagement_svc = site_engagement::SiteEngagementService::Get(
+      Profile::FromBrowserContext(contents->GetBrowserContext()));
+  double engagement =
+      engagement_svc->GetDetails(nav_entry->GetURL()).total_score;
+
+  // Return the engagement as an integer.
+  return engagement;
+}
+
+bool HasLowSiteEngagement(content::WebContents* contents) {
+  // There are 3 ways to handle session restore:
+  //
+  // Case 1: kBackgroundTabLoadingFromPerformanceManager is disabled.
+  //
+  // The algorithm uses SessionRestorePolicy::kMinSiteEngagementToRestore.
+  // SessionRestore.TabCount.LowSiteEngagement counts tabs that are less than
+  // this.
+  //
+  // Case 2: kBackgroundTabLoadingFromPerformanceManager is enabled, and uses
+  // a min value from kBackgroundTabLoadingMinSiteEngagement.
+  //
+  // SessionRestore.TabCount.LowSiteEngagement counts tabs that are less than
+  // kBackgroundTabLoadingMinSiteEngagement.
+  //
+  // Case 3: kBackgroundTabLoadingFromPerformanceManager is enabled, but
+  // kBackgroundTabLoadingMinSiteEngagement returns 0.
+  //
+  // The session restore algorithm ignores site engagement.
+  // SessionRestore.TabCount.LowSiteEngagement counts tabs that are less than
+  // SessionRestorePolicy::kMinSiteEngagementToRestore, to see what data the PM
+  // algorithm is ignoring.
+  const size_t min_site_engagement =
+      performance_manager::features::kBackgroundTabLoadingMinSiteEngagement
+          .Get();
+  if (min_site_engagement == 0) {
+    return GetSiteEngagementScore(contents) <
+           resource_coordinator::SessionRestorePolicy::
+               kMinSiteEngagementToRestore;
+  }
+  return GetSiteEngagementScore(contents) < min_site_engagement;
+}
+
+bool HasNotificationPermission(content::WebContents* contents) {
+  return contents->GetBrowserContext()
+             ->GetPermissionController()
+             ->GetPermissionResultForOriginWithoutContext(
+                 blink::PermissionType::NOTIFICATIONS,
+                 url::Origin::Create(contents->GetLastCommittedURL()))
+             .status == blink::mojom::PermissionStatus::GRANTED;
 }
 
 }  // namespace
@@ -65,6 +154,47 @@ void SessionRestoreStatsCollector::TrackTabs(
   tab_loader_stats_.tab_count += tabs.size();
   for (const auto& tab : tabs) {
     RegisterObserverForTab(tab.contents());
+    if (tab.is_active()) {
+      tab_loader_stats_.active_tab_count++;
+    }
+    if (tab.is_app()) {
+      tab_loader_stats_.app_tab_count++;
+    }
+    if (tab.is_internal_page()) {
+      tab_loader_stats_.internal_page_tab_count++;
+    }
+    if (tab.is_pinned()) {
+      tab_loader_stats_.pinned_tab_count++;
+    }
+    if (tab.group().has_value()) {
+      tab_loader_stats_.grouped_tab_count++;
+    }
+
+    // Look up background feature use in `site_data_reader` on the PM sequence,
+    // and post the result to OnTabUpdatesInBackground() on the current
+    // sequence, along with site engagement and permissions info.
+    base::OnceCallback<bool(const SiteDataReader&)> on_site_data_ready =
+        base::BindOnce([](const SiteDataReader& site_data_reader) {
+          return site_data_reader.UpdatesFaviconInBackground() ==
+                     SiteFeatureUsage::kSiteFeatureInUse ||
+                 site_data_reader.UpdatesTitleInBackground() ==
+                     SiteFeatureUsage::kSiteFeatureInUse;
+        });
+
+    base::OnceCallback<void(bool)> on_tab_updates_in_background =
+        base::BindOnce(&SessionRestoreStatsCollector::OnTabUpdatesInBackground,
+                       weak_factory_.GetWeakPtr(),
+                       HasLowSiteEngagement(tab.contents()),
+                       HasNotificationPermission(tab.contents()));
+
+    PerformanceManager::CallOnGraph(
+        FROM_HERE,
+        base::BindOnce(&performance_manager::WaitForSiteDataReader,
+                       PerformanceManager::GetPrimaryPageNodeForWebContents(
+                           tab.contents()),
+                       std::move(on_site_data_ready)
+                           .Then(base::BindPostTaskToCurrentDefault(
+                               std::move(on_tab_updates_in_background)))));
   }
 
   // If we were not able to register observers for any tab, report stats.
@@ -157,6 +287,25 @@ void SessionRestoreStatsCollector::ReportStatsAndSelfDestroy() {
   delete this;
 }
 
+void SessionRestoreStatsCollector::OnTabUpdatesInBackground(
+    bool low_site_engagement,
+    bool background_notification_permission,
+    bool updates_in_background) {
+  if (background_notification_permission) {
+    tab_loader_stats_.notification_permission_tab_count++;
+  }
+  if (updates_in_background) {
+    tab_loader_stats_.updates_in_background_tab_count++;
+  }
+  if (low_site_engagement) {
+    tab_loader_stats_.low_site_engagement_tab_count++;
+    if (background_notification_permission || updates_in_background) {
+      tab_loader_stats_
+          .low_site_engagement_with_background_communication_tab_count++;
+    }
+  }
+}
+
 SessionRestoreStatsCollector::UmaStatsReportingDelegate::
     UmaStatsReportingDelegate() = default;
 
@@ -178,4 +327,29 @@ void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
   UMA_HISTOGRAM_ENUMERATION(
       "SessionRestore.ForegroundTabFirstPaint4.FinishReason",
       tab_loader_stats.tab_first_paint_reason, PAINT_FINISHED_UMA_MAX);
+
+  base::UmaHistogramCounts100("SessionRestore.TabCount",
+                              tab_loader_stats.tab_count);
+  base::UmaHistogramCounts100("SessionRestore.TabCount.Active",
+                              tab_loader_stats.active_tab_count);
+  base::UmaHistogramCounts100("SessionRestore.TabCount.App",
+                              tab_loader_stats.app_tab_count);
+  base::UmaHistogramCounts100("SessionRestore.TabCount.InternalPage",
+                              tab_loader_stats.internal_page_tab_count);
+  base::UmaHistogramCounts100("SessionRestore.TabCount.Pinned",
+                              tab_loader_stats.pinned_tab_count);
+  base::UmaHistogramCounts100("SessionRestore.TabCount.Grouped",
+                              tab_loader_stats.grouped_tab_count);
+  base::UmaHistogramCounts100("SessionRestore.TabCount.LowSiteEngagement",
+                              tab_loader_stats.low_site_engagement_tab_count);
+  base::UmaHistogramCounts100(
+      "SessionRestore.TabCount.LowSiteEngagementWithBackgroundCommunication",
+      tab_loader_stats
+          .low_site_engagement_with_background_communication_tab_count);
+  base::UmaHistogramCounts100(
+      "SessionRestore.TabCount.BackgroundNotificationPermission",
+      tab_loader_stats.notification_permission_tab_count);
+  base::UmaHistogramCounts100(
+      "SessionRestore.TabCount.UpdatesTitleOrFaviconInBackground",
+      tab_loader_stats.updates_in_background_tab_count);
 }

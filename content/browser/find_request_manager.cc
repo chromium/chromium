@@ -370,7 +370,7 @@ void FindRequestManager::EmitFindRequest(int request_id,
 
 void FindRequestManager::ForEachAddedFindInPageRenderFrameHost(
     base::FunctionRef<void(RenderFrameHostImpl*)> func_ref) {
-  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
       [this, func_ref](RenderFrameHostImpl* rfh) {
         if (!CheckFrame(rfh))
           return;
@@ -696,10 +696,10 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
   Reset(request);
 
   // Add and observe eligible RFHs in the WebContents. And, use
-  // ForEachRenderFrameHost instead of ForEachAddedFindInPageRenderFrameHost
+  // ForEachRenderFrameHostImpl instead of ForEachAddedFindInPageRenderFrameHost
   // because that calls CheckFrame() which will only be true if we've called
   // AddFrame() for the frame.
-  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
       [this](RenderFrameHostImpl* rfh) {
         auto* wc = WebContents::FromRenderFrameHost(rfh);
         // Make sure each WebContents is only added once.

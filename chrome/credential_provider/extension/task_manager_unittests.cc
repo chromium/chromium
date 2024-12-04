@@ -29,7 +29,7 @@ namespace testing {
 
 class TaskManagerTest : public ::testing::Test {
  public:
-  TaskManagerTest() {}
+  TaskManagerTest() = default;
 
   void RunTasks() {
     fake_task_manager_.RunTasks(task_environment_.GetMainThreadTaskRunner());
@@ -83,7 +83,7 @@ int FakeTask::num_fails_ = 0;
 
 FakeTask::FakeTask(base::TimeDelta period) : period_(period) {}
 
-FakeTask::~FakeTask() {}
+FakeTask::~FakeTask() = default;
 
 extension::Config FakeTask::GetConfig() {
   extension::Config config;

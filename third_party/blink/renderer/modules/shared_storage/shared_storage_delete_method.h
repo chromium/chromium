@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_DELETE_METHOD_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_DELETE_METHOD_H_
+
+#include "services/network/public/mojom/shared_storage.mojom-blink.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace blink {
+
+class ExceptionState;
+class SharedStorageModifierMethodOptions;
+
+class MODULES_EXPORT SharedStorageDeleteMethod : public ScriptWrappable {
+  DEFINE_WRAPPERTYPEINFO();
+
+ public:
+  static SharedStorageDeleteMethod* Create(ScriptState*,
+                                           const String& key,
+                                           ExceptionState&);
+  static SharedStorageDeleteMethod* Create(
+      ScriptState*,
+      const String& key,
+      const SharedStorageModifierMethodOptions*,
+      ExceptionState&);
+
+  SharedStorageDeleteMethod(ScriptState*,
+                            const String& key,
+                            const SharedStorageModifierMethodOptions*,
+                            ExceptionState&);
+
+  // Returns std::move(method_with_options_).
+  network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
+  TakeMojomMethod();
+
+  void Trace(Visitor*) const override;
+
+ private:
+  network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
+      method_with_options_;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_DELETE_METHOD_H_

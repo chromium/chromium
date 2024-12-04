@@ -7,7 +7,6 @@
  */
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './certificate_shared.css.js';
 import './certificate_subentry.js';
 

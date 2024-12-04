@@ -132,7 +132,7 @@ BASE_FEATURE(kEnhancedSafeBrowsingPromo,
 
 BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
              "EnterprisePasswordReuseUiRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid,
              "EnterpriseRealTimeUrlCheckOnAndroid",
@@ -170,10 +170,6 @@ const base::FeatureParam<int>
     kExtensionTelemetryEnterpriseReportingIntervalSeconds{
         &kExtensionTelemetryForEnterprise, "EnterpriseReportingIntervalSeconds",
         /*default_value=*/300};
-
-BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
-             "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryReportContactedHosts,
              "SafeBrowsingExtensionTelemetryReportContactedHosts",
@@ -356,7 +352,6 @@ base::Value::List GetFeatureStatusList() {
       &kExtensionTelemetryDisableOffstoreExtensions,
       &kExtensionTelemetryForEnterprise,
       &kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
-      &kExtensionTelemetryPotentialPasswordTheft,
       &kExtensionTelemetryReportContactedHosts,
       &kExtensionTelemetryReportHostsContactedViaWebSocket,
       &kExtensionTelemetryTabsExecuteScriptSignal,

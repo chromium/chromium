@@ -145,6 +145,7 @@ class Field:
 
 @dataclasses.dataclass()
 class KnownMessages:
+    _file_names: set[str] = dataclasses.field(default_factory=set)
     _known: dict[str, Message] = dataclasses.field(default_factory=dict)
 
     def _AddMessage(self, msg: Message) -> None:
@@ -158,6 +159,8 @@ class KnownMessages:
     def AddFileDescriptorSet(self,
                              fds: descriptor_pb2.FileDescriptorSet) -> None:
         for f in fds.file:
+            if (f.package != 'optimization_guide.proto.registry'):
+                self._file_names.add(f.name)
             for m in f.message_type:
                 self._AddMessage(Message(desc=m, package=f.package))
 
@@ -177,11 +180,31 @@ class KnownMessages:
             seen.update(field_types)
         return self.GetMessages(seen)
 
+    def _GetRegistryMsg(self):
+        return self._known[
+            '.optimization_guide.proto.registry.OnDeviceFeatureProtoRegistry']
 
-def GenerateProtoDescriptors(out, includes: set[str], messages: KnownMessages,
-                             requests: set[str], responses: set[str]):
+    def YieldMessagesWithRole(self, role: str):
+        for entry_field in self._GetRegistryMsg().fields:
+            logging_data_msg = self._known[entry_field.desc.type_name]
+            for field in logging_data_msg.fields:
+                if field.name == role:
+                    yield field.desc.type_name
+
+    def GetIncludes(self):
+        """Returns the set of includes that cover all known messages types."""
+        pattern = re.compile(
+            r'.*(components/optimization_guide/proto/.*)\.proto')
+        for name in self._file_names:
+            if m := pattern.match(name):
+                yield m.group(1) + '.pb.h'
+
+
+def GenerateProtoDescriptors(out, messages: KnownMessages):
     """Generate the on_device_model_execution_proto_descriptors.cc content."""
 
+    requests = set(messages.YieldMessagesWithRole('request'))
+    responses = set(messages.YieldMessagesWithRole('response'))
     readable_messages = messages.GetAllTransitiveDeps(requests | responses)
     writable_messages = messages.GetAllTransitiveDeps(responses)
 
@@ -191,13 +214,15 @@ def GenerateProtoDescriptors(out, includes: set[str], messages: KnownMessages,
 
     out.write(
         '#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"\n'  # pylint: disable=line-too-long
-        '#include "components/optimization_guide/core/optimization_guide_util.h"\n'  # pylint: disable=line-too-long
     )
     out.write('\n')
 
-    includes.add('"base/values.h"')
+    includes = set(messages.GetIncludes()).union({
+        'base/values.h',
+        'components/optimization_guide/core/optimization_guide_util.h',
+    })
     for include in sorted(includes):
-        out.write(f'#include {include}\n')
+        out.write(f'#include "{include}"\n')
     out.write('\n')
 
     out.write('namespace optimization_guide {\n')
@@ -592,15 +617,9 @@ def main(argv):
     parser = optparse.OptionParser()
     parser.add_option('--input_file', action='append', default=[])
     parser.add_option('--output_cc')
-    parser.add_option('--include', action='append', default=[])
-    parser.add_option('--request', action='append', default=[])
-    parser.add_option('--response', action='append', default=[])
     options, _ = parser.parse_args(argv)
 
     input_files = list(options.input_file)
-    includes = set(options.include)
-    requests = set(options.request)
-    responses = set(options.response)
 
     # Write to standard output or file specified by --output_cc.
     out_cc = getattr(sys.stdout, 'buffer', sys.stdout)
@@ -615,8 +634,7 @@ def main(argv):
             messages.AddFileDescriptorSet(fds)
 
     out_cc_str = StringIO()
-    GenerateProtoDescriptors(out_cc_str, includes, messages, requests,
-                             responses)
+    GenerateProtoDescriptors(out_cc_str, messages)
     out_cc.write(out_cc_str.getvalue().encode('utf-8'))
 
     if options.output_cc:

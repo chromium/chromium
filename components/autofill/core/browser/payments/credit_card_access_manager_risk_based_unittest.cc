@@ -401,9 +401,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        LogCvcFilling_RiskBasedMaskedServerCardUnmaskingSuccess) {
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  masked_server_card->set_cvc(kTestCvc16);
 
   FetchCreditCard(masked_server_card);
 
@@ -431,10 +430,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
        DoNotLogCvcFilling_RiskBasedMaskedServerCardUnmaskingSuccess) {
   base::HistogramTester histogram_tester;
-  CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard* masked_server_card =
+  CreateServerCard(kTestGUID, kTestNumber, kTestServerId, u"");
+  const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  masked_server_card->set_cvc(u"");
 
   FetchCreditCard(masked_server_card);
 
@@ -463,12 +461,12 @@ TEST_F(
     CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
     RiskBasedMaskedServerCardUnmasking_RiskBasedAuthenticationNotInvoked_CardExpired) {
   CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard* masked_server_card =
-      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  masked_server_card->SetExpirationYearFromString(u"2010");
+  CreditCard masked_server_card =
+      *personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+  masked_server_card.SetExpirationYearFromString(u"2010");
+  personal_data().payments_data_manager().UpdateCreditCard(masked_server_card);
 
-  FetchCreditCard(masked_server_card);
-
+  FetchCreditCard(&masked_server_card);
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
   ASSERT_FALSE(autofill_client_.GetPaymentsAutofillClient()
                    ->risk_based_authentication_invoked());

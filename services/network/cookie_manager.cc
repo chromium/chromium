@@ -24,6 +24,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key.h"
@@ -152,10 +153,11 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
         cookie.SameSite(), cookie.Priority(), cookie_partition_key,
         cookie.SourceScheme(), cookie.SourcePort(), cookie.SourceType());
     if (!cookie_ptr) {
-      std::move(callback).Run(
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::ExclusionReason::
-                  EXCLUDE_FAILURE_TO_STORE)));
+      net::CookieInclusionStatus cookie_inclusion_status;
+      cookie_inclusion_status.AddExclusionReason(
+          net::CookieInclusionStatus::ExclusionReason::
+              EXCLUDE_FAILURE_TO_STORE);
+      std::move(callback).Run(net::CookieAccessResult(cookie_inclusion_status));
       return;
     }
   }

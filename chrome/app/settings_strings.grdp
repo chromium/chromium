@@ -1041,12 +1041,6 @@
   <message name="IDS_SETTINGS_CLEAR_PERIOD_EVERYTHING" desc="The option to delete browsing data from the beginning of time.">
     All time
   </message>
-  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes.">
-    Last 15 minutes
-  </message>
-  <message name="IDS_SETTINGS_CLEAR_PERIOD_NOT_SELECTED" desc="This is the text that is shown in the clear browsing data time range dropdown until the user selected a time range from this dropdown.">
-    Select a time range
-  </message>
   <message name="IDS_SETTINGS_NOTIFICATION_WARNING" desc="A warning that notifications will be disabled by deleting cookies for this site.">
     Notifications will be disabled
   </message>
@@ -2050,9 +2044,6 @@
     {NUM_SITES, plural,
     =1 {Notifications not allowed for 1 site}
     other {Notifications not allowed for {NUM_SITES} sites}}
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_SITE_PERMISSIONS_REVIEW_DONE_LABEL" desc="Text indicating that the user has no more actions to perform. This text, together with a checkmark, appear in place of a UI where the user can review permissions for a list of websites. The text is shown after the user has taken action and there are no more websites listed.">
-    All done for now
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_TOAST_UNDO_BUTTON_LABEL" desc="After the user has modified permissions for a website, a toast popup message is shown with this text next to a description of the action taken. The user can click this text to undo the action. For example, this text would be next to a descriptiton that says 'Allowed notification permissions for example.com'.">
     Undo
@@ -3288,15 +3279,6 @@
   </message>
   <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
     See all site data and permissions
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL" desc="Label for the Tracking Protection page entry point.">
-    Tracking Protection
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL" desc="Sub-label for the Tracking Protection page entry point.">
-    Manage third-party cookies and tracking protections
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_TITLE" desc="The title of a new settings page that allows users to manage settings related to tracking, for example third-party cookies. This settings page will replace the existing cookie settings page at chrome://settings/cookies.">
-    Tracking Protection
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DESCRIPTION" desc="Explanatory text for the Tracking Protection settings page.">
     Chrome limits the type of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.

@@ -153,8 +153,7 @@ TEST_F(VirtualCtap2DeviceTest, ParseGetAssertionRequestForVirtualCtapKey) {
       0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03};
 
   const auto& cbor_request = cbor::Reader::Read(
-      base::make_span(test_data::kTestComplexCtapGetAssertionRequest)
-          .subspan<1>());
+      base::span(test_data::kTestComplexCtapGetAssertionRequest).subspan<1>());
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
 

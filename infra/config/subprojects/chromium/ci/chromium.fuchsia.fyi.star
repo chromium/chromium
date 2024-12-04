@@ -189,7 +189,9 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = "fuchsia_standard_tests",
+        # Passthrough is used since these emulators use SwiftShader, which
+        # forces use of the passthrough decoder even if validating is specified.
+        targets = "fuchsia_standard_passthrough_tests",
         mixins = [
             "linux-jammy",
             targets.mixin(

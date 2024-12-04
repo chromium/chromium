@@ -38,6 +38,54 @@ enum class StrokeMetricBrushType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeBrushType)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PDFInk2StrokeHighlighterColor)
+enum class StrokeMetricHighlighterColor {
+  kLightRed = 0,
+  kLightYellow = 1,
+  kLightGreen = 2,
+  kLightBlue = 3,
+  kLightOrange = 4,
+  kRed = 5,
+  kYellow = 6,
+  kGreen = 7,
+  kBlue = 8,
+  kOrange = 9,
+  kMaxValue = 9,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeHighlighterColor)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PDFInk2StrokePenColor)
+enum class StrokeMetricPenColor {
+  kBlack = 0,
+  kDarkGrey2 = 1,
+  kDarkGrey1 = 2,
+  kLightGrey = 3,
+  kWhite = 4,
+  kRed1 = 5,
+  kYellow1 = 6,
+  kGreen1 = 7,
+  kBlue1 = 8,
+  kTan1 = 9,
+  kRed2 = 10,
+  kYellow2 = 11,
+  kGreen2 = 12,
+  kBlue2 = 13,
+  kTan2 = 14,
+  kRed3 = 15,
+  kYellow3 = 16,
+  kGreen3 = 17,
+  kBlue3 = 18,
+  kTan3 = 19,
+  kMaxValue = 19,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokePenColor)
+
 void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush);
 
 void ReportEraseStroke(float size);

@@ -48,7 +48,7 @@ class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
   ThemeServiceBrowserTest(const ThemeServiceBrowserTest&) = delete;
   ThemeServiceBrowserTest& operator=(const ThemeServiceBrowserTest&) = delete;
 
-  ~ThemeServiceBrowserTest() override {}
+  ~ThemeServiceBrowserTest() override = default;
 
   void SetUp() override {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();

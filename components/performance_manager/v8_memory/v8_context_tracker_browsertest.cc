@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
-#include "base/command_line.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -18,11 +18,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "content/public/test/test_utils.h"
 
 namespace performance_manager {
 namespace v8_memory {

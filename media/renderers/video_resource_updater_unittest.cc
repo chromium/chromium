@@ -98,9 +98,9 @@ class VideoResourceUpdaterTest : public testing::Test {
   scoped_refptr<VideoFrame> CreateTestYUVVideoFrame(
       const gfx::Size& size = gfx::Size(10, 10)) {
     constexpr int kMaxDimension = 100;
-    static uint8_t y_data[kMaxDimension * kMaxDimension] = {0};
-    static uint8_t u_data[kMaxDimension * kMaxDimension / 2] = {0};
-    static uint8_t v_data[kMaxDimension * kMaxDimension / 2] = {0};
+    static uint8_t y_data[kMaxDimension * kMaxDimension] = {};
+    static uint8_t u_data[kMaxDimension * kMaxDimension / 2] = {};
+    static uint8_t v_data[kMaxDimension * kMaxDimension / 2] = {};
 
     CHECK_LE(size.width() * size.height(), kMaxDimension * kMaxDimension);
 
@@ -125,9 +125,9 @@ class VideoResourceUpdaterTest : public testing::Test {
     const int kYWidth = kDimension + 5;
     const int kUWidth = (kYWidth + 1) / 2 + 200;
     const int kVWidth = (kYWidth + 1) / 2 + 1;
-    static uint8_t y_data[kYWidth * kDimension] = {0};
-    static uint8_t u_data[kUWidth * kDimension] = {0};
-    static uint8_t v_data[kVWidth * kDimension] = {0};
+    static uint8_t y_data[kYWidth * kDimension] = {};
+    static uint8_t u_data[kUWidth * kDimension] = {};
+    static uint8_t v_data[kVWidth * kDimension] = {};
 
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalYuvData(
         PIXEL_FORMAT_I422,                        // format
@@ -148,7 +148,7 @@ class VideoResourceUpdaterTest : public testing::Test {
   scoped_refptr<VideoFrame> CreateTestRGBVideoFrame(VideoPixelFormat format) {
     constexpr int kMaxDimension = 10;
     constexpr gfx::Size kSize = gfx::Size(kMaxDimension, kMaxDimension);
-    static uint32_t rgb_data[kMaxDimension * kMaxDimension] = {0};
+    static uint32_t rgb_data[kMaxDimension * kMaxDimension] = {};
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         format,                                // format
         kSize,                                 // coded_size
@@ -721,7 +721,7 @@ TEST_F(VideoResourceUpdaterTest, ChangeResourceizeSoftwareCompositor) {
       CreateTestYUVVideoFrame(kSize2));
 }
 
-TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanesSharedImageFormat) {
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   scoped_refptr<VideoFrame> video_frame =
       CreateTestHardwareVideoFrame(viz::MultiPlaneFormat::kI420,
@@ -772,7 +772,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ(1u, GetSharedImageCount());
 }
 
-TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanesTextureQuad) {
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_TextureQuad) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame =
@@ -915,7 +915,7 @@ TEST_F(VideoResourceUpdaterTest, GenerateSyncTokenOnTextureCopy) {
 // NV12 VideoFrames backed by a single native texture can be sampled out
 // by GL as RGB. To use them as HW overlays we need to know the format
 // of the underlying buffer, that is YUV_420_BIPLANAR.
-TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanesSingleNV12) {
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
@@ -958,7 +958,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
-TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanesSingleP010HDR) {
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP010HDR) {
   constexpr auto kHDR10ColorSpace = gfx::ColorSpace::CreateHDR10();
   gfx::HDRMetadata hdr_metadata{};
   hdr_metadata.smpte_st_2086 =

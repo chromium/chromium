@@ -51,7 +51,7 @@ EventRewriterDelegateImpl::EventRewriterDelegateImpl(
           std::move(input_device_settings_notification_controller)),
       input_device_settings_controller_(input_device_settings_controller) {}
 
-EventRewriterDelegateImpl::~EventRewriterDelegateImpl() {}
+EventRewriterDelegateImpl::~EventRewriterDelegateImpl() = default;
 
 bool EventRewriterDelegateImpl::RewriteModifierKeys() {
   // Do nothing if we have just logged in as guest but have not restarted chrome

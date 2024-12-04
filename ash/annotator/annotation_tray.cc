@@ -30,6 +30,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -117,6 +118,8 @@ AnnotationTray::AnnotationTray(Shelf* shelf)
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   ResetTray();
 
+  UpdateAccessibleName(IsAnnotatorEnabled());
+
   session_observer_.Observe(Shell::Get()->session_controller());
 }
 
@@ -143,16 +146,6 @@ void AnnotationTray::ClickedOutsideBubble(
 
 void AnnotationTray::UpdateTrayItemColor(bool is_active) {
   SetIconImage(is_active);
-}
-
-std::u16string AnnotationTray::GetAccessibleNameForTray() {
-  std::u16string enabled_state = l10n_util::GetStringUTF16(
-      GetCurrentTool() == AnnotatorToolType::kToolNone
-          ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE
-          : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE);
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
-      enabled_state);
 }
 
 void AnnotationTray::HandleLocaleChange() {}
@@ -287,6 +280,16 @@ void AnnotationTray::ToggleAnnotator() {
     CloseBubble();
   }
   UpdateIcon();
+}
+
+void AnnotationTray::UpdateAccessibleName(bool is_annotator_enabled) {
+  std::u16string enabled_state = l10n_util::GetStringUTF16(
+      is_annotator_enabled
+          ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE
+          : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE);
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
+      enabled_state));
 }
 
 void AnnotationTray::EnableAnnotatorWithPenColor() {

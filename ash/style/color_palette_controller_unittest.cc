@@ -224,7 +224,7 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor) {
   EXPECT_EQ(static_color, static_cast<SkColor>(local_static_color.value()));
 }
 
-TEST_F(ColorPaletteControllerTest, UpdateColorSchemeNotifiesObserver) {
+TEST_F(ColorPaletteControllerTest, UpdateColorScheme_NotifiesObserver) {
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   SimulateUserLogin(kAccountId);
@@ -248,7 +248,7 @@ TEST_F(ColorPaletteControllerTest, UpdateColorSchemeNotifiesObserver) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(ColorPaletteControllerTest, UpdateStaticColorNotifiesObserver) {
+TEST_F(ColorPaletteControllerTest, UpdateStaticColor_NotifiesObserver) {
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
   SimulateUserLogin(kAccountId);
@@ -272,7 +272,7 @@ TEST_F(ColorPaletteControllerTest, UpdateStaticColorNotifiesObserver) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(ColorPaletteControllerTest, UpdateUseKMeansNotifiesObserver) {
+TEST_F(ColorPaletteControllerTest, UpdateUseKMeans_NotifiesObserver) {
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kTonalSpot, kAccountId, base::DoNothing());
   SetUseKMeansPref(true);
@@ -317,7 +317,7 @@ TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
   dark_light_controller()->SetDarkModeEnabledForTest(true);
 }
 
-TEST_F(ColorPaletteControllerTest, NativeThemeDarkModeChanged) {
+TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged) {
   // Set to a known state.
   dark_light_controller()->SetDarkModeEnabledForTest(true);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
@@ -383,7 +383,7 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
                                   SkColorSetRGB(0xc8, 0xbf, 0xff))));
 }
 
-TEST_F(ColorPaletteControllerTest, GenerateSampleSchemeAllValuesTeal) {
+TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
   SkColor seed = SkColorSetRGB(0x00, 0xbf, 0x7f);  // Hue 160* Saturation 100%
                                                    // Vibrance 75%
 
@@ -412,7 +412,7 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleSchemeAllValuesTeal) {
                           .tertiary = SkColorSetRGB(0x70, 0xb7, 0xb7)}));
 }
 
-TEST_F(ColorPaletteControllerTest, NewUserUsesCelebiColor) {
+TEST_F(ColorPaletteControllerTest, NewUser_UsesCelebiColor) {
   SimulateNewUserFirstLogin("thecreek@song.com");
   base::RunLoop().RunUntilIdle();
 
@@ -435,7 +435,7 @@ TEST_F(ColorPaletteControllerTest,
             color_palette_controller()->GetCurrentSeed()->seed_color);
 }
 
-TEST_F(ColorPaletteControllerTest, ExistingUserUsesKMeansColor) {
+TEST_F(ColorPaletteControllerTest, ExistingUser_UsesKMeansColor) {
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
 
@@ -491,7 +491,7 @@ TEST_F(ColorPaletteControllerTest,
   ASSERT_EQ(kCelebiColor, color);
 }
 
-TEST_F(ColorPaletteControllerTest, GuestLoginUsesCelebiColor) {
+TEST_F(ColorPaletteControllerTest, GuestLogin_UsesCelebiColor) {
   const SkColor celebi_color = SK_ColorBLUE;
 
   SimulateGuestLogin();
@@ -502,7 +502,7 @@ TEST_F(ColorPaletteControllerTest, GuestLoginUsesCelebiColor) {
             color_palette_controller()->GetCurrentSeed()->seed_color);
 }
 
-TEST_F(ColorPaletteControllerTest, WallpaperChangedTurnsOffKMeans) {
+TEST_F(ColorPaletteControllerTest, WallpaperChanged_TurnsOffKMeans) {
   const SkColor celebi_color = SK_ColorBLUE;
   SetUseKMeansPref(true);
   SimulateUserLogin(kAccountId);
@@ -524,7 +524,7 @@ TEST_F(ColorPaletteControllerTest, WallpaperChangedTurnsOffKMeans) {
             color_palette_controller()->GetCurrentSeed()->seed_color);
 }
 
-TEST_F(ColorPaletteControllerTest, UseKMeansColorOnlyTonalSpotUsesKMeans) {
+TEST_F(ColorPaletteControllerTest, UseKMeansColor_OnlyTonalSpotUsesKMeans) {
   const bool dark_mode = true;
   dark_light_controller()->SetDarkModeEnabledForTest(dark_mode);
   SimulateUserLogin(kAccountId);
@@ -553,7 +553,7 @@ TEST_F(ColorPaletteControllerTest, UseKMeansColorOnlyTonalSpotUsesKMeans) {
             color_palette_controller()->GetCurrentSeed()->seed_color);
 }
 
-TEST_F(ColorPaletteControllerTest, WithoutUseKMeansColorAllSchemesUseCelebi) {
+TEST_F(ColorPaletteControllerTest, WithoutUseKMeansColor_AllSchemesUseCelebi) {
   const SkColor celebi_color = SK_ColorBLUE;
   SimulateUserLogin(kAccountId);
   SetUseKMeansPref(false);
@@ -581,7 +581,7 @@ TEST_F(ColorPaletteControllerTest, WithoutUseKMeansColorAllSchemesUseCelebi) {
             color_palette_controller()->GetCurrentSeed()->seed_color);
 }
 
-TEST_F(ColorPaletteControllerTest, GetSampleColorSchemesWithKMeans) {
+TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
   SimulateUserLogin(kAccountId);
   SetUseKMeansPref(true);
 
@@ -663,7 +663,7 @@ class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
   }
 };
 
-TEST_F(ColorPaletteControllerLocalPrefTest, OnUserLoginUpdatesLocalPrefs) {
+TEST_F(ColorPaletteControllerLocalPrefTest, OnUserLogin_UpdatesLocalPrefs) {
   SetUpLocalPrefs();
   const auto wallpaper_color = SK_ColorGRAY;
   UpdateWallpaperColor(wallpaper_color);
@@ -767,7 +767,7 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 
 // Verifies that when the TimeOfDayWallpaper wallpaper is active, the default
 // color scheme is Neutral instead of TonalSpot in local_state.
-TEST_F(ColorPaletteControllerLocalPrefTest, NoLocalAccountTimeOfDayScheme) {
+TEST_F(ColorPaletteControllerLocalPrefTest, NoLocalAccount_TimeOfDayScheme) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       personalization_app::GetTimeOfDayEnabledFeatures(), {});

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -25,9 +20,7 @@ LocationInternalsUI::LocationInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUILocationInternalsHost);
 
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kLocationInternalsResources,
-                                              kLocationInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kLocationInternalsResources,
                               IDR_LOCATION_INTERNALS_LOCATION_INTERNALS_HTML);
 }
 

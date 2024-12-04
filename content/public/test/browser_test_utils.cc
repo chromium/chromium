@@ -2953,6 +2953,7 @@ InputMsgWatcher::~InputMsgWatcher() {
 }
 
 void InputMsgWatcher::OnInputEventAck(
+    const RenderWidgetHost& widget,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_state,
     const blink::WebInputEvent& event) {
@@ -2964,7 +2965,8 @@ void InputMsgWatcher::OnInputEventAck(
   }
 }
 
-void InputMsgWatcher::OnInputEvent(const blink::WebInputEvent& event) {
+void InputMsgWatcher::OnInputEvent(const RenderWidgetHost& widget,
+                                   const blink::WebInputEvent& event) {
   last_sent_event_type_ = event.GetType();
 }
 
@@ -3033,6 +3035,7 @@ void InputEventAckWaiter::Reset() {
 }
 
 void InputEventAckWaiter::OnInputEventAck(
+    const RenderWidgetHost& widget,
     blink::mojom::InputEventResultSource source,
     blink::mojom::InputEventResultState state,
     const blink::WebInputEvent& event) {
@@ -3771,18 +3774,36 @@ static constexpr char kEnableLogMessage[] = R"({"id":0,"method":"Log.enable"})";
 static constexpr int kDisableLogMessageId = 1;
 static constexpr char kDisableLogMessage[] =
     R"({"id":1,"method":"Log.disable"})";
+
+static constexpr int kEnableMediaMessageId = 2;
+static constexpr char kEnableMediaMessage[] =
+    R"({"id":2,"method":"Media.enable"})";
+static constexpr int kDisableMediaMessageId = 3;
+static constexpr char kDisableMediaMessage[] =
+    R"({"id":3,"method":"Media.disable"})";
 }  // namespace
 
 DevToolsInspectorLogWatcher::DevToolsInspectorLogWatcher(
-    WebContents* web_contents) {
+    WebContents* web_contents,
+    Domain domain) {
   host_ = DevToolsAgentHost::GetOrCreateFor(web_contents);
   host_->AttachClient(this);
 
-  host_->DispatchProtocolMessage(
-      this, base::as_bytes(
-                base::make_span(kEnableLogMessage, strlen(kEnableLogMessage))));
+  switch (domain) {
+    case Domain::Log:
+      host_->DispatchProtocolMessage(
+          this, base::byte_span_from_cstring(kEnableLogMessage));
+      break;
+    case Domain::Media:
+      host_->DispatchProtocolMessage(
+          this, base::byte_span_from_cstring(kEnableMediaMessage));
+      break;
+    default:
+      NOTREACHED();
+  }
 
   run_loop_enable_log_.Run();
+  domain_ = domain;
 }
 
 DevToolsInspectorLogWatcher::~DevToolsInspectorLogWatcher() {
@@ -3800,9 +3821,11 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
   if (command_id.has_value()) {
     switch (command_id.value()) {
       case kEnableLogMessageId:
+      case kEnableMediaMessageId:
         run_loop_enable_log_.Quit();
         break;
       case kDisableLogMessageId:
+      case kDisableMediaMessageId:
         run_loop_disable_log_.Quit();
         break;
       default:
@@ -3812,7 +3835,11 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
   }
 
   std::string* notification = parsed_message.FindString("method");
-  if (notification && *notification == "Log.entryAdded") {
+  if (!notification) {
+    return;
+  }
+
+  if (*notification == "Log.entryAdded") {
     std::string* text =
         parsed_message.FindStringByDottedPath("params.entry.text");
     DCHECK(text);
@@ -3823,14 +3850,28 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
       last_url_ = GURL(*url);
     }
   }
+
+  if (notification->find("Media.") != std::string::npos) {
+    last_media_notification_ = *notification;
+  }
 }
 
 void DevToolsInspectorLogWatcher::AgentHostClosed(DevToolsAgentHost* host) {}
 
 void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
-  host_->DispatchProtocolMessage(
-      this, base::as_bytes(base::make_span(kDisableLogMessage,
-                                           strlen(kDisableLogMessage))));
+  switch (domain_) {
+    case Domain::Log:
+      host_->DispatchProtocolMessage(
+          this, base::byte_span_from_cstring(kDisableLogMessage));
+      break;
+    case Domain::Media:
+      host_->DispatchProtocolMessage(
+          this, base::byte_span_from_cstring(kDisableMediaMessage));
+      break;
+    default:
+      NOTREACHED();
+  }
+
   run_loop_disable_log_.Run();
 }
 

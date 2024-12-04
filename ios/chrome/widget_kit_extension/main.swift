@@ -23,17 +23,19 @@ struct ChromeWidgets: WidgetBundle {
   @available(iOS 17, *)
   @WidgetBundleBuilder
   var body17: some Widget {
-    QuickActionsWidget()
     #if IOS_ENABLE_WIDGETS_FOR_MIM
+      QuickActionsWidgetConfigurable()
       SearchWidgetConfigurable()
+      ShortcutsWidgetConfigurable()
+      SearchPasswordsWidgetConfigurable()
+      DinoGameWidgetConfigurable()
     #else
+      QuickActionsWidget()
       SearchWidget()
-    #endif
-    #if IOS_ENABLE_SHORTCUTS_WIDGET
       ShortcutsWidget()
+      SearchPasswordsWidget()
+      DinoGameWidget()
     #endif
-    SearchPasswordsWidget()
-    DinoGameWidget()
     #if IOS_ENABLE_LOCKSCREEN_WIDGET
       #if IOS_AVAILABLE_LOCKSCREEN_WIDGET
         LockscreenLauncherSearchWidget()
@@ -48,9 +50,7 @@ struct ChromeWidgets: WidgetBundle {
   var body16: some Widget {
     QuickActionsWidget()
     SearchWidget()
-    #if IOS_ENABLE_SHORTCUTS_WIDGET
-      ShortcutsWidget()
-    #endif
+    ShortcutsWidget()
     SearchPasswordsWidget()
     DinoGameWidget()
     #if IOS_ENABLE_LOCKSCREEN_WIDGET

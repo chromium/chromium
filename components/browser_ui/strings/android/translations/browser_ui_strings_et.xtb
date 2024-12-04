@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">Kui see on sisse lülitatud, võivad saidid küsida luba teie lõikelauale salvestatud teksti ja piltide nägemiseks. Kui see on välja lülitatud, ei näe saidid teie lõikelauale salvestatud teksti ega pilte.</translation>
 <translation id="5853982612236235577">Kui see on sisse lülitatud, võivad saidid küsida luba märguannete saatmiseks. Kui see on välja lülitatud, ei saa saidid märguandeid saata.</translation>
 <translation id="5860033963881614850">Väljas</translation>
+<translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5876056640971328065">Video peatamine</translation>
 <translation id="5877248419911025165">Ahenda kõik taotlused</translation>
 <translation id="5884085660368669834">Saidi eelistus</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">Sisestage veebiaadress</translation>
 <translation id="5975083100439434680">Suumib välja</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Nüüd pääsete soovitatud vahelehtedele kiiresti juurde oma seadme rakenduste loendist ja otsingutulemustest. Võite selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="6015775454662021376">Selle saidi juurdepääsu muutmine teie seadmele</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6042308850641462728">Rohkem</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">Esmalt küsib</translation>
 <translation id="7423538860840206698">Lõikelaua lugemine on blokeeritud</translation>
 <translation id="7425915948813553151">Tume teema saitide jaoks</translation>
+<translation id="7488573225650545859">Peida kaart Vahelehtede kuvamine teie rakenduste loendis</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kui see on sisse lülitatud, saavad saidid sisselogimisviipasid kuvada. Kui see on välja lülitatud, ei saa saidid sisselogimisviipasid kuvada.</translation>
 <translation id="7553211568594248088">Välju Hubi otsingust</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">See sisu pärineb domeenilt <ph name="DOMAIN_NAME" /> ja seda pakub Google.</translation>
 <translation id="8088603949666785339">Rohkem bänneri <ph name="BANNER_TITLE" /> seadeid</translation>
 <translation id="8090579562279016251">Vähendab jõudlust, kuid muudab V8 rünnakutele vastupidavamaks</translation>
+<translation id="8112925981674547014">Vahelehtede kuvamine teie rakenduste loendis</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome piirab homme küpsisefaile uuesti}other{Chrome piirab # päeva pärast küpsisefaile uuesti}}</translation>
 <translation id="8116925261070264013">Vaigistatud</translation>
 <translation id="8117244575099414087">Kui see on sisse lülitatud, saavad saidid kasutada teie seadme andureid. Kui see on välja lülitatud, ei saa saidid andureid kasutada.</translation>

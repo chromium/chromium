@@ -41,10 +41,10 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     CountryLocaleMap map;
 
     map[&kCommerceMerchantViewerRegionLaunched] = {{"us", {"en-us"}}};
-    map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
     map[&kEnableDiscountInfoApiRegionLaunched] = {{"us", {"en-us"}}};
     map[&ntp_features::kNtpChromeCartModule] = {{"us", {"en-us"}}};
     map[&kParcelTrackingRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kPriceAnnotationsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kProductSpecifications] = {{"us", {"en-us"}}};
     map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
@@ -151,17 +151,17 @@ BASE_FEATURE(kCommerceLocalPDPDetection,
              "CommerceLocalPDPDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommercePriceTracking,
-             "CommercePriceTracking",
+BASE_FEATURE(kPriceAnnotations,
+             "PriceAnnotations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
-             "CommercePriceTrackingRegionLaunched",
+BASE_FEATURE(kPriceAnnotationsRegionLaunched,
+             "PriceAnnotationsRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
-             "CommercePriceTrackingRegionLaunched",
+BASE_FEATURE(kPriceAnnotationsRegionLaunched,
+             "PriceAnnotationsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

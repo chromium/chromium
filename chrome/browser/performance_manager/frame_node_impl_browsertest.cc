@@ -14,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -295,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   // Check that a form interaction notification is received through the bound
   // receiver.
   MockFrameNodeObserver obs;
-  RunInGraph([&](GraphImpl* graph) { graph->AddFrameNodeObserver(&obs); });
+  RunInGraph([&](Graph* graph) { graph->AddFrameNodeObserver(&obs); });
 
   base::RunLoop run_loop;
   EXPECT_CALL(obs, OnHadFormInteractionChanged(_)).WillOnce([&]() {
@@ -306,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   run_loop.Run();
 
   // Clean up.
-  RunInGraph([&](GraphImpl* graph) { graph->RemoveFrameNodeObserver(&obs); });
+  RunInGraph([&](Graph* graph) { graph->RemoveFrameNodeObserver(&obs); });
 }
 
 class FrameNodeImplBackForwardCacheBrowserTest
@@ -351,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBackForwardCacheBrowserTest,
   // Check that a form interaction notification is received through the bound
   // receiver.
   MockFrameNodeObserver obs;
-  RunInGraph([&](GraphImpl* graph) { graph->AddFrameNodeObserver(&obs); });
+  RunInGraph([&](Graph* graph) { graph->AddFrameNodeObserver(&obs); });
 
   base::RunLoop run_loop;
   EXPECT_CALL(obs, OnHadFormInteractionChanged(_)).WillOnce([&]() {
@@ -365,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBackForwardCacheBrowserTest,
   run_loop.Run();
 
   // Clean up.
-  RunInGraph([&](GraphImpl* graph) { graph->RemoveFrameNodeObserver(&obs); });
+  RunInGraph([&](Graph* graph) { graph->RemoveFrameNodeObserver(&obs); });
 }
 
 class FrameNodeImplPrerenderBrowserTest : public FrameNodeImplBrowserTest {
@@ -418,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplPrerenderBrowserTest,
   // Check that a form interaction notification is received through the bound
   // receiver.
   MockFrameNodeObserver obs;
-  RunInGraph([&](GraphImpl* graph) { graph->AddFrameNodeObserver(&obs); });
+  RunInGraph([&](Graph* graph) { graph->AddFrameNodeObserver(&obs); });
 
   base::RunLoop run_loop;
   EXPECT_CALL(obs, OnHadFormInteractionChanged(_)).WillOnce([&]() {
@@ -432,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplPrerenderBrowserTest,
   run_loop.Run();
 
   // Clean up.
-  RunInGraph([&](GraphImpl* graph) { graph->RemoveFrameNodeObserver(&obs); });
+  RunInGraph([&](Graph* graph) { graph->RemoveFrameNodeObserver(&obs); });
 }
 
 }  // namespace performance_manager

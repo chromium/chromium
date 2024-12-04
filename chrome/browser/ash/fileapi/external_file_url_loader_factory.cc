@@ -53,7 +53,7 @@ constexpr size_t kDefaultPipeSize = 65536;
 class MojoPipeIOBuffer : public net::IOBuffer {
  public:
   MojoPipeIOBuffer(void* data, size_t size)
-      : net::IOBuffer(base::make_span(static_cast<char*>(data), size)) {}
+      : net::IOBuffer(base::span(static_cast<char*>(data), size)) {}
 
   MojoPipeIOBuffer(const MojoPipeIOBuffer&) = delete;
   MojoPipeIOBuffer& operator=(const MojoPipeIOBuffer&) = delete;

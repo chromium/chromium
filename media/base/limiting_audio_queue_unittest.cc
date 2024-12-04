@@ -42,10 +42,9 @@ void VerifyAudioBuffer(scoped_refptr<AudioBuffer> buffer,
 
   for (int ch = 0; ch < kChannels; ++ch) {
     const size_t kSpanSize = sizeof(float) * static_cast<size_t>(number_frames);
-    base::span<uint8_t> input_span = base::make_span(
+    base::span<uint8_t> input_span(
         reinterpret_cast<uint8_t*>(expected_data->channel(ch)), kSpanSize);
-    base::span<uint8_t> output_span =
-        base::make_span(buffer->channel_data()[ch], kSpanSize);
+    base::span<uint8_t> output_span(buffer->channel_data()[ch], kSpanSize);
     EXPECT_EQ(input_span, output_span);
   }
 }
@@ -110,7 +109,7 @@ TEST_F(LimitingAudioQueueTest, FlushClearFlush) {
 
 // Makes sure inputs and outputs are bit-wise identical when the limiter isn't
 // adjusting gain.
-TEST_F(LimitingAudioQueueTest, NoLimitingIsPassthrough) {
+TEST_F(LimitingAudioQueueTest, NoLimiting_IsPassthrough) {
   FillWithSine(input_bus_.get());
 
   scoped_refptr<AudioBuffer> result;
@@ -128,7 +127,7 @@ TEST_F(LimitingAudioQueueTest, NoLimitingIsPassthrough) {
 
 // Makes sure that calling Clear() drops both pending output callbacks, and does
 // not include past data in the following buffers.
-TEST_F(LimitingAudioQueueTest, ClearDropsPendingInputs) {
+TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
   constexpr float kGuardValue = 0.5f;
 
   // Fill the first channel with kGuardValue.
@@ -174,7 +173,7 @@ TEST_F(LimitingAudioQueueTest, ClearDropsPendingInputs) {
 
 // Makes sure inputs and outputs are bit-wise identical when the limiter isn't
 // adjusting gain.
-TEST_F(LimitingAudioQueueTest, NoLimitingPartialBufferIsPassthrough) {
+TEST_F(LimitingAudioQueueTest, NoLimiting_PartialBuffer_IsPassthrough) {
   FillWithSine(input_bus_.get());
 
   constexpr int kPartialBuffer = kBufferSize / 4;
@@ -195,7 +194,7 @@ TEST_F(LimitingAudioQueueTest, NoLimitingPartialBufferIsPassthrough) {
   EXPECT_TRUE(result);
 }
 
-TEST_F(LimitingAudioQueueTest, LimitingCompressesGain) {
+TEST_F(LimitingAudioQueueTest, Limiting_CompressesGain) {
   FillWithSine(input_bus_.get(), 2.0f);
 
   bool has_out_of_range_value = false;

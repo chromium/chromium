@@ -20,7 +20,8 @@
 
 namespace dbus_xdg {
 class Request;
-}
+enum class SystemdUnitStatus;
+}  // namespace dbus_xdg
 
 namespace extensions {
 
@@ -114,6 +115,8 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
                          const std::string& signal_name,
                          bool success);
 
+  void OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus status);
+
   void OnServiceStarted(std::optional<bool> service_started);
 
   void CreateSession(SessionMapPair& pair);
@@ -124,7 +127,7 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> global_shortcuts_proxy_ = nullptr;
 
-  // Whether the GlboalShortcuts service is available, or nullopt if the status
+  // Whether the GlobalShortcuts service is available, or nullopt if the status
   // is not yet known.
   std::optional<bool> service_started_;
 

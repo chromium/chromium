@@ -181,7 +181,7 @@ TEST_P(ConvertingAudioFifoTest, PushFlushTwice) {
 }
 
 // Verify that the fifo doesn't output until it has enough frames.
-TEST_P(ConvertingAudioFifoTest, PushNotEnoughFrames) {
+TEST_P(ConvertingAudioFifoTest, Push_NotEnoughFrames) {
   CreateFifo(TestOutputParams());
 
   int total_frames_pushed = 0;
@@ -212,7 +212,7 @@ TEST_P(ConvertingAudioFifoTest, PushNotEnoughFrames) {
 }
 
 // Verify that the fifo outputs immediately if it has enough frames.
-TEST_P(ConvertingAudioFifoTest, PushEnoughFrames) {
+TEST_P(ConvertingAudioFifoTest, Push_EnoughFrames) {
   CreateFifo(TestOutputParams());
 
   // Push enough frames to trigger an single output.
@@ -222,7 +222,7 @@ TEST_P(ConvertingAudioFifoTest, PushEnoughFrames) {
 }
 
 // Verify that the fifo produces more than one output if it has enough frames.
-TEST_P(ConvertingAudioFifoTest, PushMoreThanEnoughFrames) {
+TEST_P(ConvertingAudioFifoTest, Push_MoreThanEnoughFrames) {
   CreateFifo(TestOutputParams());
 
   // Push enough frames to trigger multiple outputs.
@@ -235,7 +235,7 @@ TEST_P(ConvertingAudioFifoTest, PushMoreThanEnoughFrames) {
 }
 
 // Verify we can partially drain the fifo before pushing more data.
-TEST_P(ConvertingAudioFifoTest, PushMoreThanEnoughFramesPartialDrain) {
+TEST_P(ConvertingAudioFifoTest, Push_MoreThanEnoughFrames_PartialDrain) {
   CreateFifo(TestOutputParams());
 
   // Push enough frames to trigger multiple outputs.
@@ -265,7 +265,7 @@ TEST_P(ConvertingAudioFifoTest, PushMoreThanEnoughFramesPartialDrain) {
 }
 
 // Verify that the FIFO returns outputs in FIFO order.
-TEST_F(ConvertingAudioFifoTest, PushMoreThanEnoughFramesIsFifoOrder) {
+TEST_F(ConvertingAudioFifoTest, Push_MoreThanEnoughFrames_IsFifoOrder) {
   // Do not perform any conversion, as to preserve the values pushed in.
   CreateFifo(kDefaultParams);
 
@@ -288,7 +288,7 @@ TEST_F(ConvertingAudioFifoTest, PushMoreThanEnoughFramesIsFifoOrder) {
 }
 
 // Verify that the fifo can handle variable numbers of input frames.
-TEST_P(ConvertingAudioFifoTest, PushVaryingFrames) {
+TEST_P(ConvertingAudioFifoTest, Push_VaryingFrames) {
   CreateFifo(TestOutputParams());
 
   int base_frame_count = min_number_input_frames_needed() / 4;
@@ -305,7 +305,7 @@ TEST_P(ConvertingAudioFifoTest, PushVaryingFrames) {
 }
 
 // Verify that the fifo can handle variable numbers of input channels.
-TEST_P(ConvertingAudioFifoTest, PushVaryingChannels) {
+TEST_P(ConvertingAudioFifoTest, Push_VaryingChannels) {
   CreateFifo(TestOutputParams());
 
   // Superpermutation of {1, 2, 3}, covering all transitions between upmixing,

@@ -285,7 +285,7 @@ TEST(HttpStreamParser, InitAsynchronousUploadDataStream) {
 }
 
 // The empty payload is how the last chunk is encoded.
-TEST(HttpStreamParser, EncodeChunkEmptyPayload) {
+TEST(HttpStreamParser, EncodeChunk_EmptyPayload) {
   char output[kOutputSize];
 
   const std::string_view kPayload = "";
@@ -296,7 +296,7 @@ TEST(HttpStreamParser, EncodeChunkEmptyPayload) {
   EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
 
-TEST(HttpStreamParser, EncodeChunkShortPayload) {
+TEST(HttpStreamParser, EncodeChunk_ShortPayload) {
   char output[kOutputSize];
 
   const std::string kPayload("foo\x00\x11\x22", 6);
@@ -308,7 +308,7 @@ TEST(HttpStreamParser, EncodeChunkShortPayload) {
   EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
 
-TEST(HttpStreamParser, EncodeChunkLargePayload) {
+TEST(HttpStreamParser, EncodeChunk_LargePayload) {
   char output[kOutputSize];
 
   const std::string kPayload(1000, '\xff');  // '\xff' x 1000.
@@ -320,7 +320,7 @@ TEST(HttpStreamParser, EncodeChunkLargePayload) {
   EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
 
-TEST(HttpStreamParser, EncodeChunkFullPayload) {
+TEST(HttpStreamParser, EncodeChunk_FullPayload) {
   char output[kOutputSize];
 
   const std::string kPayload(kMaxPayloadSize, '\xff');
@@ -332,7 +332,7 @@ TEST(HttpStreamParser, EncodeChunkFullPayload) {
   EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
 
-TEST(HttpStreamParser, EncodeChunkTooLargePayload) {
+TEST(HttpStreamParser, EncodeChunk_TooLargePayload) {
   char output[kOutputSize];
 
   // The payload is one byte larger the output buffer size.
@@ -342,13 +342,13 @@ TEST(HttpStreamParser, EncodeChunkTooLargePayload) {
   ASSERT_THAT(num_bytes_written, IsError(ERR_INVALID_ARGUMENT));
 }
 
-TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodyNoBody) {
+TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_NoBody) {
   // Shouldn't be merged if upload data is non-existent.
   ASSERT_FALSE(HttpStreamParser::ShouldMergeRequestHeadersAndBody("some header",
                                                                   nullptr));
 }
 
-TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodyEmptyBody) {
+TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_EmptyBody) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   std::unique_ptr<UploadDataStream> body(
       std::make_unique<ElementsUploadDataStream>(std::move(element_readers),
@@ -359,7 +359,7 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodyEmptyBody) {
       "some header", body.get()));
 }
 
-TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodyChunkedBody) {
+TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_ChunkedBody) {
   const std::string payload = "123";
   auto body = std::make_unique<ChunkedUploadDataStream>(0);
   body->AppendData(base::as_byte_span(payload), true);
@@ -371,7 +371,7 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodyChunkedBody) {
       "some header", body.get()));
 }
 
-TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodyFileBody) {
+TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_FileBody) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
 
@@ -405,7 +405,7 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodyFileBody) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodySmallBodyInMemory) {
+TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_SmallBodyInMemory) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   const std::string payload = "123";
   element_readers.push_back(
@@ -420,7 +420,7 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodySmallBodyInMemory) {
       "some header", body.get()));
 }
 
-TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBodyLargeBodyInMemory) {
+TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_LargeBodyInMemory) {
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   const std::string payload(10000, 'a');  // 'a' x 10000.
   element_readers.push_back(

@@ -143,7 +143,10 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
     payments_network_interface().AllowFidoRegistration(
         /*offer_fido_opt_in=*/UnmaskDetailsOfferFidoOptIn());
     if (IsVirtualCard()) {
-      GetCreditCard()->set_record_type(CreditCard::RecordType::kVirtualCard);
+      CreditCard credit_card_copy = *GetCreditCard();
+      credit_card_copy.set_record_type(CreditCard::RecordType::kVirtualCard);
+      personal_data().payments_data_manager().UpdateCreditCard(
+          credit_card_copy);
     }
     if (IsOptedIntoFido()) {
       // If user and device are already opted into FIDO, then add an eligible
@@ -181,7 +184,7 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
     return fido_opt_in_not_offered_histogram;
   }
 
-  CreditCard* GetCreditCard() {
+  const CreditCard* GetCreditCard() {
     return personal_data().payments_data_manager().GetCreditCardByGUID(
         kTestGUID);
   }

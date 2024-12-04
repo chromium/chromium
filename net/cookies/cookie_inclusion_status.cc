@@ -18,20 +18,6 @@ namespace net {
 
 CookieInclusionStatus::CookieInclusionStatus() = default;
 
-CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason) {
-  exclusion_reasons_[reason] = true;
-}
-
-CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason,
-                                             WarningReason warning) {
-  exclusion_reasons_[reason] = true;
-  warning_reasons_[warning] = true;
-}
-
-CookieInclusionStatus::CookieInclusionStatus(WarningReason warning) {
-  warning_reasons_[warning] = true;
-}
-
 CookieInclusionStatus::CookieInclusionStatus(
     const CookieInclusionStatus& other) = default;
 

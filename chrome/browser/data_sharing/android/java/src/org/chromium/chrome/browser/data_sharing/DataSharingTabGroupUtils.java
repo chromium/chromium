@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.data_sharing;
 
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -24,6 +26,8 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +37,18 @@ import java.util.Set;
 
 /** Utilities related to tab groups in data sharing. */
 public class DataSharingTabGroupUtils {
+    @IntDef({
+        TabPresence.IN_WINDOW,
+        TabPresence.IN_WINDOW_CLOSING,
+        TabPresence.NOT_IN_WINDOW,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface TabPresence {
+        int IN_WINDOW = 0;
+        int IN_WINDOW_CLOSING = 1;
+        int NOT_IN_WINDOW = 2;
+    }
+
     /** A holder for list of tab groups pending destruction. */
     public static class GroupsPendingDestroy {
         /**
@@ -184,11 +200,22 @@ public class DataSharingTabGroupUtils {
             }
 
             // If the saved tab has a local id, but it is not in the current tab model it is either
-            // currently closing or in another window. In either case, the tabsToRemove belong to
-            // the tabModel so we can skip this tab as it is either closing or not relevant.
-            int localId = savedTab.localId;
-            if (tabModel.getTabById(localId) == null) {
-                continue;
+            // currently closing or in another window.
+            int localTabId = savedTab.localId;
+            switch (getTabPresence(tabModel, localTabId)) {
+                case TabPresence.IN_WINDOW:
+                    // Intentional no-op.
+                    break;
+                case TabPresence.IN_WINDOW_CLOSING:
+                    // If the tab is closing we should keep checking since all the rest of the tabs
+                    // in the group might also be closing as part of tabsToRemove.
+                    continue;
+                case TabPresence.NOT_IN_WINDOW:
+                    // If the tab is just missing from the model entirely we can assume the group is
+                    // not present in this window since all tabs in a group must be in one window.
+                    return false;
+                default:
+                    assert false : "Not reached.";
             }
 
             // If any of the tabs in the saved group are missing from the list of tabsToRemove we
@@ -197,21 +224,29 @@ public class DataSharingTabGroupUtils {
             // could optimize this with sets, but then the average case performance is likely to
             // be worse as realistically very few entries will be shared. We can revisit this if we
             // start seeing ANRs or other issues.
-            if (savedTab.localId == null) {
-                return false;
-            }
-            boolean found = false;
-            for (Tab tab : tabsToRemove) {
-                if (tab.getId() == savedTab.localId) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
+            if (!tabsToRemoveContains(tabsToRemove, localTabId)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private static @TabPresence int getTabPresence(TabModel tabModel, int tabId) {
+        TabList tabList = tabModel.getComprehensiveModel();
+        for (int i = 0; i < tabList.getCount(); i++) {
+            Tab tab = tabList.getTabAt(i);
+            if (tab.getId() == tabId) {
+                return tab.isClosing() ? TabPresence.IN_WINDOW_CLOSING : TabPresence.IN_WINDOW;
+            }
+        }
+        return TabPresence.NOT_IN_WINDOW;
+    }
+
+    private static boolean tabsToRemoveContains(List<Tab> tabsToRemove, int tabId) {
+        for (Tab tab : tabsToRemove) {
+            if (tab.getId() == tabId) return true;
+        }
+        return false;
     }
 
     /**

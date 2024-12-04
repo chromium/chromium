@@ -400,7 +400,7 @@ TEST(IPAddressTest, IPAddressToPackedString) {
 }
 
 // Test that invalid IP literals fail to parse.
-TEST(IPAddressTest, AssignFromIPLiteralFailParse) {
+TEST(IPAddressTest, AssignFromIPLiteral_FailParse) {
   IPAddress address;
 
   EXPECT_FALSE(address.AssignFromIPLiteral("bad value"));
@@ -413,7 +413,7 @@ TEST(IPAddressTest, AssignFromIPLiteralFailParse) {
 
 // Test that a failure calling AssignFromIPLiteral() has the sideffect of
 // clearing the current value.
-TEST(IPAddressTest, AssignFromIPLiteralResetOnFailure) {
+TEST(IPAddressTest, AssignFromIPLiteral_ResetOnFailure) {
   IPAddress address = IPAddress::IPv6Localhost();
 
   EXPECT_TRUE(address.IsValid());
@@ -426,7 +426,7 @@ TEST(IPAddressTest, AssignFromIPLiteralResetOnFailure) {
 }
 
 // Test parsing an IPv4 literal.
-TEST(IPAddressTest, AssignFromIPLiteralIPv4) {
+TEST(IPAddressTest, AssignFromIPLiteral_IPv4) {
   IPAddress address;
   EXPECT_TRUE(address.AssignFromIPLiteral("192.168.0.1"));
   EXPECT_EQ("192,168,0,1", DumpIPAddress(address));
@@ -434,7 +434,7 @@ TEST(IPAddressTest, AssignFromIPLiteralIPv4) {
 }
 
 // Test parsing an IPv6 literal.
-TEST(IPAddressTest, AssignFromIPLiteralIPv6) {
+TEST(IPAddressTest, AssignFromIPLiteral_IPv6) {
   IPAddress address;
   EXPECT_TRUE(address.AssignFromIPLiteral("1:abcd::3:4:ff"));
   EXPECT_EQ("0,1,171,205,0,0,0,0,0,0,0,3,0,4,0,255", DumpIPAddress(address));
@@ -546,7 +546,7 @@ TEST(IPAddressTest, IPAddressMatchesPrefix) {
 }
 
 // Test parsing invalid CIDR notation literals.
-TEST(IPAddressTest, ParseCIDRBlockInvalid) {
+TEST(IPAddressTest, ParseCIDRBlock_Invalid) {
   const char* const bad_literals[] = {"foobar",
                                       "",
                                       "192.168.0.1",
@@ -574,7 +574,7 @@ TEST(IPAddressTest, ParseCIDRBlockInvalid) {
 }
 
 // Test parsing a valid CIDR notation literal.
-TEST(IPAddressTest, ParseCIDRBlockValid) {
+TEST(IPAddressTest, ParseCIDRBlock_Valid) {
   IPAddress ip_address;
   size_t prefix_length_in_bits;
 
@@ -592,7 +592,7 @@ TEST(IPAddressTest, ParseCIDRBlockValid) {
   EXPECT_EQ(112u, prefix_length_in_bits);
 }
 
-TEST(IPAddressTest, ParseURLHostnameToAddressFailParse) {
+TEST(IPAddressTest, ParseURLHostnameToAddress_FailParse) {
   IPAddress address;
   EXPECT_FALSE(ParseURLHostnameToAddress("bad value", &address));
   EXPECT_FALSE(ParseURLHostnameToAddress("bad:value", &address));
@@ -603,14 +603,14 @@ TEST(IPAddressTest, ParseURLHostnameToAddressFailParse) {
   EXPECT_FALSE(ParseURLHostnameToAddress("[192.169.0.1]", &address));
 }
 
-TEST(IPAddressTest, ParseURLHostnameToAddressIPv4) {
+TEST(IPAddressTest, ParseURLHostnameToAddress_IPv4) {
   IPAddress address;
   EXPECT_TRUE(ParseURLHostnameToAddress("192.168.0.1", &address));
   EXPECT_EQ("192,168,0,1", DumpIPAddress(address));
   EXPECT_EQ("192.168.0.1", address.ToString());
 }
 
-TEST(IPAddressTest, ParseURLHostnameToAddressIPv6) {
+TEST(IPAddressTest, ParseURLHostnameToAddress_IPv6) {
   IPAddress address;
   EXPECT_TRUE(ParseURLHostnameToAddress("[1:abcd::3:4:ff]", &address));
   EXPECT_EQ("0,1,171,205,0,0,0,0,0,0,0,3,0,4,0,255", DumpIPAddress(address));

@@ -72,7 +72,7 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaDiscountInfos(
     j_discount_infos.push_back(discount_info_java);
   }
   return base::android::ToTypedJavaArrayOfObjects(
-      env, base::make_span(j_discount_infos), discount_info_clazz);
+      env, base::span(j_discount_infos), discount_info_clazz);
 }
 
 }  // namespace
@@ -432,14 +432,6 @@ bool ShoppingServiceAndroid::IsMerchantViewerEnabled(
   CHECK(shopping_service_);
 
   return shopping_service_->IsMerchantViewerEnabled();
-}
-
-bool ShoppingServiceAndroid::IsCommercePriceTrackingEnabled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  CHECK(shopping_service_);
-
-  return shopping_service_->IsCommercePriceTrackingEnabled();
 }
 
 bool ShoppingServiceAndroid::IsPriceInsightsEligible(

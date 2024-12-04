@@ -8,11 +8,7 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
-#if (!defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||            \
-     defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER) ||      \
-     defined(THREAD_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
-     DCHECK_IS_ON()) &&                                           \
-    BUILDFLAG(USE_BLINK)
+#if (DCHECK_IS_ON() || !defined(OFFICIAL_BUILD)) && BUILDFLAG(USE_BLINK)
 // Enable fast fails on clusterfuzz and other builds used to debug Chrome,
 // in order to help narrow down illegal states more quickly.
 #define AX_FAIL_FAST_BUILD

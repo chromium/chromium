@@ -229,9 +229,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
   void RequestDecode(const cc::PaintImage&,
                      base::OnceCallback<void(bool)>) override;
-  void NotifyPresentationTimeInBlink(
-      base::OnceCallback<void(const viz::FrameTimingDetails&)>
-          presentation_callback) final;
   void RequestBeginMainFrameNotExpected(bool request) final;
   int GetLayerTreeId() final;
   const cc::LayerTreeSettings* GetLayerTreeSettings() final;

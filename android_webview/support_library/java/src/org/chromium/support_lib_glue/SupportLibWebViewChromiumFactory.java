@@ -99,9 +99,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.SPECULATIVE_LOADING,
                 Features.BACK_FORWARD_CACHE,
                 Features.PREFETCH_WITH_URL + Features.DEV_SUFFIX,
-                Features.DEFAULT_TRAFFICSTATS_TAGGING + Features.DEV_SUFFIX,
-                Features.ASYNC_WEBVIEW_STARTUP + Features.DEV_SUFFIX,
+                Features.DEFAULT_TRAFFICSTATS_TAGGING,
+                Features.ASYNC_WEBVIEW_STARTUP,
                 Features.PRERENDER_WITH_URL + Features.DEV_SUFFIX,
+                Features.WEB_STORAGE_DELETE_BROWSING_DATA + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -227,6 +228,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.START_UP_WEBVIEW,
         ApiCall.PRERENDER_URL,
         ApiCall.PRERENDER_URL_WITH_PARAMS,
+        ApiCall.WEB_STORAGE_DELETE_BROWSING_DATA,
+        ApiCall.WEB_STORAGE_DELETE_BROWSING_DATA_FOR_SITE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -350,8 +353,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int START_UP_WEBVIEW = 114;
         int PRERENDER_URL = 115;
         int PRERENDER_URL_WITH_PARAMS = 116;
+        int WEB_STORAGE_DELETE_BROWSING_DATA = 117;
+        int WEB_STORAGE_DELETE_BROWSING_DATA_FOR_SITE = 118;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 117;
+        int COUNT = 119;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

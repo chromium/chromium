@@ -249,7 +249,7 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
 
   web_contents()
       ->GetPrimaryMainFrame()
-      ->ForEachRenderFrameHostIncludingSpeculative(
+      ->ForEachRenderFrameHostImplIncludingSpeculative(
           [&name, object_id, this](RenderFrameHostImpl* render_frame_host) {
             if (!render_frame_host->IsRenderFrameLive()) {
               return;
@@ -278,7 +278,7 @@ void GinJavaBridgeDispatcherHost::RemoveNamedObject(
 
   web_contents()
       ->GetPrimaryMainFrame()
-      ->ForEachRenderFrameHostIncludingSpeculative(
+      ->ForEachRenderFrameHostImplIncludingSpeculative(
           [&copied_name, this](RenderFrameHostImpl* render_frame_host) {
             if (!render_frame_host->IsRenderFrameLive()) {
               return;

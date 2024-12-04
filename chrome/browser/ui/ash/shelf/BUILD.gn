@@ -66,10 +66,6 @@ static_library("shelf") {
     "shelf_spinner_controller.h",
     "shelf_spinner_item_controller.cc",
     "shelf_spinner_item_controller.h",
-    "standalone_browser_extension_app_context_menu.cc",
-    "standalone_browser_extension_app_context_menu.h",
-    "standalone_browser_extension_app_shelf_item_controller.cc",
-    "standalone_browser_extension_app_shelf_item_controller.h",
   ]
 
   public_deps = [

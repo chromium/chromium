@@ -315,9 +315,9 @@ void CGaiaCredentialProvider::ProviderConcurrentState::InternalReset() {
   auto_logon_credential_.Reset();
 }
 
-CGaiaCredentialProvider::CGaiaCredentialProvider() {}
+CGaiaCredentialProvider::CGaiaCredentialProvider() = default;
 
-CGaiaCredentialProvider::~CGaiaCredentialProvider() {}
+CGaiaCredentialProvider::~CGaiaCredentialProvider() = default;
 
 HRESULT CGaiaCredentialProvider::FinalConstruct() {
   LOGFN(VERBOSE);

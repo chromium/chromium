@@ -18,7 +18,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.ts';
 import type {ProductSpecificationsBrowserProxy} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
-import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.js';
+import type {ProductInfo, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.js';
 import {UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {ProductSpecificationsFeatureState} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {ShoppingServiceBrowserProxy} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
@@ -41,7 +41,7 @@ import type {NewColumnSelectorElement} from './new_column_selector.js';
 import {SectionType} from './product_selection_menu.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import type {ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
 import {isValidLowercaseUuid, type UrlListEntry} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
@@ -700,6 +700,7 @@ export class ProductSpecificationsElement extends PolymerElement {
         this.setName_, urls.map(url => ({url})));
     if (createdSet) {
       this.id_ = createdSet.uuid;
+      document.title = this.setName_;
       window.history.replaceState(undefined, '', `?id=${this.id_.value}`);
     }
     this.populateTable_(urls);

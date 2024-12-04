@@ -11,7 +11,6 @@
 <translation id="1200396280085622191">每次点按消息和其他应用中的链接时，都使用 Chrome 打开。</translation>
 <translation id="1229222343402087523">在 Chrome 中搜索 ${searchPhrase}</translation>
 <translation id="1237769345474105984">来自 Chrome</translation>
-<translation id="1240190568154816272">Chrome 技巧</translation>
 <translation id="124228879633599436">您的 Chrome 版本过旧。请更新以确保安全。</translation>
 <translation id="1333745675627230582">玩 Chrome 恐龙游戏</translation>
 <translation id="1352919863522755794">Google 密码管理工具无法检查您的密码。请尝试检查您的互联网连接。</translation>
@@ -301,7 +300,7 @@
 <translation id="8673726683583791503">使用 Google 智能镜头购物</translation>
 <translation id="8727043961453758442">充分利用 Chrome</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
-<translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
+<translation id="8772179140489533211">显示让用户登录 Chrome 的提示。</translation>
 <translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中</translation>
 <translation id="880967149107462122">前往 Chrome 设置</translation>
 <translation id="8842132678697187091">您可以在此处打开 Google 智能镜头。</translation>

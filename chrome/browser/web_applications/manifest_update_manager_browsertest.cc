@@ -1494,10 +1494,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // This is to ensure that the uninstall command that was scheduled also
   // completes.
   GetProvider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_FALSE(GetProvider().registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(GetProvider().registrar_unsafe().IsNotInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -2187,8 +2184,8 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
 
   // ManifestUpdateManager updates only locally installed apps. Installs web app
   // locally on Win/Mac/Linux.
-  if (GetProvider().registrar_unsafe().IsInstallState(
-          app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE})) {
+  if (GetProvider().registrar_unsafe().GetInstallState(app_id) ==
+      proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE) {
     InstallAppLocally(web_app);
   }
 

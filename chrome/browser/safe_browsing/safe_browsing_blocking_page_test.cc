@@ -103,6 +103,7 @@
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "components/security_interstitials/core/urls.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
@@ -429,7 +430,7 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   }
 
  protected:
-  ~FakeSafeBrowsingUIManager() override {}
+  ~FakeSafeBrowsingUIManager() override = default;
 
  private:
   std::string report_;
@@ -446,9 +447,6 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
 
 class TestThreatDetailsFactory : public ThreatDetailsFactory {
  public:
-  TestThreatDetailsFactory() : details_() {}
-  ~TestThreatDetailsFactory() override {}
-
   std::unique_ptr<ThreatDetails> CreateThreatDetails(
       BaseUIManager* delegate,
       WebContents* web_contents,
@@ -470,7 +468,7 @@ class TestThreatDetailsFactory : public ThreatDetailsFactory {
   ThreatDetails* get_details() { return details_; }
 
  private:
-  raw_ptr<ThreatDetails, AcrossTasksDanglingUntriaged> details_;
+  raw_ptr<ThreatDetails, AcrossTasksDanglingUntriaged> details_ = nullptr;
 };
 
 // A SafeBrowingBlockingPage class that lets us wait until it's hidden.
@@ -535,7 +533,7 @@ class TestSafeBrowsingBlockingPageFactory
     : public SafeBrowsingBlockingPageFactory {
  public:
   TestSafeBrowsingBlockingPageFactory() : always_show_back_to_safety_(true) {}
-  ~TestSafeBrowsingBlockingPageFactory() override {}
+  ~TestSafeBrowsingBlockingPageFactory() override = default;
 
   void SetAlwaysShowBackToSafety(bool value) {
     always_show_back_to_safety_ = value;
@@ -566,7 +564,7 @@ class TestSafeBrowsingBlockingPageFactory
             safe_browsing::kSafetyHubAbusiveNotificationRevocation);
 
     BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options(
-        BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
+        BaseBlockingPage::IsMainPageResourceLoadPending(unsafe_resources),
         is_extended_reporting_opt_in_allowed,
         web_contents->GetBrowserContext()->IsOffTheRecord(),
         IsExtendedReportingEnabled(*prefs),
@@ -630,7 +628,7 @@ class TestSafeBrowsingBlockingPageFactory
 
 class SafeBrowsingBlockingPageTestHelper {
  public:
-  SafeBrowsingBlockingPageTestHelper() {}
+  SafeBrowsingBlockingPageTestHelper() = default;
   SafeBrowsingBlockingPageTestHelper(
       const SafeBrowsingBlockingPageTestHelper&) = delete;
   SafeBrowsingBlockingPageTestHelper& operator=(
@@ -692,7 +690,7 @@ class SafeBrowsingBlockingPageBrowserTest
   SafeBrowsingBlockingPageBrowserTest& operator=(
       const SafeBrowsingBlockingPageBrowserTest&) = delete;
 
-  ~SafeBrowsingBlockingPageBrowserTest() override {}
+  ~SafeBrowsingBlockingPageBrowserTest() override = default;
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
@@ -3118,8 +3116,9 @@ class SafeBrowsingBlockingPageIDNTest
 
     resource.url = request_url;
     resource.threat_type = GetParam();
-    resource.render_process_id = primary_main_frame_id.child_id;
-    resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+    resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
+        CreateForRenderFrameToken(primary_main_frame_id.child_id,
+                                  primary_main_frame->GetFrameToken().value());
     resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
     auto* ui_manager = sb_service->ui_manager().get();

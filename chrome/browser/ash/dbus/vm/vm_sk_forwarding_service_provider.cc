@@ -21,7 +21,7 @@
 
 namespace ash {
 
-VmSKForwardingServiceProvider::VmSKForwardingServiceProvider() {}
+VmSKForwardingServiceProvider::VmSKForwardingServiceProvider() = default;
 
 VmSKForwardingServiceProvider::~VmSKForwardingServiceProvider() = default;
 

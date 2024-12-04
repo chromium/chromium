@@ -68,6 +68,10 @@ class GuestPageHolder : public base::SupportsUserData {
     // The guest was resized.
     virtual void GuestResizeDueToAutoResize(const gfx::Size& new_size) = 0;
 
+    // Return the prospective outer document. Should only be called when
+    // unattached.
+    virtual RenderFrameHost* GetProspectiveOuterDocument() = 0;
+
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific
     // WebContentsObserver methods (e.g.

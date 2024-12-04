@@ -1098,7 +1098,7 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappingsFlagDisabled) {
       settings_dict->contains(prefs::kKeyboardSettingSixPackKeyRemappings));
 }
 
-TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappingsDefault) {
+TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Default) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kAltClickAndSixPackCustomization);
 
@@ -1117,7 +1117,7 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappingsDefault) {
             settings->six_pack_key_remappings->insert);
 }
 
-TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappingsGroup) {
+TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_Group) {
   {
     base::test::ScopedFeatureList disable_feature_list;
     disable_feature_list.InitAndDisableFeature(
@@ -1137,7 +1137,7 @@ TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappingsGroup) {
             settings->six_pack_key_remappings->page_up);
 }
 
-TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappingsRetrieveSettings) {
+TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappings_RetrieveSettings) {
   {
     base::test::ScopedFeatureList disable_feature_list;
     disable_feature_list.InitAndDisableFeature(

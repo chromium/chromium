@@ -28,4 +28,7 @@
 - (void)setCanOpenFile:(BOOL)canOpenFile {
 }
 
+- (void)setOriginatingHost:(NSString*)originatingHost {
+}
+
 @end

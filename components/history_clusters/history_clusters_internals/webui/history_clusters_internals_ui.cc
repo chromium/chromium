@@ -22,7 +22,7 @@ HistoryClustersInternalsUI::HistoryClustersInternalsUI(
       history_clusters_service_(history_clusters_service),
       history_service_(history_service) {
   std::move(set_up_data_source_callback)
-      .Run(base::make_span(kHistoryClustersInternalsResources),
+      .Run(base::span(kHistoryClustersInternalsResources),
            IDR_HISTORY_CLUSTERS_INTERNALS_HISTORY_CLUSTERS_INTERNALS_HTML);
 }
 

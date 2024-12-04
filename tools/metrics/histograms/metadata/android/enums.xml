@@ -606,6 +606,8 @@ chromium-metrics-reviews@google.com.
   <int value="114" label="WebViewCompat.startUpWebView"/>
   <int value="115" label="WebViewCompat.prerenderUrl"/>
   <int value="116" label="WebViewCompat.prerenderUrlWithParams"/>
+  <int value="117" label="WebStorageCompat.deleteBrowsingData"/>
+  <int value="118" label="WebStorageCompat.deleteBrowsingDataForSite"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

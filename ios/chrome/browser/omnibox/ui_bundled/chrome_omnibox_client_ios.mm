@@ -280,8 +280,7 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
     bool destination_url_entered_with_http_scheme,
     const std::u16string& text,
     const AutocompleteMatch& match,
-    const AutocompleteMatch& alternative_nav_match,
-    IDNA2008DeviationCharacter deviation_char_in_hostname) {
+    const AutocompleteMatch& alternative_nav_match) {
   if (location_bar_->GetWebState()) {
     web::WebState* web_state = location_bar_->GetWebState();
     const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();

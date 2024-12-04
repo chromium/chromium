@@ -76,6 +76,7 @@ namespace {
 
 using PromptAction = ::PrivacySandboxService::PromptAction;
 using SurfaceType = ::PrivacySandboxService::SurfaceType;
+using NoticeQueueState = ::PrivacySandboxService::NoticeQueueState;
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
@@ -682,6 +683,10 @@ PrivacySandboxServiceImpl::GetProductMessagingController() {
   return product_messaging_controller_;
 }
 
+void PrivacySandboxServiceImpl::SetSuppressQueue(bool suppress_queue) {
+  suppress_queue_ = suppress_queue;
+}
+
 bool PrivacySandboxServiceImpl::IsHoldingHandle() {
   return static_cast<bool>(notice_handle_);
   // TODO(crbug.com/379900298): Add timeout for notice collision handle
@@ -705,9 +710,11 @@ void SetQueueHandleShown(
   notice_handle->SetShown();
 }
 
-void PrivacySandboxServiceImpl::MaybeUnqueueNotice() {
+void PrivacySandboxServiceImpl::MaybeUnqueueNotice(
+    NoticeQueueState unqueue_source) {
   if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
+          privacy_sandbox::kPrivacySandboxNoticeQueue) ||
+      suppress_queue_) {
     return;
   }
 
@@ -715,16 +722,19 @@ void PrivacySandboxServiceImpl::MaybeUnqueueNotice() {
   notice_handle_.Release();
   // Unqueue if we are in the queue (checked by controller).
   GetProductMessagingController()->UnqueueRequiredNotice(kPrivacySandboxNotice);
+
+  base::UmaHistogramEnumeration("PrivacySandbox.NoticeQueue", unqueue_source);
 }
 
 bool PrivacySandboxServiceImpl::IsNoticeQueued() {
   return GetProductMessagingController()->IsNoticeQueued(kPrivacySandboxNotice);
 }
 
-void PrivacySandboxServiceImpl::MaybeQueueNotice() {
+void PrivacySandboxServiceImpl::MaybeQueueNotice(
+    NoticeQueueState queue_source) {
   if (!base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxNoticeQueue) ||
-      suppress_queue) {
+      suppress_queue_) {
     return;
   }
   // We don't want to queue in the case the profile does not require a prompt.
@@ -740,6 +750,7 @@ void PrivacySandboxServiceImpl::MaybeQueueNotice() {
   GetProductMessagingController()->QueueRequiredNotice(
       kPrivacySandboxNotice,
       base::BindOnce(&PrivacySandboxServiceImpl::HoldQueueHandle, weak_factory_.GetWeakPtr()), {/* TODO(crbug.com/370804492): When we add the DMA notice, add it to this show_after_ list*/});
+  base::UmaHistogramEnumeration("PrivacySandbox.NoticeQueue", queue_source);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1693,7 +1704,7 @@ void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
   }
 
   // After we are done closing the last prompt, release the handle
-  MaybeUnqueueNotice();
+  MaybeUnqueueNotice(NoticeQueueState::kReleaseOnShown);
 }
 #endif
 

@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Slå på varsler fra sikkerhetssjekk…</translation>
 <translation id="1652333207707886577">Tilpass menyen</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Gjenstående tid: {TIME} sekunder}=1{Gjenstående tid: {TIME} sekund}other{Gjenstående tid: {TIME} sekunder}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} lagret passord er tilgjengelig over tastaturet.}other{{count} lagrede passord er tilgjengelige over tastaturet.}}</translation>
 <translation id="1654232554734641711">Mikrofontilgang er tillatt</translation>
 <translation id="16554782717487656">Registrer måleenheter</translation>
 <translation id="1657011748321897393">Delingen mislyktes fordi du ikke er tilkoblet nettverket.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Åpne fanerutenettet</translation>
 <translation id="20485545164632846">nytt element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontoer bruker det samme passordet</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} lagret betalingsmåte er tilgjengelig over tastaturet.}other{{count} lagrede betalingsmåter er tilgjengelige over tastaturet.}}</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="20638360198452347">Enhetstypevelger</translation>
 <translation id="2067852168641682340">Lagre i denne kontoen hver gang</translation>
@@ -329,7 +327,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2390457533592708044">Skjul «<ph name="MODULE_NAME" />»</translation>
 <translation id="2403129868389095715">Pakken kan ikke leveres</translation>
 <translation id="2410754283952462441">Velg en konto</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} lagret adresse er tilgjengelig over tastaturet.}other{{count} lagrede adresser er tilgjengelige over tastaturet.}}</translation>
 <translation id="2424805048070062787">Fortsett med denne fanen</translation>
 <translation id="2426805022920575512">Velg en annen konto</translation>
 <translation id="243275146591958220">Avbryt nedlastingen</translation>
@@ -757,7 +754,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4525629404718770519">Vis forhåndsvisninger av linker</translation>
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4532845899244822526">Velg en mappe</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} lagret forslag til autofullføring er tilgjengelig over tastaturet.}other{{count} lagrede forslag til autofullføring er tilgjengelige over tastaturet.}}</translation>
 <translation id="4547181496285029457">Gå tilbake til nylig fane</translation>
 <translation id="4552042254369397518">Kopierer …</translation>
 <translation id="4564893319561643483">Skjul «<ph name="TITLE" />»</translation>
@@ -770,6 +766,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4597892826846980979">Få varsler om faner</translation>
 <translation id="4601095002996233687">Dybdeskanninger av mistenkelige nedlastinger.</translation>
 <translation id="4606247758155004938">Nettleseren administreres av organisasjonen din.</translation>
+<translation id="4607887340472970274">Prissporing</translation>
 <translation id="4611811151908969241">Skjul Slutt å følge <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Søker med Google</translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
@@ -1274,7 +1271,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6710079714193676716">Administreres av organisasjonen din. Noen funksjoner er kanskje ikke tilgjengelige. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Gå til feeden</translation>
 <translation id="6713676799463473249">Endret <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Spor prisen</translation>
 <translation id="6722623263381062480">Mottatte faner</translation>
 <translation id="6723740634201835758">I Google-kontoen din</translation>
 <translation id="672735642903863329">Få bokmerker, passord med mer på alle enhetene dine.</translation>
@@ -1440,7 +1436,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="75362970626182391">Ny fanegruppe</translation>
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
 <translation id="754655535278952384">Sjekket <ph name="TIME" /></translation>
-<translation id="755255281989213264">Tilpass menyen</translation>
 <translation id="7553234618121028547">For å slå av funksjonen, åpne <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /> og gå til Passordvalg.</translation>
 <translation id="7557508262441527045">Logget av</translation>
 <translation id="7561196759112975576">Alltid</translation>

@@ -272,9 +272,7 @@ void ChromePasswordReuseDetectionManagerClient::CheckProtectedPasswordEntry(
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryPotentialPasswordTheft)) {
+  if (!telemetry_service || !telemetry_service->enabled()) {
     return;
   }
   // Construct password reuse info.
@@ -364,6 +362,7 @@ void ChromePasswordReuseDetectionManagerClient::OnPaste() {
 }
 
 void ChromePasswordReuseDetectionManagerClient::OnInputEvent(
+    const content::RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
   phishy_interaction_tracker_.HandleInputEvent(event);
 #if BUILDFLAG(IS_ANDROID)

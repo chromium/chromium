@@ -247,9 +247,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Cookies and site data' button. Options on the next screen include: Block third-party cookies, Manage cookies and site data, and See related sites.">
         Options for cookies and site data
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Tracking Protection' button. Options on the next screen include: Block third-party cookies, and Manage on-device site data.">
-        Options for tracking protections and on-device site data
-      </message>
     </if>
 
     <!-- Permission values -->
@@ -739,9 +736,6 @@
   <message name="IDS_PAGE_INFO_COOKIES_HEADER" desc="The header label of cookies subpage in Page Info bubble.">
     Cookies and site data
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME" desc="A button in the Page Info bubble (which shows when you click the lock icon) that expands to another bubble detailing the user's Tracking protection settings.">
-    Tracking Protection
-  </message>
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are allowed." formatter_data="android_java">
     Third-party cookies allowed
   </message>
@@ -750,9 +744,6 @@
   </message>
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are limited." formatter_data="android_java">
     Third-party cookies limited
-  </message>
-  <message name="IDS_PAGE_INFO_SUB_PAGE_VIEW_TRACKING_PROTECTION_HEADER" desc="The header label of Tracking Protection subview page.">
-    Tracking Protection
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The description of cookies in Cookies Subpage with placeholder for link to settings.">
     Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
@@ -784,15 +775,6 @@
   <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP" desc="The tooltip on the blocking third-party cookies icon in cookies subpage if blocking is explicitly set by user in cookies settings.">
     Managed by cookies settings
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED" desc="The label detailing that third party cookies are allowed. This text will be shown on the blocking third-party cookies toggle when the toggle isn't active.">
-    Allowed
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED" desc="The label detailing that third party cookies are limited. This text will be shown on the blocking third-party cookies toggle when the toggle is active.">
-    Limited
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED" desc="The label detailing that third party cookies are blocked. This text will be shown on the blocking third-party cookies toggle if the user has chosen to block all third party cookies.">
-    Blocked
-  </message>
   <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button.">
     {NUM_COOKIES, plural, =0 {No sites allowed} =1 {1 site allowed} other {# sites allowed}}
   </message>
@@ -810,6 +792,36 @@
   </message>
   <message name="IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE" desc="The subtitle of related website sets button in cookies subpage with placeholder for name of the owner of this set.">
     This site is in a group, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>, that can see your activity
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="A heading in the page info bubble guiding the user where to go if the site they're on appears broken because of a third-party cookie dependency">
+    Site not working?
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the page info bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
+    Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="A label next to a toggle that allows or blocks third-party cookies.  When the toggle is enabled, third party cookies are allowed.">
+    Third-party cookies
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are limited again.">
+    {COUNT, plural,
+              =0 {Chrome will limit cookies again today}
+              =1 {Chrome will limit cookies again tomorrow}
+              other {# days until Chrome limits cookies again}}
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are blocked again.">
+    {COUNT, plural,
+              =0 {Cookies will be blocked again today}
+              =1 {Cookies will be blocked again tomorrow}
+              other {# days until cookies are blocked again}}
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has temporarily allowed third-party cookies on a site explaining the browsing protection trade-off of their decision.">
+    You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Tracking Protection subpage bubble telling the user they allowed third-party cookies on the current site.">
+    You allowed third-party cookies on this site
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list.">
+    This means site features should work as expected, but you may have less browsing protection.
   </message>
 
   <!-- Merchant trust strings -->
@@ -897,38 +909,6 @@
   </message>
   <message name="IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON" desc="A button label that opens the Ad privacy page, allowing a user to turn on / off the ad privacy settings and to manage the topics and sites that influence ad personalization.">
     Manage ad privacy
-  </message>
-
-  <!-- Tracking Protection strings -->
-  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="A heading in the page info bubble guiding the user where to go if the site they're on appears broken because of a third-party cookie dependency">
-    Site not working?
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the page info bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
-    Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
-  </message>
-  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="A label next to a toggle that allows or blocks third-party cookies.  When the toggle is enabled, third party cookies are allowed.">
-    Third-party cookies
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are limited again.">
-    {COUNT, plural,
-              =0 {Chrome will limit cookies again today}
-              =1 {Chrome will limit cookies again tomorrow}
-              other {# days until Chrome limits cookies again}}
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are blocked again.">
-    {COUNT, plural,
-              =0 {Cookies will be blocked again today}
-              =1 {Cookies will be blocked again tomorrow}
-              other {# days until cookies are blocked again}}
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has temporarily allowed third-party cookies on a site explaining the browsing protection trade-off of their decision.">
-    You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Tracking Protection subpage bubble telling the user they allowed third-party cookies on the current site.">
-    You allowed third-party cookies on this site
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list.">
-    This means site features should work as expected, but you may have less browsing protection.
   </message>
 
 </grit-part>

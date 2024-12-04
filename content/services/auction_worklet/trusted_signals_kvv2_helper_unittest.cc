@@ -251,11 +251,10 @@ std::string BuildResponseBody(const std::string& hex_string,
   size_t response_body_size = desired_size - kOhttpHeaderSize;
   response_body.resize(response_body_size, 0x00);
 
-  base::SpanWriter writer(
-      base::as_writable_bytes(base::make_span(response_body)));
+  base::SpanWriter writer(base::as_writable_byte_span(response_body));
   writer.WriteU8BigEndian(compress_scheme);
   writer.WriteU32BigEndian(hex_bytes.size());
-  writer.Write(base::as_bytes(base::make_span(hex_bytes)));
+  writer.Write(base::as_byte_span(hex_bytes));
 
   return response_body;
 }
@@ -2582,7 +2581,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, NonCborData) {
         TrustedSignalsKVv2ResponseParser::ParseEntireCompressionGroup(
             helper_.get(), signals_type,
             mojom::TrustedSignalsCompressionScheme::kNone,
-            base::as_bytes(base::make_span("Not CBOR")));
+            base::byte_span_with_nul_from_cstring("Not CBOR"));
     EXPECT_THAT(result_or_error, IsError("Failed to parse content as CBOR."));
   }
 }
@@ -2679,7 +2678,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
             // gzip code unconditionally allocates memory based on the last 4
             // bytes of the response, which can be quite large. End this string
             // with 4 character 01's to avoid allocating too much memory.
-            base::as_bytes(base::make_span("Not gzip.\x1\x1\x1\x1")));
+            base::byte_span_with_nul_from_cstring("Not gzip.\x1\x1\x1\x1"));
     ASSERT_THAT(result_or_error,
                 IsError("Failed to decompress content string with Gzip."));
   }

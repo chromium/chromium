@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
 
 #include <memory>
@@ -136,10 +131,8 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       l10n_util::GetStringUTF16(
           IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP));
 
-  source->AddResourcePaths(base::make_span(kLockScreenReauthResources,
-                                           kLockScreenReauthResourcesSize));
-  source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
-                                           kGaiaActionButtonsResourcesSize));
+  source->AddResourcePaths(kLockScreenReauthResources);
+  source->AddResourcePaths(kGaiaActionButtonsResources);
   source->SetDefaultResource(
       IDR_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_APP_HTML);
 

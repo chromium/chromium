@@ -371,8 +371,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::before");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdAfter) {
       class_names.Append("::after");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdSelectArrow) {
-      class_names.Append("::select-arrow");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdPickerIcon) {
+      class_names.Append("::picker-icon");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdMarker) {
       class_names.Append("::marker");
     } else if (pseudo_element->GetPseudoIdForStyling() ==
@@ -1054,15 +1054,19 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
 
     if (auto* repeated_values =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(list_value.Get())) {
-      size_t repetitions = repeated_values->Repetitions();
-      for (size_t i = 0; i < repetitions; ++i) {
-        for (auto repeated_value : *repeated_values) {
-          if (repeated_value->IsGridLineNamesValue())
-            continue;
-          result.push_back(repeated_value->CssText());
+      std::optional<wtf_size_t> repetitions =
+          repeated_values->GetRepetitionsIfKnown();
+      if (repetitions.has_value()) {
+        for (size_t i = 0; i < *repetitions; ++i) {
+          for (auto repeated_value : *repeated_values) {
+            if (repeated_value->IsGridLineNamesValue()) {
+              continue;
+            }
+            result.push_back(repeated_value->CssText());
+          }
         }
+        continue;
       }
-      continue;
     }
 
     if (list_value->IsGridLineNamesValue())
@@ -1827,7 +1831,7 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
             kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
-            kPseudoIdSelectArrow, kPseudoIdScrollMarkerGroupAfter,
+            kPseudoIdPickerIcon, kPseudoIdScrollMarkerGroupAfter,
             kPseudoIdScrollMarker, kPseudoIdScrollUpButton,
             kPseudoIdScrollDownButton, kPseudoIdScrollLeftButton,
             kPseudoIdScrollRightButton}) {

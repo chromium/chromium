@@ -231,6 +231,9 @@ BASE_FEATURE(kEducationalTipModule,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kMaxDefaultBrowserCardImpressions{
     &kEducationalTipModule, "max_default_browser_card_impressions",
-    /*default_value=*/4};
+    /*default_value=*/3};
+constexpr base::FeatureParam<int> kMaxTabGroupCardImpressions{
+    &kEducationalTipModule, "max_tab_group_card_impressions",
+    /*default_value=*/10};
 
 }  // namespace segmentation_platform::features

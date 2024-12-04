@@ -566,6 +566,8 @@ IN_PROC_BROWSER_TEST_F(
   }
   histogram_tester.ExpectTotalCount(
       "Bookmarks.BookmarkBar.PrerenderNavigationToActivation", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.IsPrerenderingSRPUrl.Embedder_BookmarkBar", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,

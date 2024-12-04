@@ -1237,27 +1237,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetInAnyContext(true)
           .SetMetadata(130, "johntlee@chromium.org",
                        "Triggered after user lands on chrome://history.")));
-
-  // kIPHToolbarManagementButtonFeature
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHToolbarManagementButtonFeature,
-          kToolbarManagementButtonElementId,
-          IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED, IDS_LEARN_MORE,
-          base::BindRepeating(
-              [](ui::ElementContext ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                auto* const browser =
-                    chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
-                chrome::ShowEnterpriseManagementPageInTabbedBrowser(browser);
-              }))
-          .SetCustomActionIsDefault(true)
-          .SetMetadata(129, "ydago@chromium.org",
-                       "Triggered after a user uses managed browser where the "
-                       "toolbar management button is visible.")));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

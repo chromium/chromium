@@ -111,8 +111,13 @@ using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
 BEGIN_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow)
 END_METADATA
 
+using FooterRow_RecentActivityRowData = FooterRow<RecentActivityRowData>;
+BEGIN_TEMPLATE_METADATA(FooterRow_RecentActivityRowData, FooterRow)
+END_METADATA
+
 template class FooterRow<AlertFooterRowData>;
 template class FooterRow<PerformanceRowData>;
+template class FooterRow<RecentActivityRowData>;
 
 // FadeAlertFooterRow
 // -----------------------------------------------------------------------
@@ -173,6 +178,42 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
 BEGIN_METADATA(FadePerformanceFooterRow)
 END_METADATA
 
+// FadeRecentActivityFooterRow
+// -----------------------------------------------------------------------
+
+void FadeRecentActivityFooterRow::SetData(const RecentActivityRowData& data) {
+  data_ = data;
+
+  if (!data_.should_show_recent_activity) {
+    // Empty section if recent activity should be hidden.
+    SetContent(ui::ImageModel(), std::u16string());
+    return;
+  }
+
+  if (data_.avatar.has_value()) {
+    // Use avatar, if supplied.
+    SetContent(*data_.avatar, data_.text);
+    return;
+  }
+
+  // Fallback to using an icon.
+  // TODO(crbug.com/381719301): Define a color for the fallback icon
+  SetContent(ui::ImageModel::FromVectorIcon(
+                 kTabGroupSharingIcon, kColorHoverCardTabAlertAudioPlayingIcon,
+                 GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
+             data_.text);
+}
+
+RecentActivityRowData::RecentActivityRowData() = default;
+RecentActivityRowData::~RecentActivityRowData() = default;
+RecentActivityRowData::RecentActivityRowData(
+    const RecentActivityRowData& other) = default;
+RecentActivityRowData& RecentActivityRowData::operator=(
+    const RecentActivityRowData& other) = default;
+
+BEGIN_METADATA(FadeRecentActivityFooterRow)
+END_METADATA
+
 // FooterView
 // -----------------------------------------------------------------------
 
@@ -195,6 +236,12 @@ FooterView::FooterView() {
       std::make_unique<FadePerformanceFooterRow>(/* is_fade_out_view =*/false),
       std::make_unique<FadePerformanceFooterRow>(/* is_fade_out_view =*/true)));
 
+  recent_activity_row_ = AddChildView(std::make_unique<RecentActivityFadeView>(
+      std::make_unique<FadeRecentActivityFooterRow>(
+          /* is_fade_out_view =*/false),
+      std::make_unique<FadeRecentActivityFooterRow>(
+          /* is_fade_out_view =*/true)));
+
   alert_row_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -202,6 +249,12 @@ FooterView::FooterView() {
                                views::MaximumFlexSizeRule::kUnbounded, true));
 
   performance_row_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded, true));
+
+  recent_activity_row_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -221,14 +274,21 @@ void FooterView::SetPerformanceData(const PerformanceRowData& data) {
   UpdateVisibility();
 }
 
+void FooterView::SetRecentActivityData(const RecentActivityRowData& data) {
+  recent_activity_row_->SetData(data);
+  UpdateVisibility();
+}
+
 void FooterView::SetFade(double percent) {
   alert_row_->SetFade(percent);
   performance_row_->SetFade(percent);
+  recent_activity_row_->SetFade(percent);
 }
 
 void FooterView::UpdateVisibility() {
   SetVisible(performance_row_->CalculatePreferredSize({}).height() > 0 ||
-             alert_row_->CalculatePreferredSize({}).height() > 0);
+             alert_row_->CalculatePreferredSize({}).height() > 0 ||
+             recent_activity_row_->CalculatePreferredSize({}).height() > 0);
 }
 
 using FadeWrapper_View_PerformanceRowData =
@@ -241,6 +301,12 @@ using FadeWrapper_View_AlertFooterRowData =
     FadeWrapper<views::View, AlertFooterRowData>;
 
 BEGIN_TEMPLATE_METADATA(FadeWrapper_View_AlertFooterRowData, FadeWrapper)
+END_METADATA
+
+using FadeWrapper_View_RecentActivityRowData =
+    FadeWrapper<views::View, RecentActivityRowData>;
+
+BEGIN_TEMPLATE_METADATA(FadeWrapper_View_RecentActivityRowData, FadeWrapper)
 END_METADATA
 
 using FadeView_FadeAlertFooterRow_FadeAlertFooterRow_AlertFooterRowData =
@@ -258,6 +324,16 @@ using FadeView_FadePerformanceFooterRow_FadePerformanceFooterRow_PerformanceRowD
 
 BEGIN_TEMPLATE_METADATA(
     FadeView_FadePerformanceFooterRow_FadePerformanceFooterRow_PerformanceRowData,
+    FadeView)
+END_METADATA
+
+using FadeView_FadeRecentActivityFooterRow_FadeRecentActivityFooterRow_RecentActivityRowData =
+    FadeView<FadeRecentActivityFooterRow,
+             FadeRecentActivityFooterRow,
+             RecentActivityRowData>;
+
+BEGIN_TEMPLATE_METADATA(
+    FadeView_FadeRecentActivityFooterRow_FadeRecentActivityFooterRow_RecentActivityRowData,
     FadeView)
 END_METADATA
 

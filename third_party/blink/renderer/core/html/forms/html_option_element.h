@@ -99,7 +99,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   HTMLFormElement* form() const;
   bool SpatialNavigationFocused() const;
 
-  bool IsDisplayNone() const;
+  bool IsDisplayNone(bool ensure_style);
 
   int ListIndex() const;
 

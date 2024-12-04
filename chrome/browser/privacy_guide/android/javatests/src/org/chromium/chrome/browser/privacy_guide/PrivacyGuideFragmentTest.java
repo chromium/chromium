@@ -179,11 +179,11 @@ public class PrivacyGuideFragmentTest {
         int cardPosition = mAllFragments.indexOf(cardType);
         assertTrue(cardPosition < numberOfMaxSteps - 1);
         if (cardPosition == 0) {
-            onView(withText(R.string.privacy_guide_start_button)).perform(click());
+            onViewWaiting(withText(R.string.privacy_guide_start_button)).perform(click());
         } else if (cardPosition == numberOfMaxSteps - 2) {
-            onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+            onViewWaiting(withText(R.string.privacy_guide_finish_button)).perform(click());
         } else {
-            onView(withText(R.string.next)).perform(click());
+            onViewWaiting(withText(R.string.next)).perform(click());
         }
         @FragmentType int nextCardType = getNextCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(nextCardType)));
@@ -192,7 +192,7 @@ public class PrivacyGuideFragmentTest {
     private void navigateFromCardToPrevious(@FragmentType int cardType) {
         int cardPosition = mAllFragments.indexOf(cardType);
         assertTrue(cardPosition > 0);
-        onView(withText(R.string.back)).perform(click());
+        onViewWaiting(withText(R.string.back)).perform(click());
         @FragmentType int previousCardType = getPreviousCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(previousCardType)));
     }

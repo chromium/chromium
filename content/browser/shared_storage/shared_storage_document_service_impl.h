@@ -66,6 +66,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
       const GURL& script_source_url,
       const url::Origin& data_origin,
       network::mojom::CredentialsMode credentials_mode,
+      blink::mojom::SharedStorageWorkletCreationMethod creation_method,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>

@@ -102,6 +102,7 @@ repack("resource_pack_strings") {
   sources = [
     "$root_gen_dir/components/strings/components_strings_en-US.pak",
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.pak",
     "$root_gen_dir/third_party/blink/public/strings/permission_element_strings_en-US.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/auto_image_annotation_strings_en-US.pak",
@@ -114,6 +115,7 @@ repack("resource_pack_strings") {
   deps = [
     "//components/strings",
     "//third_party/blink/public/strings",
+    "//third_party/blink/public/strings:permission_element_generated_strings",
     "//third_party/blink/public/strings:permission_element_strings",
     "//ui/strings",
   ]

@@ -854,9 +854,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public long getTimeToLiveMs() {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    TIME_TO_LIVE_MS_PARAM,
-                    (int) ONE_HOUR_MS);
+                    ChromeFeatureList.PRICE_ANNOTATIONS, TIME_TO_LIVE_MS_PARAM, (int) ONE_HOUR_MS);
         }
         return (int) ONE_HOUR_MS;
     }
@@ -898,7 +896,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public static int getStaleTabThresholdSeconds() {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    ChromeFeatureList.PRICE_ANNOTATIONS,
                     STALE_TAB_THRESHOLD_SECONDS_PARAM,
                     NINETY_DAYS_SECONDS);
         }
@@ -908,7 +906,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static @DelayedInitMethod int getDelayedInitMethod() {
         if (FeatureList.isInitialized()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                        ChromeFeatureList.PRICE_ANNOTATIONS,
                         RETURN_EMPTY_PRICE_DROPS_UNTIL_INIT_PARAM,
                         false)) {
             return DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT;
@@ -919,7 +917,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static int getDisplayTimeMs() {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, DISPLAY_TIME_MS_PARAM, ONE_WEEK_MS);
+                    ChromeFeatureList.PRICE_ANNOTATIONS, DISPLAY_TIME_MS_PARAM, ONE_WEEK_MS);
         }
         return ONE_WEEK_MS;
     }

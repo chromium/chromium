@@ -937,7 +937,7 @@ TEST_F(KeyboardBrightnessControllerTest,
   ExpectKeyboardAmbientLightSensorEnabled(true);
 }
 
-TEST_F(KeyboardBrightnessControllerTest, SetKeyboardBrightnessCause) {
+TEST_F(KeyboardBrightnessControllerTest, SetKeyboardBrightness_Cause) {
   // Keyboard brightness changes from Quick Settings should have cause
   // "USER_REQUEST".
   keyboard_brightness_control_delegate()->HandleSetKeyboardBrightness(
@@ -1126,7 +1126,7 @@ TEST_F(KeyboardBrightnessControllerTest,
   ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
 }
 
-TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettingsNoSensor) {
+TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_NoSensor) {
   // Test case: Disable ALS via brightness key and restore brightness settings.
   // When the device has no sensor. ALS should not be re-enabled after login.
   scoped_feature_list_.InitAndEnableFeature(
@@ -1181,7 +1181,7 @@ TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettingsNoSensor) {
   ExpectKeyboardBrightnessPercent(30.0);
 }
 
-TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettingsHasSensor) {
+TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_HasSensor) {
   // Test case: Disable ALS via brightness key and restore brightness settings.
   // when the device has a sensor. ALS should be re-enabled after login.
   scoped_feature_list_.InitAndEnableFeature(
@@ -1309,7 +1309,7 @@ TEST_F(KeyboardBrightnessControllerTest,
       1);
 }
 
-TEST_F(KeyboardBrightnessControllerTest, HistogramTestLoginSecondary) {
+TEST_F(KeyboardBrightnessControllerTest, HistogramTest_LoginSecondary) {
   // Metric count should start at 0.
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Keyboard.TimeUntilFirstBrightnessChange.OnLoginScreen."
@@ -1354,7 +1354,7 @@ TEST_F(KeyboardBrightnessControllerTest, HistogramTestLoginSecondary) {
       1);
 }
 
-TEST_F(KeyboardBrightnessControllerTest, HistogramTestPowerSourceCharger) {
+TEST_F(KeyboardBrightnessControllerTest, HistogramTest_PowerSourceCharger) {
   // Metric count should start at 0.
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Keyboard.TimeUntilFirstBrightnessChange.OnLoginScreen."

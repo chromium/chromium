@@ -70,11 +70,6 @@ BASE_DECLARE_FEATURE(kApiEnterpriseReportingPrivateReportDataMaskingEvent);
 
 // For historical reasons, this includes some APIs. Please don't add more APIs.
 
-// Whether extension contexts can use SharedArrayBuffers unconditionally (i.e.
-// without requiring cross origin isolation).
-// TODO(crbug.com/40752831): Flip this in M95.
-BASE_DECLARE_FEATURE(kAllowSharedArrayBuffersUnconditionally);
-
 // Enables the UI in the install prompt which lets a user choose to withhold
 // requested host permissions by default.
 BASE_DECLARE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall);

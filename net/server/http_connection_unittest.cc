@@ -26,7 +26,7 @@ std::string GetTestString(int size) {
   return test_string;
 }
 
-TEST(HttpConnectionTest, ReadIOBufferSetCapacity) {
+TEST(HttpConnectionTest, ReadIOBuffer_SetCapacity) {
   scoped_refptr<HttpConnection::ReadIOBuffer> buffer =
       base::MakeRefCounted<HttpConnection::ReadIOBuffer>();
   EXPECT_EQ(HttpConnection::ReadIOBuffer::kInitialBufSize + 0,
@@ -42,7 +42,7 @@ TEST(HttpConnectionTest, ReadIOBufferSetCapacity) {
   EXPECT_EQ(0, buffer->GetSize());
 }
 
-TEST(HttpConnectionTest, ReadIOBufferSetCapacityWithData) {
+TEST(HttpConnectionTest, ReadIOBuffer_SetCapacity_WithData) {
   scoped_refptr<HttpConnection::ReadIOBuffer> buffer =
       base::MakeRefCounted<HttpConnection::ReadIOBuffer>();
   EXPECT_EQ(HttpConnection::ReadIOBuffer::kInitialBufSize + 0,
@@ -75,7 +75,7 @@ TEST(HttpConnectionTest, ReadIOBufferSetCapacityWithData) {
             std::string_view(buffer->StartOfBuffer(), buffer->GetSize()));
 }
 
-TEST(HttpConnectionTest, ReadIOBufferIncreaseCapacity) {
+TEST(HttpConnectionTest, ReadIOBuffer_IncreaseCapacity) {
   scoped_refptr<HttpConnection::ReadIOBuffer> buffer =
       base::MakeRefCounted<HttpConnection::ReadIOBuffer>();
   EXPECT_TRUE(buffer->IncreaseCapacity());
@@ -110,7 +110,7 @@ TEST(HttpConnectionTest, ReadIOBufferIncreaseCapacity) {
             buffer->GetCapacity());
 }
 
-TEST(HttpConnectionTest, ReadIOBufferIncreaseCapacityWithData) {
+TEST(HttpConnectionTest, ReadIOBuffer_IncreaseCapacity_WithData) {
   scoped_refptr<HttpConnection::ReadIOBuffer> buffer =
       base::MakeRefCounted<HttpConnection::ReadIOBuffer>();
   EXPECT_TRUE(buffer->IncreaseCapacity());
@@ -148,7 +148,7 @@ TEST(HttpConnectionTest, ReadIOBufferIncreaseCapacityWithData) {
             std::string_view(buffer->StartOfBuffer(), buffer->GetSize()));
 }
 
-TEST(HttpConnectionTest, ReadIOBufferDidReadDidConsume) {
+TEST(HttpConnectionTest, ReadIOBuffer_DidRead_DidConsume) {
   scoped_refptr<HttpConnection::ReadIOBuffer> buffer =
       base::MakeRefCounted<HttpConnection::ReadIOBuffer>();
   const char* start_of_buffer = buffer->StartOfBuffer();
@@ -234,7 +234,7 @@ TEST(HttpConnectionTest, ReadIOBufferDidReadDidConsume) {
   EXPECT_EQ(start_of_buffer, buffer->data());
 }
 
-TEST(HttpConnectionTest, QueuedWriteIOBufferAppendDidConsume) {
+TEST(HttpConnectionTest, QueuedWriteIOBuffer_Append_DidConsume) {
   scoped_refptr<HttpConnection::QueuedWriteIOBuffer> buffer =
       base::MakeRefCounted<HttpConnection::QueuedWriteIOBuffer>();
   EXPECT_TRUE(buffer->IsEmpty());
@@ -291,7 +291,7 @@ TEST(HttpConnectionTest, QueuedWriteIOBufferAppendDidConsume) {
   EXPECT_EQ(0, buffer->total_size());
 }
 
-TEST(HttpConnectionTest, QueuedWriteIOBufferTotalSizeLimit) {
+TEST(HttpConnectionTest, QueuedWriteIOBuffer_TotalSizeLimit) {
   scoped_refptr<HttpConnection::QueuedWriteIOBuffer> buffer =
       base::MakeRefCounted<HttpConnection::QueuedWriteIOBuffer>();
   EXPECT_EQ(HttpConnection::QueuedWriteIOBuffer::kDefaultMaxBufferSize + 0,
@@ -331,7 +331,7 @@ TEST(HttpConnectionTest, QueuedWriteIOBufferTotalSizeLimit) {
   EXPECT_EQ(kDataLength * 4 - kConsumedLength, buffer->total_size());
 }
 
-TEST(HttpConnectionTest, QueuedWriteIOBufferDataPointerStability) {
+TEST(HttpConnectionTest, QueuedWriteIOBuffer_DataPointerStability) {
   // This is a regression test that makes sure that QueuedWriteIOBuffer deals
   // with base::queue's semantics differences vs. std::queue right, and still
   // makes sure our data() pointers are stable.

@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {
@@ -33,6 +34,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
     virtual RenderInputRouterSupportBase* GetParentRenderInputRouterSupport(
         const FrameSinkId& frame_sink_id) = 0;
     virtual RenderInputRouterSupportBase* GetRootRenderInputRouterSupport(
+        const FrameSinkId& frame_sink_id) = 0;
+    virtual const CompositorFrameMetadata* GetLastActivatedFrameMetadata(
         const FrameSinkId& frame_sink_id) = 0;
   };
 

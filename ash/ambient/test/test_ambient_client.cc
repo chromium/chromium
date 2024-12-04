@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/time/time.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -119,7 +120,7 @@ void TestAmbientClient::IssueAccessToken(bool is_empty) {
              /*expiration_time=*/base::Time::Now());
   } else {
     std::move(pending_callback_)
-        .Run(kTestGaiaId, kTestAccessToken,
+        .Run(GaiaId(kTestGaiaId), kTestAccessToken,
              base::Time::Now() + kDefaultTokenExpirationDelay);
   }
 }

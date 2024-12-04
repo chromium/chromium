@@ -18,6 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/collaboration/internal/messaging_jni_headers/ConversionUtils_jni.h"
 
+using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
@@ -154,9 +155,12 @@ ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
   for (const auto& activity_log_item : activity_log_items) {
     Java_ConversionUtils_createActivityLogItemAndMaybeAddToList(
         env, jlist, static_cast<int>(activity_log_item.collaboration_event),
-        ConvertUTF8ToJavaString(env, activity_log_item.title_text),
-        ConvertUTF8ToJavaString(env, activity_log_item.description_text),
-        ConvertUTF8ToJavaString(env, activity_log_item.timestamp_text),
+        ConvertUTF8ToJavaString(env, activity_log_item.user_display_name),
+        activity_log_item.user_is_self,
+        ConvertUTF16ToJavaString(env, activity_log_item.description),
+        activity_log_item.time_delta.InMilliseconds(),
+        activity_log_item.show_favicon,
+        static_cast<int>(activity_log_item.action),
         MessageAttributionToJava(env, activity_log_item.activity_metadata));
   }
 

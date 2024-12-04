@@ -164,6 +164,10 @@ ProfileManagementOidcTokens::ProfileManagementOidcTokens(
     : auth_token(auth_token), id_token(id_token), state(state) {}
 
 ProfileManagementOidcTokens::ProfileManagementOidcTokens(
+    const std::string& encrypted_user_info)
+    : auth_token(""), id_token(encrypted_user_info), is_token_encrypted(true) {}
+
+ProfileManagementOidcTokens::ProfileManagementOidcTokens(
     ProfileManagementOidcTokens&& other) = default;
 ProfileManagementOidcTokens& ProfileManagementOidcTokens::operator=(
     ProfileManagementOidcTokens&& other) = default;
@@ -581,9 +585,13 @@ std::string ProfileAttributesEntry::GetProfileManagementEnrollmentToken()
 
 ProfileManagementOidcTokens
 ProfileAttributesEntry::GetProfileManagementOidcTokens() const {
-  return ProfileManagementOidcTokens(GetString(kProfileManagementOidcAuthToken),
-                                     GetString(kProfileManagementOidcIdToken),
-                                     GetString(kProfileManagementOidcState));
+  std::string auth_token = GetString(kProfileManagementOidcAuthToken);
+  std::string id_token = GetString(kProfileManagementOidcIdToken);
+  return (auth_token.empty() && !id_token.empty())
+             ? ProfileManagementOidcTokens(id_token)
+             : ProfileManagementOidcTokens(
+                   auth_token, id_token,
+                   GetString(kProfileManagementOidcState));
 }
 
 std::string ProfileAttributesEntry::GetProfileManagementId() const {

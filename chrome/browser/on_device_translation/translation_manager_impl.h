@@ -46,13 +46,15 @@ class TranslationManagerImpl
   explicit TranslationManagerImpl(content::RenderFrameHost* rfh);
 
   // `blink::mojom::TranslationManager` implementation.
-  void CanCreateTranslator(const std::string& source_lang,
-                           const std::string& target_lang,
+  void CanCreateTranslator(blink::mojom::TranslatorLanguageCodePtr source_lang,
+                           blink::mojom::TranslatorLanguageCodePtr target_lang,
                            CanCreateTranslatorCallback callback) override;
   void CreateTranslator(
       mojo::PendingRemote<
           blink::mojom::TranslationManagerCreateTranslatorClient> client,
       blink::mojom::TranslatorCreateOptionsPtr options) override;
+  void GetTranslatorAvailabilityInfo(
+      GetTranslatorAvailabilityInfoCallback callback) override;
 
   static bool PassAcceptLanguagesCheck(const std::string& accept_languages_str,
                                        const std::string& source_lang,

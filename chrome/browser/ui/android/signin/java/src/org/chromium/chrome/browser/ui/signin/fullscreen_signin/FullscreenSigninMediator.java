@@ -45,7 +45,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.ColorUtils;
 
@@ -524,8 +524,8 @@ public class FullscreenSigninMediator
 
         ArrayList<SpanApplier.SpanInfo> spans = new ArrayList<>();
         // Terms of Service SpanInfo.
-        final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
-                new NoUnderlineClickableSpan(
+        final ChromeClickableSpan clickableTermsOfServiceSpan =
+                new ChromeClickableSpan(
                         mContext,
                         view ->
                                 mDelegate.showInfoPage(
@@ -538,8 +538,8 @@ public class FullscreenSigninMediator
         // Metrics and Crash Reporting SpanInfo.
         if (!isMetricsReportingDisabled) {
             footerString += " " + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
-            final NoUnderlineClickableSpan clickableUMADialogSpan =
-                    new NoUnderlineClickableSpan(mContext, view -> openUmaDialog());
+            final ChromeClickableSpan clickableUMADialogSpan =
+                    new ChromeClickableSpan(mContext, view -> openUmaDialog());
             spans.add(
                     new SpanApplier.SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
         }

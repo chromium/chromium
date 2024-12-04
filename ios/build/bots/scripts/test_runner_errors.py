@@ -66,6 +66,32 @@ class XcodePathNotFoundError(XcodeInstallError):
         'xcode_path is not specified or does not exist: "%s"' % xcode_path)
 
 
+class LocalRunXcodeError(XcodeInstallError):
+  """The local environment did not match the test runner arguments for the
+  Xcode version"""
+
+  def __init__(self, xcode_build_version, local_version):
+    error_message = (
+        f'Requested xcode build version: {xcode_build_version} does not match '
+        f'the locally installed version: {local_version}. Either download '
+        f'{xcode_build_version} from go/xcode and run sudo xcode-select -s '
+        f'path/to/xcode or change the value of the --xcode-build-version '
+        f'argument passed to the test runner to: {local_version}')
+    super(LocalRunXcodeError, self).__init__(error_message)
+
+
+class LocalRunRuntimeError(XcodeInstallError):
+  """The local environment did not match the test runner arguments for the
+  iOS version"""
+
+  def __init__(self, ios_version, runtime_build):
+    error_message = (
+        f'Requested ios version: {ios_version} ({runtime_build})  any locally '
+        f'available runtime versions. To view installed runtime versions run:\n'
+        f'xcrun simctl runtime list')
+    super(LocalRunRuntimeError, self).__init__(error_message)
+
+
 class RuntimeBuildNotFoundError(Error):
   """The desired runtime build is not found on cipd."""
 

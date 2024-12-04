@@ -3291,6 +3291,22 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
+void Element::AttachColumnPseudoElements(AttachContext& context) {
+  if (const ColumnPseudoElementsVector* columns = GetColumnPseudoElements()) {
+    for (ColumnPseudoElement* column : *columns) {
+      column->AttachLayoutTree(context);
+    }
+  }
+}
+
+void Element::DetachColumnPseudoElements(bool performing_reattach) {
+  if (const ColumnPseudoElementsVector* columns = GetColumnPseudoElements()) {
+    for (ColumnPseudoElement* column : *columns) {
+      column->DetachLayoutTree(performing_reattach);
+    }
+  }
+}
+
 void Element::AttachLayoutTree(AttachContext& context) {
   DCHECK(GetDocument().InStyleRecalc() ||
          GetDocument().GetStyleEngine().InScrollMarkersAttachment());
@@ -3385,6 +3401,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
     context.counters_context.EnterObject(*layout_object);
   }
 
+  AttachColumnPseudoElements(children_context);
   AttachPrecedingPseudoElements(children_context);
 
   if (ShadowRoot* shadow_root = GetShadowRoot()) {
@@ -3447,6 +3464,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     data->RemoveAnchorPositionScrollData();
   }
 
+  DetachColumnPseudoElements(performing_reattach);
   DetachPrecedingPseudoElements(performing_reattach);
 
   auto* context = GetDisplayLockContext();
@@ -3689,6 +3707,13 @@ bool Element::SkipStyleRecalcForContainer(
     return false;
   }
 
+  // Same as above about ::scroll-marker-group goes about ::scroll-button().
+  // Note: using generic kPseudoIdScrollButton here, as style collection only
+  // sets generic pseudo style flag on originating element.
+  if (CanGeneratePseudoElement(kPseudoIdScrollButton)) {
+    return false;
+  }
+
   // Store the child_change so that we can continue interleaved style layout
   // from where we left off.
   EnsureElementRareData().EnsureContainerQueryData().SkipStyleRecalc(
@@ -3766,7 +3791,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   StyleRecalcContext local_style_recalc_context = style_recalc_context;
   local_style_recalc_context.style_scope_frame = &style_scope_frame;
 
-  StyleRecalcChange child_change = change.ForChildren(*this);
+  StyleRecalcChange child_change =
+      IsPseudoElement() ? change.ForPseudoElement() : change.ForChildren(*this);
   if (change.ShouldRecalcStyleFor(*this)) {
     child_change = RecalcOwnStyle(change, local_style_recalc_context);
     if (GetStyleChangeType() == kSubtreeStyleChange) {
@@ -3867,17 +3893,17 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   if (child_change.TraversePseudoElements(*this)) {
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollUpButton, child_change,
-                        child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollDownButton, child_change,
-                        child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollLeftButton, child_change,
-                        child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollRightButton, child_change,
-                        child_recalc_context);
-    UpdateScrollMarkerGroupPseudoElement(kPseudoIdScrollMarkerGroupBefore,
-                                         child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollMarkerGroupBefore,
+                                     child_change, child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollUpButton, child_change,
+                                     child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollDownButton, child_change,
+                                     child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollLeftButton, child_change,
+                                     child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollRightButton, child_change,
+                                     child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
     UpdateColumnPseudoElements(child_change, child_recalc_context);
@@ -3911,13 +3937,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       if (IsA<HTMLSelectElement>(this)) {
-        UpdatePseudoElement(kPseudoIdSelectArrow, child_change,
+        UpdatePseudoElement(kPseudoIdPickerIcon, child_change,
                             child_recalc_context);
       }
     }
 
-    UpdateScrollMarkerGroupPseudoElement(kPseudoIdScrollMarkerGroupAfter,
-                                         child_change, child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollMarkerGroupAfter,
+                                     child_change, child_recalc_context);
 
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
@@ -4422,7 +4448,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
       child_attacher = &whitespace_attacher;
     }
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdSelectArrow, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
     if (GetShadowRoot()) {
       RebuildShadowRootLayoutTree(*child_attacher);
     } else {
@@ -4439,6 +4465,8 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
                                    local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
     RebuildFirstLetterLayoutTree();
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollMarker, *child_attacher);
+    RebuildColumnLayoutTrees(*child_attacher);
     ClearChildNeedsReattachLayoutTree();
   }
   DCHECK(!NeedsStyleRecalc());
@@ -4461,6 +4489,15 @@ void Element::RebuildPseudoElementLayoutTree(
     WhitespaceAttacher& whitespace_attacher) {
   if (PseudoElement* element = GetPseudoElement(pseudo_id)) {
     RebuildLayoutTreeForChild(element, whitespace_attacher);
+  }
+}
+
+void Element::RebuildColumnLayoutTrees(
+    WhitespaceAttacher& whitespace_attacher) {
+  if (const ColumnPseudoElementsVector* columns = GetColumnPseudoElements()) {
+    for (ColumnPseudoElement* column : *columns) {
+      RebuildLayoutTreeForChild(column, whitespace_attacher);
+    }
   }
 }
 
@@ -6017,6 +6054,13 @@ Attr* Element::removeAttributeNode(Attr* attr,
 }
 
 void Element::LangAttributeChanged() {
+  // Propagate the change to all descendants.
+  for (Element& child : ElementTraversal::ChildrenOf(*this)) {
+    if (child.hasAttribute(html_names::kLangAttr)) {
+      continue;
+    }
+    child.LangAttributeChanged();
+  }
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
@@ -6956,45 +7000,55 @@ void Element::SetPseudoElementStylesChangeCounters(bool value) {
   EnsureElementRareData().SetPseudoElementStylesChangeCounters(value);
 }
 
-ColumnPseudoElement* Element::CreateColumnPseudoElementIfNeeded(
+ColumnPseudoElement* Element::GetOrCreateColumnPseudoElementIfNeeded(
     wtf_size_t index,
     const PhysicalRect& column_rect) {
   if (const ComputedStyle* style = GetComputedStyle();
       !style || !style->HasPseudoElementStyle(kPseudoIdColumn)) {
     return nullptr;
   }
-  auto* column_pseudo_element = MakeGarbageCollected<ColumnPseudoElement>(
-      /*originating_element=*/this, index, column_rect);
-  const ComputedStyle* style =
-      column_pseudo_element->CustomStyleForLayoutObject(
-          StyleRecalcContext::FromInclusiveAncestors(*this));
-  if (!style) {
-    style = &GetDocument().GetStyleResolver().InitialStyle();
-  }
-  column_pseudo_element->SetComputedStyle(style);
   ElementRareDataVector& data = EnsureElementRareData();
-  data.AddColumnPseudoElement(*column_pseudo_element);
-  column_pseudo_element->InsertedInto(*this);
-  probe::PseudoElementCreated(column_pseudo_element);
-  if (!style->CanGeneratePseudoElement(kPseudoIdScrollMarker)) {
+  ColumnPseudoElement* column_pseudo_element =
+      data.GetColumnPseudoElement(index);
+  if (!column_pseudo_element) {
+    column_pseudo_element = MakeGarbageCollected<ColumnPseudoElement>(
+        /*originating_element=*/this, index);
+    data.AddColumnPseudoElement(*column_pseudo_element);
+    const ComputedStyle* style =
+        column_pseudo_element->CustomStyleForLayoutObject(
+            StyleRecalcContext::FromInclusiveAncestors(*this));
+    if (!style) {
+      style = &GetDocument().GetStyleResolver().InitialStyle();
+    }
+    column_pseudo_element->SetComputedStyle(style);
+    column_pseudo_element->InsertedInto(*this);
+    probe::PseudoElementCreated(column_pseudo_element);
+  }
+  column_pseudo_element->SetColumnRect(column_rect);
+
+  if (!column_pseudo_element->GetComputedStyle()->CanGeneratePseudoElement(
+          kPseudoIdScrollMarker)) {
     return column_pseudo_element;
   }
 
-  auto* scroll_marker =
-      MakeGarbageCollected<ScrollMarkerPseudoElement>(column_pseudo_element);
-  const ComputedStyle* scroll_marker_style =
-      scroll_marker->CustomStyleForLayoutObject(
-          StyleRecalcContext::FromInclusiveAncestors(*column_pseudo_element));
-  if (!scroll_marker_style) {
-    scroll_marker->Dispose();
-    return column_pseudo_element;
+  auto* scroll_marker = To<ScrollMarkerPseudoElement>(
+      column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker));
+  if (!scroll_marker) {
+    scroll_marker =
+        MakeGarbageCollected<ScrollMarkerPseudoElement>(column_pseudo_element);
+    const ComputedStyle* scroll_marker_style =
+        scroll_marker->CustomStyleForLayoutObject(
+            StyleRecalcContext::FromInclusiveAncestors(*column_pseudo_element));
+    if (!scroll_marker_style) {
+      scroll_marker->Dispose();
+      return column_pseudo_element;
+    }
+    scroll_marker->SetComputedStyle(scroll_marker_style);
+    column_pseudo_element->EnsureElementRareData().SetPseudoElement(
+        kPseudoIdScrollMarker, scroll_marker);
+    scroll_marker->InsertedInto(*column_pseudo_element);
+    probe::PseudoElementCreated(scroll_marker);
   }
-
-  scroll_marker->SetComputedStyle(scroll_marker_style);
-  column_pseudo_element->EnsureElementRareData().SetPseudoElement(
-      kPseudoIdScrollMarker, scroll_marker);
-  scroll_marker->InsertedInto(*column_pseudo_element);
-  probe::PseudoElementCreated(scroll_marker);
 
   return column_pseudo_element;
 }
@@ -7007,21 +7061,24 @@ const ColumnPseudoElementsVector* Element::GetColumnPseudoElements() const {
   return data->GetColumnPseudoElements();
 }
 
-void Element::ClearColumnPseudoElements() {
+void Element::ClearColumnPseudoElements(wtf_size_t to_keep) {
   ElementRareDataVector* data = GetElementRareData();
   if (!data) {
     return;
   }
+  wtf_size_t idx = 0u;
   if (const ColumnPseudoElementsVector* column_pseudo_elements =
           data->GetColumnPseudoElements()) {
     for (PseudoElement* column_pseudo_element : *column_pseudo_elements) {
-      if (ElementRareDataVector* column_data =
-              column_pseudo_element->GetElementRareData()) {
-        column_data->ClearPseudoElements();
+      if (++idx > to_keep) {
+        if (ElementRareDataVector* column_data =
+                column_pseudo_element->GetElementRareData()) {
+          column_data->ClearPseudoElements();
+        }
       }
     }
   }
-  data->ClearColumnPseudoElements();
+  data->ClearColumnPseudoElements(to_keep);
 }
 
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
@@ -8202,28 +8259,33 @@ void Element::UpdateColumnPseudoElements(const StyleRecalcChange change,
   }
 }
 
-PseudoElement* Element::UpdateScrollMarkerGroupPseudoElement(
+PseudoElement* Element::UpdateLayoutSiblingPseudoElement(
     PseudoId pseudo_id,
     const StyleRecalcChange change,
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
-         pseudo_id == kPseudoIdScrollMarkerGroupAfter);
-  StyleRecalcContext scroll_marker_group_context(style_recalc_context);
+         pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
+         pseudo_id == kPseudoIdScrollUpButton ||
+         pseudo_id == kPseudoIdScrollDownButton ||
+         pseudo_id == kPseudoIdScrollLeftButton ||
+         pseudo_id == kPseudoIdScrollRightButton);
+  StyleRecalcContext context(style_recalc_context);
   if (style_recalc_context.container &&
       style_recalc_context.container == this) {
     // TODO(crbug.com/378584781): Needs specification.
     //
-    // The ::scroll-marker-group box is a sibling of its originating element,
-    // which means that it's laid out before or after its originating element.
-    // That means the ::scroll-marker-group is not contained by its parent and
-    // size container queries will break down. This behavior is not specified,
-    // but we currently make the grandparent the first size container query
-    // candidate to avoid crashing. Note that the originating element can still
-    // be a query container for style() queries, for instance.
-    scroll_marker_group_context.container =
+    // The ::scroll-marker-group/::scroll-button() box is a sibling of its
+    // originating element, which means that it's laid out before or after its
+    // originating element. That means the ::scroll-marker-group is not
+    // contained by its parent and size container queries will break down. This
+    // behavior is not specified, but we currently make the grandparent the
+    // first size container query candidate to avoid crashing. Note that the
+    // originating element can still be a query container for style() queries,
+    // for instance.
+    context.container =
         FlatTreeTraversal::ParentElement(*style_recalc_context.container);
   }
-  return UpdatePseudoElement(pseudo_id, change, scroll_marker_group_context);
+  return UpdatePseudoElement(pseudo_id, change, context);
 }
 
 PseudoElement* Element::UpdatePseudoElement(
@@ -8530,7 +8592,7 @@ const ComputedStyle* Element::StyleForPseudoElement(
 
   const bool is_before_or_after_like =
       pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
-      pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdSelectArrow;
+      pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdPickerIcon;
 
   if (is_before_or_after_like) {
     DCHECK(request.parent_override);
@@ -10668,7 +10730,7 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdCheckMark:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
-      case kPseudoIdSelectArrow:
+      case kPseudoIdPickerIcon:
       case kPseudoIdBackdrop:
       case kPseudoIdScrollMarkerGroupBefore:
       case kPseudoIdScrollMarkerGroupAfter:

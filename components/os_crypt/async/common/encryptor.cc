@@ -197,8 +197,7 @@ bool Encryptor::EncryptString(const std::string& plaintext,
 bool Encryptor::DecryptString(const std::string& ciphertext,
                               std::string* plaintext,
                               DecryptFlags* flags) const {
-  auto decrypted =
-      DecryptData(base::as_bytes(base::make_span(ciphertext)), flags);
+  auto decrypted = DecryptData(base::as_byte_span(ciphertext), flags);
 
   if (!decrypted.has_value()) {
     return false;
@@ -228,8 +227,7 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
   }
 
   const auto& [provider, key] = *it;
-  std::vector<uint8_t> ciphertext =
-      key.Encrypt(base::as_bytes(base::make_span(data)));
+  std::vector<uint8_t> ciphertext = key.Encrypt(base::as_byte_span(data));
 
   // This adds the provider prefix on the start of the data.
   ciphertext.insert(ciphertext.begin(), provider.cbegin(), provider.cend());

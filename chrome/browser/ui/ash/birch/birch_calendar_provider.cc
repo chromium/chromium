@@ -50,7 +50,7 @@ BirchCalendarItem::ResponseStatus GetItemResponseStatus(
 BirchCalendarProvider::BirchCalendarProvider(Profile* profile)
     : profile_(profile) {}
 
-BirchCalendarProvider::~BirchCalendarProvider() {}
+BirchCalendarProvider::~BirchCalendarProvider() = default;
 
 void BirchCalendarProvider::Initialize() {
   fetcher_ = std::make_unique<BirchCalendarFetcher>(profile_);

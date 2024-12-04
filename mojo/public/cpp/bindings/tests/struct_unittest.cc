@@ -145,7 +145,7 @@ TEST_F(StructTest, Clone) {
 }
 
 // Serialization test of a struct with no pointer or handle members.
-TEST_F(StructTest, SerializationBasic) {
+TEST_F(StructTest, Serialization_Basic) {
   RectPtr rect(MakeRect());
 
   mojo::Message message;
@@ -159,7 +159,7 @@ TEST_F(StructTest, SerializationBasic) {
 }
 
 // Construction of a struct with struct pointers from null.
-TEST_F(StructTest, ConstructionStructPointers) {
+TEST_F(StructTest, Construction_StructPointers) {
   RectPairPtr pair;
   EXPECT_TRUE(pair.is_null());
 
@@ -173,7 +173,7 @@ TEST_F(StructTest, ConstructionStructPointers) {
 }
 
 // Serialization test of a struct with struct pointers.
-TEST_F(StructTest, SerializationStructPointers) {
+TEST_F(StructTest, Serialization_StructPointers) {
   RectPairPtr pair(RectPair::New(MakeRect(), MakeRect()));
 
   mojo::Message message;
@@ -188,7 +188,7 @@ TEST_F(StructTest, SerializationStructPointers) {
 }
 
 // Serialization test of a struct with an array member.
-TEST_F(StructTest, SerializationArrayPointers) {
+TEST_F(StructTest, Serialization_ArrayPointers) {
   std::vector<RectPtr> rects;
   for (size_t i = 0; i < 4; ++i)
     rects.push_back(MakeRect(static_cast<int32_t>(i) + 1));
@@ -220,7 +220,7 @@ TEST_F(StructTest, SerializationArrayPointers) {
 }
 
 // Serialization test of a struct with null array pointers.
-TEST_F(StructTest, SerializationNullArrayPointers) {
+TEST_F(StructTest, Serialization_NullArrayPointers) {
   NamedRegionPtr region(NamedRegion::New());
   EXPECT_FALSE(region->name);
   EXPECT_FALSE(region->rects);
@@ -240,7 +240,7 @@ TEST_F(StructTest, SerializationNullArrayPointers) {
 }
 
 // Tests deserializing structs as a newer version.
-TEST_F(StructTest, VersioningOldToNew) {
+TEST_F(StructTest, Versioning_OldToNew) {
   {
     MultiVersionStructV0Ptr input(MultiVersionStructV0::New(123));
     MultiVersionStructPtr expected_output(MultiVersionStruct::New(123));
@@ -307,7 +307,7 @@ TEST_F(StructTest, VersioningOldToNew) {
 }
 
 // Tests deserializing structs as an older version.
-TEST_F(StructTest, VersioningNewToOld) {
+TEST_F(StructTest, Versioning_NewToOld) {
   {
     MultiVersionStructPtr input = MakeMultiVersionStruct();
     MultiVersionStructV7Ptr expected_output(MultiVersionStructV7::New(
@@ -368,7 +368,7 @@ TEST_F(StructTest, VersioningNewToOld) {
 }
 
 // Serialization test for native struct.
-TEST_F(StructTest, SerializationNativeStruct) {
+TEST_F(StructTest, Serialization_NativeStruct) {
   using Data = native::internal::NativeStruct_Data;
   {
     // Serialization of a null native struct.
@@ -420,7 +420,7 @@ TEST_F(StructTest, SerializationNativeStruct) {
   }
 }
 
-TEST_F(StructTest, SerializationPublicAPI) {
+TEST_F(StructTest, Serialization_PublicAPI) {
   {
     // A null struct pointer.
     RectPtr null_struct;

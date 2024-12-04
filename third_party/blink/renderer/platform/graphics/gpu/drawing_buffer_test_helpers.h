@@ -326,6 +326,9 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
   void DrawingBufferClientRestorePixelLocalStorage() override {
     // Not unit tested yet. Tested with end-to-end tests.
   }
+  void DrawingBufferClientInitializeLayer(cc::Layer* layer) override {
+    // Not unit tested yet. Tested with end-to-end tests.
+  }
 
   // Testing methods.
   gpu::SyncToken MostRecentlyWaitedSyncToken() const {
@@ -463,7 +466,6 @@ class DrawingBufferForTests : public DrawingBuffer {
             false /* wantDepth */,
             false /* wantStencil */,
             DrawingBuffer::kAllowChromiumImage /* ChromiumImageUsage */,
-            cc::PaintFlags::FilterQuality::kLow,
             PredefinedColorSpace::kSRGB,
             gl::GpuPreference::kHighPerformance),
         live_(nullptr) {}

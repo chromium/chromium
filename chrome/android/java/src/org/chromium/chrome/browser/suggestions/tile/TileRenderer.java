@@ -247,7 +247,7 @@ public class TileRenderer {
     }
 
     /** Returns whether the tile represents a Search query. */
-    public boolean isSearchTile(Tile tile) {
+    private boolean isSearchTile(Tile tile) {
         return TileUtils.isSearchTile(mProfile, tile);
     }
 

@@ -27,7 +27,7 @@ using CheckForServiceAndStartCallback =
 // False is passed to the callback if the service is not activatable or failed to
 // start. True is passed if the service is already running or was auto-started.
 // Any DBus errors are indicated as nullopt.
-COMPONENT_EXPORT(DBUS)
+COMPONENT_EXPORT(COMPONENTS_DBUS)
 void CheckForServiceAndStart(scoped_refptr<dbus::Bus> bus,
                              const std::string& name,
                              CheckForServiceAndStartCallback callback);

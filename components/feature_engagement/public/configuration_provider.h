@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_list.h"
 #include "components/feature_engagement/public/stats.h"
@@ -61,7 +60,7 @@ class ConfigurationProvider {
   virtual bool MaybeProvideGroupConfiguration(const base::Feature& feature,
                                               GroupConfig& config) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Provides an allowed set of prefixes for the events which can be stored and
   // kept, regardless of whether or not they are used in a config.
   virtual std::set<std::string> MaybeProvideAllowedEventPrefixes(

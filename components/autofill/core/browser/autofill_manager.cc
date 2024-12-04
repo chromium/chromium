@@ -322,11 +322,11 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   LogTypePredictionsAvailable(log_manager(), queryable_forms);
 
   // Query the server if at least one of the forms was parsed.
-  if (!queryable_forms.empty() && client().GetCrowdsourcingManager()) {
+  if (!queryable_forms.empty()) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
     // If language detection is currently reparsing the form, wait until the
     // server response is processed, to ensure server predictions are not lost.
-    client().GetCrowdsourcingManager()->StartQueryRequest(
+    client().GetCrowdsourcingManager().StartQueryRequest(
         queryable_forms, driver().GetIsolationInfo(),
         AfterParsingFinishes(base::BindOnce(
             &AutofillManager::OnLoadedServerPredictions, GetWeakPtr())));

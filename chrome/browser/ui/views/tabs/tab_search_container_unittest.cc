@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/common/chrome_features.h"
@@ -43,34 +46,38 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
         {features::kTabOrganization, features::kTabstripDeclutter},
         {features::kTabstripComboButton});
 
-    tab_strip_controller_ =
-        std::make_unique<FakeBaseTabStripControllerWithProfile>();
+    tab_strip_ = std::make_unique<TabStrip>(
+        std::make_unique<FakeBaseTabStripControllerWithProfile>());
+
     tab_strip_model_ = std::make_unique<TabStripModel>(
-        &tab_strip_model_delegate_, tab_strip_controller_->GetProfile());
+        &tab_strip_model_delegate_, tab_strip_->controller()->GetProfile());
 
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
     ON_CALL(*browser_window_interface_, GetTabStripModel)
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
     ON_CALL(*browser_window_interface_, GetProfile)
-        .WillByDefault(::testing::Return(tab_strip_controller_->GetProfile()));
+        .WillByDefault(
+            ::testing::Return(tab_strip_->controller()->GetProfile()));
 
     tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
         browser_window_interface_.get());
 
     locked_expansion_view_ = std::make_unique<views::View>();
     container_before_tab_strip_ = std::make_unique<TabSearchContainer>(
-        tab_strip_controller_.get(), tab_strip_model_.get(), true,
+        tab_strip_->controller(), tab_strip_model_.get(), true,
         locked_expansion_view_.get(), browser_window_interface_.get(),
-        tab_declutter_controller_.get());
+        tab_declutter_controller_.get(), /*anchor_view=*/nullptr,
+        tab_strip_.get());
     container_after_tab_strip_ = std::make_unique<TabSearchContainer>(
-        tab_strip_controller_.get(), tab_strip_model_.get(), false,
+        tab_strip_->controller(), tab_strip_model_.get(), false,
         locked_expansion_view_.get(), browser_window_interface_.get(),
-        tab_declutter_controller_.get());
+        tab_declutter_controller_.get(), /*anchor_view=*/nullptr,
+        tab_strip_.get());
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TabStripController> tab_strip_controller_;
+  std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
   TestTabStripModelDelegate tab_strip_model_delegate_;

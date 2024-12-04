@@ -647,11 +647,11 @@ class AudioRendererImplTest : public ::testing::Test,
   bool ended_;
 };
 
-TEST_F(AudioRendererImplTest, InitializeSuccessful) {
+TEST_F(AudioRendererImplTest, Initialize_Successful) {
   Initialize();
 }
 
-TEST_F(AudioRendererImplTest, InitializeDecoderInitFailure) {
+TEST_F(AudioRendererImplTest, Initialize_DecoderInitFailure) {
   expected_init_result_ = false;
   InitializeWithStatus(DECODER_ERROR_NOT_SUPPORTED);
 }
@@ -824,7 +824,7 @@ TEST_F(AudioRendererImplTest, DemuxerUnderflow) {
   EXPECT_TRUE(ConsumeBufferedData(OutputFrames(1)));
 }
 
-TEST_F(AudioRendererImplTest, UnderflowCapacityResetsAfterFlush) {
+TEST_F(AudioRendererImplTest, Underflow_CapacityResetsAfterFlush) {
   Initialize();
   Preroll();
   StartTicking();
@@ -848,7 +848,7 @@ TEST_F(AudioRendererImplTest, UnderflowCapacityResetsAfterFlush) {
   EXPECT_EQ(buffer_capacity().value, initial_capacity.value);
 }
 
-TEST_F(AudioRendererImplTest, UnderflowCapacityIncreasesBeforeHaveNothing) {
+TEST_F(AudioRendererImplTest, Underflow_CapacityIncreasesBeforeHaveNothing) {
   Initialize();
   Preroll();
   StartTicking();
@@ -864,7 +864,7 @@ TEST_F(AudioRendererImplTest, UnderflowCapacityIncreasesBeforeHaveNothing) {
   EXPECT_GT(buffer_capacity().value, initial_capacity.value);
 }
 
-TEST_F(AudioRendererImplTest, UnderflowOneCapacityIncreasePerUnderflow) {
+TEST_F(AudioRendererImplTest, Underflow_OneCapacityIncreasePerUnderflow) {
   Initialize();
   Preroll();
   StartTicking();
@@ -963,7 +963,7 @@ TEST_F(AudioRendererImplTest, ChannelMask) {
 
 // Verify that the proper channel mask is configured when downmixing is applied
 // to the input with discrete layout. The default hardware layout is stereo.
-TEST_F(AudioRendererImplTest, ChannelMaskDownmixDiscreteLayout) {
+TEST_F(AudioRendererImplTest, ChannelMask_DownmixDiscreteLayout) {
   int audio_channels = 9;
 
   AudioDecoderConfig audio_config(
@@ -984,7 +984,7 @@ TEST_F(AudioRendererImplTest, ChannelMaskDownmixDiscreteLayout) {
     ASSERT_TRUE(mask[ch]);
 }
 
-TEST_F(AudioRendererImplTest, UnderflowFlush) {
+TEST_F(AudioRendererImplTest, Underflow_Flush) {
   Initialize();
   Preroll();
   StartTicking();
@@ -1001,7 +1001,7 @@ TEST_F(AudioRendererImplTest, UnderflowFlush) {
   FlushDuringPendingRead();
 }
 
-TEST_F(AudioRendererImplTest, PendingReadFlush) {
+TEST_F(AudioRendererImplTest, PendingRead_Flush) {
   Initialize();
 
   Preroll();
@@ -1024,7 +1024,7 @@ TEST_F(AudioRendererImplTest, PendingReadFlush) {
   Preroll(seek_timestamp, seek_timestamp, PIPELINE_OK);
 }
 
-TEST_F(AudioRendererImplTest, PendingReadDestroy) {
+TEST_F(AudioRendererImplTest, PendingRead_Destroy) {
   Initialize();
 
   Preroll();
@@ -1041,7 +1041,7 @@ TEST_F(AudioRendererImplTest, PendingReadDestroy) {
   renderer_.reset();
 }
 
-TEST_F(AudioRendererImplTest, PendingFlushDestroy) {
+TEST_F(AudioRendererImplTest, PendingFlush_Destroy) {
   Initialize();
 
   Preroll();

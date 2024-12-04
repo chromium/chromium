@@ -996,7 +996,7 @@ TEST_F(NightLightTest, TestCustomScheduleInvertedStartAndEndTimesCase3) {
   EXPECT_EQ(base::Hours(5), controller->timer()->GetCurrentDelay());
 }
 
-TEST_F(NightLightTest, TestAmbientLightEnabledSettingFeatureOn) {
+TEST_F(NightLightTest, TestAmbientLightEnabledSetting_FeatureOn) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kAllowAmbientEQ);
 
@@ -1009,7 +1009,7 @@ TEST_F(NightLightTest, TestAmbientLightEnabledSettingFeatureOn) {
   EXPECT_TRUE(GetController()->GetAmbientColorEnabled());
 }
 
-TEST_F(NightLightTest, TestAmbientLightEnabledSettingFeatureOff) {
+TEST_F(NightLightTest, TestAmbientLightEnabledSetting_FeatureOff) {
   // With the feature disabled it should always be disabled.
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kAllowAmbientEQ);

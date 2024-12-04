@@ -50,6 +50,10 @@ class TabGroupChangeNotifier
     // A tab has been updated.
     virtual void OnTabUpdated(
         const tab_groups::SavedTabGroupTab& updated_tab) = 0;
+    // A tab has been selected. The parameter is empty if the selected tab could
+    // not be found, i.e. it is not part of a shared tab group.
+    virtual void OnTabSelected(
+        std::optional<tab_groups::SavedTabGroupTab> selected_tab) = 0;
   };
 
   ~TabGroupChangeNotifier() override;

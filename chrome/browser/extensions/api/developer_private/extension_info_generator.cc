@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/commands/command_service.h"
@@ -40,6 +41,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
@@ -827,6 +829,15 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
         extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())
             .spec();
   }
+
+  // Whether the extension can be uploaded as an account extension.
+  // `CanUploadAsAccountExtension` should already check for the feature flag
+  // somewhere but add another guard for it here just in case.
+  info->can_upload_as_account_extension =
+      base::FeatureList::IsEnabled(
+          syncer::kSyncEnableExtensionsInTransportMode) &&
+      AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
+          extension);
 
   // The icon.
   ExtensionResource icon = IconsInfo::GetIconResource(

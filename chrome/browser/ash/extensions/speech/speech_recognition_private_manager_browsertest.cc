@@ -23,7 +23,7 @@ namespace extensions {
 class SpeechRecognitionPrivateManagerTest
     : public SpeechRecognitionPrivateBaseTest {
  protected:
-  SpeechRecognitionPrivateManagerTest() {}
+  SpeechRecognitionPrivateManagerTest() = default;
   ~SpeechRecognitionPrivateManagerTest() override = default;
   SpeechRecognitionPrivateManagerTest(
       const SpeechRecognitionPrivateManagerTest&) = delete;

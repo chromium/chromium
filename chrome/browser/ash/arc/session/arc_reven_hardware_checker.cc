@@ -72,8 +72,8 @@ const std::unordered_set<std::string> ArcRevenHardwareChecker::kSupportedGpuIds{
     "8086:46b1", "8086:46b0", "8086:46aa", "8086:4626", "1002:15d8",
     "1002:1638"};
 
-ArcRevenHardwareChecker::ArcRevenHardwareChecker() {}
-ArcRevenHardwareChecker::~ArcRevenHardwareChecker() {}
+ArcRevenHardwareChecker::ArcRevenHardwareChecker() = default;
+ArcRevenHardwareChecker::~ArcRevenHardwareChecker() = default;
 
 void ArcRevenHardwareChecker::IsRevenDeviceCompatibleForArc(
     base::OnceCallback<void(bool)> callback) {

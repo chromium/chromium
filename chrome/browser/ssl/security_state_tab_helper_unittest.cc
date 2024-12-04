@@ -27,7 +27,7 @@ class SecurityStateTabHelperTest : public ChromeRenderViewHostTestHarness {
   SecurityStateTabHelperTest(const SecurityStateTabHelperTest&) = delete;
   SecurityStateTabHelperTest& operator=(const SecurityStateTabHelperTest&) =
       delete;
-  ~SecurityStateTabHelperTest() override {}
+  ~SecurityStateTabHelperTest() override = default;
 };
 
 TEST_F(SecurityStateTabHelperTest, DoesNotRecreateHelper) {
@@ -64,7 +64,7 @@ class ChromeSecurityStateTabHelperHistogramTest
   ChromeSecurityStateTabHelperHistogramTest& operator=(
       const ChromeSecurityStateTabHelperHistogramTest&) = delete;
 
-  ~ChromeSecurityStateTabHelperHistogramTest() override {}
+  ~ChromeSecurityStateTabHelperHistogramTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();

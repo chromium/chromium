@@ -9,7 +9,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-
+Play core common pulled in via gradle.
 
 Local Modifications:
 No modifications.

@@ -54,14 +54,8 @@ class SmallCapsIteratorTest : public testing::Test {
   }
 };
 
-// Some of our compilers cannot initialize a vector from an array yet.
-#define DECLARE_SMALL_CAPS_RUNSVECTOR(...)                  \
-  static const SmallCapsTestRun kRunsArray[] = __VA_ARGS__; \
-  Vector<SmallCapsTestRun> runs;                            \
-  runs.Append(kRunsArray, sizeof(kRunsArray) / sizeof(*kRunsArray));
-
-#define CHECK_SMALL_CAPS_RUN(...)             \
-  DECLARE_SMALL_CAPS_RUNSVECTOR(__VA_ARGS__); \
+#define CHECK_SMALL_CAPS_RUN(...)              \
+  Vector<SmallCapsTestRun> runs = __VA_ARGS__; \
   CheckRuns(runs);
 
 TEST_F(SmallCapsIteratorTest, Empty) {

@@ -138,8 +138,7 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
                           IDR_MEDIA_APP_APP_IMAGE_HANDLER_MODULE_JS);
 
   // Add all resources from chromeos_media_app_bundle_resources.pak.
-  source->AddResourcePaths(base::make_span(
-      kChromeosMediaAppBundleResources, kChromeosMediaAppBundleResourcesSize));
+  source->AddResourcePaths(kChromeosMediaAppBundleResources);
 
   // Note: go/bbsrc/flags.ts processes this.
   delegate->PopulateLoadTimeData(web_ui, source);

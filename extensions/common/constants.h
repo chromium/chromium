@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/extensions_export.h"
@@ -161,8 +162,8 @@ inline constexpr char kMimeTypePng[] = "image/png";
 inline constexpr char kWebStoreAppId[] = "ahfgeienlihckogmohjhadlkjgocpleb";
 
 // The key used for signing some pieces of data from the webstore.
-EXTENSIONS_EXPORT extern const uint8_t kWebstoreSignaturesPublicKey[];
-EXTENSIONS_EXPORT extern const size_t kWebstoreSignaturesPublicKeySize;
+EXTENSIONS_EXPORT extern const base::span<const uint8_t>
+    kWebstoreSignaturesPublicKey;
 
 // A preference for storing the extension's update URL data.
 inline constexpr char kUpdateURLData[] = "update_url_data";

@@ -583,7 +583,7 @@ TEST(UnionTest, ObjectUnionInArraySerialization) {
 
 // TODO(azani): Move back in struct_unittest.cc when possible.
 // Struct tests
-TEST(UnionTest, CloneUnion) {
+TEST(UnionTest, Clone_Union) {
   SmallStructPtr small_struct(SmallStruct::New());
   small_struct->pod_union = PodUnion::NewFInt8(10);
 
@@ -592,7 +592,7 @@ TEST(UnionTest, CloneUnion) {
 }
 
 // Serialization test of a struct with a union of plain old data.
-TEST(UnionTest, SerializationUnionOfPods) {
+TEST(UnionTest, Serialization_UnionOfPods) {
   SmallStructPtr small_struct(SmallStruct::New());
   small_struct->pod_union = PodUnion::NewFInt32(10);
 
@@ -608,7 +608,7 @@ TEST(UnionTest, SerializationUnionOfPods) {
 }
 
 // Serialization test of a struct with a union of structs.
-TEST(UnionTest, SerializationUnionOfObjects) {
+TEST(UnionTest, Serialization_UnionOfObjects) {
   SmallObjStructPtr obj_struct(SmallObjStruct::New());
   std::string hello("hello world");
   obj_struct->obj_union = ObjectUnion::NewFString(hello);
@@ -625,7 +625,7 @@ TEST(UnionTest, SerializationUnionOfObjects) {
 }
 
 // Validation test of a struct with a union.
-TEST(UnionTest, ValidationUnionsInStruct) {
+TEST(UnionTest, Validation_UnionsInStruct) {
   SmallStructPtr small_struct(SmallStruct::New());
   small_struct->pod_union = PodUnion::NewFInt32(10);
 
@@ -639,7 +639,7 @@ TEST(UnionTest, ValidationUnionsInStruct) {
 }
 
 // Validation test of a struct union fails due to unknown union tag.
-TEST(UnionTest, ValidationPodUnionInStructFailure) {
+TEST(UnionTest, Validation_PodUnionInStruct_Failure) {
   SmallStructPtr small_struct(SmallStruct::New());
   small_struct->pod_union = PodUnion::NewFInt32(10);
 
@@ -654,7 +654,7 @@ TEST(UnionTest, ValidationPodUnionInStructFailure) {
 }
 
 // Validation fails due to non-nullable null union in struct.
-TEST(UnionTest, ValidationNullUnionFailure) {
+TEST(UnionTest, Validation_NullUnion_Failure) {
   SmallStructNonNullableUnionPtr small_struct(
       SmallStructNonNullableUnion::New());
 
@@ -670,7 +670,7 @@ TEST(UnionTest, ValidationNullUnionFailure) {
 }
 
 // Validation passes with nullable null union.
-TEST(UnionTest, ValidationNullableUnion) {
+TEST(UnionTest, Validation_NullableUnion) {
   SmallStructPtr small_struct(SmallStruct::New());
 
   mojo::Message message;

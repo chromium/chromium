@@ -102,15 +102,13 @@ TEST(U2fParsingUtils, StaticMaterialize) {
   EXPECT_THAT(Materialize(base::span<const uint8_t, 0>()),
               ::testing::IsEmpty());
 
-  EXPECT_THAT(Materialize(base::make_span(kOne)),
-              ::testing::ElementsAreArray(kOne));
-  EXPECT_THAT(Materialize(base::make_span(kOneTwoThree)),
+  EXPECT_THAT(Materialize(base::span(kOne)), ::testing::ElementsAreArray(kOne));
+  EXPECT_THAT(Materialize(base::span(kOneTwoThree)),
               ::testing::ElementsAreArray(kOneTwoThree));
 
-  static_assert(
-      std::is_same<std::array<uint8_t, 1>,
-                   decltype(Materialize(base::make_span(kOne)))>::value,
-      "Materialize with a static span should yield a std::array.");
+  static_assert(std::is_same<std::array<uint8_t, 1>,
+                             decltype(Materialize(base::span(kOne)))>::value,
+                "Materialize with a static span should yield a std::array.");
 }
 
 TEST(U2fParsingUtils, MaterializeOrNull) {
@@ -141,7 +139,7 @@ TEST(U2fParsingUtils, Append) {
 
 TEST(U2fParsingUtils, AppendSelfCrashes) {
   std::vector<uint8_t> target(std::begin(kOneTwoThree), std::end(kOneTwoThree));
-  auto span = base::make_span(target);
+  auto span = base::span(target);
 
   // Tests the case where |in_values| overlap with the beginning of |*target|.
   EXPECT_DEATH_IF_SUPPORTED(Append(&target, span.first(1u)), "");

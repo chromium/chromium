@@ -368,7 +368,7 @@ TEST_F(HlsRenditionImplUnittest, TestCheckStateWithTooLateBuffer) {
   ASSERT_NE(rendition, nullptr);
 
   RespondWithRange(base::Seconds(10), base::Seconds(12));
-  EXPECT_CALL(*mock_mdeh_, OnError(_));
+  EXPECT_CALL(*mock_hrh_, Quit(_));
   rendition->CheckState(base::Seconds(0), 1.0, BindCheckStateNoExpect());
 
   task_environment_.RunUntilIdle();
@@ -391,7 +391,7 @@ TEST_F(HlsRenditionImplUnittest, TestNonRealTimePlaybackRate) {
   ASSERT_EQ(rendition->GetDuration(), std::nullopt);
 
   // Any rate not 0.0 or 1.0 should error.
-  EXPECT_CALL(*mock_mdeh_, OnError(_));
+  EXPECT_CALL(*mock_hrh_, Quit(_));
   rendition->CheckState(base::Seconds(0), 2.0, BindCheckStateNoExpect());
   task_environment_.RunUntilIdle();
 }
@@ -487,10 +487,9 @@ TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataFetchNewManifest) {
   task_environment_.FastForwardBy(base::Seconds(33));
   EXPECT_CALL(*mock_hrh_,
               UpdateRenditionManifestUri("test", GURL("http://example.com"), _))
-      .WillOnce(
-          [](std::string role, GURL uri, base::OnceCallback<void(bool)> cb) {
-            std::move(cb).Run(true);
-          });
+      .WillOnce([](std::string role, GURL uri, HlsDemuxerStatusCallback cb) {
+        std::move(cb).Run(OkStatus());
+      });
 
   // CheckState should in this case respond with a delay of 12 - 10/2 seconds.
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -597,7 +596,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // come back with a 0 second delay.
   EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(202)));
   EXPECT_CALL(*mock_hrh_, UpdateRenditionManifestUri("test", _, _))
-      .WillOnce(base::test::RunOnceCallback<2>(true));
+      .WillOnce(base::test::RunOnceCallback<2>(OkStatus()));
   task_environment_.FastForwardBy(base::Seconds(190));
   rendition->CheckState(base::Seconds(10), 1.0,
                         BindCheckState(base::Seconds(0)));

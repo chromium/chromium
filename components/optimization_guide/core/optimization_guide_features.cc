@@ -772,13 +772,6 @@ bool ShouldUseTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
 }
 
-uint32_t GetOnDeviceModelTextSafetyTokenInterval() {
-  static const base::FeatureParam<int32_t>
-      kOnDeviceModelTextSafetyTokenInterval{
-          &kTextSafetyClassifier, "on_device_text_safety_token_interval", 10};
-  return static_cast<uint32_t>(kOnDeviceModelTextSafetyTokenInterval.Get());
-}
-
 double GetOnDeviceModelLanguageDetectionMinimumReliability() {
   static const base::FeatureParam<double>
       kOnDeviceModelLanguageDetectionMinimumReliability{

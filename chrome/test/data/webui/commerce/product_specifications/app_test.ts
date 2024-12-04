@@ -9,8 +9,8 @@ import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction, LOADING_EN
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {Router} from 'chrome://compare/router.js';
-import type {ProductSpecificationsSet} from 'chrome://compare/shared.mojom-webui.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
+import type {ProductInfo, ProductSpecificationsSet} from 'chrome://compare/shared.mojom-webui.js';
+import type {ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.js';
 import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';

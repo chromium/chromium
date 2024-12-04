@@ -112,7 +112,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
         self.tool.filesystem.write_text_file(
             finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps({
-                'version': 8,
+                'version': 9,
                 'url_base': '/',
                 'items': {
                     'manual': {

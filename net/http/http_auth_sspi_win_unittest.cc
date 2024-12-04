@@ -54,7 +54,7 @@ TEST(HttpAuthSSPITest, SplitUserAndDomain) {
   MatchDomainUserAfterSplit(u"FOO\\bar", u"FOO", u"bar");
 }
 
-TEST(HttpAuthSSPITest, DetermineMaxTokenLengthNormal) {
+TEST(HttpAuthSSPITest, DetermineMaxTokenLength_Normal) {
   SecPkgInfoW package_info;
   memset(&package_info, 0x0, sizeof(package_info));
   package_info.cbMaxToken = 1337;
@@ -67,7 +67,7 @@ TEST(HttpAuthSSPITest, DetermineMaxTokenLengthNormal) {
   EXPECT_EQ(1337u, max_token_length);
 }
 
-TEST(HttpAuthSSPITest, DetermineMaxTokenLengthInvalidPackage) {
+TEST(HttpAuthSSPITest, DetermineMaxTokenLength_InvalidPackage) {
   MockSSPILibrary mock_library{L"Foo"};
   mock_library.ExpectQuerySecurityPackageInfo(SEC_E_SECPKG_NOT_FOUND, nullptr);
   ULONG max_token_length = kMaxTokenLength;
@@ -78,7 +78,7 @@ TEST(HttpAuthSSPITest, DetermineMaxTokenLengthInvalidPackage) {
   EXPECT_EQ(100u, max_token_length);
 }
 
-TEST(HttpAuthSSPITest, ParseChallengeFirstRound) {
+TEST(HttpAuthSSPITest, ParseChallenge_FirstRound) {
   // The first round should just consist of an unadorned "Negotiate" header.
   MockSSPILibrary mock_library{NEGOSSP_NAME};
   HttpAuthSSPI auth_sspi(&mock_library, HttpAuth::AUTH_SCHEME_NEGOTIATE);
@@ -87,7 +87,7 @@ TEST(HttpAuthSSPITest, ParseChallengeFirstRound) {
             auth_sspi.ParseChallenge(&challenge));
 }
 
-TEST(HttpAuthSSPITest, ParseChallengeTwoRounds) {
+TEST(HttpAuthSSPITest, ParseChallenge_TwoRounds) {
   // The first round should just have "Negotiate", and the second round should
   // have a valid base64 token associated with it.
   MockSSPILibrary mock_library{NEGOSSP_NAME};
@@ -108,7 +108,7 @@ TEST(HttpAuthSSPITest, ParseChallengeTwoRounds) {
             auth_sspi.ParseChallenge(&second_challenge));
 }
 
-TEST(HttpAuthSSPITest, ParseChallengeUnexpectedTokenFirstRound) {
+TEST(HttpAuthSSPITest, ParseChallenge_UnexpectedTokenFirstRound) {
   // If the first round challenge has an additional authentication token, it
   // should be treated as an invalid challenge from the server.
   MockSSPILibrary mock_library{NEGOSSP_NAME};
@@ -118,7 +118,7 @@ TEST(HttpAuthSSPITest, ParseChallengeUnexpectedTokenFirstRound) {
             auth_sspi.ParseChallenge(&challenge));
 }
 
-TEST(HttpAuthSSPITest, ParseChallengeMissingTokenSecondRound) {
+TEST(HttpAuthSSPITest, ParseChallenge_MissingTokenSecondRound) {
   // If a later-round challenge is simply "Negotiate", it should be treated as
   // an authentication challenge rejection from the server or proxy.
   MockSSPILibrary mock_library{NEGOSSP_NAME};
@@ -137,7 +137,7 @@ TEST(HttpAuthSSPITest, ParseChallengeMissingTokenSecondRound) {
             auth_sspi.ParseChallenge(&second_challenge));
 }
 
-TEST(HttpAuthSSPITest, ParseChallengeNonBase64EncodedToken) {
+TEST(HttpAuthSSPITest, ParseChallenge_NonBase64EncodedToken) {
   // If a later-round challenge has an invalid base64 encoded token, it should
   // be treated as an invalid challenge.
   MockSSPILibrary mock_library{NEGOSSP_NAME};
@@ -158,7 +158,7 @@ TEST(HttpAuthSSPITest, ParseChallengeNonBase64EncodedToken) {
 }
 
 // Runs through a full handshake against the MockSSPILibrary.
-TEST(HttpAuthSSPITest, GenerateAuthTokenFullHandshakeAmbientCreds) {
+TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds) {
   MockSSPILibrary mock_library{NEGOSSP_NAME};
   HttpAuthSSPI auth_sspi(&mock_library, HttpAuth::AUTH_SCHEME_NEGOTIATE);
   std::string first_challenge_text = "Negotiate";
@@ -195,7 +195,7 @@ TEST(HttpAuthSSPITest, GenerateAuthTokenFullHandshakeAmbientCreds) {
 }
 
 // Test NetLogs produced while going through a full Negotiate handshake.
-TEST(HttpAuthSSPITest, GenerateAuthTokenFullHandshakeAmbientCredsLogging) {
+TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
   RecordingNetLogObserver net_log_observer;
   NetLogWithSource net_log_with_source =
       NetLogWithSource::Make(NetLogSourceType::NONE);

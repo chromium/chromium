@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/viz/common/switches.h"
@@ -174,11 +176,22 @@ BASE_FEATURE(kWebViewNewInvalidateHeuristic,
              "WebViewNewInvalidateHeuristic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, WebView reports the set of threads involved in frame production
-// to HWUI, and they're included in the HWUI ADPF session.
+// If enabled and the device's SOC manufacturer satisifes the allowlist and
+// blocklist rules, WebView reports the set of threads involved in frame
+// production to HWUI, and they're included in the HWUI ADPF session.
+// If disabled, WebView never uses ADPF.
+// The allowlist takes precedence - i.e. if the allowlist is non-empty, the
+// soc must be in the allowlist for WebView to use ADPF, and the blocklist is
+// ignored. If there's no allowlist, the soc must be absent from the blocklist.
 BASE_FEATURE(kWebViewEnableADPF,
              "WebViewEnableADPF",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kWebViewADPFSocManufacturerAllowlist{
+    &kWebViewEnableADPF, "webview_soc_manufacturer_allowlist", "Google"};
+
+const base::FeatureParam<std::string> kWebViewADPFSocManufacturerBlocklist{
+    &kWebViewEnableADPF, "webview_soc_manufacturer_blocklist", ""};
 
 // If enabled, Renderer Main is included in the set of threads reported to the
 // HWUI. This feature works only when WebViewEnableADPF is enabled, otherwise
@@ -671,6 +684,23 @@ bool IsBcivBottomControlsEnabled() {
 
 bool IsBrowserControlsInVizEnabled() {
   return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz);
+}
+
+bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
+                         std::string_view soc_blocklist,
+                         std::string_view soc) {
+  std::vector<std::string_view> allowlist = base::SplitStringPiece(
+      soc_allowlist, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::string blocklist_param = features::kADPFSocManufacturerBlocklist.Get();
+  std::vector<std::string_view> blocklist = base::SplitStringPiece(
+      soc_blocklist, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // If there's no allowlist, soc must be absent from the blocklist.
+  if (allowlist.empty()) {
+    return !base::Contains(blocklist, soc);
+  }
+  // If there's an allowlist, soc must be in the allowlist.
+  // Blocklist is ignored in this case.
+  return base::Contains(allowlist, soc);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

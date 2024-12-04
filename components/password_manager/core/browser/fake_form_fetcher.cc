@@ -89,7 +89,7 @@ base::span<const PasswordForm> FakeFormFetcher::GetAllRelevantMatches() const {
 }
 
 base::span<const PasswordForm> FakeFormFetcher::GetBestMatches() const {
-  return base::make_span(best_matches_);
+  return base::span(best_matches_);
 }
 
 const PasswordForm* FakeFormFetcher::GetPreferredMatch() const {

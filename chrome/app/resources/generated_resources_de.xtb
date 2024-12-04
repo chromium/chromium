@@ -1120,7 +1120,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1769157454356586138">Fehler beim Scannen. Diese Datei wird von deinem Administrator blockiert.</translation>
 <translation id="1770407692401984718">Bild hierher ziehen oder</translation>
 <translation id="177053719077591686">Android-Apps auf Google Drive sichern.</translation>
-<translation id="1771075623623424448">Suchst du die Seite mit dem Geräteprotokoll des Browsers? Gehe zu <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Du kannst einen WLAN-Hotspot mit der mobilen Datenverbindung deines Geräts (<ph name="DEVICE_TYPE" />) erstellen, um anderen Geräten eine Internetverbindung zur Verfügung zu stellen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Daten aus gehosteten Apps</translation>
 <translation id="177529472352014190">Mit OneDrive verbinden</translation>
@@ -3125,6 +3124,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3166443275568926403">Leistung und Akkustatus</translation>
 <translation id="3167446923957429259">Mund nach links bewegen</translation>
 <translation id="3167562202484086668">Alle <ph name="BRAND" />-Daten löschen</translation>
+<translation id="3169901410527787002">Tastatureingaben in der Adressleiste immer vorlesen</translation>
 <translation id="3169930038976362151">Wähle ein Design aus, das deinen Anforderungen entspricht. Wenn du das Design, den Hintergrund oder den Bildschirmschoner ändern möchtest, halte einfach eine beliebige Stelle auf dem Desktop gedrückt.</translation>
 <translation id="3170072451822350649">Du kannst die Anmeldung auch überspringen und <ph name="LINK_START" />als Gast surfen<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Text</translation>
@@ -3136,6 +3136,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3179982752812949580">Schriftart für Text</translation>
 <translation id="3180284704187420717">Per Synchronisierung Lesezeichen, Passwörter und weitere Inhalte speichern</translation>
 <translation id="3180990259147710757">Kiefer nach links verschieben</translation>
+<translation id="3181825792072797598">Synchronisierung aktivieren</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
 <translation id="3182749001423093222">Rechtschreibprüfung</translation>
 <translation id="3183139917765991655">Profilimport</translation>
@@ -4321,7 +4322,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3988124842897276887">Dieser Tab ist mit einem USB-Gerät verbunden</translation>
 <translation id="3988996860813292272">Zeitzone auswählen</translation>
 <translation id="3989635538409502728">Abmelden</translation>
-<translation id="3991055816270226534">Drittanbieter-Cookies und Tracking-Schutzmaßnahmen verwalten</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Wenn die Standortgenauigkeit aktiviert ist, werden Informationen über Funksignale, wie WLAN‑Zugangspunkte und Mobilfunkmasten zusammen mit den Daten der Gerätesensoren, wie Beschleunigungsmesser und Gyroskop, verwendet, um den Gerätestandort genauer zu bestimmen. Android-Apps und ‑Dienste nutzen diese Daten, um standortbezogene Funktionen bereitzustellen. Dafür erhebt Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale in der Nähe dieses Geräts, die zum Bestimmen der Standorte von Funksignalen per Crowdsourcing verwendet werden.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google nutzt diese von diesem Gerät erhobenen Informationen dafür, die Standortgenauigkeit und standortbezogene Dienste zu verbessern sowie die Dienste von Google allgemein zu optimieren, bereitzustellen und zu verwalten. Wir verarbeiten diese Daten auf Grundlage der berechtigten Interessen von Google und Dritten, um den Anforderungen von Nutzern gerecht zu werden. Diese Informationen werden nicht zur Identifizierung von Personen verwendet.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kannst die Standortgenauigkeit jederzeit in den Standorteinstellungen dieses Geräts unter den Einstellungen &gt; Datenschutz und Sicherheit &gt; Datenschutzeinstellungen &gt; Standortzugriff &gt; Erweiterte Standorteinstellungen deaktivieren. Wenn die Standortgenauigkeit deaktiviert ist, werden keine Daten zur Standortgenauigkeit erhoben. Für Android-Apps und ‑Dienste wird zur Bestimmung des Standorts dieses Geräts nur die IP‑Adresse verwendet, sofern verfügbar. Dies kann die Verfügbarkeit und Genauigkeit des Standorts für Android-Apps und ‑Dienste, etwa Google Maps, beeinträchtigen.<ph name="END_PARAGRAPH3" />
@@ -6960,7 +6960,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5927132638760172455">Übertragung an unbekannten Empfänger</translation>
 <translation id="592740088639760830">Diesen Container anhalten</translation>
 <translation id="592880897588170157">PDF-Dateien herunterladen, anstatt sie automatisch in Chrome zu öffnen</translation>
-<translation id="5928969282301718193">Das ist im Moment alles</translation>
 <translation id="5930567261594625340">Nachthimmel</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> erfordert, dass das Gerät (<ph name="DEVICE_TYPE" />) sofort aktualisiert wird.</translation>
 <translation id="5932224571077948991">Website zeigt aufdringliche oder irreführende Werbung an</translation>
@@ -7530,7 +7529,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6344170822609224263">Auf Liste der Netzwerkverbindungen zugreifen</translation>
 <translation id="6344576354370880196">Gespeicherte Drucker</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />Dein Browser wird von deinen Eltern verwaltet<ph name="END_LINK" /></translation>
-<translation id="6344622098450209924">Schutz vor Tracking</translation>
 <translation id="6345418402353744910">Für den Proxy <ph name="PROXY" /> werden dein Nutzername und Passwort benötigt, damit der Administrator dein Netzwerk konfigurieren kann</translation>
 <translation id="6345566021391290381">Es wurden Passwörter für <ph name="WEBSITE_NAME" /> freigegeben. Du kannst sie im Anmeldeformular verwenden.</translation>
 <translation id="6345878117466430440">Als gelesen markieren</translation>
@@ -10125,7 +10123,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8195920051450756553">Verzögerung vor erneuter Aktivierung derselben Taste</translation>
 <translation id="8197673340773315084">Name oder Label wie „Arbeit“ oder „Privat“ hinzufügen</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
-<translation id="8198457270656084773">Suchst du die Seite mit dem Geräteprotokoll des Systems? Gehe zu <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Netzwerk(dienst) und Geräteeigenschaften</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8202160505685531999">Gib dein Passwort erneut ein, um dein <ph name="DEVICE_TYPE" />-Profil zu aktualisieren.</translation>

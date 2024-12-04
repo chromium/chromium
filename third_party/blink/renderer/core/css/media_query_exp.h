@@ -102,7 +102,7 @@ class CORE_EXPORT MediaQueryExpValue {
 
   double GetDoubleValue() const {
     DCHECK(IsNumericLiteralValue());
-    return To<CSSNumericLiteralValue>(*value_).GetDoubleValue();
+    return To<CSSNumericLiteralValue>(*value_).ClampedDoubleValue();
   }
 
   CSSPrimitiveValue::UnitType GetUnitType() const {

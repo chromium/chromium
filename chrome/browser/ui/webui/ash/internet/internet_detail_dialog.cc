@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 
 #include "ash/constants/ash_features.h"
@@ -184,9 +179,7 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kInternetDetailDialogResources,
-                      kInternetDetailDialogResourcesSize),
+      source, kInternetDetailDialogResources,
       IDR_INTERNET_DETAIL_DIALOG_INTERNET_DETAIL_DIALOG_CONTAINER_HTML);
   source->DisableTrustedTypesCSP();
 }

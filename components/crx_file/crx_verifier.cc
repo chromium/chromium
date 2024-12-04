@@ -87,7 +87,7 @@ bool ReadHashAndVerifyArchive(base::File* file,
   size_t len = 0;
   while ((len = ReadAndHashBuffer(buffer, std::size(buffer), file, hash)) > 0) {
     for (auto& verifier : verifiers) {
-      verifier->VerifyUpdate(base::make_span(buffer, len));
+      verifier->VerifyUpdate(base::span(buffer, len));
     }
   }
   for (auto& verifier : verifiers) {
@@ -213,14 +213,13 @@ VerifierResult VerifyCrx3(
       auto v = std::make_unique<crypto::SignatureVerifier>();
       static_assert(sizeof(unsigned char) == sizeof(uint8_t),
                     "Unsupported char size.");
-      if (!v->VerifyInit(proof_type.second,
-                         base::as_bytes(base::make_span(sig)),
-                         base::as_bytes(base::make_span(key)))) {
+      if (!v->VerifyInit(proof_type.second, base::as_byte_span(sig),
+                         base::as_byte_span(key))) {
         return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
       }
-      v->VerifyUpdate(base::as_bytes(base::make_span(kSignatureContext)));
+      v->VerifyUpdate(base::as_byte_span(kSignatureContext));
       v->VerifyUpdate(header_size_octets);
-      v->VerifyUpdate(base::as_bytes(base::make_span(signed_header_data_str)));
+      v->VerifyUpdate(base::as_byte_span(signed_header_data_str));
       verifiers.push_back(std::move(v));
     }
   }

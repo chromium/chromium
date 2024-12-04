@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -122,7 +123,8 @@ class ToolbarController : public views::MenuDelegate,
       int element_flex_order_start,
       views::View* toolbar_container_view,
       OverflowButton* overflow_button,
-      PinnedActionsDelegate* PinnedActionsDelegate);
+      PinnedActionsDelegate* PinnedActionsDelegate,
+      PinnedToolbarActionsModel* pinned_toolbar_actions_model);
   ToolbarController(const ToolbarController&) = delete;
   ToolbarController& operator=(const ToolbarController&) = delete;
   ~ToolbarController() override;

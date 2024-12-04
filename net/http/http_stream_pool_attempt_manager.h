@@ -69,6 +69,10 @@ class HttpStreamPool::AttemptManager
     return service_endpoint_request_.get();
   }
 
+  bool is_failing() const { return is_failing_; }
+
+  int error_to_notify() const { return error_to_notify_; }
+
   bool is_service_endpoint_request_finished() const {
     return service_endpoint_request_finished_;
   }
@@ -192,6 +196,9 @@ class HttpStreamPool::AttemptManager
 
   class InFlightAttempt;
   struct PreconnectEntry;
+
+  static std::string_view TcpBasedAttemptStateToString(
+      TcpBasedAttemptState state);
 
   const HttpStreamKey& stream_key() const;
 
@@ -325,6 +332,11 @@ class HttpStreamPool::AttemptManager
   // of the entry is moved to `notified_jobs_`.
   Job* ExtractFirstJobToNotify();
 
+  // Remove the pointeee of `job_pointer` from `jobs_`. May cancel in-flight
+  // attempts when there are no limit ignoring jobs after removing the job and
+  // in-flight attempts count is larger than the limit.
+  raw_ptr<Job> RemoveJobFromQueue(JobQueue::Pointer job_pointer);
+
   void OnInFlightAttemptComplete(InFlightAttempt* raw_attempt, int rv);
   void OnInFlightAttemptTcpHandshakeComplete(InFlightAttempt* raw_attempt,
                                              int rv);
@@ -366,6 +378,8 @@ class HttpStreamPool::AttemptManager
   void MaybeMarkQuicBroken();
 
   base::Value::Dict GetStatesAsNetLogParams();
+
+  bool CanComplete() const;
 
   void MaybeComplete();
 

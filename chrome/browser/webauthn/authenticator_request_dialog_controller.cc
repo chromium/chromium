@@ -242,41 +242,6 @@ const gfx::VectorIcon& GetCredentialIcon(AuthenticatorType type) {
   return vector_icons::kPasskeyIcon;
 }
 
-std::u16string GetMechanismDescription(
-    AuthenticatorType type,
-    const std::optional<std::string>& priority_phone_name) {
-  if (type == AuthenticatorType::kPhone) {
-    return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
-                                      base::UTF8ToUTF16(*priority_phone_name));
-  }
-  int message;
-  const bool gpm_enabled =
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
-  switch (type) {
-    case AuthenticatorType::kWinNative:
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
-                            : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
-      break;
-    case AuthenticatorType::kTouchID:
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW
-                            : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
-      break;
-    case AuthenticatorType::kICloudKeychain:
-      // TODO(crbug.com/40265798): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
-      // third party providers.
-      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
-                            : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
-      break;
-    case AuthenticatorType::kEnclave:
-      CHECK(gpm_enabled);
-      message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
-      break;
-    default:
-      message = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
-  }
-  return l10n_util::GetStringUTF16(message);
-}
-
 int GetHybridButtonLabel(bool has_security_key, bool specific_phones_listed) {
   if (has_security_key) {
     return specific_phones_listed
@@ -1168,8 +1133,7 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
       if (transport_availability_.has_empty_allow_list) {
         // For discoverable credential requests, show an account picker.
         model_->creds = std::move(platform_credentials);
-        SetCurrentStep(model_->creds.size() == 1 ? Step::kPreSelectSingleAccount
-                                                 : Step::kPreSelectAccount);
+        SetCurrentStep(Step::kPreSelectAccount);
       } else {
         // For requests with an allow list, pre-select a random credential.
         model_->creds = {platform_credentials.front()};
@@ -1183,7 +1147,7 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
           // Otherwise show the chosen credential to the user. For platform
           // authenticators with optional UV (e.g. Touch ID), this step
           // essentially acts as the user presence check.
-          SetCurrentStep(Step::kPreSelectSingleAccount);
+          SetCurrentStep(Step::kPreSelectAccount);
         }
       }
       return;
@@ -1446,8 +1410,7 @@ void AuthenticatorRequestDialogController::SelectAccount(
                                response.credential->id, *response.user_entity);
   }
   selection_callback_ = std::move(callback);
-  SetCurrentStep(model_->creds.size() == 1 ? Step::kSelectSingleAccount
-                                           : Step::kSelectAccount);
+  SetCurrentStep(Step::kSelectAccount);
 }
 
 AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
@@ -2116,7 +2079,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
                   &AuthenticatorRequestDialogController::OnAccountPreselected),
               base::Unretained(this), cred.cred_id));
       mechanism.description =
-          GetMechanismDescription(cred.source, model_->priority_phone_name);
+          AuthenticatorRequestDialogModel::GetMechanismDescription(
+              cred.source, model_->priority_phone_name);
     }
   }
 

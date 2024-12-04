@@ -38,7 +38,7 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
   }
 
   virtual bssl::UniquePtr<CRYPTO_BUFFER> GetCerts() {
-    return net::x509_util::CreateCryptoBuffer(base::make_span(google_der));
+    return net::x509_util::CreateCryptoBuffer(base::span(google_der));
   }
 
   virtual std::optional<
@@ -112,7 +112,7 @@ class CertificateViewerUIInvalidCertTest : public CertificateViewerUITest {
  protected:
   bssl::UniquePtr<CRYPTO_BUFFER> GetCerts() override {
     const uint8_t kInvalid[] = {42, 42, 42, 42, 42};
-    return net::x509_util::CreateCryptoBuffer(base::make_span(kInvalid));
+    return net::x509_util::CreateCryptoBuffer(base::span(kInvalid));
   }
 };
 

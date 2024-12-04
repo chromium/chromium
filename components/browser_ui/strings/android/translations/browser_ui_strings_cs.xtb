@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">Když je tato možnost zapnutá, weby mohou žádat o zobrazení textu a obrázků uložených do schránky. Když je vypnutá, weby k textům ani obrázkům uloženým do schránky nemají přístup.</translation>
 <translation id="5853982612236235577">Když je tato možnost zapnutá, weby mohou žádat o odesílání oznámení. Když je vypnutá, weby oznámení odesílat nemohou.</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
+<translation id="5860491529813859533">Zapnout</translation>
 <translation id="5876056640971328065">Pozastavit video</translation>
 <translation id="5877248419911025165">Sbalit všechny žádosti</translation>
 <translation id="5884085660368669834">Nastavení webu</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">Zadejte webovou adresu</translation>
 <translation id="5975083100439434680">Oddálit</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Navrhované karty jsou teď rychle přístupné ze seznamu aplikací v zařízení a z výsledků vyhledávání zařízení. Toto nastavení můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="6015775454662021376">Spravujte přístup tohoto webu k vašemu zařízení</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6042308850641462728">Více</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7423538860840206698">Čtení schránky je blokováno</translation>
 <translation id="7425915948813553151">Tmavý motiv pro weby</translation>
+<translation id="7488573225650545859">Skrýt kartu Zobrazení karet v seznamu aplikací</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Když je tato možnost zapnutá, weby mohou zobrazovat výzvy k přihlášení. Když je tato možnost vypnutá, weby výzvy k přihlášení zobrazovat nemohou.</translation>
 <translation id="7553211568594248088">Ukončit vyhledávání v centru</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">Tento obsah pochází z domény <ph name="DOMAIN_NAME" />. Poskytováno společností Google.</translation>
 <translation id="8088603949666785339">Další možnosti v <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Snižuje výkon, ale zvyšuje odolnost modulu V8 proti útokům</translation>
+<translation id="8112925981674547014">Zobrazení karet v seznamu aplikací</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Zítra Chrome soubory cookie opět omezí}few{Za # dny Chrome soubory cookie opět omezí}many{Za # dne Chrome soubory cookie opět omezí}other{Za # dní Chrome soubory cookie opět omezí}}</translation>
 <translation id="8116925261070264013">Ztlumeno</translation>
 <translation id="8117244575099414087">Když je tato možnost zapnutá, weby mohou používat senzory zařízení. Když je vypnutá, weby senzory používat nemohou.</translation>

@@ -8,11 +8,10 @@
 #include <cstdint>
 #include <optional>
 
+#include "ui/events/event.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
-
-class Event;
 
 // Structure to hold stylus handwriting specific details. This is only intended
 // to be used in the Browser process.
@@ -38,6 +37,11 @@ struct StylusHandwritingPropertiesWin {
 // Please use SetStylusHandwritingProperties().
 EVENTS_EXPORT const char* GetPropertyHandwritingPointerIdKeyForTesting();
 EVENTS_EXPORT const char* GetPropertyHandwritingStrokeIdKeyForTesting();
+
+// Creates event properties for testing with the provided stylus handwriting
+// properties.
+EVENTS_EXPORT Event::Properties CreateEventPropertiesForTesting(
+    const StylusHandwritingPropertiesWin& properties);
 
 // Sets stylus handwriting properties (stroke and pointer ids) to the provided
 // event.

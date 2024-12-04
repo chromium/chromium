@@ -34,10 +34,10 @@ enum class AppType {
   kRemote = 8,             // Remote app.
   kBorealis = 9,           // Borealis app, see go/borealis-app.
   kSystemWeb = 10,         // System web app.
-  kStandaloneBrowserChromeApp = 11,  // Chrome app hosted in Lacros.
-  kExtension = 12,                   // Browser extension.
-  kStandaloneBrowserExtension = 13,  // Extension hosted in Lacros.
-  kBruschetta = 14,                  // Bruschetta app, see go/bruschetta.
+  // kStandaloneBrowserChromeApp = 11,  // Removed. No longer used.
+  kExtension = 12,  // Browser extension.
+  // kStandaloneBrowserExtension = 13,  // Removed. No longer used.
+  kBruschetta = 14,  // Bruschetta app, see go/bruschetta.
 
   // The value for UMA. Should be updated when a new entry is added.
   kMaxValue = kBruschetta

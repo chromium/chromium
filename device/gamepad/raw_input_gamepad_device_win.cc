@@ -145,8 +145,8 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
     // Handle Dualshock4 input reports that do not specify HID gamepad usages in
     // the report descriptor.
     uint8_t report_id = input->data.hid.bRawData[0];
-    auto report = base::make_span(input->data.hid.bRawData + 1,
-                                  input->data.hid.dwSizeHid);
+    auto report =
+        base::span(input->data.hid.bRawData + 1, input->data.hid.dwSizeHid);
     Gamepad pad;
     bool is_multitouch_enabled = features::IsGamepadMultitouchEnabled();
     if (dualshock4_->ProcessInputReport(report_id, report, &pad, false,

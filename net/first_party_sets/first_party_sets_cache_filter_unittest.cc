@@ -12,13 +12,13 @@
 
 namespace net {
 
-TEST(FirstPartySetsCacheFilterTest, GetMatchInfoEmptyFilter) {
+TEST(FirstPartySetsCacheFilterTest, GetMatchInfo_EmptyFilter) {
   EXPECT_EQ(FirstPartySetsCacheFilter().GetMatchInfo(
                 SchemefulSite(GURL("https://example.test"))),
             FirstPartySetsCacheFilter::MatchInfo());
 }
 
-TEST(FirstPartySetsCacheFilterTest, GetMatchInfoNotMatch) {
+TEST(FirstPartySetsCacheFilterTest, GetMatchInfo_NotMatch) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite foo(GURL("https://foo.test"));
   const int64_t kBrowserRunId = 3;
@@ -30,7 +30,7 @@ TEST(FirstPartySetsCacheFilterTest, GetMatchInfoNotMatch) {
   EXPECT_EQ(cache_filter.GetMatchInfo(foo), match_info);
 }
 
-TEST(FirstPartySetsCacheFilterTest, GetMatchInfoMatch) {
+TEST(FirstPartySetsCacheFilterTest, GetMatchInfo_Match) {
   SchemefulSite example(GURL("https://example.test"));
   const int64_t kBrowserRunId = 3;
 

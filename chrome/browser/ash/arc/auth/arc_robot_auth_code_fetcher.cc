@@ -44,7 +44,7 @@ const policy::CloudPolicyClient* GetCloudPolicyClient() {
 
 namespace arc {
 
-ArcRobotAuthCodeFetcher::ArcRobotAuthCodeFetcher() {}
+ArcRobotAuthCodeFetcher::ArcRobotAuthCodeFetcher() = default;
 
 ArcRobotAuthCodeFetcher::~ArcRobotAuthCodeFetcher() = default;
 

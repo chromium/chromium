@@ -30,7 +30,7 @@ LocationBarModelAndroid::LocationBarModelAndroid(JNIEnv* env,
                                                  content::kMaxURLDisplayChars)),
       java_object_(obj) {}
 
-LocationBarModelAndroid::~LocationBarModelAndroid() {}
+LocationBarModelAndroid::~LocationBarModelAndroid() = default;
 
 void LocationBarModelAndroid::Destroy(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj) {

@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -347,7 +346,7 @@ TEST_F(GCMAccountTrackerTest, AccountRemoved) {
   VerifyAccountTokens(expected_accounts, driver()->accounts());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Tests that clearing the primary account when having multiple accounts
 // does not crash the application.
 // Regression test for crbug.com/1234406
@@ -368,7 +367,7 @@ TEST_F(GCMAccountTrackerTest, AccountRemovedWithoutSyncConsentNoCrash) {
   ClearPrimaryAccount();
   EXPECT_TRUE(driver()->update_accounts_called());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(GCMAccountTrackerTest, GetTokenFailed) {
   CoreAccountInfo account1 = SetPrimaryAccount(kEmail1);

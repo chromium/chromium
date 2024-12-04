@@ -15,8 +15,8 @@ namespace autofill {
 // static
 AutofillImageFetcherImpl* AutofillImageFetcherFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<AutofillImageFetcherImpl*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<AutofillImageFetcherImpl>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -26,10 +26,9 @@ AutofillImageFetcherFactory* AutofillImageFetcherFactory::GetInstance() {
 }
 
 AutofillImageFetcherFactory::AutofillImageFetcherFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AutofillImageFetcher",
-          BrowserStateDependencyManager::GetInstance()) {}
-AutofillImageFetcherFactory::~AutofillImageFetcherFactory() {}
+    : ProfileKeyedServiceFactoryIOS("AutofillImageFetcher") {}
+
+AutofillImageFetcherFactory::~AutofillImageFetcherFactory() = default;
 
 std::unique_ptr<KeyedService>
 AutofillImageFetcherFactory::BuildServiceInstanceFor(

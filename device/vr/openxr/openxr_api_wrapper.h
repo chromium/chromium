@@ -77,6 +77,8 @@ class OpenXrApiWrapper {
 
   static VRTestHook* GetTestHook();
 
+  static bool NeedsSeparateActivity();
+
   bool UpdateAndGetSessionEnded();
 
   // The supplied graphics_binding is guaranteed by the caller to exist until

@@ -119,7 +119,7 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
        IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG},
   };
 
-  webui::SetupWebUIDataSource(source, base::make_span(kResources),
+  webui::SetupWebUIDataSource(source, kResources,
                               IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_HTML);
 
   source->AddString("accountImageUrl", GetAccountImageURL(profile));

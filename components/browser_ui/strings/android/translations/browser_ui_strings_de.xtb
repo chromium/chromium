@@ -321,6 +321,7 @@
 <translation id="5844448279347999754">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Text und Bilder abrufen dürfen, die in der Zwischenablage gespeichert sind. Wenn er deaktiviert ist, können Websites keine Texte oder Bilder abrufen, die in der Zwischenablage gespeichert sind.</translation>
 <translation id="5853982612236235577">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Benachrichtigungen senden dürfen. Wenn er deaktiviert ist, können Websites keine Benachrichtigungen senden.</translation>
 <translation id="5860033963881614850">Aus</translation>
+<translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5876056640971328065">Video anhalten</translation>
 <translation id="5877248419911025165">Alle Anfragen minimieren</translation>
 <translation id="5884085660368669834">Websiteeinstellung</translation>
@@ -334,6 +335,7 @@
 <translation id="5968921426641056619">Webadresse eingeben</translation>
 <translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Du kannst jetzt schnell über die App-Liste und die Suchergebnissen deines Geräts auf vorgeschlagene Tabs zugreifen. Die Funktion lässt sich jederzeit in den Chrome-Einstellungen deaktivieren.</translation>
 <translation id="6015775454662021376">Zugriff dieser Website auf dein Gerät steuern</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6042308850641462728">Mehr</translation>
@@ -435,6 +437,7 @@
 <translation id="7423098979219808738">Zuerst fragen</translation>
 <translation id="7423538860840206698">Es dürfen keine Dateien aus der Zwischenablage abgerufen werden</translation>
 <translation id="7425915948813553151">Dunkles Design für Websites</translation>
+<translation id="7488573225650545859">„Tabs in App-Liste anzeigen“ ausblenden</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Wenn dieser Schalter aktiviert ist, können Websites Aufforderungen zur Anmeldung anzeigen. Wenn er deaktiviert ist, können Websites keine Aufforderungen zur Anmeldung anzeigen.</translation>
 <translation id="7553211568594248088">Hub-Suche beenden</translation>
@@ -474,6 +477,7 @@
 <translation id="8087000398470557479">Dieser Inhalt ist von <ph name="DOMAIN_NAME" /> und wurde von Google bereitgestellt.</translation>
 <translation id="8088603949666785339">Weitere Optionen in „<ph name="BANNER_TITLE" />“</translation>
 <translation id="8090579562279016251">Reduziert die Leistung, macht V8 aber widerstandsfähiger gegen Angriffe</translation>
+<translation id="8112925981674547014">Tabs in App-Liste anzeigen</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Chrome schränkt morgen wieder Cookies ein}other{Noch # Tage, bis Chrome wieder Cookies einschränkt}}</translation>
 <translation id="8116925261070264013">Stummgeschaltet</translation>
 <translation id="8117244575099414087">Wenn dieser Schalter aktiviert ist, können Websites die Sensoren deines Geräts verwenden. Wenn er deaktiviert ist, können Websites keine Sensoren verwenden.</translation>

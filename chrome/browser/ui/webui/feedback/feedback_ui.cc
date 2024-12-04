@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 
 #include "build/chromeos_buildflags.h"
@@ -80,12 +75,9 @@ void AddStringResources(content::WebUIDataSource* source,
 void CreateAndAddFeedbackHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFeedbackHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kFeedbackResources, kFeedbackResourcesSize),
-      IDR_FEEDBACK_FEEDBACK_HTML);
-  source->AddResourcePaths(
-      base::make_span(kKeyValuePairViewerSharedResources,
-                      kKeyValuePairViewerSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kFeedbackResources,
+                              IDR_FEEDBACK_FEEDBACK_HTML);
+  source->AddResourcePaths(kKeyValuePairViewerSharedResources);
   AddStringResources(source, profile);
 }
 

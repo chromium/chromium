@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Aktivér notifikationer om Sikkerhedstjek…</translation>
 <translation id="1652333207707886577">Tilpas din menu</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Resterende tid: {TIME} sekunder}=1{Resterende tid: {TIME} sekund}one{Resterende tid: {TIME} sekund}other{Resterende tid: {TIME} sekunder}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} gemt adgangskode er tilgængelig over dit tastatur.}one{{count} gemt adgangskode er tilgængelig over dit tastatur.}other{{count} gemte adgangskoder er tilgængelige over dit tastatur.}}</translation>
 <translation id="1654232554734641711">Der er givet adgang til mikrofonen</translation>
 <translation id="16554782717487656">Registrer enheder</translation>
 <translation id="1657011748321897393">Deling mislykkedes. Du har ikke forbindelse til netværket.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Åbn fanegitteret</translation>
 <translation id="20485545164632846">nyt element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> konti bruger den samme adgangskode</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} gemt betalingsmetode er tilgængelig over dit tastatur.}one{{count} gemt betalingsmetode er tilgængelig over dit tastatur.}other{{count} gemte betalingsmetoder er tilgængelige over dit tastatur.}}</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="20638360198452347">Enhedstypevælger</translation>
 <translation id="2067852168641682340">Gem på denne konto hver gang</translation>
@@ -329,7 +327,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2390457533592708044">Skjul "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Din pakke kan ikke leveres</translation>
 <translation id="2410754283952462441">Vælg en konto</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} gemt adresse er tilgængelig over dit tastatur.}one{{count} gemt adresse er tilgængelig over dit tastatur.}other{{count} gemte adresser er tilgængelige over dit tastatur.}}</translation>
 <translation id="2424805048070062787">Fortsæt med denne fane</translation>
 <translation id="2426805022920575512">Vælg en anden konto</translation>
 <translation id="243275146591958220">Annuller download</translation>
@@ -757,7 +754,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4525629404718770519">Vis forhåndsvisninger af links</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4532845899244822526">Vælg mappe</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} gemt forslag til autofuldførelse er tilgængeligt over dit tastatur.}one{{count} gemt forslag til autofuldførelse er tilgængeligt over dit tastatur.}other{{count} gemte forslag til autofuldførelse er tilgængelige over dit tastatur.}}</translation>
 <translation id="4547181496285029457">Gå tilbage til den seneste fane</translation>
 <translation id="4552042254369397518">Kopierer…</translation>
 <translation id="4564893319561643483">Skjul "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4597892826846980979">Få notifikationer om faner</translation>
 <translation id="4601095002996233687">Grundige scanninger efter mistænkelige downloads.</translation>
 <translation id="4606247758155004938">Din browser administreres af din organisation.</translation>
+<translation id="4607887340472970274">Prissporing</translation>
 <translation id="4611811151908969241">Skjul Følg ikke <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Søgning via Google</translation>
 <translation id="4619564267100705184">Verificer din identitet</translation>
@@ -1274,7 +1271,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6710079714193676716">Administreret af din organisation. Nogle funktioner er muligvis ikke tilgængelige. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Gå til feed</translation>
 <translation id="6713676799463473249">Ændret <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Overvåg pris</translation>
 <translation id="6722623263381062480">Modtagne faner</translation>
 <translation id="6723740634201835758">På din Google-konto</translation>
 <translation id="672735642903863329">Få dine bogmærker, adgangskoder og meget mere på alle dine enheder.</translation>
@@ -1440,7 +1436,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="75362970626182391">Ny fanegruppe</translation>
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>
 <translation id="754655535278952384">Tjek udført for <ph name="TIME" /></translation>
-<translation id="755255281989213264">Tilpas menu</translation>
 <translation id="7553234618121028547">Du kan deaktivere funktionen ved at åbne <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> og gå til Valgmuligheder for adgangskoder.</translation>
 <translation id="7557508262441527045">Logget ud</translation>
 <translation id="7561196759112975576">Altid</translation>

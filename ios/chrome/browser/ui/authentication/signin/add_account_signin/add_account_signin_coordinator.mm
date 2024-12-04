@@ -22,8 +22,11 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_manager.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
@@ -58,6 +61,8 @@ using signin_metrics::PromoAction;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Identity manager to retrieve Chrome identities.
   raw_ptr<signin::IdentityManager> _identityManager;
+  raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 #pragma mark - Public
@@ -110,6 +115,8 @@ using signin_metrics::PromoAction;
 - (void)start {
   [super start];
   ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
+  _syncService = SyncServiceFactory::GetForProfile(profile);
   _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _identityManager = IdentityManagerFactory::GetForProfile(profile);
@@ -130,6 +137,8 @@ using signin_metrics::PromoAction;
   [super stop];
   _accountManagerService = nullptr;
   _identityManager = nullptr;
+  _authenticationService = nil;
+  _syncService = nil;
   // If one of those 3 DCHECK() fails, -[AddAccountSigninCoordinator
   // runCompletionWithSigninResult] has not been called.
   DCHECK(!self.addAccountSigninManager);
@@ -269,6 +278,17 @@ using signin_metrics::PromoAction;
   [self.alertCoordinator start];
 }
 
+- (void)addAccountDone {
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(
+          self.browser->GetProfile()->GetOriginalProfile());
+  // Even if `result` is not "success" for the history opt-in step, the sign-in
+  // step did succeed, so pass SigninCoordinatorResultSuccess.
+  [self addAccountDoneWithSigninResult:SigninCoordinatorResultSuccess
+                              identity:authService->GetPrimaryIdentity(
+                                           signin::ConsentLevel::kSignin)];
+}
+
 // Runs callback completion on finishing the add account flow.
 - (void)addAccountDoneWithSigninResult:(SigninCoordinatorResult)signinResult
                               identity:(id<SystemIdentity>)identity {
@@ -316,15 +336,22 @@ using signin_metrics::PromoAction;
     return;
   }
 
-  self.historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                   showUserEmail:NO
-               signOutIfDeclined:NO
-                      isOptional:YES
-                     accessPoint:self.accessPoint];
-  self.historySyncPopupCoordinator.delegate = self;
-  [self.historySyncPopupCoordinator start];
+  if (history_sync::GetSkipReason(_syncService, _authenticationService,
+                                  self.browser->GetProfile()->GetPrefs(),
+                                  YES) !=
+      history_sync::HistorySyncSkipReason::kNone) {
+    [self addAccountDone];
+  } else {
+    self.historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser
+                     showUserEmail:NO
+                 signOutIfDeclined:NO
+                        isOptional:YES
+                       accessPoint:self.accessPoint];
+    self.historySyncPopupCoordinator.delegate = self;
+    [self.historySyncPopupCoordinator start];
+  }
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate
@@ -332,15 +359,7 @@ using signin_metrics::PromoAction;
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
                 didFinishWithResult:(SigninCoordinatorResult)result {
   [self stopHistorySyncPopupCoordinator];
-
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(
-          self.browser->GetProfile()->GetOriginalProfile());
-  // Even if `result` is not "success" for the history opt-in step, the sign-in
-  // step did succeed, so pass SigninCoordinatorResultSuccess.
-  [self addAccountDoneWithSigninResult:SigninCoordinatorResultSuccess
-                              identity:authService->GetPrimaryIdentity(
-                                           signin::ConsentLevel::kSignin)];
+  [self addAccountDone];
 }
 
 #pragma mark - NSObject

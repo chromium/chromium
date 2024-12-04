@@ -47,8 +47,8 @@ class FakeTabSlotController : public TabSlotController {
       const tab_groups::TabGroupId group,
       ToggleTabGroupCollapsedStateOrigin origin =
           ToggleTabGroupCollapsedStateOrigin::kMenuAction) override;
-  void NotifyTabGroupEditorBubbleOpened() override {}
-  void NotifyTabGroupEditorBubbleClosed() override {}
+  void NotifyTabstripBubbleOpened() override {}
+  void NotifyTabstripBubbleClosed() override {}
 
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
   void ShowContextMenuForTab(Tab* tab,

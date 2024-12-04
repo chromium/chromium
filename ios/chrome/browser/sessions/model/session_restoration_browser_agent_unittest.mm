@@ -156,7 +156,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     // rather than the TestWebStateList delegate used in the default TestBrowser
     // constructor.
     browser_ = std::make_unique<TestBrowser>(
-        profile_.get(), std::make_unique<BrowserWebStateListDelegate>());
+        profile_.get(),
+        std::make_unique<BrowserWebStateListDelegate>(profile_.get()));
   }
 
   void TearDown() override {

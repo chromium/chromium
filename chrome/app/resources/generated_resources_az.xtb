@@ -1119,7 +1119,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1769157454356586138">Skanlanmadı. Administrator bu faylı bloklayıb</translation>
 <translation id="1770407692401984718">Şəkli buraya dartın və ya</translation>
 <translation id="177053719077591686">Android t'tbiql'rini Google Diskdə yedəkləyin.</translation>
-<translation id="1771075623623424448">Brauzerin cihaz jurnalı səhifəsini axtarırsınız? Daxil olun: <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="1773329206876345543">Digər cihazlara internet vermək üçün <ph name="DEVICE_TYPE" /> mobil datası ilə Wi-Fi hotspotu yaradın. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">Aparıcı Tətbiq datası</translation>
 <translation id="177529472352014190">OneDrive-a qoşulun</translation>
@@ -3127,6 +3126,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3166443275568926403">Performans və batareya vəziyyəti</translation>
 <translation id="3167446923957429259">Mausu sola hərəkət etdirin</translation>
 <translation id="3167562202484086668">Bütün <ph name="BRAND" /> datasını silin</translation>
+<translation id="3169901410527787002">Həmişə ünvan panelindəki klaviatura daxiletməsini oxuyun</translation>
 <translation id="3169930038976362151">Ehtiyaclarınıza uyğun olan mövzunu seçin. Mövzu, divar kağızı, ekran qoruyucusu və daha çoxunu dəyişmək üçün masaüstünə toxunub saxlayın.</translation>
 <translation id="3170072451822350649">Hesaba girişi atlayaraq <ph name="LINK_START" />Qonaq qismində girə bilərsiniz<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Mətn</translation>
@@ -3138,6 +3138,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3179982752812949580">Mətn şrifti</translation>
 <translation id="3180284704187420717">Sinxronlaşdırmaqla əlfəcin, parol və s. yadda saxlayın</translation>
 <translation id="3180990259147710757">Çənənizi sola çevirin</translation>
+<translation id="3181825792072797598">Sinxronizasiyanı aktiv edin</translation>
 <translation id="3181954750937456830">Təhlükəsiz Axtarış (Sizi və cihazınızı təhlükəli saytlardan qoruyur)</translation>
 <translation id="3182749001423093222">Orfoqrafik yoxlanış</translation>
 <translation id="3183139917765991655">Profil İmporter</translation>
@@ -4325,7 +4326,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3988124842897276887">Bu tab USB cihazına qoşuludur</translation>
 <translation id="3988996860813292272">Vaxt zonası seçin</translation>
 <translation id="3989635538409502728">Çıxış</translation>
-<translation id="3991055816270226534">Üçüncü tərəf kukiləri və izləmənin qorunmasını idarə edin</translation>
 <translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Məkan Dəqiqliyi yanılı olduqda cihaz məkanını daha dəqiq təxmin etmək üçün Wi‑Fi giriş nöqtələri, mobil şəbəkə qüllələri və GPS kimi simsiz siqnallar haqqında məlumatlar, eləcə də tətbiq və xidmətlərin məkan əsaslı funksiyalar təmin etmək üçün istifadə etdiyi cihazın akselerometr və giroskop datası kimi sensor datası istifadə edilir. Bunun üçün Google kraudsors simsiz siqnal məkanlarına töhfə vermək məqsədilə mütəmadi olaraq bu cihazın yaxınlığında əlçatan olan cihaz sensorları və simsiz siqnallar haqqında məlumatları emal edir.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google bu cihazdan toplanmış bu məlumatları aşağıdakı məqsədlər üçün istifadə edir: məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək; və ümumilikdə Google xidmətlərini təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq. İstifadəçilərin ehtiyaclarına xidmət etmək üçün bu məlumatları Google və üçüncü tərəflərin qanuni maraqlarına əsasən emal edirik. Bu məlumatlar hər hansı şəxsin kimliyini müəyyənləşdirmək üçün istifadə edilmir.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Bu cihazın məkan ayarlarında Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş &gt; Təkmil məkan ayarları bölməsində Məkan Dəqiqliyini söndürə bilərsiniz. Məkan Dəqiqliyi sönülü olarsa, Məkan Dəqiqliyi datası toplanılmayacaq. Android tətbiq və xidmətlərində bu cihazın məkanını müəyyən etmək üçün yalnız IP ünvanı (əlçatandırsa) istifadə olunur ki, bu da Google Xəritə kimi Android tətbiq və xidmətləri üçün məkanın əlçatanlığına və dəqiqliyinə təsir edə bilər.<ph name="END_PARAGRAPH3" />
@@ -6964,7 +6964,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5927132638760172455">Naməlum alıcı Döküm</translation>
 <translation id="592740088639760830">Bu konteyneri dayandırın</translation>
 <translation id="592880897588170157">PDF faylları Chrome'da avtomatik açmaq əvəzinə onları endirin</translation>
-<translation id="5928969282301718193">Hələlik hər şey hazırdır</translation>
 <translation id="5930567261594625340">Gecə səması</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> sizdən <ph name="DEVICE_TYPE" /> cihazınızı dərhal güncəlləməyinizi tələb edir.</translation>
 <translation id="5932224571077948991">Sayt intruziv və ya aldadıcı reklamlar göstərir</translation>
@@ -7535,7 +7534,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6344170822609224263">Şəbəkə bağlantılarının giriş siyahısı</translation>
 <translation id="6344576354370880196">Yadda saxlanmış printerlər</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />Brauzerinizi<ph name="END_LINK" /> valideyn idarə edir</translation>
-<translation id="6344622098450209924">İzlənmədən qorunma</translation>
 <translation id="6345418402353744910">Proksi <ph name="PROXY" /> üçün istifadəçi adı və parolunuz tələb olunur ki, admin şəbəkənizi konfiqurasiya edə bilsin</translation>
 <translation id="6345566021391290381"><ph name="WEBSITE_NAME" /> üçün sizinlə paylaşılan parollar var. Giriş formasında istifadə edə bilərsiniz.</translation>
 <translation id="6345878117466430440">Oxunmuş kimi qeyd edin</translation>
@@ -10128,7 +10126,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8195920051450756553">Eyni düyməni yenidən aktivləşdirməzdən əvvəl gecikmə</translation>
 <translation id="8197673340773315084">İş və ya Şəxsi kimi ad və ya etiket əlavə edin</translation>
 <translation id="8198456017687137612">Yayım tabı</translation>
-<translation id="8198457270656084773">Sistemin cihaz jurnalı səhifəsini axtarırsınız? Daxil olun: <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Şəbəkə (Xidmət) və Cihaz xüsusiyyətləri</translation>
 <translation id="8200772114523450471">Davam edin</translation>
 <translation id="8202160505685531999">Yeniləmə Şifrəni yenidən daxil edin <ph name="DEVICE_TYPE" /> profil.</translation>

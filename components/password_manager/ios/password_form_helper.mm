@@ -132,7 +132,8 @@ const char kHostFrameKey[] = "host_frame";
                           inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
   GURL pageURL = webState->GetLastCommittedURL();
-  if (pageURL.DeprecatedGetOriginAsURL() != frame->GetSecurityOrigin()) {
+  if (pageURL.DeprecatedGetOriginAsURL() !=
+      frame->GetSecurityOriginDeprecated()) {
     // Passwords is only supported on main frame and iframes with the same
     // origin.
     return;
@@ -153,9 +154,10 @@ const char kHostFrameKey[] = "host_frame";
   autofill::FieldDataManager* fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
-  std::optional<std::vector<FormData>> formsData = autofill::ExtractFormsData(
-      JSONString, false, std::u16string(), pageURL, frame->GetSecurityOrigin(),
-      *fieldDataManager, frame->GetFrameId());
+  std::optional<std::vector<FormData>> formsData =
+      autofill::ExtractFormsData(JSONString, false, std::u16string(), pageURL,
+                                 frame->GetSecurityOriginDeprecated(),
+                                 *fieldDataManager, frame->GetFrameId());
   if (!formsData) {
     return;
   }

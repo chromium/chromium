@@ -124,7 +124,7 @@ TEST_F(NaClIPCAdapterTest, SendRewriting) {
 
   // Send a message with one int inside it.
   const int buf_size = sizeof(NaClIPCAdapter::NaClMessageHeader) + sizeof(int);
-  char buf[buf_size] = {0};
+  char buf[buf_size] = {};
 
   NaClIPCAdapter::NaClMessageHeader* header =
       reinterpret_cast<NaClIPCAdapter::NaClMessageHeader*>(buf);
@@ -242,7 +242,7 @@ TEST_F(NaClIPCAdapterTest, SendOverflow) {
   // we can test what happens when we send too much data.
   const int buf_size = sizeof(NaClIPCAdapter::NaClMessageHeader) + sizeof(int);
   const int big_buf_size = buf_size + 4;
-  char buf[big_buf_size] = {0};
+  char buf[big_buf_size] = {};
 
   NaClIPCAdapter::NaClMessageHeader* header =
       reinterpret_cast<NaClIPCAdapter::NaClMessageHeader*>(buf);

@@ -1037,7 +1037,7 @@ autofill::AutofillCrowdsourcingManager*
 ChromePasswordManagerClient::GetAutofillCrowdsourcingManager() {
   if (auto* client =
           autofill::ContentAutofillClient::FromWebContents(web_contents())) {
-    return client->GetCrowdsourcingManager();
+    return &client->GetCrowdsourcingManager();
   }
   return nullptr;
 }

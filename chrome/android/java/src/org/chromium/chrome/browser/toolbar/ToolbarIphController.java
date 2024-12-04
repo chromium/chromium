@@ -31,16 +31,31 @@ public class ToolbarIphController {
     public void showPriceDropIph(View anchorView) {
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        int yInset =
-                mContext.getResources()
-                        .getDimensionPixelOffset(
-                                R.dimen.price_drop_spotted_iph_ntp_tabswitcher_y_inset);
+        int yInset = mContext.getResources().getDimensionPixelOffset(R.dimen.toolbar_iph_y_inset);
         mEducationHelper.requestShowIph(
                 new IphCommandBuilder(
                                 mContext.getResources(),
                                 FeatureConstants.PRICE_DROP_NTP_FEATURE,
                                 R.string.price_drop_spotted_iph,
                                 R.string.price_drop_spotted_iph)
+                        .setInsetRect(new Rect(0, 0, 0, -yInset))
+                        .setAnchorView(anchorView)
+                        .setHighlightParams(params)
+                        .setDismissOnTouch(true)
+                        .build());
+    }
+
+    @VisibleForTesting
+    public void showBottomToolbarIph(View anchorView) {
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setBoundsRespectPadding(true);
+        int yInset = mContext.getResources().getDimensionPixelOffset(R.dimen.toolbar_iph_y_inset);
+        mEducationHelper.requestShowIph(
+                new IphCommandBuilder(
+                                mContext.getResources(),
+                                FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
+                                R.string.toolbar_long_press_options_iph,
+                                R.string.toolbar_long_press_options_iph)
                         .setInsetRect(new Rect(0, 0, 0, -yInset))
                         .setAnchorView(anchorView)
                         .setHighlightParams(params)

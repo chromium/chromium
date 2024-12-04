@@ -484,7 +484,7 @@ web_package::test::Ed25519KeyPair GetKeyPairForSite(Site site) {
   std::string site_id = GetSiteId(site);
   size_t seed_length = 32;
   site_id.resize(seed_length, 'a');
-  base::span<const uint8_t> seed = base::as_bytes(base::make_span(site_id));
+  base::span<const uint8_t> seed = base::as_byte_span(site_id);
 
   uint8_t public_key[ED25519_PUBLIC_KEY_LEN];
   uint8_t private_key[ED25519_PRIVATE_KEY_LEN];
@@ -713,13 +713,9 @@ WebAppSettingsPageHandler CreateAppManagementPageHandler(Profile* profile) {
 #endif
 
 void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
-  std::string simple_dialog_name =
-      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
-          ? "WebAppSimpleInstallDialog"
-          : "PWAConfirmationBubbleView";
   std::string widget_name = site == InstallableSite::kScreenshots
                                 ? "WebAppDetailedInstallDialog"
-                                : simple_dialog_name;
+                                : "WebAppSimpleInstallDialog";
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        widget_name);
   views::Widget* widget = waiter.WaitIfNeededAndGet();

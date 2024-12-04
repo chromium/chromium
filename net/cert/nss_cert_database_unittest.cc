@@ -528,7 +528,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12NullPassword) {
   EXPECT_EQ(1U, ListCerts().size());
 }
 
-TEST_F(CertDatabaseNSSTest, ImportCACertSSLTrust) {
+TEST_F(CertDatabaseNSSTest, ImportCACert_SSLTrust) {
   ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
@@ -561,7 +561,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACertSSLTrust) {
   EXPECT_EQ(1, observer_->trust_store_changes());
 }
 
-TEST_F(CertDatabaseNSSTest, ImportCACertEmailTrust) {
+TEST_F(CertDatabaseNSSTest, ImportCACert_EmailTrust) {
   ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
@@ -596,7 +596,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACertEmailTrust) {
   EXPECT_EQ(1, observer_->trust_store_changes());
 }
 
-TEST_F(CertDatabaseNSSTest, ImportCACertObjSignTrust) {
+TEST_F(CertDatabaseNSSTest, ImportCACert_ObjSignTrust) {
   ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
@@ -631,7 +631,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACertObjSignTrust) {
   EXPECT_EQ(1, observer_->trust_store_changes());
 }
 
-TEST_F(CertDatabaseNSSTest, ImportCANotCACert) {
+TEST_F(CertDatabaseNSSTest, ImportCA_NotCACert) {
   ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
       GetTestCertsDirectory(), "ok_cert.pem", X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
@@ -870,7 +870,7 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert) {
   EXPECT_EQ(0, observer_->trust_store_changes());
 }
 
-TEST_F(CertDatabaseNSSTest, ImportServerCertSelfSigned) {
+TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned) {
   ScopedCERTCertificateList certs;
   ASSERT_TRUE(ReadCertIntoList("punycodetest.pem", &certs));
 
@@ -912,7 +912,7 @@ TEST_F(CertDatabaseNSSTest, ImportServerCertSelfSigned) {
   EXPECT_EQ(0, observer_->trust_store_changes());
 }
 
-TEST_F(CertDatabaseNSSTest, ImportServerCertSelfSignedTrusted) {
+TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned_Trusted) {
   ScopedCERTCertificateList certs;
   ASSERT_TRUE(ReadCertIntoList("punycodetest.pem", &certs));
 
@@ -999,7 +999,7 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert) {
   EXPECT_EQ(0U, verify_result.cert_status);
 }
 
-TEST_F(CertDatabaseNSSTest, ImportCaAndServerCertDistrustServer) {
+TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert_DistrustServer) {
   ScopedCERTCertificateList ca_certs = CreateCERTCertificateListFromFile(
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);

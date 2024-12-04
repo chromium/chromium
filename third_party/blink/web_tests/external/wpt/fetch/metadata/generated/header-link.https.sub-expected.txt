@@ -65,5 +65,13 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
 [FAIL] sec-fetch-user rel=stylesheet
   promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=icon - Cross-site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=stylesheet - Cross-site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=icon - Same site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access rel=stylesheet - Same site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
 Harness: the test ran to completion.
 

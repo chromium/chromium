@@ -8,7 +8,7 @@
 #include <memory>
 #include <queue>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -20,7 +20,7 @@ enum class ReportType;
 // queue for the uploader.
 class ReportRequest {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using DeviceReportRequestProto =
       enterprise_management::ChromeOsUserReportRequest;
 #else

@@ -1365,6 +1365,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7425037327577270384">Hjælp mig med at skrive</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Dette APN kan ikke deaktiveres eller fjernes. Sørg for, at <ph name="ATTACH" /> APN'er, som er aktiveret, deaktiveres eller fjernes.</translation>
+<translation id="7453118953486228603">Klik for at få opsummeret den markerede tekst</translation>
 <translation id="7458970041932198923">Opret forbindelse til et netværk, og genindlæs siden for at se og angive avatarer.</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
 <translation id="7481312909269577407">Frem</translation>
@@ -1723,6 +1724,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="9133772297793293778">Tryk på 1-4 ændringstaster og 1 anden tast på dit tastatur. Hvis du vil afslutte redigeringstilstand, skal du trykke på Alt + Esc.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9138630967333032450">Shift i venstre side</translation>
+<translation id="9147928237330776930">Der er for få ord til at generere en opsummering</translation>
 <translation id="9149391708638971077">Kør hukommelsestest</translation>
 <translation id="9159524746324788320">hamburgere</translation>
 <translation id="9161276708550942948">mellemrum</translation>

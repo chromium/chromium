@@ -38,7 +38,7 @@ class MultiUserContextMenuChromeos : public ui::SimpleMenuModel,
   MultiUserContextMenuChromeos& operator=(const MultiUserContextMenuChromeos&) =
       delete;
 
-  ~MultiUserContextMenuChromeos() override {}
+  ~MultiUserContextMenuChromeos() override = default;
 
   // SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override { return false; }

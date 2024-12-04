@@ -22,17 +22,10 @@ AuthenticatorSelectAccountSheetView::~AuthenticatorSelectAccountSheetView() =
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorSelectAccountSheetView::BuildStepSpecificContent() {
-  switch (model()->selection_type()) {
-    case AuthenticatorSelectAccountSheetModel::kMultipleAccounts:
-      return std::make_pair(std::make_unique<HoverListView>(
-                                std::make_unique<AccountHoverListModel>(
-                                    model()->dialog_model(), this)),
-                            AutoFocus::kYes);
-    case AuthenticatorSelectAccountSheetModel::kSingleAccount:
-      return std::make_pair(
-          std::make_unique<PasskeyDetailView>(model()->SingleCredential().user),
-          AutoFocus::kNo);
-  }
+  return std::make_pair(
+      std::make_unique<HoverListView>(std::make_unique<AccountHoverListModel>(
+          model()->dialog_model(), this)),
+      AutoFocus::kYes);
 }
 
 void AuthenticatorSelectAccountSheetView::CredentialSelected(size_t index) {

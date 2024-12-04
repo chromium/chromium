@@ -944,10 +944,28 @@
       other {{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account}
       }
     </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS" desc="Subtitle of the Batch Upload dialog if bookmark type exists with no other types. It mentions the number of bookmarks in the section." translateable="false">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account.}
+      other {{BOOKMARK_COUNT} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO" desc="Subtitle of the Batch Upload dialog if bookmark type is the first type and it is not the only one. It mentions the number of bookmarks in the section as well as 'and other items' to reference the other types." translateable="false">
+      {BOOKMARK_COUNT, plural,
+      =1 {1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      other {{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
+      }
+    </message>
     <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="Title of the Passwords section in the Batch Upload dialog. Shows the number of selected passwords in the section of the dialog if any.">
       {SELECTED_ITEMS, plural,
       =0 {Passwords}
       other {Passwords ({SELECTED_ITEMS})}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_BOOKMARKS" desc="Title of the Bookmarks section in the Batch Upload dialog. Shows the number of selected bookmarks in the section of the dialog if any." translateable="false">
+      {SELECTED_ITEMS, plural,
+      =0 {Bookmarks}
+      other {Bookmarks ({SELECTED_ITEMS})}
       }
     </message>
     <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES" desc="Title of the Addresses section in the Batch Upload dialog. Shows the number of selected addresses in the section of the dialog if any.">

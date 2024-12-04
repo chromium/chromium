@@ -394,9 +394,16 @@ def _crossbench_jetstream2_1(estimated_runtime=180):
                           estimated_runtime=estimated_runtime)
 
 
-def _crossbench_loadline_phone(estimated_runtime=60, arguments=None):
+def _crossbench_loadline_phone(estimated_runtime=7000, arguments=None):
   return CrossbenchConfig('loadline_phone.crossbench',
                           'loadline-phone',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
+def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
+  return CrossbenchConfig('loadline_tablet.crossbench',
+                          'loadline-tablet',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
@@ -420,7 +427,18 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 # TODO(b/338630584): Remove it when other benchmarks can be run on Android.
 _CROSSBENCH_ANDROID = frozenset([
     _crossbench_speedometer3_0(arguments=['--fileserver']),
-    _crossbench_loadline_phone(arguments=['--repeat=1']),
+    _crossbench_loadline_phone(arguments=[
+        '--cool-down-threshold=moderate',
+        '--no-splash',
+    ]),
+])
+
+_CROSSBENCH_TANGOR = frozenset([
+    _crossbench_loadline_tablet(arguments=[
+        '--repeat=20',
+        '--cool-down-threshold=moderate',
+        '--no-splash',
+    ]),
 ])
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
@@ -615,6 +633,11 @@ _WIN_ARM64_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('system_health.common_desktop', abridged=True),
+])
+_WIN_ARM64_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(200),
+    _components_perftests(125),
+    _views_perftests(),
 ])
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
@@ -873,7 +896,7 @@ WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
     _WIN_ARM64_BENCHMARK_CONFIGS,
     1,
     'win',
-    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_BENCHMARKS_ALL,
     is_fyi=True)
 WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
@@ -882,7 +905,7 @@ WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     _WIN_ARM64_BENCHMARK_CONFIGS,
     1,
     'win',
-    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_BENCHMARKS_ALL,
     is_fyi=True)
 
@@ -907,9 +930,6 @@ ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
 ANDROID_PIXEL4_WEBVIEW_PGO = PerfPlatform(
     'android-pixel4_webview-perf-pgo', 'Android R',
     _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
-# TODO(crbug.com/307958700): Switch shard number back to a higher number around
-#                            28 once more devices are procured. Temporarily use
-#                            15 to avoid high contention in the pixel6 pool.
 ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               'Android U',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
@@ -945,9 +965,14 @@ ANDROID_PIXEL_FOLD = PerfPlatform('android-pixel-fold-perf', 'Android U',
     2,  # testing on the first two connected devices
     'android',
     executables=_ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS)
-ANDROID_PIXEL_TANGOR = PerfPlatform('android-pixel-tangor-perf', 'Android U',
-    _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS, 8, 'android',
-    executables=_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS)
+ANDROID_PIXEL_TANGOR = PerfPlatform(
+    'android-pixel-tangor-perf',
+    'Android U',
+    _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS,
+    8,
+    'android',
+    executables=_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_TANGOR)
 ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
                                   _ANDROID_GO_BENCHMARK_CONFIGS, 15, 'android')
 ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(

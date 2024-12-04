@@ -89,8 +89,8 @@ class AccountProfileMapper {
 
   // Marks the personal profile as managed, attaches the given `gaia_id`, and
   // moves all personal accounts to a new empty personal profile. Deletes the
-  // managed profile to which `gaia_id` was attached. That profile must not be
-  // loaded.
+  // managed profile to which `gaia_id` was attached. That profile must still be
+  // "new" (per ProfileAttributesIOS::IsNewProfile()).
   // This is meant for two situations:
   // 1. Signing in with a managed account during the FRE. In this case, there
   //    can't be any pre-existing local data, so no need to move to a new empty

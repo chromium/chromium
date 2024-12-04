@@ -32,7 +32,7 @@
   </main>
   <script>
     promise_test(async (t) => {
-      await waitForCompositorCommit();
+      await waitForCompositorReady();
       const scroller = document.getElementById("scroller");
       assert_equals(scroller.scrollTop, 0, "scroller not initially scrolled");
 

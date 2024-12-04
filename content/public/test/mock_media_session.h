@@ -28,6 +28,7 @@ class MockMediaSession : public MediaSession {
               SetAudioFocusGroupId,
               (const base::UnguessableToken& group_id),
               (override));
+  MOCK_METHOD(content::RenderFrameHost*, GetRoutedFrame, (), (override));
   MOCK_METHOD(void, Suspend, (SuspendType suspend_type), (override));
   MOCK_METHOD(void, Resume, (SuspendType suspend_type), (override));
   MOCK_METHOD(void, StartDucking, (), (override));

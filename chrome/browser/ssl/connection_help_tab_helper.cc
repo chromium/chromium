@@ -30,7 +30,7 @@ void RedirectToBundledHelp(content::WebContents* web_contents) {
 }
 }  // namespace
 
-ConnectionHelpTabHelper::~ConnectionHelpTabHelper() {}
+ConnectionHelpTabHelper::~ConnectionHelpTabHelper() = default;
 
 void ConnectionHelpTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {

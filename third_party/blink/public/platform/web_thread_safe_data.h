@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THREAD_SAFE_DATA_H_
 
 #include "base/containers/checked_iterators.h"
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 
@@ -58,7 +59,7 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
   using iterator = base::CheckedContiguousIterator<const char>;
 
   WebThreadSafeData() = default;
-  WebThreadSafeData(const char* data, size_t length);
+  explicit WebThreadSafeData(base::span<const char> data);
 
   ~WebThreadSafeData() { Reset(); }
 

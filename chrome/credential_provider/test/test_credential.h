@@ -149,7 +149,7 @@ CTestCredentialBase<T>::CTestCredentialBase()
                 base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
 template <class T>
-CTestCredentialBase<T>::~CTestCredentialBase() {}
+CTestCredentialBase<T>::~CTestCredentialBase() = default;
 
 template <class T>
 HRESULT CTestCredentialBase<T>::SetDefaultExitCode(

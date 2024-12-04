@@ -53,9 +53,8 @@ bool CheckBrowsingContextIsValid(ScriptState& script_state,
   return true;
 }
 
-bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
-                                         ExecutionContext& execution_context,
-                                         ScriptPromiseResolverBase& resolver) {
+bool CheckSharedStoragePermissionsPolicy(ExecutionContext& execution_context,
+                                         ExceptionState& exception_state) {
   // The worklet scope has to be created from the Window scope, thus the
   // shared-storage permissions policy feature must have been enabled. Besides,
   // the `SharedStorageWorkletGlobalScope` is currently given a null
@@ -70,11 +69,10 @@ bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
 
   if (!execution_context.IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kSharedStorage)) {
-    resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state.GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
         "The \"shared-storage\" Permissions Policy denied the method on "
-        "window.sharedStorage."));
-
+        "window.sharedStorage.");
     return false;
   }
 

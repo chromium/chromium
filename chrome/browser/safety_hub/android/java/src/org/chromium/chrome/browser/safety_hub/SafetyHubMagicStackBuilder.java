@@ -11,11 +11,14 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,6 +43,20 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
         mProfileSupplier = profileSupplier;
         mTabModelSelector = tabModelSelector;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+
+        recordMetricForMagicStackSettingState();
+    }
+
+    /**
+     * Records the metric related to the settings state of the safety hub magic stack module. This
+     * should only be recorded on start up.
+     */
+    private void recordMetricForMagicStackSettingState() {
+        boolean magicStackModuleEnabled =
+                HomeModulesConfigManager.getInstance()
+                        .getPrefModuleTypeEnabled(ModuleType.SAFETY_HUB);
+        RecordHistogram.recordBooleanHistogram(
+                "Settings.SafetyHub.MagicStack.StateOnStartup", magicStackModuleEnabled);
     }
 
     @Override

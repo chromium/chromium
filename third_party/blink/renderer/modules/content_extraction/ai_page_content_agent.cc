@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -24,6 +25,11 @@ namespace {
 constexpr MapCoordinatesFlags kMapCoordinatesFlags =
     kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform;
 constexpr VisualRectFlags kVisualRectFlags = kUseGeometryMapper;
+
+constexpr float kHeading1FontSizeMultiplier = 2;
+constexpr float kHeading3FontSizeMultiplier = 1.17;
+constexpr float kHeading5FontSizeMultiplier = 0.83;
+constexpr float kHeading6FontSizeMultiplier = 0.67;
 
 // TODO(khushalsagar): This is duplicating logic from
 // UnsupportedTagTypeValueForNode, consider reusing it.
@@ -34,6 +40,47 @@ bool IsHeadingTag(const HTMLElement& element) {
          element.HasTagName(html_names::kH4Tag) ||
          element.HasTagName(html_names::kH5Tag) ||
          element.HasTagName(html_names::kH6Tag);
+}
+
+// Returns the relative text size of the object compared to the document
+// default. Ratios are based on browser defaults for headings, which are as
+// follows:
+//
+// Heading 1: 2em
+// Heading 2: 1.5em
+// Heading 3: 1.17em
+// Heading 4: 1em
+// Heading 5: 0.83em
+// Heading 6: 0.67em
+mojom::blink::AIPageContentTextSize GetTextSize(
+    const ComputedStyle& style,
+    const ComputedStyle& document_style) {
+  float font_size_multiplier =
+      style.ComputedFontSize() / document_style.ComputedFontSize();
+  if (font_size_multiplier >= kHeading1FontSizeMultiplier) {
+    return mojom::blink::AIPageContentTextSize::kXL;
+  } else if (font_size_multiplier >= kHeading3FontSizeMultiplier &&
+             font_size_multiplier < kHeading1FontSizeMultiplier) {
+    return mojom::blink::AIPageContentTextSize::kL;
+  } else if (font_size_multiplier >= kHeading5FontSizeMultiplier &&
+             font_size_multiplier < kHeading3FontSizeMultiplier) {
+    return mojom::blink::AIPageContentTextSize::kM;
+  } else if (font_size_multiplier >= kHeading6FontSizeMultiplier &&
+             font_size_multiplier < kHeading5FontSizeMultiplier) {
+    return mojom::blink::AIPageContentTextSize::kS;
+  } else {  // font_size_multiplier < kHeading6FontSizeMultiplier
+    return mojom::blink::AIPageContentTextSize::kXS;
+  }
+}
+
+// If the style has a non-normal font weight, has applied text decorations, or
+// is a super/subscript, then the text is considered to have emphasis.
+bool HasEmphasis(const ComputedStyle& style) {
+  return style.GetFontWeight() != kNormalWeightValue ||
+         style.GetFontStyle() != kNormalSlopeValue ||
+         style.HasAppliedTextDecorations() ||
+         style.VerticalAlign() == EVerticalAlign::kSub ||
+         style.VerticalAlign() == EVerticalAlign::kSuper;
 }
 
 std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
@@ -187,17 +234,19 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
       DocumentUpdateReason::kUnknown);
 
   auto* layout_view = document.GetLayoutView();
+  auto* document_style = layout_view->Style();
   auto root_node = MaybeGenerateContentNode(*layout_view);
   CHECK(root_node);
 
-  ProcessNode(*layout_view, *root_node);
+  ProcessNode(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
   return page_content;
 }
 
 void AIPageContentAgent::ProcessNode(
     const LayoutObject& object,
-    mojom::blink::AIPageContentNode& content_node) const {
+    mojom::blink::AIPageContentNode& content_node,
+    const ComputedStyle& document_style) const {
   if (object.ChildPrePaintBlockedByDisplayLock()) {
     return;
   }
@@ -213,14 +262,16 @@ void AIPageContentAgent::ProcessNode(
     auto& node_for_child =
         child_content_node ? *child_content_node : content_node;
 
-    MaybeAddNodeContent(*child, *node_for_child.content_attributes);
+    MaybeAddNodeContent(*child, *node_for_child.content_attributes,
+                        document_style);
 
     // We could generate a ContentNode for the child LayoutView but that seems
     // redundant given we already have one for the iframe.
     if (child_layout_view) {
-      ProcessNode(*child_layout_view, node_for_child);
+      auto* child_document_style = child_layout_view->Style();
+      ProcessNode(*child_layout_view, node_for_child, *child_document_style);
     } else {
-      ProcessNode(*child, node_for_child);
+      ProcessNode(*child, node_for_child, document_style);
     }
 
     if (child_content_node) {
@@ -253,7 +304,8 @@ mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
 
 void AIPageContentAgent::MaybeAddNodeContent(
     const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes) const {
+    mojom::blink::AIPageContentAttributes& attributes,
+    const ComputedStyle& document_style) const {
   if (object.Style()->Visibility() != EVisibility::kVisible) {
     return;
   }
@@ -261,10 +313,15 @@ void AIPageContentAgent::MaybeAddNodeContent(
   if (const auto* layout_text = DynamicTo<LayoutText>(object)) {
     AddNodeId(object, attributes);
 
+    auto text_style = mojom::blink::AIPageContentTextStyle::New();
+    text_style->text_size = GetTextSize(*layout_text->Style(), document_style);
+    text_style->has_emphasis = HasEmphasis(*layout_text->Style());
+
     auto text_info = mojom::blink::AIPageContentTextInfo::New();
     text_info->text_content = layout_text->TransformedText();
     text_info->text_bounding_box =
         layout_text->AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
+    text_info->text_style = std::move(text_style);
     attributes.text_info.emplace_back(std::move(text_info));
     return;
   }

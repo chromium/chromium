@@ -121,9 +121,8 @@ void PasswordDataTypeController::OnAccountsInCookieUpdated(
 void PasswordDataTypeController::OnAccountsCookieDeletedByUserAction() {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Pass an empty `signin::AccountsInCookieJarInfo` to simulate empty cookies.
-  base::flat_set<std::string> gaia_ids =
-      signin::GetAllGaiaIdsForKeyedPreferences(
-          identity_manager_, signin::AccountsInCookieJarInfo());
+  base::flat_set<GaiaId> gaia_ids = signin::GetAllGaiaIdsForKeyedPreferences(
+      identity_manager_, signin::AccountsInCookieJarInfo());
   features_util::KeepAccountStorageSettingsOnlyForUsers(
       pref_service_, std::move(gaia_ids).extract());
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)

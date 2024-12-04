@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -123,7 +124,7 @@ class AX_EXPORT AXNode final {
   const std::vector<raw_ptr<AXNode, VectorExperimental>>& GetAllChildren()
       const;
   size_t GetChildCount() const;
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   size_t GetSubtreeCount() const;
 #endif
   size_t GetChildCountCrossingTreeBoundary() const;

@@ -147,7 +147,7 @@ class AXTreeSerializer {
   // as explored by the serializer.
   size_t ClientTreeNodeCount() const;
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
   std::vector<AXNodeID> ClientTreeNodeIds() const;
 
   AXSourceNode ParentOf(AXNodeID id);
@@ -386,7 +386,7 @@ size_t AXTreeSerializer<AXSourceNode,
   return client_id_map_.size();
 }
 
-#if DCHECK_IS_ON()
+#if defined(AX_FAIL_FAST_BUILD)
 template <typename AXSourceNode,
           typename AXSourceNodeVectorType,
           typename AXTreeUpdateType,
@@ -421,7 +421,7 @@ AXSourceNode AXTreeSerializer<AXSourceNode,
   }
   return tree_->GetFromId(node->parent->id);
 }
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
 
 template <typename AXSourceNode,
           typename AXSourceNodeVectorType,

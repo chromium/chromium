@@ -27,7 +27,11 @@ this text can be found by Ctrl + F because it isn't hidden. -->
       <span id="name" class="cr-title-text" role="heading" aria-level="1">
         ${this.data.name}
       </span>
-      ${!this.computeDevReloadButtonHidden_() ? html`
+      ${this.showAccountUploadButton_() ? html`
+        <cr-icon-button id="account-upload-button" class="no-overlap"
+          iron-icon="extensions-icons:extension_cloud_upload">
+        </cr-icon-button>` : ''}
+      ${this.showDevReloadButton_() ? html`
         <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
             title="$i18n{itemReload}" aria-label="$i18n{itemReload}"
             aria-describedby="a11yAssociation" @click="${this.onReloadClick_}">

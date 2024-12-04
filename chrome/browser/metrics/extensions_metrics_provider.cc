@@ -393,8 +393,7 @@ int ExtensionsMetricsProvider::HashExtension(const std::string& extension_id,
   DCHECK_LE(client_key, kExtensionListClientKeys);
   std::string message =
       base::StringPrintf("%u:%s", client_key, extension_id.c_str());
-  uint64_t output =
-      base::legacy::CityHash64(base::as_bytes(base::make_span(message)));
+  uint64_t output = base::legacy::CityHash64(base::as_byte_span(message));
   return output % kExtensionListBuckets;
 }
 

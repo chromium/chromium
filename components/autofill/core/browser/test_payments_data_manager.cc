@@ -95,7 +95,7 @@ bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
 }
 
 void TestPaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
-  if (CreditCard* credit_card = GetCreditCardByGUID(card.guid())) {
+  if (CreditCard* credit_card = GetMutableCreditCardByGUID(card.guid())) {
     credit_card->RecordAndLogUse();
   }
 }
@@ -321,11 +321,9 @@ void TestPaymentsDataManager::SetNicknameForCardWithGUID(
 
 void TestPaymentsDataManager::RemoveCardWithoutNotification(
     const CreditCard& card) {
-  if (const CreditCard* existing_credit_card =
-          GetCreditCardByGUID(card.guid())) {
-    local_credit_cards_.erase(
-        base::ranges::find(local_credit_cards_, existing_credit_card,
-                           &std::unique_ptr<CreditCard>::get));
+  if (auto it = base::ranges::find(local_credit_cards_,
+        card.guid(), &CreditCard::guid); it != local_credit_cards_.end()) {
+    local_credit_cards_.erase(it);
   }
 }
 

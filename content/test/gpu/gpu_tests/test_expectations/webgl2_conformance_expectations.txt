@@ -926,8 +926,6 @@ crbug.com/906742 [ android-pie android-pixel-2 no-passthrough qualcomm ] conform
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
-crbug.com/375117795 [ android android-pixel-2 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
-crbug.com/375128676 [ android android-pixel-2 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 ## Pixel 4 ##
 
@@ -939,8 +937,6 @@ crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conform
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
 
-crbug.com/335857348 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
-crbug.com/375117795 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
 
 ## DrDc being re-enabled ##
 crbug.com/380250262 [ android android-pixel-2 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
@@ -1018,9 +1014,6 @@ crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/* 
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/* [ RetryOnFailure ]
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/* [ RetryOnFailure ]
 
-## Volteer ##
-crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 
 #####################
 # Lacros failures #

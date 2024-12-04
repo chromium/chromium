@@ -21,8 +21,6 @@ class AutofillManagerTestApi {
     return manager_->observers_;
   }
 
-  void Reset() { manager_->Reset(); }
-
   void OnLoadedServerPredictions(
       std::string response,
       const std::vector<FormSignature>& queried_form_signatures) {

@@ -374,6 +374,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Overridden from aura::WindowTreeHostObserver:
   void OnHostMovedInPixels(aura::WindowTreeHost* host) override;
+  void OnLocalSurfaceIdChanged(aura::WindowTreeHost* host,
+                               const viz::LocalSurfaceId& id) override {}
 
   // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(

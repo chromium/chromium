@@ -3044,17 +3044,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   EXPECT_THAT(response_.streamed(), ElementsAre(expected_response));
 }
 
-// Validate that token interval 0 suppresses partial output.
+// Validate that a missing partial output config suppresses partial output.
 TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {
-          {features::kOptimizationGuideOnDeviceModel,
-           {{"on_device_model_retract_repeats", "false"}}},
-          {features::kTextSafetyClassifier,
-           {{"on_device_text_safety_token_interval", "0"}}},
-      },
-      {});
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
@@ -3082,18 +3073,10 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
 
 // Validate that token interval 1 evaluates all partial output.
 TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {
-          {features::kOptimizationGuideOnDeviceModel,
-           {{"on_device_model_retract_repeats", "false"}}},
-          {features::kTextSafetyClassifier,
-           {{"on_device_text_safety_token_interval", "1"}}},
-      },
-      {});
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config.mutable_partial_output_checks()->set_token_interval(1);
     return safety_config;
   }());
   Initialize({
@@ -3122,18 +3105,10 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
 
 // Validate that token interval 3 only evaluates every third and final chunk.
 TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {
-          {features::kOptimizationGuideOnDeviceModel,
-           {{"on_device_model_retract_repeats", "false"}}},
-          {features::kTextSafetyClassifier,
-           {{"on_device_text_safety_token_interval", "3"}}},
-      },
-      {});
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config.mutable_partial_output_checks()->set_token_interval(3);
     return safety_config;
   }());
   Initialize({
@@ -3155,6 +3130,40 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
       "token1 token2 token3 token4 token5 token6",
       "token1 token2 token3 token4 token5 token6 token7",
   };
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
+}
+
+// Validate that PartialOutputChecks::minimum_tokens is respected.
+TEST_F(OnDeviceModelServiceControllerTest, MinimumSafetyTokens) {
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config.mutable_partial_output_checks()->set_minimum_tokens(2);
+    safety_config.mutable_partial_output_checks()->set_token_interval(1);
+    return safety_config;
+  }());
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &safety_asset,
+      .language = &standard_assets_.language,
+      .adaptations = {&standard_assets_.compose},
+  });
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+
+  fake_settings_.set_execute_result(
+      {"token1", " token2", " token3", " token4"});
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  task_environment_.RunUntilIdle();
+
+  const std::vector<std::string> expected_responses = {
+      "token1 token2",
+      "token1 token2 token3",
+      "token1 token2 token3 token4",
+  };
+
   EXPECT_EQ(*response_.value(), expected_responses.back());
   EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
@@ -3211,15 +3220,15 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
       {{features::kOptimizationGuideOnDeviceModel,
         {{"on_device_model_retract_repeats", "false"}}},
        {features::kTextSafetyClassifier,
-        {{"on_device_retract_unsafe_content", "true"},
-         {"on_device_text_safety_token_interval",
-          base::NumberToString(GetParam())}}}},
+        {{"on_device_retract_unsafe_content", "true"}}}},
       {});
 
   Initialize(standard_assets_);
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config.mutable_partial_output_checks()->set_token_interval(
+        GetParam());
     return safety_config;
   }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());

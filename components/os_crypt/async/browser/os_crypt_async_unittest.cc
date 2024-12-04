@@ -547,7 +547,7 @@ TEST_F(OSCryptAsyncTest, ShouldReencrypt) {
     Encryptor encryptor = GetInstanceSync(factory);
     ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
     // FOO should be used, as it's the higher precedence.
-    EXPECT_THAT(base::make_span(ciphertext).first(3u),
+    EXPECT_THAT(base::span(ciphertext).first<3>(),
                 ::testing::ElementsAreArray(base::span_from_cstring("FOO")));
     std::string plaintext;
     Encryptor::DecryptFlags flags;

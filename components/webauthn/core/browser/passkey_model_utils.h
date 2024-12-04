@@ -26,6 +26,9 @@ namespace webauthn::passkey_model_utils {
 std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys);
 
+// Returns whether the passkey is of the expected format.
+bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey);
+
 // Generates a passkey for the given RP ID and user. `trusted_vault_key` must be
 // the security domain secret of the `hw_protected` domain. Returns a passkey
 // sync entity with the sealed `encrypted` member set, and the unsealed private

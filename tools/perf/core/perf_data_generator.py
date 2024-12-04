@@ -702,7 +702,7 @@ BUILDERS = {
             'performance_test_suite_android_clank_trichrome_bundle',
         }],
         'platform':
-        'android-trichrome-bundle',
+        'android-trichrome-chrome-google-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf',
             'os': 'Android',

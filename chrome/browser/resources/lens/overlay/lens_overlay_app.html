@@ -32,6 +32,22 @@
     transition: opacity 150ms, visibility 150ms;
   }
 
+  #searchboxContainer {
+    animation: searchboxGrow 300ms ease forwards;
+    transform-origin: right;
+    animation-delay: 350ms;
+  }
+
+  /* Keyframes for the searchbox grow animation */
+  @keyframes searchboxGrow {
+    0% {
+      transform: scaleX(.5);
+    }
+    100% {
+      transform: scaleX(1);
+    }
+  }
+
   :host([should-fade-out-buttons]) .button-container,
   :host(:not([initial-flash-animation-has-ended])) .button-container,
   :host(:not([initial-flash-animation-has-ended])) #searchboxContainer {

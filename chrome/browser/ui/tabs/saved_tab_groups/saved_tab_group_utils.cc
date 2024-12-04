@@ -35,6 +35,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -691,6 +692,13 @@ bool SavedTabGroupUtils::AreSavedTabGroupsSyncedForProfile(Profile* profile) {
 
   return sync_service->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups);
+}
+
+bool SavedTabGroupUtils::SupportsSharedTabGroups() {
+  return tab_groups::IsTabGroupsSaveV2Enabled() &&
+         tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled() &&
+         base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingFeature);
 }
 
 }  // namespace tab_groups

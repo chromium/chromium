@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/system/system_info_ui.h"
 
 #include <memory>
@@ -84,12 +79,9 @@ void CreateAndAddSystemInfoUIDataSource(Profile* profile) {
   html_source->AddString("osLinkContainer", os_link_container);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kAboutSysResources, kAboutSysResourcesSize),
-      IDR_ABOUT_SYS_ABOUT_SYS_HTML);
-  html_source->AddResourcePaths(
-      base::make_span(kKeyValuePairViewerSharedResources,
-                      kKeyValuePairViewerSharedResourcesSize));
+  webui::SetupWebUIDataSource(html_source, kAboutSysResources,
+                              IDR_ABOUT_SYS_ABOUT_SYS_HTML);
+  html_source->AddResourcePaths(kKeyValuePairViewerSharedResources);
 }
 
 }  // namespace

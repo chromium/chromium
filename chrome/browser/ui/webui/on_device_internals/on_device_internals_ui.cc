@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -32,9 +27,7 @@ OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIOnDeviceInternalsHost);
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kOnDeviceInternalsResources,
-                                              kOnDeviceInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kOnDeviceInternalsResources,
                               IDR_ON_DEVICE_INTERNALS_ON_DEVICE_INTERNALS_HTML);
 }
 

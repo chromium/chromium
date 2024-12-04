@@ -198,7 +198,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                             .unarchiveAndRestoreTabs(
                                     mRegularTabCreator,
                                     Arrays.asList(tab),
-                                    /* updateTimestamp= */ true);
+                                    /* updateTimestamp= */ true,
+                                    /* areTabsBeingOpened= */ true);
 
                     hide(
                             ANIM_DURATION_MS,
@@ -679,7 +680,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private void restoreArchivedTabs(List<Tab> tabs) {
         mArchivedTabModelOrchestrator
                 .getTabArchiver()
-                .unarchiveAndRestoreTabs(mRegularTabCreator, tabs, /* updateTimestamp= */ true);
+                .unarchiveAndRestoreTabs(
+                        mRegularTabCreator,
+                        tabs,
+                        /* updateTimestamp= */ true,
+                        /* areTabsBeingOpened= */ false);
     }
 
     private void onIphReviewClicked() {

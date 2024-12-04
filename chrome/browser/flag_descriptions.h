@@ -236,6 +236,9 @@ extern const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[];
 extern const char kEnableBookmarksSelectedTypeOnSigninForTestingName[];
 extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
 
+extern const char kEnableLazyLoadImageForInvisiblePageName[];
+extern const char kEnableLazyLoadImageForInvisiblePageDescription[];
+
 extern const char kFontationsFontBackendName[];
 extern const char kFontationsFontBackendDescription[];
 
@@ -1799,9 +1802,6 @@ extern const char kPreloadingOnPerformancePageDescription[];
 extern const char kPrerender2Name[];
 extern const char kPrerender2Description[];
 
-extern const char kCbdTimeframeRequiredName[];
-extern const char kCbdTimeframeRequiredDescription[];
-
 extern const char kPriceChangeModuleName[];
 extern const char kPriceChangeModuleDescription[];
 
@@ -2037,6 +2037,9 @@ extern const char kIsolateOriginsDescription[];
 
 extern const char kIsolationByDefaultName[];
 extern const char kIsolationByDefaultDescription[];
+
+extern const char kSignatureBasedSriName[];
+extern const char kSignatureBasedSriDescription[];
 
 extern const char kSiteIsolationOptOutName[];
 extern const char kSiteIsolationOptOutDescription[];
@@ -2573,9 +2576,6 @@ extern const char kClankDefaultBrowserPromoDescription[];
 extern const char kClankDefaultBrowserPromoRoleManagerName[];
 extern const char kClankDefaultBrowserPromoRoleManagerDescription[];
 
-extern const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[];
-extern const char kClearLoginDatabaseForAllMigratedUPMUsersName[];
-
 extern const char kTabStateFlatBufferName[];
 extern const char kTabStateFlatBufferDescription[];
 
@@ -3085,9 +3085,6 @@ extern const char kNtpWideModulesDescription[];
 extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
-extern const char kHatsWebUIName[];
-extern const char kHatsWebUIDescription[];
-
 extern const char kMainNodeAnnotationsName[];
 extern const char kMainNodeAnnotationsDescription[];
 
@@ -3124,7 +3121,6 @@ extern const char kTabReorganizationDividerDescription[];
 extern const char kTabstripDeclutterName[];
 extern const char kTabstripDeclutterDescription[];
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kIOSPromoRefreshedPasswordBubbleName[];
 extern const char kIOSPromoRefreshedPasswordBubbleDescription[];
 
@@ -3133,7 +3129,6 @@ extern const char kIOSPromoAddressBubbleDescription[];
 
 extern const char kIOSPromoPaymentBubbleName[];
 extern const char kIOSPromoPaymentBubbleDescription[];
-#endif
 
 extern const char kWebAppSyncGeneratedIconBackgroundFixName[];
 extern const char kWebAppSyncGeneratedIconBackgroundFixDescription[];
@@ -3383,9 +3378,6 @@ extern const char kArcExtendIntentAnrTimeoutDescription[];
 
 extern const char kArcExtendServiceAnrTimeoutName[];
 extern const char kArcExtendServiceAnrTimeoutDescription[];
-
-extern const char kArcFilePickerExperimentName[];
-extern const char kArcFilePickerExperimentDescription[];
 
 extern const char kArcFriendlierErrorDialogName[];
 extern const char kArcFriendlierErrorDialogDescription[];
@@ -4102,9 +4094,6 @@ extern const char kMahiDebuggingDescription[];
 
 extern const char kMediaAppPdfMahiName[];
 extern const char kMediaAppPdfMahiDescription[];
-
-extern const char kMeteredShowToggleName[];
-extern const char kMeteredShowToggleDescription[];
 
 extern const char kMicrophoneMuteSwitchDeviceName[];
 extern const char kMicrophoneMuteSwitchDeviceDescription[];

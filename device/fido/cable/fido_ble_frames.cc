@@ -69,7 +69,7 @@ FidoBleFrame::ToFragments(size_t max_fragment_size) const {
 
   // Cast is necessary to ignore too high bits.
   auto data_view =
-      base::make_span(data_.data(), static_cast<uint16_t>(data_.size()));
+      base::span(data_.data(), static_cast<uint16_t>(data_.size()));
 
   // Subtract 3 to account for CMD, HLEN and LLEN bytes.
   const size_t init_fragment_size =

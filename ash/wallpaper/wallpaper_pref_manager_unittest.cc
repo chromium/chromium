@@ -169,7 +169,7 @@ class WallpaperPrefManagerTest : public WallpaperPrefManagerTestBase {
   WallpaperPrefManagerTest() = default;
 };
 
-TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNormal) {
+TEST_F(WallpaperPrefManagerTest, GetWallpaperInfo_Normal) {
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kDaily);
   pref_manager_->SetUserWallpaperInfo(account_id_1, expected_info);
 
@@ -178,7 +178,7 @@ TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNormal) {
   EXPECT_TRUE(actual_info.MatchesSelection(expected_info));
 }
 
-TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoEphemeral) {
+TEST_F(WallpaperPrefManagerTest, GetWallpaperInfo_Ephemeral) {
   profile_helper_->is_ephemeral = true;
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kDaily);
   pref_manager_->SetUserWallpaperInfo(account_id_1, expected_info);
@@ -188,12 +188,12 @@ TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoEphemeral) {
   EXPECT_TRUE(actual_info.MatchesSelection(expected_info));
 }
 
-TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNothingToGetNormal) {
+TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNothingToGet_Normal) {
   WallpaperInfo info;
   EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, &info));
 }
 
-TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNothingToGetEphemeral) {
+TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNothingToGet_Ephemeral) {
   profile_helper_->is_ephemeral = true;
   WallpaperInfo info;
   EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, &info));
@@ -211,7 +211,7 @@ TEST_F(WallpaperPrefManagerTest,
   EXPECT_TRUE(actual_info.MatchesSelection(expected_info));
 }
 
-TEST_F(WallpaperPrefManagerTest, RemoveUserWallpaperInfoEphemeral) {
+TEST_F(WallpaperPrefManagerTest, RemoveUserWallpaperInfo_Ephemeral) {
   profile_helper_->is_ephemeral = true;
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kDaily);
   pref_manager_->SetUserWallpaperInfo(account_id_1, expected_info);
@@ -221,7 +221,7 @@ TEST_F(WallpaperPrefManagerTest, RemoveUserWallpaperInfoEphemeral) {
   EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, &actual_info));
 }
 
-TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoEphemeralDoesNotChangeLocal) {
+TEST_F(WallpaperPrefManagerTest, SetWallpaperInfo_EphemeralDoesNotChangeLocal) {
   profile_helper_->is_ephemeral = true;
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kDaily);
   pref_manager_->SetUserWallpaperInfo(account_id_1, expected_info);
@@ -311,7 +311,7 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoCustom) {
       prefs::kSyncableWallpaperInfo, account_id_1, synced_info);
 }
 
-TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdateFuture) {
+TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdate_Future) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
   base::Time time = base::Time::Now();
 
@@ -326,7 +326,7 @@ TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdateFuture) {
                     Lt(base::Days(3) + base::Minutes(1))));
 }
 
-TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdatePast) {
+TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdate_Past) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
   base::Time time = base::Time::Now();
 
@@ -340,7 +340,7 @@ TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdatePast) {
             base::TimeDelta());
 }
 
-TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdateRecent) {
+TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdate_Recent) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
   base::Time time = base::Time::Now();
 
@@ -488,7 +488,7 @@ TEST_F(WallpaperPrefManagerTest, ShouldNotSyncInIfLocalWallpaperIsSeaPen) {
 
 // Verifies that creating a wallpaper info from prefs with an invalid layout
 // enum fails.
-TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfoInvalidLayoutEnum) {
+TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfo_InvalidLayoutEnum) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
@@ -513,7 +513,7 @@ TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfoInvalidLayoutEnum) {
 
 // Verifies that creating a wallpaper info from prefs with an invalid wallpaper
 // type fails.
-TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfoInvalidWallpaperType) {
+TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfo_InvalidWallpaperType) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);

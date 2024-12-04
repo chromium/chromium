@@ -21,14 +21,13 @@ BrowserImpl::BrowserImpl(ProfileIOS* profile,
                          InsertionPolicy insertion_policy,
                          ActivationPolicy activation_policy,
                          Type type)
-    : BrowserWebStateListDelegate(insertion_policy, activation_policy),
+    : BrowserWebStateListDelegate(profile, insertion_policy, activation_policy),
       type_(type),
-      profile_(profile),
       web_state_list_(this),
       scene_state_(scene_state),
       command_dispatcher_(command_dispatcher),
       active_browser_(active_browser ?: this) {
-  DCHECK(profile_);
+  DCHECK(profile);
   DCHECK(active_browser_);
 
   CHECK((type == Type::kInactive) == (active_browser != nullptr));
@@ -47,7 +46,7 @@ Browser::Type BrowserImpl::type() const {
 }
 
 ProfileIOS* BrowserImpl::GetProfile() {
-  return profile_;
+  return profile();
 }
 
 WebStateList* BrowserImpl::GetWebStateList() {
@@ -91,7 +90,7 @@ Browser* BrowserImpl::CreateInactiveBrowser() {
   CHECK(!inactive_browser_.get())
       << "This browser already links to its inactive counterpart.";
   inactive_browser_ = std::make_unique<BrowserImpl>(
-      profile_, scene_state_, [[CommandDispatcher alloc] init],
+      profile(), scene_state_, [[CommandDispatcher alloc] init],
       /*active_browser=*/this, BrowserImpl::InsertionPolicy::kAttachTabHelpers,
       BrowserImpl::ActivationPolicy::kDoNothing, Type::kInactive);
   return inactive_browser_.get();

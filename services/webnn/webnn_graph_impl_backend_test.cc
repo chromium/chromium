@@ -10,9 +10,9 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -282,6 +282,7 @@ class WebNNGraphImplBackendTest : public dml::TestBase {
 
   void SetUp() override;
   void SetUpBase();
+  void TearDown() override;
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
@@ -371,6 +372,7 @@ class WebNNGraphImplBackendTest : public testing::Test {
 
   void SetUp() override;
   void SetUpBase();
+  void TearDown() override;
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
@@ -418,6 +420,7 @@ class WebNNGraphImplBackendTest : public testing::Test {
 
   void SetUp() override;
   void SetUpBase();
+  void TearDown() override;
 
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
@@ -455,8 +458,11 @@ void WebNNGraphImplBackendTest::SetUpBase() {
 
   // Create the ContextImpl through context provider.
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
-  provider_remote_->CreateWebNNContext(mojom::CreateContextOptions::New(),
-                                       create_context_future.GetCallback());
+  provider_remote_->CreateWebNNContext(
+      mojom::CreateContextOptions::New(
+          mojom::CreateContextOptions::Device::kGpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
+      create_context_future.GetCallback());
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
   if (create_context_result->is_success()) {
@@ -466,6 +472,12 @@ void WebNNGraphImplBackendTest::SetUpBase() {
   EXPECT_FALSE(create_context_result->is_error())
       << create_context_result->get_error()->message;
   EXPECT_TRUE(webnn_context_.is_bound());
+}
+
+void WebNNGraphImplBackendTest::TearDown() {
+  webnn_context_.reset();
+  provider_remote_.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return true; }));
 }
 
 mojo::AssociatedRemote<mojom::WebNNGraphBuilder>
@@ -3516,7 +3528,16 @@ struct Resample2dTester {
 };
 
 // Test building and computing a graph with single operator resample2d.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorResample2d) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM_FAMILY)
+// Test times out on Windows 11 / ARM bot, see https:  // crbug.com/381510750.
+#define MAYBE_BuildAndComputeSingleOperatorResample2d \
+  DISABLED_BuildAndComputeSingleOperatorResample2d
+#else
+#define MAYBE_BuildAndComputeSingleOperatorResample2d \
+  BuildAndComputeSingleOperatorResample2d
+#endif
+TEST_F(WebNNGraphImplBackendTest,
+       MAYBE_BuildAndComputeSingleOperatorResample2d) {
   // Test resample2d with "NearestNeighbor" mode, explicit scales = [2, 3] and
   // axes = [2, 3].
   {

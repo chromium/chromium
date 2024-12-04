@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 
 #include <string>
@@ -23,6 +18,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
+#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -241,12 +237,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
   const int resource = IDR_SIDE_PANEL_BOOKMARKS_POWER_BOOKMARKS_HTML;
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kSidePanelBookmarksResources,
-                                              kSidePanelBookmarksResourcesSize),
-                              resource);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kSidePanelBookmarksResources, resource);
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
@@ -274,6 +266,14 @@ void BookmarksSidePanelUI::BindInterface(
         shopping_service::mojom::ShoppingServiceHandlerFactory> receiver) {
   shopping_service_factory_receiver_.reset();
   shopping_service_factory_receiver_.Bind(std::move(receiver));
+}
+
+void BookmarksSidePanelUI::BindInterface(
+    mojo::PendingReceiver<
+        commerce::price_tracking::mojom::PriceTrackingHandlerFactory>
+        receiver) {
+  price_tracking_factory_receiver_.reset();
+  price_tracking_factory_receiver_.Bind(std::move(receiver));
 }
 
 void BookmarksSidePanelUI::BindInterface(
@@ -309,7 +309,6 @@ void BookmarksSidePanelUI::CreateBookmarksPageHandler(
 }
 
 void BookmarksSidePanelUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -321,11 +320,27 @@ void BookmarksSidePanelUI::CreateShoppingServiceHandler(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker, nullptr, nullptr);
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker, nullptr, nullptr);
+}
+
+void BookmarksSidePanelUI::CreatePriceTrackingHandler(
+    mojo::PendingRemote<commerce::price_tracking::mojom::Page> page,
+    mojo::PendingReceiver<commerce::price_tracking::mojom::PriceTrackingHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  feature_engagement::Tracker* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
+      std::move(page), std::move(receiver), web_ui(), shopping_service, tracker,
+      bookmark_model);
   shopping_list_context_menu_controller_ =
       std::make_unique<commerce::ShoppingListContextMenuController>(
-          bookmark_model, shopping_service, shopping_service_handler_.get());
+          bookmark_model, shopping_service, price_tracking_handler_.get());
 }
 
 bool BookmarksSidePanelUI::IsIncognitoModeAvailable() {

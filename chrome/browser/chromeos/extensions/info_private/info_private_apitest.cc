@@ -38,8 +38,8 @@ const char kTestAppId[] = "ljoammodoonkhnehlncldjelhidljdpi";
 
 class ChromeOSInfoPrivateTest : public extensions::ExtensionApiTest {
  public:
-  ChromeOSInfoPrivateTest() {}
-  ~ChromeOSInfoPrivateTest() override {}
+  ChromeOSInfoPrivateTest() = default;
+  ~ChromeOSInfoPrivateTest() override = default;
 
  protected:
   void EnableKioskSession() {

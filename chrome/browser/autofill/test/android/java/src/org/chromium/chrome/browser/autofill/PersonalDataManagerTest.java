@@ -700,19 +700,15 @@ public class PersonalDataManagerTest {
         CreditCard card3 = createLocalCreditCard("Mastercard", "1234123412341234", "11", "2020");
         card3.setOrigin("http://www.example.com");
 
-        String guid1 = mHelper.setCreditCard(card1);
-        String guid2 = mHelper.setCreditCard(card2);
-        String guid3 = mHelper.setCreditCard(card3);
-
         // The first credit card has the lowest use count but has most recently been used, making it
         // ranked first.
-        mHelper.setCreditCardUseStatsForTesting(guid1, 6, 1);
-        // The second credit card has the median use count and use date, and with these values it is
-        // ranked third.
-        mHelper.setCreditCardUseStatsForTesting(guid2, 25, 10);
+        String guid1 = mHelper.addCreditCardWithUseStatsForTesting(card1, 6, 1);
+        // The second credit card has the median use count and use date, and with these
+        // values it is ranked third.
+        String guid2 = mHelper.addCreditCardWithUseStatsForTesting(card2, 25, 10);
         // The third credit card has the highest use count and is the credit card with the farthest
         // last use date. Because of its very high use count, it is still ranked second.
-        mHelper.setCreditCardUseStatsForTesting(guid3, 100, 20);
+        String guid3 = mHelper.addCreditCardWithUseStatsForTesting(card3, 100, 20);
 
         List<CreditCard> cards = mHelper.getCreditCardsToSuggest();
         Assert.assertEquals(3, cards.size());
@@ -771,19 +767,15 @@ public class PersonalDataManagerTest {
         CreditCard card3 = createLocalCreditCard("Mastercard", "1234123412341234", "11", "2020");
         card3.setOrigin("http://www.example.com");
 
-        String guid1 = mHelper.setCreditCard(card1);
-        String guid2 = mHelper.setCreditCard(card2);
-        String guid3 = mHelper.setCreditCard(card3);
-
         // The first credit card has the lowest use count but has most recently been used, making it
-        // ranked second.
-        mHelper.setCreditCardUseStatsForTesting(guid1, 6, 1);
-        // The second credit card has the median use count and use date, and with these values it is
         // ranked first.
-        mHelper.setCreditCardUseStatsForTesting(guid2, 25, 10);
-        // The third credit card has the highest use count and is the profile with the farthest last
-        // use date. Because of its very far last use date, it's ranked third.
-        mHelper.setCreditCardUseStatsForTesting(guid3, 100, 20);
+        String guid1 = mHelper.addCreditCardWithUseStatsForTesting(card1, 6, 1);
+        // The second credit card has the median use count and use date, and with these
+        // values it is ranked third.
+        String guid2 = mHelper.addCreditCardWithUseStatsForTesting(card2, 25, 10);
+        // The third credit card has the highest use count and is the credit card with the farthest
+        // last use date. Because of its very high use count, it is still ranked second.
+        String guid3 = mHelper.addCreditCardWithUseStatsForTesting(card3, 100, 20);
 
         List<CreditCard> cards = mHelper.getCreditCardsToSuggest();
         Assert.assertEquals(3, cards.size());
@@ -859,9 +851,10 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void testCreditCardUseStatsSettingAndGetting() throws TimeoutException {
+    public void testCreditCardWithUseStatsSettingAndGetting() throws TimeoutException {
+        // Set a credit card with specific use stats.
         String guid =
-                mHelper.setCreditCard(
+                mHelper.addCreditCardWithUseStatsForTesting(
                         new CreditCard(
                                 /* guid= */ "",
                                 /* origin= */ "",
@@ -874,14 +867,9 @@ public class PersonalDataManagerTest {
                                 "Visa",
                                 /* issuerIconDrawableId= */ 0,
                                 /* billingAddressId= */ "",
-                                /* serverId= */ ""));
-
-        // Make sure the credit card does not have the specific use stats form the start.
-        Assert.assertTrue(1234 != mHelper.getCreditCardUseCountForTesting(guid));
-        Assert.assertTrue(1234 != mHelper.getCreditCardUseDateForTesting(guid));
-
-        // Set specific use stats for the credit card.
-        mHelper.setCreditCardUseStatsForTesting(guid, 1234, 1234);
+                                /* serverId= */ ""),
+                        1234,
+                        1234);
 
         // Make sure the specific use stats were set for the credit card.
         Assert.assertEquals(1234, mHelper.getCreditCardUseCountForTesting(guid));
@@ -919,7 +907,7 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testRecordAndLogCreditCardUse() throws TimeoutException {
         String guid =
-                mHelper.setCreditCard(
+                mHelper.addCreditCardWithUseStatsForTesting(
                         new CreditCard(
                                 /* guid= */ "",
                                 /* origin= */ "",
@@ -932,10 +920,9 @@ public class PersonalDataManagerTest {
                                 "Visa",
                                 /* issuerIconDrawableId= */ 0,
                                 /* billingAddressId= */ "",
-                                /* serverId= */ ""));
-
-        // Set specific use stats for the credit card.
-        mHelper.setCreditCardUseStatsForTesting(guid, 1234, 1234);
+                                /* serverId= */ ""),
+                        1234,
+                        1234);
 
         // Get the current date value just before the call to record and log.
         long timeBeforeRecord = mHelper.getCurrentDateForTesting();

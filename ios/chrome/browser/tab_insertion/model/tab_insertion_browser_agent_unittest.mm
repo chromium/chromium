@@ -20,9 +20,10 @@
 
 namespace {
 
-const char kURL1[] = "https://www.some.url.com";
+using tab_groups::TabGroupId;
+using tab_groups::TabGroupVisualData;
 
-}  // namespace
+const char kURL1[] = "https://www.some.url.com";
 
 class TabInsertionBrowserAgentTest : public PlatformTest {
  public:
@@ -254,3 +255,189 @@ TEST_F(TabInsertionBrowserAgentTest, InsertPinned) {
   EXPECT_EQ(web_state2, browser_->GetWebStateList()->GetWebStateAt(2));
   EXPECT_EQ(web_state0, browser_->GetWebStateList()->GetWebStateAt(3));
 }
+
+// Tests inserting a tab in no group.
+TEST_F(TabInsertionBrowserAgentTest, InsertInNoGroup) {
+  TabInsertion::Params insertion_params;
+  web::WebState* web_state0 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state2 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  TabGroupVisualData visual_data1 =
+      TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kPink);
+  web_state_list->CreateGroup({1}, visual_data1, TabGroupId::GenerateNew());
+  TabGroupVisualData visual_data2 =
+      TabGroupVisualData(u"Other Group", tab_groups::TabGroupColorId::kYellow);
+  web_state_list->CreateGroup({2}, visual_data2, TabGroupId::GenerateNew());
+
+  insertion_params.index = TabInsertion::kPositionAutomatically;
+  web::WebState* web_state3 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+
+  ASSERT_EQ(4, browser_->GetWebStateList()->count());
+  EXPECT_EQ(0, browser_->GetWebStateList()->pinned_tabs_count());
+  EXPECT_EQ(web_state0, browser_->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_EQ(web_state1, browser_->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_EQ(web_state2, browser_->GetWebStateList()->GetWebStateAt(2));
+  EXPECT_EQ(web_state3, browser_->GetWebStateList()->GetWebStateAt(3));
+  const TabGroup* group = browser_->GetWebStateList()->GetGroupOfWebStateAt(3);
+  EXPECT_EQ(group, nullptr);
+}
+
+// Tests inserting a tab by creating a new group.
+TEST_F(TabInsertionBrowserAgentTest, InsertInNewGroup) {
+  TabInsertion::Params insertion_params;
+  web::WebState* web_state0 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state2 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  TabGroupVisualData visual_data1 =
+      TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kPink);
+  const TabGroup* group1 =
+      web_state_list->CreateGroup({1}, visual_data1, TabGroupId::GenerateNew());
+  TabGroupVisualData visual_data2 =
+      TabGroupVisualData(u"Other Group", tab_groups::TabGroupColorId::kYellow);
+  const TabGroup* group2 =
+      web_state_list->CreateGroup({2}, visual_data2, TabGroupId::GenerateNew());
+
+  insertion_params.index = TabInsertion::kPositionAutomatically;
+  insertion_params.insert_in_group = true;
+  web::WebState* web_state3 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+
+  ASSERT_EQ(4, browser_->GetWebStateList()->count());
+  EXPECT_EQ(0, browser_->GetWebStateList()->pinned_tabs_count());
+  EXPECT_EQ(web_state0, browser_->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_EQ(web_state1, browser_->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_EQ(web_state2, browser_->GetWebStateList()->GetWebStateAt(2));
+  EXPECT_EQ(web_state3, browser_->GetWebStateList()->GetWebStateAt(3));
+  const TabGroup* group = browser_->GetWebStateList()->GetGroupOfWebStateAt(3);
+  EXPECT_NE(group, nullptr);
+  EXPECT_NE(group, group1);
+  EXPECT_NE(group, group2);
+  EXPECT_EQ(group->range(), TabGroupRange(3, 1));
+}
+
+// Tests inserting a tab in an existing group on the left.
+TEST_F(TabInsertionBrowserAgentTest, InsertInExistingGroupOnTheLeft) {
+  TabInsertion::Params insertion_params;
+  web::WebState* web_state0 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state2 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  TabGroupVisualData visual_data1 =
+      TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kPink);
+  const TabGroup* group1 =
+      web_state_list->CreateGroup({1}, visual_data1, TabGroupId::GenerateNew());
+  TabGroupVisualData visual_data2 =
+      TabGroupVisualData(u"Other Group", tab_groups::TabGroupColorId::kYellow);
+  const TabGroup* group2 =
+      web_state_list->CreateGroup({2}, visual_data2, TabGroupId::GenerateNew());
+
+  insertion_params.index = TabInsertion::kPositionAutomatically;
+  insertion_params.insert_in_group = true;
+  insertion_params.tab_group = group1->GetWeakPtr();
+  web::WebState* web_state3 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+
+  ASSERT_EQ(4, web_state_list->count());
+  EXPECT_EQ(0, web_state_list->pinned_tabs_count());
+  EXPECT_EQ(web_state0, web_state_list->GetWebStateAt(0));
+  EXPECT_EQ(web_state1, web_state_list->GetWebStateAt(1));
+  EXPECT_EQ(web_state3, web_state_list->GetWebStateAt(2));
+  EXPECT_EQ(web_state2, web_state_list->GetWebStateAt(3));
+  EXPECT_EQ(group1, web_state_list->GetGroupOfWebStateAt(1));
+  EXPECT_EQ(group1, web_state_list->GetGroupOfWebStateAt(2));
+  EXPECT_EQ(group1->range(), TabGroupRange(1, 2));
+  EXPECT_EQ(group2, web_state_list->GetGroupOfWebStateAt(3));
+  EXPECT_EQ(group2->range(), TabGroupRange(3, 1));
+}
+
+// Tests inserting a tab in an existing group on the right.
+TEST_F(TabInsertionBrowserAgentTest, InsertInExistingGroupOnTheRight) {
+  TabInsertion::Params insertion_params;
+  web::WebState* web_state0 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state2 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  TabGroupVisualData visual_data1 =
+      TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kPink);
+  const TabGroup* group1 =
+      web_state_list->CreateGroup({1}, visual_data1, TabGroupId::GenerateNew());
+  TabGroupVisualData visual_data2 =
+      TabGroupVisualData(u"Other Group", tab_groups::TabGroupColorId::kYellow);
+  const TabGroup* group2 =
+      web_state_list->CreateGroup({2}, visual_data2, TabGroupId::GenerateNew());
+
+  insertion_params.index = TabInsertion::kPositionAutomatically;
+  insertion_params.insert_in_group = true;
+  insertion_params.tab_group = group2->GetWeakPtr();
+  web::WebState* web_state3 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+
+  ASSERT_EQ(4, web_state_list->count());
+  EXPECT_EQ(0, web_state_list->pinned_tabs_count());
+  EXPECT_EQ(web_state0, web_state_list->GetWebStateAt(0));
+  EXPECT_EQ(web_state1, web_state_list->GetWebStateAt(1));
+  EXPECT_EQ(web_state2, web_state_list->GetWebStateAt(2));
+  EXPECT_EQ(web_state3, web_state_list->GetWebStateAt(3));
+  EXPECT_EQ(group1, web_state_list->GetGroupOfWebStateAt(1));
+  EXPECT_EQ(group1->range(), TabGroupRange(1, 1));
+  EXPECT_EQ(group2, web_state_list->GetGroupOfWebStateAt(2));
+  EXPECT_EQ(group2, web_state_list->GetGroupOfWebStateAt(3));
+  EXPECT_EQ(group2->range(), TabGroupRange(2, 2));
+}
+
+// Tests inserting a tab in an existing group on the right, at the beginning of
+// the group.
+TEST_F(TabInsertionBrowserAgentTest,
+       InsertInExistingGroupOnTheRightAtTheBeginning) {
+  TabInsertion::Params insertion_params;
+  web::WebState* web_state0 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state2 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  TabGroupVisualData visual_data1 =
+      TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kPink);
+  const TabGroup* group1 =
+      web_state_list->CreateGroup({1}, visual_data1, TabGroupId::GenerateNew());
+  TabGroupVisualData visual_data2 =
+      TabGroupVisualData(u"Other Group", tab_groups::TabGroupColorId::kYellow);
+  const TabGroup* group2 =
+      web_state_list->CreateGroup({2}, visual_data2, TabGroupId::GenerateNew());
+
+  insertion_params.index = 2;
+  insertion_params.insert_in_group = true;
+  insertion_params.tab_group = group2->GetWeakPtr();
+  web::WebState* web_state3 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+
+  ASSERT_EQ(4, web_state_list->count());
+  EXPECT_EQ(0, web_state_list->pinned_tabs_count());
+  EXPECT_EQ(web_state0, web_state_list->GetWebStateAt(0));
+  EXPECT_EQ(web_state1, web_state_list->GetWebStateAt(1));
+  EXPECT_EQ(web_state3, web_state_list->GetWebStateAt(2));
+  EXPECT_EQ(web_state2, web_state_list->GetWebStateAt(3));
+  EXPECT_EQ(group1, web_state_list->GetGroupOfWebStateAt(1));
+  EXPECT_EQ(group1->range(), TabGroupRange(1, 1));
+  EXPECT_EQ(group2, web_state_list->GetGroupOfWebStateAt(2));
+  EXPECT_EQ(group2, web_state_list->GetGroupOfWebStateAt(3));
+  EXPECT_EQ(group2->range(), TabGroupRange(2, 2));
+}
+
+}  // namespace

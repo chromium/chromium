@@ -278,7 +278,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1473495410389165587">Aby uzyskać pomoc w pisaniu, wpisz co najmniej 3 słowa</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Firmy sprzątające</translation>
-<translation id="1475299637784133125">Szukasz wersji przeglądarki? Wejdź na</translation>
 <translation id="1476595624592550506">Zmień hasło</translation>
 <translation id="1482372785911828880">Bardzo cienka</translation>
 <translation id="1482879811280872320">Jazda na rowerze</translation>
@@ -1421,7 +1420,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
 <translation id="3559897352860026926">Poproś administratora o sprawdzenie ustawień konfiguracji usługi <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560408312959371419">Opcje ochrony przed śledzeniem i danych witryn na urządzeniu</translation>
 <translation id="3560824484345057728">Pokaż powiązane witryny</translation>
 <translation id="3566021033012934673">Połączenie nie jest prywatne</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -2598,7 +2596,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5675809467256309336">Muzyka dance i elektroniczna</translation>
 <translation id="5675959228867414813">Pokaż według daty</translation>
 <translation id="567604591393105935">Plansza dolna Handel otwarta do połowy wysokości</translation>
-<translation id="5677928146339483299">Zablokowane</translation>
 <translation id="5678007133659493065">Folia</translation>
 <translation id="5680642791693447368">Thrillery i filmy kryminalne</translation>
 <translation id="568292603005599551">Pozycja X obrazu</translation>
@@ -2658,7 +2655,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="57838592816432529">Wycisz</translation>
 <translation id="5784606427469807560">Podczas potwierdzania karty wystąpił problem. Sprawdź połączenie internetowe i spróbuj ponownie.</translation>
 <translation id="5785756445106461925">Ta strona zawiera także niezabezpieczone zasoby. Podczas przesyłania mogą je wyświetlić inni użytkownicy, a osoby atakujące mogą je zmodyfikować, by zmienić wygląd strony.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ta forma płatności zostanie usunięta z tego urządzenia</translation>
 <translation id="5794065675298686371">Włącz powiadomienia dotyczące śledzenia cen</translation>
 <translation id="5800727402210090597">Naprawa telefonów komórkowych i powiązane usługi</translation>
@@ -2957,7 +2953,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="633770708279464947">Wartość <ph name="SECURE_DNS_SALT" /> jest nieprawidłowa i nie zostanie użyta.</translation>
 <translation id="6340739886198108203">Zgodnie z zasadą administratora nie zaleca się robienia zrzutów ekranu, gdy są widoczne treści poufne:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się przenoszenia tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Ochrona przed śledzeniem</translation>
 <translation id="634500758737709758">Trasa</translation>
 <translation id="6348220984832452017">Aktywne warianty</translation>
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
@@ -4148,6 +4143,7 @@ Dodatkowe informacje:
 <translation id="8449836157089738489">Otwórz wszystko w nowej grupie kart</translation>
 <translation id="84561192812921051">Administrator może zdalnie wprowadzać zmiany w Twoim profilu i przeglądarce, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania. Aktywność na tym urządzeniu może być zarządzana również poza Chrome.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Plansza dolna jest zamknięta.</translation>
+<translation id="8456775115498700722">Dane kart <ph name="CARD_ISSUER_NAME" /> mogą być teraz uzupełniane automatycznie, ponieważ Twoje konto <ph name="CARD_ISSUER_NAME" /> jest połączone z Google Pay.</translation>
 <translation id="8457125768502047971">Bez ograniczeń</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Włącz</translation>
@@ -4304,6 +4300,7 @@ Dodatkowe informacje:
 <translation id="8757526089434340176">Dostępna oferta Google Pay</translation>
 <translation id="8759274551635299824">Ta karta straciła ważność</translation>
 <translation id="87601671197631245">Ta strona używa nieaktualnej konfiguracji zabezpieczeń, co oznacza, że Twoje dane (np. hasła, wiadomości i numery kart kredytowych) mogą być zagrożone podczas przesyłania na tę stronę.</translation>
+<translation id="8763226176721243078">Dane tej karty mogą być uzupełniane automatycznie, ponieważ Twoje konto <ph name="CARD_ISSUER_NAME" /> jest połączone z Google Pay.</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
 <translation id="8763986294015493060">Zamknij wszystkie otwarte okna incognito</translation>
 <translation id="8766943070169463815">Arkusz uwierzytelniania danych logowania na potrzeby bezpiecznych płatności jest otwarty</translation>
@@ -4393,7 +4390,6 @@ Dodatkowe informacje:
 <translation id="893332455753468063">Dodaj imię i nazwisko lub nazwę firmy</translation>
 <translation id="8942355029279167844">Administrator zezwolił aplikacji <ph name="APP_NAME" /> na zbieranie danych diagnostycznych, z których korzystamy, by ulepszać działanie usługi. Więcej informacji znajdziesz na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limonkowy</translation>
-<translation id="8944485226638699751">Z ograniczeniami</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">Witryna prosi o dostęp do Twojego urządzenia: <ph name="REQUEST_TYPE" />. Wypełnij tę krótką ankietę, aby pomóc nam ulepszyć sposób, w jaki witryny proszą o dostęp.</translation>
@@ -4414,7 +4410,6 @@ Dodatkowe informacje:
 <translation id="8987663052629670333">Usługi wywoływania zdjęć</translation>
 <translation id="8987927404178983737">Miesiąc</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">Szukasz wersji systemu? Wejdź na</translation>
 <translation id="899688752321268742"><ph name="URL" /> chce wiedzieć, kiedy używasz urządzenia</translation>
 <translation id="8997023839087525404">Certyfikat przesłany przez serwer nie został publicznie ujawniony przez protokół Certificate Transparency. Jest to wymagane w przypadku niektórych certyfikatów jako potwierdzenie, że są one zaufane i zabezpieczone przed atakami.</translation>
 <translation id="9000145382638074673">Twoje urządzenia</translation>

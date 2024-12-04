@@ -36,9 +36,9 @@
 
 namespace blink {
 
-WebThreadSafeData::WebThreadSafeData(const char* data, size_t length) {
+WebThreadSafeData::WebThreadSafeData(base::span<const char> data) {
   private_ = RawData::Create();
-  private_->MutableData()->Append(data, base::checked_cast<wtf_size_t>(length));
+  private_->MutableData()->AppendSpan(data);
 }
 
 void WebThreadSafeData::Reset() {

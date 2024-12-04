@@ -1685,6 +1685,11 @@ const char kMirrorBackForwardGesturesInRTLDescription[] =
     "directions are flipped so that the left edge is considered forward and "
     "right is considered back.";
 
+const char kEnableLazyLoadImageForInvisiblePageName[] =
+    "Enable lazy load image for invisible page";
+const char kEnableLazyLoadImageForInvisiblePageDescription[] =
+    "Respect the loading = lazy attribute for images even on invisible pages.";
+
 const char kEnableLensStandaloneFlagId[] = "enable-lens-standalone";
 const char kEnableLensStandaloneName[] = "Enable Lens features in Chrome.";
 const char kEnableLensStandaloneDescription[] =
@@ -3137,13 +3142,6 @@ const char kEnableOmniboxClientSearchPrefetchDescription[] =
     "Search Engine that the client thinks are likely to be navigated. Requires "
     "chrome://flags/#omnibox-search-prefetch";
 
-const char kCbdTimeframeRequiredName[] =
-    "Clear Browsing Data Timeframe Experiment on Desktop";
-const char kCbdTimeframeRequiredDescription[] =
-    "This experiment requires users to interact with timeframe drop down menu "
-    "in the clear browsing data dialog. It also adds a new 'Last 15 minutes' "
-    "value to the list.";
-
 const char kPriceChangeModuleName[] = "Price Change Module";
 const char kPriceChangeModuleDescription[] =
     "Show a module with price drops of open tabs on new tab page.";
@@ -3553,6 +3551,12 @@ const char kIsolationByDefaultDescription[] =
     "distinct processes. While these changes will ideally become new default "
     "behaviors for the web, this flag is likely to break your experience on "
     "sites you visit today.";
+
+const char kSignatureBasedSriName[] = "Signature-based Integrity Checks";
+const char kSignatureBasedSriDescription[] =
+    "Enables signature-based "
+    "integrity checks, as proposed in "
+    "https://wicg.github.io/signature-based-sri/.";
 
 const char kSiteIsolationOptOutName[] = "Disable site isolation";
 const char kSiteIsolationOptOutDescription[] =
@@ -4442,12 +4446,6 @@ const char kClankDefaultBrowserPromoRoleManagerName[] =
 const char kClankDefaultBrowserPromoRoleManagerDescription[] =
     "Sets the Role Manager Default Browser Promo for testing the new "
     "Default Browser Promo Feature";
-
-const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[] =
-    "This feature clears LoginDatabase for all users when UPM is properly "
-    "enabled and the credentials were migrated to GMS Core.";
-const char kClearLoginDatabaseForAllMigratedUPMUsersName[] =
-    "Clear LoginDatabase for all migrated UPM users";
 
 const char kTabStateFlatBufferName[] = "Enable TabState FlatBuffer";
 const char kTabStateFlatBufferDescription[] =
@@ -5340,11 +5338,6 @@ const char kHappinessTrackingSurveysForDesktopDemoName[] =
 const char kHappinessTrackingSurveysForDesktopDemoDescription[] =
     "Enable showing Happiness Tracking Surveys Demo to users on Desktop";
 
-const char kHatsWebUIName[] = "HaTS in Chrome WebUI";
-const char kHatsWebUIDescription[] =
-    "Enables the Happiness Tracking Surveys being delivered via chrome webui, "
-    "rather than a separate static website.";
-
 const char kMainNodeAnnotationsName[] = "Main Node Annotations";
 const char kMainNodeAnnotationsDescription[] =
     "Uses Screen2x main content extractor to annotate the accessibility tree "
@@ -5405,7 +5398,6 @@ const char kTabstripDeclutterDescription[] =
     "Enables the Tab Declutter feature, which can be found within the Tab "
     "Search bubble.";
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kIOSPromoRefreshedPasswordBubbleName[] =
     "Chrome for iOS promo : passwords";
 const char kIOSPromoRefreshedPasswordBubbleDescription[] =
@@ -5421,8 +5413,6 @@ const char kIOSPromoPaymentBubbleName[] = "Chrome for iOS promo : payments";
 const char kIOSPromoPaymentBubbleDescription[] =
     "When enabled, the Contextual Chrome for iOS promo will be shown to"
     "the eligible users when they save/update their payments.";
-
-#endif
 
 const char kWebAppSyncGeneratedIconBackgroundFixName[] =
     "Web App Sync Generated Icon Background Fix";
@@ -5858,11 +5848,6 @@ const char kArcExtendServiceAnrTimeoutDescription[] =
     "When enabled, the default executing service ANR timeout time will be"
     " extended from 20 seconds to 30 seconds for foreground services, 200"
     " seconds to 300 seconds for background services.";
-
-const char kArcFilePickerExperimentName[] =
-    "Enable file picker experiment for ARC";
-const char kArcFilePickerExperimentDescription[] =
-    "Enables using ChromeOS file picker in ARC.";
 
 const char kArcFriendlierErrorDialogName[] =
     "Enable friendlier error dialog for ARC";
@@ -7072,12 +7057,6 @@ const char kMahiSummarizeSelectedDescription[] =
 const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";
-
-const char kMeteredShowToggleName[] = "Show Metered Toggle";
-const char kMeteredShowToggleDescription[] =
-    "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "
-    "The toggle allows users to set whether a network should be considered "
-    "metered for purposes of bandwith usage (e.g. for automatic updates).";
 
 const char kMicrophoneMuteSwitchDeviceName[] = "Microphone Mute Switch Device";
 const char kMicrophoneMuteSwitchDeviceDescription[] =

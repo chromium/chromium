@@ -88,9 +88,6 @@ void DownloadManagerTabHelper::AdaptToFullscreen(bool adapt_to_fullscreen) {
 }
 
 bool DownloadManagerTabHelper::WillDownloadTaskBeSavedToDrive() const {
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    return false;
-  }
   DriveTabHelper* drive_tab_helper =
       DriveTabHelper::GetOrCreateForWebState(task_->GetWebState());
   UploadTask* upload_task =

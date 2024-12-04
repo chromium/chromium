@@ -241,7 +241,7 @@ class AutofillClient {
 
   // Returns the AutofillCrowdsourcingManager for communication with the
   // Autofill server.
-  virtual AutofillCrowdsourcingManager* GetCrowdsourcingManager();
+  virtual AutofillCrowdsourcingManager& GetCrowdsourcingManager() = 0;
 
   // Gets the PersonalDataManager instance associated with the original Chrome
   // profile.
@@ -484,9 +484,8 @@ class AutofillClient {
   virtual bool IsPasswordManagerEnabled() const = 0;
 
   // Inform the client that the form has been filled.
-  virtual void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                                    AutofillTriggerSource trigger_source,
-                                    bool is_refill) = 0;
+  virtual void DidFillForm(AutofillTriggerSource trigger_source,
+                           bool is_refill) = 0;
 
   // If the context is secure.
   virtual bool IsContextSecure() const = 0;

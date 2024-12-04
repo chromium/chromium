@@ -145,9 +145,10 @@ void RenderFrameHostAndroid::GetCanonicalUrlForSharing(
 std::vector<ScopedJavaLocalRef<jobject>>
 RenderFrameHostAndroid::GetAllRenderFrameHosts(JNIEnv* env) const {
   std::vector<ScopedJavaLocalRef<jobject>> ret;
-  render_frame_host_->ForEachRenderFrameHost([&ret](RenderFrameHostImpl* rfh) {
-    ret.push_back(rfh->GetJavaRenderFrameHost());
-  });
+  render_frame_host_->ForEachRenderFrameHostImpl(
+      [&ret](RenderFrameHostImpl* rfh) {
+        ret.push_back(rfh->GetJavaRenderFrameHost());
+      });
   return ret;
 }
 

@@ -160,8 +160,8 @@ bool VerifyCRL(const Crl& crl,
 
   // Verify the signature in the CRL. It should be signed with RSASSA-PKCS1-v1_5
   // and SHA-256.
-  auto signature_bytes = base::as_bytes(base::make_span(crl.signature()));
-  auto tbs_crl_bytes = base::as_bytes(base::make_span(crl.tbs_crl()));
+  auto signature_bytes = base::as_byte_span(crl.signature());
+  auto tbs_crl_bytes = base::as_byte_span(crl.tbs_crl());
   bssl::ScopedEVP_MD_CTX ctx;
   if (EVP_PKEY_id(pubkey.get()) != EVP_PKEY_RSA ||
       !EVP_DigestVerifyInit(ctx.get(), nullptr, EVP_sha256(), nullptr,

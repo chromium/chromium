@@ -19,13 +19,15 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/download/model/confirm_download_closing_overlay.h"
 #import "ios/chrome/browser/download/model/confirm_download_replacing_overlay.h"
+#import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/installation_notifier.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller+Testing.h"
+#import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller.h"
 #import "ios/chrome/browser/download/ui_bundled/download_manager_view_controller_delegate.h"
-#import "ios/chrome/browser/download/ui_bundled/legacy_download_manager_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -35,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_contained_presenter.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -44,6 +47,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
@@ -58,21 +62,34 @@ const int64_t kTestReceivedBytes = 0;
 const base::FilePath::CharType kTestSuggestedFileName[] =
     FILE_PATH_LITERAL("file.zip");
 
+// Returns formatted size string.
+NSString* GetSizeString(int64_t size_in_bytes) {
+  NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
+  formatter.countStyle = NSByteCountFormatterCountStyleFile;
+  formatter.zeroPadsFractionDigits = YES;
+  NSString* result = [formatter stringFromByteCount:size_in_bytes];
+  // Replace spaces with non-breaking spaces.
+  result = [result stringByReplacingOccurrencesOfString:@" "
+                                             withString:@"\u00A0"];
+  return result;
+}
+
 }  // namespace
 
 // Test fixture for testing DownloadManagerCoordinator class.
 class DownloadManagerCoordinatorTest : public PlatformTest {
  protected:
   DownloadManagerCoordinatorTest() {
-    feature_list_.InitAndDisableFeature(kIOSSaveToDrive);
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     presenter_ = [[FakeContainedPresenter alloc] init];
     base_view_controller_ = [[UIViewController alloc] init];
     activity_view_controller_class_ =
         OCMClassMock([UIActivityViewController class]);
-    OverlayRequestQueue::CreateForWebState(&web_state_);
-    DownloadManagerTabHelper::CreateForWebState(&web_state_);
+    web_state_ = std::make_unique<web::FakeWebState>();
+    OverlayRequestQueue::CreateForWebState(web_state_.get());
+    DownloadManagerTabHelper::CreateForWebState(web_state_.get());
+    DocumentDownloadTabHelper::CreateForWebState(web_state_.get());
     coordinator_ = [[DownloadManagerCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
@@ -94,7 +111,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
   }
 
   DownloadManagerTabHelper* tab_helper() {
-    return DownloadManagerTabHelper::FromWebState(&web_state_);
+    return DownloadManagerTabHelper::FromWebState(web_state_.get());
   }
 
   // Creates a fake download task for testing.
@@ -104,7 +121,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
     task->SetTotalBytes(kTestTotalBytes);
     task->SetReceivedBytes(kTestReceivedBytes);
     task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
-    task->SetWebState(&web_state_);
+    task->SetWebState(web_state_.get());
     return task;
   }
 
@@ -116,7 +133,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   ScopedKeyWindow scoped_key_window_;
   id activity_view_controller_class_;
-  web::FakeWebState web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   // Application can be lazily created by tests, but it has to be OCMock.
   // Destructor will call -stopMocking on this object to make sure that
   // UIApplication is not mocked after these test finish running.
@@ -128,7 +145,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
 
 // Tests starting the coordinator. Verifies that view controller is presented
 // without animation (default configuration) and that
-// LegacyDownloadManagerViewController is propertly configured and presented.
+// DownloadManagerViewController is propertly configured and presented.
 TEST_F(DownloadManagerCoordinatorTest, Start) {
   auto task = CreateTestTask();
   coordinator_.downloadTask = task.get();
@@ -138,19 +155,24 @@ TEST_F(DownloadManagerCoordinatorTest, Start) {
   EXPECT_FALSE(presenter_.lastPresentationWasAnimated);
 
   // Verify that presented view controller is
-  // LegacyDownloadManagerViewController.
+  // DownloadManagerViewController.
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
-  // Verify that LegacyDownloadManagerViewController configuration matches
+  // Verify that DownloadManagerViewController configuration matches
   // download task.
   EXPECT_FALSE(viewController.actionButton.hidden);
-  EXPECT_NSEQ(@"file.zip - 10 bytes", viewController.statusLabel.text);
-  EXPECT_NSEQ(@"Download",
-              [viewController.actionButton titleForState:UIControlStateNormal]);
+  NSString* file_size = GetSizeString(kTestTotalBytes);
+  EXPECT_NSEQ(
+      l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
+                              task->GenerateFileName().LossyDisplayName(),
+                              base::SysNSStringToUTF16(file_size)),
+      viewController.statusLabel.text);
+  EXPECT_NSEQ([l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
+                  localizedUppercaseString],
+              viewController.actionButton.configuration.title);
 }
 
 // Tests stopping coordinator. Verifies that hiding web states dismisses the
@@ -176,19 +198,20 @@ TEST_F(DownloadManagerCoordinatorTest, Stop) {
 // Tests destroying coordinator during the download.
 TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr;
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(task->GenerateFileName()));
+  task_ptr->Start(path.Append(task_ptr->GenerateFileName()));
 
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidStartDownload will retain and
@@ -212,7 +235,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
 
 // Tests downloadManagerTabHelper:didCreateDownload:webStateIsVisible: callback
 // for visible web state. Verifies that coordinator's properties are set up and
-// that LegacyDownloadManagerViewController is properly configured and presented
+// that DownloadManagerViewController is properly configured and presented
 // with animation.
 TEST_F(DownloadManagerCoordinatorTest, DelegateCreatedDownload) {
   auto task = CreateTestTask();
@@ -230,19 +253,24 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateCreatedDownload) {
   EXPECT_TRUE(presenter_.lastPresentationWasAnimated);
 
   // Verify that presented view controller is
-  // LegacyDownloadManagerViewController.
+  // DownloadManagerViewController.
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
-  // Verify that LegacyDownloadManagerViewController configuration matches
+  // Verify that DownloadManagerViewController configuration matches
   // download task.
-  EXPECT_NSEQ(@"file.zip - 10 bytes", viewController.statusLabel.text);
   EXPECT_FALSE(viewController.actionButton.hidden);
-  EXPECT_NSEQ(@"Download",
-              [viewController.actionButton titleForState:UIControlStateNormal]);
+  NSString* file_size = GetSizeString(kTestTotalBytes);
+  EXPECT_NSEQ(
+      l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
+                              task->GenerateFileName().LossyDisplayName(),
+                              base::SysNSStringToUTF16(file_size)),
+      viewController.statusLabel.text);
+  EXPECT_NSEQ([l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
+                  localizedUppercaseString],
+              viewController.actionButton.configuration.title);
 
   // Verify that UMA action was logged.
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUI", 1);
@@ -261,19 +289,21 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateReplacedDownload) {
                        webStateIsVisible:YES];
 
   // Verify that presented view controller is
-  // LegacyDownloadManagerViewController.
+  // DownloadManagerViewController.
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
-  // Verify that LegacyDownloadManagerViewController configuration matches
+  // Verify that DownloadManagerViewController configuration matches
   // download task.
-  EXPECT_NSEQ(@"file.zip", viewController.statusLabel.text);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_COMPLETE),
+      viewController.statusLabel.text);
   EXPECT_FALSE(viewController.actionButton.hidden);
-  EXPECT_NSEQ(@"Open in…",
-              [viewController.actionButton titleForState:UIControlStateNormal]);
+  EXPECT_NSEQ(
+      [l10n_util::GetNSString(IDS_IOS_OPEN_IN) localizedUppercaseString],
+      viewController.actionButton.configuration.title);
 
   // Replace download task with a new one.
   auto new_task = CreateTestTask();
@@ -281,12 +311,18 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateReplacedDownload) {
                        didCreateDownload:new_task.get()
                        webStateIsVisible:YES];
 
-  // Verify that LegacyDownloadManagerViewController configuration matches new
+  // Verify that DownloadManagerViewController configuration matches new
   // download task.
-  EXPECT_NSEQ(@"file.zip - 10 bytes", viewController.statusLabel.text);
   EXPECT_FALSE(viewController.actionButton.hidden);
-  EXPECT_NSEQ(@"Download",
-              [viewController.actionButton titleForState:UIControlStateNormal]);
+  NSString* file_size = GetSizeString(kTestTotalBytes);
+  EXPECT_NSEQ(
+      l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
+                              task->GenerateFileName().LossyDisplayName(),
+                              base::SysNSStringToUTF16(file_size)),
+      viewController.statusLabel.text);
+  EXPECT_NSEQ([l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
+                  localizedUppercaseString],
+              viewController.actionButton.configuration.title);
 }
 
 // Tests downloadManagerTabHelper:didCreateDownload:webStateIsVisible: callback
@@ -341,17 +377,21 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateShowDownload) {
   EXPECT_FALSE(presenter_.lastPresentationWasAnimated);
 
   // Verify that presented view controller is
-  // LegacyDownloadManagerViewController.
+  // DownloadManagerViewController.
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
-  // Verify that LegacyDownloadManagerViewController configuration matches
+  // Verify that DownloadManagerViewController configuration matches
   // download task for shown web state.
-  EXPECT_NSEQ(@"file.zip - 10 bytes", viewController.statusLabel.text);
   EXPECT_FALSE(viewController.actionButton.hidden);
+  NSString* file_size = GetSizeString(kTestTotalBytes);
+  EXPECT_NSEQ(
+      l10n_util::GetNSStringF(IDS_IOS_DOWNLOAD_MANAGER_FILENAME_WITH_SIZE,
+                              task->GenerateFileName().LossyDisplayName(),
+                              base::SysNSStringToUTF16(file_size)),
+      viewController.statusLabel.text);
 }
 
 // Tests closing view controller. Coordinator should be stopped and task
@@ -362,10 +402,9 @@ TEST_F(DownloadManagerCoordinatorTest, Close) {
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
   ASSERT_EQ(0, user_action_tester_.GetActionCount("IOSDownloadClose"));
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidClose: will retain and
@@ -390,70 +429,18 @@ TEST_F(DownloadManagerCoordinatorTest, Close) {
   EXPECT_EQ(1, user_action_tester_.GetActionCount("IOSDownloadClose"));
 }
 
-// Tests presenting Install Google Drive dialog. Coordinator presents StoreKit
-// dialog and hides Install Google Drive button.
-TEST_F(DownloadManagerCoordinatorTest, InstallDrive) {
-  auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
-  [coordinator_ start];
-
-  EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
-      base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
-
-  // Make Install Google Drive UI visible.
-  [viewController setInstallDriveButtonVisible:YES animated:NO];
-  // The button itself is never hidden, but the superview which contains the
-  // button changes it's alpha.
-  ASSERT_EQ(1.0f, viewController.installDriveButton.superview.alpha);
-
-  ASSERT_EQ(
-      0, user_action_tester_.GetActionCount("IOSDownloadInstallGoogleDrive"));
-  @autoreleasepool {
-    // Calling -installDriveForDownloadManagerViewController: will retain and
-    // autorelease coordinator_. task_environment_ has to outlive the
-    // coordinator, so wrapping -installDriveForDownloadManagerViewController:
-    // call in @autorelease will ensure that coordinator_ is deallocated.
-    [viewController.delegate
-        installDriveForDownloadManagerViewController:viewController];
-  }
-  // Verify that Store Kit dialog was presented.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return [base_view_controller_.presentedViewController class] ==
-           [SKStoreProductViewController class];
-  }));
-
-  // Verify that Install Google Drive UI is hidden.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return viewController.installDriveButton.superview.alpha == 0.0f;
-  }));
-
-  // Simulate Google Drive app installation and verify that expected histograms
-  // have been recorded.
-  EXPECT_EQ(
-      1, user_action_tester_.GetActionCount("IOSDownloadInstallGoogleDrive"));
-  histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUIGoogleDrive",
-                                     0);
-  // SKStoreProductViewController uses UIApplication, so it's not possible to
-  // install the mock before the test run.
-  application_ = OCMClassMock([UIApplication class]);
-  OCMStub([application_ sharedApplication]).andReturn(application_);
-  OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(YES);
-}
-
 // Tests presenting Open In... menu without actually opening the download.
 TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr;
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* view_controller =
+  DownloadManagerViewController* view_controller =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [view_controller class]);
+  ASSERT_EQ([DownloadManagerViewController class], [view_controller class]);
 
   id download_view_controller_mock = OCMPartialMock(view_controller);
   id dispatcher_mock = OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
@@ -464,7 +451,7 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(task->GenerateFileName()));
+  task_ptr->Start(path.Append(task_ptr->GenerateFileName()));
 
   // Stub UIActivityViewController.
   OCMStub([download_view_controller_mock presentViewController:[OCMArg any]
@@ -492,14 +479,14 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
         downloadManagerViewControllerDidStartDownload:view_controller];
 
     // Complete the download before presenting Open In... menu.
-    task->SetDone(true);
+    task_ptr->SetDone(true);
 
     [view_controller.delegate
         presentOpenInForDownloadManagerViewController:view_controller];
   }
 
   // Download task is destroyed without opening the file.
-  task = nullptr;
+  tab_helper()->SetCurrentDownload(CreateTestTask());
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadedFileNetError", 0);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
@@ -523,14 +510,15 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
 // Tests destroying download task for in progress download.
 TEST_F(DownloadManagerCoordinatorTest, DestroyInProgressDownload) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr;
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
   // Start and the download.
   @autoreleasepool {
@@ -543,15 +531,15 @@ TEST_F(DownloadManagerCoordinatorTest, DestroyInProgressDownload) {
   }
 
   // Starting download is async for model.
-  web::DownloadTask* task_ptr = task.get();
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
         return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
       }));
 
-  // Download task is destroyed before the download is complete.
-  task = nullptr;
+  // Download task is destroyed before the download is complete. In practice,
+  // this happens if the associated WebState is destroyed.
+  web_state_ = nullptr,
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadedFileNetError", 0);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadedFileAction", 0);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileInBackground", 0);
@@ -565,16 +553,17 @@ TEST_F(DownloadManagerCoordinatorTest, DestroyInProgressDownload) {
 // Tests quitting the app during in-progress download.
 TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  web::DownloadTask* task_ptr = task.get();
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr;
   auto web_state = std::make_unique<web::FakeWebState>();
   browser_->GetWebStateList()->InsertWebState(std::move(web_state));
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
   // Start and the download.
   @autoreleasepool {
@@ -587,7 +576,6 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
   }
 
   // Starting download is async for model.
-  web::DownloadTask* task_ptr = task.get();
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -598,7 +586,7 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
   CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
   // Download task is destroyed before the download is complete.
-  task = nullptr;
+  web_state_ = nullptr;
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadedFileNetError", 0);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadedFileAction", 0);
   histogram_tester_.ExpectUniqueSample(
@@ -622,15 +610,14 @@ TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
   ASSERT_EQ(0, user_action_tester_.GetActionCount(
                    "IOSDownloadTryCloseWhenInProgress"));
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      &web_state_, OverlayModality::kWebContentArea);
+      web_state_.get(), OverlayModality::kWebContentArea);
   ASSERT_EQ(0U, queue->size());
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidClose: will retain and
@@ -680,7 +667,7 @@ TEST_F(DownloadManagerCoordinatorTest, DecidePolicyForDownload) {
   coordinator_.downloadTask = task.get();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      &web_state_, OverlayModality::kWebContentArea);
+      web_state_.get(), OverlayModality::kWebContentArea);
   ASSERT_EQ(0U, queue->size());
   [coordinator_ downloadManagerTabHelper:tab_helper()
                  decidePolicyForDownload:task.get()
@@ -723,7 +710,7 @@ TEST_F(DownloadManagerCoordinatorTest,
   coordinator_.downloadTask = nullptr;  // Current Tab does not have task.
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      &web_state_, OverlayModality::kWebContentArea);
+      web_state_.get(), OverlayModality::kWebContentArea);
   ASSERT_EQ(0U, queue->size());
   [coordinator_ downloadManagerTabHelper:tab_helper()
                  decidePolicyForDownload:task.get()
@@ -762,13 +749,14 @@ TEST_F(DownloadManagerCoordinatorTest,
 // file writer is configured to write into download directory.
 TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr;
   [coordinator_ start];
 
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidStartDownload: will retain and
     // autorelease coordinator_. task_environment_ has to outlive the
@@ -779,7 +767,6 @@ TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
   }
 
   // Starting download is async for model.
-  web::DownloadTask* task_ptr = task.get();
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -787,7 +774,7 @@ TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
       }));
 
   // Download file should be located in download directory.
-  base::FilePath file = task->GetResponsePath();
+  base::FilePath file = task_ptr->GetResponsePath();
   base::FilePath download_dir;
   ASSERT_TRUE(GetTempDownloadsDirectory(&download_dir));
   EXPECT_TRUE(download_dir.IsParent(file));
@@ -802,14 +789,15 @@ TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
 // metric is logged.
 TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr;
   [coordinator_ start];
 
   // First download is a failure.
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
   ASSERT_EQ(0, user_action_tester_.GetActionCount("IOSDownloadStartDownload"));
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidStartDownload: will retain and
@@ -819,8 +807,8 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
     [viewController.delegate
         downloadManagerViewControllerDidStartDownload:viewController];
   }
-  task->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
-  task->SetDone(true);
+  task_ptr->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
+  task_ptr->SetDone(true);
   ASSERT_EQ(1, user_action_tester_.GetActionCount("IOSDownloadStartDownload"));
 
   @autoreleasepool {
@@ -833,7 +821,6 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
   }
 
   // Starting download is async for model.
-  web::DownloadTask* task_ptr = task.get();
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -857,14 +844,15 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
 // Tests download failure in background.
 TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr;
   [coordinator_ start];
 
   // Start and immediately fail the download.
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidStartDownload: will retain and
     // autorelease coordinator_. task_environment_ has to outlive the
@@ -873,9 +861,9 @@ TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
     [viewController.delegate
         downloadManagerViewControllerDidStartDownload:viewController];
   }
-  task->SetPerformedBackgroundDownload(true);
-  task->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
-  task->SetDone(true);
+  task_ptr->SetPerformedBackgroundDownload(true);
+  task_ptr->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
+  task_ptr->SetDone(true);
 
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
@@ -892,19 +880,20 @@ TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
 // Tests successful download in background.
 TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr;
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path.Append(task->GenerateFileName()));
+  task_ptr->Start(path.Append(task_ptr->GenerateFileName()));
 
   // Start the download.
   @autoreleasepool {
@@ -917,8 +906,8 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   }
 
   // Complete the download to log UMA.
-  task->SetPerformedBackgroundDownload(true);
-  task->SetDone(true);
+  task_ptr->SetPerformedBackgroundDownload(true);
+  task_ptr->SetDone(true);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileInBackground",
       static_cast<base::HistogramBase::Sample>(
@@ -935,12 +924,11 @@ TEST_F(DownloadManagerCoordinatorTest, ViewController) {
   [coordinator_ start];
 
   // Verify that presented view controller is
-  // LegacyDownloadManagerViewController.
+  // DownloadManagerViewController.
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
-  LegacyDownloadManagerViewController* viewController =
+  DownloadManagerViewController* viewController =
       base_view_controller_.childViewControllers.firstObject;
-  ASSERT_EQ([LegacyDownloadManagerViewController class],
-            [viewController class]);
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
 
   // Verify view controller property.
   EXPECT_NSEQ(viewController, coordinator_.viewController);

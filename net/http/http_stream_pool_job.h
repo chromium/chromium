@@ -31,51 +31,66 @@ struct NetErrorDetails;
 // destination could be the origin or alternative services.
 class HttpStreamPool::Job {
  public:
-  // Interface to report Job's results. Only one of these methods will be
-  // called.
+  // Interface to report Job's results. JobController is the only implementation
+  // of this interface other than tests. We abstract the interface to avoid a
+  // circular dependency.
   class NET_EXPORT_PRIVATE Delegate {
    public:
     virtual ~Delegate() = default;
 
+    // Returns the priority of the job.
+    virtual RequestPriority priority() const = 0;
+
+    // Returns whether the limits should be respected.
+    virtual RespectLimits respect_limits() const = 0;
+
+    // Returns allowed bad certificates.
+    virtual const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()
+        const = 0;
+
+    // True when IP-based pooling is enabled.
+    virtual bool enable_ip_based_pooling() const = 0;
+
+    // True when alternative services is enabled.
+    virtual bool enable_alternative_services() const = 0;
+
+    // True when HTTP/1.1 is allowed.
+    virtual bool is_http1_allowed() const = 0;
+
+    // Returns the proxy info.
+    virtual const ProxyInfo& proxy_info() const = 0;
+
+    // Callback methods: Only one of these methods will be called.
     // Called when a stream is ready.
     virtual void OnStreamReady(Job* job,
                                std::unique_ptr<HttpStream> stream,
                                NextProto negotiated_protocol) = 0;
-
     // Called when stream attempts failed.
     virtual void OnStreamFailed(Job* job,
                                 int status,
                                 const NetErrorDetails& net_error_details,
                                 ResolveErrorInfo resolve_error_info) = 0;
-
     // Called when a stream attempt has failed due to a certificate error.
     virtual void OnCertificateError(Job* job,
                                     int status,
                                     const SSLInfo& ssl_info) = 0;
-
     // Called when a stream attempt has requested a client certificate.
     virtual void OnNeedsClientAuth(Job* job, SSLCertRequestInfo* cert_info) = 0;
   };
 
   // `delegate` must outlive `this`.
   Job(Delegate* delegate,
-      AttemptManager* attempt_manager,
-      RespectLimits respect_limits,
-      bool enable_ip_based_pooling,
-      bool enable_alternative_services,
+      Group* group,
+      quic::ParsedQuicVersion quic_version,
       NextProto expected_protocol,
-      bool is_http1_allowed,
-      ProxyInfo proxy_info);
+      const NetLogWithSource& net_log);
 
   Job& operator=(const Job&) = delete;
 
   ~Job();
 
   // Starts this job.
-  void Start(RequestPriority priority,
-             const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-             quic::ParsedQuicVersion quic_version,
-             const NetLogWithSource& net_log);
+  void Start();
 
   // Returns the LoadState of this job.
   LoadState GetLoadState() const;
@@ -103,15 +118,19 @@ class HttpStreamPool::Job {
   // requested a client certificate.
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info);
 
-  RespectLimits respect_limits() const { return respect_limits_; }
+  RequestPriority priority() const { return delegate_->priority(); }
 
-  bool enable_ip_based_pooling() const { return enable_ip_based_pooling_; }
+  RespectLimits respect_limits() const { return delegate_->respect_limits(); }
 
-  bool enable_alternative_services() const {
-    return enable_alternative_services_;
+  bool enable_ip_based_pooling() const {
+    return delegate_->enable_ip_based_pooling();
   }
 
-  const ProxyInfo& proxy_info() const { return proxy_info_; }
+  bool enable_alternative_services() const {
+    return delegate_->enable_alternative_services();
+  }
+
+  const ProxyInfo& proxy_info() const { return delegate_->proxy_info(); }
 
   const NextProtoSet& allowed_alpns() const { return allowed_alpns_; }
 
@@ -120,14 +139,13 @@ class HttpStreamPool::Job {
   }
 
  private:
+  AttemptManager* attempt_manager() const;
+
   const raw_ptr<Delegate> delegate_;
-  raw_ptr<AttemptManager> attempt_manager_;
-  const RespectLimits respect_limits_;
-  const bool enable_ip_based_pooling_;
-  const bool enable_alternative_services_;
+  raw_ptr<Group> group_;
+  const quic::ParsedQuicVersion quic_version_;
   const NextProtoSet allowed_alpns_;
-  const bool is_h2_or_h3_required_;
-  const ProxyInfo proxy_info_;
+  const NetLogWithSource net_log_;
 
   ConnectionAttempts connection_attempts_;
 

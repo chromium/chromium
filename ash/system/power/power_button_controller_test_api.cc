@@ -53,6 +53,13 @@ gfx::Rect PowerButtonControllerTestApi::GetMenuBoundsInScreen() const {
                         : gfx::Rect();
 }
 
+ui::Layer* PowerButtonControllerTestApi::GetPowerButtonMenuBackgroundLayer()
+    const {
+  return static_cast<PowerButtonMenuScreenView*>(
+             controller_->menu_widget_->GetContentsView())
+      ->GetPowerButtonScreenBackgroundShieldLayerForTest();
+}
+
 PowerButtonMenuView* PowerButtonControllerTestApi::GetPowerButtonMenuView()
     const {
   return IsMenuOpened() ? static_cast<PowerButtonMenuScreenView*>(

@@ -24,6 +24,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -42,33 +43,6 @@ const char kGroupId[] = "/?-group_id";
 const char kEncodedGroupId[] = "%2F%3F-group_id";
 const char kTokenBlob[] = "/?-_token";
 const char kEncodedTokenBlob[] = "%2F%3F-_token";
-
-sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
-    const GroupId& id) {
-  sync_pb::CollaborationGroupSpecifics result;
-  result.set_collaboration_id(id.value());
-  result.set_changed_at_timestamp_millis_since_unix_epoch(
-      base::Time::Now().InMillisecondsSinceUnixEpoch());
-  return result;
-}
-
-syncer::EntityData EntityDataFromSpecifics(
-    const sync_pb::CollaborationGroupSpecifics& specifics) {
-  syncer::EntityData entity_data;
-  *entity_data.specifics.mutable_collaboration_group() = specifics;
-  entity_data.name = specifics.collaboration_id();
-  return entity_data;
-}
-
-std::unique_ptr<syncer::EntityChange> EntityChangeAddFromSpecifics(
-    const sync_pb::CollaborationGroupSpecifics& specifics) {
-  return syncer::EntityChange::CreateAdd(specifics.collaboration_id(),
-                                         EntityDataFromSpecifics(specifics));
-}
-
-MATCHER_P(HasDisplayName, expected_name, "") {
-  return arg.display_name == expected_name;
-}
 
 // Enum cases for parameterizing the tests.
 enum Variant {
@@ -208,59 +182,13 @@ TEST_P(DataSharingServiceImplTest, ShouldReadGroup) {
   EXPECT_THAT(outcome->group_token.group_id, Eq(group_id));
 }
 
-TEST_P(DataSharingServiceImplTest, ShouldReadAllGroups) {
-  // TODO(crbug.com/301390275): add a version of this test for unhappy path.
-  // Delegate stores 2 groups.
-  const std::string display_name1 = "group1";
-  const GroupId group_id1 =
-      not_owned_sdk_delegate_->AddGroupAndReturnId(display_name1);
-  const std::string display_name2 = "group2";
-  const GroupId group_id2 =
-      not_owned_sdk_delegate_->AddGroupAndReturnId(display_name2);
-
-  // Mimics initial sync for collaboration group datatype with the same two
-  // groups.
-  auto* collaboration_group_bridge =
-      data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();
-
-  syncer::EntityChangeList entity_changes;
-  entity_changes.push_back(
-      EntityChangeAddFromSpecifics(MakeCollaborationGroupSpecifics(group_id1)));
-  entity_changes.push_back(
-      EntityChangeAddFromSpecifics(MakeCollaborationGroupSpecifics(group_id2)));
-
-  collaboration_group_bridge->MergeFullSyncData(
-      collaboration_group_bridge->CreateMetadataChangeList(),
-      std::move(entity_changes));
-
-  // Verify that DataSharingService reads the same groups.
-  DataSharingService::GroupsDataSetOrFailureOutcome outcome;
-  base::RunLoop run_loop;
-  data_sharing_service_->ReadAllGroups(base::BindLambdaForTesting(
-      [&run_loop, &outcome](
-          const DataSharingService::GroupsDataSetOrFailureOutcome& result) {
-        outcome = result;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(outcome.has_value());
-  EXPECT_THAT(outcome->size(), Eq(2));
-  const GroupData& group1 = *outcome->begin();
-  const GroupData& group2 = *(++outcome->begin());
-  EXPECT_THAT(group1.display_name, Eq(display_name1));
-  EXPECT_THAT(group1.group_token.group_id, Eq(group_id1));
-  EXPECT_THAT(group2.display_name, Eq(display_name2));
-  EXPECT_THAT(group2.group_token.group_id, Eq(group_id2));
-}
-
 TEST_P(DataSharingServiceImplTest, ShouldInviteMember) {
   // TODO(crbug.com/301390275): add a version of this test for unhappy paths.
   const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
 
   const std::string email = "user@gmail.com";
-  const std::string gaia_id = "123456789";
+  const GaiaId gaia_id("123456789");
   not_owned_sdk_delegate_->AddAccount(email, gaia_id);
 
   base::RunLoop run_loop;
@@ -285,7 +213,7 @@ TEST_P(DataSharingServiceImplTest, ShouldRemoveMember) {
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
 
   const std::string email = "user@gmail.com";
-  const std::string gaia_id = "123456789";
+  const GaiaId gaia_id("123456789");
   not_owned_sdk_delegate_->AddAccount(email, gaia_id);
   not_owned_sdk_delegate_->AddMember(group_id, gaia_id);
 
@@ -309,7 +237,7 @@ TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
 
   const std::string email = "user@gmail.com";
-  const std::string gaia_id = "123456789";
+  const GaiaId gaia_id("123456789");
   not_owned_sdk_delegate_->SetUserGaiaId(gaia_id);
   not_owned_sdk_delegate_->AddAccount(email, gaia_id);
   not_owned_sdk_delegate_->AddMember(group_id, gaia_id);
@@ -330,9 +258,6 @@ TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
 }
 
 TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
-  GroupData group_data = GroupData();
-  group_data.group_token =
-      GroupToken(data_sharing::GroupId(kGroupId), kTokenBlob);
   GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
                   "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
 
@@ -340,17 +265,16 @@ TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
       data_sharing_service_->ParseDataSharingUrl(url);
 
   // Verify valid path.
-  EXPECT_TRUE(result.has_value());
-  EXPECT_EQ(group_data.group_token.group_id.value(),
-            result.value().group_id.value());
-  EXPECT_EQ(group_data.group_token.access_token, result.value().access_token);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(kGroupId, result.value().group_id.value());
+  EXPECT_EQ(kTokenBlob, result.value().access_token);
   EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 
   // Verify host/path error.
   std::string invalid = "https://www.test.com/";
   url = GURL(invalid + "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
   result = data_sharing_service_->ParseDataSharingUrl(url);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             DataSharingService::ParseUrlStatus::kHostOrPathMismatchFailure);
   EXPECT_FALSE(
@@ -358,13 +282,21 @@ TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
 
   // Verify query missing error.
   url = GURL(data_sharing::features::kDataSharingURL.Get() +
-             "?group_id=" + kGroupId);
+             "?access_token=" + kGroupId);
   result = data_sharing_service_->ParseDataSharingUrl(url);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             DataSharingService::ParseUrlStatus::kQueryMissingFailure);
-  EXPECT_FALSE(
-      data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
+  EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
+
+  // Verify access token missing is ok.
+  url = GURL(data_sharing::features::kDataSharingURL.Get() +
+             "?group_id=" + kGroupId);
+  result = data_sharing_service_->ParseDataSharingUrl(url);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(kGroupId, result.value().group_id.value());
+  EXPECT_EQ("", result.value().access_token);
+  EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 }
 
 TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {

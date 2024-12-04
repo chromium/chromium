@@ -24,7 +24,7 @@ ToolbarSwipeSceneLayer::ToolbarSwipeSceneLayer(JNIEnv* env,
       right_content_layer_(nullptr),
       tab_content_manager_(nullptr) {}
 
-ToolbarSwipeSceneLayer::~ToolbarSwipeSceneLayer() {}
+ToolbarSwipeSceneLayer::~ToolbarSwipeSceneLayer() = default;
 
 void ToolbarSwipeSceneLayer::UpdateLayer(
     JNIEnv* env,

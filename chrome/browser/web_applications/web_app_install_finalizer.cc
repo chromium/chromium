@@ -643,8 +643,8 @@ void WebAppInstallFinalizer::OnInstallHooksFinished(
     webapps::AppId app_id) {
   // Only notify that os hooks were added if the installation was a 'full'
   // installation.
-  if (provider_->registrar_unsafe().IsInstallState(
-          app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (provider_->registrar_unsafe().GetInstallState(app_id) ==
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
     callback = std::move(callback).Then(base::BindOnce(
         &WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks,
         weak_ptr_factory_.GetWeakPtr(), app_id));
@@ -678,8 +678,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
   // If the app being updated was installed by default and not also manually
   // installed by the user or an enterprise policy, disable os integration.
   should_skip_os_integration_on_manifest_update =
-      provider_->registrar_unsafe().IsInstallState(
-          app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION});
+      provider_->registrar_unsafe().GetInstallState(app_id) ==
+      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   if (should_skip_os_integration_on_manifest_update) {

@@ -95,8 +95,17 @@ public final class ChromePreferenceKeys {
     public static final String AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED =
             "Chrome.AutofillAssistant.ProactiveHelp";
 
+    /** Whether the Tabs sharing schema has been set. */
     public static final String AUXILIARY_SEARCH_IS_SCHEMA_SET =
             "Chrome.AuxiliarySearch.IsSchemaSet";
+
+    /** The total times that the opt in card was shown to the user. */
+    public static final String AUXILIARY_SEARCH_MODULE_IMPRESSION =
+            "Chrome.AuxiliarySearchModule.Impression";
+
+    /** Whether users have responded to the opt in card. */
+    public static final String AUXILIARY_SEARCH_MODULE_USER_RESPONDED =
+            "Chrome.AuxiliarySearchModule.UserResponded";
 
     public static final String BACKUP_FIRST_BACKUP_DONE = "first_backup_done";
 
@@ -919,6 +928,8 @@ public final class ChromePreferenceKeys {
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED,
+                AUXILIARY_SEARCH_MODULE_USER_RESPONDED,
+                AUXILIARY_SEARCH_MODULE_IMPRESSION,
                 AUXILIARY_SEARCH_IS_SCHEMA_SET,
                 APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,

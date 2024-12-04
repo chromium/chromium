@@ -160,7 +160,8 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
   void AddColumnPseudoElement(ColumnPseudoElement&);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
-  void ClearColumnPseudoElements();
+  ColumnPseudoElement* GetColumnPseudoElement(wtf_size_t idx) const;
+  void ClearColumnPseudoElements(wtf_size_t to_keep);
 
   CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);
 

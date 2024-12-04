@@ -82,7 +82,7 @@ class FakeDownloadFeedback : public DownloadFeedback {
 
 class FakeDownloadFeedbackFactory : public DownloadFeedbackFactory {
  public:
-  ~FakeDownloadFeedbackFactory() override {}
+  ~FakeDownloadFeedbackFactory() override = default;
 
   std::unique_ptr<DownloadFeedback> CreateDownloadFeedback(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

@@ -177,7 +177,8 @@ void GestureListenerManager::RenderFrameHostChanged(RenderFrameHost* old_host,
   }
 }
 
-void GestureListenerManager::OnInputEvent(const blink::WebInputEvent& event) {
+void GestureListenerManager::OnInputEvent(const RenderWidgetHost& widget,
+                                          const blink::WebInputEvent& event) {
   const blink::mojom::EventType event_type = event.GetType();
   if (WebInputEvent::IsTouchEventType(event_type)) {
     if (event_type == blink::mojom::EventType::kTouchStart) {
@@ -235,6 +236,7 @@ void GestureListenerManager::GestureEventAck(
 }
 
 void GestureListenerManager::OnInputEventAck(
+    const RenderWidgetHost& widget,
     blink::mojom::InputEventResultSource source,
     blink::mojom::InputEventResultState state,
     const blink::WebInputEvent& event) {

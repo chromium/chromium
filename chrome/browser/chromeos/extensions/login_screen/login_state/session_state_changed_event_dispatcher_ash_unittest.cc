@@ -85,7 +85,7 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
                  void(crosapi::mojom::SessionState state));
   };
 
-  SessionStateChangedEventDispatcherAshUnittest() {}
+  SessionStateChangedEventDispatcherAshUnittest() = default;
 
   SessionStateChangedEventDispatcherAshUnittest(
       const SessionStateChangedEventDispatcherAshUnittest&) = delete;

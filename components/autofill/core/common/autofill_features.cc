@@ -5,7 +5,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 
 namespace autofill::features {
 
@@ -39,13 +38,6 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, no prefix matching is applied to filter credit card number
-// suggestions.
-// TODO(crbug.com/338932642): Clean up.
-BASE_FEATURE(kAutofillDontPrefixMatchCreditCardNumbersOrCvcs,
-             "AutofillDontPrefixMatchCreditCardNumbersOrCvcs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
@@ -441,13 +433,6 @@ BASE_FEATURE(kAutofillPageLanguageDetection,
 // TODO(crbug.com/361560365): Clean up when launched.
 BASE_FEATURE(kAutofillParseEmailLabelAndPlaceholder,
              "AutofillParseEmailLabelAndPlaceholder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If the feature is enabled, paint checks over individual `PopupCellView`s (to
-// verify that a user's cursor has been outside the cell before accepting it)
-// are disabled.
-BASE_FEATURE(kAutofillPopupDisablePaintChecks,
-             "AutofillPopupDisablePaintChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If the feature is enabled, before triggering suggestion acceptance, the row

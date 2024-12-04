@@ -1365,6 +1365,7 @@
 <translation id="7425037327577270384">작성 지원 기능</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정된 <ph name="ATTACH" /> APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
+<translation id="7453118953486228603">클릭하여 선택한 텍스트를 요약하세요.</translation>
 <translation id="7458970041932198923">아바타를 보고 설정하려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
 <translation id="7481312909269577407">앞으로</translation>
@@ -1723,6 +1724,7 @@
 <translation id="9133772297793293778">키보드에서 특수키 1~4개와 다른 키 1개를 누릅니다. 수정 모드를 종료하려면 Alt + Esc를 누르세요.</translation>
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9138630967333032450">왼쪽 시프트</translation>
+<translation id="9147928237330776930">단어가 너무 적어 요약할 수 없습니다.</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9159524746324788320">햄버거</translation>
 <translation id="9161276708550942948">스페이스</translation>

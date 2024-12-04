@@ -311,6 +311,8 @@ source_set("tab_group_grid_ui") {
 
 source_set("activity_label_view") {
   sources = [
+    "activity_label_data.h",
+    "activity_label_data.mm",
     "activity_label_view.h",
     "activity_label_view.mm",
   ]

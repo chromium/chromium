@@ -106,7 +106,7 @@ void AdvancedProtectionStatusManager::Shutdown() {
   UnsubscribeFromSigninEvents();
 }
 
-AdvancedProtectionStatusManager::~AdvancedProtectionStatusManager() {}
+AdvancedProtectionStatusManager::~AdvancedProtectionStatusManager() = default;
 
 void AdvancedProtectionStatusManager::SubscribeToSigninEvents() {
   identity_manager_->AddObserver(this);

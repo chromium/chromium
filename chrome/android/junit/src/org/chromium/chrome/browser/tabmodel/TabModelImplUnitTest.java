@@ -161,6 +161,15 @@ public class TabModelImplUnitTest {
                     }
 
                     @Override
+                    public void prepareCloseTabs(
+                            @NonNull TabClosureParams tabClosureParams,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener,
+                            @NonNull Callback<TabClosureParams> onPreparedCallback) {
+                        onPreparedCallback.onResult(tabClosureParams);
+                    }
+
+                    @Override
                     public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
                         ((TabModelImpl) mTabModelSelector.getModel(isIncognito))
                                 .closeTabs(tabClosureParams);

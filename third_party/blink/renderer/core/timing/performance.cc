@@ -401,23 +401,6 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
                                 kDoNotRecordSwaps);
   }
 
-  if (user_timing_) {
-    if (maybe_name) {
-      // UserTiming already stores lists of marks and measures by name, so
-      // requesting them directly is much more efficient than getting the full
-      // lists of marks and measures and then filtering during the merge.
-      entries = MergePerformanceEntryVectors(
-          entries, user_timing_->GetMarks(maybe_name), g_null_atom);
-      entries = MergePerformanceEntryVectors(
-          entries, user_timing_->GetMeasures(maybe_name), g_null_atom);
-    } else {
-      entries = MergePerformanceEntryVectors(entries, user_timing_->GetMarks(),
-                                             g_null_atom);
-      entries = MergePerformanceEntryVectors(
-          entries, user_timing_->GetMeasures(), g_null_atom);
-    }
-  }
-
   if (paint_entries_timing_.size()) {
     entries = MergePerformanceEntryVectors(entries, paint_entries_timing_,
                                            maybe_name);
@@ -437,9 +420,7 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
                                            maybe_name);
   }
 
-  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-          GetExecutionContext()) &&
-      long_animation_frame_buffer_.size()) {
+  if (long_animation_frame_buffer_.size()) {
     entries = MergePerformanceEntryVectors(
         entries, long_animation_frame_buffer_, maybe_name);
   }
@@ -447,6 +428,26 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
   if (visibility_state_buffer_.size()) {
     entries = MergePerformanceEntryVectors(entries, visibility_state_buffer_,
                                            maybe_name);
+  }
+
+  // `user_timing_` is the largest in size, in order to keep
+  // `MergePerformanceEntryVectors` performant, carry out the merge in
+  // the end.
+  if (user_timing_) {
+    if (maybe_name) {
+      // UserTiming already stores lists of marks and measures by name, so
+      // requesting them directly is much more efficient than getting the full
+      // lists of marks and measures and then filtering during the merge.
+      entries = MergePerformanceEntryVectors(
+          entries, user_timing_->GetMarks(maybe_name), g_null_atom);
+      entries = MergePerformanceEntryVectors(
+          entries, user_timing_->GetMeasures(maybe_name), g_null_atom);
+    } else {
+      entries = MergePerformanceEntryVectors(entries, user_timing_->GetMarks(),
+                                             g_null_atom);
+      entries = MergePerformanceEntryVectors(
+          entries, user_timing_->GetMeasures(), g_null_atom);
+    }
   }
 
   return entries;
@@ -595,12 +596,9 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kLongAnimationFrame:
-      if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-              GetExecutionContext())) {
         UseCounter::Count(GetExecutionContext(),
                           WebFeature::kLongAnimationFrameRequested);
         entries = &long_animation_frame_buffer_;
-      }
       break;
 
     case PerformanceEntry::kInvalid:

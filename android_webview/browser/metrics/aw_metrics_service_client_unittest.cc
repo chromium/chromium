@@ -106,7 +106,7 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName) {
 
 TEST_F(
     AwMetricsServiceClientTest,
-    TestAppDataDirectorySizeRecordedIfFeatureEnabledConsentGrantedAndInSample) {
+    TestAppDataDirectorySize_RecordedIfFeatureEnabledConsentGrantedAndInSample) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
       android_webview::features::kWebViewRecordAppDataDirectorySize);
@@ -122,7 +122,7 @@ TEST_F(
 }
 
 TEST_F(AwMetricsServiceClientTest,
-       TestAppDataDirectorySizeNotRecordedIfFeatureDisabled) {
+       TestAppDataDirectorySize_NotRecordedIfFeatureDisabled) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndDisableFeature(
       android_webview::features::kWebViewRecordAppDataDirectorySize);
@@ -138,7 +138,7 @@ TEST_F(AwMetricsServiceClientTest,
 }
 
 TEST_F(AwMetricsServiceClientTest,
-       TestAppDataDirectorySizeNotRecordedIfConsentNotGranted) {
+       TestAppDataDirectorySize_NotRecordedIfConsentNotGranted) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
       android_webview::features::kWebViewRecordAppDataDirectorySize);
@@ -154,7 +154,7 @@ TEST_F(AwMetricsServiceClientTest,
 }
 
 TEST_F(AwMetricsServiceClientTest,
-       TestAppDataDirectorySizeNotRecordedIfNotInSample) {
+       TestAppDataDirectorySize_NotRecordedIfNotInSample) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
       android_webview::features::kWebViewRecordAppDataDirectorySize);
@@ -170,7 +170,7 @@ TEST_F(AwMetricsServiceClientTest,
 }
 
 TEST_F(AwMetricsServiceClientTest,
-       TestShouldApplyMetricsFilteringFeatureOnAllMetrics) {
+       TestShouldApplyMetricsFilteringFeatureOn_AllMetrics) {
   // Both metrics consent and app consent true;
   GetClient()->SetHaveMetricsConsent(true, true);
   GetClient()->SetSampleBucketValue(19);
@@ -180,7 +180,7 @@ TEST_F(AwMetricsServiceClientTest,
 }
 
 TEST_F(AwMetricsServiceClientTest,
-       TestShouldApplyMetricsFilteringFeatureOnOnlyCriticalMetrics) {
+       TestShouldApplyMetricsFilteringFeatureOn_OnlyCriticalMetrics) {
   // Both metrics consent and app consent true;
   GetClient()->SetHaveMetricsConsent(true, true);
   GetClient()->SetSampleBucketValue(20);

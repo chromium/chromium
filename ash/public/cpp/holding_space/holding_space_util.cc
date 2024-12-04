@@ -122,7 +122,6 @@ base::flat_set<HoldingSpaceItem::Type> GetAllItemTypes() {
       HoldingSpaceItem::Type::kDiagnosticsLog,
       HoldingSpaceItem::Type::kDownload,
       HoldingSpaceItem::Type::kDriveSuggestion,
-      HoldingSpaceItem::Type::kLacrosDownload,
       HoldingSpaceItem::Type::kLocalSuggestion,
       HoldingSpaceItem::Type::kNearbyShare,
       HoldingSpaceItem::Type::kPhoneHubCameraRoll,
@@ -143,7 +142,6 @@ gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
     case HoldingSpaceItem::Type::kDiagnosticsLog:
     case HoldingSpaceItem::Type::kDownload:
     case HoldingSpaceItem::Type::kDriveSuggestion:
-    case HoldingSpaceItem::Type::kLacrosDownload:
     case HoldingSpaceItem::Type::kLocalSuggestion:
     case HoldingSpaceItem::Type::kNearbyShare:
     case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
@@ -260,8 +258,6 @@ std::string ToString(HoldingSpaceItem::Type type) {
       return "Download";
     case HoldingSpaceItem::Type::kDriveSuggestion:
       return "DriveSuggestion";
-    case HoldingSpaceItem::Type::kLacrosDownload:
-      return "LacrosDownload";
     case HoldingSpaceItem::Type::kLocalSuggestion:
       return "LocalSuggestion";
     case HoldingSpaceItem::Type::kNearbyShare:

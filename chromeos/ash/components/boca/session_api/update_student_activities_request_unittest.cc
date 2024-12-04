@@ -16,6 +16,7 @@
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -109,7 +110,7 @@ TEST_F(UpdateStudentActivitiesRequestTest, UpdateActivityAndSucceed) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
-  std::string gaia_id = "1";
+  GaiaId gaia_id("1");
   std::string session_id = "session_id";
   std::string device_id = "device_id";
 
@@ -145,7 +146,7 @@ TEST_F(UpdateStudentActivitiesRequestTest, UpdateEmptyActivityAndSucceed) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
-  std::string gaia_id = "1";
+  GaiaId gaia_id("1");
   std::string session_id = "session_id";
   std::string device_id = "device_id";
 
@@ -180,7 +181,7 @@ TEST_F(UpdateStudentActivitiesRequestTest, UpdateActivityAndFail) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateFailedResponse())));
-  std::string gaia_id = "1";
+  GaiaId gaia_id("1");
   std::string session_id = "session_id";
   std::string device_id = "device_id";
 

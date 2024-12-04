@@ -980,6 +980,13 @@ EVENT_TYPE(STREAM_ATTEMPT_BOUND_TO_POOL)
 //   }
 EVENT_TYPE(TCP_STREAM_ATTEMPT_ALIVE)
 
+// Logged when a TcpStreamAttempt connects a socket.
+// The event parameter is:
+//   {
+//     "source_dependency": <Source identifier of the socket>,
+//   }
+EVENT_TYPE(TCP_STREAM_ATTEMPT_CONNECT)
+
 // Marks the creation/destruction of a TlsStreamAttempt.
 // For the BEGIN phase, the following parameter is attached:
 //   {
@@ -1475,6 +1482,14 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
 
+// Emitted when DNS resolution on an HttpStreamPool::AttemptManager finishes.
+// The event parameters are:
+//   {
+//     "net_error": <Net error code integer>,
+//     "resolve_error": <DNS resolution error code integer>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED)
+
 // Emitted when the stream attempt delay has passed on an
 // HttpStreamPool::AttemptManager. The event parameter is:
 //   {
@@ -1497,7 +1512,9 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
 //     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
 //                           treated as slow>,
 //     "quic_task_alive": <True when a QuicTask is alive>,
-//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//     "quic_task_result": <The result of a QuicTask, if it is already
+//                          finished>,
+//     "quic_error_code": <The error code of the QuicTask>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED)
 

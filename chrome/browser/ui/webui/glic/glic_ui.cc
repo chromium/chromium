@@ -38,8 +38,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       web_ui->GetWebContents()->GetBrowserContext(), chrome::kChromeUIGlicHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(source, base::make_span(kGlicResources),
-                              IDR_GLIC_GLIC_HTML);
+  webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -54,7 +53,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddString(
       "glicGuestAPISource",
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_GENERATED_GLIC_API_IMPL_ROLLUP_JS));
+          IDR_GLIC_GLIC_API_GLIC_API_CLIENT_ROLLUP_JS));
 
   // TODO(crbug.com/378951332): Configure an approved CSP.
   // Set up csp override by cli flag or default to finch param value. This will

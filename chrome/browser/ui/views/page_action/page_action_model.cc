@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 
 namespace page_actions {
@@ -15,7 +16,8 @@ PageActionModel::~PageActionModel() {
       &PageActionModelObserver::OnPageActionModelWillBeDeleted, this);
 }
 
-void PageActionModel::SetShowRequested(bool requested) {
+void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
+                                       bool requested) {
   if (show_requested_ == requested) {
     return;
   }

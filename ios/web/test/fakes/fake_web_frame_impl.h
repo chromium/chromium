@@ -27,7 +27,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   WebFrameInternal* GetWebFrameInternal() override;
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
-  GURL GetSecurityOrigin() const override;
+  GURL GetSecurityOriginDeprecated() const override;
   BrowserState* GetBrowserState() override;
   bool CallJavaScriptFunction(const std::string& name,
                               const base::Value::List& parameters) override;

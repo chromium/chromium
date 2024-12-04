@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/network_ui/network_ui.h"
 
 #include <memory>
@@ -1042,9 +1037,8 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   ui::network_element::AddOncLocalizedStrings(html);
   traffic_counters::AddResources(html);
 
-  webui::SetupWebUIDataSource(
-      html, base::make_span(kNetworkUiResources, kNetworkUiResourcesSize),
-      IDR_NETWORK_UI_NETWORK_HTML);
+  webui::SetupWebUIDataSource(html, kNetworkUiResources,
+                              IDR_NETWORK_UI_NETWORK_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct
   // policies for JS WebUIs.

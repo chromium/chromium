@@ -333,7 +333,6 @@ public class RootUiCoordinator
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
     protected final BottomControlsStacker mBottomControlsStacker;
-    private final Supplier<Long> mLastUserInteractionTimeSupplier;
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
@@ -366,7 +365,6 @@ public class RootUiCoordinator
      * @param incognitoTabSwitcherSupplier Supplier of the incognito {@link TabSwitcher}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
-     * @param lastUserInteractionTimeSupplier Supplies the last user interaction time.
      * @param browserControlsManager Manages the browser controls.
      * @param windowAndroid The current {@link WindowAndroid}.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
@@ -411,7 +409,6 @@ public class RootUiCoordinator
             @NonNull OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
-            @NonNull Supplier<Long> lastUserInteractionTimeSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ActivityWindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -513,7 +510,6 @@ public class RootUiCoordinator
         mLayoutStateProviderOneShotSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
 
-        mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mIncognitoTabSwitcherSupplier = incognitoTabSwitcherSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
@@ -990,7 +986,6 @@ public class RootUiCoordinator
                         mBrowserControlsManager,
                         mWindowAndroid,
                         mTabModelSelectorSupplier.get(),
-                        mLastUserInteractionTimeSupplier,
                         mEdgeToEdgeControllerSupplier));
     }
 

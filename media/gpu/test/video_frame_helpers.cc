@@ -397,9 +397,13 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
     planes.emplace_back(plane.stride, plane.offset, plane.size);
     dmabuf_fds.emplace_back(plane.fd.release());
   }
-  return VideoFrame::WrapExternalDmabufs(
+  scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalDmabufs(
       frame->layout(), frame->visible_rect(), frame->natural_size(),
       std::move(dmabuf_fds), frame->timestamp());
+
+  video_frame->set_metadata(frame->metadata());
+
+  return video_frame;
 #else
   return nullptr;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)}
@@ -435,9 +439,14 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     return nullptr;
   }
 
-  return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      frame->visible_rect(), frame->natural_size(),
-      std::move(gpu_memory_buffer), frame->timestamp());
+  scoped_refptr<VideoFrame> video_frame =
+      media::VideoFrame::WrapExternalGpuMemoryBuffer(
+          frame->visible_rect(), frame->natural_size(),
+          std::move(gpu_memory_buffer), frame->timestamp());
+
+  video_frame->metadata().tracking_token = base::UnguessableToken::Create();
+
+  return video_frame;
 }
 
 scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
@@ -456,7 +465,7 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
     return nullptr;
   }
 
-  scoped_refptr<const VideoFrame> video_frame =
+  scoped_refptr<VideoFrame> video_frame =
       VideoFrame::WrapExternalDataWithLayout(
           *layout, image.VisibleRect(), image.VisibleRect().size(),
           image.Data(), image.DataSize(), base::TimeDelta());
@@ -464,6 +473,8 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
     LOG(ERROR) << "Failed to create VideoFrame";
     return nullptr;
   }
+
+  video_frame->metadata().tracking_token = base::UnguessableToken::Create();
 
   return video_frame;
 }

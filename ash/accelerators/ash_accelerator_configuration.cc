@@ -129,54 +129,36 @@ void SetLookupMaps(base::span<const ash::AcceleratorData> accelerators,
 
 std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
   std::vector<ash::AcceleratorData> accelerators;
-  AppendAcceleratorData(
-      accelerators,
-      base::make_span(ash::kAcceleratorData, ash::kAcceleratorDataLength));
+  AppendAcceleratorData(accelerators, ash::kAcceleratorData);
 
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    AppendAcceleratorData(accelerators,
+                          ash::kEnableWithPositionalAcceleratorsData);
     AppendAcceleratorData(
         accelerators,
-        base::make_span(ash::kEnableWithPositionalAcceleratorsData,
-                        ash::kEnableWithPositionalAcceleratorsDataLength));
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(
-            ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData,
-            ash::
-                kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength));
+        ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData);
   } else {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(ash::kDisableWithNewMappingAcceleratorData,
-                        ash::kDisableWithNewMappingAcceleratorDataLength));
+    AppendAcceleratorData(accelerators,
+                          ash::kDisableWithNewMappingAcceleratorData);
   }
   if (ash::features::IsSameAppWindowCycleEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(
-            ash::kEnableWithSameAppWindowCycleAcceleratorData,
-            ash::kEnableWithSameAppWindowCycleAcceleratorDataLength));
+    AppendAcceleratorData(accelerators,
+                          ash::kEnableWithSameAppWindowCycleAcceleratorData);
   }
 
   if (ash::features::IsTilingWindowResizeEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(ash::kTilingWindowResizeAcceleratorData,
-                        ash::kTilingWindowResizeAcceleratorDataLength));
+    AppendAcceleratorData(accelerators,
+                          ash::kTilingWindowResizeAcceleratorData);
   }
 
   // Debug accelerators.
   if (ash::debug::DebugAcceleratorsEnabled()) {
-    AppendAcceleratorData(accelerators,
-                          base::make_span(ash::kDebugAcceleratorData,
-                                          ash::kDebugAcceleratorDataLength));
+    AppendAcceleratorData(accelerators, ash::kDebugAcceleratorData);
   }
 
   // Developer accelerators.
   if (ash::debug::DeveloperAcceleratorsEnabled()) {
-    AppendAcceleratorData(
-        accelerators, base::make_span(ash::kDeveloperAcceleratorData,
-                                      ash::kDeveloperAcceleratorDataLength));
+    AppendAcceleratorData(accelerators, ash::kDeveloperAcceleratorData);
   }
   return accelerators;
 }

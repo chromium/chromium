@@ -181,10 +181,10 @@ bool IpProtectionProxyConfigManagerImpl::IsProxyListOlderThanMinAge() const {
 }
 
 void IpProtectionProxyConfigManagerImpl::SetProxyListForTesting(
-    std::optional<std::vector<net::ProxyChain>> proxy_list,
+    std::vector<net::ProxyChain> proxy_list,
     std::optional<GeoHint> geo_hint) {
-  current_geo_id_ = GetGeoIdFromGeoHint(geo_hint);
-  proxy_list_ = *proxy_list;
+  current_geo_id_ = GetGeoIdFromGeoHint(std::move(geo_hint));
+  proxy_list_ = std::move(proxy_list);
   have_fetched_proxy_list_ = true;
 }
 

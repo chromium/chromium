@@ -7,6 +7,8 @@
 #include "chrome/browser/ui/views/glic/glic_view.h"
 #include "ui/views/controls/webview/webview.h"
 
+namespace glic {
+
 GlicWindowController::GlicWindowController(Profile* profile)
     : profile_(profile) {}
 
@@ -55,3 +57,5 @@ base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {
 }
 
 GlicWindowController::~GlicWindowController() = default;
+
+}  // namespace glic

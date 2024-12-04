@@ -262,7 +262,7 @@ LRESULT CALLBACK SystemMenuTestCBTHook(int n_code,
   // Look for the system menu window getting created or becoming visible and
   // then select the New Tab option from the menu.
   if (n_code == HCBT_ACTIVATE || n_code == HCBT_CREATEWND) {
-    wchar_t class_name[MAX_PATH] = {0};
+    wchar_t class_name[MAX_PATH] = {};
     GetClassName(reinterpret_cast<HWND>(w_param), class_name,
                  std::size(class_name));
     if (base::EqualsCaseInsensitiveASCII(class_name, "#32768")) {
@@ -312,7 +312,7 @@ LRESULT CALLBACK SystemMenuReopenClosedTabTestCBTHook(int n_code,
   // Look for the system menu window getting created or becoming visible and
   // then select the New Tab option from the menu.
   if (n_code == HCBT_ACTIVATE || n_code == HCBT_CREATEWND) {
-    wchar_t class_name[MAX_PATH] = {0};
+    wchar_t class_name[MAX_PATH] = {};
     GetClassName(reinterpret_cast<HWND>(w_param), class_name,
                  std::size(class_name));
     if (base::EqualsCaseInsensitiveASCII(class_name, "#32768")) {

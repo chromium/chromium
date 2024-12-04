@@ -16,7 +16,7 @@ namespace web_package {
 namespace {
 
 cbor::Value CreateByteString(std::string_view s) {
-  return cbor::Value(base::as_bytes(base::make_span(s)));
+  return cbor::Value(base::as_byte_span(s));
 }
 
 cbor::Value CreateHeaderMap(const WebBundleBuilder::Headers& headers) {

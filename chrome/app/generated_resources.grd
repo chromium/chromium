@@ -334,11 +334,6 @@ are declared in tools/grit/grit_rule.gni.
         <part file="nearby_share_strings.grdp" />
       </if>
 
-      <!-- Welcome strings -->
-      <if expr="not chromeos_ash and not is_android">
-        <part file="welcome_strings.grdp" />
-      </if>
-
       <!-- What's New strings -->
       <if expr="not is_android">
         <part file="whats_new_strings.grdp" />
@@ -4996,13 +4991,13 @@ are declared in tools/grit/grit_rule.gni.
           Keepalive Count
         </message>
       </if>
-      <message name="IDS_TASK_MANAGER_MEM_CELL_TEXT" desc="The value displayed in the memory usage cells.">
+      <message name="IDS_TASK_MANAGER_MEM_CELL_TEXT" desc="The value displayed in the memory usage cells." formatter_data="android_java">
         <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K
       </message>
       <message name="IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT" desc="The value displayed in the cache size cells.">
         <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K (<ph name="NUM_KILOBYTES_LIVE">$2<ex>5,000</ex></ph>K live)
       </message>
-      <message name="IDS_TASK_MANAGER_NA_CELL_TEXT" desc="The value displayed for resource usage when the information is not available, or not applicable to the process.">
+      <message name="IDS_TASK_MANAGER_NA_CELL_TEXT" desc="The value displayed for resource usage when the information is not available, or not applicable to the process." formatter_data="android_java">
         &#8211;
       </message>
       <message name="IDS_TASK_MANAGER_BACKGROUNDED_TEXT" desc="The value displayed for a process with backgrounded priority">
@@ -9489,6 +9484,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST" desc="Label for status text when no space on disk prevents a voice from downloading from the Read Aloud language menu but there are already installed voices for the language.">
         For higher quality voices, clear space on your device
       </message>
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_ITEM_LABEL" desc="Accessibility label for a line item in the language menu containing a language name and a preview button.">
+        <ph name="LANGUAGE">$1<ex>English</ex></ph>, use right arrow key to preview voice
+      </message>
       <message name="IDS_READING_MODE_VOICE_DOWNLOADED_TITLE" desc="Title for a notification to alert the user that a high quality TTS voice data file has been downloaded.">
         High-quality <ph name="LANGUAGE">$1<ex>English</ex></ph> voice files downloaded
       </message>
@@ -9894,105 +9892,99 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!--Desktop to iOS password promo strings-->
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <if expr="use_titlecase">
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop password promo bubble letting users know their password is saved.">
-              Your Password Is Saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-              Use This Password On Your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
-              No Thanks
-            </message>
-          </if>
-          <if expr="not use_titlecase">
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop password promo bubble letting users know their password is saved.">
-              Your password is saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-              Use this password on your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
-              No thanks
-            </message>
-          </if>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop password promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
-            You can access it on Google Password Manager.
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop password promo bubble letting users know their password is saved.">
+            Your Password Is Saved
           </message>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop password promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
-            Download Chrome with this QR code, and sign in to your Google Account.
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
+            Use This Password On Your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
+            No Thanks
           </message>
         </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop password promo bubble letting users know their password is saved.">
+            Your password is saved
+          </message>
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
+            Use this password on your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+            No thanks
+          </message>
+        </if>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop password promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
+          You can access it on Google Password Manager.
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop password promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+          Download Chrome with this QR code, and sign in to your Google Account.
+        </message>
       </if>
 
       <!--Desktop to iOS address promo strings-->
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <if expr="use_titlecase">
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop address promo bubble letting users know their address is saved.">
-              Your Address Is Saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop address promo bubble suggesting to users that they can use their addresses on their iOS devices.">
-              Use This Address On Your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
-              No Thanks
-            </message>
-          </if>
-          <if expr="not use_titlecase">
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop address promo bubble letting users know their address is saved.">
-              Your address is saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop address promo bubble suggesting to users that they can use their addresses on their iOS devices.">
-              Use this address on your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
-              No thanks
-            </message>
-          </if>
-          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop address promo bubble which lets the user know they can access their saved addresses.">
-            You can find it in your Addresses and More
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop address promo bubble letting users know their address is saved.">
+            Your Address Is Saved
           </message>
-          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop address promo bubble footer which lets the user know how to use their saved addresses on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
-            Download Chrome with this QR code, and sign in to your Google Account.
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop address promo bubble suggesting to users that they can use their addresses on their iOS devices.">
+            Use This Address On Your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
+            No Thanks
           </message>
         </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop address promo bubble letting users know their address is saved.">
+            Your address is saved
+          </message>
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop address promo bubble suggesting to users that they can use their addresses on their iOS devices.">
+            Use this address on your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+            No thanks
+          </message>
+        </if>
+        <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop address promo bubble which lets the user know they can access their saved addresses.">
+          You can find it in your Addresses and More
+        </message>
+        <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop address promo bubble footer which lets the user know how to use their saved addresses on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+          Download Chrome with this QR code, and sign in to your Google Account.
+        </message>
       </if>
 
       <!--Desktop to iOS payment promo strings-->
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <if expr="use_titlecase">
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop payment promo bubble letting users know their card is saved.">
-              Your Card Is Saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
-              Use This Card On Your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
-              No Thanks
-            </message>
-          </if>
-          <if expr="not use_titlecase">
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop payment promo bubble letting users know their card is saved.">
-              Your card is saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
-              Use this card on your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
-              No thanks
-            </message>
-          </if>
-          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop payment promo bubble which lets the user know they can access their saved payment methods.">
-            You can access it in your Payment Methods
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop payment promo bubble letting users know their card is saved.">
+            Your Card Is Saved
           </message>
-          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop payment promo bubble footer which lets the user know how to use their saved payment methods on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
-            Download Chrome with this QR code, and sign in to your Google Account.
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
+            Use This Card On Your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
+            No Thanks
           </message>
         </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop payment promo bubble letting users know their card is saved.">
+            Your card is saved
+          </message>
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
+            Use this card on your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+            No thanks
+          </message>
+        </if>
+        <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop payment promo bubble which lets the user know they can access their saved payment methods.">
+          You can access it in your Payment Methods
+        </message>
+        <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop payment promo bubble footer which lets the user know how to use their saved payment methods on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+          Download Chrome with this QR code, and sign in to your Google Account.
+        </message>
       </if>
 
       <!--Accessible name/action strings-->
@@ -16187,16 +16179,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <ph name="FILE_INFO">$2<ex>file:123</ex></ph>
         <ph name="EVENT_NAME">$3<ex>Event Description</ex></ph>
       </message>
-      <if expr="chromeos_ash">
-        <message name="IDS_DEVICE_LOG_OS_LINK_CONTAINER" desc="Text and link on the os://device-log page from ChromeOS which directs a user to a page showing Chrome browser specific device-log">
-          Looking for the browser device-log page? Visit<ph name="BEGIN_LINK">&lt;a href="#" id="os-link-href"&gt;</ph><ph name="CHROME_DEVICE_LOG_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-        </message>
-      </if>
-      <if expr="chromeos_lacros">
-        <message name="IDS_DEVICE_LOG_OS_LINK_CONTAINER" desc="Text and link on the chrome://device-log page from ChromeOS which directs a user to a dialog showing OS specific device-log">
-          Looking for the system device-log page? Visit<ph name="BEGIN_LINK">&lt;a href="$1" id="os-link-href"&gt;</ph><ph name="OS_DEVICE_LOG_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-        </message>
-      </if>
 
     <!-- WebUsb Notification -->
     <message name="IDS_WEBUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">
@@ -17160,6 +17142,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in Google Password Manager.">
         Google Password Manager
+      </message>
+      <message name="IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in a USB security key.">
+        USB security key
       </message>
       <message name="IDS_WEBAUTHN_SOURCE_PHONE" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in their phone.">
         From "<ph name="PHONE_NAME">$1<ex>Pixel 7</ex></ph>"
@@ -18689,6 +18674,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING" desc="This is the heading for the page that appears when a user attempts to load an internal developer debugging page when such pages are disabled by a pref.">
       Internal debugging pages are currently disabled.
     </message>
+
+    <!-- Glic status tray icon strings -->
+    <if expr="is_win or is_macosx">
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
+        <!-- TODO(378139555): Find the correct string for this. -->
+        Open
+      </message>
+    </if>
   </messages>
 </release>
 </grit>

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 
 #include "base/containers/span.h"
@@ -25,9 +20,7 @@ LauncherInternalsUI::LauncherInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUILauncherInternalsHost);
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kLauncherInternalsResources,
-                                              kLauncherInternalsResourcesSize),
+  webui::SetupWebUIDataSource(source, kLauncherInternalsResources,
                               IDR_LAUNCHER_INTERNALS_INDEX_HTML);
 }
 

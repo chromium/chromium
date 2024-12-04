@@ -937,20 +937,19 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithEmptyUpdate) {
   InitializedObserver observer1(&cache);
 
   std::vector<AppPtr> deltas1;
-  OnApps(cache, std::move(deltas1), AppType::kStandaloneBrowserChromeApp,
+  OnApps(cache, std::move(deltas1), AppType::kChromeApp,
          true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is called when the Apps are initialized.
-  EXPECT_TRUE(base::Contains(observer1.app_types(),
-                             AppType::kStandaloneBrowserChromeApp));
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kChromeApp));
   EXPECT_EQ(1, observer1.initialized_app_type_count());
   EXPECT_EQ(0, observer1.app_count_at_initialization());
   EXPECT_EQ(1u, cache.InitializedAppTypes().size());
-  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kStandaloneBrowserChromeApp));
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kChromeApp));
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(MakeApp("d", "durian"));
-  OnApps(cache, std::move(deltas2), AppType::kStandaloneBrowserChromeApp,
+  OnApps(cache, std::move(deltas2), AppType::kChromeApp,
          true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is not called when the Apps are initialized

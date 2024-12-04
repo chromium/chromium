@@ -120,6 +120,7 @@ class CORE_EXPORT InspectorNetworkAgent final
                                  const KURL&,
                                  const AtomicString& http_method,
                                  EncodedFormData* http_body);
+  void WillSendWorkerMainRequest(uint64_t identifier, const KURL&);
   void MarkResourceAsCached(DocumentLoader*, uint64_t identifier);
   void DidReceiveResourceResponse(uint64_t identifier,
                                   DocumentLoader*,

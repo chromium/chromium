@@ -23,6 +23,14 @@
 #include "base/android/jni_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
+namespace image_fetcher {
+class ImageFetcher;
+}  // namespace image_fetcher
+
 namespace data_sharing {
 class DataSharingNetworkLoader;
 class DataSharingSDKDelegate;
@@ -81,11 +89,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     // Two methods below are called in addition to OnGroupChanged().
     // Called when a new member has been added to the group.
     virtual void OnGroupMemberAdded(const GroupId& group_id,
-                                    const std::string& member_gaia_id,
+                                    const GaiaId& member_gaia_id,
                                     const base::Time& event_time) {}
     // Called when a member has been removed from the group.
     virtual void OnGroupMemberRemoved(const GroupId& group_id,
-                                      const std::string& member_gaia_id,
+                                      const GaiaId& member_gaia_id,
                                       const base::Time& event_time) {}
   };
 
@@ -146,15 +154,7 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Returns nullopt if no data is found.
   virtual std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
-      const std::string& member_gaia_id) = 0;
-
-  // Refreshes data if necessary. On success passes to the `callback` a set of
-  // all groups known to the client (ordered by id).
-  // TODO(crbug.com/370897286): Deprecate and eventually remove asynchronous
-  // ReadAllGroups() and ReadGroup() methods.
-  virtual void ReadAllGroups(
-      base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>
-          callback) = 0;
+      const GaiaId& member_gaia_id) = 0;
 
   // Refreshes data if necessary and passes the GroupData to `callback`.
   virtual void ReadGroup(
@@ -239,6 +239,15 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) = 0;
+
+  // Gets avatar image for the given `avatar_url. It's by default cropped into a
+  // circle where the diameter will be set to the `size`.
+  // TODO(crbug.com/382127659): Shouldn't force UI to pass in an image_fetcher.
+  virtual void GetAvatarImageForURL(
+      const GURL& avatar_url,
+      int size,
+      base::OnceCallback<void(const gfx::Image&)> callback,
+      image_fetcher::ImageFetcher* image_fetcher) = 0;
 
   // Sets the current DataSharingSDKDelegate instance.
   virtual void SetSDKDelegate(

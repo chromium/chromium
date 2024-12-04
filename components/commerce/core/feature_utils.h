@@ -25,6 +25,10 @@ bool IsShoppingListEligible(AccountChecker* account_checker);
 // user-facing feature.
 bool IsSubscriptionsApiEnabled(AccountChecker* account_checker);
 
+// Returns whether the price annotations feature is enabled. This check will
+// check allowed country and locale.
+bool IsPriceAnnotationsEnabled(AccountChecker* account_checker);
+
 // Check if the product specifications feature is allowed for enterprise.
 bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs);
 

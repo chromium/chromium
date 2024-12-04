@@ -83,102 +83,16 @@ if (is_android) {
   }
 }
 
-proto_library("compose_proto_descriptor") {
+proto_library("optimization_guide_proto_descriptors") {
   proto_in_dir = "//"
   proto_out_dir = "components/optimization_guide/proto"
-  sources = [ "features/compose.proto" ]
-  generate_cc = false
-  generate_python = false
-  generate_descriptor = "compose.descriptor"
+  sources = [ "features/feature_proto_registry.proto" ]
   proto_deps = [
     ":optimization_guide_proto",
     "//third_party/metrics_proto:metrics_proto",
   ]
-  import_dirs = [ "//third_party/metrics_proto/" ]
-}
-
-proto_library("string_value_proto_descriptor") {
-  proto_in_dir = "//"
-  proto_out_dir = "components/optimization_guide/proto"
-  sources = [ "string_value.proto" ]
   generate_cc = false
   generate_python = false
-  generate_descriptor = "string_value.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
-}
-
-proto_library("tab_organization_proto_descriptor") {
-  proto_in_dir = "//"
-  proto_out_dir = "components/optimization_guide/proto"
-  sources = [ "features/tab_organization.proto" ]
-  generate_cc = false
-  generate_python = false
-  generate_descriptor = "tab_organization.descriptor"
-  proto_deps = [
-    ":optimization_guide_proto",
-    "//third_party/metrics_proto:metrics_proto",
-  ]
-  import_dirs = [ "//third_party/metrics_proto/" ]
-}
-
-proto_library("history_answer_proto_descriptor") {
-  proto_in_dir = "//"
-  proto_out_dir = "components/optimization_guide/proto"
-  sources = [ "features/history_answer.proto" ]
-  generate_cc = false
-  generate_python = false
-  generate_descriptor = "history_answer.descriptor"
-  proto_deps = [
-    ":optimization_guide_proto",
-    "//third_party/metrics_proto:metrics_proto",
-  ]
-  import_dirs = [ "//third_party/metrics_proto/" ]
-}
-
-proto_library("summarize_descriptor") {
-  proto_in_dir = "//"
-  proto_out_dir = "components/optimization_guide/proto"
-  sources = [ "features/summarize.proto" ]
-  generate_cc = false
-  generate_python = false
-  generate_descriptor = "summarize.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
-}
-
-proto_library("prompt_api_proto_descriptor") {
-  proto_in_dir = "//"
-  proto_out_dir = "components/optimization_guide/proto"
-  sources = [ "features/prompt_api.proto" ]
-  generate_cc = false
-  generate_python = false
-  generate_descriptor = "prompt_api.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
-}
-
-proto_library("history_query_intent_proto_descriptor") {
-  proto_in_dir = "//"
-  proto_out_dir = "components/optimization_guide/proto"
-  sources = [ "features/history_query_intent.proto" ]
-  generate_cc = false
-  generate_python = false
-  generate_descriptor = "history_query_intent.descriptor"
-  proto_deps = [
-    ":optimization_guide_proto",
-    "//third_party/metrics_proto:metrics_proto",
-  ]
-  import_dirs = [ "//third_party/metrics_proto/" ]
-}
-
-proto_library("scam_detection_proto_descriptor") {
-  proto_in_dir = "//"
-  proto_out_dir = "components/optimization_guide/proto"
-  sources = [ "features/scam_detection.proto" ]
-  generate_cc = false
-  generate_python = false
-  generate_descriptor = "scam_detection.descriptor"
-  proto_deps = [
-    ":optimization_guide_proto",
-    "//third_party/metrics_proto:metrics_proto",
-  ]
+  generate_descriptor = "optimization_guide_proto.descriptor"
   import_dirs = [ "//third_party/metrics_proto/" ]
 }

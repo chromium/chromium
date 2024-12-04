@@ -1504,8 +1504,17 @@ TEST_F(ChromePasswordProtectionServiceTest,
   reused_password_type.set_is_account_syncing(true);
   CoreAccountInfo core_account_info = SetPrimaryAccount(kTestEmail);
   SetUpSyncAccount(std::string("example.com"), core_account_info);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // prefs::kEnterpriseCustomLabel is only registered on Windows, Mac, and
+  // Linux.
+  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabel,
+                                   "example.com");
   EXPECT_EQ(warning_text_with_org_name,
             service_->GetWarningDetailText(reused_password_type));
+#else
+  EXPECT_EQ(generic_enterprise_warning_text,
+            service_->GetWarningDetailText(reused_password_type));
+#endif
   reused_password_type.set_account_type(
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
   EXPECT_EQ(generic_enterprise_warning_text,

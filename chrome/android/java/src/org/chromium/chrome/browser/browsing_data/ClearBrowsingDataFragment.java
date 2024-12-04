@@ -63,7 +63,7 @@ import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ButtonCompat;
@@ -476,7 +476,9 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
             dismissProgressDialog();
         } else {
             dismissProgressDialog();
-            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+            var mainFragment = getParentFragment() != null ? getParentFragment() : this;
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .finishCurrentSettings(mainFragment);
         }
     }
 
@@ -764,7 +766,7 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
                 new SpanInfo(
                         "<link1>",
                         "</link1>",
-                        new NoUnderlineClickableSpan(
+                        new ChromeClickableSpan(
                                 requireContext(), createSignOutOfChromeCallback())));
     }
 

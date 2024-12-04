@@ -259,10 +259,7 @@ struct AuthenticatorRequestDialogModel
     // a single available credential and choosing one from a list of multiple
     // options.
     kSelectAccount,
-    kSelectSingleAccount,
     kPreSelectAccount,
-    // TODO(crbug.com/40284700): Merge with kSelectPriorityMechanism.
-    kPreSelectSingleAccount,
     // kSelectPriorityMechanism lets the user confirm a single "priority"
     // mechanism.
     kSelectPriorityMechanism,
@@ -373,6 +370,12 @@ struct AuthenticatorRequestDialogModel
     CABLE_V2_SERVER_LINK,
     CABLE_V2_2ND_FACTOR,
   };
+
+  // Returns a user-friendly description for a |type|. If |type| is kPhone, a
+  // |phone_name| must be passed.
+  static std::u16string GetMechanismDescription(
+      device::AuthenticatorType type,
+      const std::optional<std::string>& phone_name);
 
   explicit AuthenticatorRequestDialogModel(
       content::RenderFrameHost* render_frame_host);

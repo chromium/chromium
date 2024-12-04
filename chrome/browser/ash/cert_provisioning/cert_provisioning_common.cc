@@ -365,7 +365,7 @@ scoped_refptr<net::X509Certificate> CreateSingleCertificateFromBytes(
     size_t length) {
   net::CertificateList cert_list =
       net::X509Certificate::CreateCertificateListFromBytes(
-          base::as_bytes(base::make_span(data, length)),
+          base::as_bytes(base::span(data, length)),
           net::X509Certificate::FORMAT_AUTO);
 
   if (cert_list.size() != 1) {

@@ -32,7 +32,7 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
   void AddMember(const GroupId& group_id, const std::string& member_gaia_id);
   void RemoveMember(const GroupId& group_id, const std::string& member_gaia_id);
 
-  void AddAccount(const std::string& email, const std::string& gaia_id);
+  void AddAccount(const std::string& email, const GaiaId& gaia_id);
 
   // DataSharingSDKDelegate impl:
   void Initialize(
@@ -68,7 +68,7 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
           void(const base::expected<data_sharing_pb::AddAccessTokenResult,
                                     absl::Status>&)> callback) override;
 
-  void SetUserGaiaId(const std::string& gaia_id);
+  void SetUserGaiaId(const GaiaId& gaia_id);
 
  private:
   std::map<GroupId, data_sharing_pb::GroupData> groups_;

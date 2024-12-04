@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.matches;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -32,7 +31,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,7 +44,6 @@ import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
@@ -56,14 +53,11 @@ import org.chromium.url.GURL;
 // TODO(crbug.com/40743432): Once SyncTestRule supports batching, investigate batching this suite.
 @DoNotBatch(reason = "SyncTestRule doesn't support batching.")
 public class AccountBookmarkTest {
-    private static final String BOOKMARKS_TYPE_STRING = "Bookmarks";
-
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
     @Rule public BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
 
     private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private BookmarkModel mBookmarkModel;
-    private RecyclerView mRecyclerView;
 
     @Before
     public void setUp() throws Exception {
@@ -81,27 +75,7 @@ public class AccountBookmarkTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testReplaceSyncPromosWithSigninPromos() {
-        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
-        RecyclerViewTestUtils.waitForStableMvcRecyclerView(
-                mBookmarkManagerCoordinator.getRecyclerViewForTesting());
-        checkTopLevelAccountFoldersDisplayed();
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testEnableDatatypesManually() {
-        runOnUiThreadBlocking(
-                () -> {
-                    mSyncTestRule
-                            .getSyncService()
-                            .setSelectedType(UserSelectableType.BOOKMARKS, true);
-                    mSyncTestRule
-                            .getSyncService()
-                            .setSelectedType(UserSelectableType.READING_LIST, true);
-                });
+    public void testAccountFoldersDisplay() {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(
                 mBookmarkManagerCoordinator.getRecyclerViewForTesting());
@@ -111,7 +85,6 @@ public class AccountBookmarkTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     @DisabledTest(
             message =
                     "Enable this test when reading list is available w/o restart crbug.com/1510547")
@@ -137,7 +110,6 @@ public class AccountBookmarkTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testDefaultFolders() {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
         runOnUiThreadBlocking(

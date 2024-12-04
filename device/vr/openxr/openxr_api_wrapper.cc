@@ -133,6 +133,11 @@ std::vector<XrEnvironmentBlendMode> OpenXrApiWrapper::GetSupportedBlendModes(
   return environment_blend_modes;
 }
 
+// static
+bool OpenXrApiWrapper::NeedsSeparateActivity() {
+  return test_hook_ == nullptr;
+}
+
 OpenXrApiWrapper::OpenXrApiWrapper() = default;
 
 OpenXrApiWrapper::~OpenXrApiWrapper() {

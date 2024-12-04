@@ -25,7 +25,7 @@ bool ReadStream::ReadExact(base::span<uint8_t> buffer) {
 
 FileReadStream::FileReadStream(int fd) : fd_(fd) {}
 
-FileReadStream::~FileReadStream() {}
+FileReadStream::~FileReadStream() = default;
 
 bool FileReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
   *bytes_read = 0;
@@ -43,7 +43,7 @@ off_t FileReadStream::Seek(off_t offset, int whence) {
 MemoryReadStream::MemoryReadStream(base::span<const uint8_t> byte_buf)
     : byte_buf_(byte_buf), offset_(0) {}
 
-MemoryReadStream::~MemoryReadStream() {}
+MemoryReadStream::~MemoryReadStream() = default;
 
 bool MemoryReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
   *bytes_read = 0;

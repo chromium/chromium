@@ -10,6 +10,8 @@ found in the LICENSE file.
     <dimen name="toolbar_swipe_space_between_tabs">30dp</dimen>
     <!-- TabSwitcher - The minimum distance from the edge to commit a toolbar side swap. -->
     <dimen name="toolbar_swipe_commit_distance">90dp</dimen>
+    <!-- Toolbar IPH dimens. -->
+    <dimen name="toolbar_iph_y_inset">4dp</dimen>
 
     <!-- Tab title -->
     <dimen name="border_texture_title_fade">24dp</dimen>                    <!-- 40px hdpi -->
@@ -336,9 +338,6 @@ found in the LICENSE file.
     <dimen name="virtual_card_enrollment_dialog_description_margin_top">16dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_google_legal_message_margin_top">20dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_google_issuer_message_margin_top">8dp</dimen>
-
-    <!-- Price Drop dimensions -->
-    <dimen name="price_drop_spotted_iph_ntp_tabswitcher_y_inset">4dp</dimen>
 
     <!-- Improved bookmark row folder dimensions. -->
     <dimen name="improved_bookmark_row_outer_corner_radius">16dp</dimen>

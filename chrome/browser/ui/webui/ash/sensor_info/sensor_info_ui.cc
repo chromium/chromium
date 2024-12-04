@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor_info_ui.h"
 
 #include <memory>
@@ -32,9 +27,8 @@ SensorInfoUI::SensorInfoUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISensorInfoHost);
   // Adds required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kSensorInfoResources, kSensorInfoResourcesSize),
-      IDR_SENSOR_INFO_SENSOR_INFO_HTML);
+  webui::SetupWebUIDataSource(source, kSensorInfoResources,
+                              IDR_SENSOR_INFO_SENSOR_INFO_HTML);
 }
 
 SensorInfoUI::~SensorInfoUI() = default;

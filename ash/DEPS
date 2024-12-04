@@ -43,6 +43,7 @@ include_rules = [
   "+crypto",
   "+dbus",
   "+extensions/common/constants.h",
+  "+google_apis/gaia/gaia_id.h",
   "+gpu/config",
   "+media",
   "+mojo/public",

@@ -376,6 +376,11 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
   CHECK(g_browser_process);
   CHECK(g_browser_process->safe_browsing_service());
 
+  auto* rfh = content::MediaSession::Get(web_contents())->GetRoutedFrame();
+  if (!rfh || !rfh->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   if (!safe_browsing_checker_client_) {
     // Create the AutoPiP safe browsing checker client, which will be used for
     // determining URL safety.
@@ -387,10 +392,7 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
                             async_tasks_weak_factory_.GetWeakPtr()));
   }
 
-  safe_browsing_checker_client_->CheckUrlSafety(
-      // TODO(crbug.com/40250017): Replace with MediaSession routed frame last
-      // committed URL, and ensure the rfh is in primary main frame.
-      web_contents()->GetLastCommittedURL());
+  safe_browsing_checker_client_->CheckUrlSafety(rfh->GetLastCommittedURL());
 }
 
 void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {

@@ -149,7 +149,7 @@ constexpr char kVpccKey[] = "vpcC";
 
 namespace media {
 
-TEST(VTConfigUtil, CreateFormatExtensionsH264BT709) {
+TEST(VTConfigUtil, CreateFormatExtensions_H264_BT709) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN, 8, VideoColorSpace::REC709(),
       std::nullopt, std::nullopt);
@@ -177,7 +177,7 @@ TEST(VTConfigUtil, CreateFormatExtensionsH264BT709) {
                   .empty());
 }
 
-TEST(VTConfigUtil, CreateFormatExtensionsH264BT2020PQ) {
+TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN, 8,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
@@ -203,7 +203,7 @@ TEST(VTConfigUtil, CreateFormatExtensionsH264BT2020PQ) {
   AssertHasDefaultHDRMetadata(fmt.get());
 }
 
-TEST(VTConfigUtil, CreateFormatExtensionsH264BT2020HLG) {
+TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN, 8,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
@@ -229,7 +229,7 @@ TEST(VTConfigUtil, CreateFormatExtensionsH264BT2020HLG) {
   AssertHasNoHDRMetadata(fmt.get());
 }
 
-TEST(VTConfigUtil, CreateFormatExtensionsHDRMetadata) {
+TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
   // Values from real YouTube HDR content.
   gfx::HDRMetadata hdr_meta;
   hdr_meta.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 600);
@@ -286,7 +286,7 @@ TEST(VTConfigUtil, CreateFormatExtensionsHDRMetadata) {
   }
 }
 
-TEST(VTConfigUtil, CreateFormatExtensionsVP9Profile0) {
+TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile0) {
   constexpr VideoCodecProfile kTestProfile = VP9PROFILE_PROFILE0;
   const auto kTestColorSpace = VideoColorSpace::REC709();
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt =
@@ -307,7 +307,7 @@ TEST(VTConfigUtil, CreateFormatExtensionsVP9Profile0) {
   ASSERT_EQ(kTestColorSpace, vpcc_box.color_space);
 }
 
-TEST(VTConfigUtil, CreateFormatExtensionsVP9Profile2) {
+TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile2) {
   constexpr VideoCodecProfile kTestProfile = VP9PROFILE_PROFILE2;
   const VideoColorSpace kTestColorSpace(
       VideoColorSpace::PrimaryID::BT2020,
@@ -331,7 +331,7 @@ TEST(VTConfigUtil, CreateFormatExtensionsVP9Profile2) {
   ASSERT_EQ(kTestColorSpace, vpcc_box.color_space);
 }
 
-TEST(VTConfigUtil, CreateFormatExtensionsAV1) {
+TEST(VTConfigUtil, CreateFormatExtensions_AV1) {
   // Dumped from a main profile 10-bit AV1 stream.
   constexpr uint8_t kAvc1Box[] = {0x81, 0x04, 0x4c, 0x00, 0x0a, 0x0b,
                                   0x00, 0x00, 0x00, 0x24, 0xcf, 0x7f,
@@ -360,7 +360,7 @@ TEST(VTConfigUtil, CreateFormatExtensionsAV1) {
   // No other fields are parsed by mp4::AV1CodecConfigurationRecord.
 }
 
-TEST(VTConfigUtil, GetImageBufferColorSpaceBT601) {
+TEST(VTConfigUtil, GetImageBufferColorSpace_BT601) {
   auto cs = VideoColorSpace::REC601();
   auto image_buffer = CreateCVImageBuffer(cs);
   ASSERT_TRUE(image_buffer);
@@ -370,7 +370,7 @@ TEST(VTConfigUtil, GetImageBufferColorSpaceBT601) {
   EXPECT_EQ(expected_cs, GetImageBufferColorSpace(image_buffer.get()));
 }
 
-TEST(VTConfigUtil, GetImageBufferColorSpaceBT709) {
+TEST(VTConfigUtil, GetImageBufferColorSpace_BT709) {
   auto cs = VideoColorSpace::REC709();
   auto image_buffer = CreateCVImageBuffer(cs);
   ASSERT_TRUE(image_buffer);
@@ -381,7 +381,7 @@ TEST(VTConfigUtil, GetImageBufferColorSpaceBT709) {
   EXPECT_EQ(expected_cs, GetImageBufferColorSpace(image_buffer.get()));
 }
 
-TEST(VTConfigUtil, GetImageBufferColorSpaceGAMMA22) {
+TEST(VTConfigUtil, GetImageBufferColorSpace_GAMMA22) {
   auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE170M,
                             VideoColorSpace::TransferID::GAMMA22,
                             VideoColorSpace::MatrixID::SMPTE170M,
@@ -391,7 +391,7 @@ TEST(VTConfigUtil, GetImageBufferColorSpaceGAMMA22) {
   EXPECT_EQ(cs.ToGfxColorSpace(), GetImageBufferColorSpace(image_buffer.get()));
 }
 
-TEST(VTConfigUtil, GetImageBufferColorSpaceGAMMA28) {
+TEST(VTConfigUtil, GetImageBufferColorSpace_GAMMA28) {
   auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE170M,
                             VideoColorSpace::TransferID::GAMMA28,
                             VideoColorSpace::MatrixID::SMPTE170M,
@@ -401,7 +401,7 @@ TEST(VTConfigUtil, GetImageBufferColorSpaceGAMMA28) {
   EXPECT_EQ(cs.ToGfxColorSpace(), GetImageBufferColorSpace(image_buffer.get()));
 }
 
-TEST(VTConfigUtil, GetImageBufferColorSpaceBT2020PQ) {
+TEST(VTConfigUtil, GetImageBufferColorSpace_BT2020_PQ) {
   auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                             VideoColorSpace::TransferID::SMPTEST2084,
                             VideoColorSpace::MatrixID::BT2020_NCL,
@@ -414,7 +414,7 @@ TEST(VTConfigUtil, GetImageBufferColorSpaceBT2020PQ) {
   EXPECT_EQ(cs.ToGfxColorSpace(), image_buffer_cs);
 }
 
-TEST(VTConfigUtil, GetImageBufferColorSpaceBT2020HLG) {
+TEST(VTConfigUtil, GetImageBufferColorSpace_BT2020_HLG) {
   auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                             VideoColorSpace::TransferID::ARIB_STD_B67,
                             VideoColorSpace::MatrixID::BT2020_NCL,

@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "content/public/browser/web_contents.h"
 
@@ -19,12 +18,6 @@ ChromeTabStripDelegate::~ChromeTabStripDelegate() = default;
 std::vector<ash::TabInfo> ChromeTabStripDelegate::GetTabsListForWindow(
     aura::Window* window) const {
   if (!window) {
-    return {};
-  }
-
-  const std::string app_id = full_restore::GetAppId(window);
-  // Lacros will not be supported.
-  if (app_id == app_constants::kLacrosAppId) {
     return {};
   }
 

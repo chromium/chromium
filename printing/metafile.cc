@@ -64,8 +64,7 @@ bool Metafile::SaveTo(base::File* file) const {
   if (!GetDataAsVector(&buffer))
     return false;
 
-  if (!file->WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::make_span(buffer)))) {
+  if (!file->WriteAtCurrentPosAndCheck(base::as_byte_span(buffer))) {
     DLOG(ERROR) << "Failed to save file.";
     return false;
   }

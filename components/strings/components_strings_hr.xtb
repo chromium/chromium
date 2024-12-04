@@ -278,7 +278,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1473495410389165587">Unesite najmanje tri riječi da biste dobili pomoć pri pisanju</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Usluge čišćenja</translation>
-<translation id="1475299637784133125">Tražite li verziju preglednika? Otvorite</translation>
 <translation id="1476595624592550506">Promijenite zaporku</translation>
 <translation id="1482372785911828880">Iznimno tanak</translation>
 <translation id="1482879811280872320">Vožnja biciklom</translation>
@@ -1421,7 +1420,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">Drugi dan</translation>
 <translation id="3559897352860026926">Zatražite od administratora da potvrdi svoje postavke konfiguracije za uslugu <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560408312959371419">Opcije za zaštitu od praćenja i podatke web-lokacije na uređaju</translation>
 <translation id="3560824484345057728">Pogledajte povezane web-lokacije</translation>
 <translation id="3566021033012934673">Vaša veza nije privatna</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -2597,7 +2595,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5675809467256309336">Dance i elektronička glazba</translation>
 <translation id="5675959228867414813">Prikaži po datumu</translation>
 <translation id="567604591393105935">Donja tablica trgovine otvorena u pola visine</translation>
-<translation id="5677928146339483299">Blokirano</translation>
 <translation id="5678007133659493065">Folija</translation>
 <translation id="5680642791693447368">Trileri, kriminalistički filmovi i filmovi o misterijima</translation>
 <translation id="568292603005599551">X-položaj slike</translation>
@@ -2657,7 +2654,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784606427469807560">Pojavio se problem prilikom potvrđivanja kartice. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="5785756445106461925">Nadalje, ova stranica sadrži druge resurse koji nisu sigurni. Te resurse mogu vidjeti drugi tijekom prijenosa i napadač ih može izmijeniti kako bi promijenio izgled stranice.</translation>
-<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Taj će se način plaćanja izbrisati s ovog uređaja</translation>
 <translation id="5794065675298686371">Uključivanje obavijesti o praćenju cijena</translation>
 <translation id="5800727402210090597">Popravci i usluge u vezi s mobilnim telefonima</translation>
@@ -2746,6 +2742,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5969199813874624822">Spremi i prati cijenu</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Šesti kolut</translation>
+<translation id="5974745851230707809">Opcije plaćanja na rate</translation>
 <translation id="5975083100439434680">Smanji</translation>
 <translation id="5979084224081478209">Provjeri zaporke</translation>
 <translation id="5984570616552610254">Vlažnost komore</translation>
@@ -2956,7 +2953,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="633770708279464947">Vrijednost <ph name="SECURE_DNS_SALT" /> nije važeća i neće se upotrebljavati.</translation>
 <translation id="6340739886198108203">Prema pravilima administratora ne preporučuje se izrada snimki zaslona ili snimki kad je vidljiv povjerljiv sadržaj:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Prema pravilima administratora ne preporučuje se prijenos te datoteke na <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Zaštita od praćenja</translation>
 <translation id="634500758737709758">Upute</translation>
 <translation id="6348220984832452017">Aktivne varijacije</translation>
 <translation id="6349101878882523185">Instalirajte aplikaciju <ph name="APP_NAME" /></translation>
@@ -4147,6 +4143,7 @@ Dodatne pojedinosti:
 <translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
 <translation id="84561192812921051">Vaš administrator može daljinski unositi promjene u vaš profil i preglednik, analizirati podatke o pregledniku putem izvješćivanja i izvršavati druge potrebne zadatke. Aktivnostima na ovom uređaju može se upravljati i izvan Chromea.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Donja tablica je zatvorena.</translation>
+<translation id="8456775115498700722">Sada možete automatski popuniti svoje <ph name="CARD_ISSUER_NAME" /> kartice jer je vaš <ph name="CARD_ISSUER_NAME" /> račun povezan s Google Payom.</translation>
 <translation id="8457125768502047971">Neodređeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Uključite</translation>
@@ -4304,6 +4301,7 @@ Dodatne pojedinosti:
 <translation id="8757526089434340176">Dostupna je ponuda Google Paya</translation>
 <translation id="8759274551635299824">Ta je kartica istekla</translation>
 <translation id="87601671197631245">Ova web-lokacija upotrebljava zastarjelu sigurnosnu konfiguraciju, pa bi vaši podaci (na primjer zaporke, poruke ili brojevi kreditnih kartica) mogli biti otkriveni kad se šalju na nju.</translation>
+<translation id="8763226176721243078">Možete automatski popuniti podatke o toj kartici jer je vaš <ph name="CARD_ISSUER_NAME" /> račun povezan s Google Payom.</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8763986294015493060">Zatvorite sve anonimne prozore koji su trenutačno otvoreni</translation>
 <translation id="8766943070169463815">Otvoren je list s autentifikacijom za vjerodajnicu sigurnog plaćanja</translation>
@@ -4338,6 +4336,7 @@ Dodatne pojedinosti:
 <translation id="882338992931677877">Utor za ručno umetanje</translation>
 <translation id="8830320733681313421">Hagaki dopisnica</translation>
 <translation id="8830565333350631528">Pregled datoteka na usluzi <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Dostupno za kupnje iznad <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Perilice i sušilice rublja</translation>
 <translation id="8834962751196791179">Upozorenje vam se prikazuje jer ova web-lokacija ne podržava HTTPS, a vi ste u anonimnom načinu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o tom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">TV ZF i fantasy serije</translation>
@@ -4393,7 +4392,6 @@ Dodatne pojedinosti:
 <translation id="893332455753468063">Dodajte ime</translation>
 <translation id="8942355029279167844">Administrator je dopustio da <ph name="APP_NAME" /> prikuplja dijagnostičke podatke radi poboljšanja doživljaja proizvoda. Dodatne informacije potražite na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limeta</translation>
-<translation id="8944485226638699751">Ograničeno</translation>
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8952569554322479410">Web-lokacija upravo je zatražila pristup značajki vašeg uređaja: <ph name="REQUEST_TYPE" />. Ispunite ovu jednominutnu anketu i pomozite nam da poboljšamo način na koji web-lokacije traže pristup.</translation>
@@ -4414,7 +4412,6 @@ Dodatne pojedinosti:
 <translation id="8987663052629670333">Usluge tiska digitalnih fotografija</translation>
 <translation id="8987927404178983737">Mjesec</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
-<translation id="8992061558343343009">Tražite li verziju sustava? Otvorite</translation>
 <translation id="899688752321268742"><ph name="URL" /> želi znati kad aktivno upotrebljavate ovaj uređaj</translation>
 <translation id="8997023839087525404">Poslužitelj je prikazao certifikat koji nije javno otkriven putem pravila Transparentnost certifikata. Taj se zahtjev postavlja za neke certifikate radi provjere njihove pouzdanosti i zaštite od napada.</translation>
 <translation id="9000145382638074673">Vaši uređaji</translation>

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/webui_js_error/webui_js_error_ui.h"
 
 #include <ios>
@@ -41,10 +36,8 @@ WebUIJsErrorUI::WebUIJsErrorUI(content::WebUI* web_ui)
   source->AddString("uncaughtErrorButton", "Throw Uncaught Error");
   source->AddString("promiseRejectButton", "Unhandled Promise Rejection");
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kWebuiJsErrorResources, kWebuiJsErrorResourcesSize),
-      IDR_WEBUI_JS_ERROR_WEBUI_JS_ERROR_HTML);
+  webui::SetupWebUIDataSource(source, kWebuiJsErrorResources,
+                              IDR_WEBUI_JS_ERROR_WEBUI_JS_ERROR_HTML);
 }
 
 WebUIJsErrorUI::~WebUIJsErrorUI() = default;

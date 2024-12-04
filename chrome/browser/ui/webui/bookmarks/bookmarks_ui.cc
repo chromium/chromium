@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 
 #include <algorithm>
@@ -51,9 +46,8 @@ void AddLocalizedString(content::WebUIDataSource* source,
 content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIBookmarksHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kBookmarksResources, kBookmarksResourcesSize),
-      IDR_BOOKMARKS_BOOKMARKS_HTML);
+  webui::SetupWebUIDataSource(source, kBookmarksResources,
+                              IDR_BOOKMARKS_BOOKMARKS_HTML);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in bookmarks/command_manager.js

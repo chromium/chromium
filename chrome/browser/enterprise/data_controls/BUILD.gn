@@ -67,8 +67,6 @@ source_set("data_controls") {
 
   if (is_chromeos) {
     deps += [
-      "//chromeos/startup",
-
       # Included for allow_circular_includes_from.
       "//chrome/browser/chromeos/policy/dlp",
     ]
@@ -98,9 +96,6 @@ source_set("test_support") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
-  if (is_chromeos) {
-    public_deps += [ "//chromeos/startup" ]
-  }
   if (is_chromeos_ash) {
     public_deps += [ "//components/user_manager" ]
   }

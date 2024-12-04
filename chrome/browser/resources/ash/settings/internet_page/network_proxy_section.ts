@@ -19,7 +19,6 @@ import '../controls/extension_controlled_indicator.js';
 import '../settings_vars.css.js';
 import './internet_shared.css.js';
 import '../controls/settings_toggle_button.js';
-import '../common/lacros_extension_controlled_indicator.js';
 
 import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -90,15 +89,8 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
       useSharedProxies_: Boolean,
 
       /**
-       * Indicates if the proxy if set by an extension in the Lacros primary
-       * profile.
-       */
-      isProxySetByLacrosExtension_: Boolean,
-
-      /**
-       * Information about the extension in the Ash or Lacros browser which
-       * controlling the proxy. Can be null is the proxy is not controlled by an
-       * extension.
+       * Information about the extension controlling the proxy. Can be null if
+       * the proxy is not controlled by an extension.
        */
       extensionInfo_: Object,
     };
@@ -107,15 +99,12 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   static get observers() {
     return [
       'useSharedProxiesChanged_(prefs.settings.use_shared_proxies.value)',
-      'extensionProxyChanged_(prefs.ash.lacros_proxy_controlling_extension, ' +
-          'managedProperties.proxySettings)',
     ];
   }
 
   disabled: boolean;
   managedProperties: ManagedProperties|undefined;
   private extensionInfo_: ExtensionInfo|undefined;
-  private isProxySetByLacrosExtension_: boolean;
   private useSharedProxies_: boolean;
 
   /**
@@ -137,30 +126,10 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     this.useSharedProxies_ = !!pref && !!pref.value;
   }
 
-  private extensionProxyChanged_(): void {
-    if (this.proxySetByAshExtension_()) {
-      return;
-    }
-
-    const property = this.getProxySettingsTypeProperty_();
-    if (!property || !this.isExtensionControlled(property)) {
-      this.isProxySetByLacrosExtension_ = false;
-      return;
-    }
-
-    const pref = this.getPref('ash.lacros_proxy_controlling_extension');
-    this.isProxySetByLacrosExtension_ = !!pref.value &&
-        !!pref.value['extension_id_key'] && !!pref.value['extension_name_key'];
-    if (this.isProxySetByLacrosExtension_) {
-      this.extensionInfo_ = {
-        id: pref.value['extension_id_key'],
-        name: pref.value['extension_name_key'],
-        canBeDisabled: pref.value['can_be_disabled_key'],
-      };
-    }
-  }
-
-  private proxySetByAshExtension_(): boolean {
+  /**
+   * Return true if the proxy is controlled by an extension.
+   */
+  private isProxySetByExtension_(): boolean {
     const property = this.getProxySettingsTypeProperty_();
     if (!property || !this.isExtensionControlled(property) ||
         !this.prefs.proxy.controlledByName) {
@@ -172,14 +141,6 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
       canBeDisabled: this.prefs.proxy.extensionCanBeDisabled,
     };
     return true;
-  }
-
-  /**
-   * Return true if the proxy is controlled by an extension in the Ash Browser
-   * or in the Lacros Browser.
-   */
-  private isProxySetByExtension_(): boolean {
-    return this.proxySetByAshExtension_() || this.isProxySetByLacrosExtension_;
   }
 
   private isShared_(): boolean {

@@ -73,7 +73,6 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
   void Reset();
 
  private:
-  friend class BrowserAutofillManagerTest;
   friend class CreditCardAccessManagerTestBase;
 
   blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options_;

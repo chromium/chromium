@@ -136,7 +136,7 @@
 <translation id="1554477036522844996">Новое окно</translation>
 <translation id="1558391695376153246">Закрыть вкладки инкогнито</translation>
 <translation id="1571780780926010134">Вкладки инкогнито</translation>
-<translation id="1580715474678097352">Защита от опасных сайтов</translation>
+<translation id="1580715474678097352">Защищает от опасных сайтов</translation>
 <translation id="1580783302095112590">Сообщение отправлено.</translation>
 <translation id="1582732959743469162">Скачивание файлов будет приостановлено.</translation>
 <translation id="1594034544529347967">Начало</translation>
@@ -157,7 +157,6 @@
 <translation id="1652051421944182562">Включить уведомления проверки безопасности…</translation>
 <translation id="1652333207707886577">Настройте меню.</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Осталось {TIME} секунд}=1{Осталась {TIME} секунда}one{Осталась {TIME} секунда}few{Осталось {TIME} секунды}many{Осталось {TIME} секунд}other{Осталось {TIME} секунды}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} сохраненный пароль показан над клавиатурой.}one{{count} сохраненный пароль показан над клавиатурой.}few{{count} сохраненных пароля показаны над клавиатурой.}many{{count} сохраненных паролей показаны над клавиатурой.}other{{count} сохраненного пароля показаны над клавиатурой.}}</translation>
 <translation id="1654232554734641711">Доступ к микрофону разрешен.</translation>
 <translation id="16554782717487656">Конвертер единиц измерения</translation>
 <translation id="1657011748321897393">Не удалось опубликовать запись из-за ошибки сети.</translation>
@@ -246,7 +245,6 @@
 <translation id="2044394949148788042">Откройте сетку таблицы.</translation>
 <translation id="20485545164632846">новый продукт</translation>
 <translation id="2049727122989709386">В нескольких аккаунтах (<ph name="COUNT" />) используется один и тот же пароль.</translation>
-<translation id="2050196510205866090">{count,plural, =1{{count} сохраненный способ оплаты показан над клавиатурой.}one{{count} сохраненный способ оплаты показан над клавиатурой.}few{{count} сохраненных способа оплаты показаны над клавиатурой.}many{{count} сохраненных способов оплаты показаны над клавиатурой.}other{{count} сохраненного способа оплаты показаны над клавиатурой.}}</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="20638360198452347">Список выбора типов единиц измерения</translation>
 <translation id="2067852168641682340">Всегда сохранять в этот аккаунт</translation>
@@ -329,7 +327,6 @@
 <translation id="2390457533592708044">Скрыть карточку "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Недоступно</translation>
 <translation id="2410754283952462441">Выберите аккаунт</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} сохраненный адрес показан над клавиатурой.}one{{count} сохраненный адрес показан над клавиатурой.}few{{count} сохраненных адреса показаны над клавиатурой.}many{{count} сохраненных адресов показаны над клавиатурой.}other{{count} сохраненного адреса показаны над клавиатурой.}}</translation>
 <translation id="2424805048070062787">Снова открыть эту вкладку</translation>
 <translation id="2426805022920575512">Сменить аккаунт</translation>
 <translation id="243275146591958220">Отменить скачивание</translation>
@@ -561,7 +558,7 @@
 <translation id="3572607909481582402">В аккаунте Google</translation>
 <translation id="3575234738189584619">Искать с помощью Объектива</translation>
 <translation id="3575426792457739946">В списке указаны все загруженные профили.</translation>
-<translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
+<translation id="3581564640715911333">Предлагать перевести страницы на других языках</translation>
 <translation id="3587885837929752825">Ваша организация ограничила данные, которые можно сохранять в аккаунте Google.</translation>
 <translation id="3588820906588687999">Открыть в новой вкладке</translation>
 <translation id="3591006724568464696">Недавние вкладки недоступны</translation>
@@ -719,7 +716,7 @@
 <translation id="4331177082088332784">Изменить выбор можно в BEGIN_LINKНастройках контентаEND_LINK.</translation>
 <translation id="4334428914252001502">1 непрочитанная статья.</translation>
 <translation id="4338258232580025606">Не удается войти</translation>
-<translation id="4338650699862464074">Отправлять URL страниц, которые вы посещаете, в Google.</translation>
+<translation id="4338650699862464074">Отправлять URL посещаемых страниц в Google</translation>
 <translation id="4342054591427973606">{count,plural, =1{Адрес будет удален с этого и других устройств, на которых выполнен вход в аккаунт.}one{Адреса будут удалены с этого и других устройств, на которых выполнен вход в аккаунт.}few{Адреса будут удалены с этого и других устройств, на которых выполнен вход в аккаунт.}many{Адреса будут удалены с этого и других устройств, на которых выполнен вход в аккаунт.}other{Адреса будут удалены с этого и других устройств, на которых выполнен вход в аккаунт.}}</translation>
 <translation id="4342946437867096381">Для этого сайта уже сохранен пароль в аккаунте. Google может выбрать последний использованный пароль.</translation>
 <translation id="4365121137632832185">Группа вкладок. Развернута.</translation>
@@ -757,7 +754,6 @@
 <translation id="4525629404718770519">Предпросмотр ссылок</translation>
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4532845899244822526">Выбор папки</translation>
-<translation id="4539187448429948815">{count,plural, =1{{count} сохраненная подсказка автозаполнения показана над клавиатурой.}one{{count} сохраненная подсказка автозаполнения показана над клавиатурой.}few{{count} сохраненные подсказки автозаполнения показаны над клавиатурой.}many{{count} сохраненных подсказок автозаполнения показано над клавиатурой.}other{{count} сохраненной подсказки автозаполнения показано над клавиатурой.}}</translation>
 <translation id="4547181496285029457">Вернуться к последней использовавшейся вкладке</translation>
 <translation id="4552042254369397518">Копирование…</translation>
 <translation id="4564893319561643483">Скрыть карточку "<ph name="TITLE" />"</translation>
@@ -770,6 +766,7 @@
 <translation id="4597892826846980979">Получайте уведомления с вкладок</translation>
 <translation id="4601095002996233687">Выполняет тщательную проверку подозрительных файлов, которые вы скачали.</translation>
 <translation id="4606247758155004938">Этим браузером управляет ваша организация.</translation>
+<translation id="4607887340472970274">Отслеживание цен</translation>
 <translation id="4611811151908969241">Скрыть действие "Отменить подписку на <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Поиск с помощью Google</translation>
 <translation id="4619564267100705184">Подтвердить личность</translation>
@@ -826,7 +823,7 @@
 <translation id="4824480232751123840">Громкость</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и ещё 1 вкладка}one{{domain} и ещё {count} вкладка}few{{domain} и ещё {count} вкладки}many{{domain} и ещё {count} вкладок}other{{domain} и ещё {count} вкладки}}</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
-<translation id="4833786495304741580">Автоматически отправлять в Google статистику использования и отчеты о сбоях.</translation>
+<translation id="4833786495304741580">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="483689884442613745">Сохранить…</translation>
 <translation id="4840495572919996524">Ваши закладки, пароли, история и другие данные больше не будут синхронизироваться с аккаунтом Google.</translation>
 <translation id="484280513275854557">Вы вышли из аккаунта, а данные о работе в браузере были удалены.</translation>
@@ -885,7 +882,7 @@
 <translation id="5083464117946352670">Не установлен размер файла</translation>
 <translation id="5085558938118581974">Поиск вкладок на синхронизированных устройствах</translation>
 <translation id="5090832849094901128">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />.</translation>
-<translation id="5118462200606189584">Добавить аккаунт</translation>
+<translation id="5118462200606189584">Добавить аккаунт…</translation>
 <translation id="5118713593561876160">Интересы</translation>
 <translation id="5118764316110575523">ВЫКЛ</translation>
 <translation id="5121618895923301719">Вы уже отслеживаете этот товар. Эта страница добавлена в папку <ph name="BEGIN_LINK" />Закладки на мобильном устройстве<ph name="END_LINK" />.</translation>
@@ -1274,7 +1271,6 @@
 <translation id="6710079714193676716">Браузером управляет ваша организация. Некоторые функции могут быть недоступны. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Перейти к ленте</translation>
 <translation id="6713676799463473249">Изменено <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Отслеживание цен</translation>
 <translation id="6722623263381062480">Полученные вкладки</translation>
 <translation id="6723740634201835758">В аккаунте Google</translation>
 <translation id="672735642903863329">Синхронизируйте закладки, пароли и другую информацию на своих устройствах.</translation>
@@ -1331,7 +1327,7 @@
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="7004032350256606903">Согласно правилам вашей организации, использовать режим инкогнито обязательно.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="7005768247344091502">Настроить</translation>
+<translation id="7005768247344091502">Перейти в настройки</translation>
 <translation id="7015418667643980944">Режим Split View</translation>
 <translation id="7016070607649558507">У вас есть простой пароль. Устраните проблему.</translation>
 <translation id="7016958933495968912">Параметры рекомендаций</translation>
@@ -1440,7 +1436,6 @@
 <translation id="75362970626182391">Новая группа вкладок</translation>
 <translation id="7537586195939242955">Не удалось внести данные в Passbook.</translation>
 <translation id="754655535278952384">Проверено <ph name="TIME" /></translation>
-<translation id="755255281989213264">Настройка меню</translation>
 <translation id="7553234618121028547">Чтобы отключить автозаполнение, выберите <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и перейдите в раздел "Настройки паролей".</translation>
 <translation id="7557508262441527045">Выполнен выход.</translation>
 <translation id="7561196759112975576">Всегда</translation>
@@ -1463,7 +1458,7 @@
 <translation id="7640669552036055091">Вкладки из Android</translation>
 <translation id="7646263789464975852">Меню → Настройки → Проверка безопасности</translation>
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
-<translation id="764827086632467055">Найдите раздел, где выбирается браузер по умолчанию.</translation>
+<translation id="764827086632467055">Нажмите "Приложение браузера по умолчанию".</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7662316065255305764">Информация о сайте</translation>
@@ -1637,7 +1632,7 @@
 <translation id="8402673309244746971">Перейти к подпискам</translation>
 <translation id="8407669440184693619">Паролей для этого сайта не найдено</translation>
 <translation id="8407831512155324054">Нет простых паролей</translation>
-<translation id="842523302461531262">Сделать браузером по умолчанию в настройках</translation>
+<translation id="842523302461531262">Перейти в настройки</translation>
 <translation id="8428045167754449968">Город</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">ОК</translation>

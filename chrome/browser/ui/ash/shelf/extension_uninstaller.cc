@@ -16,7 +16,7 @@ ExtensionUninstaller::ExtensionUninstaller(Profile* profile,
                                            gfx::NativeWindow parent_window)
     : profile_(profile), app_id_(extension_id), parent_window_(parent_window) {}
 
-ExtensionUninstaller::~ExtensionUninstaller() {}
+ExtensionUninstaller::~ExtensionUninstaller() = default;
 
 void ExtensionUninstaller::Run() {
   const extensions::Extension* extension =

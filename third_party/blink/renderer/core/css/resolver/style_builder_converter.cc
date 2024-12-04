@@ -1612,7 +1612,9 @@ void StyleBuilderConverter::ConvertGridTrackList(
 
     if (auto* grid_integer_repeat_value =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value->Get())) {
-      const wtf_size_t repetitions = grid_integer_repeat_value->Repetitions();
+      const wtf_size_t repetitions =
+          grid_integer_repeat_value->ComputeRepetitions(
+              state.CssToLengthConversionData());
       wtf_size_t line_name_indices_count = 0;
 
       for (wtf_size_t i = 0; i < repetitions; ++i) {

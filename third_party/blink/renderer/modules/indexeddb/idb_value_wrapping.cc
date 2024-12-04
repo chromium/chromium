@@ -403,7 +403,7 @@ bool IDBValueUnwrapper::ReadBytes(Vector<uint8_t>& value) {
     return false;
   Vector<uint8_t> result;
   result.ReserveInitialCapacity(length);
-  result.Append(current_, length);
+  result.AppendSpan(base::span(current_, end_).first(length));
   value = std::move(result);
   current_ += length;
   return true;

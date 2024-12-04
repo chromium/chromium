@@ -6,6 +6,7 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
+#include "base/memory/asan_interface.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -334,8 +335,7 @@ void ParkableImageImpl::WriteToDiskInBackground(
       base::checked_cast<wtf_size_t>(parkable_image->size()));
 
   do {
-    vector.Append(reinterpret_cast<const char*>(it.data()),
-                  base::checked_cast<wtf_size_t>(it.size()));
+    vector.AppendSpan(*it);
   } while (it.Next());
 
   auto reserved_chunk = std::move(parkable_image->reserved_chunk_);

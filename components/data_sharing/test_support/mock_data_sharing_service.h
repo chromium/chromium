@@ -37,10 +37,7 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD0(ReadAllGroups, std::set<GroupData>());
   MOCK_METHOD2(GetPossiblyRemovedGroupMember,
                std::optional<GroupMemberPartialData>(const GroupId&,
-                                                     const std::string&));
-  MOCK_METHOD1(
-      ReadAllGroups,
-      void(base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>));
+                                                     const GaiaId&));
   MOCK_METHOD2(
       ReadGroup,
       void(const GroupId&,
@@ -85,6 +82,12 @@ class MockDataSharingService : public DataSharingService {
       GetSharedEntitiesPreview,
       void(const GroupToken&,
            base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>));
+  MOCK_METHOD(void,
+              GetAvatarImageForURL,
+              (const GURL&,
+               int,
+               base::OnceCallback<void(const gfx::Image&)>,
+               image_fetcher::ImageFetcher*));
   MOCK_METHOD1(SetSDKDelegate, void(std::unique_ptr<DataSharingSDKDelegate>));
   MOCK_METHOD1(SetUIDelegate, void(std::unique_ptr<DataSharingUIDelegate>));
   MOCK_METHOD0(GetUiDelegate, DataSharingUIDelegate*());

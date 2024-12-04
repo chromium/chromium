@@ -36,16 +36,6 @@ namespace {
 
 const char kDataSharingServiceBridgeKey[] = "data_sharing_service_bridge";
 
-void RunGroupsDataSetOrFailureOutcomeCallback(
-    const JavaRef<jobject>& j_callback,
-    const DataSharingService::GroupsDataSetOrFailureOutcome& result) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_result =
-      DataSharingConversionBridge::CreateGroupDataSetOrFailureOutcome(env,
-                                                                      result);
-  RunObjectCallbackAndroid(j_callback, j_result);
-}
-
 void RunGroupDataOrFailureOutcomeCallback(
     const JavaRef<jobject>& j_callback,
     const DataSharingService::GroupDataOrFailureOutcome& result) {
@@ -171,14 +161,6 @@ DataSharingServiceAndroid::DataSharingServiceAndroid(
 DataSharingServiceAndroid::~DataSharingServiceAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DataSharingServiceImpl_clearNativePtr(env, java_obj_);
-}
-
-void DataSharingServiceAndroid::ReadAllGroups(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_callback) {
-  data_sharing_service_->ReadAllGroups(
-      base::BindOnce(&RunGroupsDataSetOrFailureOutcomeCallback,
-                     ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 void DataSharingServiceAndroid::ReadGroup(

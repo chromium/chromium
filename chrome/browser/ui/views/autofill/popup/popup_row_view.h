@@ -126,10 +126,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
     return expand_child_suggestions_view_.get();
   }
 
-  views::View* GetExpandChildSuggestionsIconViewForTesting() {
-    return expand_child_suggestions_view_icon_.get();
-  }
-
  protected:
   base::WeakPtr<AutofillPopupController> controller() { return controller_; }
 
@@ -187,7 +183,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
       content_view_observer_{this};
   // The view wrapping the control area of the row.
   raw_ptr<views::View> expand_child_suggestions_view_ = nullptr;
-  raw_ptr<views::View> expand_child_suggestions_view_icon_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       expand_child_suggestions_view_observer_{this};
 

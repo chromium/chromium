@@ -85,7 +85,7 @@ TEST(DecoderBufferQueueTest, Duration) {
   EXPECT_EQ(0, queue.Duration().InSeconds());
 }
 
-TEST(DecoderBufferQueueTest, DurationOutOfOrder) {
+TEST(DecoderBufferQueueTest, Duration_OutOfOrder) {
   DecoderBufferQueue queue;
   queue.Push(CreateBuffer(10));
   queue.Push(CreateBuffer(12));
@@ -120,7 +120,7 @@ TEST(DecoderBufferQueueTest, DurationOutOfOrder) {
   EXPECT_EQ(3, queue.Duration().InSeconds());
 }
 
-TEST(DecoderBufferQueueTest, DurationNoTimestamp) {
+TEST(DecoderBufferQueueTest, Duration_NoTimestamp) {
   // Buffers with no timestamp don't affect duration.
   DecoderBufferQueue queue;
   queue.Push(CreateBuffer(0));

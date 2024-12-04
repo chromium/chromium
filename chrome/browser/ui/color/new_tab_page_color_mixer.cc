@@ -497,6 +497,9 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorNewTabPageTagBackground] =
       ui::SetAlpha(kColorNewTabPageBackgroundOverride,
                    /* 90% opacity */ 0.9 * SK_AlphaOPAQUE);
+  mixer[kColorNewTabPageDoodleShareButtonBackground] = {
+      kColorNewTabPageBackgroundOverride};
+  mixer[kColorNewTabPageDoodleShareButtonIcon] = {primary_foreground_color};
   // LINT.ThenChange(chrome/browser/ui/color/material_new_tab_page_color_mixer.cc)
 
   AddNewTabPageDialogColors(mixer, dark_mode);
