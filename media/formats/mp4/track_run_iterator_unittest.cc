@@ -606,7 +606,7 @@ TEST_F(TrackRunIteratorTest, FirstSampleFlagTest) {
 }
 
 // Verify that parsing fails if a reserved value is in the sample flags.
-TEST_F(TrackRunIteratorTest, SampleInfoTestReservedInSampleFlags) {
+TEST_F(TrackRunIteratorTest, SampleInfoTest_ReservedInSampleFlags) {
   EXPECT_MEDIA_LOG(ReservedValueInSampleDependencyInfo());
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
   MovieFragment moof = CreateFragment();
@@ -617,7 +617,7 @@ TEST_F(TrackRunIteratorTest, SampleInfoTestReservedInSampleFlags) {
 }
 
 // Verify that parsing fails if a reserved value is in the default sample flags.
-TEST_F(TrackRunIteratorTest, SampleInfoTestReservedInDefaultSampleFlags) {
+TEST_F(TrackRunIteratorTest, SampleInfoTest_ReservedInDefaultSampleFlags) {
   EXPECT_MEDIA_LOG(ReservedValueInSampleDependencyInfo());
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
   MovieFragment moof = CreateFragment();

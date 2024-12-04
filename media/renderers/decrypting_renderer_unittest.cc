@@ -100,7 +100,7 @@ class DecryptingRendererTest : public testing::Test {
   std::vector<std::unique_ptr<StrictMock<MockDemuxerStream>>> streams_;
 };
 
-TEST_F(DecryptingRendererTest, ClearStreamsNoCdm) {
+TEST_F(DecryptingRendererTest, ClearStreams_NoCdm) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ false);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ false);
 
@@ -115,7 +115,7 @@ TEST_F(DecryptingRendererTest, ClearStreamsNoCdm) {
   EXPECT_FALSE(decrypting_renderer_->HasDecryptingMediaResourceForTesting());
 }
 
-TEST_F(DecryptingRendererTest, ClearStreamsAesDecryptor) {
+TEST_F(DecryptingRendererTest, ClearStreams_AesDecryptor) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ false);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ false);
   UseAesDecryptor(true);
@@ -133,7 +133,7 @@ TEST_F(DecryptingRendererTest, ClearStreamsAesDecryptor) {
   EXPECT_TRUE(decrypting_renderer_->HasDecryptingMediaResourceForTesting());
 }
 
-TEST_F(DecryptingRendererTest, ClearStreamsOtherCdm) {
+TEST_F(DecryptingRendererTest, ClearStreams_OtherCdm) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ false);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ false);
 
@@ -151,7 +151,7 @@ TEST_F(DecryptingRendererTest, ClearStreamsOtherCdm) {
   EXPECT_FALSE(decrypting_renderer_->HasDecryptingMediaResourceForTesting());
 }
 
-TEST_F(DecryptingRendererTest, EncryptedStreamsNoCdm) {
+TEST_F(DecryptingRendererTest, EncryptedStreams_NoCdm) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ true);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ true);
 
@@ -162,7 +162,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreamsNoCdm) {
   EXPECT_FALSE(decrypting_renderer_->HasDecryptingMediaResourceForTesting());
 }
 
-TEST_F(DecryptingRendererTest, EncryptedStreamsAesDecryptor) {
+TEST_F(DecryptingRendererTest, EncryptedStreams_AesDecryptor) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ true);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ true);
   UseAesDecryptor(true);
@@ -180,7 +180,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreamsAesDecryptor) {
   EXPECT_TRUE(decrypting_renderer_->HasDecryptingMediaResourceForTesting());
 }
 
-TEST_F(DecryptingRendererTest, EncryptedStreamsOtherCdm) {
+TEST_F(DecryptingRendererTest, EncryptedStreams_OtherCdm) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ true);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ true);
 
@@ -198,7 +198,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreamsOtherCdm) {
   EXPECT_FALSE(decrypting_renderer_->HasDecryptingMediaResourceForTesting());
 }
 
-TEST_F(DecryptingRendererTest, EncryptedStreamsAesDecryptorCdmSetBeforeInit) {
+TEST_F(DecryptingRendererTest, EncryptedStreams_AesDecryptor_CdmSetBeforeInit) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ true);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ true);
   UseAesDecryptor(true);
@@ -216,7 +216,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreamsAesDecryptorCdmSetBeforeInit) {
   EXPECT_TRUE(decrypting_renderer_->HasDecryptingMediaResourceForTesting());
 }
 
-TEST_F(DecryptingRendererTest, EncryptedStreamsOtherCdmCdmSetBeforeInit) {
+TEST_F(DecryptingRendererTest, EncryptedStreams_OtherCdm_CdmSetBeforeInit) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ true);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ true);
 
@@ -234,7 +234,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreamsOtherCdmCdmSetBeforeInit) {
   EXPECT_FALSE(decrypting_renderer_->HasDecryptingMediaResourceForTesting());
 }
 
-TEST_F(DecryptingRendererTest, EncryptedAndClearStreamOtherCdm) {
+TEST_F(DecryptingRendererTest, EncryptedAndClearStream_OtherCdm) {
   AddStream(DemuxerStream::AUDIO, /* encrypted = */ false);
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ true);
 
