@@ -885,8 +885,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       ProcessFakePEndTagIfPInButtonScope();
       if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
         if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
-          tree_.GenerateImpliedEndTagsWithExclusion(
-              HTMLTokenName(HTMLTag::kOptgroup));
+          tree_.GenerateImpliedEndTags();
         }
       }
       tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
