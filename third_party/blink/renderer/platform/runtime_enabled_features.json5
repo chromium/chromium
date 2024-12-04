@@ -2090,7 +2090,7 @@
     },
     {
       name: "FontationsFontBackend",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FontationsForSelectedFormats",
