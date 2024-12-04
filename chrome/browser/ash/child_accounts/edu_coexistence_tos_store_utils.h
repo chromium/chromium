@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "google_apis/gaia/gaia_id.h"
+
 class Profile;
 
 namespace ash {
@@ -22,8 +24,8 @@ extern const char kMinTOSVersionNumber[];
 // service version number. The user is the child account but the parent is the
 // one who accepts the terms of service.
 struct UserConsentInfo {
-  UserConsentInfo(const std::string& gaia_id, const std::string& version);
-  std::string edu_account_gaia_id;
+  UserConsentInfo(const GaiaId& gaia_id, const std::string& version);
+  GaiaId edu_account_gaia_id;
   std::string edu_coexistence_tos_version;
 };
 

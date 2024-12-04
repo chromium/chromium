@@ -47,6 +47,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace {
 
@@ -105,7 +106,7 @@ void RecordUmaReviewFollowingSetup(bool value) {
 // capability value is unknown.
 bool IsMinorMode(Profile* profile, const user_manager::User* user) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  std::string gaia_id = user->GetAccountId().GetGaiaId();
+  GaiaId gaia_id = user->GetAccountId().GetGaiaId();
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   auto capability =

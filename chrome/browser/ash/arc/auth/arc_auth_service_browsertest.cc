@@ -261,8 +261,7 @@ class AccountAppsAvailabilitySetter {
   // Returns `true` if account with `gaia_id` was found in AccountManager and
   // `SetIsAccountAvailableInArc` for this account was called. Returns `false`
   // otherwise.
-  bool SetIsAccountAvailableInArc(const std::string& gaia_id,
-                                  bool is_available) {
+  bool SetIsAccountAvailableInArc(const GaiaId& gaia_id, bool is_available) {
     std::vector<account_manager::Account> result;
     base::RunLoop run_loop;
     account_manager_facade_->GetAccounts(base::BindLambdaForTesting(

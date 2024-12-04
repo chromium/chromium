@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -34,6 +35,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -178,10 +180,10 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   // Secondary Accounts must be removed.
-  const std::string gaia_id = BrowserContextHelper::Get()
-                                  ->GetUserByBrowserContext(profile())
-                                  ->GetAccountId()
-                                  .GetGaiaId();
+  const GaiaId gaia_id = BrowserContextHelper::Get()
+                             ->GetUserByBrowserContext(profile())
+                             ->GetAccountId()
+                             .GetGaiaId();
   accounts = GetAccountManagerAccounts();
   ASSERT_EQ(accounts.size(), 1UL);
   EXPECT_EQ(gaia_id, accounts[0].key.id());
@@ -206,10 +208,10 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   // Secondary Accounts must be removed.
-  const std::string gaia_id = BrowserContextHelper::Get()
-                                  ->GetUserByBrowserContext(profile())
-                                  ->GetAccountId()
-                                  .GetGaiaId();
+  const GaiaId gaia_id = BrowserContextHelper::Get()
+                             ->GetUserByBrowserContext(profile())
+                             ->GetAccountId()
+                             .GetGaiaId();
   accounts = GetAccountManagerAccounts();
   ASSERT_EQ(accounts.size(), 1UL);
   EXPECT_EQ(gaia_id, accounts[0].key.id());

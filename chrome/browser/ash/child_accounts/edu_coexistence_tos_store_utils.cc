@@ -18,7 +18,7 @@ namespace edu_coexistence {
 
 const char kMinTOSVersionNumber[] = "337351677";
 
-UserConsentInfo::UserConsentInfo(const std::string& gaia_id,
+UserConsentInfo::UserConsentInfo(const GaiaId& gaia_id,
                                  const std::string& version)
     : edu_account_gaia_id(gaia_id), edu_coexistence_tos_version(version) {}
 
@@ -71,7 +71,7 @@ std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
   std::vector<UserConsentInfo> info_list;
 
   for (const auto entry : user_consent_info_dict) {
-    const std::string& gaia_id = entry.first;
+    const GaiaId& gaia_id = entry.first;
     const std::string& accepted_tos_version = entry.second.GetString();
     info_list.push_back(UserConsentInfo(gaia_id, accepted_tos_version));
   }

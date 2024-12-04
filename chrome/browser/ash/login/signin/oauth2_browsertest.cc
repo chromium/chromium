@@ -111,7 +111,7 @@ constexpr char kRandomPagePath[] = "/non_google_page";
 constexpr char kMultiLoginPath[] = "/oauth/multilogin";
 
 CoreAccountId PickAccountId(Profile* profile,
-                            const std::string& gaia_id,
+                            const GaiaId& gaia_id,
                             const std::string& email) {
   return IdentityManagerFactory::GetInstance()
       ->GetForProfile(profile)

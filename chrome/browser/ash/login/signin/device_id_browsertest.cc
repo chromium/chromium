@@ -116,7 +116,7 @@ class DeviceIDTest : public OobeBaseTest,
   void SignInOnline(const std::string& user_id,
                     const std::string& password,
                     const std::string& refresh_token,
-                    const std::string& gaia_id) {
+                    const GaiaId& gaia_id) {
     cryptohome_mixin_.ApplyAuthConfigIfUserExists(
         AccountId::FromUserEmail(user_id),
         test::UserAuthConfig::Create(test::kDefaultAuthSetup));

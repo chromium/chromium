@@ -209,7 +209,7 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
 }
 
 AccountId GetAccountId(const std::string& authenticated_email,
-                       const std::string& gaia_id,
+                       const GaiaId& gaia_id,
                        const AccountType& account_type) {
   const std::string canonicalized_email =
       gaia::CanonicalizeEmail(gaia::SanitizeEmail(authenticated_email));

@@ -40,7 +40,7 @@ namespace {
 constexpr int kMaxNumAccountsInArcMetric =
     10;  // To match AccountManager.NumAccounts metrics.
 
-bool IsPrimaryGaiaAccount(const std::string& gaia_id) {
+bool IsPrimaryGaiaAccount(const GaiaId& gaia_id) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   // GetPrimaryUser may return nullptr in tests.
@@ -58,7 +58,7 @@ bool IsPrefInitialized(PrefService* prefs) {
 }
 
 void CompleteFindAccountByGaiaId(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     base::OnceCallback<void(const std::optional<account_manager::Account>&)>
         callback,
     const std::vector<account_manager::Account>& accounts) {
@@ -119,7 +119,7 @@ base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
 // Return `nullopt` if account with `gaia_id` is not in prefs (it can happen if
 // `SetIsAccountAvailableInArc` wasn't called for this account yet).
 std::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
-                                            const std::string& gaia_id) {
+                                            const GaiaId& gaia_id) {
   const base::Value::Dict& accounts =
       prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
 
@@ -137,7 +137,7 @@ std::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
   return is_available_in_arc.value_or(true);
 }
 
-void RemoveAccountFromPrefs(PrefService* prefs, const std::string& gaia_id) {
+void RemoveAccountFromPrefs(PrefService* prefs, const GaiaId& gaia_id) {
   DCHECK(!IsPrimaryGaiaAccount(gaia_id));
 
   ScopedDictPrefUpdate update(prefs,
@@ -148,7 +148,7 @@ void RemoveAccountFromPrefs(PrefService* prefs, const std::string& gaia_id) {
 }
 
 void AddAccountToPrefs(PrefService* prefs,
-                       const std::string& gaia_id,
+                       const GaiaId& gaia_id,
                        bool is_available_in_arc) {
   // Account shouldn't already exist.
   DCHECK(!IsAccountAvailableInArc(prefs, gaia_id).has_value());
@@ -163,7 +163,7 @@ void AddAccountToPrefs(PrefService* prefs,
 }
 
 void UpdateAccountInPrefs(PrefService* prefs,
-                          const std::string& gaia_id,
+                          const GaiaId& gaia_id,
                           bool is_available_in_arc) {
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
@@ -427,7 +427,7 @@ void AccountAppsAvailability::ReportMetrics(
 }
 
 void AccountAppsAvailability::FindAccountByGaiaId(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     base::OnceCallback<void(const std::optional<account_manager::Account>&)>
         callback) {
   account_manager_facade_->GetAccounts(base::BindOnce(

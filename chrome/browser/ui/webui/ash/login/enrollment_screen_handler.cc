@@ -39,6 +39,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -651,7 +652,7 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
 
   login::OnlineSigninArtifacts signin_artifacts;
   signin_artifacts.email = user;
-  signin_artifacts.gaia_id = gaia_id;
+  signin_artifacts.gaia_id = GaiaId(gaia_id);
   signin_artifacts.password = password;
   signin_artifacts.using_saml = using_saml;
 

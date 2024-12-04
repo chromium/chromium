@@ -97,7 +97,7 @@ class TestSigninHelper : public SigninHelper {
           void(const std::string&, const std::string&)>& show_signin_error,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<ArcHelper> arc_helper,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& email,
       const std::string& auth_code,
       const std::string& signin_scoped_device_id)
@@ -340,7 +340,7 @@ class SigninHelperTestSecondaryGoogleAccountUsage : public SigninHelperTest {
       const base::RepeatingClosure& exit_closure,
       const base::RepeatingClosure& close_dialog_closure,
       const base::RepeatingClosure& show_signin_error,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& email) {
     std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
         std::make_unique<SigninHelper::ArcHelper>(

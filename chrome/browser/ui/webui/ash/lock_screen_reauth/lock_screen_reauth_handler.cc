@@ -40,6 +40,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -310,7 +311,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
   };
 
   CHECK_EQ(params.size(), 7u);
-  std::string gaia_id, email, password;
+  GaiaId gaia_id, email, password;
   bool using_saml;
   gaia_id = params[0].GetString();
   email = params[1].GetString();

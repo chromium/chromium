@@ -36,6 +36,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -49,7 +50,7 @@ constexpr char kManagedDomain[] = "@example.com";
 
 AccountId CreateAccountId(int id, const std::string& domain) {
   const std::string email = "test_user_" + base::NumberToString(id) + domain;
-  const std::string gaia_id = base::NumberToString(id) + "111111111";
+  const GaiaId gaia_id(base::NumberToString(id) + "111111111");
   return AccountId::FromUserEmailGaiaId(email, gaia_id);
 }
 

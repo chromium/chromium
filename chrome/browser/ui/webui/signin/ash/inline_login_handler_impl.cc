@@ -76,9 +76,9 @@ std::string AnonymizeAccountEmail(const std::string& email) {
 
 // Returns a base64-encoded hash code of "signin_scoped_device_id:gaia_id".
 std::string GetAccountDeviceId(const std::string& signin_scoped_device_id,
-                               const std::string& gaia_id) {
-  return base::Base64Encode(
-      crypto::SHA256HashString(signin_scoped_device_id + ":" + gaia_id));
+                               const GaiaId& gaia_id) {
+  return base::Base64Encode(crypto::SHA256HashString(signin_scoped_device_id +
+                                                     ":" + gaia_id.ToString()));
 }
 
 bool IsPrimaryAccountBeingReauthenticated(
@@ -163,7 +163,7 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
       crosapi::AccountManagerMojoService* account_manager_mojo_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<SigninHelper::ArcHelper> arc_helper,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& email,
       const std::string& auth_code,
       const std::string& signin_scoped_device_id,

@@ -217,7 +217,7 @@ class ChromeAssistantUtilTest : public testing::Test {
   }
 
   AccountId GetGaiaUserAccountId(const std::string& user_name,
-                                 const std::string& gaia_id) {
+                                 const GaiaId& gaia_id) {
     return AccountId::FromUserEmailGaiaId(user_name, gaia_id);
   }
 

@@ -26,6 +26,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -155,7 +156,7 @@ std::string GenerateSigninScopedDeviceId() {
 }
 
 void LoginDemoAccount(const std::string& email,
-                      const std::string& gaia_id,
+                      const GaiaId& gaia_id,
                       const std::string& auth_code,
                       const std::string& sign_in_scoped_device_id) {
   // TODO(crbug.com/364195755): Allow list this user in CrosSetting when the
@@ -373,8 +374,8 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
   CHECK(!url_loader_);
 
   auto* local_state = g_browser_process->local_state();
-  const std::string gaia_id_to_clean_up =
-      local_state->GetString(prefs::kDemoAccountGaiaId);
+  const GaiaId gaia_id_to_clean_up =
+      GaiaId(local_state->GetString(prefs::kDemoAccountGaiaId));
   const std::string login_scope_device_id =
       local_state->GetString(prefs::kDemoModeSessionIdentifier);
   // For the first session of demo account, `gaia_id_to_clean_up and session
