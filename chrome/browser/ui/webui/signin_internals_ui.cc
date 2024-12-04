@@ -46,7 +46,7 @@ void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
       "script-src chrome://resources 'self' 'unsafe-eval';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
+      "trusted-types jstemplate lit-html-desktop;");
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
