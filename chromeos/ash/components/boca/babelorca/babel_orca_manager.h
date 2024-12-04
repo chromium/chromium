@@ -21,6 +21,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
+class GaiaId;
+
 namespace ash::babelorca {
 class BabelOrcaController;
 class CaptionController;

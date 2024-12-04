@@ -4,13 +4,6 @@
 
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 
-#include "google_apis/gaia/gaia_id.h"
-// Copyright 2024 The Chromium Authors
-#include "google_apis/gaia/gaia_id.h"
-// Use of this source code is governed by a BSD-style license that can be
-#include "google_apis/gaia/gaia_id.h"
-// found in the LICENSE file.
-
 #include <memory>
 #include <string>
 
@@ -30,6 +23,7 @@
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
