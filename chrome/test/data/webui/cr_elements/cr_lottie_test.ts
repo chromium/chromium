@@ -15,28 +15,16 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 /** @fileoverview Suite of tests for cr-lottie. */
 suite('cr_lottie_test', function() {
   /**
-   * A data url that produces a sample solid green json lottie animation.
+   * A URL that produces a sample solid green json lottie animation.
    */
   const SAMPLE_LOTTIE_GREEN: string =
-      'data:application/json;base64,eyJ2IjoiNC42LjkiLCJmciI6NjAsImlwIjowLCJvc' +
-      'CI6MjAwLCJ3Ijo4MDAsImgiOjYwMCwiZGRkIjowLCJhc3NldHMiOltdLCJsYXllcnMiOlt' +
-      '7ImluZCI6MSwidHkiOjEsInNjIjoiIzAwZmYwMCIsImFvIjowLCJpcCI6MCwib3AiOjIwM' +
-      'Cwic3QiOjAsInNyIjoxLCJzdyI6ODAwLCJzaCI6NjAwLCJibSI6MCwia3MiOnsibyI6eyJ' +
-      'hIjowLCJrIjoxMDB9LCJyIjp7ImEiOjAsImsiOlswLDAsMF19LCJwIjp7ImEiOjAsImsiO' +
-      'lszMDAsMjAwLDBdfSwiYSI6eyJhIjowLCJrIjpbMzAwLDIwMCwwXX0sInMiOnsiYSI6MCw' +
-      'iayI6WzEwMCwxMDAsMTAwXX19fV19';
+      'chrome://webui-test/cr_elements/cr_lottie_green.json';
 
   /**
-   * A data url that produces a sample solid blue json lottie animation.
+   * A URL that produces a sample solid blue json lottie animation.
    */
   const SAMPLE_LOTTIE_BLUE: string =
-      'data:application/json;base64,eyJhc3NldHMiOltdLCJkZGQiOjAsImZyIjo2MCwia' +
-      'CI6NjAwLCJpcCI6MCwibGF5ZXJzIjpbeyJhbyI6MCwiYm0iOjAsImluZCI6MSwiaXAiOjA' +
-      'sImtzIjp7ImEiOnsiYSI6MCwiayI6WzMwMCwyMDAsMF19LCJvIjp7ImEiOjAsImsiOjEwM' +
-      'H0sInAiOnsiYSI6MCwiayI6WzMwMCwyMDAsMF19LCJyIjp7ImEiOjAsImsiOlswLDAsMF1' +
-      '9LCJzIjp7ImEiOjAsImsiOlsxMDAsMTAwLDEwMF19fSwib3AiOjIwMCwic2MiOiIjMDAwM' +
-      'GZmIiwic2giOjYwMCwic3IiOjEsInN0IjowLCJzdyI6ODAwLCJ0eSI6MX1dLCJvcCI6MjA' +
-      'wLCJ2IjoiNC42LjkiLCJ3Ijo4MDB9';
+      'chrome://webui-test/cr_elements/cr_lottie_blue.json';
 
   /**
    * A green pixel as returned by samplePixel.
