@@ -153,16 +153,8 @@ int8_t HighlightLayer::ComparePaintOrder(
         kOverlayStackingPositionEquivalent;
   }
   DCHECK(registry);
-  const HighlightRegistryMap& map = registry->GetHighlights();
-  auto* this_entry =
-      map.Find<HighlightRegistryMapEntryNameTranslator>(PseudoArgument())
-          ->Get();
-  auto* other_entry =
-      map.Find<HighlightRegistryMapEntryNameTranslator>(other.PseudoArgument())
-          ->Get();
-  return registry->CompareOverlayStackingPosition(
-      PseudoArgument(), this_entry->highlight, other.PseudoArgument(),
-      other_entry->highlight);
+  return registry->CompareOverlayStackingPosition(PseudoArgument(),
+                                                  other.PseudoArgument());
 }
 
 HighlightRange::HighlightRange(unsigned from, unsigned to)
