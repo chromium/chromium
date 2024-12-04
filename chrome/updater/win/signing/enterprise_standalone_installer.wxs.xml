@@ -1,7 +1,7 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <?define Copyright = '$(var.ProductOriginalVersionString) Copyright $(var.ProductBuildYear) $(var.CompanyFullName)'?>
   <?define UpdateKeyPath = 'SOFTWARE\$(var.CompanyName)\Update'?>
-  <?define InstallCommandBase='--silent --install=[ProductTag] --installsource=enterprisemsi[OptOmahaArgs]'?>
+  <?define InstallCommandBase='--silent --install="[ProductTag]" --installsource=enterprisemsi[OptOmahaArgs]'?>
 
   <Package
     Name="$(var.ProductName)"
