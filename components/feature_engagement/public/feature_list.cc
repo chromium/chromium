@@ -250,7 +250,7 @@ const base::Feature* const kAllFeatures[] = {
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     &kIPHGrowthFramework,
     &kIPHGoogleOneOfferNotificationFeature,
     &kIPHLauncherSearchHelpUiFeature,
@@ -286,7 +286,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHScalableIphHelpAppBasedNineFeature,
     &kIPHScalableIphHelpAppBasedTenFeature,
     &kIPHScalableIphGamingFeature,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     &kIPHDesktopPWAsLinkCapturingLaunch,

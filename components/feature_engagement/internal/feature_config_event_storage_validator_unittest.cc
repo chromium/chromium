@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
@@ -361,7 +360,7 @@ TEST_F(FeatureConfigEventStorageValidatorTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(FeatureConfigEventStorageValidatorTest,
        ShouldStoreIfEventStartsWithPrefix) {
   scoped_feature_list_.InitWithFeatures({kEventStorageTestFeatureFoo}, {});

@@ -15,9 +15,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/feature_engagement/public/ios_promo_feature_configuration.h"
 #endif  // BUILDFLAG(IS_IOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/feature_engagement/public/scalable_iph_feature_configurations.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -2291,14 +2291,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 #endif  // BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (std::optional<FeatureConfig> scalable_iph_feature_config =
           GetScalableIphFeatureConfig(feature)) {
     return scalable_iph_feature_config;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (kIPHLauncherSearchHelpUiFeature.name == feature->name) {
     // A config that allows the ChromeOS Ash Launcher search IPH to be shown.
     std::optional<FeatureConfig> config = FeatureConfig();
@@ -2321,7 +2321,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         kMaxStoragePeriod, kMaxStoragePeriod));
     return config;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this

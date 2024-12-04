@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -86,7 +85,7 @@ void ChromeVariationsConfiguration::LoadConfigs(
 
   for (auto* feature : features) {
     LoadFeatureConfig(*feature, configuration_providers, features, groups);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     LoadAllowedEventPrefixes(*feature, configuration_providers);
 #endif
   }
@@ -98,7 +97,7 @@ void ChromeVariationsConfiguration::LoadConfigs(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ChromeVariationsConfiguration::UpdateConfig(
     const base::Feature& feature,
     const ConfigurationProvider* provider) {
@@ -169,7 +168,7 @@ void ChromeVariationsConfiguration::LoadGroupConfig(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ChromeVariationsConfiguration::LoadAllowedEventPrefixes(
     const base::Feature& feature,
     const ConfigurationProviderList& configuration_providers) {

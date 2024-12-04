@@ -15,11 +15,10 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace feature_engagement {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ConfigurationProvider;
 #endif
 
@@ -309,7 +308,7 @@ class Configuration {
   // Returns the list of the names of all registered groups.
   virtual const std::vector<std::string> GetRegisteredGroups() const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Updates the config of a specific feature. The new config will replace the
   // existing cofig.
   virtual void UpdateConfig(const base::Feature& feature,

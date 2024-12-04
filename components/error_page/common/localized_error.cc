@@ -28,7 +28,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/error_page/common/alt_game_images.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
@@ -1122,11 +1121,11 @@ LocalizedError::PageState LocalizedError::GetPageState(
     result.strings.Set("reloadButton", std::move(reload_button));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS has its own diagnostics extension, which doesn't rely on a
   // browser-initiated dialog.
   can_show_network_diagnostics_dialog = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Add default suggestions and any relevant supporting details.
   GetSuggestionsSummaryList(error_code, result.strings, options.suggestions,

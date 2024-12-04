@@ -10,6 +10,3 @@ Mac uses a system NSColorSampler.
 
 Linux Wayland is not supported since Wayland does not have support to detect the
 cursor position or to place the EyeDropper widget outside the browser window.
-
-ChromeOS LaCrOS works around the Wayland restriction by using crosapi for Ash to
-display this widget.

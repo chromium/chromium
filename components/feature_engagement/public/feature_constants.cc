@@ -688,7 +688,7 @@ BASE_FEATURE(kIPHPlusAddressCreateSuggestionFeature,
         // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kIPHGrowthFramework,
              "IPH_GrowthFramework",
              base::FEATURE_ENABLED_BY_DEFAULT);
