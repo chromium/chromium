@@ -282,6 +282,9 @@ class ProfileOAuth2TokenServiceDelegate {
   virtual void FireRefreshTokensLoaded();
   void FireAuthErrorChanged(const CoreAccountId& account_id,
                             const GoogleServiceAuthError& error);
+#if BUILDFLAG(IS_IOS)
+  void FireAccountsOnDeviceChanged();
+#endif
 
   // Helper class to scope batch changes.
   class ScopedBatchChange {

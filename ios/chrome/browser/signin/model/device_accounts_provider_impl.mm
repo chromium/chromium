@@ -126,6 +126,16 @@ DeviceAccountsProviderImpl::DeviceAccountsProviderImpl(
 
 DeviceAccountsProviderImpl::~DeviceAccountsProviderImpl() = default;
 
+void DeviceAccountsProviderImpl::AddObserver(
+    DeviceAccountsProvider::Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void DeviceAccountsProviderImpl::RemoveObserver(
+    DeviceAccountsProvider::Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void DeviceAccountsProviderImpl::GetAccessToken(
     const std::string& gaia_id,
     const std::string& client_id,

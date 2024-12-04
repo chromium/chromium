@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 
@@ -46,6 +47,14 @@ class DeviceAccountsProvider {
     base::Time expiration_time;
   };
 
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    ~Observer() override = default;
+
+    virtual void OnAccountsOnDeviceChanged() {}
+  };
+
   // Result of GetAccessToken() passed to the callback. Contains either
   // a valid AccessTokenInfo or the error.
   using AccessTokenResult =
@@ -57,6 +66,9 @@ class DeviceAccountsProvider {
 
   DeviceAccountsProvider() = default;
   virtual ~DeviceAccountsProvider() = default;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns the IDs of all accounts that are assigned to the current profile.
   virtual std::vector<AccountInfo> GetAccountsForProfile() const;

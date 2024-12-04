@@ -655,6 +655,9 @@ class IdentityManager : public KeyedService,
                           const GoogleServiceAuthError& auth_error,
                           signin_metrics::SourceForRefreshTokenOperation
                               token_operation_source) override;
+#if BUILDFLAG(IS_IOS)
+  void OnAccountsOnDeviceChanged() override;
+#endif
 
   // GaiaCookieManagerService callbacks:
   void OnGaiaAccountsInCookieUpdated(

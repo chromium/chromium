@@ -12,6 +12,14 @@ FakeDeviceAccountsProvider::FakeDeviceAccountsProvider() = default;
 
 FakeDeviceAccountsProvider::~FakeDeviceAccountsProvider() = default;
 
+void FakeDeviceAccountsProvider::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FakeDeviceAccountsProvider::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void FakeDeviceAccountsProvider::GetAccessToken(
     const std::string& account_id,
     const std::string& client_id,
@@ -39,11 +47,13 @@ DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::AddAccount(
   account.gaia = gaia;
   account.email = email;
   accounts_.push_back(account);
+  FireOnAccountsOnDeviceChanged();
   return account;
 }
 
 void FakeDeviceAccountsProvider::ClearAccounts() {
   accounts_.clear();
+  FireOnAccountsOnDeviceChanged();
 }
 
 void FakeDeviceAccountsProvider::IssueAccessTokenForAllRequests() {
@@ -62,4 +72,10 @@ void FakeDeviceAccountsProvider::IssueAccessTokenErrorForAllRequests() {
         .Run(base::unexpected(kAuthenticationErrorCategoryAuthorizationErrors));
   }
   requests_.clear();
+}
+
+void FakeDeviceAccountsProvider::FireOnAccountsOnDeviceChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountsOnDeviceChanged();
+  }
 }

@@ -68,6 +68,14 @@ WebViewDeviceAccountsProviderImpl::WebViewDeviceAccountsProviderImpl() {}
 WebViewDeviceAccountsProviderImpl::~WebViewDeviceAccountsProviderImpl() =
     default;
 
+void WebViewDeviceAccountsProviderImpl::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void WebViewDeviceAccountsProviderImpl::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void WebViewDeviceAccountsProviderImpl::GetAccessToken(
     const std::string& gaia_id,
     const std::string& client_id,

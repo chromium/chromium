@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
 class ChromeAccountManagerService;
@@ -27,6 +28,9 @@ class DeviceAccountsProviderImpl : public DeviceAccountsProvider {
   ~DeviceAccountsProviderImpl() override;
 
   // ios::DeviceAccountsProvider
+  void AddObserver(DeviceAccountsProvider::Observer* observer) override;
+  void RemoveObserver(DeviceAccountsProvider::Observer* observer) override;
+
   void GetAccessToken(const std::string& gaia_id,
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
@@ -36,6 +40,7 @@ class DeviceAccountsProviderImpl : public DeviceAccountsProvider {
 
  private:
   raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;
+  base::ObserverList<DeviceAccountsProvider::Observer, true> observer_list_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_DEVICE_ACCOUNTS_PROVIDER_IMPL_H_
