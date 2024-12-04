@@ -5477,7 +5477,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   ASSERT_HRESULT_SUCCEEDED(element->get_CurrentControlType(&control_type));
   EXPECT_EQ(UIA_WindowControlTypeId, control_type);
 
-  wchar_t window_text[100] = {0};
+  wchar_t window_text[100] = {};
   ::GetWindowTextW(hwnd, window_text, _countof(window_text));
   std::wstring window_text_str16(window_text);
   base::win::ScopedBstr name;

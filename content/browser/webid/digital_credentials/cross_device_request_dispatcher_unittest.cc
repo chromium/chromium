@@ -120,7 +120,7 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
   std::unique_ptr<device::cablev2::Discovery::AdvertEventStream>
       ble_advert_events_;
   device::cablev2::Discovery::AdvertEventStream::Callback ble_advert_callback_;
-  uint8_t peer_identity_x962_[device::kP256X962Length] = {0};
+  uint8_t peer_identity_x962_[device::kP256X962Length] = {};
   const std::array<uint8_t, device::cablev2::kQRSecretSize> zero_qr_secret_ = {
       0};
   const std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret_ = {

@@ -4423,7 +4423,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
         }
         switch (base_type) {
           case GL_FLOAT: {
-            GLfloat value[16] = {0};
+            GLfloat value[16] = {};
             ContextGL()->GetUniformfv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
@@ -4431,7 +4431,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                                               base::span(value).first(length)));
           }
           case GL_INT: {
-            GLint value[4] = {0};
+            GLint value[4] = {};
             ContextGL()->GetUniformiv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
@@ -4439,7 +4439,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                                               base::span(value).first(length)));
           }
           case GL_UNSIGNED_INT: {
-            GLuint value[4] = {0};
+            GLuint value[4] = {};
             ContextGL()->GetUniformuiv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);

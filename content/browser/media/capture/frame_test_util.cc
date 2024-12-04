@@ -177,7 +177,7 @@ FrameTestUtil::RGB FrameTestUtil::ComputeAverageColor(
 
   // Sum up the color values in each color channel for all pixels in
   // |include_rect| not contained by |exclude_rect|.
-  int64_t include_sums[3] = {0};
+  int64_t include_sums[3] = {};
   for (int y = include_rect.y(), bottom = include_rect.bottom(); y < bottom;
        ++y) {
     for (int x = include_rect.x(), right = include_rect.right(); x < right;

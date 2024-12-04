@@ -248,7 +248,7 @@ TEST_F(SyncSocketTest, DisconnectTest) {
                                 base::as_writable_byte_span(buf), &received));
 
   // Wait for the worker thread to say hello.
-  char hello[kHelloStringLength] = {0};
+  char hello[kHelloStringLength] = {};
   pair[1].Receive(base::as_writable_byte_span(hello));
   EXPECT_EQ(strcmp(hello, kHelloString), 0);
   // Give the worker a chance to start Receive().
@@ -272,14 +272,14 @@ TEST_F(SyncSocketTest, BlockingReceiveTest) {
   worker.Start();
 
   // Try to do a blocking read from one of the sockets on the worker thread.
-  char buf[kHelloStringLength] = {0};
+  char buf[kHelloStringLength] = {};
   size_t received = 1U;  // Initialize to an unexpected value.
   worker.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BlockingRead, &pair[0],
                                 base::as_writable_byte_span(buf), &received));
 
   // Wait for the worker thread to say hello.
-  char hello[kHelloStringLength] = {0};
+  char hello[kHelloStringLength] = {};
   pair[1].Receive(base::as_writable_byte_span(hello));
   EXPECT_EQ(0, strcmp(hello, kHelloString));
   // Give the worker a chance to start Receive().
@@ -318,7 +318,7 @@ TEST_F(SyncSocketTest, NonBlockingWriteTest) {
   EXPECT_EQ(bytes_in_buffer, pair[1].Peek());
 
   // Read from another socket to free some space for a new write.
-  char hello[kHelloStringLength] = {0};
+  char hello[kHelloStringLength] = {};
   pair[1].Receive(base::as_writable_byte_span(hello));
 
   // Should be able to write more data to the buffer now.

@@ -313,7 +313,7 @@ bool AddressTrackerLinux::IsInterfaceIgnored(int interface_index) const {
   if (ignored_interfaces_.empty())
     return false;
 
-  char buf[IFNAMSIZ] = {0};
+  char buf[IFNAMSIZ] = {};
   const char* interface_name = get_interface_name_(interface_index, buf);
   return ignored_interfaces_.find(interface_name) != ignored_interfaces_.end();
 }
@@ -617,7 +617,7 @@ void AddressTrackerLinux::OnFileCanReadWithoutBlocking() {
 }
 
 bool AddressTrackerLinux::IsTunnelInterface(int interface_index) const {
-  char buf[IFNAMSIZ] = {0};
+  char buf[IFNAMSIZ] = {};
   return IsTunnelInterfaceName(get_interface_name_(interface_index, buf));
 }
 

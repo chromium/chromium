@@ -119,7 +119,7 @@ bool ParseSmapsHeader(const char* header_line,
   // e.g., "00400000-00421000 r-xp 00000000 fc:01 1234  /foo.so\n"
   bool res = true;  // Whether this region should be appended or skipped.
   uint64_t end_addr = 0;
-  char protection_flags[5] = {0};
+  char protection_flags[5] = {};
   char mapped_file[kMaxLineSize];
 
   if (sscanf(header_line, "%" SCNx64 "-%" SCNx64 " %4c %*s %*s %*s%4095[^\n]\n",

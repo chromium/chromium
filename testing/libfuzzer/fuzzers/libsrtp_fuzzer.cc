@@ -106,8 +106,7 @@ struct Environment {
 
  private:
   srtp_policy_t policy;
-  unsigned char key[SRTP_MAX_KEY_LEN] = {0};
-
+  unsigned char key[SRTP_MAX_KEY_LEN] = {};
 };
 
 size_t ReadLength(const uint8_t* data, size_t size) {

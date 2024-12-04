@@ -549,7 +549,7 @@ void NetworkSpeechRecognitionEngineImplTest::EndMockRecognition() {
 void NetworkSpeechRecognitionEngineImplTest::InjectDummyAudioChunk() {
   // Enough data so that the encoder will output something, as can't read 0
   // bytes from a Mojo stream.
-  unsigned char dummy_audio_buffer_data[2000 * 2] = {'\0'};
+  unsigned char dummy_audio_buffer_data[2000 * 2] = {};
   scoped_refptr<AudioChunk> dummy_audio_chunk(
       new AudioChunk(&dummy_audio_buffer_data[0],
                      sizeof(dummy_audio_buffer_data),

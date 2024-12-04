@@ -103,7 +103,7 @@ TEST_F(RingBufferTest, EmptyReads) {
 }
 
 TEST_F(RingBufferTest, FullWrites) {
-  uint8_t data[256] = {0};
+  uint8_t data[256] = {};
   TestRingBuffer ring(256);
   ASSERT_TRUE(ring.buffer().WriteAll(data));
   EXPECT_EQ(256u, ring.buffer().data_size());

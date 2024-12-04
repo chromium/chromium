@@ -114,7 +114,7 @@ void UniformityTest(int64_t time_microseconds,
   const int kBuckets = 5;
   const int kSampleCount = 10000;
   const int kTimeStep = interval / kBuckets;
-  int histogram[kBuckets] = {0};
+  int histogram[kBuckets] = {};
   TimeClamper clamper;
 
   // This test ensures the jitter thresholds are approximately uniformly

@@ -9881,7 +9881,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
   const std::array<uint8_t, device::cablev2::kQRSeedSize> zero_seed_ = {0};
 
   std::unique_ptr<network::mojom::NetworkContext> network_context_;
-  uint8_t peer_identity_x962_[device::kP256X962Length] = {0};
+  uint8_t peer_identity_x962_[device::kP256X962Length] = {};
   device::VirtualCtap2Device virtual_device_{DeviceState(), DeviceConfig()};
   std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings_;
   base::OnceCallback<void(

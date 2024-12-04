@@ -91,7 +91,7 @@ scoped_refptr<net::IOBufferWithSize> StunTcpPacketProcessor::Pack(
   memcpy(buffer->data(), data, data_size);
 
   if (pad_bytes) {
-    char padding[4] = {0};
+    char padding[4] = {};
     DCHECK_LE(pad_bytes, 4u);
     memcpy(buffer->data() + data_size, padding, pad_bytes);
   }

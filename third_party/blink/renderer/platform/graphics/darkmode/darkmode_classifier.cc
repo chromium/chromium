@@ -575,7 +575,7 @@ void StridedSlice(const int32_t input_rank,
   assert(input_rank < MAX_RANK);
 
   // Compute the address strides for each dimension.
-  int dim_addr_strides[MAX_RANK] = {0};
+  int dim_addr_strides[MAX_RANK] = {};
   dim_addr_strides[input_rank - 1] = 1;
   for (int dim = input_rank - 2; dim >= 0; --dim) {
     dim_addr_strides[dim] = dim_addr_strides[dim + 1] * input_shape[dim + 1];
@@ -611,7 +611,7 @@ void StridedSlice(const int32_t input_rank,
   }
 
   // Initialize the read pos for each dimension according to the begin offsets.
-  int read_pos[MAX_RANK] = {0};
+  int read_pos[MAX_RANK] = {};
   for (int dim = 0; dim < input_rank; ++dim) {
     read_pos[dim] = dim_begin[dim];
   }

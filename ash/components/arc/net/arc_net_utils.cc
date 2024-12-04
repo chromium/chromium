@@ -38,7 +38,7 @@ std::string PackedIPAddressToString(sa_family_t family,
     return "";
   }
 
-  char buf[INET6_ADDRSTRLEN] = {0};
+  char buf[INET6_ADDRSTRLEN] = {};
   return !inet_ntop(family, data.data(), buf, sizeof(buf)) ? "" : buf;
 }
 
@@ -114,7 +114,7 @@ const ash::NetworkState* GetShillBackedNetwork(
 }
 
 std::string IPv4AddressToString(uint32_t addr) {
-  char buf[INET_ADDRSTRLEN] = {0};
+  char buf[INET_ADDRSTRLEN] = {};
   struct in_addr ia;
   ia.s_addr = addr;
   return !inet_ntop(AF_INET, &ia, buf, sizeof(buf)) ? std::string() : buf;
