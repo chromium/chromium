@@ -724,8 +724,11 @@ TEST_F(OopPixelTest, DrawGainmapImage) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
+
+  // Use cubic sampling, to ensure that it does not cause corruption or crashes.
+  // https://crbug.com/374783345
+  SkSamplingOptions sampling =
+      SkSamplingOptions(SkCubicResampler::CatmullRom());
   display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
                                        nullptr);
   display_item_list->EndPaintOfUnpaired(kRect);
@@ -766,6 +769,93 @@ TEST_F(OopPixelTest, DrawGainmapImage) {
     EXPECT_NEAR(out_color.fR, std::pow(0.5f / kDestScale, kGamma), kEps);
     EXPECT_NEAR(out_color.fG, std::pow(1.0f / kDestScale, kGamma), kEps);
     EXPECT_NEAR(out_color.fB, std::pow(2.0f / kDestScale, kGamma), kEps);
+  }
+}
+
+TEST_F(OopPixelTest, DrawGainmapImageCubic) {
+  constexpr uint32_t kSrcSize = 2;
+  constexpr uint32_t kDstSize = 4;
+
+  // The gainmap is fully applied at headroom 2, and has a maximum scale of 4.
+  const float kRatioMax = 4.f;
+  SkGainmapInfo gainmap_info = {
+      {1.f, 1.f, 1.f, 1.f},
+      {kRatioMax, kRatioMax, kRatioMax, 1.f},
+      {1.f, 1.f, 1.f, 1.f},
+      {0.f, 0.f, 0.f, 1.f},
+      {0.f, 0.f, 0.f, 1.f},
+      1.f,
+      kRatioMax,
+      SkGainmapInfo::BaseImageType::kSDR,
+      SkGainmapInfo::Type::kDefault,
+      nullptr,
+  };
+
+  auto info = SkImageInfo::MakeN32Premul(kSrcSize, kSrcSize,
+                                         SkColorSpace::MakeSRGBLinear());
+  sk_sp<FakePaintImageGenerator> generators[2];
+  uint8_t pixel_values[2][2] = {
+      {100, 20},
+      {static_cast<uint8_t>(
+           std::round(255.f * std::log(2.f) / std::log(kRatioMax))),
+       static_cast<uint8_t>(
+           std::round(255.f * std::log(3.f) / std::log(kRatioMax)))}};
+  for (int i = 0; i < 2; ++i) {
+    generators[i] = sk_make_sp<FakePaintImageGenerator>(info);
+    SkPixmap pm = generators[i]->GetPixmap();
+    for (size_t x = 0; x < kSrcSize; ++x) {
+      for (size_t y = 0; y < kSrcSize; ++y) {
+        uint32_t* pixel = pm.writable_addr32(x, y);
+        uint8_t v = pixel_values[i][x];
+        *pixel = SkColorSetARGB(255, v, v, v);
+      }
+    }
+  }
+
+  // Draw with cubic filtering. This will get demoted to linear filtering.
+  static int counter = 0;
+  const PaintImage::Id kSomeId = 32 + counter++;
+  auto paint_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(kSomeId)
+          .set_paint_image_generator(generators[0])
+          .set_gainmap_paint_image_generator(generators[1], gainmap_info)
+          .TakePaintImage();
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  {
+    display_item_list->StartPaint();
+    display_item_list->push<DrawImageRectOp>(
+        paint_image, SkRect::MakeWH(kSrcSize, kSrcSize),
+        SkRect::MakeWH(kDstSize, kDstSize),
+        SkSamplingOptions(SkCubicResampler::CatmullRom()), nullptr,
+        SkCanvas::kStrict_SrcRectConstraint);
+    display_item_list->EndPaintOfUnpaired(gfx::Rect(0, 0, kDstSize, kDstSize));
+    display_item_list->Finalize();
+  }
+  RasterOptions options(gfx::Size(kDstSize, kDstSize));
+  {
+    auto dest_color_space = SkColorSpace::MakeSRGBLinear();
+    options.target_color_params.color_space =
+        gfx::ColorSpace(*dest_color_space);
+    options.target_color_params.hdr_max_luminance_relative = kRatioMax;
+  }
+  auto result = Raster(display_item_list, options);
+
+  // Check pixel values against manually computed expected values.
+  for (int i = 0; i < 4; ++i) {
+    // Compute the linearly interpolated base and gainmap pixel values.
+    float base_value =
+        ((3.f - i) * pixel_values[0][0] + i * pixel_values[0][1]) /
+        (255.f * 3.f);
+    float gain_value =
+        ((3.f - i) * pixel_values[1][0] + i * pixel_values[1][1]) /
+        (255.f * 3.f);
+
+    // Compute the expected value using the interpolated values.
+    float expected = base_value * std::exp(gain_value * std::log(kRatioMax));
+    float actual = result.getColor4f(i, 0).fR;
+    float kEpsilon = 16.f / 255.f;
+    EXPECT_NEAR(expected, actual, kEpsilon);
   }
 }
 
