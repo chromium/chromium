@@ -134,7 +134,6 @@
             "loadline-phone": {
                 "display_name": "loadline_phone.crossbench",
                 "arguments": [
-                    "--repeat=1",
                     "--cool-down-threshold=moderate",
                     "--no-splash"
                 ]

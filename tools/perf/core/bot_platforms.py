@@ -401,6 +401,13 @@ def _crossbench_loadline_phone(estimated_runtime=7000, arguments=None):
                           arguments=arguments)
 
 
+def _crossbench_loadline_tablet(estimated_runtime=3600, arguments=None):
+  return CrossbenchConfig('loadline_tablet.crossbench',
+                          'loadline-tablet',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
     _crossbench_jetstream2_1(),
     _crossbench_speedometer3_0(),
@@ -421,7 +428,14 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 _CROSSBENCH_ANDROID = frozenset([
     _crossbench_speedometer3_0(arguments=['--fileserver']),
     _crossbench_loadline_phone(arguments=[
-        '--repeat=1',
+        '--cool-down-threshold=moderate',
+        '--no-splash',
+    ]),
+])
+
+_CROSSBENCH_TANGOR = frozenset([
+    _crossbench_loadline_tablet(arguments=[
+        '--repeat=20',
         '--cool-down-threshold=moderate',
         '--no-splash',
     ]),
@@ -951,9 +965,14 @@ ANDROID_PIXEL_FOLD = PerfPlatform('android-pixel-fold-perf', 'Android U',
     2,  # testing on the first two connected devices
     'android',
     executables=_ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS)
-ANDROID_PIXEL_TANGOR = PerfPlatform('android-pixel-tangor-perf', 'Android U',
-    _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS, 8, 'android',
-    executables=_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS)
+ANDROID_PIXEL_TANGOR = PerfPlatform(
+    'android-pixel-tangor-perf',
+    'Android U',
+    _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS,
+    8,
+    'android',
+    executables=_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_TANGOR)
 ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
                                   _ANDROID_GO_BENCHMARK_CONFIGS, 15, 'android')
 ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(
