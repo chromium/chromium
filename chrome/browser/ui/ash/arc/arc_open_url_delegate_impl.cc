@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -266,23 +265,6 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
     return;
 
   GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
-  // If Lacros is enabled, convert externalfile:// url into file:// url
-  // managed by the FuseBox moniker system because Lacros cannot handle
-  // externalfile:// urls.
-  // TODO(crbug.com/1374575): Check if other externalfile:// urls can use the
-  // same logic. If so, move this code into CrosapiNewWindowDelegate::OpenUrl()
-  // which is only for Lacros.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      url_to_open.SchemeIs(content::kExternalFileScheme)) {
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetPrimaryUser());
-    // `profile` may be null if sign-in has happened but the profile isn't
-    // loaded yet.
-    if (!profile)
-      return;
-    url_to_open = ConvertToMonikerFileUrl(profile, url);
-  }
-
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url_to_open, ash::NewWindowDelegate::OpenUrlFrom::kArc,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
