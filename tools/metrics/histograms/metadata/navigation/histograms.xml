@@ -2188,6 +2188,18 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
+<histogram
+    name="Navigation.Throttles.PolicyBlocklist.CacheHit.GoogleSearch.SafeSitesFilterEnabled"
+    enum="BooleanCacheHit" expires_after="2025-04-06">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records cache hit distribution that PolicyBlocklistNavigationThrottle uses
+    for the Safe Sites Filter check. Recorded at OnCommit() if the Safe Sites
+    Filter is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Throttles.PolicyBlocklist.DeferDurationTime2"
     units="ms" expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
@@ -2196,6 +2208,17 @@ chromium-metrics-reviews@google.com.
     Measures duration times that PolicyBlocklistNavigationThrottles asks to
     defer navigation request. The time is accumulated on resuming request each
     time, and recorded on destructing the throttle for the request.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.Throttles.PolicyBlocklist.RedirectCount.GoogleSearch.SafeSitesFilterEnabled"
+    units="times" expires_after="2025-04-06">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures redirect counts that PolicyBlocklistNavigationThrottles recognize.
+    Recorded at OnCommit() if the Safe Sites Filter is enabled.
   </summary>
 </histogram>
 
@@ -2211,14 +2234,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2"
+<histogram
+    name="Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2{Condition}"
     units="ms" expires_after="2025-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures duration times from the time PolicyBlocklistNavigationThrottles
     observes the first WillStartRequest() to the time it observes the
-    WillProcessResponse(). Recorded when the WillProcessResponse() is handled.
+    WillProcessResponse(). Recorded {Condition}.
+  </summary>
+  <token key="Condition">
+    <variant name="" summary="when the WillProcessResponse() is handled"/>
+    <variant name=".GoogleSearch.SafeSitesFilterEnabled"
+        summary="at OnCommit() if the Safe Sites Filter is enabled"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration.GoogleSearch.SafeSitesFilterEnabled"
+    units="ms" expires_after="2025-04-06">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures duration times from the time PolicyBlocklistNavigationThrottles
+    defers WillProcessResponse() to the time it calls Resume(). Recorded at
+    OnCommit() if the Safe Sites Filter is enabled.
   </summary>
 </histogram>
 
