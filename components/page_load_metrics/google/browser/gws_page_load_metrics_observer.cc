@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/gws_page_load_metrics_observer.h"
 
 #include <string>
 
@@ -13,16 +13,13 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/named_trigger.h"
-#include "chrome/browser/after_startup_task_utils.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -503,26 +500,12 @@ void GWSPageLoadMetricsObserver::RecordConnectionReuseHistograms() {
   }
 }
 
-bool GWSPageLoadMetricsObserver::IsFromNewTabPage(
-    content::NavigationHandle* navigation_handle) {
-  auto* start_instance = navigation_handle->GetStartingSiteInstance();
-  if (!start_instance) {
-    return false;
-  }
-
-  auto origin = start_instance->GetSiteURL();
-
-  GURL ntp_url(chrome::kChromeUINewTabPageURL);
-  return ntp_url.scheme_piece() == origin.scheme_piece() &&
-         ntp_url.host_piece() == origin.host_piece();
-}
-
 std::string GWSPageLoadMetricsObserver::AddHistogramSuffix(
     const std::string& histogram_name) {
   std::string suffix =
       (is_first_navigation_ ? internal::kSuffixFirstNavigation
                             : internal::kSuffixSubsequentNavigation);
-  if (!AfterStartupTaskUtils::IsBrowserStartupComplete()) {
+  if (!IsBrowserStartupComplete()) {
     suffix += internal::kSuffixIsBrowserStarting;
   }
 

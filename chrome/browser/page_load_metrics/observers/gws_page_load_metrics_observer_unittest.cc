@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
-
 #include <vector>
 
 #include "base/memory/ptr_util.h"
@@ -11,6 +9,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/page_load_metrics/observers/chrome_gws_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -18,6 +17,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -41,7 +41,7 @@ class GWSPageLoadMetricsObserverTest
 
   // page_load_metrics::PageLoadMetricsObserverTestHarness:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
-    auto observer = std::make_unique<GWSPageLoadMetricsObserver>();
+    auto observer = std::make_unique<ChromeGWSPageLoadMetricsObserver>();
     // Set the PLMO navigation to the first navigation to ensure that we get
     // constant UMA names.
     observer->SetIsFirstNavigationForTesting(true);
