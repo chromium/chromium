@@ -145,7 +145,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Public for testing.
   void TabWillEnterBackground(tabs::TabInterface* tab);
 
-  // Called when the accounts UI is displayed.
+  // Called after the widget associated with Show() has been shown.
   void OnAccountsDisplayed();
 
   // Called when a user either selects the account from the multi-account
@@ -417,15 +417,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Returns whether an IDP sign-in pop-up window is currently open.
   bool IsIdpSigninPopupOpen();
 
-  // Returns whether the dialog widget is ready.
-  bool IsDialogWidgetReady();
-
-  // Returns whether the dialog widget should be shown.
-  bool ShouldShowDialogWidget();
-
-  // Updates the dialog's position and shows the dialog.
-  void UpdateAndShowDialogWidget();
-
   // Hides the dialog widget and notifies the input protector.
   void HideDialogWidget();
 
@@ -461,6 +452,15 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // as pressing "esc".
   void OnUserClosedDialog(views::Widget::ClosedReason reason);
 
+  // This method calculates whether the dialog should be visible. This method
+  // always updates the dialog position if the dialog should be visible. If the
+  // dialog should be visible, and it is not, this method makes the dialog
+  // visible and focuses the dialog.
+  void UpdateDialogVisibilityAndPosition();
+
+  // Called when any of the Show*() methods is called.
+  void ResetDialogWidgetStateOnAnyShow();
+
   std::vector<IdentityProviderDataPtr> idp_list_;
 
   std::vector<IdentityRequestAccountPtr> accounts_;
@@ -489,18 +489,21 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // is asked to verify phone number, change password, etc.
   base::OnceClosure show_accounts_dialog_callback_;
 
-  // Because the tab that shows the accounts dialog may be invisible initially,
-  // e.g. when a user opens a new tab, we'd delay showing the dialog until the
-  // tab becomes visible. This callback notifies the controller when the dialog
-  // is displayed to the user for the first time.
-  base::OnceClosure accounts_displayed_callback_;
+  // When we are using the bubble dialog, and the user opens an IDP login popup
+  // window, and a new accounts fetch has not yet completed, we keep hiding the
+  // dialog widget ever after CloseModalDialog(). This ensures we do not show
+  // the previous UI (could be mismatch UI or account picker). Instead we wait
+  // for Show() to be called with new information, and then show the updated
+  // dialog widget.
+  //
+  // If the IDP never sends a login status header, then CloseModalDialog() will
+  // closes the popup, but Show() will never be called. This is currently not
+  // handled by the fedcm control-flow. For now we keep hiding the dialog.
+  bool hide_dialog_widget_after_idp_login_popup_{false};
 
-  // If dialog has NOT been populated with accounts yet as a result of the IDP
-  // sign-in flow and the IDP sign-in pop-up window has been closed, we use this
-  // boolean to let the widget know it should unhide itself when the dialog is
-  // ready. This can happen when the accounts fetch has yet to finish but the
-  // pop-up window has already been closed.
-  bool is_modal_closed_but_accounts_fetch_pending_{false};
+  // If Show() is called, the intention is to show the accounts dialog. This
+  // callback is invoked when the widget is actually shown for the first time.
+  base::OnceClosure accounts_widget_shown_callback_;
 
   // Whether the "Continue" button on the mismatch dialog is clicked. Once the
   // "Continue" button is clicked, a pop-up window is shown for the user to sign
