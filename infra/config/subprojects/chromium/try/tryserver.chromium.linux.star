@@ -57,8 +57,7 @@ try_.builder(
             "x64",
         ],
     ),
-    # TODO: crbug.com/40190002 - Make builderful before productionizing.
-    builderless = True,
+    builderless = False,
     cores = 8,
     contact_team_email = "build@chromium.org",
     properties = {
@@ -71,6 +70,10 @@ try_.builder(
             ],
         },
     },
+    # TODO: crbug.com/370566043 - Increase to 100% once confirming load is ok.
+    tryjob = try_.job(
+        experiment_percentage = 50,
+    ),
 )
 
 try_.builder(
