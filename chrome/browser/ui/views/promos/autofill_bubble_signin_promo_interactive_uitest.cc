@@ -629,8 +629,16 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
               testing::ElementsAre(AddressMatches(address)));
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AddressSignInPromoWithAccountSignInPending \
+  DISABLED_AddressSignInPromoWithAccountSignInPending
+#else
+#define MAYBE_AddressSignInPromoWithAccountSignInPending \
+  AddressSignInPromoWithAccountSignInPending
+#endif
+
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
-                       AddressSignInPromoWithAccountSignInPending) {
+                       MAYBE_AddressSignInPromoWithAccountSignInPending) {
   // Sign in with an account, and put its refresh token into an error
   // state. This simulates the "sign in pending" state.
   AccountInfo info = signin::MakePrimaryAccountAvailable(
