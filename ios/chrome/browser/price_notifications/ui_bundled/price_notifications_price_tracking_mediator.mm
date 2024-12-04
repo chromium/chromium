@@ -223,10 +223,10 @@ using PriceNotificationItems =
 
 - (void)priceInsightsNavigateToWebpageForItem:(PriceInsightsItem*)item {
   DCHECK(item.buyingOptionsURL.is_valid());
-  [self navigateToWebpageForURL:item.buyingOptionsURL
-                    disposition:WindowOpenDisposition::NEW_FOREGROUND_TAB];
   [self.priceInsightsConsumer
       didStartNavigationToWebpageWithPriceBucket:item.priceBucket];
+  [self navigateToWebpageForURL:item.buyingOptionsURL
+                    disposition:WindowOpenDisposition::NEW_FOREGROUND_TAB];
 }
 
 #pragma mark - Private
