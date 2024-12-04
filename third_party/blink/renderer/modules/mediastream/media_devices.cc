@@ -859,6 +859,65 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
       .SetCaptureHandleConfig(std::move(config_ptr));
 }
 
+ScriptPromise<IDLUndefined> MediaDevices::setPreferredSinkId(
+    ScriptState* script_state,
+    const String& sink_id,
+    ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UpdateWebRTCMethodCount(RTCAPIName::kSetPreferredSinkId);
+
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Current frame is detached.");
+    return ScriptPromise<IDLUndefined>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
+
+  LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();
+  GetDispatcherHost(frame).SetPreferredSinkId(
+      sink_id, WTF::BindOnce(&MediaDevices::SetPreferredSinkIdResultReceived,
+                             WrapWeakPersistent(this), sink_id,
+                             WrapPersistent(resolver)));
+
+  return promise;
+}
+
+void MediaDevices::SetPreferredSinkIdResultReceived(
+    const String& sink_id,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    media::mojom::blink::OutputDeviceStatus status) {
+  auto* excecution_context = resolver->GetExecutionContext();
+  if (!excecution_context || excecution_context->IsContextDestroyed()) {
+    return;
+  }
+
+  switch (static_cast<media::OutputDeviceStatus>(status)) {
+    case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK:
+      resolver->Resolve();
+      break;
+    case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError,
+          "Device not found, " + sink_id + "."));
+      break;
+    case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "Not authorized to access the device, " + sink_id + "."));
+      break;
+    case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kTimeoutError,
+          "Timeout to access the device, " + sink_id + "."));
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
     ScriptState* script_state,
     Element* element,

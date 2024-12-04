@@ -78,6 +78,7 @@
 #include "media/capture/video/video_capture_system_impl.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -3290,7 +3291,8 @@ void MediaStreamManager::InitializeMaybeAsync(
       base::BindRepeating(&MediaStreamManager::NotifyDevicesChanged,
                           base::Unretained(this)));
 
-  if (base::FeatureList::IsEnabled(features::kPreferredAudioOutputDevices)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPreferredAudioOutputDevices)) {
     preferred_audio_output_device_manager_ =
         std::make_unique<PreferredAudioOutputDeviceManagerImpl>();
   }

@@ -245,6 +245,11 @@ class MediaDevicesDispatcherHostMock
     NOTREACHED();
   }
 
+  void SetPreferredSinkId(const String& sink_id,
+                          SetPreferredSinkIdCallback callback) override {
+    NOTREACHED();
+  }
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {
     NOTREACHED();
@@ -256,11 +261,6 @@ class MediaDevicesDispatcherHostMock
     NOTREACHED();
   }
 #endif
-
-  void SetPreferredSinkId(const String& sink_id,
-                          SetPreferredSinkIdCallback callback) override {
-    NOTREACHED();
-  }
 
   void GetAllVideoInputDeviceFormats(
       const String& device_id,

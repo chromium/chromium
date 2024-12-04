@@ -198,6 +198,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="OBSOLETE_GetCurrentBrowsingContextMedia"/>
   <int value="10" label="OBSOLETE_GetDisplayMediaSet"/>
   <int value="11" label="GetAllScreensMedia"/>
+  <int value="12" label="SetPreferredSinkId"/>
 </enum>
 
 <enum name="SocketErrorCode">

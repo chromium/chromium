@@ -1490,12 +1490,6 @@ const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
     &kPwaNavigationCapturing, "link_capturing_state",
     CapturingState::kReimplDefaultOn, &kNavigationCapturingParams};
 
-// The called preferred audio output device is used when the audio output
-// device for the frames are system default.
-BASE_FEATURE(kPreferredAudioOutputDevices,
-             "PreferredAudioOutputDevices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const base::FeatureParam<std::string> kForcedOffCapturingAppsOnFirstNavigation{
     &kPwaNavigationCapturing, "initial_nav_forced_off_apps", ""};
 

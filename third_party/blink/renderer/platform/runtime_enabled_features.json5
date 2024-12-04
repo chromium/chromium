@@ -3297,6 +3297,10 @@
       settable_from_internals: true,
     },
     {
+      name: "PreferredAudioOutputDevices",
+      status: "test",
+    },
+    {
       name: "PrefersReducedData",
       status: "experimental",
     },

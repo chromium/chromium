@@ -6053,6 +6053,7 @@ interface MediaDevices : EventTarget
     method getUserMedia
     method selectAudioOutput
     method setCaptureHandleConfig
+    method setPreferredSinkId
     setter ondevicechange
 interface MediaElementAudioSourceNode : AudioNode
     attribute @@toStringTag
