@@ -821,21 +821,19 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   // custom resource provider. This avoids consuming compositing-specific
   // resources (e.g. GpuMemoryBuffer). We tag the SharedImage with display usage
   // since there are uncommon paths which may use this snapshot for compositing.
-  const auto image_info =
-      SkImageInfo::Make(SkISize::Make(size.width(), size.height()),
-                        CanvasRenderingContextSkColorInfo());
+  const auto color_info = CanvasRenderingContextSkColorInfo();
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, image_info.colorType(), image_info.alphaType(),
-          image_info.refColorSpace(), kShouldInitialize,
+          size, color_info.colorType(), color_info.alphaType(),
+          color_info.refColorSpace(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        size, image_info.colorType(), image_info.alphaType(),
-        image_info.refColorSpace(),
+        size, color_info.colorType(), color_info.alphaType(),
+        color_info.refColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
