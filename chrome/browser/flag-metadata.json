@@ -6407,16 +6407,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "omnibox-inspire-me",
-    "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "omnibox-inspire-me-signed-out",
-    "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "omnibox-ipad-zps-limit",
     "owners": [ "ameurhosni@google.com", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 135
