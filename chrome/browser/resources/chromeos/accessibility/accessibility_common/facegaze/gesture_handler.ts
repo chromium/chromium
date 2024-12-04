@@ -48,13 +48,18 @@ export class GestureHandler {
   private gestureToMacroName_: Map<FacialGesture, MacroName> = new Map();
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
   private isDictationActive_: () => boolean;
+  private toggleInfoListener_: (enabled: boolean) => void;
   private macrosToCompleteLater_:
       Map<FacialGesture, {macro: Macro, displayText: string}> = new Map();
   private paused_ = false;
+  // Tracks the last gesture used to activate precision click. We need to track
+  // this because TOGGLE_PRECISION_MODE isn't stored in `gestureToMacroName_`
+  // and there are multiple ways to activate a precision click.
+  private lastPrecisionGesture_: FacialGesture|undefined = undefined;
+
   // The most recently detected gestures. We track this to know when a gesture
   // has ended.
   private previousGestures_: FacialGesture[] = [];
-  private toggleInfoListener_: (enabled: boolean) => void;
 
   constructor(
       mouseController: MouseController, bubbleController: BubbleController,
@@ -85,6 +90,7 @@ export class GestureHandler {
       entry.macro.run();
     });
     this.macrosToCompleteLater_.clear();
+    this.lastPrecisionGesture_ = undefined;
   }
 
   isPaused(): boolean {
@@ -147,6 +153,10 @@ export class GestureHandler {
     return this.getGestureFor_(MacroName.TOGGLE_DICTATION);
   }
 
+  getGestureForPrecision(): FacialGesture|undefined {
+    return this.lastPrecisionGesture_;
+  }
+
   private getGestureFor_(macroName: MacroName): FacialGesture|undefined {
     // Return the first found gesture assigned to the given macro.
     for (const [gesture, macro] of this.gestureToMacroName_.entries()) {
@@ -154,6 +164,7 @@ export class GestureHandler {
         return gesture;
       }
     }
+
     return undefined;
   }
 
@@ -197,7 +208,7 @@ export class GestureHandler {
         continue;
       }
 
-      const macros: Macro[] = this.handlePrecisionClick_(initialMacro);
+      const macros: Macro[] = this.handlePrecisionClick_(initialMacro, gesture);
       for (const macro of macros) {
         result.push(macro);
         const displayText = BubbleController.getDisplayText(gesture, macro);
@@ -438,7 +449,7 @@ export class GestureHandler {
   // 3. If precision mode is active, then this should return both the original
   // macro and a TOGGLE_PRECISION_CLICK macro so that the macro is performed and
   // precision click is ended.
-  private handlePrecisionClick_(macro: Macro): Macro[] {
+  private handlePrecisionClick_(macro: Macro, gesture: FacialGesture): Macro[] {
     if (!this.mouseController_.usePrecision()) {
       return [macro];
     }
@@ -459,12 +470,17 @@ export class GestureHandler {
 
     const result = [];
     if (!this.mouseController_.isPrecisionActive()) {
-      result.push(
-          isClickMacro() ? new CustomCallbackMacro(
-                               MacroName.TOGGLE_PRECISION_CLICK,
-                               () => this.mouseController_.togglePrecision(),
-                               /*toggleDirection=*/ ToggleDirection.ON) :
-                           macro);
+      if (!isClickMacro()) {
+        result.push(macro);
+      } else {
+        // If we're toggling precision click on, we need to save the gesture
+        // that was used so that we can display it in the bubble UI.
+        this.lastPrecisionGesture_ = gesture;
+        result.push(new CustomCallbackMacro(
+            MacroName.TOGGLE_PRECISION_CLICK,
+            () => this.mouseController_.togglePrecision(),
+            /*toggleDirection=*/ ToggleDirection.ON));
+      }
     } else {
       result.push(
           macro,

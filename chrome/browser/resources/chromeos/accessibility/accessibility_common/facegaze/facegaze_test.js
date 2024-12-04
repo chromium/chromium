@@ -2764,7 +2764,7 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickBubbleText', async function() {
   // timeout has elapsed.
   this.triggerBubbleControllerTimeout();
   assertEquals(
-      'Precision click active, mouse speed reduced',
+      'Mouse speed reduced, Open your mouth wide again to click',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
   // Perform the gesture again to left-click.
@@ -2832,7 +2832,7 @@ AX_TEST_F(
 
       this.triggerBubbleControllerTimeout();
       assertEquals(
-          'Precision click active, mouse speed reduced',
+          'Mouse speed reduced, Open your mouth wide again to click',
           this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
       // Turn off actions via pref.
@@ -2862,7 +2862,7 @@ AX_TEST_F(
 
       this.triggerBubbleControllerTimeout();
       assertEquals(
-          'Precision click active, mouse speed reduced',
+          'Mouse speed reduced, Open your mouth wide again to click',
           this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
       // Turn off cursor control via pref.
@@ -2901,7 +2901,7 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickAndScrollMode', async function() {
 
   this.triggerBubbleControllerTimeout();
   assertEquals(
-      'Precision click active, mouse speed reduced',
+      'Mouse speed reduced, Open your mouth wide again to click',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
   // Toggle scroll mode on. This should automatically stop precision click.
@@ -2973,7 +2973,7 @@ AX_TEST_F('FaceGazeTest', 'PrecisionRightClickBubbleText', async function() {
   // timeout has elapsed.
   this.triggerBubbleControllerTimeout();
   assertEquals(
-      'Precision click active, mouse speed reduced',
+      'Mouse speed reduced, Open your mouth wide again to click',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
   // Perform the gesture again to right-click.
