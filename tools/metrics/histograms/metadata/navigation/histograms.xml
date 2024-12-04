@@ -2909,6 +2909,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Prerender.IsPrerenderingSRPUrl.{PreloadingEmbedderType}"
+    enum="Boolean" expires_after="2025-05-11">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    To record whether a prerendering attempt initiated by
+    {PreloadingEmbedderType} is trying to prerender a SRP url or not.
+
+    This is recorded when PrerenderManager::StartPrerender* is called to
+    initiate {PreloadingEmbedderType}, which is the list of affected prerender
+    triggers in https://crbug.com/40066983.
+  </summary>
+  <token key="PreloadingEmbedderType">
+    <variant name="Embedder_BookmarkBar"
+        summary="Prerender BookmarkBar Trigger"/>
+    <variant name="Embedder_NewTabPage" summary="Prerender NewTabPage Trigger"/>
+  </token>
+</histogram>
+
 <histogram name="Prerender.PrerenderLoadComplete" enum="BooleanSuccess"
     expires_after="2025-01-05">
   <owner>gambard@chromium.org</owner>
