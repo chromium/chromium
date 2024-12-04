@@ -15,6 +15,7 @@ import android.webkit.WebViewClient;
 import androidx.annotation.Nullable;
 import androidx.core.os.CancellationSignal;
 
+import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.SharedWebViewChromium;
 import com.android.webview.chromium.SharedWebViewRendererClientAdapter;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
@@ -227,7 +228,10 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
             ValueCallback<Throwable> errorCallback) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PRERENDER_URL")) {
             recordApiCall(ApiCall.PRERENDER_URL);
-            mSharedWebViewChromium.getAwContents().startPrerendering(url, null);
+            mSharedWebViewChromium
+                    .getAwContents()
+                    .startPrerendering(
+                            url, null, CallbackConverter.fromValueCallback(activationCallback));
         }
     }
 
@@ -253,7 +257,8 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                             SupportLibSpeculativeLoadingParametersAdapter
                                     .fromSpeculativeLoadingParametersBoundaryInterface(
                                             speculativeLoadingParametersBoundaryInterface)
-                                    .toAwPrefetchParams());
+                                    .toAwPrefetchParams(),
+                            CallbackConverter.fromValueCallback(activationCallback));
         }
     }
 }

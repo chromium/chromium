@@ -1883,10 +1883,16 @@ public class AwContents implements SmartClipProvider {
     }
 
     public void startPrerendering(
-            @NonNull String prerenderingUrl, @Nullable AwPrefetchParameters prefetchParameters) {
+            @NonNull String prerenderingUrl,
+            @Nullable AwPrefetchParameters prefetchParameters,
+            @Nullable Callback<Void> activationCallback) {
         if (isDestroyed(NO_WARN)) return;
         AwContentsJni.get()
-                .startPrerendering(mNativeAwContents, prerenderingUrl, prefetchParameters);
+                .startPrerendering(
+                        mNativeAwContents,
+                        prerenderingUrl,
+                        prefetchParameters,
+                        activationCallback.bind(null));
     }
 
     public void cancelAllPrerendering() {
@@ -4948,7 +4954,8 @@ public class AwContents implements SmartClipProvider {
         void startPrerendering(
                 long nativeAwContents,
                 @JniType("std::string") @NonNull String prerenderingUrl,
-                @Nullable AwPrefetchParameters prefetchParameters);
+                @Nullable AwPrefetchParameters prefetchParameters,
+                @Nullable Runnable activationCallback);
 
         void cancelAllPrerendering(long nativeAwContents);
     }
