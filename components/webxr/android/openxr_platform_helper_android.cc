@@ -37,8 +37,10 @@ void OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
   auto activity_ready_callback =
       base::BindOnce(&OpenXrPlatformHelperAndroid::OnXrActivityReady,
                      base::Unretained(this), std::move(result_callback));
-  session_coordinator_->RequestXrSession(std::move(activity_ready_callback),
-                                         std::move(shutdown_callback));
+  session_coordinator_->RequestXrSession(
+      create_info.render_process_id, create_info.render_frame_id,
+      create_info.needs_separate_activity, std::move(activity_ready_callback),
+      std::move(shutdown_callback));
 }
 
 void OpenXrPlatformHelperAndroid::OnXrActivityReady(
