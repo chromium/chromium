@@ -453,48 +453,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation kPriceInsightsVariations[] =
      {"See price history", kPriceInsightsSeePriceHistoryParam,
       std::size(kPriceInsightsSeePriceHistoryParam), nullptr}};
 
-const FeatureEntry::FeatureParam kRichAutocompletionImplementationLabel[] = {
-    {kRichAutocompletionParam, kRichAutocompletionParamLabel}};
-const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationTextField3Chars[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamTextField},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
-const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationTextField4Chars[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamTextField},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "4"}};
-const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationNoAdditionalText3Chars[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
-const FeatureEntry::FeatureParam
-    kRichAutocompletionImplementationNoAdditionalText4Chars[] = {
-        {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "4"}};
-const FeatureEntry::FeatureVariation
-    kRichAutocompletionImplementationVariations[] = {
-        {"In Label", kRichAutocompletionImplementationLabel,
-         std::size(kRichAutocompletionImplementationLabel), nullptr},
-        {"In TextField, 3 Min Chars",
-         kRichAutocompletionImplementationTextField3Chars,
-         std::size(kRichAutocompletionImplementationTextField3Chars), nullptr},
-        {"In TextField, 4 Min Chars",
-         kRichAutocompletionImplementationTextField4Chars,
-         std::size(kRichAutocompletionImplementationTextField4Chars), nullptr},
-        {"No Additional Text, 3 Min Chars",
-         kRichAutocompletionImplementationNoAdditionalText3Chars,
-         std::size(kRichAutocompletionImplementationNoAdditionalText3Chars),
-         nullptr},
-        {"No Additional Text, 4 Min Chars",
-         kRichAutocompletionImplementationNoAdditionalText4Chars,
-         std::size(kRichAutocompletionImplementationNoAdditionalText4Chars),
-         nullptr},
-};
-
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
     {web::features::kOneTapForMapsConsentModeParamTitle,
      web::features::kOneTapForMapsConsentModeDefaultParam}};
@@ -1817,13 +1775,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableiPadFeedGhostCardsName,
      flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableiPadFeedGhostCards)},
-    {"omnibox-rich-autocompletion",
-     flag_descriptions::kOmniboxRichAutocompletionName,
-     flag_descriptions::kOmniboxRichAutocompletionDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kRichAutocompletion,
-         kRichAutocompletionImplementationVariations,
-         "RichAutocompletionImplementationVariations")},
     {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
      flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableLensCamera)},

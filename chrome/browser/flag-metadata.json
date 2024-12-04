@@ -6507,12 +6507,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-rich-autocompletion",
-    "owners": [ "manukh@chromium.org", "christianxu@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
-  },
-
-  {
     "name": "omnibox-rich-autocompletion-android",
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 140

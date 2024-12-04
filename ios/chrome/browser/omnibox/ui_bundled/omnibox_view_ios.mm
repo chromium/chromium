@@ -261,22 +261,11 @@ void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
 }
 
 void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
-  if (!IsRichAutocompletionEnabled()) {
-    return;
-  }
-
-  if (IsRichAutocompletionEnabled(
-          RichAutocompletionImplementation::kNoAdditionalText)) {
-    [consumer_ setOmniboxHasRichInline:text.length()];
-    return;
-  }
-
   if (!text.length()) {
     [consumer_ updateAdditionalText:nil];
     return;
   }
 
-  // TODO(crbug.com/325035406): Temporary string and colors. Update if needed.
   NSString* additional_text = base::SysUTF16ToNSString(u" - " + text);
   [consumer_ updateAdditionalText:additional_text];
 }

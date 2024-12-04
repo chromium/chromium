@@ -30,10 +30,6 @@
 /// Optional text displayed after user and autocomplete text.
 @property(nonatomic, strong) NSAttributedString* additionalText;
 
-/// Whether the omnibox has a rich inline default suggestion. Only used when
-/// `RichAutocompletion` is enabled with no additional text.
-@property(nonatomic, assign) BOOL omniboxHasRichInline;
-
 /// Whether the return key is enabled with an empty textfield.
 @property(nonatomic, assign) BOOL allowsReturnKeyWithEmptyText;
 

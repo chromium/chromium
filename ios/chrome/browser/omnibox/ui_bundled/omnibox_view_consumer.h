@@ -14,11 +14,6 @@
 /// additional text.
 - (void)updateAdditionalText:(NSString*)additionalText;
 
-/// Notifies the consumer whether the omnibox has a rich inline default
-/// suggestion. Only used when `RichAutocompletion` is enabled without
-/// additional text.
-- (void)setOmniboxHasRichInline:(BOOL)omniboxHasRichInline;
-
 /// Sets the thumbnail image used for image search. Set to`nil` to hide the
 /// thumbnail.
 - (void)setThumbnailImage:(UIImage*)image;

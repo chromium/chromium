@@ -852,12 +852,6 @@ const char kOmniboxOnDeviceTailSuggestionsDescription[] =
     "Google tail non personalized search suggestions provided by a compact on "
     "device model.";
 
-const char kOmniboxRichAutocompletionName[] =
-    "Omnibox rich inline autocompletion";
-const char kOmniboxRichAutocompletionDescription[] =
-    "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
-    "to any type of input that users repeatedly use to get to specific URLs.";
-
 const char kOmniboxSuggestionAnswerMigrationName[] =
     "Omnibox suggestion answer migration";
 const char kOmniboxSuggestionAnswerMigrationDescription[] =

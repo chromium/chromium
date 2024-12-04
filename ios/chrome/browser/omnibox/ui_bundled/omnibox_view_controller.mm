@@ -520,10 +520,6 @@ using base::UserMetricsAction;
   [self.view updateAdditionalText:additionalText];
 }
 
-- (void)setOmniboxHasRichInline:(BOOL)omniboxHasRichInline {
-  [self.view setOmniboxHasRichInline:omniboxHasRichInline];
-}
-
 - (void)setThumbnailImage:(UIImage*)image {
   [self.view setThumbnailImage:image];
   // Cancel any pending image removal if a new selection is made.
@@ -730,7 +726,7 @@ using base::UserMetricsAction;
   // Dismiss any inline autocomplete. The user expectation is to not have it.
   [self.textField clearAutocompleteText];
 
-  if (IsRichAutocompletionEnabled() && _textChangeDelegate) {
+  if (_textChangeDelegate) {
     _textChangeDelegate->OnRemoveAdditionalText();
   }
 }

@@ -749,10 +749,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 extern const char kOmniboxOnDeviceTailSuggestionsName[];
 extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 
-// Title and description for omnibox rich inline autocompletion.
-extern const char kOmniboxRichAutocompletionName[];
-extern const char kOmniboxRichAutocompletionDescription[];
-
 // Title and description for omnibox suggestion answer migration.
 extern const char kOmniboxSuggestionAnswerMigrationName[];
 extern const char kOmniboxSuggestionAnswerMigrationDescription[];

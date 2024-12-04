@@ -151,9 +151,7 @@ using base::UserMetricsAction;
   // receive the suggestion as inline autocomplete through OmniboxViewIOS.
   if (!isFirstUpdate) {
     // Remove additional text when previewing suggestions.
-    if (IsRichAutocompletionEnabled()) {
-      [self.consumer updateAdditionalText:nil];
-    }
+    [self.consumer updateAdditionalText:nil];
     [self.consumer updateText:suggestion.omniboxPreviewText];
   }
 
