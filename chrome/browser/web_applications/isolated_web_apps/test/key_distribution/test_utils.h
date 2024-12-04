@@ -16,6 +16,11 @@
 
 namespace web_app::test {
 
+struct IwaComponentMetadata {
+  base::Version version;
+  bool is_preloaded;
+};
+
 // Synchronously updates the key distribution info provider with data from
 // `path`.
 base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
@@ -52,9 +57,10 @@ InstallIwaKeyDistributionComponent(
     const std::string& web_bundle_id,
     std::optional<base::span<const uint8_t>> expected_key);
 
-// Synchronously registers the preloaded component with the component updater.
-base::expected<void, IwaComponentUpdateError>
-RegisterPreloadedIwaKeyDistributionComponent();
+// Synchronously registers the component with the component updater and waits
+// for the component updater to pick up the on-disk data in its folder.
+base::expected<IwaComponentMetadata, IwaComponentUpdateError>
+RegisterIwaKeyDistributionComponentAndWaitForLoad();
 
 }  // namespace web_app::test
 

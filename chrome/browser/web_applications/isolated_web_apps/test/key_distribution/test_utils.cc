@@ -13,61 +13,48 @@
 #include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "components/component_updater/component_updater_paths.h"
 
 namespace web_app::test {
 
 namespace {
 
-using ComponentUpdateFuture =
-    base::test::TestFuture<base::expected<void, IwaComponentUpdateError>>;
+using ComponentMetadataOrError =
+    base::expected<IwaComponentMetadata, IwaComponentUpdateError>;
+
+using ComponentUpdateFuture = base::test::TestFuture<ComponentMetadataOrError>;
 
 class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
  public:
-  using UpdateCallback =
-      base::OnceCallback<void(base::expected<void, IwaComponentUpdateError>)>;
+  using UpdateCallback = base::OnceCallback<void(ComponentMetadataOrError)>;
 
-  ComponentUpdateWaiter(base::Version expected_version,
-                        UpdateCallback on_update)
-      : expected_version_(std::move(expected_version)),
-        on_update_(std::move(on_update)) {
-    obs_.Observe(IwaKeyDistributionInfoProvider::GetInstance());
-  }
-
-  // Waits for the preloaded component.
   explicit ComponentUpdateWaiter(UpdateCallback on_update)
-      : is_preloaded_(true), on_update_(std::move(on_update)) {
+      : on_update_(std::move(on_update)) {
     obs_.Observe(IwaKeyDistributionInfoProvider::GetInstance());
   }
 
   // IwaKeyRotationInfoProvider::Observer:
   void OnComponentUpdateSuccess(const base::Version& version,
                                 bool is_preloaded) override {
-    if (expected_version_ && version != expected_version_) {
-      return;
-    }
-    if (is_preloaded != is_preloaded_) {
-      return;
-    }
-    std::move(on_update_).Run(base::ok());
+    std::move(on_update_)
+        .Run(IwaComponentMetadata{.version = version,
+                                  .is_preloaded = is_preloaded});
     obs_.Reset();
   }
+
   void OnComponentUpdateError(const base::Version& version,
                               IwaComponentUpdateError error) override {
-    if (expected_version_ && version != expected_version_) {
-      return;
-    }
     std::move(on_update_).Run(base::unexpected(error));
     obs_.Reset();
   }
 
  private:
-  std::optional<base::Version> expected_version_;
-  bool is_preloaded_ = false;
-
   UpdateCallback on_update_;
   base::ScopedObservation<IwaKeyDistributionInfoProvider,
                           IwaKeyDistributionInfoProvider::Observer>
@@ -80,11 +67,14 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::Version& version,
     const base::FilePath& path) {
   ComponentUpdateFuture future;
-  auto waiter =
-      std::make_unique<ComponentUpdateWaiter>(version, future.GetCallback());
+  auto waiter = std::make_unique<ComponentUpdateWaiter>(future.GetCallback());
   IwaKeyDistributionInfoProvider::GetInstance()->LoadKeyDistributionData(
       version, path, /*is_preloaded=*/false);
-  return future.Take();
+  ASSIGN_OR_RETURN((auto [loaded_version, is_preloaded]), future.Take());
+  if (version != loaded_version || is_preloaded) {
+    return base::unexpected(IwaComponentUpdateError::kStaleVersion);
+  }
+  return base::ok();
 }
 
 base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
@@ -126,8 +116,7 @@ InstallIwaKeyDistributionComponent(const base::Version& version,
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   ComponentUpdateFuture future;
-  auto waiter =
-      std::make_unique<ComponentUpdateWaiter>(version, future.GetCallback());
+  auto waiter = std::make_unique<ComponentUpdateWaiter>(future.GetCallback());
 
   // Write the serialized proto to the attestation list file.
   auto install_dir = [&] {
@@ -154,12 +143,16 @@ InstallIwaKeyDistributionComponent(const base::Version& version,
 
   component_updater::RegisterIwaKeyDistributionComponent(
       g_browser_process->component_updater());
-  auto result = future.Take();
+  ASSIGN_OR_RETURN((auto [loaded_version, is_preloaded]), future.Take());
 
   // `install_dir` is no longer necessary after the installation has completed.
   CHECK(base::DeletePathRecursively(install_dir));
 
-  return result;
+  if (version != loaded_version || is_preloaded) {
+    return base::unexpected(IwaComponentUpdateError::kStaleVersion);
+  }
+
+  return base::ok();
 }
 
 base::expected<void, IwaComponentUpdateError>
@@ -182,8 +175,8 @@ InstallIwaKeyDistributionComponent(
   return InstallIwaKeyDistributionComponent(version, key_distribution);
 }
 
-base::expected<void, IwaComponentUpdateError>
-RegisterPreloadedIwaKeyDistributionComponent() {
+base::expected<IwaComponentMetadata, IwaComponentUpdateError>
+RegisterIwaKeyDistributionComponentAndWaitForLoad() {
   ComponentUpdateFuture future;
   auto waiter = std::make_unique<ComponentUpdateWaiter>(future.GetCallback());
   component_updater::RegisterIwaKeyDistributionComponent(

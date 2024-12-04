@@ -87,6 +87,7 @@
 #include "chrome/browser/usb/usb_status_icon.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -481,7 +482,11 @@ DownloadRequestLimiter* TestingBrowserProcess::download_request_limiter() {
 
 component_updater::ComponentUpdateService*
 TestingBrowserProcess::component_updater() {
+#if !BUILDFLAG(IS_ANDROID)
+  return component_updater_.get();
+#else
   return nullptr;
+#endif
 }
 
 MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
@@ -663,6 +668,12 @@ void TestingBrowserProcess::SetStatusTray(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void TestingBrowserProcess::SetComponentUpdater(
+    std::unique_ptr<component_updater::ComponentUpdateService>
+        component_updater) {
+  component_updater_ = std::move(component_updater);
+}
+
 void TestingBrowserProcess::SetHidSystemTrayIcon(
     std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon) {
   hid_system_tray_icon_ = std::move(hid_system_tray_icon);
