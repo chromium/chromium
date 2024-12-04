@@ -15,6 +15,7 @@ source_set("xdg") {
     "//base",
     "//build:branding_buildflags",
     "//components/dbus/properties",
+    "//components/dbus/utils",
     "//dbus",
   ]
 }

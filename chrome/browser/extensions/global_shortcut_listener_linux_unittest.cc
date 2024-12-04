@@ -109,6 +109,18 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
         dbus::MessageReader reader(method_call);
         std::string service_name;
         EXPECT_TRUE(reader.PopString(&service_name));
+        EXPECT_EQ(service_name, "org.freedesktop.systemd1");
+
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendBool(true);
+        std::move(*callback).Run(response.get());
+      }))
+      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseCallback* callback) {
+        dbus::MessageReader reader(method_call);
+        std::string service_name;
+        EXPECT_TRUE(reader.PopString(&service_name));
         EXPECT_EQ(service_name,
                   GlobalShortcutListenerLinux::kPortalServiceName);
 
