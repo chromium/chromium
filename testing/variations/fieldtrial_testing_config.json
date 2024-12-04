@@ -17263,22 +17263,6 @@
             ]
         }
     ],
-    "PostQuantumKyber": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PostQuantumKyber"
-                    ]
-                }
-            ]
-        }
-    ],
     "PowerBookmarkBackend": [
         {
             "platforms": [
