@@ -141,7 +141,7 @@ class MojoDecryptorTest : public ::testing::Test {
 };
 
 // DecryptAndDecodeAudio() and ResetDecoder(kAudio) immediately.
-TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeAudio) {
+TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_Audio) {
   Initialize();
 
   {
@@ -163,7 +163,7 @@ TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeAudio) {
 }
 
 // DecryptAndDecodeAudio() and ResetDecoder(kAudio) immediately.
-TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeAudioChunkedWrite) {
+TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_Audio_ChunkedWrite) {
   SetWriterCapacity(20);
   Initialize();
 
@@ -186,7 +186,7 @@ TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeAudioChunkedWrite) {
 }
 
 // DecryptAndDecodeVideo() and ResetDecoder(kVideo) immediately.
-TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeVideo) {
+TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_Video) {
   Initialize();
 
   {
@@ -210,7 +210,7 @@ TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeVideo) {
 }
 
 // DecryptAndDecodeVideo() and ResetDecoder(kVideo) immediately.
-TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeVideoChunkedWrite) {
+TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_Video_ChunkedWrite) {
   SetWriterCapacity(20);
   Initialize();
 
@@ -236,7 +236,7 @@ TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeVideoChunkedWrite) {
 
 // DecryptAndDecodeAudio(), DecryptAndDecodeVideo(), ResetDecoder(kAudio) and
 // ResetDecoder(kVideo).
-TEST_F(MojoDecryptorTest, ResetDuringDecryptAndDecodeAudioAndVideo) {
+TEST_F(MojoDecryptorTest, Reset_DuringDecryptAndDecode_AudioAndVideo) {
   // Only test chunked write as it's the most complex and error prone case.
   SetWriterCapacity(20);
   Initialize();

@@ -192,7 +192,7 @@ class MojoAudioInputStreamTest : public Test {
   raw_ptr<AudioInputDelegate::EventHandler> delegate_event_handler_ = nullptr;
 };
 
-TEST_F(MojoAudioInputStreamTest, NoDelegateSignalsError) {
+TEST_F(MojoAudioInputStreamTest, NoDelegate_SignalsError) {
   bool deleter_called = false;
   EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
   mojo::Remote<mojom::AudioInputStream> stream_remote;
@@ -207,7 +207,7 @@ TEST_F(MojoAudioInputStreamTest, NoDelegateSignalsError) {
   EXPECT_TRUE(deleter_called);
 }
 
-TEST_F(MojoAudioInputStreamTest, RecordRecords) {
+TEST_F(MojoAudioInputStreamTest, Record_Records) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(*delegate_, OnRecordStream());
 
@@ -215,7 +215,7 @@ TEST_F(MojoAudioInputStreamTest, RecordRecords) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MojoAudioInputStreamTest, SetVolumeSetsVolume) {
+TEST_F(MojoAudioInputStreamTest, SetVolume_SetsVolume) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(*delegate_, OnSetVolume(kNewVolume));
 
@@ -223,7 +223,7 @@ TEST_F(MojoAudioInputStreamTest, SetVolumeSetsVolume) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MojoAudioInputStreamTest, DestructWithCallPendingSafe) {
+TEST_F(MojoAudioInputStreamTest, DestructWithCallPending_Safe) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(client_, GotNotification(kInitiallyNotMuted));
   base::RunLoop().RunUntilIdle();
@@ -243,7 +243,7 @@ TEST_F(MojoAudioInputStreamTest, DestructWithCallPendingSafe) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MojoAudioInputStreamTest, CreatedNotifiesClient) {
+TEST_F(MojoAudioInputStreamTest, Created_NotifiesClient) {
   auto audio_input = CreateAudioInput();
   base::RunLoop().RunUntilIdle();
 
@@ -258,7 +258,7 @@ TEST_F(MojoAudioInputStreamTest, CreatedNotifiesClient) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MojoAudioInputStreamTest, SetVolumeTooLargeError) {
+TEST_F(MojoAudioInputStreamTest, SetVolumeTooLarge_Error) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(deleter_, Finished());
   EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
@@ -268,7 +268,7 @@ TEST_F(MojoAudioInputStreamTest, SetVolumeTooLargeError) {
   Mock::VerifyAndClear(&deleter_);
 }
 
-TEST_F(MojoAudioInputStreamTest, SetVolumeNegativeError) {
+TEST_F(MojoAudioInputStreamTest, SetVolumeNegative_Error) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(deleter_, Finished());
   EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
@@ -278,7 +278,7 @@ TEST_F(MojoAudioInputStreamTest, SetVolumeNegativeError) {
   Mock::VerifyAndClear(&deleter_);
 }
 
-TEST_F(MojoAudioInputStreamTest, DelegateErrorBeforeCreatedPropagatesError) {
+TEST_F(MojoAudioInputStreamTest, DelegateErrorBeforeCreated_PropagatesError) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(deleter_, Finished());
   EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
@@ -290,7 +290,7 @@ TEST_F(MojoAudioInputStreamTest, DelegateErrorBeforeCreatedPropagatesError) {
   Mock::VerifyAndClear(&deleter_);
 }
 
-TEST_F(MojoAudioInputStreamTest, DelegateErrorAfterCreatedPropagatesError) {
+TEST_F(MojoAudioInputStreamTest, DelegateErrorAfterCreated_PropagatesError) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(client_, GotNotification(kInitiallyNotMuted));
   EXPECT_CALL(deleter_, Finished());
@@ -308,7 +308,7 @@ TEST_F(MojoAudioInputStreamTest, DelegateErrorAfterCreatedPropagatesError) {
   Mock::VerifyAndClear(&deleter_);
 }
 
-TEST_F(MojoAudioInputStreamTest, RemoteEndGoneError) {
+TEST_F(MojoAudioInputStreamTest, RemoteEndGone_Error) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(deleter_, Finished());
   audio_input.reset();

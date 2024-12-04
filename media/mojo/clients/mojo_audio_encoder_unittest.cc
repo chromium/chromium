@@ -156,7 +156,7 @@ class MojoAudioEncoderTest : public ::testing::Test {
       mock_audio_encoder_ = nullptr;
 };
 
-TEST_F(MojoAudioEncoderTest, InitializeSuccess) {
+TEST_F(MojoAudioEncoderTest, Initialize_Success) {
   base::RunLoop run_loop;
   AudioEncoder::Options options = MakeOptions();
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
@@ -182,7 +182,7 @@ TEST_F(MojoAudioEncoderTest, InitializeSuccess) {
   run_loop.Run();
 }
 
-TEST_F(MojoAudioEncoderTest, InitializeFail) {
+TEST_F(MojoAudioEncoderTest, Initialize_Fail) {
   base::RunLoop run_loop;
   AudioEncoder::Options options = MakeOptions();
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
@@ -208,7 +208,7 @@ TEST_F(MojoAudioEncoderTest, InitializeFail) {
   run_loop.Run();
 }
 
-TEST_F(MojoAudioEncoderTest, InitializeTwice) {
+TEST_F(MojoAudioEncoderTest, Initialize_Twice) {
   base::RunLoop good_init_run_loop;
   base::RunLoop failed_initi_run_loop;
   AudioEncoder::Options options = MakeOptions();

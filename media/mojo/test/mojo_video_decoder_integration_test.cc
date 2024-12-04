@@ -519,7 +519,7 @@ TEST_F(MojoVideoDecoderIntegrationTest, ResetDuringDecode) {
   RunUntilIdle();
 }
 
-TEST_F(MojoVideoDecoderIntegrationTest, ResetDuringDecodeChunkedWrite) {
+TEST_F(MojoVideoDecoderIntegrationTest, ResetDuringDecode_ChunkedWrite) {
   // Use a small writer capacity to force chunked write.
   SetWriterCapacity(10);
   ASSERT_TRUE(Initialize());

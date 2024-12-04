@@ -97,7 +97,7 @@ class MojoCdmHelperTest : public testing::Test {
   MojoCdmHelper helper_;
 };
 
-TEST_F(MojoCdmHelperTest, CreateCdmFileIOOpenClose) {
+TEST_F(MojoCdmHelperTest, CreateCdmFileIO_OpenClose) {
   cdm::FileIO* file_io = helper_.CreateCdmFileIO(&file_io_client_);
   const std::string kFileName = "openfile";
   EXPECT_CALL(file_io_client_, OnOpenComplete(Status::kSuccess));
@@ -112,7 +112,7 @@ TEST_F(MojoCdmHelperTest, CreateCdmFileIOOpenClose) {
 // Simulate the case where the CDM didn't call Close(). In this case we still
 // should not leak the cdm::FileIO object. LeakSanitizer bots should be able to
 // catch such issues.
-TEST_F(MojoCdmHelperTest, CreateCdmFileIOOpenWithoutClose) {
+TEST_F(MojoCdmHelperTest, CreateCdmFileIO_OpenWithoutClose) {
   cdm::FileIO* file_io = helper_.CreateCdmFileIO(&file_io_client_);
   const std::string kFileName = "openfile";
   EXPECT_CALL(file_io_client_, OnOpenComplete(Status::kSuccess));
