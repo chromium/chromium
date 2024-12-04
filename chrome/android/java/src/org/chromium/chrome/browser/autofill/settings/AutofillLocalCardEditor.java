@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -437,12 +438,18 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     @Override
     public void onScanCompleted(
             String cardHolderName, String cardNumber, int expirationMonth, int expirationYear) {
+        // Create a new card if it doesn't already exist.
         if (mCard == null) {
             mCard =
                     PersonalDataManagerFactory.getForProfile(getProfile())
                             .getCreditCardForNumber(cardNumber);
-        } else if (!TextUtils.isEmpty(cardNumber)) {
-            mCard.setNumber(cardNumber);
+        }
+
+        if (!TextUtils.isEmpty(cardNumber)) {
+            // Reformat the card number for the text field.
+            SpannableStringBuilder cardNumberAsEditable = new SpannableStringBuilder(cardNumber);
+            CreditCardNumberFormattingTextWatcher.insertSeparators(cardNumberAsEditable);
+            mCard.setNumber(cardNumberAsEditable.toString());
         }
 
         if (!TextUtils.isEmpty(cardHolderName)) {
@@ -450,7 +457,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         }
 
         if (expirationMonth != 0) {
-            // Zero pad the month to 2 digits
+            // Zero pad the month to 2 digits.
             mCard.setMonth(String.format(Locale.getDefault(), "%02d", expirationMonth));
         }
 
