@@ -188,6 +188,7 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/android.emulator_13.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_14.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
+    "//testing/buildbot/filters/android.emulator_16.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
     "//testing/buildbot/filters/android.device_14.content_browsertests.filter",

@@ -1168,6 +1168,9 @@ ci.builder(
                 ],
             ),
             "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_16.content_browsertests.filter",
+                ],
                 swarming = targets.swarming(
                     shards = 30,
                 ),
