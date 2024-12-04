@@ -261,6 +261,20 @@ enum class FedCmUseOtherAccountResult {
   kMaxValue = kUserDoesNotSignIn
 };
 
+// This enum describes the outcome of the verifying dialog. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class FedCmVerifyingDialogResult {
+  kSuccessExplicit = 0,
+  kSuccessAutoReauthn = 1,
+  kCancelExplicit = 2,
+  kCancelAutoReauthn = 3,
+  kDestroyExplicit = 4,
+  kDestroyAutoReauthn = 5,
+
+  kMaxValue = kDestroyAutoReauthn
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   explicit FedCmMetrics(const ukm::SourceId page_source_id);
@@ -359,7 +373,8 @@ class CONTENT_EXPORT FedCmMetrics {
       int num_idps_mismatch,
       const std::optional<GURL>& selected_idp_config_url,
       const RpMode& rp_mode,
-      std::optional<FedCmUseOtherAccountResult> use_other_account_result);
+      std::optional<FedCmUseOtherAccountResult> use_other_account_result,
+      std::optional<FedCmVerifyingDialogResult> verifying_dialog_result);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,

@@ -4006,6 +4006,13 @@ be describing additional metrics about the same event.
       are multiple attempts.
     </summary>
   </metric>
+  <metric name="VerifyingDialogResult" enum="FedCmVerifyingDialogResult">
+    <summary>
+      Records the outcome of the verifying dialog. Recorded once per verifying
+      dialog shown when the FedCM call is completed, i.e. at the same time as
+      Blink.FedCm.Status.RequestIdToken.
+    </summary>
+  </metric>
 </event>
 
 <event name="Blink.FedCmIdp">
@@ -4195,6 +4202,13 @@ be describing additional metrics about the same event.
       button, when the request is fulfilled (either resolved or rejected). Only
       considers the last &quot;use other account&quot; button clicked if there
       are multiple attempts.
+    </summary>
+  </metric>
+  <metric name="VerifyingDialogResult" enum="FedCmVerifyingDialogResult">
+    <summary>
+      Records the outcome of the verifying dialog. Recorded once per verifying
+      dialog shown when the FedCM call is completed, i.e. at the same time as
+      Blink.FedCm.Status.RequestIdToken.
     </summary>
   </metric>
 </event>

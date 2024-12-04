@@ -1256,6 +1256,11 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     request_remote_.set_disconnect_handler(base::OnceClosure());
   }
 
+  void CloseDialog() {
+    federated_auth_request_impl_->OnDialogDismissed(
+        IdentityRequestDialogController::DismissReason::kCloseButton);
+  }
+
   base::span<const IdentityRequestAccountPtr> all_accounts_for_display() const {
     return dialog_controller_state_.all_accounts_for_display;
   }
@@ -1500,6 +1505,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     if (expected_succeeded) {
       histogram_tester_.ExpectTotalCount(
           "Blink.FedCm.Timing.AccountsDialogShownDuration2", 0);
+      histogram_tester_.ExpectUniqueSample(
+          "Blink.FedCm.VerifyingDialogResult",
+          FedCmVerifyingDialogResult::kSuccessAutoReauthn, 1);
     }
 
     // UKM checks
@@ -1561,6 +1569,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     EXPECT_TRUE(metric_found) << "Did not find AutoReauthn metrics";
     if (expected_succeeded) {
       ExpectNoUKMPresence("Timing.AccountsDialogShownDuration");
+      ExpectUKMPresence("VerifyingDialogResult");
     }
     CheckAllFedCmSessionIDs();
   }
@@ -2958,6 +2967,9 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
                                        1, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.RpMode",
                                        static_cast<int>(RpMode::kPassive), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.VerifyingDialogResult",
+      static_cast<int>(FedCmVerifyingDialogResult::kSuccessExplicit), 1);
 
   ExpectUKMPresence("Timing.ShowAccountsDialog");
   ExpectUKMPresenceInternal(
@@ -2975,6 +2987,9 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectUKMPresence("Timing.AccountsDialogShownDuration");
   ExpectNoUKMPresence("Timing.MismatchDialogShownDuration");
   ExpectUkmValue("RpMode", static_cast<int>(RpMode::kPassive));
+  ExpectUkmValue(
+      "VerifyingDialogResult",
+      static_cast<int>(FedCmVerifyingDialogResult::kSuccessExplicit));
 
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
   CheckAllFedCmSessionIDs();
@@ -7881,6 +7896,99 @@ TEST_F(FederatedAuthRequestImplTest, MultipleIdpSigninDueToHint) {
     EXPECT_TRUE(federated_auth_request_impl_->HasUserTriedToSignInToIdp(
         GURL(kProviderUrlFull)));
   }
+}
+
+TEST_F(FederatedAuthRequestImplTest, VerifyingDialogCancelExplicitMetrics) {
+  MockConfiguration config = kConfigurationValid;
+  config.delay_token_response = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, config);
+  CloseDialog();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.VerifyingDialogResult",
+      FedCmVerifyingDialogResult::kCancelExplicit, 1);
+  ExpectUkmValue("VerifyingDialogResult",
+                 static_cast<int>(FedCmVerifyingDialogResult::kCancelExplicit));
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, VerifyingDialogCancelAutoReauthnMetrics) {
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .WillRepeatedly(Return(std::make_optional<base::Time>()));
+
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+
+  MockConfiguration config = kConfigurationValid;
+  config.delay_token_response = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, config);
+  CloseDialog();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.VerifyingDialogResult",
+      FedCmVerifyingDialogResult::kCancelAutoReauthn, 1);
+  ExpectUkmValue(
+      "VerifyingDialogResult",
+      static_cast<int>(FedCmVerifyingDialogResult::kCancelAutoReauthn));
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, VerifyingDialogDestroyExplicitMetrics) {
+  MockConfiguration config = kConfigurationValid;
+  config.delay_token_response = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, config);
+  federated_auth_request_impl_->ResetAndDeleteThis();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.VerifyingDialogResult",
+      FedCmVerifyingDialogResult::kDestroyExplicit, 1);
+  ExpectUkmValue(
+      "VerifyingDialogResult",
+      static_cast<int>(FedCmVerifyingDialogResult::kDestroyExplicit));
+  CheckAllFedCmSessionIDs();
+}
+
+TEST_F(FederatedAuthRequestImplTest, VerifyingDialogDestroyAutoReauthnMetrics) {
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .WillRepeatedly(Return(std::make_optional<base::Time>()));
+
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+
+  MockConfiguration config = kConfigurationValid;
+  config.delay_token_response = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, config);
+  federated_auth_request_impl_->ResetAndDeleteThis();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.VerifyingDialogResult",
+      FedCmVerifyingDialogResult::kDestroyAutoReauthn, 1);
+  ExpectUkmValue(
+      "VerifyingDialogResult",
+      static_cast<int>(FedCmVerifyingDialogResult::kDestroyAutoReauthn));
+  CheckAllFedCmSessionIDs();
 }
 
 }  // namespace content

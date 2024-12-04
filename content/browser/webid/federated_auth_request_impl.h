@@ -195,8 +195,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     kLoginToIdpPopup = 5,
     kContinueOnPopup = 6,
     kErrorUrlPopup = 7,
+
     kMaxValue = kErrorUrlPopup
   };
+
   DialogType GetDialogType() const { return dialog_type_; }
 
   enum IdentitySelectionType { kExplicit, kAutoPassive, kAutoActive };
@@ -625,6 +627,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Keeps track of the state of the use other account flow. Is std::nullopt
   // when the flow is not active.
   std::optional<FedCmUseOtherAccountResult> use_other_account_account_result_;
+
+  // Whether a token request has been sent.
+  bool has_sent_token_request_{false};
+
+  // Keeps track of the state of the verifying dialog. Is std::nullopt when the
+  // verifying dialog has not been shown.
+  std::optional<FedCmVerifyingDialogResult> verifying_dialog_result_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
