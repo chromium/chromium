@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -15,6 +16,10 @@ using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
+
+namespace base {
+class Location;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -84,6 +89,8 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       base::OnceCallback<void(bool accepted)> callback) override;
 
  private:
+  void PostTask(const base::Location& from_here, base::OnceClosure task);
+
   std::optional<std::string> selected_account_;
   std::string title_;
   // The caller ensures that this object does not outlive the web_contents_.
