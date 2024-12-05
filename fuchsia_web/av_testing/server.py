@@ -8,10 +8,9 @@ import http.server
 import logging
 import os
 import socketserver
-import sys
 
 
-VIDEO_DIR = '/usr/local/cipd/videostack_videos'
+VIDEO_DIR = '/usr/local/cipd/videostack_videos_30s'
 
 
 class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):

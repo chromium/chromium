@@ -6,11 +6,9 @@
     This script needs to be executed from the build output folder, e.g.
     out/fuchsia/."""
 
-import json
 import logging
 import multiprocessing
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -29,25 +27,20 @@ sys.path.append(TEST_SCRIPTS_ROOT)
 
 import monitors
 import version
-from browser_runner import BrowserRunner
 from chrome_driver_wrapper import ChromeDriverWrapper
 from common import get_build_info, get_ffx_isolate_dir, get_free_local_port
 from isolate_daemon import IsolateDaemon
-from run_webpage_test import WebpageTestRunner, capture_devtools_addr
+from run_webpage_test import capture_devtools_addr
 
 
 HTTP_SERVER_PORT = get_free_local_port()
 LOG_DIR = os.environ.get('ISOLATED_OUTDIR', '/tmp')
 TEMP_DIR = os.environ.get('TMPDIR', '/tmp')
 
-VIDEOS = {
-    '720p24fpsH264_gangnam_sync.mp4': {
-        'length': 252
-    },
-    '720p24fpsVP9_gangnam_sync.webm': {
-        'length': 252
-    },
-}
+VIDEOS =[
+    '720p24fpsH264_gangnam_sync.mp4',
+    '720p24fpsVP9_gangnam_sync.webm',
+]
 
 
 class StartProcess(AbstractContextManager):
@@ -87,8 +80,8 @@ def parameters_of(file: str) -> camera.Parameters:
     # more performant host machines.
     result.max_frames = 1200
     result.fps = 120
-    # Record several extra seconds to cover the video buffering.
-    result.duration_sec = VIDEOS[file]['length'] + 5
+    # All the videos now being used are 30s long.
+    result.duration_sec = 30
     return result
 
 
@@ -137,6 +130,14 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
 def run_test(proc: subprocess.Popen) -> None:
     device, port = capture_devtools_addr(proc, LOG_DIR)
     logging.warning('DevTools is now running on %s:%s', device, port)
+    # webpage test may update the fuchsia version, so get build_info after its
+    # finish.
+    logging.warning('Chrome version %s %s', version.chrome_version_str(),
+                    version.git_revision())
+    build_info = get_build_info()
+    logging.warning('Fuchsia build info %s', build_info)
+    monitors.tag(version.chrome_version_str(), build_info.version,
+                 version.chrome_version_str() + '/' + build_info.version)
     # Replace the last byte to 1, by default it's the ip address of the host
     # machine being accessible on the device.
     host = '.'.join(device.split('.')[:-1] + ['1'])
@@ -146,7 +147,7 @@ def run_test(proc: subprocess.Popen) -> None:
         # being accessible on the device by the fuchsia managed docker image.
         host = proxy_host + '0'
     with ChromeDriverWrapper((device, port)) as driver:
-        for file in VIDEOS.keys():
+        for file in VIDEOS:
             run_video_perf_test(file, driver, host)
 
 
@@ -177,12 +178,6 @@ def main() -> int:
 
 if __name__ == '__main__':
     logging.warning('Running %s with env %s', sys.argv, os.environ)
-    logging.warning('Chrome version %s %s', version.chrome_version_str(),
-                    version.git_revision())
-    build_info = get_build_info()
-    logging.warning('Fuchsia build info %s', build_info)
-    monitors.tag(version.chrome_version_str(), build_info.version,
-                 version.chrome_version_str() + '/' + build_info.version)
     # Setting a temporary isolate daemon dir and share it with the webpage
     # runner.
     with StartProcess(server.start, [HTTP_SERVER_PORT], True), \
