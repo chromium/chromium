@@ -1235,6 +1235,7 @@ source_set("extensions") {
         "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_done",
         "//chrome/browser/devtools",
         "//chrome/browser/nearby_sharing/common",
+        "//chrome/browser/policy:system_features_disable_list",
         "//chrome/browser/ui/ash/keyboard",
         "//chrome/browser/ui/ash/login",
         "//chrome/browser/ui/ash/media_client",

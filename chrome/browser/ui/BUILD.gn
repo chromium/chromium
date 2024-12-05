@@ -2355,6 +2355,7 @@ static_library("ui") {
       "//chrome/browser/nearby_sharing/local_device_data",
       "//chrome/browser/nearby_sharing/logging:util",
       "//chrome/browser/policy:onc",
+      "//chrome/browser/policy:system_features_disable_list",
       "//chrome/browser/push_notification:push_notification",
       "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//chrome/browser/ui/ash/accessibility",

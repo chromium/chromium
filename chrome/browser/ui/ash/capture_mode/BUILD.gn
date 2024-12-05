@@ -35,6 +35,7 @@ static_library("capture_mode") {
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/policy:system_features_disable_list",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/system_web_apps",
