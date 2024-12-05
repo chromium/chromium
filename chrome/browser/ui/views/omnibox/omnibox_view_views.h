@@ -91,7 +91,7 @@ class OmniboxViewViews
   void SaveStateToTab(content::WebContents* tab);
 
   // Called when the window's active tab changes.
-  void OnTabChanged(content::WebContents* web_contents);
+  void OnTabChanged(const content::WebContents* web_contents);
 
   // Called to clear the saved state for |web_contents|.
   void ResetTabState(content::WebContents* web_contents);

@@ -279,7 +279,7 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 
   // NOTE: GetStateForTabSwitch() may affect GetSelectedRange(), so order is
   // important.
-  OmniboxEditModel::State state = model()->GetStateForTabSwitch();
+  const OmniboxEditModel::State state = model()->GetStateForTabSwitch();
   tab->SetUserData(
       OmniboxState::kKey,
       std::make_unique<OmniboxState>(state, GetRenderText()->GetAllSelections(),
@@ -287,7 +287,7 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
   UpdateAccessibleTextSelection();
 }
 
-void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
+void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   model()->RestoreState(state ? &state->model_state : nullptr);
@@ -345,12 +345,12 @@ bool OmniboxViewViews::GetSelectionAtEnd() const {
 void OmniboxViewViews::EmphasizeURLComponents() {
   // If the current contents is a URL, turn on special URL rendering mode in
   // RenderText.
-  bool text_is_url = model()->CurrentTextIsURL();
+  const bool text_is_url = model()->CurrentTextIsURL();
   GetRenderText()->SetDirectionalityMode(
       text_is_url ? gfx::DIRECTIONALITY_AS_URL : gfx::DIRECTIONALITY_FROM_TEXT);
   SetStyle(gfx::TEXT_STYLE_STRIKE, false);
 
-  std::u16string text = GetText();
+  const std::u16string text = GetText();
   UpdateTextStyle(text, text_is_url,
                   controller()->client()->GetSchemeClassifier());
 }
@@ -492,9 +492,9 @@ int OmniboxViewViews::GetTextWidth() const {
 }
 
 int OmniboxViewViews::GetUnelidedTextWidth() const {
-  auto elide_behavior = GetRenderText()->elide_behavior();
+  const auto elide_behavior = GetRenderText()->elide_behavior();
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
-  auto width = GetTextWidth();
+  const auto width = GetTextWidth();
   GetRenderText()->SetElideBehavior(elide_behavior);
   return width;
 }
@@ -504,7 +504,7 @@ bool OmniboxViewViews::IsImeComposing() const {
 }
 
 gfx::Size OmniboxViewViews::GetMinimumSize() const {
-  const int kMinCharacters = 20;
+  constexpr int kMinCharacters = 20;
   return gfx::Size(
       GetFontList().GetExpectedTextWidth(kMinCharacters) + GetInsets().width(),
       GetPreferredSize().height());
@@ -513,7 +513,7 @@ gfx::Size OmniboxViewViews::GetMinimumSize() const {
 void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
   if (latency_histogram_state_ == CHAR_TYPED) {
     DCHECK(!insert_char_time_.is_null());
-    auto now = base::TimeTicks::Now();
+    const auto now = base::TimeTicks::Now();
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency.ToPaint",
                         now - insert_char_time_);
     latency_histogram_state_ = ON_PAINT_CALLED;
@@ -679,8 +679,8 @@ void OmniboxViewViews::SetTextAndSelectedRanges(
   // the cursor are visible. If possible given the prior guarantee, also
   // guarantees |kPadTrailing| chars of the text following the cursor are
   // visible.
-  static const size_t kPadTrailing = 30;
-  static const size_t kPadLeading = 10;
+  static constexpr size_t kPadTrailing = 30;
+  static constexpr size_t kPadLeading = 10;
 
   // We use SetTextWithoutCaretBoundsChangeNotification() in order to avoid
   // triggering accessibility events multiple times.
@@ -927,8 +927,8 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   GetSelectionBounds(&start, &end);
 
   // Try to unelide. Early exit if there's no unelisions to perform.
-  std::u16string original_text = GetText();
-  std::u16string original_selected_text = GetSelectedText();
+  const std::u16string original_text = GetText();
+  const std::u16string original_selected_text = GetSelectedText();
   if (!model()->Unelide())
     return false;
 
@@ -951,7 +951,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   if (offset != std::u16string::npos) {
     AutocompleteMatch match;
     model()->ClassifyString(original_selected_text, &match, nullptr);
-    bool selection_classifes_as_search =
+    const bool selection_classifes_as_search =
         AutocompleteMatch::IsSearchType(match.type);
     if (start != end && gesture == UnelisionGesture::MOUSE_RELEASE &&
         !selection_classifes_as_search) {
@@ -1046,7 +1046,7 @@ bool OmniboxViewViews::IsImeShowingPopup() const {
 #if BUILDFLAG(IS_CHROMEOS)
   return ime_candidate_window_open_;
 #else
-  return GetInputMethod() ? GetInputMethod()->IsCandidatePopupOpen() : false;
+  return GetInputMethod() && GetInputMethod()->IsCandidatePopupOpen();
 #endif
 }
 
@@ -1117,7 +1117,7 @@ std::u16string OmniboxViewViews::GetLabelForCommandId(int command_id) const {
   // a better way to do this.
   const float kMaxSelectionPixelWidth =
       GetStringWidthF(selection_text, Textfield::GetFontList());
-  std::u16string url = url_formatter::ElideUrl(
+  const std::u16string url = url_formatter::ElideUrl(
       match.destination_url, Textfield::GetFontList(), kMaxSelectionPixelWidth);
 
   return l10n_util::GetStringFUTF16(IDS_PASTE_AND_GO, url);
@@ -1161,7 +1161,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
   if (event.IsOnlyLeftMouseButton() && (!HasFocus() || GetText().empty()))
     model()->StartZeroSuggestRequest();
 
-  bool handled = views::Textfield::OnMousePressed(event);
+  const bool handled = views::Textfield::OnMousePressed(event);
 
   // Reset next double click length
   if (event.GetClickCount() == 1)
@@ -1183,9 +1183,10 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
       // URL. See https://crbug.com/1084406.
       if (IsSelectAll()) {
         SelectWordAt(event.location());
-        std::u16string shown_url = GetText();
-        std::u16string full_url = controller()->client()->GetFormattedFullURL();
-        size_t offset = full_url.find(shown_url);
+        const std::u16string shown_url = GetText();
+        const std::u16string full_url =
+            controller()->client()->GetFormattedFullURL();
+        const size_t offset = full_url.find(shown_url);
         if (offset != std::u16string::npos) {
           next_double_click_selection_len_ = GetSelectedText().length();
           next_double_click_selection_offset_ =
@@ -1220,7 +1221,7 @@ bool OmniboxViewViews::OnMouseDragged(const ui::MouseEvent& event) {
   if (HasTextBeingDragged())
     CloseOmniboxPopup();
 
-  bool handled = views::Textfield::OnMouseDragged(event);
+  const bool handled = views::Textfield::OnMouseDragged(event);
 
   if (HasSelection() || ExceededDragThreshold(event.root_location() -
                                               GetLastClickRootLocation())) {
@@ -1774,7 +1775,7 @@ void OmniboxViewViews::OnAfterUserAction(views::Textfield* sender) {
 }
 
 void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
-  ui::Clipboard* cb = ui::Clipboard::GetForCurrentThread();
+  const ui::Clipboard* cb = ui::Clipboard::GetForCurrentThread();
   std::u16string selected_text;
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
@@ -1858,7 +1859,7 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
   MaybeAddSendTabToSelfItem(menu_contents);
 
-  std::optional<size_t> paste_position =
+  const std::optional<size_t> paste_position =
       menu_contents->GetIndexOfCommandId(Textfield::kPaste);
   DCHECK(paste_position.has_value());
   menu_contents->InsertItemWithStringIdAt(paste_position.value() + 1,
@@ -1965,7 +1966,7 @@ void OmniboxViewViews::PerformDrop(
           data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
       url_result.has_value()) {
     text = StripJavascriptSchemas(base::UTF8ToUTF16(url_result->url.spec()));
-  } else if (std::optional<std::u16string> text_result = data.GetString();
+  } else if (const std::optional<std::u16string> text_result = data.GetString();
              text_result.has_value()) {
     text = StripJavascriptSchemas(base::CollapseWhitespace(*text_result, true));
   } else {

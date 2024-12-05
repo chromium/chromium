@@ -110,7 +110,7 @@ gfx::Size OmniboxTextView::CalculatePreferredSize(
     return render_text_->GetStringSize();
   }
 
-  int width = available_size.width().value();
+  const int width = available_size.width().value();
   if (!wrap_text_lines_) {
     return gfx::Size(width, GetLineHeight());
   }
@@ -185,8 +185,9 @@ void OmniboxTextView::AppendTextWithStyling(
     const omnibox::AnswerType& answer_type) {
   cached_classifications_.reset();
   wrap_text_lines_ = AnswerHasDefinedMaxLines(answer_type);
-  for (size_t i = fragment_index;
-       i < static_cast<size_t>(formatted_string.fragments_size()); i++) {
+  const auto fragments_size =
+      static_cast<size_t>(formatted_string.fragments_size());
+  for (size_t i = fragment_index; i < fragments_size; ++i) {
     const std::u16string space_separator = i == 0u ? u"" : u" ";
     const std::u16string append_text =
         space_separator +

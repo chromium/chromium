@@ -169,7 +169,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     OnThemeChanged();
   }
 
-  OmniboxPopupSelection selection() { return selection_; }
+  OmniboxPopupSelection selection() const { return selection_; }
 
   void OnThemeChanged() override {
     MdTextButton::OnThemeChanged();
@@ -302,7 +302,7 @@ OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
 void OmniboxSuggestionButtonRowView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
 
-  auto bounds = GetLocalBounds();
+  const auto bounds = GetLocalBounds();
   SkPath path;
   path.addRect(RectToSkRect(bounds), SkPathDirection::kCW, 0);
   SetClipPath(path);
@@ -362,7 +362,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     }
   }
 
-  bool is_any_child_visible =
+  const bool is_any_child_visible =
       embeddings_chip_->GetVisible() || keyword_button_->GetVisible() ||
       base::ranges::any_of(action_buttons_, [](const auto& action_button) {
         return action_button->GetVisible();

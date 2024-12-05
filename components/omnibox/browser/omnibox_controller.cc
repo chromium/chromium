@@ -171,7 +171,7 @@ bool OmniboxController::IsSuggestionHidden(
     const AutocompleteMatch& match) const {
   if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
       match.from_keyword) {
-    TemplateURL* turl =
+    const TemplateURL* turl =
         match.GetTemplateURL(client_->GetTemplateURLService(), false);
     if (turl &&
         turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {

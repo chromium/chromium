@@ -56,7 +56,7 @@ bool OmniboxPopupViewIOS::IsOpen() const {
 }
 
 std::u16string OmniboxPopupViewIOS::GetAccessibleButtonTextForResult(
-    size_t line) {
+    size_t line) const {
   return u"";
 }
 
