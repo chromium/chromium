@@ -1498,6 +1498,7 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
       {"peopleSignIn", IDS_PROFILES_DICE_SIGNIN_BUTTON},
       {"turnOnSync",
        IDS_SETTINGS_TURN_ON_SYNC_BUTTON_UPDATE_SETTINGS_UI_ENABLED},
+      {"peopleSignInNoAccountAwareness", IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON},
       {"syncPaused", IDS_SETTINGS_PEOPLE_SYNC_PAUSED},
       {"turnOffSync", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
       {"settingsCheckboxLabel", IDS_SETTINGS_SETTINGS_CHECKBOX_LABEL},
@@ -1572,8 +1573,6 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"peopleSignInSyncPagePromptSecondaryWithAccount",
        IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
-      {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
-       IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
       {"bookmarksCheckboxLabel", IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL},
       {"readingListCheckboxLabel", IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL},
       {"cancelSync", IDS_SETTINGS_SYNC_SETTINGS_CANCEL_SYNC},
@@ -1603,6 +1602,18 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddLocalizedString(
+      "peopleSignInSyncPagePromptSecondaryWithNoAccount",
+      IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
+#else
+  html_source->AddLocalizedString(
+      "peopleSignInSyncPagePromptSecondaryWithNoAccount",
+      switches::IsImprovedSettingsUIOnDesktopEnabled()
+          ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT
+          : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
+#endif
 
   html_source->AddString("activityControlsUrl",
                          chrome::kGoogleAccountActivityControlsURL);
@@ -1668,8 +1679,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
       // Top level people strings:
       {"peopleSignInPromptSecondaryWithAccount",
        IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
-      {"peopleSignInPromptSecondaryWithNoAccount",
-       IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
       {"peoplePageTitle", IDS_SETTINGS_PEOPLE},
       {"syncSettingsSavedToast", IDS_SETTINGS_SYNC_SETTINGS_SAVED_TOAST_LABEL},
       {"peopleSignInPrompt", IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT},
@@ -1718,6 +1727,18 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITHOUT_COUNTS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddLocalizedString(
+      "peopleSignInPromptSecondaryWithNoAccount",
+      IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
+#else
+  html_source->AddLocalizedString(
+      "peopleSignInPromptSecondaryWithNoAccount",
+      switches::IsImprovedSettingsUIOnDesktopEnabled()
+          ? IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT
+          : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
+#endif
 
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

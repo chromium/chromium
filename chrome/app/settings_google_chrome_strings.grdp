@@ -317,6 +317,9 @@
   <message name="IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT" desc="The secondary text displayed to prompt users to enable sync for an account that is alredy present in Chrome.">
     Sync and personalize Chrome across your devices
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_EXPLICIT_SIGN_IN_PROMPT_SECONDARY_WITH_NO_ACCOUNT" desc="The secondary text displayed to prompt users to enable sync for an account that is already present in Chromium.">
+    To get your passwords and more on all your devices, sign in to Chrome
+  </message>
 <if expr="chromeos_ash">
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
     You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
