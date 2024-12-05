@@ -613,6 +613,13 @@ size_t TransportSecurityState::num_sts_entries() const {
   return enabled_sts_hosts_.size();
 }
 
+#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+// static
+base::Time TransportSecurityState::GetBuiltInPinsListTimestamp() {
+  return kPinsListTimestamp;
+}
+#endif
+
 // static
 bool TransportSecurityState::IsBuildTimely() {
   const base::Time build_time = base::GetBuildTime();

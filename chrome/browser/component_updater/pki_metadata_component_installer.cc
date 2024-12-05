@@ -45,6 +45,7 @@
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "components/certificate_transparency/certificate_transparency.pb.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
+#include "components/certificate_transparency/ct_known_logs.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #endif
 
@@ -52,6 +53,10 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
+#endif
+
+#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+#include "net/http/transport_security_state.h"
 #endif
 
 using component_updater::ComponentUpdateService;
@@ -282,6 +287,16 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     return;
   }
 
+  base::Time proto_timestamp =
+      base::Time::UnixEpoch() +
+      base::Seconds(proto->log_list().timestamp().seconds()) +
+      base::Nanoseconds(proto->log_list().timestamp().nanos());
+  // Do not update the CT log list with the component data if it's older than
+  // the built in list.
+  if (proto_timestamp < certificate_transparency::GetLogListTimestamp()) {
+    return;
+  }
+
   // TODO(crbug.com/41392053): Log info needs to be sent to both network
   // service and cert verifier service. Finish refactoring so that it is only
   // sent to cert verifier service.
@@ -363,12 +378,8 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       base::BindOnce(
           &PKIMetadataComponentInstallerService::NotifyCTLogListConfigured,
           weak_factory_.GetWeakPtr()));
-  base::Time update_time =
-      base::Time::UnixEpoch() +
-      base::Seconds(proto->log_list().timestamp().seconds()) +
-      base::Nanoseconds(proto->log_list().timestamp().nanos());
   content::GetCertVerifierServiceFactory()->UpdateCtLogList(
-      std::move(log_list_mojo), update_time, done_callback);
+      std::move(log_list_mojo), proto_timestamp, done_callback);
   network_service->UpdateCtLogList(
       std::move(log_list_mojo_clone_network_service), done_callback);
 
@@ -392,6 +403,16 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
       content::GetNetworkService();
 
   if (proto->compatibility_version() > kMaxSupportedKPCompatibilityVersion) {
+    return;
+  }
+
+  base::Time proto_timestamp = base::Time::UnixEpoch() +
+                               base::Seconds(proto->timestamp().seconds()) +
+                               base::Nanoseconds(proto->timestamp().nanos());
+  // Do not update the pins list with the component data if it's older than the
+  // built in list.
+  if (proto_timestamp <
+      net::TransportSecurityState::GetBuiltInPinsListTimestamp()) {
     return;
   }
 
@@ -419,11 +440,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
     pinlist_ptr->host_pins.push_back(std::move(pininfo_ptr));
   }
 
-  base::Time update_time = base::Time::UnixEpoch() +
-                           base::Seconds(proto->timestamp().seconds()) +
-                           base::Nanoseconds(proto->timestamp().nanos());
-
-  network_service->UpdateKeyPinsList(std::move(pinlist_ptr), update_time);
+  network_service->UpdateKeyPinsList(std::move(pinlist_ptr), proto_timestamp);
 }
 
 void PKIMetadataComponentInstallerService::NotifyCTLogListConfigured() {
