@@ -667,6 +667,13 @@
        {}
       ]
      ],
+     "chrome-379758203-crash.html": [
+      "eea43feb5999a111b2fb9b936a5fbd6e49ac5f53",
+      [
+       null,
+       {}
+      ]
+     ],
      "chrome-380321441-crash.html": [
       "85dfb27325f9881d589dd898c8060c2a8711bfbe",
       [
@@ -226735,6 +226742,19 @@
      ]
     },
     "css-transitions": {
+     "allow-discrete-auto-inset.html": [
+      "d12264021ebbf678281c1f67b8a9422d4748e692",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "inherit-background-color-transition.html": [
       "2c0e4aed933ec69f145f55dac81f262d93a3cdaa",
       [
@@ -241992,7 +242012,7 @@
       ]
      ],
      "variable-generated-content-dynamic-001.html": [
-      "792c51d31c3e90c3181e540d5101a4b8639fd3e7",
+      "9aaf17a6359526f7e6d30f963429465e119dc1a0",
       [
        null,
        [
@@ -325531,6 +325551,14 @@
       "content-computed-expected.txt": [
        "2541212ea95fcdba664f7d96fbee2b174811ebb4",
        []
+      ],
+      "content-invalid-expected.txt": [
+       "c66650fa9ace440db3fdda2a84891ba1658b334a",
+       []
+      ],
+      "content-valid-expected.txt": [
+       "268048fc867014edeac9267c9c42af9b563029c1",
+       []
       ]
      },
      "pseudo-element-inline-box-ref.html": [
@@ -346908,6 +346936,10 @@
        "2c38d3940822a6adec1d3fbef9f386e6e20b0a2f",
        []
       ],
+      "block-step-computed-expected.txt": [
+       "cbec96b13fce08ebc311289c287b8dfeb7d91f7d",
+       []
+      ],
       "block-step-insert-computed-expected.txt": [
        "a7626935cd561efcb4ba73cd06ddf0ee2f16ea8d",
        []
@@ -346930,6 +346962,10 @@
       ],
       "block-step-size-valid-expected.txt": [
        "1d43a539c8db072b45bb02c0fea51959efb73cd4",
+       []
+      ],
+      "block-step-valid-expected.txt": [
+       "b78d62c59841456c797c71e43e244d0af1448f84",
        []
       ]
      }
@@ -358612,7 +358648,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "a2b52ecbac7cf9a3e6cc69f9f0a8359ac4648d4a",
+      "2248d3702b0c0276dbb2dd1f1f2ae2712fa654c8",
       []
      ],
      "acos-asin-atan-atan2-computed-expected.txt": [
@@ -358631,6 +358667,10 @@
      ],
      "attr-notype-fallback-ref.html": [
       "21f7362dbafd6b8bef9fc292cbd44d99fd205f1c",
+      []
+     ],
+     "attr-security-expected.txt": [
+      "cf9ea6a79725f94ed557028704f7ce0be602dcae",
       []
      ],
      "calc-background-image-gradient-1-ref.html": [
@@ -363048,7 +363088,7 @@
       []
      ],
      "serialize-values-expected.txt": [
-      "38bd0d3a931022c1582624c8a97236708c51e2db",
+      "fedafa597a88bd7f69309bf244cca7602813bf23",
       []
      ],
      "shorthand-values-expected.txt": [
@@ -381518,7 +381558,7 @@
         []
        ],
        "text.yaml": [
-        "7fe59a91a357868cf5f97773e8a70a15988e0400",
+        "db2d5380dd81f244d0612a7aef658da5e38713fd",
         []
        ],
        "the-canvas-state.yaml": [
@@ -397795,7 +397835,7 @@
        []
       ],
       "utils.js": [
-       "b50fc5ced684e8d1f0c98b1f56527278f36228e8",
+       "66b3cf40ba2bf734ae308899c44d278839db77b1",
        []
       ]
      }
@@ -402730,6 +402770,14 @@
     ],
     "WEB_FEATURES.yml": [
      "61ab30b26b601cd836a9ec579e0b8d014ceb430f",
+     []
+    ],
+    "pointerlock_unadjustedMovement-expected.txt": [
+     "76d65d0646435b4a759da8eddeae2b7e2f7b40a1",
+     []
+    ],
+    "pointerlock_without_gesture-expected.txt": [
+     "03f6f78b4a6dc958fde781f05c1eb95f9078f338",
      []
     ]
    },
@@ -480382,7 +480430,7 @@
        ]
       ],
       "grid-shorthand-serialization.html": [
-       "61be1c2872bccb077cc081b91964c65f4e600f84",
+       "aca07d7075dc44d67b0f63bf26934e54a3af5c6b",
        [
         null,
         {}
@@ -480543,7 +480591,14 @@
        ]
       ],
       "grid-template-shorthand-areas-valid.html": [
-       "2d2b2433a4102326ecd2fbdd1c33d12c0ffae009",
+       "c4703197e29dc8bfa80e5f51bce205e0ba84aca6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-template-shorthand-composition.html": [
+       "781410d51536ec2f6ebeca1315f03519f1967b88",
        [
         null,
         {}
@@ -480564,7 +480619,7 @@
        ]
       ],
       "grid-template-shorthand.html": [
-       "d7e8f47e14a6c369b93fc02ad93ab1abce334eed",
+       "bde0118a630e5fe776a9fd22517896e79911bb75",
        [
         null,
         {}
@@ -483808,6 +483863,13 @@
        {}
       ]
      ],
+     "scrollable-overflow-padding-inline.html": [
+      "38b02e99dce5e325c0248e76386569850558a7c9",
+      [
+       null,
+       {}
+      ]
+     ],
      "scrollable-overflow-padding-input.html": [
       "6f19af1c1bf973b6e74766dc4571a1d33c49e598",
       [
@@ -485909,6 +485971,13 @@
         {}
        ]
       ],
+      "block-step-computed.html": [
+       "ea9a602d8ca7a2c2ab653a64ff236f87878b6ce3",
+       [
+        null,
+        {}
+       ]
+      ],
       "block-step-insert-computed.html": [
        "4b0f4e8374d16d019cb1703eea6c71ac44350407",
        [
@@ -485925,6 +485994,13 @@
       ],
       "block-step-insert-valid.html": [
        "c1ef52d65028f0c9bdd3ebbf963fc05cd0eaac63",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-step-invalid.html": [
+       "93961fad5b33ac68eccb58c7b6118d63969181be",
        [
         null,
         {}
@@ -485967,6 +486043,13 @@
       ],
       "block-step-size-valid.html": [
        "bb41e61fb9078ca60ecee4a9d16d8cf7daa3cb76",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-step-valid.html": [
+       "8a6fcc90edb39dc1c414a1269daba40c36c5bf62",
        [
         null,
         {}
@@ -499535,7 +499618,7 @@
       ]
      ],
      "calc-unit-analysis.html": [
-      "7508a3924162b87454a180f75f17c572192c3776",
+      "f88c0496b6cce1b666d201302c46750c706c5819",
       [
        null,
        {}
@@ -584210,6 +584293,13 @@
          {}
         ]
        ],
+       "2d.text.measure.actualBoundingBox.whitespace.html": [
+        "29f25f502d7d808659d85184ef51a5000eced053",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.measure.baselines.html": [
         "5e208655518beb6d9bcf7d9486a72127c44c75d6",
         [
@@ -597798,6 +597888,20 @@
         "bb83feda6f984355e062056d8e4a25f188178619",
         [
          null,
+         {}
+        ]
+       ],
+       "2d.text.measure.actualBoundingBox.whitespace.html": [
+        "e9bed7dcefd3bf4f7ba8241dfba271acf3b7af6e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.actualBoundingBox.whitespace.worker.js": [
+        "b588b6e68f85d147db06f85f7f58cde24a2863f0",
+        [
+         "html/canvas/offscreen/text/2d.text.measure.actualBoundingBox.whitespace.worker.html",
          {}
         ]
        ],
@@ -632655,7 +632759,7 @@
      ]
     ],
     "first-paint-equals-lcp-text.html": [
-     "50bccd072e2db5c7f2865a8e2cf36aa30264ac21",
+     "c71e86f9c2a05be6dc3b02d886a43f920497ca1a",
      [
       null,
       {}
@@ -634551,6 +634655,15 @@
        }
       ]
      ],
+     "loaf-paint-mixin.html": [
+      "a0ef8df5bd322c8b8ecbf6b94db3e56f479837ba",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "loaf-pause-duration.html": [
       "fcc13e17983acafd106882d9dcf6e17a7f5d71f9",
       [
@@ -634680,7 +634793,7 @@
       ]
      ],
      "loaf-timeline.html": [
-      "c434a26ef8d18aa84836dbef56f737df425beb57",
+      "721842e846bc416d3bb97035a759086e73c67b89",
       [
        null,
        {
@@ -645330,7 +645443,7 @@
      ]
     ],
     "paint-timing-mixin.html": [
-     "837d45620b65c17e46c622209050a84ff48b63ae",
+     "65c1062a05912dc87d142a29cd493d92ac52d2bf",
      [
       null,
       {}
@@ -650860,6 +650973,16 @@
       }
      ]
     ],
+    "pointerlock_promise.html": [
+     "81cdb7849596875af372b2a048d8b44637c08728",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "pointerlock_remove_target.html": [
      "f0bd89497e0676866ff5963de9bc50297b1d9c04",
      [
@@ -650881,6 +651004,25 @@
     ],
     "pointerlock_shadow.html": [
      "21f3a928cd410471aa7fd32b6a7d427535007041",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "pointerlock_unadjustedMovement.html": [
+     "691f16f61fd1e695c60861afa83461edad3b4296",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerlock_without_gesture.html": [
+     "37245061c79f43e739854d6fcd4f0430b08a2286",
      [
       null,
       {

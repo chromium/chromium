@@ -2690,6 +2690,8 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?1-2 [ Crash ]
+[ Linux ] external/wpt/pointerlock/pointerlock_without_gesture.html [ Crash Failure ]
 crbug.com/382302596 [ Mac14 ] external/wpt/webrtc/protocol/pt-no-bundle.html [ Timeout ]
 crbug.com/382302593 [ Win10.20h2 ] external/wpt/mathml/presentation-markup/fractions/frac-created-dynamically-4.html [ Failure ]
 crbug.com/382302593 [ Win10.20h2 ] external/wpt/png/apng/acTL-plays-two.html [ Failure ]
@@ -2845,6 +2847,7 @@ crbug.com/378891966 [ Win10.20h2 ] virtual/no-auto-wpt-origin-isolation/external
 crbug.com/378891966 [ Linux ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_iframe_pdf_viewer.html [ Failure ]
 crbug.com/378891966 [ Mac ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_iframe_pdf_viewer.html [ Failure ]
 crbug.com/378014595 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate.html [ Timeout ]
+crbug.com/378014595 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate.html [ Timeout ]
 crbug.com/378014595 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-description-attributes-timing.https.html [ Timeout ]
 crbug.com/378014595 [ Mac14 ] external/wpt/webrtc/RTCSctpTransport-maxMessageSize.html [ Timeout ]
 crbug.com/378750930 [ Mac14 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?av1 [ Timeout ]
