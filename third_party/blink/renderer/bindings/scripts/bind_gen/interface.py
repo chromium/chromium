@@ -21,7 +21,6 @@ from .code_node import SequenceNode
 from .code_node import SymbolDefinitionNode
 from .code_node import SymbolNode
 from .code_node import SymbolScopeNode
-from .code_node import SymbolSensitiveSelectionNode
 from .code_node import TextNode
 from .code_node import WeakDependencyNode
 from .code_node_cxx import CxxBlockNode
@@ -319,6 +318,9 @@ def bind_callback_local_vars(code_node, cg_context):
         S("current_script_state",
           ("ScriptState* ${current_script_state} = "
            "ScriptState::From(${isolate}, ${current_context});")),
+        S("receiver_script_state",
+          ("ScriptState* ${receiver_script_state} = "
+           "ScriptState::ForRelevantRealm(${isolate}, ${v8_receiver});")),
         S("isolate", "v8::Isolate* ${isolate} = ${info}.GetIsolate();"),
         S("non_undefined_argument_length",
           ("const int ${non_undefined_argument_length} = "
@@ -334,11 +336,6 @@ def bind_callback_local_vars(code_node, cg_context):
     is_receiver_context = not (
         (cg_context.member_like and cg_context.member_like.is_static)
         or cg_context.constructor)
-
-    # creation_context
-    pattern = "const v8::Local<v8::Context>& ${creation_context} = {_1};"
-    _1 = "${receiver_context}" if is_receiver_context else "${current_context}"
-    local_vars.append(S("creation_context", _format(pattern, _1=_1)))
 
     # script_state
     pattern = "ScriptState* ${script_state} = {_1};"
@@ -412,70 +409,6 @@ def bind_callback_local_vars(code_node, cg_context):
 
     local_vars.append(
         S("exception_state", definition_constructor=create_exception_state))
-
-    # receiver_context
-    def create_receiver_context(symbol_node):
-        node = SymbolDefinitionNode(symbol_node)
-        # tl;dr: This is an optimization to leverage
-        # `v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext`.
-        # See also the comment in `create_receiver_script_state`.
-        #
-        # When ${receiver_script_state} is already defined,
-        #     ${receiver_script_state}->GetContext()
-        # is faster than
-        #     ${v8_receiver}->GetCreationContextChecked()
-        node.append(
-            SymbolSensitiveSelectionNode([
-                SymbolSensitiveSelectionNode.Choice(
-                    ["receiver_script_state"],
-                    T("v8::Local<v8::Context> ${receiver_context} = "
-                      "${receiver_script_state}->GetContext();")),
-                SymbolSensitiveSelectionNode.Choice(
-                    [],
-                    T("v8::Local<v8::Context> ${receiver_context} = "
-                      "${v8_receiver}->GetCreationContextChecked();")),
-            ]))
-        return node
-
-    local_vars.append(
-        S("receiver_context", definition_constructor=create_receiver_context))
-
-    # receiver_script_state
-    def create_receiver_script_state(symbol_node):
-        node = SymbolDefinitionNode(symbol_node)
-        # tl;dr: This is an optimization to leverage
-        # `v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext`.
-        #
-        # If ${receiver_context} is not used at all, or if
-        # ${receiver_script_state} is used before ${receiver_context} is used,
-        # then
-        #     v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext
-        #   + ScriptState::GetContext
-        # i.e.
-        #     ScriptState::ForRelevantRealm(v8::Local<v8::Object>)
-        #   + ScriptState::GetContext
-        # is faster than
-        #     v8::Object::GetCreationContextChecked
-        #   + ScriptState::From(v8::Isolate*, v8::Local<v8::Context>)
-        # Depending on already-defined symbols, select the best way to get
-        # ${receiver_script_state}.
-        node.append(
-            SymbolSensitiveSelectionNode([
-                SymbolSensitiveSelectionNode.Choice(
-                    ["receiver_context"],
-                    T("ScriptState* ${receiver_script_state} = "
-                      "ScriptState::From(${isolate}, ${receiver_context});")),
-                SymbolSensitiveSelectionNode.Choice(
-                    [],
-                    T("ScriptState* ${receiver_script_state} = "
-                      "ScriptState::ForRelevantRealm(${isolate}, "
-                      "${v8_receiver});")),
-            ]))
-        return node
-
-    local_vars.append(
-        S("receiver_script_state",
-          definition_constructor=create_receiver_script_state))
 
 
     # blink_receiver
@@ -1963,7 +1896,7 @@ def make_v8_set_return_value(cg_context):
             args.append("${blink_receiver}")
             args.append("bindings::V8ReturnValue::kMaybeCrossOrigin")
         elif cg_context.constructor or cg_context.member_like.is_static:
-            args.append("${creation_context}")
+            args.append("${current_context}")
         elif cg_context.for_world == cg_context.MAIN_WORLD:
             args.append("bindings::V8ReturnValue::kMainWorld")
         else:
