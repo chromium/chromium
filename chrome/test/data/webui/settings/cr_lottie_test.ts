@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://settings/lazy_load.js';
 
-import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import type {CrLottieElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type { MockMethod} from 'chrome://webui-test/mock_controller.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -18,13 +18,13 @@ suite('cr_lottie_test', function() {
    * A URL that produces a sample solid green json lottie animation.
    */
   const SAMPLE_LOTTIE_GREEN: string =
-      'chrome://webui-test/cr_elements/cr_lottie_green.json';
+      'chrome://webui-test/settings/cr_lottie_green.json';
 
   /**
    * A URL that produces a sample solid blue json lottie animation.
    */
   const SAMPLE_LOTTIE_BLUE: string =
-      'chrome://webui-test/cr_elements/cr_lottie_blue.json';
+      'chrome://webui-test/settings/cr_lottie_blue.json';
 
   /**
    * A green pixel as returned by samplePixel.

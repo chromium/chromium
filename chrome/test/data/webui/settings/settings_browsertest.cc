@@ -736,6 +736,10 @@ class SettingsWithPixelOutputTest : public SettingsBrowserTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(SettingsWithPixelOutputTest, CrLottie) {
+  RunTest("settings/cr_lottie_test.js", "mocha.run()");
+}
+
 // https://crbug.com/1044390 - maybe flaky on Mac?
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FingerprintProgressArc DISABLED_FingerprintProgressArc

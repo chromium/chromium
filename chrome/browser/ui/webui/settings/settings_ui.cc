@@ -463,6 +463,16 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(html_source, kSettingsResources,
                               IDR_SETTINGS_SETTINGS_HTML);
+  // Add chrome://webui-test for cr-lottie test.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc,
+      "connect-src chrome://webui-test chrome://resources chrome://theme "
+      "'self';");
+  // Add TrustedTypes policy for cr-lottie.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      base::StrCat({webui::kDefaultTrustedTypesPolicies,
+                    " lottie-worker-script-loader;"}));
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
   html_source->AddResourcePaths(kSettingsSharedResources);

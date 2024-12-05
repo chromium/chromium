@@ -294,6 +294,8 @@ build_webui("build") {
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",
     "performance_page/tab_discard/exception_validation_mixin.ts",
+    "privacy_page/cr_lottie.html.ts",
+    "privacy_page/cr_lottie.ts",
     "privacy_page/privacy_guide/constants.ts",
     "privacy_page/privacy_guide/privacy_guide_availability_mixin.ts",
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
@@ -369,6 +371,7 @@ build_webui("build") {
     # subfolder files
     "autofill_page/screen_reader_only.css",
     "autofill_page/passwords_shared.css",
+    "privacy_page/cr_lottie.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "search_engines_page/search_engine_entry.css",
     "site_settings/clear_storage_dialog_shared.css",
@@ -394,6 +397,7 @@ build_webui("build") {
 
   ts_deps = [
     "//chrome/browser/resources/settings_shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
