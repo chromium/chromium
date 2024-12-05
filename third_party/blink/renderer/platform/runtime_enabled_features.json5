@@ -1660,6 +1660,10 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "ElementInnerTextHandleFirstLineStyle",
+      status: "stable",
+    },
+    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },
