@@ -1075,7 +1075,7 @@ void PasswordAutofillAgent::SubmitChangePasswordForm(
     }
 
     DoFillField(input_element, task.second,
-                FieldPropertiesFlags::kAutofilledOnPageLoad);
+                FieldPropertiesFlags::kAutofilledChangePasswordFormOnPageLoad);
     last_element = input_element;
   }
 

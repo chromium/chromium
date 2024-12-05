@@ -133,7 +133,9 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
     bool manually_filled = field.properties_mask() &
                            FieldPropertiesFlags::kAutofilledOnUserTrigger;
     bool automatically_filled =
-        field.properties_mask() & FieldPropertiesFlags::kAutofilledOnPageLoad;
+        (field.properties_mask() &
+         (FieldPropertiesFlags::kAutofilledOnPageLoad |
+          FieldPropertiesFlags::kAutofilledChangePasswordFormOnPageLoad));
     result.manual_fallback_used |=
         field.properties_mask() &
         FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback;
