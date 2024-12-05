@@ -192,6 +192,9 @@ constexpr base::FeatureParam<int> kLensOverlaySignificantRegionMinArea{
 constexpr base::FeatureParam<int> kLensOverlayMaxSignificantRegions{
     &kLensOverlay, "max-significant-regions", 100};
 
+constexpr base::FeatureParam<bool> kLensOverlayUseBlur{&kLensOverlay,
+                                                       "use-blur", true};
+
 constexpr base::FeatureParam<int> kLensOverlayCustomBlurBlurRadiusPixels{
     &kLensOverlay, "custom-blur-blur-radius-pixels", 60};
 
@@ -649,6 +652,10 @@ int GetLensOverlayMaxSignificantRegions() {
 
 double GetLensOverlayPostSelectionComparisonThreshold() {
   return kLensOverlayPostSelectionComparisonThreshold.Get();
+}
+
+bool GetLensOverlayUseBlur() {
+  return kLensOverlayUseBlur.Get();
 }
 
 int GetLensOverlayCustomBlurBlurRadiusPixels() {

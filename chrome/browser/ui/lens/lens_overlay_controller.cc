@@ -1899,13 +1899,16 @@ void LensOverlayController::InitializeOverlay(
   }
 
   // Create the blur delegate so it is ready to blur once the view is visible.
-  content::RenderWidgetHost* live_page_widget_host = tab_->GetContents()
-                                                         ->GetPrimaryMainFrame()
-                                                         ->GetRenderViewHost()
-                                                         ->GetWidget();
-  lens_overlay_blur_layer_delegate_ =
-      std::make_unique<lens::LensOverlayBlurLayerDelegate>(
-          live_page_widget_host);
+  if (lens::features::GetLensOverlayUseBlur()) {
+    content::RenderWidgetHost* live_page_widget_host =
+        tab_->GetContents()
+            ->GetPrimaryMainFrame()
+            ->GetRenderViewHost()
+            ->GetWidget();
+    lens_overlay_blur_layer_delegate_ =
+        std::make_unique<lens::LensOverlayBlurLayerDelegate>(
+            live_page_widget_host);
+  }
 
   state_ = State::kOverlay;
 
@@ -2411,13 +2414,12 @@ void LensOverlayController::ActivityRequestedByEvent(int event_flags) {
 }
 
 void LensOverlayController::AddBackgroundBlur() {
-  // We do not blur unless the overlay is currently active.
-  if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
+  // We do not blur unless the overlay is currently active and the blur delegate
+  // was created.
+  if (!lens_overlay_blur_layer_delegate_ ||
+      (state_ != State::kOverlay && state_ != State::kOverlayAndResults)) {
     return;
   }
-
-  // The blur layer should have been initialized earlier.
-  CHECK(lens_overlay_blur_layer_delegate_);
 
   // Add our blur layer to the view.
   overlay_view_->SetPaintToLayer();
