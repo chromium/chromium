@@ -192,6 +192,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   // never cache this pointer since it can become nullptr if the renderer
   // crashes, instead you should always ask for it using the accessor.
   virtual RenderWidgetHostView* GetView() = 0;
+  virtual const RenderWidgetHostView* GetView() const = 0;
 
   // Returns true if the renderer is considered unresponsive.
   virtual bool IsCurrentlyUnresponsive() = 0;
