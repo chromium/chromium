@@ -444,6 +444,22 @@ TEST_P(AXPlatformNodeCocoaTestNewAPI,
   }
 }
 
+// accessibilityColumns on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityColumns) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kColumn
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  AXPlatformNodeCocoa* column = GetCocoaNode(2);
+  NSArray* columns = [table accessibilityColumns];
+  EXPECT_EQ([columns count], 1UL);
+  EXPECT_EQ([[columns firstObject] node]->GetUniqueId(),
+            [column node]->GetUniqueId());
+}
+
 // accessibilityColumnIndexRange on a table cell.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityColumnIndexRange) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(

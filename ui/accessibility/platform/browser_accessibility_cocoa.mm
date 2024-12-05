@@ -661,6 +661,7 @@ bool ui::IsNSRange(id value) {
   return nil;
 }
 
+// LINT.IfChange(accessibilityColumns)
 - (NSArray*)columns {
   if (![self instanceActive])
     return nil;
@@ -671,6 +672,7 @@ bool ui::IsNSRange(id value) {
   }
   return ret;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityColumns)
 
 - (BrowserAccessibility*)containingTable {
   BrowserAccessibility* table = _owner;
