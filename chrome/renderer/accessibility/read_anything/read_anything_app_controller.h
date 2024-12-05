@@ -152,6 +152,8 @@ class ReadAnythingAppController
       read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnDeviceLocked() override;
+#else
+  void OnTtsEngineInstalled() override;
 #endif
 
   // gin templates:

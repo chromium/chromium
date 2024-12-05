@@ -278,6 +278,9 @@ declare namespace chrome {
     // Read Aloud state should be updated if the lock screen state changes.
     function onLockScreen(): void;
 
+    // Ping that a new tts engine has installed.
+    function onTtsEngineInstalled(): void;
+
     // Called with the response of sendGetVoicePackInfoRequest() or
     // sendInstallVoicePackRequest()
     function updateVoicePackStatus(lang: string, status: string): void;

@@ -1717,6 +1717,10 @@ void ReadAnythingAppController::OnDeviceLocked() {
   // this callback on ChromeOS.
   ExecuteJavaScript("chrome.readingMode.onLockScreen();");
 }
+#else
+void ReadAnythingAppController::OnTtsEngineInstalled() {
+  ExecuteJavaScript("chrome.readingMode.onTtsEngineInstalled()");
+}
 #endif
 
 void ReadAnythingAppController::SetDefaultLanguageCode(

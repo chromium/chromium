@@ -263,6 +263,10 @@ interface UntrustedPage {
   [EnableIf=is_chromeos_ash]
   OnDeviceLocked();
 
+  // Notifies that the TTS engine for Google natural voices has been installed.
+  [EnableIfNot=is_chromeos_ash]
+  OnTtsEngineInstalled();
+
   // Sets the default language code to be available in the WebUI in the event
   // the language set by SetLanguageCode is invalid.
   SetDefaultLanguageCode(string code);
