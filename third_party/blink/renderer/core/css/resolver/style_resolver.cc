@@ -1301,7 +1301,7 @@ void StyleResolver::InitStyle(Element& element,
     // Sadly, ComputedStyle creation is unavoidable until ElementRuleCollector
     // and friends stop relying on ComputedStyle mutation. The good news is that
     // if the element has no rules for this highlight pseudo, we skip resolution
-    // entirely (leaving the scoped_refptr untouched). The bad news is that if
+    // entirely (leaving the optional unset). The bad news is that if
     // the element has rules but no matched properties, we currently clone.
     state.SetStyle(*parent_style);
 

@@ -10916,6 +10916,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5209" label="V8ExtendingNonExtensibleWithPrivate"/>
   <int value="5210" label="SharedStorageAPI_BatchUpdate_Method"/>
   <int value="5211" label="PreservesPitch"/>
+  <int value="5212" label="SelectionCustomProperty"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
