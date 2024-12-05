@@ -96,7 +96,6 @@ chrome/test/chromedriver 2 2
 chrome/test/chromedriver/chrome 1 1
 chrome/test/chromedriver/server 1 1
 chrome/test/data/browsing_topics 1 1
-chrome/test/data/dom_checker 1 1
 chrome/test/data/downloads 2 1
 chrome/test/data/dromaeo 13 1
 chrome/test/data/dromaeo/lib 4 2
