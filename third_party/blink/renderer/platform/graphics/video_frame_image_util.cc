@@ -166,7 +166,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         },
         frame, SharedGpuContext::ContextProviderWrapper());
 
-    return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+    return AcceleratedStaticBitmapImage::CreateFromVideoFrameSharedImage(
         frame->shared_image(), frame->acquire_sync_token(), 0u, sk_image_info,
         frame->shared_image()->GetTextureTarget(),
         frame->metadata().texture_origin_is_top_left,

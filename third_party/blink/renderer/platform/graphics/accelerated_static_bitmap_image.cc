@@ -66,6 +66,31 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     GLuint shared_image_texture_id,
     const SkImageInfo& sk_image_info,
     GLenum texture_target,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    base::PlatformThreadRef context_thread_ref,
+    scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
+    viz::ReleaseCallback release_callback,
+    bool supports_display_compositing,
+    bool is_overlay_candidate) {
+  const bool is_origin_top_left =
+      shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin;
+  return base::AdoptRef(new AcceleratedStaticBitmapImage(
+      std::move(shared_image), sync_token, shared_image_texture_id,
+      sk_image_info, texture_target, is_origin_top_left,
+      supports_display_compositing, is_overlay_candidate,
+      ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
+      context_thread_ref, std::move(context_task_runner),
+      std::move(release_callback)));
+}
+
+// static
+scoped_refptr<AcceleratedStaticBitmapImage>
+AcceleratedStaticBitmapImage::CreateFromVideoFrameSharedImage(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    const gpu::SyncToken& sync_token,
+    GLuint shared_image_texture_id,
+    const SkImageInfo& sk_image_info,
+    GLenum texture_target,
     bool is_origin_top_left,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
