@@ -83,6 +83,7 @@ void CrosSafetyService::CreateOnDeviceSafetySession(
            ->IsConnected()) {
     std::move(callback).Run(
         cros_safety::mojom::GetOnDeviceSafetySessionResult::kGenericError);
+    return;
   }
 
   auto* on_device_safety_instance = ARC_GET_INSTANCE_FOR_METHOD(
@@ -92,6 +93,7 @@ void CrosSafetyService::CreateOnDeviceSafetySession(
   if (!on_device_safety_instance) {
     std::move(callback).Run(
         cros_safety::mojom::GetOnDeviceSafetySessionResult::kGenericError);
+    return;
   }
 
   on_device_safety_instance->GetArcSafetySession(
