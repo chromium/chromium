@@ -37,7 +37,7 @@ void MathMLPainter::PaintStretchyOrLargeOperator(const PaintInfo& info,
   const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   UChar operator_character = parameters.operator_character;
   TextFragmentPaintInfo text_fragment_paint_info = {
-      StringView(&operator_character, 1), 0, 1,
+      StringView(base::span_from_ref(operator_character)), 0, 1,
       parameters.operator_shape_result_view.Get()};
   GraphicsContextStateSaver state_saver(info.context);
   info.context.SetFillColor(style.VisitedDependentColor(GetCSSPropertyColor()));

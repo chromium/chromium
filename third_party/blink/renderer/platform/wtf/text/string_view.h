@@ -158,8 +158,6 @@ class WTF_EXPORT StringView {
       : StringView(reinterpret_cast<const LChar*>(chars)) {}
 
   // From a wide literal string or UChar buffer.
-  StringView(const UChar* chars, unsigned length)
-      : impl_(StringImpl::empty16_bit_), bytes_(chars), length_(length) {}
   explicit StringView(base::span<const UChar> chars)
       : impl_(StringImpl::empty16_bit_),
         bytes_(chars.data()),

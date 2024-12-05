@@ -123,7 +123,7 @@ StringView HyphenationMinikin::WordToHyphenate(
   }
   *num_leading_chars_out = index;
   CHECK_GE(len, index);
-  return StringView(begin + index, len - index);
+  return StringView(text, index, len - index);
 }
 
 Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {

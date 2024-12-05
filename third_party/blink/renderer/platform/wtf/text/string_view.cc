@@ -41,7 +41,10 @@ class StackStringViewAllocator {
 }  // namespace
 
 StringView::StringView(const UChar* chars)
-    : StringView(chars, chars ? LengthOfNullTerminatedString(chars) : 0) {}
+    // SAFETY: It's safe if `chars` points to a NUL-terminated string.
+    : StringView(UNSAFE_BUFFERS(
+          base::span(chars, chars ? LengthOfNullTerminatedString(chars) : 0))) {
+}
 
 #if DCHECK_IS_ON()
 StringView::~StringView() {
