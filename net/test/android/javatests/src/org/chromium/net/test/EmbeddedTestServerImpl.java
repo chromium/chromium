@@ -12,6 +12,7 @@ import android.os.RemoteException;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -20,6 +21,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.util.UrlUtils;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -257,9 +259,28 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
                 });
     }
 
-    /** Shut down the server.
+    /**
+     * Get the request headers observed on the server for the given relative URL.
      *
-     *  @return Whether the server was successfully shut down.
+     * @param relativeUrl The relative URL for which request headers should be returned.
+     * @return The map of the header key and value pairs.
+     */
+    @Override
+    public Map<String, String> getRequestHeadersForUrl(final String relativeUrl) {
+        return runOnHandlerThread(
+                new Callable<Map>() {
+                    @Override
+                    public Map<String, String> call() {
+                        return EmbeddedTestServerImplJni.get()
+                                .getRequestHeadersForUrl(mNativeEmbeddedTestServer, relativeUrl);
+                    }
+                });
+    }
+
+    /**
+     * Shut down the server.
+     *
+     * @return Whether the server was successfully shut down.
      */
     @Override
     public boolean shutdownAndWaitUntilComplete() {
@@ -362,5 +383,9 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
                 long nativeEmbeddedTestServerAndroid, String hostName, String relativeUrl);
 
         void serveFilesFromDirectory(long nativeEmbeddedTestServerAndroid, String directoryPath);
+
+        @JniType("std::map<std::string, std::string>")
+        Map<String, String> getRequestHeadersForUrl(
+                long nativeEmbeddedTestServerAndroid, String relativeUrl);
     }
 }

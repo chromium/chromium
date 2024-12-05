@@ -48,6 +48,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
@@ -401,6 +402,10 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // onPageStarted should never be called for prerender initial navigation.
         Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
+
+        // Make sure that prerendering navigation has the Sec-Purpose header.
+        Map<String, String> headers = mTestServer.getRequestHeadersForUrl(PRERENDER_URL);
+        Assert.assertEquals("prefetch;prerender", headers.get("Sec-Purpose"));
 
         activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
 

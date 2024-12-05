@@ -54,6 +54,11 @@ EmbeddedTestServerAndroid::EmbeddedTestServerAndroid(
   test_server_.SetConnectionListener(&connection_listener_);
   Java_EmbeddedTestServerImpl_setNativePtr(env, jobj,
                                            reinterpret_cast<intptr_t>(this));
+
+  // Register the request monitor to capture request headers.
+  test_server_.RegisterRequestMonitor(
+      base::BindRepeating(&EmbeddedTestServerAndroid::MonitorResourceRequest,
+                          base::Unretained(this)));
 }
 
 EmbeddedTestServerAndroid::~EmbeddedTestServerAndroid() {
@@ -91,6 +96,23 @@ ScopedJavaLocalRef<jstring> EmbeddedTestServerAndroid::GetURLWithHostName(
       base::android::ConvertJavaStringToUTF8(env, jhostname),
       base::android::ConvertJavaStringToUTF8(env, jrelative_url)));
   return base::android::ConvertUTF8ToJavaString(env, gurl.spec());
+}
+
+std::map<std::string, std::string>
+EmbeddedTestServerAndroid::GetRequestHeadersForUrl(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jrelative_url) {
+  base::AutoLock auto_lock(lock_);
+  std::string path = base::android::ConvertJavaStringToUTF8(env, jrelative_url);
+  CHECK(request_headers_by_path_.contains(path)) << path;
+
+  // Copy data from HttpRequest::HeaderMap (std::map with the custom comparator)
+  // to the default std::map, so that it can be passed to Java.
+  std::map<std::string, std::string> headers;
+  for (auto [key, value] : request_headers_by_path_[path]) {
+    headers.emplace(key, value);
+  }
+  return headers;
 }
 
 void EmbeddedTestServerAndroid::AddDefaultHandlers(
@@ -154,6 +176,13 @@ static void JNI_EmbeddedTestServerImpl_Init(
   // receives a Destroy() call its Java counterpart. The Java counterpart owns
   // the instance created here.
   new EmbeddedTestServerAndroid(env, jobj, jhttps);
+}
+
+void EmbeddedTestServerAndroid::MonitorResourceRequest(
+    const net::test_server::HttpRequest& request) {
+  base::AutoLock auto_lock(lock_);
+  request_headers_by_path_.emplace(request.GetURL().PathForRequest(),
+                                   request.headers);
 }
 
 }  // namespace net::test_server
