@@ -71,6 +71,9 @@ DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieHEVCDecoderConfigurationBoxWriter,
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MoviePixelAspectRatioBoxBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieBitRateBoxWriter,
                              mp4::writable_boxes::BitRate);
+
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieColorInformationBoxWriter,
+                             mp4::writable_boxes::ColorInformation);
 }  // namespace media
 
 #endif  // MEDIA_MUXERS_MP4_MOVIE_BOX_WRITER_H_

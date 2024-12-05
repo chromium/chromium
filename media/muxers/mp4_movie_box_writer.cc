@@ -675,6 +675,33 @@ void Mp4MovieSampleDescriptionBoxWriter::Write(BoxByteStream& writer) {
   writer.EndBox();
 }
 
+// Mp4MovieColorInformationBoxWriter (`colr`) class
+Mp4MovieColorInformationBoxWriter::Mp4MovieColorInformationBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::ColorInformation& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieColorInformationBoxWriter::~Mp4MovieColorInformationBoxWriter() =
+    default;
+
+void Mp4MovieColorInformationBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_COLR);
+  writer.WriteU32(mp4::FOURCC_NCLX);
+
+  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.primaries));
+  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.transfer));
+  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.matrix));
+
+  gfx::ColorSpace::RangeID range = box_->video_color_space.range;
+  writer.WriteU8(range == gfx::ColorSpace::RangeID::FULL ? 0x80 : 0x00);
+
+  writer.EndBox();
+}
+
 // Mp4MovieVisualSampleEntryBoxWriter (`vp09`, `av01`, `avc1`, `hvc1`) class.
 Mp4MovieVisualSampleEntryBoxWriter::Mp4MovieVisualSampleEntryBoxWriter(
     const Mp4MuxerContext& context,
@@ -713,6 +740,11 @@ Mp4MovieVisualSampleEntryBoxWriter::Mp4MovieVisualSampleEntryBoxWriter(
 #endif
     default:
       NOTREACHED();
+  }
+
+  if (box_->color_information.has_value()) {
+    AddChildBox(std::make_unique<Mp4MovieColorInformationBoxWriter>(
+        context, box_->color_information.value()));
   }
 }
 

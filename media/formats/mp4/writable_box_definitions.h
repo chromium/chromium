@@ -136,6 +136,15 @@ struct MEDIA_EXPORT AV1CodecConfiguration : FullBox {
   std::vector<uint8_t> av1_decoder_configuration_data;
 };
 
+struct MEDIA_EXPORT ColorInformation : Box {
+  explicit ColorInformation(VideoColorSpace video_color_space);
+  ~ColorInformation();
+  ColorInformation(const ColorInformation&);
+  ColorInformation& operator=(const ColorInformation&);
+
+  VideoColorSpace video_color_space;
+};
+
 // VisualSampleEntry (`avc1`, `hvc1`, `vp09`, `av01`) box.
 struct MEDIA_EXPORT VisualSampleEntry : Box {
   explicit VisualSampleEntry(VideoCodec codec);
@@ -165,6 +174,7 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
 
   PixelAspectRatioBox pixel_aspect_ratio;
   BitRate bit_rate;
+  std::optional<ColorInformation> color_information;
 };
 
 // Opus media data (`dOps`) box.
