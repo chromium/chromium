@@ -275,7 +275,8 @@ MediaBufferScopedPointer::MediaBufferScopedPointer(IMFMediaBuffer* media_buffer)
       buffer_(nullptr),
       max_length_(0),
       current_length_(0) {
-  HRESULT hr = media_buffer_->Lock(&buffer_, &max_length_, &current_length_);
+  HRESULT hr = media_buffer_->Lock(&buffer_.AsEphemeralRawAddr(), &max_length_,
+                                   &current_length_);
   CHECK(SUCCEEDED(hr));
 }
 

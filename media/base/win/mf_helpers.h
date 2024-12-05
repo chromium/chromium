@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
@@ -82,15 +81,13 @@ class MEDIA_EXPORT MediaBufferScopedPointer {
 
   ~MediaBufferScopedPointer();
 
-  uint8_t* get() { return buffer_; }
+  raw_ptr<uint8_t, AllowPtrArithmetic> get() { return buffer_; }
   DWORD current_length() const { return current_length_; }
   DWORD max_length() const { return max_length_; }
 
  private:
   Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION uint8_t* buffer_;
+  raw_ptr<uint8_t, AllowPtrArithmetic> buffer_;
   DWORD max_length_;
   DWORD current_length_;
 };

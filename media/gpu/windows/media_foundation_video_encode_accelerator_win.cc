@@ -3054,7 +3054,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     DCHECK(svc_parser_);
     TemporalScalabilityIdExtractor::BitstreamMetadata bits_md;
     MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
-    if (!svc_parser_->ParseChunk(base::span(scoped_buffer.get(), size),
+    if (!svc_parser_->ParseChunk(base::span(scoped_buffer.get().get(), size),
                                  metadata.frame_id, bits_md)) {
       NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                          "Parse bitstream failed"});
