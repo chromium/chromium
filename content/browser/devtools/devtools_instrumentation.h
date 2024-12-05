@@ -253,6 +253,7 @@ void DidUpdatePrefetchStatus(
     FrameTreeNode* ftn,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prefetch_url,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
     PrefetchStatus prefetch_status,
     const std::string& request_id);
@@ -289,6 +290,7 @@ void DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
     std::optional<PrerenderFinalStatus> prerender_status,
     std::optional<std::string> disallowed_mojo_interface,

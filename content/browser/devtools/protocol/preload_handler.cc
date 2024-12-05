@@ -363,6 +363,7 @@ void PreloadHandler::DidUpdatePrefetchStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::string& initiating_frame_id,
     const GURL& prefetch_url,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
     PrefetchStatus prefetch_status,
     const std::string& request_id) {
@@ -378,8 +379,9 @@ void PreloadHandler::DidUpdatePrefetchStatus(
           .Build();
   if (PreloadingTriggeringOutcomeSupportedByPrefetch(status)) {
     frontend_->PrefetchStatusUpdated(
-        std::move(preloading_attempt_key), initiating_frame_id,
-        prefetch_url.spec(), PreloadingTriggeringOutcomeToProtocol(status),
+        std::move(preloading_attempt_key), preload_pipeline_id.ToString(),
+        initiating_frame_id, prefetch_url.spec(),
+        PreloadingTriggeringOutcomeToProtocol(status),
         PrefetchStatusToProtocol(prefetch_status), request_id);
   }
 }
@@ -388,6 +390,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
     std::optional<PrerenderFinalStatus> prerender_status,
     std::optional<std::string> disallowed_mojo_interface,
@@ -443,7 +446,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
 
   if (PreloadingTriggeringOutcomeSupportedByPrerender(status)) {
     frontend_->PrerenderStatusUpdated(
-        std::move(preloading_attempt_key),
+        std::move(preloading_attempt_key), preload_pipeline_id.ToString(),
         PreloadingTriggeringOutcomeToProtocol(status),
         std::move(protocol_prerender_status),
         std::move(protocol_disallowed_mojo_interface),
@@ -537,15 +540,16 @@ void PreloadHandler::SendCurrentPreloadStatus() {
     const std::string initiating_frame_id =
         document->GetDevToolsFrameToken().ToString();
     for (const auto& [key, data] : preload_storage->prefetch_data_map()) {
-      DidUpdatePrefetchStatus(
-          initiator_devtools_navigation_token, initiating_frame_id,
-          /*prefetch_url=*/key, data.outcome, data.status, data.request_id);
+      DidUpdatePrefetchStatus(initiator_devtools_navigation_token,
+                              initiating_frame_id,
+                              /*prefetch_url=*/key, data.preload_pipeline_id,
+                              data.outcome, data.status, data.request_id);
     }
     for (const auto& [key, data] : preload_storage->prerender_data_map()) {
       DidUpdatePrerenderStatus(
           initiator_devtools_navigation_token, /*prerender_url=*/key.first,
-          /*target_hint=*/key.second, data.outcome, data.status,
-          data.disallowed_mojo_interface,
+          /*target_hint=*/key.second, data.preload_pipeline_id, data.outcome,
+          data.status, data.disallowed_mojo_interface,
           data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);
     }
   }

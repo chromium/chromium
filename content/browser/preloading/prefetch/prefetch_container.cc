@@ -823,7 +823,8 @@ void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
         preloading_trigger_outcome.has_value()) {
       devtools_instrumentation::DidUpdatePrefetchStatus(
           ftn, initiator_devtools_navigation_token_.value(), GetURL(),
-          preloading_trigger_outcome.value(), prefetch_status, RequestId());
+          preload_pipeline_info_->id(), preloading_trigger_outcome.value(),
+          prefetch_status, RequestId());
     }
   }
 }

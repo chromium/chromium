@@ -12424,6 +12424,15 @@ experimental domain Preload
       array of RuleSetId ruleSetIds
       array of DOM.BackendNodeId nodeIds
 
+  # Chrome manages different types of preloads together using a
+  # concept of preloading pipeline. For example, if a site uses a
+  # SpeculationRules for prerender, Chrome first starts a prefetch and
+  # then upgrades it to prerender.
+  #
+  # CDP events for them are emitted separately but they share
+  # `PreloadPipelineId`.
+  type PreloadPipelineId extends string
+
   command enable
 
   command disable
@@ -12580,6 +12589,7 @@ experimental domain Preload
   event prefetchStatusUpdated
     parameters
       PreloadingAttemptKey key
+      PreloadPipelineId pipelineId
       # The frame id of the frame initiating prefetch.
       Page.FrameId initiatingFrameId
       string prefetchUrl
@@ -12598,6 +12608,7 @@ experimental domain Preload
   event prerenderStatusUpdated
     parameters
       PreloadingAttemptKey key
+      PreloadPipelineId pipelineId
       PreloadingStatus status
       optional PrerenderFinalStatus prerenderStatus
       # This is used to give users more information about the name of Mojo interface
