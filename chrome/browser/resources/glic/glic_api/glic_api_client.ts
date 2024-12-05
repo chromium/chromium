@@ -155,3 +155,9 @@ export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
   window.addEventListener('message', messageHandler);
   return promise;
 }
+
+// DEPRECATED: Provided for the old code-injected style of booting the API.
+// Supports the test client. May be removed in the future.
+export function boot(windowProxy: WindowProxy): GlicHostRegistry {
+  return new GlicHostRegistryImpl(windowProxy);
+}
