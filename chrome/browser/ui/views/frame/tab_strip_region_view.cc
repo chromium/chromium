@@ -656,6 +656,11 @@ void TabStripRegionView::UpdateTabStripMargin() {
                             GetLayoutConstant(TAB_STRIP_PADDING) +
                             GetLayoutConstant(TAB_STRIP_PADDING) -
                             TabStyle::Get()->GetBottomCornerRadius();
+  } else if (features::IsTabstripComboButtonEnabled() &&
+             !tabs::GetDefaultTabSearchRightAligned()) {
+    // With the combobutton, this case has no caption buttons on the left side.
+    // Leave a padding so the tabstrip is after the corner radius.
+    tab_strip_left_margin = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
   }
 
   UpdateButtonBorders();
