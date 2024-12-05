@@ -632,18 +632,6 @@ class TabDragController : public views::WidgetObserver,
                                                bool exclude_dragged_view,
                                                gfx::NativeWindow* window);
 
-  // Sets the dragging info for the current dragged context. On Chrome OS, the
-  // dragging info include two window properties: one is to indicate if the
-  // tab-dragging process starts/stops, and the other is to indicate which
-  // window initiates the dragging. This function is supposed to be called
-  // whenever the dragged tabs are attached to a new tabstrip.
-  void SetTabDraggingInfo();
-
-  // Clears the tab dragging info for the current dragged context. This
-  // function is supposed to be called whenever the dragged tabs are detached
-  // from the old context or the tab dragging is ended.
-  void ClearTabDraggingInfo();
-
   // Tests whether a drag can be attached to a |window|.  Drags may be
   // disallowed for reasons such as the target: does not support tabs, is
   // showing a modal, has a different profile, is a different browser type

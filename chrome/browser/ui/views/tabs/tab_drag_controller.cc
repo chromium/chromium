@@ -1496,7 +1496,6 @@ void TabDragController::Attach(TabDragContext* attached_context,
   if (controller)
     attached_context_->OwnDragController(std::move(controller));
 
-  SetTabDraggingInfo();
   attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
           attached_context_->GetTabStripModel(), this);
@@ -1557,7 +1556,6 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
     }
   }
 
-  ClearTabDraggingInfo();
   attached_context_->DraggedTabsDetached();
   attached_context_ = nullptr;
   attached_views_.clear();
@@ -1846,10 +1844,6 @@ void TabDragController::EndDragImpl(EndDragType type) {
     if (previous_state != DragState::kNotStarted)
       RevertDrag();
   }  // else case the only tab we were dragging was deleted. Nothing to do.
-
-  // Clear tab dragging info after the complete/revert as CompleteDrag() may
-  // need to use some of the properties.
-  ClearTabDraggingInfo();
 
   // Clear out drag data so we don't attempt to do anything with it.
   drag_data_.clear();
@@ -2586,39 +2580,6 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   *window = window_finder_->GetLocalProcessWindowAtPoint(screen_point, exclude);
   return ref ? Liveness::ALIVE : Liveness::DELETED;
-}
-
-void TabDragController::SetTabDraggingInfo() {
-#if BUILDFLAG(IS_CHROMEOS)
-  TabDragContext* dragged_context =
-      attached_context_ ? attached_context_ : source_context_;
-  DCHECK(dragged_context->IsDragSessionActive() &&
-         current_state_ != DragState::kStopped);
-
-  aura::Window* dragged_window =
-      GetWindowForTabDraggingProperties(dragged_context);
-  dragged_window->SetProperty(ash::kIsDraggingTabsKey, true);
-#endif
-}
-
-void TabDragController::ClearTabDraggingInfo() {
-#if BUILDFLAG(IS_CHROMEOS)
-  TabDragContext* dragged_context =
-      attached_context_ ? attached_context_ : source_context_;
-  DCHECK(!dragged_context->IsDragSessionActive() ||
-         current_state_ == DragState::kStopped);
-  // Do not clear the dragging info properties for a to-be-destroyed window.
-  // They will be cleared later in Window's destructor. It's intentional as
-  // ash::SplitViewController::TabDraggedWindowObserver listens to both
-  // OnWindowDestroying() event and the window properties change event, and uses
-  // the two events to decide what to do next.
-  if (dragged_context->GetTabStripModel()->empty())
-    return;
-
-  aura::Window* dragged_window =
-      GetWindowForTabDraggingProperties(dragged_context);
-  dragged_window->ClearProperty(ash::kIsDraggingTabsKey);
-#endif
 }
 
 std::optional<tab_groups::TabGroupId>

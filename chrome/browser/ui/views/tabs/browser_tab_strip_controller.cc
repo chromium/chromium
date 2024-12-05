@@ -79,6 +79,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -544,6 +545,11 @@ void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
   BrowserView* source_browser_view = GetSourceBrowserViewInTabDragging();
   if (source_browser_view && source_browser_view != browser_view_)
     source_browser_view->frame()->SetTabDragKind(TabDragKind::kTab);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  browser_view_->GetWidget()->GetNativeWindow()->SetProperty(
+      ash::kIsDraggingTabsKey, true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BrowserTabStripController::OnStoppedDragging() {
@@ -556,6 +562,11 @@ void BrowserTabStripController::OnStoppedDragging() {
     browser_view_->frame()->SetTabDragKind(TabDragKind::kNone);
   if (source_browser_view && !TabDragController::IsActive())
     source_browser_view->frame()->SetTabDragKind(TabDragKind::kNone);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  browser_view_->GetWidget()->GetNativeWindow()->ClearProperty(
+      ash::kIsDraggingTabsKey);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BrowserTabStripController::OnKeyboardFocusedTabChanged(
