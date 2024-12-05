@@ -15,9 +15,9 @@ import collections
 import errno
 import json
 import os
-import shlex
 import platform
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -662,9 +662,9 @@ class MetaBuildWrapper:
       return 1
 
     tags = ['-tag=%s' % tag for tag in self.args.tags]
+    json_dir = self.TempDir()
 
     try:
-      json_dir = self.TempDir()
       json_file = self.PathJoin(json_dir, 'task.json')
       cmd = [
           self.PathJoin('tools', 'luci-go', 'swarming'),
@@ -1093,6 +1093,8 @@ class MetaBuildWrapper:
 
   def RunGNGen(self, vals, compute_inputs_for_analyze=False, check=True):
     build_dir = self.args.path
+    isolate_targets = None
+    isolate_map = None
 
     if check:
       cmd = self.GNCmd('gen', build_dir, '--check')
@@ -1148,7 +1150,7 @@ class MetaBuildWrapper:
       self.Print('GN gen failed: %d' % ret)
       return ret
 
-    if getattr(self.args, 'swarming_targets_file', None):
+    if isolate_targets is not None:
       ret = self.GenerateIsolates(vals, isolate_targets, isolate_map, build_dir)
 
     return ret
@@ -1981,6 +1983,7 @@ class MetaBuildWrapper:
     output_path = self.args.output_path
     if not self.Exists(path):
       self.WriteFailureAndRaise('"%s" does not exist' % path, output_path)
+    inp = None
 
     try:
       inp = json.loads(self.ReadFile(path))
