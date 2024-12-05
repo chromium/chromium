@@ -306,6 +306,10 @@ enum WebDXFeature {
   kWebOtp = 248,
   kPreservesPitch = 249,
   kViewportUnitVariants = 250,
+  kPromiseTry = 251,
+  kStringReplaceall = 252,
+  kStringWellformed = 253,
+  kWeakReferences = 254,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
