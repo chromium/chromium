@@ -14,53 +14,26 @@ import {QueueMode} from '../common/tts_types.js';
 
 import {Output} from './output/output.js';
 
-// TODO: determine why Delta types are not in the externs for chrome.downloads.
-// Pulled from
-// https://developer.chrome.com/docs/extensions/reference/downloads/#type-DownloadDelta
+type DownloadDelta = chrome.downloads.DownloadDelta;
+type DownloadItem = chrome.downloads.DownloadItem;
+import DownloadState = chrome.downloads.State;
 
-/** @typedef {{current: (boolean|undefined), previous: (boolean|undefined)}} */
-let BoolDelta;
-/** @typedef {{current: (string|undefined), previous: (string|undefined)}} */
-let StringDelta;
-/** @typedef {{current: (number|undefined), previous: (number|undefined)}} */
-let DoubleDelta;
-/**
- * @typedef {{
- *   canResume: (BoolDelta|undefined),
- *   danger: (StringDelta|undefined),
- *   endTime: (StringDelta|undefined),
- *   error: (StringDelta|undefined),
- *   exists: (BoolDelta|undefined),
- *   fileSize: (DoubleDelta|undefined),
- *   filename: (StringDelta|undefined),
- *   finalUrl: (StringDelta|undefined),
- *   id: number,
- *   mime: (StringDelta|undefined),
- *   paused: (BoolDelta|undefined),
- *   startTime: (StringDelta|undefined),
- *   state: (StringDelta|undefined),
- *   totalBytes: (DoubleDelta|undefined),
- *   url: (StringDelta|undefined)
- * }}
- */
-let DownloadDelta;
-const DownloadItem = chrome.downloads.DownloadItem;
-const DownloadState = chrome.downloads.State;
+interface DownloadInfo {
+  fileName: string;
+  notifyProgressId: number;
+  time: number;
+  percentComplete: number;
+}
 
 /** Handles all download events and notifications for ChromeVox. */
 export class DownloadHandler {
-  /** @private */
-  constructor() {
-    /**
-     * Maps download item ID to an object containing its file name and progress
-     * update function.
-     * @private {!Object<number, {fileName: string,
-     *                            notifyProgressId: number,
-     *                            time: number,
-     *                            percentComplete: number}>}
-     */
-    this.downloadItemData_ = {};
-  }
+  /**
+   * Maps download item ID to an object containing its file name and progress
+   * update function.
+   */
+  private downloadItemData_: Record<number, DownloadInfo> = {};
+
+  static instance: DownloadHandler;
 
   /**
    * Performs initialization. Populates downloadItemData_ object and registers
@@ -73,7 +46,8 @@ export class DownloadHandler {
     // Retrieve 20 most recent downloads sorted by most recent start time.
     chrome.downloads.search(
         {orderBy: ['-startTime'], limit: FILE_LIMIT},
-        results => DownloadHandler.instance.populateDownloadItemData_(results));
+        (results: DownloadItem[]) =>
+            DownloadHandler.instance.populateDownloadItemData_(results));
 
     // Note: No event listener for chrome.downloads.onCreated because
     // onCreated does not actually correspond to when the download starts;
@@ -84,25 +58,20 @@ export class DownloadHandler {
     // Fired when any of a DownloadItem's properties, except bytesReceived and
     // estimatedEndTime, change. Only contains properties that changed.
     chrome.downloads.onChanged.addListener(
-        item => DownloadHandler.instance.onChanged_(
-            /** @type {DownloadDelta} */ (item)));
+        (item: DownloadDelta) => DownloadHandler.instance.onChanged_(item));
   }
 
   /**
    * Notifies user of download progress for file.
-   * @param {number} id The ID of the file we are providing an update for.
-   * @private
+   * @param id The ID of the file we are providing an update for.
    */
-  notifyProgress_(id) {
+  private notifyProgress_(id: number): void {
     chrome.downloads.search(
-        {id}, results => this.notifyProgressResults_(results));
+        {id},
+        (results: DownloadItem[]) => this.notifyProgressResults_(results));
   }
 
-  /**
-   * @param {!Array<!DownloadItem>} results
-   * @private
-   */
-  notifyProgressResults_(results) {
+  notifyProgressResults_(results: DownloadItem[]) {
     if (results?.length !== 1) {
       return;
     }
@@ -152,22 +121,18 @@ export class DownloadHandler {
         return;
       }
 
-      const optSubs = [
-        storedItem.percentComplete,
+      const optSubs: string[] = [
+        storedItem.percentComplete.toString(),
         storedItem.fileName,
-        timeRemaining,
-        timeUnit,
+        timeRemaining.toString(),
+        timeUnit.toString(),
       ];
       this.speechAndBrailleOutput_(
           'download_progress', QueueMode.FLUSH, optSubs);
     }
   }
 
-  /**
-   * @param {!DownloadDelta} delta
-   * @private
-   */
-  onChanged_(delta) {
+  private onChanged_(delta: DownloadDelta): void {
     // The type of notification ChromeVox reports can be inferred based on the
     // available properties, as they have been observed to be mutually
     // exclusive.
@@ -182,7 +147,7 @@ export class DownloadHandler {
     // New download if we're not tracking the item and if the filename was
     // previously empty.
     if (!storedItem && name?.previous === '') {
-      this.startTrackingDownload_(delta);
+      this.startTrackingDownloadDelta_(delta);
 
       // Speech and braille output.
       const optSub = this.downloadItemData_[id].fileName;
@@ -225,11 +190,7 @@ export class DownloadHandler {
     }
   }
 
-  /**
-   * @param {!Array<!DownloadItem>} results
-   * @private
-   */
-  populateDownloadItemData_(results) {
+  private populateDownloadItemData_(results: DownloadItem[]): void {
     if (!results || results.length === 0) {
       return;
     }
@@ -237,19 +198,19 @@ export class DownloadHandler {
     for (const item of results) {
       // If download is in progress, start tracking it.
       if (item.state === DownloadState.IN_PROGRESS) {
-        this.startTrackingDownload_(item);
+        this.startTrackingDownloadItem_(item);
       }
     }
   }
 
   /**
    * Output download notification as speech and braille.
-   * @param{string} msgId The msgId for Output.
-   * @param{QueueMode} queueMode The queue mode.
-   * @param{Array<string>} optSubs Substitution strings.
-   * @private
+   * @param msgId The msgId for Output.
+   * @param queueMode The queue mode.
+   * @param optSubs Substitution strings.
    */
-  speechAndBrailleOutput_(msgId, queueMode, optSubs) {
+  private speechAndBrailleOutput_(
+      msgId: string, queueMode: QueueMode, optSubs: string[]): void {
     if (SettingsManager.get('announceDownloadNotifications')) {
       const msg = Msgs.getMsg(msgId, optSubs);
       new Output().withString(msg).withQueueMode(queueMode).go();
@@ -259,17 +220,16 @@ export class DownloadHandler {
 
   /**
    * Store item data.
-   * @param {!DownloadItem|!DownloadDelta} item The download item to track.
-   * @private
+   * @param item The download item to track.
    */
-  startTrackingDownload_(item) {
+  private startTrackingDownloadItem_(item: DownloadItem): void {
     const id = item.id;
     // Don't add if we are already tracking file.
     if (this.downloadItemData_[id]) {
       return;
     }
 
-    const fullPath = item.filename.current ?? item.filename;
+    const fullPath = item.filename;
     const fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1);
     const notifyProgressId =
         setInterval(() => this.notifyProgress_(id), INTERVAL_TIME_MILLISECONDS);
@@ -282,29 +242,39 @@ export class DownloadHandler {
     this.downloadItemData_[id] =
         {fileName, notifyProgressId, time: Date.now(), percentComplete};
   }
-}
 
-/** @type {DownloadHandler} */
-DownloadHandler.instance;
+  /**
+   * Store item data.
+   * @param item The download item to track.
+   */
+  private startTrackingDownloadDelta_(item: DownloadDelta) {
+    const id = item.id;
+    // Don't add if we are already tracking file.
+    if (this.downloadItemData_[id]) {
+      return;
+    }
+
+    const fullPath = item.filename?.current;
+    const fileName =
+        fullPath ? fullPath.substring(fullPath.lastIndexOf('/') + 1) : '';
+    const notifyProgressId =
+        setInterval(() => this.notifyProgress_(id), INTERVAL_TIME_MILLISECONDS);
+    this.downloadItemData_[id] =
+        {fileName, notifyProgressId, time: Date.now(), percentComplete: 0};
+  }
+}
 
 // Local to module.
 
 /**
  * Threshold value used when determining whether to report an update to user.
- * @const {number}
  */
 const UPDATE_THRESHOLD = 100;
 
-/**
- * The limit for the number of results we receive when querying for downloads.
- * @const {number}
- */
+/** The limit for the number of download results to receive when querying. */
 const FILE_LIMIT = 20;
 
-/**
- * The time interval, in milliseconds, for calling notifyProgress.
- * @const {number}
- */
+/** The time interval, in milliseconds, for calling notifyProgress. */
 const INTERVAL_TIME_MILLISECONDS = 10000;
 
 TestImportManager.exportForTesting(DownloadHandler);
