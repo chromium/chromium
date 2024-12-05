@@ -141,8 +141,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   content_settings::RuleMetaData metadata;
   metadata.set_session_model(content_settings::mojom::SessionModel::ONE_TIME);
   metadata.set_last_modified(now);
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kActiveContentSettingExpiry) &&
+  if (content_settings::ShouldTypeExpireActively(content_settings_type) &&
       !constraints.lifetime().is_zero()) {
     metadata.SetExpirationAndLifetime(now + constraints.lifetime(),
                                       constraints.lifetime());
