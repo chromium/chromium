@@ -1412,6 +1412,11 @@ deps = {
   'src/tools/luci-go': {
       'packages': [
         {
+          'package': 'infra/tools/luci/cas/${{platform}}',
+          'version': Var('luci_go'),
+        },
+        # TODO(crbug.com/382506663): Remove after investigation/deprecation
+        {
           'package': 'infra/tools/luci/isolate/${{platform}}',
           'version': Var('luci_go'),
         },
