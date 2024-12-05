@@ -23,8 +23,8 @@
   <span slot="title" id="pages-label">$i18n{pagesLabel}</span>
   <div slot="controls">
     <select class="md-select" aria-labelledby="pages-label"
-        disabled$="[[controlsDisabled_]]" value="{{selectedValue::change}}"
-        on-blur="onSelectBlur_">
+        disabled$="[[controlsDisabled_]]" value="[[selectedValue]]"
+        on-change="onSelectChange" on-blur="onSelectBlur_">
       <option value="[[pagesValueEnum_.ALL]]" selected>
         $i18n{optionAllPages}
       </option>

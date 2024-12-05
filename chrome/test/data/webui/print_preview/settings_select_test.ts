@@ -8,7 +8,6 @@ import type {PrintPreviewModelElement, PrintPreviewSettingsSelectElement, Select
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {getMediaSizeCapabilityWithCustomNames, selectOption} from './print_preview_test_utils.js';
 
@@ -97,14 +96,21 @@ suite('SettingsSelectTest', function() {
         option0,
         JSON.stringify(settingsSelect.getSettingValue('headerFooter')));
     assertTrue(settingsSelect.getSetting('headerFooter').setFromUi);
+    assertEquals(option0, settingsSelect.selectedValue);
     assertEquals(0, select.selectedIndex);
+    assertEquals(option0, select.value);
 
-    // Verify that selecting from outside works.
+    // Verify that selecting from outside works. This should update the UI,
+    // but does not update the setting. This is because selectValue() is
+    // intended for use by client code to update the UI programmatically (e.g.
+    // in response to setting changes), so we don't want to call setSetting()
+    // and set setFromUi = true for this case.
     settingsSelect.selectValue(option1);
-    await eventToPromise('process-select-change', settingsSelect);
-    assertEquals(
-        option1,
-        JSON.stringify(settingsSelect.getSettingValue('headerFooter')));
+    assertEquals(option1, settingsSelect.selectedValue);
+    assertEquals(option1, select.value);
     assertEquals(1, select.selectedIndex);
+    assertEquals(
+        option0,
+        JSON.stringify(settingsSelect.getSettingValue('headerFooter')));
   });
 });

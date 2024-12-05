@@ -6,7 +6,6 @@ import type {PrintPreviewMarginsSettingsElement, PrintPreviewModelElement} from 
 import {MarginsType, State} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
@@ -29,12 +28,11 @@ suite('MarginsSettingsTest', function() {
   });
 
   // Tests that setting the setting updates the UI.
-  test('set setting', async () => {
+  test('set setting', () => {
     const select = marginsSection.shadowRoot!.querySelector('select')!;
     assertEquals(MarginsType.DEFAULT.toString(), select.value);
 
     marginsSection.setSetting('margins', MarginsType.MINIMUM);
-    await eventToPromise('process-select-change', marginsSection);
     assertEquals(MarginsType.MINIMUM.toString(), select.value);
   });
 
@@ -65,7 +63,6 @@ suite('MarginsSettingsTest', function() {
     assertFalse(select.disabled);
 
     model.set('settings.pagesPerSheet.value', 2);
-    await eventToPromise('process-select-change', marginsSection);
     assertEquals(
         MarginsType.DEFAULT, marginsSection.getSettingValue('margins'));
     assertEquals(MarginsType.DEFAULT.toString(), select.value);
@@ -86,7 +83,6 @@ suite('MarginsSettingsTest', function() {
 
     // Changing layout clears custom margins.
     model.set('settings.layout.value', true);
-    await eventToPromise('process-select-change', marginsSection);
     assertEquals(
         MarginsType.DEFAULT, marginsSection.getSettingValue('margins'));
     assertEquals(MarginsType.DEFAULT.toString(), select.value);
@@ -98,7 +94,6 @@ suite('MarginsSettingsTest', function() {
     model.set(
         'settings.mediaSize.value',
         '{height_microns: 400, width_microns: 300}');
-    await eventToPromise('process-select-change', marginsSection);
     assertEquals(
         MarginsType.DEFAULT, marginsSection.getSettingValue('margins'));
     assertEquals(MarginsType.DEFAULT.toString(), select.value);

@@ -38,7 +38,7 @@
             settings.duplexShortEdge.value, dark)]];"
           disabled$="[[getDisabled_(
             settings.duplexShortEdge.setByPolicy, disabled)]]"
-          value="{{selectedValue::change}}">
+          value="[[selectedValue]]" on-change="onSelectChange">
         <option value="[[duplexValueEnum_.LONG_EDGE]]">
           $i18n{optionLongEdge}
         </option>

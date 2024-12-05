@@ -5,7 +5,7 @@
   <div slot="controls">
     <select class="md-select" aria-labelledby="margins-label"
         disabled$="[[marginsDisabled_]]"
-        value="{{selectedValue::change}}">
+        value="[[selectedValue]]" on-change="onSelectChange">
       <!-- The order of these options must match the natural order of their
       values, which come from MarginsType. -->
       <option value="[[marginsTypeEnum_.DEFAULT]]" selected>
