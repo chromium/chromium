@@ -7002,7 +7002,7 @@
   {
     "name": "price-insights",
     "owners": [ "qib@google.com", "chrome-shopping-eng@google.com", "chrommerce-eng@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 135
   },
   {
     "name": "price-insights-high-price-ios",
@@ -7025,7 +7025,7 @@
   {
     "name": "price-tracking-subscription-service-locale-key",
     "owners": [ "qib@google.com", "chrommerce-eng@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 135
   },
   {
     "name": "price-tracking-subscription-service-product-version",
