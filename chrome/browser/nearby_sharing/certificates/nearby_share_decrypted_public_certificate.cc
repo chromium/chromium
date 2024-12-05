@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 #include "components/cross_device/logging/logging.h"
 #include "crypto/aead.h"
-#include "crypto/encryptor.h"
+#include "crypto/aes_ctr.h"
 #include "crypto/hmac.h"
 #include "crypto/signature_verifier.h"
 
@@ -37,22 +37,13 @@ bool IsDataValid(base::Time not_before,
 std::optional<std::vector<uint8_t>> DecryptMetadataKey(
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key,
     const crypto::SymmetricKey* secret_key) {
-  std::unique_ptr<crypto::Encryptor> encryptor =
-      CreateNearbyShareCtrEncryptor(secret_key, encrypted_metadata_key.salt());
-  if (!encryptor) {
-    CD_LOG(ERROR, Feature::NS)
-        << "Cannot decrypt metadata key: Could not create CTR encryptor.";
-    return std::nullopt;
-  }
+  auto key = base::as_byte_span(secret_key->key());
+  auto counter = DeriveNearbyShareKey(encrypted_metadata_key.salt(),
+                                      crypto::aes_ctr::kCounterSize);
 
-  std::vector<uint8_t> decrypted_metadata_key;
-  if (!encryptor->Decrypt(
-          base::as_byte_span(encrypted_metadata_key.encrypted_key()),
-          &decrypted_metadata_key)) {
-    return std::nullopt;
-  }
-
-  return decrypted_metadata_key;
+  return crypto::aes_ctr::Decrypt(
+      key, base::span<const uint8_t, crypto::aes_ctr::kCounterSize>(counter),
+      base::as_byte_span(encrypted_metadata_key.encrypted_key()));
 }
 
 // Attempts to decrypt |encrypted_metadata| with |metadata_encryption_key|,

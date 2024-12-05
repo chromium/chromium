@@ -11,11 +11,6 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 
-namespace crypto {
-class Encryptor;
-class SymmetricKey;
-}  // namespace crypto
-
 // Returns true if the |current_time| exceeds |not_after| by more than the
 // public certificate clock-skew tolerance if applicable.
 bool IsNearbyShareCertificateExpired(base::Time current_time,
@@ -46,10 +41,5 @@ std::vector<uint8_t> DeriveNearbyShareKey(base::span<const uint8_t> key,
 
 // Generates a random byte array with size |num_bytes|.
 std::vector<uint8_t> GenerateRandomBytes(size_t num_bytes);
-
-// Creates a CTR encryptor used for metadata key encryption/decryption.
-std::unique_ptr<crypto::Encryptor> CreateNearbyShareCtrEncryptor(
-    const crypto::SymmetricKey* secret_key,
-    base::span<const uint8_t> salt);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_COMMON_H_
