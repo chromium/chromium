@@ -25,11 +25,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/popup_row_autofill_ai_feedback_view.h"
 #include "chrome/browser/ui/views/autofill/popup/lazy_loading_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -565,13 +565,13 @@ std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
 
 // Creates the row for the `SuggestionType::kPredictionImprovementsFeedback`
 // suggestion.
-std::unique_ptr<PopupRowPredictionImprovementsFeedbackView>
+std::unique_ptr<autofill_ai::PopupRowAutofillAiFeedbackView>
 CreatePredictionImprovementsFeedbackRow(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     PopupRowView::SelectionDelegate& selection_delegate,
     int line_number) {
-  return std::make_unique<PopupRowPredictionImprovementsFeedbackView>(
+  return std::make_unique<autofill_ai::PopupRowAutofillAiFeedbackView>(
       a11y_selection_delegate, selection_delegate, controller, line_number);
 }
 

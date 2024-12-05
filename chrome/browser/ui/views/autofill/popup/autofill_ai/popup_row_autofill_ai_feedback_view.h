@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_PREDICTION_IMPROVEMENTS_FEEDBACK_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_PREDICTION_IMPROVEMENTS_FEEDBACK_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_AI_POPUP_ROW_AUTOFILL_AI_FEEDBACK_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_AI_POPUP_ROW_AUTOFILL_AI_FEEDBACK_VIEW_H_
 
 #include <optional>
 
@@ -17,16 +17,18 @@ class View;
 }  // namespace views
 
 namespace autofill {
-
 class AutofillPopupController;
+}  // namespace autofill
+
+namespace autofill_ai {
 
 // A class for prediction improvements suggestions feedback.
-class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
-  METADATA_HEADER(PopupRowPredictionImprovementsFeedbackView, PopupRowView)
+class PopupRowAutofillAiFeedbackView : public autofill::PopupRowView {
+  METADATA_HEADER(PopupRowAutofillAiFeedbackView, autofill::PopupRowView)
 
  public:
   enum class FocusableControl {
-    kManagePredictionImprovementsLink,
+    kManageAutofillAiLink,
     kThumbsUp,
     kThumbsDown,
   };
@@ -34,17 +36,17 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
   static constexpr int kLearnMoreStyledLabelViewID = 123;
   static constexpr int kFeedbackTextAndButtonsContainerViewID = 321;
 
-  PopupRowPredictionImprovementsFeedbackView(
+  PopupRowAutofillAiFeedbackView(
       AccessibilitySelectionDelegate& a11y_selection_delegate,
       SelectionDelegate& selection_delegate,
-      base::WeakPtr<AutofillPopupController> controller,
+      base::WeakPtr<autofill::AutofillPopupController> controller,
       int line_number);
 
-  PopupRowPredictionImprovementsFeedbackView(
-      const PopupRowPredictionImprovementsFeedbackView&) = delete;
-  PopupRowPredictionImprovementsFeedbackView& operator=(
-      const PopupRowPredictionImprovementsFeedbackView&) = delete;
-  ~PopupRowPredictionImprovementsFeedbackView() override;
+  PopupRowAutofillAiFeedbackView(const PopupRowAutofillAiFeedbackView&) =
+      delete;
+  PopupRowAutofillAiFeedbackView& operator=(
+      const PopupRowAutofillAiFeedbackView&) = delete;
+  ~PopupRowAutofillAiFeedbackView() override;
 
   views::ImageButton* GetThumbsUpButtonForTest() { return thumbs_up_button_; }
   views::ImageButton* GetThumbsDownButtonForTest() {
@@ -68,7 +70,7 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
   // can be just clicked, highlighting the area looks weird.
   // Calls the parent's method unless the selection was triggered by mouse.
   void OnCellSelected(std::optional<CellType> type,
-                      PopupCellSelectionSource source) override;
+                      autofill::PopupCellSelectionSource source) override;
 
  private:
   views::View& GetFocusableControlView(FocusableControl focused_control);
@@ -82,6 +84,6 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
   raw_ptr<views::ImageButton> thumbs_down_button_ = nullptr;
 };
 
-}  // namespace autofill
+}  // namespace autofill_ai
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_PREDICTION_IMPROVEMENTS_FEEDBACK_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_AI_POPUP_ROW_AUTOFILL_AI_FEEDBACK_VIEW_H_

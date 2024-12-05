@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/popup_row_autofill_ai_feedback_view.h"
 
 #include <algorithm>
 #include <array>
@@ -41,9 +41,13 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-namespace autofill {
+namespace autofill_ai {
 
 namespace {
+
+using autofill::AutofillPopupController;
+using autofill::PopupRowContentView;
+using autofill::PopupRowView;
 
 // The size of the icons used in the buttons.
 constexpr int kIconSize = 16;
@@ -129,7 +133,7 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
   auto feedback_title_and_button_container =
       views::Builder<views::BoxLayoutView>()
           .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-          .SetID(PopupRowPredictionImprovementsFeedbackView::
+          .SetID(PopupRowAutofillAiFeedbackView::
                      kFeedbackTextAndButtonsContainerViewID)
           .Build();
   views::StyledLabel::RangeStyleInfo style_info =
@@ -160,8 +164,8 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
                       replacement_offsets[0] +
                           manage_prediction_improvements_link_text.length()),
                   style_info)
-              .SetID(PopupRowPredictionImprovementsFeedbackView::
-                         kLearnMoreStyledLabelViewID)
+              .SetID(
+                  PopupRowAutofillAiFeedbackView::kLearnMoreStyledLabelViewID)
               .Build()),
       1);
 
@@ -204,18 +208,17 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
 // The focusable controls form a visually recognizable horizontal line of
 // elements on the UI. These controls are focused by the LEFT/RIGHT keys.
 // This function defines the order in which controls are selected and its list
-// must be in sync with `PopupRowPredictionImprovementsFeedbackView`'s rendered
+// must be in sync with `PopupRowAutofillAiFeedbackView`'s rendered
 // views. It returns the `FocusableControl` which should have focus next after
 // the reference `control`, wrapping the list, so that if the current `control`
 // is the last one, the next will be the first element if moving `forward`.
-PopupRowPredictionImprovementsFeedbackView::FocusableControl
+PopupRowAutofillAiFeedbackView::FocusableControl
 GetNextHorizontalFocusableControl(
-    PopupRowPredictionImprovementsFeedbackView::FocusableControl control,
+    PopupRowAutofillAiFeedbackView::FocusableControl control,
     bool forward) {
-  using Control = PopupRowPredictionImprovementsFeedbackView::FocusableControl;
+  using Control = PopupRowAutofillAiFeedbackView::FocusableControl;
   static constexpr std::array kControls{
-      Control::kManagePredictionImprovementsLink, Control::kThumbsUp,
-      Control::kThumbsDown};
+      Control::kManageAutofillAiLink, Control::kThumbsUp, Control::kThumbsDown};
   const auto found_it = std::find(kControls.begin(), kControls.end(), control);
   CHECK(found_it != kControls.end());
 
@@ -228,12 +231,11 @@ GetNextHorizontalFocusableControl(
 
 }  // namespace
 
-PopupRowPredictionImprovementsFeedbackView::
-    PopupRowPredictionImprovementsFeedbackView(
-        AccessibilitySelectionDelegate& a11y_selection_delegate,
-        SelectionDelegate& selection_delegate,
-        base::WeakPtr<AutofillPopupController> controller,
-        int line_number)
+PopupRowAutofillAiFeedbackView::PopupRowAutofillAiFeedbackView(
+    AccessibilitySelectionDelegate& a11y_selection_delegate,
+    SelectionDelegate& selection_delegate,
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number)
     : PopupRowView(
           a11y_selection_delegate,
           selection_delegate,
@@ -244,18 +246,18 @@ PopupRowPredictionImprovementsFeedbackView::
               &AutofillPopupController::PerformButtonActionForSuggestion,
               controller,
               line_number,
-              PredictionImprovementsButtonActions::kLearnMoreClicked))) {
+              autofill::PredictionImprovementsButtonActions::
+                  kLearnMoreClicked))) {
   CHECK(line_number < controller->GetLineCount() &&
         !controller->GetSuggestionAt(line_number).voice_over->empty());
 
   manage_prediction_improvements_link_ = GetContentView().GetViewByID(
-      PopupRowPredictionImprovementsFeedbackView::kLearnMoreStyledLabelViewID);
+      PopupRowAutofillAiFeedbackView::kLearnMoreStyledLabelViewID);
   CHECK(manage_prediction_improvements_link_);
 
   // Create the feedback buttons.
-  auto* feedback_text_and_buttons_container =
-      GetContentView().GetViewByID(PopupRowPredictionImprovementsFeedbackView::
-                                       kFeedbackTextAndButtonsContainerViewID);
+  auto* feedback_text_and_buttons_container = GetContentView().GetViewByID(
+      PopupRowAutofillAiFeedbackView::kFeedbackTextAndButtonsContainerViewID);
   CHECK(feedback_text_and_buttons_container);
   auto* buttons_wrapper = feedback_text_and_buttons_container->AddChildView(
       views::Builder<views::BoxLayoutView>()
@@ -268,32 +270,31 @@ PopupRowPredictionImprovementsFeedbackView::
       base::BindRepeating(
           &AutofillPopupController::PerformButtonActionForSuggestion,
           controller, line_number,
-          PredictionImprovementsButtonActions::kThumbsUpClicked)));
+          autofill::PredictionImprovementsButtonActions::kThumbsUpClicked)));
   thumbs_down_button_ = buttons_wrapper->AddChildView(CreateFeedbackButton(
       vector_icons::kThumbDownIcon,
       base::BindRepeating(
           &AutofillPopupController::PerformButtonActionForSuggestion,
           controller, line_number,
-          PredictionImprovementsButtonActions::kThumbsDownClicked)));
+          autofill::PredictionImprovementsButtonActions::kThumbsDownClicked)));
 
   auto* content_layout = static_cast<views::BoxLayout*>(
       feedback_text_and_buttons_container->GetLayoutManager());
   content_layout->SetFlexForView(buttons_wrapper, 0);
 }
 
-PopupRowPredictionImprovementsFeedbackView::
-    ~PopupRowPredictionImprovementsFeedbackView() = default;
+PopupRowAutofillAiFeedbackView::~PopupRowAutofillAiFeedbackView() = default;
 
-void PopupRowPredictionImprovementsFeedbackView::SetSelectedCell(
+void PopupRowAutofillAiFeedbackView::SetSelectedCell(
     std::optional<CellType> cell) {
   autofill::PopupRowView::SetSelectedCell(cell);
   UpdateFocusedControl(
       cell == CellType::kContent
-          ? std::optional(FocusableControl::kManagePredictionImprovementsLink)
+          ? std::optional(FocusableControl::kManageAutofillAiLink)
           : std::nullopt);
 }
 
-bool PopupRowPredictionImprovementsFeedbackView::HandleKeyPressEvent(
+bool PopupRowAutofillAiFeedbackView::HandleKeyPressEvent(
     const input::NativeWebKeyboardEvent& event) {
   if (!focused_control_.has_value()) {
     return PopupRowView::HandleKeyPressEvent(event);
@@ -310,20 +311,20 @@ bool PopupRowPredictionImprovementsFeedbackView::HandleKeyPressEvent(
       return true;
     case ui::VKEY_RETURN:
       switch (*focused_control_) {
-        case FocusableControl::kManagePredictionImprovementsLink:
+        case FocusableControl::kManageAutofillAiLink:
           controller()->PerformButtonActionForSuggestion(
               line_number(),
-              PredictionImprovementsButtonActions::kLearnMoreClicked);
+              autofill::PredictionImprovementsButtonActions::kLearnMoreClicked);
           break;
         case FocusableControl::kThumbsUp:
           controller()->PerformButtonActionForSuggestion(
               line_number(),
-              PredictionImprovementsButtonActions::kThumbsUpClicked);
+              autofill::PredictionImprovementsButtonActions::kThumbsUpClicked);
           break;
         case FocusableControl::kThumbsDown:
           controller()->PerformButtonActionForSuggestion(
-              line_number(),
-              PredictionImprovementsButtonActions::kThumbsDownClicked);
+              line_number(), autofill::PredictionImprovementsButtonActions::
+                                 kThumbsDownClicked);
           break;
       }
       UpdateFocusedControl(std::nullopt);
@@ -333,21 +334,20 @@ bool PopupRowPredictionImprovementsFeedbackView::HandleKeyPressEvent(
   return PopupRowView::HandleKeyPressEvent(event);
 }
 
-void PopupRowPredictionImprovementsFeedbackView::OnCellSelected(
+void PopupRowAutofillAiFeedbackView::OnCellSelected(
     std::optional<CellType> type,
-    PopupCellSelectionSource source) {
-  if (source == PopupCellSelectionSource::kMouse) {
+    autofill::PopupCellSelectionSource source) {
+  if (source == autofill::PopupCellSelectionSource::kMouse) {
     return;
   }
 
   PopupRowView::OnCellSelected(type, source);
 }
 
-views::View&
-PopupRowPredictionImprovementsFeedbackView::GetFocusableControlView(
+views::View& PopupRowAutofillAiFeedbackView::GetFocusableControlView(
     FocusableControl focused_control) {
   switch (focused_control) {
-    case FocusableControl::kManagePredictionImprovementsLink:
+    case FocusableControl::kManageAutofillAiLink:
       return *this;
     case FocusableControl::kThumbsUp:
       return *thumbs_up_button_;
@@ -356,7 +356,7 @@ PopupRowPredictionImprovementsFeedbackView::GetFocusableControlView(
   }
 }
 
-void PopupRowPredictionImprovementsFeedbackView::UpdateFocusedControl(
+void PopupRowAutofillAiFeedbackView::UpdateFocusedControl(
     std::optional<FocusableControl> new_focused_control) {
   if (focused_control_ == new_focused_control) {
     return;
@@ -380,7 +380,7 @@ void PopupRowPredictionImprovementsFeedbackView::UpdateFocusedControl(
   }
 
   manage_prediction_improvements_link_->SetBackground(
-      new_focused_control == FocusableControl::kManagePredictionImprovementsLink
+      new_focused_control == FocusableControl::kManageAutofillAiLink
           ? views::CreateThemedRoundedRectBackground(
                 ui::kColorDropdownBackgroundSelected,
                 ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
@@ -396,7 +396,7 @@ void PopupRowPredictionImprovementsFeedbackView::UpdateFocusedControl(
   focused_control_ = new_focused_control;
 }
 
-BEGIN_METADATA(PopupRowPredictionImprovementsFeedbackView)
+BEGIN_METADATA(PopupRowAutofillAiFeedbackView)
 END_METADATA
 
-}  // namespace autofill
+}  // namespace autofill_ai

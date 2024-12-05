@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/popup_row_autofill_ai_feedback_view.h"
 
 #include <memory>
 #include <optional>
@@ -35,16 +35,17 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
-namespace autofill {
+namespace autofill_ai {
 
 namespace {
-bool IsA11ySelected(const views::View& view) {
-  ui::AXNodeData node_data;
-  view.GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
-}
-}  // namespace
 
+using autofill::MockAccessibilitySelectionDelegate;
+using autofill::MockAutofillPopupController;
+using autofill::MockSelectionDelegate;
+using autofill::PopupCellSelectionSource;
+using autofill::PopupRowView;
+using autofill::PopupViewViews;
+using autofill::PredictionImprovementsButtonActions;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::MockFunction;
@@ -53,8 +54,15 @@ using ::testing::Ref;
 using ::testing::Return;
 using ::testing::VariantWith;
 
-class PopupRowPredictionImprovementsFeedbackViewTest
-    : public ChromeViewsTestBase {
+bool IsA11ySelected(const views::View& view) {
+  ui::AXNodeData node_data;
+  view.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+}
+
+}  // namespace
+
+class PopupRowAutofillAiFeedbackViewTest : public ChromeViewsTestBase {
  public:
   // views::ViewsTestBase:
   void SetUp() override {
@@ -62,13 +70,13 @@ class PopupRowPredictionImprovementsFeedbackViewTest
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    Suggestion suggestion(SuggestionType::kPredictionImprovementsFeedback);
+    autofill::Suggestion suggestion(
+        autofill::SuggestionType::kPredictionImprovementsFeedback);
     suggestion.voice_over = u"Required a11y text";
     controller_.set_suggestions({std::move(suggestion)});
   }
 
-  void ShowView(
-      std::unique_ptr<PopupRowPredictionImprovementsFeedbackView> view) {
+  void ShowView(std::unique_ptr<PopupRowAutofillAiFeedbackView> view) {
     view_ = widget_->SetContentsView(std::move(view));
     widget_->Show();
   }
@@ -81,7 +89,7 @@ class PopupRowPredictionImprovementsFeedbackViewTest
   }
 
   void CreateFeedbackRowAndGetButtons() {
-    auto row = std::make_unique<PopupRowPredictionImprovementsFeedbackView>(
+    auto row = std::make_unique<PopupRowAutofillAiFeedbackView>(
         a11y_selection_delegate(), selection_delegate(),
         controller_.GetWeakPtr(), /*line_number=*/0);
     ShowView(std::move(row));
@@ -105,7 +113,7 @@ class PopupRowPredictionImprovementsFeedbackViewTest
     return mock_selection_delegate_;
   }
   ui::test::EventGenerator& generator() { return *generator_; }
-  PopupRowPredictionImprovementsFeedbackView& view() { return *view_; }
+  PopupRowAutofillAiFeedbackView& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
 
  private:
@@ -114,10 +122,10 @@ class PopupRowPredictionImprovementsFeedbackViewTest
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   NiceMock<MockSelectionDelegate> mock_selection_delegate_;
-  raw_ptr<PopupRowPredictionImprovementsFeedbackView> view_ = nullptr;
+  raw_ptr<PopupRowAutofillAiFeedbackView> view_ = nullptr;
 };
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+TEST_F(PopupRowAutofillAiFeedbackViewTest,
        ThumbsUpButtonClickTriggersCallback) {
   CreateFeedbackRowAndGetButtons();
 
@@ -135,7 +143,7 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   generator().ClickLeftButton();
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+TEST_F(PopupRowAutofillAiFeedbackViewTest,
        ThumbsDownButtonClickTriggersCallback) {
   CreateFeedbackRowAndGetButtons();
 
@@ -153,8 +161,7 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   generator().ClickLeftButton();
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
-       MouseSelectionIsSuppressed) {
+TEST_F(PopupRowAutofillAiFeedbackViewTest, MouseSelectionIsSuppressed) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
   CreateFeedbackRowAndGetButtons();
@@ -168,8 +175,7 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
       view().GetContentView().GetBoundsInScreen().CenterPoint());
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
-       FocusTriggersSelectionDelegate) {
+TEST_F(PopupRowAutofillAiFeedbackViewTest, FocusTriggersSelectionDelegate) {
   CreateFeedbackRowAndGetButtons();
 
   EXPECT_CALL(selection_delegate(),
@@ -179,8 +185,7 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   view().OnViewFocused(&view().GetContentView());
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
-       LearnMoreClickTriggersCallback) {
+TEST_F(PopupRowAutofillAiFeedbackViewTest, LearnMoreClickTriggersCallback) {
   CreateFeedbackRowAndGetButtons();
   view().SetSelectedCell(PopupRowView::CellType::kContent);
 
@@ -190,54 +195,50 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
                   VariantWith<PredictionImprovementsButtonActions>(
                       PredictionImprovementsButtonActions::kLearnMoreClicked)));
 
-  auto* suggestion_text = views::AsViewClass<
-      views::StyledLabel>(view().GetViewByID(
-      PopupRowPredictionImprovementsFeedbackView::kLearnMoreStyledLabelViewID));
+  auto* suggestion_text =
+      views::AsViewClass<views::StyledLabel>(view().GetViewByID(
+          PopupRowAutofillAiFeedbackView::kLearnMoreStyledLabelViewID));
   suggestion_text->ClickFirstLinkForTesting();
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+TEST_F(PopupRowAutofillAiFeedbackViewTest,
        LinkIsDefaultFocusableControlForSelectedRow) {
   CreateFeedbackRowAndGetButtons();
 
   EXPECT_EQ(view().focused_control_for_testing(), std::nullopt);
   view().SetSelectedCell(PopupRowView::CellType::kContent);
-  EXPECT_EQ(view().focused_control_for_testing(),
-            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
-                kManagePredictionImprovementsLink);
+  EXPECT_EQ(
+      view().focused_control_for_testing(),
+      PopupRowAutofillAiFeedbackView::FocusableControl::kManageAutofillAiLink);
 
   view().SetSelectedCell(std::nullopt);
   EXPECT_EQ(view().focused_control_for_testing(), std::nullopt);
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
-       LeftRightKeysUpdateFocusedControl) {
+TEST_F(PopupRowAutofillAiFeedbackViewTest, LeftRightKeysUpdateFocusedControl) {
   CreateFeedbackRowAndGetButtons();
   view().SetSelectedCell(PopupRowView::CellType::kContent);
 
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsUp);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsDown);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
   EXPECT_EQ(
       view().focused_control_for_testing(),
-      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
-
-  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
-  EXPECT_EQ(view().focused_control_for_testing(),
-            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
-                kThumbsDown);
-
-  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
-  EXPECT_EQ(view().focused_control_for_testing(),
-            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
-                kManagePredictionImprovementsLink)
+      PopupRowAutofillAiFeedbackView::FocusableControl::kManageAutofillAiLink)
       << "The list of controls wraps.";
 
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
   EXPECT_EQ(view().focused_control_for_testing(),
-            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
-                kThumbsDown);
+            PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsDown);
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+TEST_F(PopupRowAutofillAiFeedbackViewTest,
        LeftRightKeysUpdateFocusedControlRTL) {
   base::i18n::SetRTLForTesting(true);
 
@@ -245,29 +246,26 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   view().SetSelectedCell(PopupRowView::CellType::kContent);
 
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsUp);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsDown);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
   EXPECT_EQ(
       view().focused_control_for_testing(),
-      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
-
-  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
-  EXPECT_EQ(view().focused_control_for_testing(),
-            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
-                kThumbsDown);
-
-  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
-  EXPECT_EQ(view().focused_control_for_testing(),
-            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
-                kManagePredictionImprovementsLink)
+      PopupRowAutofillAiFeedbackView::FocusableControl::kManageAutofillAiLink)
       << "The list of controls wraps.";
 
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
   EXPECT_EQ(view().focused_control_for_testing(),
-            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
-                kThumbsDown);
+            PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsDown);
   base::i18n::SetRTLForTesting(false);
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+TEST_F(PopupRowAutofillAiFeedbackViewTest,
        EnterIsHandledForFocusedManagePredictionImprovementsLink) {
   CreateFeedbackRowAndGetButtons();
   view().SetSelectedCell(PopupRowView::CellType::kContent);
@@ -281,15 +279,13 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
-       EnterIsHandledForFocusedThumbsUp) {
+TEST_F(PopupRowAutofillAiFeedbackViewTest, EnterIsHandledForFocusedThumbsUp) {
   CreateFeedbackRowAndGetButtons();
   view().SetSelectedCell(PopupRowView::CellType::kContent);
 
   SimulateKeyPress(ui::VKEY_RIGHT);
-  ASSERT_EQ(
-      view().focused_control_for_testing(),
-      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
+  ASSERT_EQ(view().focused_control_for_testing(),
+            PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsUp);
 
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
@@ -300,16 +296,14 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
-       EnterIsHandledForFocusedThumbsDown) {
+TEST_F(PopupRowAutofillAiFeedbackViewTest, EnterIsHandledForFocusedThumbsDown) {
   CreateFeedbackRowAndGetButtons();
   view().SetSelectedCell(PopupRowView::CellType::kContent);
 
   SimulateKeyPress(ui::VKEY_RIGHT);
   SimulateKeyPress(ui::VKEY_RIGHT);
   ASSERT_EQ(view().focused_control_for_testing(),
-            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
-                kThumbsDown);
+            PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsDown);
 
   EXPECT_CALL(
       controller(),
@@ -321,8 +315,7 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
 }
 
-TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
-       A11yFocusIsSetToFocusedControl) {
+TEST_F(PopupRowAutofillAiFeedbackViewTest, A11yFocusIsSetToFocusedControl) {
   CreateFeedbackRowAndGetButtons();
   MockFunction<void()> check;
   {
@@ -366,4 +359,4 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   EXPECT_FALSE(IsA11ySelected(*view().GetThumbsDownButtonForTest()));
   EXPECT_TRUE(IsA11ySelected(view()));
 }
-}  // namespace autofill
+}  // namespace autofill_ai
