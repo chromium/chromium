@@ -1504,6 +1504,21 @@ void TemplateURLService::OnWebDataServiceRequestDone(
       base::UmaHistogramEnumeration(
           "Search.DefaultSearchProviderType2.SetByEnterprisePolicy",
           engine_type, SEARCH_ENGINE_MAX);
+    } else if (default_search_provider_source_ ==
+               DefaultSearchManager::FROM_EXTENSION) {
+      base::UmaHistogramEnumeration(
+          "Search.DefaultSearchProviderType2.SetByExtension", engine_type,
+          SEARCH_ENGINE_MAX);
+    } else if (default_search_provider_source_ ==
+               DefaultSearchManager::FROM_USER) {
+      base::UmaHistogramEnumeration(
+          "Search.DefaultSearchProviderType2.SetByUser", engine_type,
+          SEARCH_ENGINE_MAX);
+    } else if (default_search_provider_source_ ==
+               DefaultSearchManager::FROM_FALLBACK) {
+      base::UmaHistogramEnumeration(
+          "Search.DefaultSearchProviderType2.Fallback", engine_type,
+          SEARCH_ENGINE_MAX);
     }
   }
 }
