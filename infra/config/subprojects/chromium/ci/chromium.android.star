@@ -4319,13 +4319,9 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "android_15_emulator_gtests",
+            "android_rel_isolated_scripts",
         ],
         mixins = [
-            targets.mixin(
-                args = [
-                    "--emulator-debug-tags=all,-qemud,-sensors",
-                ],
-            ),
             "15-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
