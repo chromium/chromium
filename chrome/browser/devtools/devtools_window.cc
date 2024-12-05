@@ -805,7 +805,7 @@ Profile* DevToolsWindow::GetProfileForDevToolsWindow(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (profile->IsPrimaryOTRProfile()) {
+  if (profile->IsPrimaryOTRProfile() || profile->IsDevToolsOTRProfile()) {
     return profile;
   }
   return profile->GetOriginalProfile();
