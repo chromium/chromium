@@ -764,7 +764,7 @@ bool InputType::CanSetStringValue() const {
   NOTREACHED();
 }
 
-bool InputType::IsKeyboardFocusable(
+bool InputType::IsKeyboardFocusableSlow(
     Element::UpdateBehavior update_behavior) const {
   // Inputs are always keyboard focusable if they are focusable at all,
   // and don't have a negative tabindex set.

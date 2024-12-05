@@ -60,8 +60,9 @@ class CORE_EXPORT HTMLAreaElement final : public HTMLAnchorElementBase {
 
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
   FocusableState IsFocusableState(
       UpdateBehavior update_behavior) const override;
   bool IsFocusableStyle(UpdateBehavior update_behavior =

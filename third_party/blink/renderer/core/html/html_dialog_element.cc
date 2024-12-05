@@ -431,7 +431,7 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   }
 }
 
-bool HTMLDialogElement::IsKeyboardFocusable(
+bool HTMLDialogElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   if (!IsFocusable(update_behavior)) {
     return false;

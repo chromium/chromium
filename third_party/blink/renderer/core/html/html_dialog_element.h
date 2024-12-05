@@ -88,8 +88,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   FocusableState SupportsFocus(UpdateBehavior) const override {
     return FocusableState::kFocusable;
   }
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
 
   // https://html.spec.whatwg.org/C/#the-dialog-element
   // Chooses the focused element when show() or showModal() is invoked.

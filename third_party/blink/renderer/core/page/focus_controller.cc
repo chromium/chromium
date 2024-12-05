@@ -798,7 +798,7 @@ inline bool IsNonKeyboardFocusableShadowHost(const Element& element) {
   if (!element.IsFocusable()) {
     return true;
   }
-  if (element.IsKeyboardFocusable()) {
+  if (element.IsKeyboardFocusableSlow()) {
     return false;
   }
   // This host supports focus, but cannot be keyboard focused. For example:
@@ -809,16 +809,17 @@ inline bool IsNonKeyboardFocusableShadowHost(const Element& element) {
 }
 
 inline bool IsNonKeyboardFocusableReadingFlowOwner(const Element& element) {
-  return IsReadingFlowScopeOwner(&element) && !element.IsKeyboardFocusable();
+  return IsReadingFlowScopeOwner(&element) &&
+         !element.IsKeyboardFocusableSlow();
 }
 
 inline bool IsKeyboardFocusableReadingFlowOwner(const Element& element) {
-  return IsReadingFlowScopeOwner(&element) && element.IsKeyboardFocusable();
+  return IsReadingFlowScopeOwner(&element) && element.IsKeyboardFocusableSlow();
 }
 
 inline bool IsKeyboardFocusableShadowHost(const Element& element) {
   return IsShadowHostWithoutCustomFocusLogic(element) &&
-         (element.IsKeyboardFocusable() ||
+         (element.IsKeyboardFocusableSlow() ||
           element.IsShadowHostWithDelegatesFocus());
 }
 
@@ -829,10 +830,10 @@ inline bool IsNonFocusableFocusScopeOwner(Element& element) {
 }
 
 inline bool ShouldVisit(Element& element) {
-  DCHECK(!element.IsKeyboardFocusable() ||
+  DCHECK(!element.IsKeyboardFocusableSlow() ||
          FocusController::AdjustedTabIndex(element) >= 0)
       << "Keyboard focusable element with negative tabindex" << element;
-  return element.IsKeyboardFocusable() ||
+  return element.IsKeyboardFocusableSlow() ||
          element.IsShadowHostWithDelegatesFocus() ||
          IsNonFocusableFocusScopeOwner(element);
 }
@@ -1569,7 +1570,7 @@ bool FocusController::AdvanceFocusInDocumentOrder(
   bool has_remote_frame =
       owner && owner->ContentFrame() && owner->ContentFrame()->IsRemoteFrame();
   if (owner && (has_remote_frame || !IsA<HTMLPlugInElement>(*element) ||
-                !element->IsKeyboardFocusable())) {
+                !element->IsKeyboardFocusableSlow())) {
     // FIXME: We should not focus frames that have no scrollbars, as focusing
     // them isn't useful to the user.
     if (!owner->ContentFrame()) {

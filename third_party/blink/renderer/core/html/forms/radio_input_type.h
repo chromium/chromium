@@ -53,7 +53,7 @@ class RadioInputType final : public BaseCheckableInputType {
   void HandleClickEvent(MouseEvent&) override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleKeyupEvent(KeyboardEvent&) override;
-  bool IsKeyboardFocusable(
+  bool IsKeyboardFocusableSlow(
       Element::UpdateBehavior update_behavior =
           Element::UpdateBehavior::kStyleAndLayout) const override;
   bool ShouldSendChangeEventAfterCheckedChanged() override;

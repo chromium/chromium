@@ -738,7 +738,7 @@ bool AXNodeObject::ShouldIncludeCustomElement() const {
   }
 
   // * Focusable.
-  if (element->IsKeyboardFocusable(
+  if (element->IsKeyboardFocusableSlow(
           Element::UpdateBehavior::kNoneForAccessibility)) {
     return true;
   }

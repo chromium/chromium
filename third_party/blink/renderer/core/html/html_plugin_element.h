@@ -165,8 +165,8 @@ class CORE_EXPORT HTMLPlugInElement
   }
   bool IsFocusableStyle(UpdateBehavior update_behavior =
                             UpdateBehavior::kStyleAndLayout) const final;
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const final;
+  bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior =
+                                   UpdateBehavior::kStyleAndLayout) const final;
   void DidAddUserAgentShadowRoot(ShadowRoot&) final;
   const ComputedStyle* CustomStyleForLayoutObject(
       const StyleRecalcContext&) final;
