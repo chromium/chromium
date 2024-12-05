@@ -23,6 +23,15 @@ BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
              "AutofillAcrossIframesIosTriggerFormExtraction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature flag to control displaying of Autofill suggestions on
+// unclassified fields based on prefix matching. These suggestions are displayed
+// after the user typed a certain number of characters that match some data
+// stored in the user's profile.
+// TODO(crbug.com/381994105): Cleanup when launched.
+BASE_FEATURE(kAutofillAddressSuggestionsOnTyping,
+             "AutofillAddressSuggestionsOnTyping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature flag to control the displaying of an ongoing hats survey that
 // measures users perception of Autofill. Differently from other surveys,
 // the Autofill user perception survey will not have a specific target

@@ -594,6 +594,13 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
 
 }  // namespace
 
+std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
+    const AddressDataManager& address_data_manager,
+    const std::u16string& field_contents) {
+  // TODO(crbug.com/381994105): Implement.
+  return {Suggestion(SuggestionType::kAddressEntryOnTyping)};
+}
+
 std::vector<Suggestion> GetSuggestionsForProfiles(
     const AutofillClient& client,
     const FieldTypeSet& field_types,

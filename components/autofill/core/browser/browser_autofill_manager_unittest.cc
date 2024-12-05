@@ -7405,6 +7405,27 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
       }));
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       AddressSuggestionOnTyping_ShownWhenNoOtherSuggestionExists) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAddressSuggestionsOnTyping};
+  FormData form;
+  form.set_name(u"NothingSpecial");
+  form.set_fields({CreateTestFormField("Something", "something", "",
+                                       FormControlType::kInputText)});
+  // Autocomplete suggestions (and all others for that matter) should be empty
+  // in order to `SuggestionType::kAddressEntryOnTyping` to exist.
+  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(Return(false));
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping)));
+}
+
 class BrowserAutofillManagerPlusAddressTest
     : public BrowserAutofillManagerTest {
  protected:

@@ -1466,7 +1466,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
               OnGeneratedPlusAddressAndSingleFieldFillSuggestions,
           weak_ptr_factory_.GetWeakPtr(),
           AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
-          password_form_classification.type, form, field, std::move(callback)));
+          password_form_classification.type, form, field,
+          should_offer_single_field_form_fill, std::move(callback)));
 
   if (should_offer_plus_addresses) {
     std::vector<Suggestion> plus_address_suggestions =
@@ -1503,10 +1504,28 @@ void BrowserAutofillManager::
         PasswordFormClassification::Type password_form_type,
         const FormData& form,
         const FormFieldData& field,
+        bool should_offer_single_field_form_fill,
         OnGenerateSuggestionsCallback callback,
         std::vector<std::vector<Suggestion>> suggestion_lists) {
-  if (suggestion_lists.empty()) {
-    std::move(callback).Run(/*show_suggestions=*/true, {}, std::nullopt);
+  if (std::ranges::all_of(suggestion_lists, &std::vector<Suggestion>::empty)) {
+    // Note the check below is the same done for regular autocomplete
+    // suggestions.
+    // TODO(crbug.com/381994105): Consider adding
+    // `should_offer_autofill_on_typing()` to `FormFieldData`.
+    if (should_offer_single_field_form_fill && field.should_autocomplete() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillAddressSuggestionsOnTyping)) {
+      // Try to build `Suggestion::kAddressEntryOnTyping` suggestions.
+      // Note that these suggestions are always displayed on their own.
+      std::move(callback).Run(
+          /*show_suggestions=*/true,
+          GetSuggestionsOnTypingForProfile(
+              client().GetPersonalDataManager().address_data_manager(),
+              field.value()),
+          std::nullopt);
+    } else {
+      std::move(callback).Run(/*show_suggestions=*/true, {}, std::nullopt);
+    }
     return;
   }
 
