@@ -16,16 +16,11 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_bindings.h"
 
-namespace gl {
-class SurfaceTexture;
-}  // namespace gl
-
 namespace gfx {
 class GpuFence;
 }  // namespace gfx
 
 namespace gpu {
-struct MailboxHolder;
 struct SyncToken;
 }  // namespace gpu
 
@@ -84,11 +79,7 @@ class XrImageTransportBase {
       const gpu::SyncToken& sync_token,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>);
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token);
-  virtual void CopyMailboxToSurfaceAndSwap(const gfx::Size& frame_size,
-                                           const gpu::MailboxHolder& mailbox,
-                                           const gfx::Transform& uv_transform);
 
-  void SetFrameAvailableCallback(XrFrameCallback on_frame_available);
   void ServerWaitForGpuFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
 
  protected:
@@ -116,19 +107,11 @@ class XrImageTransportBase {
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
  private:
-  void ResizeSurface(const gfx::Size& size);
   void OnMailboxBridgeReady(XrInitStatusCallback callback);
-  void OnFrameAvailable();
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
 
   bool webgpu_session_ = false;
-
-  gfx::Size surface_size_;
-  scoped_refptr<gl::SurfaceTexture> transport_surface_texture_;
-  gfx::Transform transport_surface_texture_uv_transform_;
-  float transport_surface_texture_uv_matrix_[16];
-  XrFrameCallback on_transport_frame_available_;
 
   // Must be last.
   base::WeakPtrFactory<XrImageTransportBase> weak_ptr_factory_{this};

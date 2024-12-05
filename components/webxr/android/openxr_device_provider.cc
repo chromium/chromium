@@ -74,15 +74,13 @@ bool OpenXrDeviceProvider::Initialized() {
 void OpenXrDeviceProvider::CreateContextProviderAsync(
     VizContextProviderCallback viz_context_provider_callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](int surface_handle,
-             content::Compositor::ContextProviderCallback callback) {
-            content::Compositor::CreateContextProvider(
-                surface_handle, gpu::SharedMemoryLimits::ForMailboxContext(),
-                std::move(callback));
-          },
-          gpu::kNullSurfaceHandle, std::move(viz_context_provider_callback)));
+      FROM_HERE, base::BindOnce(
+                     [](content::Compositor::ContextProviderCallback callback) {
+                       content::Compositor::CreateContextProvider(
+                           gpu::SharedMemoryLimits::ForMailboxContext(),
+                           std::move(callback));
+                     },
+                     std::move(viz_context_provider_callback)));
 }
 
 }  // namespace webxr

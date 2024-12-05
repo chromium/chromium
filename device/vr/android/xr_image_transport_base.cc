@@ -15,11 +15,9 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
-#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gl/android/surface_texture.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
 
@@ -80,41 +78,6 @@ void XrImageTransportBase::OnMailboxBridgeReady(XrInitStatusCallback callback) {
   DCHECK(mailbox_bridge_->IsConnected());
 
   std::move(callback).Run(true);
-}
-
-void XrImageTransportBase::SetFrameAvailableCallback(
-    XrFrameCallback on_transport_frame_available) {
-  CHECK(IsOnGlThread());
-  DVLOG(2) << __func__;
-  on_transport_frame_available_ = std::move(on_transport_frame_available);
-}
-
-void XrImageTransportBase::OnFrameAvailable() {
-  DVLOG(2) << __func__;
-  DCHECK(on_transport_frame_available_);
-
-  // This function assumes that there's only at most one frame in "processing"
-  // state at any given time, the webxr_ state handling ensures that. Drawing
-  // and swapping twice without an intervening UpdateTexImage call would lose
-  // an image, and that would lead to images and poses getting out of sync.
-  //
-  // It also assumes that the XrImageTransportBase and Surface only exist for
-  // the duration of a single session, and a new session will use fresh objects.
-  // For comparison, see GvrSchedulerDelegate::OnWebXrFrameAvailable which has
-  // more complex logic to support a lifetime across multiple sessions,
-  // including handling a possibly-unconsumed frame left over from a previous
-  // session.
-
-  transport_surface_texture_->UpdateTexImage();
-
-  // The SurfaceTexture needs to be drawn using the corresponding
-  // UV transform, that's usually a Y flip.
-  transport_surface_texture_->GetTransformMatrix(
-      transport_surface_texture_uv_matrix_);
-  transport_surface_texture_uv_transform_ =
-      gfx::Transform::ColMajorF(transport_surface_texture_uv_matrix_);
-
-  on_transport_frame_available_.Run(transport_surface_texture_uv_transform_);
 }
 
 bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
@@ -273,29 +236,6 @@ LocalTexture XrImageTransportBase::GetRenderingTexture(
     WebXrPresentationState* webxr) {
   CHECK(IsOnGlThread());
   return webxr->GetRenderingFrame()->shared_buffer->local_texture;
-}
-
-void XrImageTransportBase::CopyMailboxToSurfaceAndSwap(
-    const gfx::Size& frame_size,
-    const gpu::MailboxHolder& mailbox,
-    const gfx::Transform& uv_transform) {
-  CHECK(IsOnGlThread());
-  DVLOG(2) << __func__;
-  if (frame_size != surface_size_) {
-    DVLOG(2) << __func__ << " resize from " << surface_size_.ToString()
-             << " to " << frame_size.ToString();
-    transport_surface_texture_->SetDefaultBufferSize(frame_size.width(),
-                                                     frame_size.height());
-    mailbox_bridge_->ResizeSurface(frame_size.width(), frame_size.height());
-    surface_size_ = frame_size;
-  }
-
-  // Draw the image to the surface in the GPU process's command buffer context.
-  // This will trigger an OnFrameAvailable event once the corresponding
-  // SurfaceTexture in the local GL context is ready for updating.
-  bool swapped =
-      mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox, uv_transform);
-  DCHECK(swapped);
 }
 
 bool XrImageTransportBase::IsOnGlThread() const {
