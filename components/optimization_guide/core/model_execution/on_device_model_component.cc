@@ -135,7 +135,12 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
 OnDeviceModelComponentStateManager::RegistrationCriteria
 OnDeviceModelComponentStateManager::GetRegistrationCriteria() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return *registration_criteria_;
+  if (registration_criteria_) {
+    return *registration_criteria_;
+  } else {
+    RegistrationCriteria empty_criteria;
+    return empty_criteria;
+  }
 }
 
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
