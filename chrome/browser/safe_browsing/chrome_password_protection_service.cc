@@ -1254,7 +1254,7 @@ std::string ChromePasswordProtectionService::GetOrganizationName(
   if (base::FeatureList::IsEnabled(
           safe_browsing::kEnterprisePasswordReuseUiRefresh)) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    return GetPrefs()->GetString(prefs::kEnterpriseCustomLabel);
+    return GetPrefs()->GetString(prefs::kEnterpriseCustomLabelForProfile);
 #else
     return std::string();
 #endif
