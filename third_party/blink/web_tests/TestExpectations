@@ -2691,7 +2691,6 @@ crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-sa
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/382302596 [ Mac14 ] external/wpt/webrtc/protocol/pt-no-bundle.html [ Timeout ]
-crbug.com/382322944 [ Mac13 ] external/wpt/css/css-shapes/shape-outside/shape-image/gradients/shape-outside-linear-gradient-004.html [ Failure ]
 crbug.com/382302593 [ Win10.20h2 ] external/wpt/mathml/presentation-markup/fractions/frac-created-dynamically-4.html [ Failure ]
 crbug.com/382302593 [ Win10.20h2 ] external/wpt/png/apng/acTL-plays-two.html [ Failure ]
 crbug.com/382302593 [ Mac12 ] external/wpt/scroll-animations/scroll-timelines/set-current-time-before-play.html [ Failure ]
