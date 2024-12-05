@@ -910,7 +910,10 @@ void RenderThreadImpl::InitializeRenderer(
     const std::string& user_agent,
     const blink::UserAgentMetadata& user_agent_metadata,
     const std::vector<std::string>& cors_exempt_header_list,
-    blink::mojom::OriginTrialsSettingsPtr origin_trials_settings) {
+    blink::mojom::OriginTrialsSettingsPtr origin_trials_settings,
+    uint64_t trace_id) {
+  TRACE_EVENT("navigation", "RenderThreadImpl::InitializeRenderer",
+              perfetto::TerminatingFlow::Global(trace_id));
   DCHECK(user_agent_.IsNull());
 
   user_agent_ = WebString::FromUTF8(user_agent);

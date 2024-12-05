@@ -1706,12 +1706,15 @@ bool RenderProcessHostImpl::Init() {
 
   // Call this now and not in OnProcessLaunched in case any mojo calls get
   // dispatched before this.
+  uint64_t trace_id = base::Token::CreateRandom().high();
+  TRACE_EVENT("navigation", "RenderProcessHostImpl::Init",
+              perfetto::Flow::Global(trace_id));
   GetRendererInterface()->InitializeRenderer(
       GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
           browser_context_),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
-      GetContentClient()->browser()->GetOriginTrialsSettings());
+      GetContentClient()->browser()->GetOriginTrialsSettings(), trace_id);
 
   if (run_renderer_in_process()) {
     DCHECK(g_renderer_main_thread_factory);
