@@ -816,7 +816,8 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
   CHECK(client_si);
   CHECK(client_si->mailbox() == transferable_resource.mailbox());
   auto resource = AdoptRef(new ExternalCanvasResource(
-      std::move(client_si), transferable_resource, std::move(release_callback),
+      std::move(client_si), transferable_resource,
+      transferable_resource.is_overlay_candidate, std::move(release_callback),
       std::move(context_provider_wrapper), std::move(provider)));
   return resource->IsValid() ? resource : nullptr;
 }
@@ -870,8 +871,7 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       CreateSkImageInfo(), client_si_->GetTextureTarget(), is_origin_top_left,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback),
-      /*supports_display_compositing=*/true,
-      transferable_resource_.is_overlay_candidate);
+      /*supports_display_compositing=*/true, is_overlay_candidate_);
 }
 
 const gpu::SyncToken
@@ -920,7 +920,7 @@ bool ExternalCanvasResource::
   *out_resource = viz::TransferableResource::MakeGpu(
       client_si_, client_si_->GetTextureTarget(),
       transferable_resource_.sync_token(), client_si_->size(),
-      client_si_->format(), transferable_resource_.is_overlay_candidate,
+      client_si_->format(), is_overlay_candidate_,
       transferable_resource_.resource_source);
   out_resource->color_space = transferable_resource_.color_space;
   out_resource->hdr_metadata = transferable_resource_.hdr_metadata;
@@ -932,6 +932,7 @@ bool ExternalCanvasResource::
 ExternalCanvasResource::ExternalCanvasResource(
     scoped_refptr<gpu::ClientSharedImage> client_si,
     const viz::TransferableResource& transferable_resource,
+    bool is_overlay_candidate,
     viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
@@ -943,6 +944,7 @@ ExternalCanvasResource::ExternalCanvasResource(
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       transferable_resource_(transferable_resource),
+      is_overlay_candidate_(is_overlay_candidate),
       release_callback_(std::move(out_callback)) {
   CHECK(client_si_);
   CHECK(client_si_->mailbox() == transferable_resource_.mailbox());

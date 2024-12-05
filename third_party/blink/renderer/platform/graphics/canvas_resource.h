@@ -468,9 +468,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   }
 
  private:
-  bool IsOverlayCandidate() const final {
-    return transferable_resource_.is_overlay_candidate;
-  }
+  bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
   bool UsesAcceleratedRaster() const final { return true; }
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
@@ -482,6 +480,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
 
   ExternalCanvasResource(scoped_refptr<gpu::ClientSharedImage> client_si,
                          const viz::TransferableResource& transferable_resource,
+                         bool is_overlay_candidate,
                          viz::ReleaseCallback out_callback,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                          base::WeakPtr<CanvasResourceProvider>);
@@ -490,6 +489,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;
   viz::TransferableResource transferable_resource_;
+  bool is_overlay_candidate_ = false;
   viz::ReleaseCallback release_callback_;
   bool is_origin_clean_ = true;
   bool resource_is_lost_ = false;
