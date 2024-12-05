@@ -123,6 +123,14 @@ id<GREYMatcher> MigrateToAccountButton() {
   return grey_accessibilityID(kAutofillAddressMigrateToAccountButtonId);
 }
 
+// Matcher for the navigation bar title of the "Adresses and more" page.
+id<GREYMatcher> AddressesAndMoreNavBarTitle() {
+  return grey_allOf(
+      grey_text(l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE)),
+      grey_kindOfClass([UILabel class]),
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+}
+
 }  // namespace
 
 // Various tests for the Autofill profiles section of the settings.
@@ -445,6 +453,22 @@ id<GREYMatcher> MigrateToAccountButton() {
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
+
+  // Wait for the "Addresses and more" page before exiting the Settings menu
+  // using the navigation back button. This is to avoid a racing condition where
+  // the back button matcher is determined before the settings page actually
+  // changed which ends up picking a matcher for the previous page instead of
+  // the new page to be loaded.
+  ConditionBlock wait_for_appearance = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:AddressesAndMoreNavBarTitle()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1),
+                                                          wait_for_appearance),
+             @"\"Addresses and more\" page did not appear.");
 
   [self exitSettingsMenu];
 }
