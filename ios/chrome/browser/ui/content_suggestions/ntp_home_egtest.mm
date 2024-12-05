@@ -1679,33 +1679,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [self checkDiscoverSettingsToggleVisible:YES];
 }
 
-// Tests that the feed top sync promo is visible when conditions are met, and
-// that pressing the dismiss button makes it disappear.
-// TODO(crbug.com/40252918): Enable test when feed is supported.
-- (void)DISABLED_testFeedTopSyncPromoIsVisibleAndDismiss {
-  // Scroll into feed to trigger engagement condition.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-
-  // Relaunch the app
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  // Scroll down a bit and check that the promo is visible.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 100)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kSigninPromoViewId)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap the dismiss button and check that the promo is no longer visible.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSigninPromoCloseButtonId)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kSigninPromoViewId)]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-}
-
 #pragma mark - Customization tests
 
 // Tests that the customization menu can be used to toggle the visibility of
