@@ -121,7 +121,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* MinWidthOrMinHeightAuto(const ComputedStyle&);
   static CSSValue* ValueForPositionOffset(const ComputedStyle&,
                                           const CSSProperty&,
-                                          const LayoutObject*);
+                                          const LayoutObject*,
+                                          CSSValuePhase);
   static CSSValue* ValueForItemPositionWithOverflowAlignment(
       const StyleSelfAlignmentData&);
   static cssvalue::CSSContentDistributionValue*
