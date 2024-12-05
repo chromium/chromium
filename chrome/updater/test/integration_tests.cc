@@ -4855,11 +4855,24 @@ INSTANTIATE_TEST_SUITE_P(
             },
 
             // Silent install with a launch command, InstallerResult::kSuccess,
-            // will
-            // not run `more.com` since silent install.
+            // will not run `more.com` since silent install.
             {
                 false,
                 "INSTALLER_RESULT=0 "
+                "REGISTER_LAUNCH_COMMAND=more.com",
+                UpdateService::ErrorCategory::kNone,
+                0,
+                {},
+                "more.com",
+                {},
+            },
+
+            // Silent install with a launch command, InstallerResult::kExitCode
+            // with a zero exit code, will not run `more.com` since silent
+            // install.
+            {
+                false,
+                "INSTALLER_RESULT=4 "
                 "REGISTER_LAUNCH_COMMAND=more.com",
                 UpdateService::ErrorCategory::kNone,
                 0,
@@ -4904,6 +4917,20 @@ INSTANTIATE_TEST_SUITE_P(
             {
                 true,
                 "INSTALLER_RESULT=0 "
+                "REGISTER_LAUNCH_COMMAND=more.com",
+                UpdateService::ErrorCategory::kNone,
+                0,
+                {},
+                "more.com",
+                {},
+            },
+
+            // Interactive install via the command line with a launch command,
+            // InstallerResult::kExitCode with a zero exit code, will run
+            // `more.com` since success exit code and interactive install.
+            {
+                true,
+                "INSTALLER_RESULT=4 "
                 "REGISTER_LAUNCH_COMMAND=more.com",
                 UpdateService::ErrorCategory::kNone,
                 0,
@@ -5124,6 +5151,13 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
 
 TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
   if (GetTestCase().interactive_install) {
+    GTEST_SKIP();
+  }
+
+  // TODO(crbug.com/382059245): remove this `if` once the older versions are
+  // updated to a version that supports a success `kExitCode`.
+  if (base::StartsWith(GetTestCase().command_line_args, "INSTALLER_RESULT=4") &&
+      (GetSetup().version != base::Version(kUpdaterVersion))) {
     GTEST_SKIP();
   }
 
