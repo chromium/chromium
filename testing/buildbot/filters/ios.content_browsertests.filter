@@ -813,3 +813,6 @@
 -ContentBrowserTest.MANUAL_BrowserCrash
 -ContentBrowserTest.MANUAL_BrowserCrash
 
+# TODO(crbug.com/382303507): This test has been failing since
+# https://crrev.com/c/5980534.
+-IndexedDBBrowserTest.SchedulingPriority
