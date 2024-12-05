@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'ae03b11c10d6b3f9066e487168fc94752a08d0e5',
+  'dawn_revision': '05c2a11e7d67b291ece960133b542dc269592b5d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -4398,7 +4398,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '1a9583232ad5ad4a04d4ad50953738766a561250',
+        'e5eb27ff29d9b06a39b22dfefca7eff5544e5733',
       'condition': 'checkout_src_internal',
   },
 
