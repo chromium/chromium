@@ -6,6 +6,8 @@
 
 #include <tuple>
 
+#include "base/ranges/algorithm.h"
+
 namespace media {
 
 ResolutionBitrateLimit::ResolutionBitrateLimit() = default;
@@ -46,6 +48,13 @@ bool operator==(const VideoEncoderInfo& lhs, const VideoEncoderInfo& rhs) {
                   rhs.reports_average_qp, rhs.requested_resolution_alignment,
                   rhs.apply_alignment_to_all_simulcast_layers,
                   rhs.fps_allocation, rhs.resolution_bitrate_limits);
+}
+
+bool VideoEncoderInfo::DoesSupportGpuSharedImages(VideoPixelFormat format) {
+  bool is_gpu_supported_format =
+      base::ranges::find(gpu_supported_pixel_formats, format) !=
+      gpu_supported_pixel_formats.end();
+  return supports_gpu_shared_images && is_gpu_supported_format;
 }
 
 }  // namespace media

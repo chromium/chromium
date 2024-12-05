@@ -1715,6 +1715,9 @@ BASE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64,
 BASE_FEATURE(kMediaFoundationD3DVideoProcessing,
              "MediaFoundationD3DVideoProcessing",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaFoundationSharedImageEncode,
+             "MediaFoundationSharedImageEncode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 bool IsChromeWideEchoCancellationEnabled() {

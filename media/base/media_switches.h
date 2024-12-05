@@ -536,6 +536,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64);
 
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationD3DVideoProcessing);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationSharedImageEncode);
 #endif
 
 // Based on a |command_line| and the current platform, returns the effective

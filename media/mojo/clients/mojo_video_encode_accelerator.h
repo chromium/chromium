@@ -69,6 +69,8 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
   // Constructed during Initialize().
   std::unique_ptr<mojom::VideoEncodeAcceleratorClient> vea_client_;
 
+  VideoPixelFormat init_format_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

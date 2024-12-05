@@ -199,6 +199,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   VideoEncodeAccelerator::Config::EncoderType required_encoder_type_ =
       VideoEncodeAccelerator::Config::EncoderType::kHardware;
   bool supports_frame_size_change_ = false;
+  bool supports_gpu_shared_images_ = false;
 };
 
 }  // namespace media

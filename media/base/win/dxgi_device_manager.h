@@ -43,10 +43,15 @@ class MEDIA_EXPORT DXGIDeviceManager
   // Returns a DXGIDeviceManager with associated D3D device set, or nullptr on
   // failure.
   static scoped_refptr<DXGIDeviceManager> Create(CHROME_LUID luid);
+  static scoped_refptr<DXGIDeviceManager> Create(CHROME_LUID luid,
+                                                 ID3D11Device* shared_device);
 
   // Associates a new D3D device with the DXGI Device Manager
   // returns it in the parameter, which can't be nullptr.
   virtual HRESULT ResetDevice(Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device);
+
+  // Associates a shared D3D device  with the DXGI Device Manager
+  virtual HRESULT ResetDeviceWithSharedDevice(ID3D11Device* shared_device);
 
   // Checks if the local device was removed, recreates it if needed.
   // Returns DeviceRemovedReason HRESULT value.

@@ -217,6 +217,18 @@ MEDIA_EXPORT HRESULT GenerateSampleFromVideoFrame(
     DWORD buffer_alignment,
     IMFSample** sample_out);
 
+class CommandBufferHelper;
+typedef base::OnceCallback<void(scoped_refptr<VideoFrame> frame,
+                                Microsoft::WRL::ComPtr<IMFSample>,
+                                HRESULT)>
+    SampleAvailableCB;
+
+MEDIA_EXPORT void GenerateSampleFromSharedImageVideoFrame(
+    scoped_refptr<VideoFrame> frame,
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d_device,
+    scoped_refptr<CommandBufferHelper> command_buffer_helper,
+    SampleAvailableCB sample_available_cb);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MF_HELPERS_H_
