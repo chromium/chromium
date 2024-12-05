@@ -2743,6 +2743,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5969199813874624822">Lagre og spor prisen</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sjette rull</translation>
+<translation id="5974745851230707809">Alternativer for betaling over tid</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5979084224081478209">Kontroller passordene</translation>
 <translation id="5984570616552610254">Kammerfuktighet</translation>
@@ -4306,6 +4307,7 @@ Mer informasjon:
 <translation id="8767765348545497220">Lukk hjelpeboble</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 betalingsmåte}other{# betalingsmåter}}</translation>
 <translation id="8768225988514678921">Knappen «Opprett presentasjon» – aktiver for å opprette en ny Google-presentasjon raskt</translation>
+<translation id="8769662576926275897">Kortinformasjon</translation>
 <translation id="8770286973007342895">Gressklippere</translation>
 <translation id="8772387130037509473">Yoga og pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vil du flytte den konfidensielle filen?}other{Vil du flytte de konfidensielle filene?}}</translation>
@@ -4334,6 +4336,7 @@ Mer informasjon:
 <translation id="882338992931677877">Manuelt spor</translation>
 <translation id="8830320733681313421">Hagaki-postkort</translation>
 <translation id="8830565333350631528">Se filer i <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Tilgjengelig for kjøp over <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Vaskemaskiner og tørketromler</translation>
 <translation id="8834962751196791179">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS og du er i inkognitomodus. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Sci-fi- og fantasy-serier på TV</translation>

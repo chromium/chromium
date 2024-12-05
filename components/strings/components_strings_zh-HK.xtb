@@ -2742,6 +2742,7 @@
 <translation id="5969199813874624822">儲存並追蹤價格</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">第六卷</translation>
+<translation id="5974745851230707809">分期付款選項</translation>
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5984570616552610254">室內濕度</translation>
@@ -4306,6 +4307,7 @@
 <translation id="8767765348545497220">閂說明對話氣泡</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 種付款方法}other{# 種付款方法}}</translation>
 <translation id="8768225988514678921">建立簡報按鈕，啟動之後就可以喺簡報度快速建立新嘅 Google 簡報</translation>
+<translation id="8769662576926275897">卡片詳情</translation>
 <translation id="8770286973007342895">除草機</translation>
 <translation id="8772387130037509473">瑜珈和普拉提</translation>
 <translation id="877348612833018844">{0,plural, =1{要移動機密檔案嗎？}other{要移動機密檔案嗎？}}</translation>
@@ -4334,6 +4336,7 @@
 <translation id="882338992931677877">手動插槽</translation>
 <translation id="8830320733681313421">Hagaki 明信片</translation>
 <translation id="8830565333350631528">前往「<ph name="CLOUD_PROVIDER" />」查看檔案</translation>
+<translation id="8831783793142731637">適用於超過 <ph name="RANGE_MINIMUM" />的購買項目</translation>
 <translation id="8833007469711500369">洗衣機及乾衣機</translation>
 <translation id="8834962751196791179">此網站不支援 HTTPS，且你目前處於無痕模式，因此系統顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">科幻和奇幻電視節目</translation>

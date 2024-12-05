@@ -2740,6 +2740,7 @@
 <translation id="5969199813874624822">ದರವನ್ನು ಸೇವ್ ಮಾಡಿ ಹಾಗೂ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ಆರನೇ ರೋಲ್</translation>
+<translation id="5974745851230707809">ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸುವ ಆಯ್ಕೆಗಳು</translation>
 <translation id="5975083100439434680">ಝೂಮ್ ಔಟ್</translation>
 <translation id="5979084224081478209">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5984570616552610254">ಚೇಂಬರ್ ತೇವಾಂಶ</translation>
@@ -4304,6 +4305,7 @@
 <translation id="8767765348545497220">ಸಹಾಯಕ ಬಬಲ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 ಪಾವತಿ ವಿಧಾನ}one{# ಪಾವತಿ ವಿಧಾನಗಳು}other{# ಪಾವತಿ ವಿಧಾನಗಳು}}</translation>
 <translation id="8768225988514678921">ಪ್ರಸ್ತುತಿ ರಚಿಸಿ ಬಟನ್, Slides ನಲ್ಲಿ ಹೊಸ Google ಪ್ರಸ್ತುತಿಯನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="8769662576926275897">ಕಾರ್ಡ್ ವಿವರಗಳು</translation>
 <translation id="8770286973007342895">ಹುಲ್ಲು ಕತ್ತರಿಸುವ ಯಂತ್ರಗಳು</translation>
 <translation id="8772387130037509473">ಯೋಗ ಮತ್ತು ಪಿಲಾಟೀಗಳು</translation>
 <translation id="877348612833018844">{0,plural, =1{ಗೌಪ್ಯ ಫೈಲ್ ಅನ್ನು ಸರಿಸಬೇಕೇ?}one{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಬೇಕೇ?}other{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಬೇಕೇ?}}</translation>
@@ -4332,6 +4334,7 @@
 <translation id="882338992931677877">ಹಸ್ತಚಾಲಿತ ಟ್ರೇ</translation>
 <translation id="8830320733681313421">Hagaki ಪೋಸ್ಟ್‌ಕಾರ್ಡ್</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಖರೀದಿಗಳಿಗೆ ಲಭ್ಯವಿದೆ</translation>
 <translation id="8833007469711500369">ಬಟ್ಟೆ ಒಗೆಯುವ ಮತ್ತು ಒಣಗಿಸುವ ಯಂತ್ರಗಳು</translation>
 <translation id="8834962751196791179">ನೀವು ಈ ಎಚ್ಚರಿಕೆಯನ್ನು ನೋಡುತ್ತಿರುವುದು ಏಕೆಂದರೆ ಈ ಸೈಟ್ HTTPS ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ ಮತ್ತು ನೀವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿರುವಿರಿ. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">TV ಸೈ-ಫೈ ಮತ್ತು ಫ್ಯಾಂಟಸಿ ಶೋಗಳು</translation>

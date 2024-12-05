@@ -2744,6 +2744,7 @@
 <translation id="5969199813874624822">ဈေးနှုန်းကို သိမ်းပြီး စောင့်ကြည့်ရန်</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ခြောက်ခုမြောက်အလိပ်</translation>
+<translation id="5974745851230707809">ငွေခွဲ၍ ပေးချေရန် ရွေးချယ်စရာများ</translation>
 <translation id="5975083100439434680">ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="5979084224081478209">စကားဝှက်များ စစ်ဆေးရန်</translation>
 <translation id="5984570616552610254">စက်အိမ် စိုထိုင်းဆ</translation>
@@ -4308,6 +4309,7 @@
 <translation id="8767765348545497220">အကူအညီ ပူဖောင်းကွက်ကို ပိတ်ရန်</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{ငွေပေးချေနည်းလမ်း ၁ ခု}other{ငွေပေးချေနည်းလမ်း # ခု}}</translation>
 <translation id="8768225988514678921">Slides တွင် Google တင်ပြမှုအသစ် အမြန်ပြုလုပ်ရန်အတွက် ‘တင်ပြမှု ပြုလုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
+<translation id="8769662576926275897">ကဒ်အသေးစိတ်</translation>
 <translation id="8770286973007342895">မြက်ရိတ်စက်</translation>
 <translation id="8772387130037509473">ယောဂနှင့် ပီလတိစ်</translation>
 <translation id="877348612833018844">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို ရွှေ့မလား။}other{လျှို့ဝှက်ဖိုင်များကို ရွှေ့မလား။}}</translation>
@@ -4336,6 +4338,7 @@
 <translation id="882338992931677877">ကိုယ်တိုင်ထည့် အပေါက်</translation>
 <translation id="8830320733681313421">ဟာဂကိ ပို့စ်ကတ်</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" /> တွင် ဖိုင်များကြည့်ရန်</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> အထက် ဝယ်ယူမှုများအတွက် ရနိုင်သည်</translation>
 <translation id="8833007469711500369">အဝတ်လျှော်စက်နှင့် အခြောက်ခံစက်</translation>
 <translation id="8834962751196791179">ဤဝဘ်ဆိုက်သည် HTTPS ကို မပံ့ပိုးသည့်အပြင် သင်သည် ရုပ်ဖျက်မုဒ်တွင် ရှိနေသောကြောင့် ဤသတိပေးချက်ကို မြင်ရခြင်းဖြစ်သည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">သိပ္ပံ၊ စိတ်ကူးယဉ် TV ရှိုး</translation>

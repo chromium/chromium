@@ -2151,7 +2151,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4877422487531841831"><ph name="TEXT" /> zoeken</translation>
 <translation id="4877521229462766300">Ingesloten content toestaan?</translation>
 <translation id="4879491255372875719">Automatisch (standaard)</translation>
-<translation id="4880827082731008257">Geschiedenis doorzoeken</translation>
+<translation id="4880827082731008257">Zoek in de geschiedenis</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4881808915112408168">24 x 31,5 inch</translation>
 <translation id="4882314601499260499">Geen gebruikersbeleid toegepast. Als je gebruikersbeleid wilt toevoegen, moet je organisatie <ph name="LINK_BEGIN" />je domein verifiëren<ph name="LINK_END" />.</translation>
@@ -4301,6 +4301,7 @@ Aanvullende informatie:
 <translation id="8767765348545497220">Hulpballon sluiten</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 betaalmethode}other{# betaalmethoden}}</translation>
 <translation id="8768225988514678921">Knop Presentatie maken. Activeer deze om snel een nieuwe Google-presentatie te maken in Presentaties.</translation>
+<translation id="8769662576926275897">Kaartdetails</translation>
 <translation id="8770286973007342895">Grasmaaiers</translation>
 <translation id="8772387130037509473">Yoga en pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vertrouwelijk bestand verplaatsen?}other{Vertrouwelijke bestanden verplaatsen?}}</translation>

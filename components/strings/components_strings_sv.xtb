@@ -2743,6 +2743,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5969199813874624822">Spara och bevaka pris</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sjätte rullen</translation>
+<translation id="5974745851230707809">Alternativ för att betala över tid</translation>
 <translation id="5975083100439434680">Zooma ut</translation>
 <translation id="5979084224081478209">Kontrollera lösenord</translation>
 <translation id="5984570616552610254">Luftfuktighet i kammare</translation>
@@ -4308,6 +4309,7 @@ Mer information:
 <translation id="8767765348545497220">Stäng hjälpbubblan</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 betalningsmetod}other{# betalningsmetod}}</translation>
 <translation id="8768225988514678921">Knappen Skapa presentation: aktivera om du snabbt vill skapa en ny Google-presentation i Presentationer</translation>
+<translation id="8769662576926275897">Kortuppgifter</translation>
 <translation id="8770286973007342895">Gräsklippare</translation>
 <translation id="8772387130037509473">Yoga och pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vill du flytta en konfidentiell fil?}other{Vill du flytta konfidentiella filer?}}</translation>
@@ -4336,6 +4338,7 @@ Mer information:
 <translation id="882338992931677877">Manuell plats</translation>
 <translation id="8830320733681313421">Hagaki-vykort</translation>
 <translation id="8830565333350631528">Visa filer i <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Tillgängligt för köp över <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Tvättmaskiner och torktumlare</translation>
 <translation id="8834962751196791179">Den här varningen visas därför att webbplatsen inte stöder HTTPS, och du är i inkognitoläge. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Science fiction- och fantasyserier</translation>

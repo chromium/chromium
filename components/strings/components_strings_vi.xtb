@@ -2743,6 +2743,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5969199813874624822">Lưu và theo dõi giá</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Cuộn thứ sáu</translation>
+<translation id="5974745851230707809">Các lựa chọn thanh toán dần</translation>
 <translation id="5975083100439434680">Thu nhỏ</translation>
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
 <translation id="5984570616552610254">Độ ẩm buồng</translation>
@@ -4308,6 +4309,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8767765348545497220">Đóng bong bóng trợ giúp</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 phương thức thanh toán}other{# phương thức thanh toán}}</translation>
 <translation id="8768225988514678921">Nút Tạo bản trình bày, hãy nhấn nút này để tạo nhanh một bản trình bày mới trong Google Trang trình bày</translation>
+<translation id="8769662576926275897">Chi tiết thẻ</translation>
 <translation id="8770286973007342895">Máy cắt cỏ</translation>
 <translation id="8772387130037509473">Yoga và pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Chuyển tệp bảo mật?}other{Chuyển các tệp bảo mật?}}</translation>
@@ -4336,6 +4338,7 @@ Thông tin chi tiết bổ sung:
 <translation id="882338992931677877">Khe thủ công</translation>
 <translation id="8830320733681313421">Bưu thiếp Hagaki</translation>
 <translation id="8830565333350631528">Xem các tệp trong <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Áp dụng cho các giao dịch mua trên <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Máy giặt và máy sấy</translation>
 <translation id="8834962751196791179">Cảnh báo này xuất hiện vì đây là trang web không hỗ trợ HTTPS và bạn đang ở Chế độ ẩn danh. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Chương trình truyền hình khoa học viễn tưởng và giả tưởng</translation>

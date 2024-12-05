@@ -2743,6 +2743,7 @@
 <translation id="5969199813874624822">가격 저장 및 추적</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">6번째 롤</translation>
+<translation id="5974745851230707809">할부 결제 옵션</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="5984570616552610254">챔버 습도</translation>
@@ -4306,6 +4307,7 @@
 <translation id="8767765348545497220">도움말 풍선 닫기</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{결제 수단 1개}other{결제 수단 #개}}</translation>
 <translation id="8768225988514678921">프레젠테이션 만들기 버튼, Slides에서 새 Google 프레젠테이션을 빠르게 만들려면 활성화하세요.</translation>
+<translation id="8769662576926275897">카드 세부정보</translation>
 <translation id="8770286973007342895">잔디깎이</translation>
 <translation id="8772387130037509473">요가 및 필라테스</translation>
 <translation id="877348612833018844">{0,plural, =1{기밀 파일을 이동하시겠습니까?}other{기밀 파일을 이동하시겠습니까?}}</translation>
@@ -4334,6 +4336,7 @@
 <translation id="882338992931677877">수동 슬롯</translation>
 <translation id="8830320733681313421">Hagaki 엽서</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" />에서 파일 보기</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> 이상 구매 시 사용할 수 있음</translation>
 <translation id="8833007469711500369">세탁기 및 건조기</translation>
 <translation id="8834962751196791179">HTTPS를 지원하지 않는 사이트이며 현재 시크릿 모드를 사용하고 있기 때문에 이 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">TV 공상과학 및 판타지 프로그램</translation>

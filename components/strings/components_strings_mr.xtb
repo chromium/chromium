@@ -2742,6 +2742,7 @@
 <translation id="5969199813874624822">किंमत सेव्ह करून तिचा माग ठेवा</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">सहावा रोल</translation>
+<translation id="5974745851230707809">कालांतराने पेमेंट करण्याचे पर्याय</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
 <translation id="5984570616552610254">चेंबरची आर्द्रता</translation>
@@ -4307,6 +4308,7 @@
 <translation id="8767765348545497220">मदतीसंबंधित बबल बंद करा</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{१ पेमेंट पद्धत}other{# पेमेंट पद्धती}}</translation>
 <translation id="8768225988514678921">प्रेझेंटेशन तयार करा बटण, Slides मध्ये नवीन Google प्रेझेंटेशन झटपट तयार करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
+<translation id="8769662576926275897">कार्ड तपशील</translation>
 <translation id="8770286973007342895">गवत कापणीची यंत्रे</translation>
 <translation id="8772387130037509473">योग आणि पिलाटेज</translation>
 <translation id="877348612833018844">{0,plural, =1{गोपनीय फाइल हलवायची आहे का?}other{गोपनीय फाइल हलवायच्या आहेत का?}}</translation>
@@ -4335,6 +4337,7 @@
 <translation id="882338992931677877">मॅन्‍युअल स्लॉट</translation>
 <translation id="8830320733681313421">Hagaki पोस्टकार्ड</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" /> मध्ये फाइल पहा</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> वरील खरेदीवर उपलब्ध आहे</translation>
 <translation id="8833007469711500369">वॉशर आणि ड्रायर</translation>
 <translation id="8834962751196791179">तुम्हाला ही चेतावणी दिसत आहे, कारण ही साइट HTTPS ला सपोर्ट करत नाही आणि तुम्ही गुप्त मोडमध्ये आहात. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">टीव्हीवरील साय-फाय आणि फँटसी शो</translation>

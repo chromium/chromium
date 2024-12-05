@@ -2738,6 +2738,7 @@
 <translation id="5969199813874624822">ధరను సేవ్ చేసి, ట్రాక్ చేయండి</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">సిక్స్త్ రోల్</translation>
+<translation id="5974745851230707809">కాలక్రమేణా పేమెంట్ చేసే ఆప్షన్‌లు</translation>
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
 <translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="5984570616552610254">చాంబర్‌లోని తేమ</translation>
@@ -4302,6 +4303,7 @@
 <translation id="8767765348545497220">సహాయ బబుల్‌ను మూసివేయండి</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 పేమెంట్ ఆప్షన్}other{# పేమెంట్ ఆప్షన్‌లు}}</translation>
 <translation id="8768225988514678921">'ప్రెజెంటేషన్‌ను క్రియేట్ చేయండి' బటన్, Slidesలో క్విక్‌గా కొత్త Google ప్రెజెంటేషన్‌ను క్రియేట్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
+<translation id="8769662576926275897">కార్డ్ వివరాలు</translation>
 <translation id="8770286973007342895">లాన్ మూవర్‌లు</translation>
 <translation id="8772387130037509473">యోగా &amp; పిలాటిస్</translation>
 <translation id="877348612833018844">{0,plural, =1{గోప్యమైన ఫైల్‌ను తరలించాలా?}other{గోప్యమైన ఫైల్స్‌ను తరలించాలా?}}</translation>
@@ -4330,6 +4332,7 @@
 <translation id="882338992931677877">మాన్యువల్ స్లాట్</translation>
 <translation id="8830320733681313421">Hagaki పోస్ట్‌కార్డ్</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" />‌లో ఉన్న ఫైళ్లను చూడండి</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> కంటే ఎక్కువ మొత్తంలో చేసే కొనుగోళ్లకు అందుబాటులో ఉంటుంది</translation>
 <translation id="8833007469711500369">వాషర్‌లు &amp; డ్రైయర్‌లు</translation>
 <translation id="8834962751196791179">ఈ సైట్ HTTPSను సపోర్ట్ చేయదు, అలాగే మీరు అజ్ఞాత మోడ్‌లో ఉన్నారు, కాబట్టి మీకు ఈ హెచ్చరిక కనిపిస్తోంది. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">సైన్స్-ఫిక్షన్ &amp; ఫాంటసీ టీవీ షోలు</translation>

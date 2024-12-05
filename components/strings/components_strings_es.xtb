@@ -4132,7 +4132,7 @@ Más información:
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">Entendido</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar tus preferencias de cookies en la configuración de Chrome</translation>
-<translation id="8433057134996913067">Con esta opción, tu sesión se cerrará en la mayoría de sitios web.</translation>
+<translation id="8433057134996913067">Con esta opción, tu sesión se cerrará en la mayoría de sitios web</translation>
 <translation id="8434840396568290395">Mascotas</translation>
 <translation id="8436623588884785770">Añadir política</translation>
 <translation id="8437238597147034694">&amp;Deshacer movimiento</translation>
@@ -4308,6 +4308,7 @@ Más información:
 <translation id="8767765348545497220">Cerrar cuadro de ayuda</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 método de pago}other{# métodos de pago}}</translation>
 <translation id="8768225988514678921">Botón Crear presentación: actívalo para crear una nueva presentación de Google en Presentaciones rápidamente</translation>
+<translation id="8769662576926275897">Información de la tarjeta</translation>
 <translation id="8770286973007342895">Cortacéspedes</translation>
 <translation id="8772387130037509473">Yoga y pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{¿Mover archivo confidencial?}other{¿Mover archivos confidenciales?}}</translation>

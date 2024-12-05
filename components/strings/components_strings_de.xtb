@@ -2741,6 +2741,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5969199813874624822">Speichern und Preis beobachten</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sechste Rolle</translation>
+<translation id="5974745851230707809">Optionen für die Ratenzahlung</translation>
 <translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
 <translation id="5984570616552610254">Kammerfeuchtigkeit</translation>
@@ -4306,6 +4307,7 @@ Weitere Details:
 <translation id="8767765348545497220">Infofeld schließen</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 Zahlungsmethode}other{# Zahlungsmethoden}}</translation>
 <translation id="8768225988514678921">Schaltfläche „Präsentation erstellen“ – aktivieren, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
+<translation id="8769662576926275897">Kartendaten</translation>
 <translation id="8770286973007342895">Rasenmäher</translation>
 <translation id="8772387130037509473">Yoga und Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vertrauliche Datei verschieben?}other{Vertrauliche Dateien verschieben?}}</translation>
@@ -4334,6 +4336,7 @@ Weitere Details:
 <translation id="882338992931677877">Manueller Einzug</translation>
 <translation id="8830320733681313421">Hagaki (Postkarte)</translation>
 <translation id="8830565333350631528">Dateien in <ph name="CLOUD_PROVIDER" /> ansehen</translation>
+<translation id="8831783793142731637">Für Käufe ab <ph name="RANGE_MINIMUM" /> verfügbar</translation>
 <translation id="8833007469711500369">Waschmaschinen und Trockner</translation>
 <translation id="8834962751196791179">Du siehst diese Warnung, weil diese Website kein HTTPS unterstützt und du den Inkognitomodus nutzt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Sci-Fi- und Fantasy-Fernsehsendungen</translation>
