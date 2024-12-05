@@ -4972,7 +4972,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.ResetAutofillPrefToChrome" enum="Boolean"
-    expires_after="2024-12-14">
+    expires_after="2025-05-18">
   <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
