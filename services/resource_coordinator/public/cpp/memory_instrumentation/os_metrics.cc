@@ -9,7 +9,7 @@
 namespace memory_instrumentation {
 
 // static
-bool OSMetrics::FillProcessMemoryMaps(base::ProcessId pid,
+bool OSMetrics::FillProcessMemoryMaps(base::ProcessHandle handle,
                                       mojom::MemoryMapOption mmap_option,
                                       mojom::RawOSMemDump* dump) {
   DCHECK_NE(mmap_option, mojom::MemoryMapOption::NONE);
@@ -19,9 +19,9 @@ bool OSMetrics::FillProcessMemoryMaps(base::ProcessId pid,
 #if BUILDFLAG(IS_MAC)
   // On macOS, fetching all memory maps is very slow. See
   // https://crbug.com/826913 and https://crbug.com/1035401.
-  results = GetProcessModules(pid);
+  results = GetProcessModules(handle);
 #else
-  results = GetProcessMemoryMaps(pid);
+  results = GetProcessMemoryMaps(handle);
 
 #endif
 
@@ -32,5 +32,16 @@ bool OSMetrics::FillProcessMemoryMaps(base::ProcessId pid,
 
   return true;
 }
+
+#if !BUILDFLAG(IS_APPLE)
+base::expected<base::ProcessMemoryInfo, base::ProcessUsageError>
+OSMetrics::GetMemoryInfo(base::ProcessHandle handle) {
+  auto process_metrics =
+      (handle == base::kNullProcessHandle)
+          ? base::ProcessMetrics::CreateCurrentProcessMetrics()
+          : base::ProcessMetrics::CreateProcessMetrics(handle);
+  return process_metrics->GetMemoryInfo();
+}
+#endif  // !BUILDFLAG(IS_APPLE)
 
 }  // namespace memory_instrumentation

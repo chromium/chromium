@@ -138,7 +138,11 @@ int64_t TaskGroupSampler::RefreshSwappedMem() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return process_metrics_->GetVmSwapBytes();
+  auto info = process_metrics_->GetMemoryInfo();
+  if (!info.has_value()) {
+    return 0;
+  }
+  return info->vm_swap_bytes;
 #else
   return 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

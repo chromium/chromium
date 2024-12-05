@@ -18,32 +18,23 @@
 namespace memory_instrumentation {
 
 // static
-bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
+bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
                                  mojom::RawOSMemDump* dump) {
-  base::Process process = pid == base::kNullProcessId
-                              ? base::Process::Current()
-                              : base::Process::Open(pid);
-  zx::unowned<zx::process> zx_process(process.Handle());
-  zx_info_task_stats_t info;
-  zx_status_t status = zx_process->get_info(ZX_INFO_TASK_STATS, &info,
-                                            sizeof(info), nullptr, nullptr);
-  if (status != ZX_OK) {
+  auto info = GetMemoryInfo(handle);
+  if (!info.has_value()) {
     return false;
   }
 
-  size_t rss_bytes = info.mem_private_bytes + info.mem_shared_bytes;
-  size_t rss_anon_bytes = info.mem_private_bytes;
-
-  dump->resident_set_kb = rss_bytes / 1024;
-  dump->platform_private_footprint->rss_anon_bytes = rss_anon_bytes;
-  // Fuchsia has no swap.
-  dump->platform_private_footprint->vm_swap_bytes = 0;
+  dump->platform_private_footprint->rss_anon_bytes = info->rss_anon_bytes;
+  dump->platform_private_footprint->vm_swap_bytes = info->vm_swap_bytes;
+  dump->resident_set_kb =
+      base::saturated_cast<uint32_t>(info->resident_set_bytes / 1024);
   return true;
 }
 
 // static
 std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
-    base::ProcessId) {
+    base::ProcessHandle) {
   // TODO(crbug.com/40720107): Implement this.
   NOTIMPLEMENTED();
   return std::vector<mojom::VmRegionPtr>();
