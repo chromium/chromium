@@ -6,11 +6,14 @@
 #define CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_TEST_UTILS_H_
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/auto_reset.h"
+#include "base/functional/bind_internal.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 
 namespace ash::kiosk::test {
 
@@ -64,6 +67,14 @@ void WaitNetworkScreen();
 
 // Closes the window of the given `app`.
 void CloseAppWindow(const KioskApp& app);
+
+// Caches the resulting device local account policy built by `setup` for the
+// given `account_id`.
+//
+// Must be called early, before Chrome loads policies from session manager
+// during startup.
+void CachePolicy(const std::string& account_id,
+                 base::FunctionRef<void(policy::UserPolicyBuilder&)> setup);
 
 }  // namespace ash::kiosk::test
 

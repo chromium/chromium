@@ -6,8 +6,6 @@
 #include <optional>
 #include <string_view>
 
-#include "ash/public/cpp/keyboard/keyboard_config.h"
-#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check_deref.h"
@@ -90,27 +88,6 @@ class WebKioskTest : public MixinBasedInProcessBrowserTest {
                                 /*auto_launch_account_id=*/{},
                                 {KioskMixin::SimpleWebAppOption()}}};
 };
-
-IN_PROC_BROWSER_TEST_F(WebKioskTest, KeyboardConfigPolicy) {
-  network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskWebApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
-
-  const keyboard::KeyboardConfig config =
-      KeyboardController::Get()->GetKeyboardConfig();
-
-  // `auto_capitalize` is not controlled by the policy
-  // 'VirtualKeyboardFeatures', and its default value remains true.
-  EXPECT_TRUE(config.auto_capitalize);
-
-  // The other features are controlled by the policy
-  // 'VirtualKeyboardFeatures', and their default values should be false.
-  EXPECT_FALSE(config.auto_complete);
-  EXPECT_FALSE(config.auto_correct);
-  EXPECT_FALSE(config.handwriting);
-  EXPECT_FALSE(config.spell_check);
-  EXPECT_FALSE(config.voice_input);
-}
 
 IN_PROC_BROWSER_TEST_F(WebKioskTest,
                        NewPopupBrowserInKioskNotAllowedByDefault) {

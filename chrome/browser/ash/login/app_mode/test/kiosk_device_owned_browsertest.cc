@@ -6,8 +6,6 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
-#include "ash/public/cpp/keyboard/keyboard_config.h"
-#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
@@ -221,24 +219,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, WindowViewsBounds) {
   const gfx::Rect& client_view_bounds =
       non_client_view->client_view()->bounds();
   EXPECT_EQ(frame_view_bounds, client_view_bounds);
-}
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
-                       VirtualKeyboardFeaturesEnabledByDefault) {
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchSuccess();
-
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  EXPECT_TRUE(user_manager->IsLoggedInAsKioskApp());
-
-  keyboard::KeyboardConfig config =
-      KeyboardController::Get()->GetKeyboardConfig();
-  EXPECT_TRUE(config.auto_capitalize);
-  EXPECT_TRUE(config.auto_complete);
-  EXPECT_TRUE(config.auto_correct);
-  EXPECT_TRUE(config.handwriting);
-  EXPECT_TRUE(config.spell_check);
-  EXPECT_TRUE(config.voice_input);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
