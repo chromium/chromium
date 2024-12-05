@@ -46,9 +46,6 @@ _ANDROID_SETTINGS = android_browser_backend_settings.ANDROID_BACKEND_SETTINGS
 # re-installing the browser on subsequent benchmark runs.
 _android_browser_installed = False
 
-# See https://crbug.com/373822787 for how this value was calculated.
-_ANDROID_64_BLOCK_COUNT_THRESHOLD = 2200000000
-
 _EXE_EXT = '.exe' if sys.platform == 'win32' else ''
 _THIS_DIR = os.path.dirname(__file__)
 _ROOT_DIR = f'{_THIS_DIR}/../..'
@@ -515,20 +512,6 @@ def main():
     if not args.skip_profdata:
         profile_output_path = f'{args.outputdir}/profile{args.suffix}'
         merge_profdata(profile_output_path, args)
-        if ('64' in str(args.android_browser)
-                and args.isolated_script_test_output):
-            # We are on the arm64 bot, where we want to avoid perf regressions.
-            max_internal_block_count = get_max_internal_block_count(
-                profile_output_path)
-            _LOGGER.info(
-                f'Maximum internal block count: {max_internal_block_count}')
-            assert max_internal_block_count is not None, 'Failed to get ' \
-                'max internal block count from profdata.'
-            # TODO(crbug.com/373822787): Remove this when no longer needed.
-            if max_internal_block_count < _ANDROID_64_BLOCK_COUNT_THRESHOLD:
-                raise MergeError(
-                    f"max_internal_block_count={max_internal_block_count} is "
-                    f"lower than {_ANDROID_64_BLOCK_COUNT_THRESHOLD}.")
 
     if not args.keep_temps:
         _LOGGER.info('Cleaning up %s, use --keep-temps to keep it.',
