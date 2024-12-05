@@ -131,26 +131,28 @@ class TaskManagerMediator {
     }
 
     /**
-     * Cycles through the sort orderings for the key.
+     * Cycles through the sort orderings for the key. The initial ordering when the column is not
+     * sorted yet is decided based on the key.
      *
      * <ul>
-     *   <li>If the column is not sorted, sorts it in descending order.
-     *   <li>If the column is sorted in descending order, sorts it in ascending order.
-     *   <li>If the column is sorted in ascending order, removes the sorting.
+     *   <li>If the column is not sorted, sorts it in initial order.
+     *   <li>If the column is sorted in the initial order, sorts it in the opposite order.
+     *   <li>If the column is sorted in the opposite of the initial order, removes the sorting.
      * </ul>
      */
     void cycleSortOrder(PropertyKey columnKey) {
         @Nullable SortDescriptor descriptor = mHeader.get(SORT_DESCRIPTOR);
 
-        // TODO(crbug.com/381351182): change default sort order per column type.
+        boolean ascendingFirst = TaskManagerProperties.initialSortIsAscending(columnKey);
+
         if (descriptor != null && descriptor.key == columnKey) {
-            if (descriptor.ascending) {
-                setSortDescriptor(null);
+            if (descriptor.ascending == ascendingFirst) {
+                setSortDescriptor(new SortDescriptor(columnKey, !ascendingFirst));
             } else {
-                setSortDescriptor(new SortDescriptor(columnKey, true));
+                setSortDescriptor(null);
             }
         } else {
-            setSortDescriptor(new SortDescriptor(columnKey, false));
+            setSortDescriptor(new SortDescriptor(columnKey, ascendingFirst));
         }
     }
 

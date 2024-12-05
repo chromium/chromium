@@ -89,4 +89,21 @@ class TaskManagerProperties {
      */
     static final PropertyKey[] ALL_COLUMN_KEYS =
             new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, PROCESS_ID};
+
+    /**
+     * Returns whether the initial sort ordering of this column should be ascending or not. Keep the
+     * definition consistent with task_manager_columns.h for the columns defined in the file.
+     */
+    static boolean initialSortIsAscending(PropertyKey columnKey) {
+        if (columnKey == TASK_NAME) {
+            return true;
+        } else if (columnKey == MEMORY_FOOTPRINT) {
+            return false;
+        } else if (columnKey == CPU) {
+            return false;
+        } else if (columnKey == PROCESS_ID) {
+            return true;
+        }
+        throw new IllegalArgumentException("column key " + columnKey + " not supported");
+    }
 }
