@@ -160,6 +160,10 @@
     --color-searchbox-ghost-loader-spinner: #70757A;
   }
 
+  :host([show-ghost-loader]) #searchboxContainer {
+    --color-searchbox-background: var(--color-searchbox-results-background);
+  }
+
   cr-icon-button.icon-arrow-back {
     margin-block-start: 26px;
     margin-inline-start: 8px;
