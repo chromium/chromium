@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/public/cpp/resource_request_body.h"
 
 #include <utility>
@@ -34,15 +29,6 @@ scoped_refptr<ResourceRequestBody> ResourceRequestBody::CreateFromCopyOfBytes(
 
 // static
 scoped_refptr<ResourceRequestBody> ResourceRequestBody::CreateFromBytes(
-    const char* bytes,
-    size_t length) {
-  auto result = base::MakeRefCounted<ResourceRequestBody>();
-  result->AppendBytes(bytes, length);
-  return result;
-}
-
-// static
-scoped_refptr<ResourceRequestBody> ResourceRequestBody::CreateFromBytes(
     std::vector<uint8_t>&& bytes) {
   auto result = base::MakeRefCounted<ResourceRequestBody>();
   result->AppendBytes(std::move(bytes));
@@ -65,14 +51,6 @@ void ResourceRequestBody::AppendBytes(std::vector<uint8_t>&& bytes) {
 
 void ResourceRequestBody::AppendCopyOfBytes(base::span<const uint8_t> bytes) {
   AppendBytes(std::vector<uint8_t>(bytes.begin(), bytes.end()));
-}
-
-void ResourceRequestBody::AppendBytes(const char* bytes, int bytes_len) {
-  std::vector<uint8_t> vec;
-  vec.assign(reinterpret_cast<const uint8_t*>(bytes),
-             reinterpret_cast<const uint8_t*>(bytes + bytes_len));
-
-  AppendBytes(std::move(vec));
 }
 
 void ResourceRequestBody::AppendFileRange(
