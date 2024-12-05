@@ -340,8 +340,9 @@ class FakeTenorServer {
     GURL url = params->url_request.url;
     // tenor.googleapis.com hosts the API endpoints for Tenor.
     if (url.DomainIs("tenor.googleapis.com")) {
-      if (url.path_piece().ends_with("/search")) {
-        return HandleSearch(params);
+      if (url.path_piece().ends_with("/search") ||
+          url.path_piece().ends_with("/featured")) {
+        return HandleSearchOrFeatured(params);
       }
       return false;
     }
@@ -357,7 +358,8 @@ class FakeTenorServer {
   }
 
  private:
-  bool HandleSearch(content::URLLoaderInterceptor::RequestParams* params) {
+  bool HandleSearchOrFeatured(
+      content::URLLoaderInterceptor::RequestParams* params) {
     // Build up a fake set of GIFs
     base::Value::List results;
     for (int i = 0; i < 10; ++i) {
@@ -429,6 +431,39 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, SearchGifs) {
       WaitForShow(ash::kQuickInsertSearchResultsPageElementId),
       WaitForShow(ash::kQuickInsertGifElementId),
       PressButton(ash::kQuickInsertGifElementId),
+      WaitForShow(ash::kQuickInsertSearchResultsImageItemElementId),
+      NameDescendantViewByType<ash::QuickInsertGifView>(
+          ash::kQuickInsertSearchResultsImageItemElementId, kGifName, 0),
+      CheckView(kGifName,
+                [](ash::QuickInsertGifView* view) {
+                  return !view->GetImageBounds().IsEmpty();
+                }),
+      PressButton(ash::kQuickInsertSearchResultsImageItemElementId),
+      WaitForHide(ash::kQuickInsertElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, FeatureGifs) {
+  FakeTenorServer fake_tenor_server;
+  // TODO: b/360229206 - Use a contenteditable input field so the file can be
+  // inserted.
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  views::Textfield* quick_insert_search_field = nullptr;
+  constexpr std::string_view kGifName = "Gif";
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
+                }),
+      WaitForShow(ash::kQuickInsertGifElementId),
+      PressButton(ash::kQuickInsertGifElementId),
+      WaitForShow(ash::kQuickInsertSearchResultsPageElementId),
       WaitForShow(ash::kQuickInsertSearchResultsImageItemElementId),
       NameDescendantViewByType<ash::QuickInsertGifView>(
           ash::kQuickInsertSearchResultsImageItemElementId, kGifName, 0),
