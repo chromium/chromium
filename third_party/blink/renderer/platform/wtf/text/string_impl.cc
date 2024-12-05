@@ -435,12 +435,9 @@ class StringImplAllocator {
   using ResultStringType = scoped_refptr<StringImpl>;
 
   template <typename CharType>
-  scoped_refptr<StringImpl> Alloc(wtf_size_t length, CharType*& buffer) {
-    base::span<CharType> data;
-    scoped_refptr<StringImpl> impl =
-        StringImpl::CreateUninitialized(length, data);
-    buffer = data.data();
-    return impl;
+  scoped_refptr<StringImpl> Alloc(wtf_size_t length,
+                                  base::span<CharType>& buffer) {
+    return StringImpl::CreateUninitialized(length, buffer);
   }
 
   scoped_refptr<StringImpl> CoerceOriginal(const StringImpl& string) {

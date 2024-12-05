@@ -59,16 +59,18 @@ class WTF_EXPORT StringView {
   // should rarely need to be used.
   class StackBackingStore {
    public:
-    // Returns a pointer to a buffer of size |length| that is valid for as long
-    // the StackBackingStore object is alive and Realloc() has not been called
+    // Returns a span of size |length| that is valid for as long the
+    // StackBackingStore object is alive and Realloc() has not been called
     // again.
     template <typename CharT>
-    CharT* Realloc(int length) {
+    base::span<CharT> Realloc(wtf_size_t length) {
       size_t size = length * sizeof(CharT);
       if (size > sizeof(stackbuf16_)) [[unlikely]] {
         heapbuf_.reset(reinterpret_cast<char*>(
             WTF::Partitions::BufferMalloc(size, "StackBackingStore")));
-        return reinterpret_cast<CharT*>(heapbuf_.get());
+        // SAFETY: `heapbuf_` is the result of BufferMalloc() for `length`.
+        return UNSAFE_BUFFERS(
+            base::span(reinterpret_cast<CharT*>(heapbuf_.get()), length));
       }
 
       // If the Realloc() shrinks the buffer size, |heapbuf_| will keep a copy
@@ -77,7 +79,9 @@ class WTF_EXPORT StringView {
       // another branch.
       static_assert(alignof(decltype(stackbuf16_)) % alignof(CharT) == 0,
                     "stack buffer must be sufficiently aligned");
-      return reinterpret_cast<CharT*>(&stackbuf16_[0]);
+      // SAFETY: `length` is smaller than the size of `stackbuf16_`.
+      return UNSAFE_BUFFERS(
+          base::span(reinterpret_cast<CharT*>(&stackbuf16_[0]), length));
     }
 
    public:

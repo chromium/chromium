@@ -28,9 +28,9 @@ class StackStringViewAllocator {
   using ResultStringType = StringView;
 
   template <typename CharType>
-  StringView Alloc(wtf_size_t length, CharType*& buffer) {
+  StringView Alloc(wtf_size_t length, base::span<CharType>& buffer) {
     buffer = backing_store_.Realloc<CharType>(length);
-    return StringView(buffer, length);
+    return StringView(buffer);
   }
 
   StringView CoerceOriginal(StringView string) { return string; }
