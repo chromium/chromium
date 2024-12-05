@@ -19,8 +19,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -43,6 +41,9 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -76,21 +77,20 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private final List<AttachedWindowInfo> mAttachList = new ArrayList<>();
     private final DataSharingUIDelegate mDataSharingUiDelegate;
+    private final TabGroupSyncService mTabGroupSyncService;
 
     /**
-     * TODO(ssid): Pass in the necessary dependencies rather than profile and fetching the services
-     * to avoid depending on the factory.
-     *
-     * @param profile The current profile to get dependencies with.
+     * @param messagingBackendService Where to register ourself as the current delegate.
      * @param dataSharingService Data sharing service for the profile.
+     * @param tabGroupSyncService To access data about tab groups not open in the current model.
      */
     /* package */ InstantMessageDelegateImpl(
-            Profile profile, DataSharingService dataSharingService) {
-        profile = profile.getOriginalProfile();
-        MessagingBackendService messagingBackendService =
-                MessagingBackendServiceFactory.getForProfile(profile);
+            MessagingBackendService messagingBackendService,
+            DataSharingService dataSharingService,
+            TabGroupSyncService tabGroupSyncService) {
         messagingBackendService.setInstantMessageDelegate(this);
         mDataSharingUiDelegate = dataSharingService.getUiDelegate();
+        mTabGroupSyncService = tabGroupSyncService;
     }
 
     /**
@@ -378,7 +378,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         tabGroupTitle);
 
         @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
-        dataSharingNotificationManager.showOtherJoinedNotification(contentTitle, tabGroupId);
+        if (tabGroupId == null) return;
+        SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+        if (syncGroup == null) return;
+        dataSharingNotificationManager.showOtherJoinedNotification(contentTitle, syncGroup.syncId);
     }
 
     private void showGenericMessage(

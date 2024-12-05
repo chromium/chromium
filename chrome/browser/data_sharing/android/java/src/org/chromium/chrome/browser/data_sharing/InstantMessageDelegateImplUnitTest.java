@@ -25,6 +25,7 @@ import static org.chromium.components.messages.MessageBannerProperties.ON_FULLY_
 import static org.chromium.components.messages.MessageBannerProperties.ON_PRIMARY_ACTION;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
 import static org.chromium.components.messages.PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -48,8 +49,6 @@ import org.chromium.base.Token;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -70,6 +69,8 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -94,7 +95,6 @@ public class InstantMessageDelegateImplUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private Profile mProfile;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private DataSharingService mDataSharingService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
@@ -106,6 +106,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Mock private Callback<Boolean> mSuccessCallback;
     @Mock private DataSharingNotificationManager mDataSharingNotificationManager;
     @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Bitmap mAvatarBitmap;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
@@ -114,6 +115,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     private final UnownedUserDataHost mUnownedUserDataHost = new UnownedUserDataHost();
 
+    private SyncedGroupTestHelper mSyncedGroupTestHelper;
     private InstantMessageDelegateImpl mDelegate;
 
     @Before
@@ -123,8 +125,6 @@ public class InstantMessageDelegateImplUnitTest {
     }
 
     private void onActivity(Activity activity) {
-        MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
-        DataSharingServiceFactory.setForTesting(mDataSharingService);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
         MockitoHelper.doCallback(
                         (DataSharingAvatarBitmapConfig config) ->
@@ -140,7 +140,12 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
-        mDelegate = new InstantMessageDelegateImpl(mProfile, mDataSharingService);
+        mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
+        mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, TAB_GROUP_ID);
+
+        mDelegate =
+                new InstantMessageDelegateImpl(
+                        mMessagingBackendService, mDataSharingService, mTabGroupSyncService);
         mDelegate.attachWindow(
                 mWindowAndroid,
                 mTabGroupModelFilter,
@@ -357,7 +362,8 @@ public class InstantMessageDelegateImplUnitTest {
 
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
-        verify(mDataSharingNotificationManager).showOtherJoinedNotification(any(), any());
+        verify(mDataSharingNotificationManager)
+                .showOtherJoinedNotification(any(), eq(SYNC_GROUP_ID1));
         verify(mSuccessCallback).onResult(true);
     }
 }

@@ -3788,7 +3788,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
     private void maybeShowTabSwitcherAfterTabModelLoad(Intent intent) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) return;
         boolean shouldShowTabSwitcher =
-                IntentUtils.safeHasExtra(intent, DataSharingNotificationManager.DATA_SHARING_EXTRA)
+                IntentUtils.safeHasExtra(
+                                intent, DataSharingNotificationManager.INVITATION_URL_EXTRA)
                         && IntentHandler.wasIntentSenderChrome(intent)
                         && !mTabModelSelector.isIncognitoSelected();
         if (!shouldShowTabSwitcher) {
@@ -3797,7 +3798,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         GURL url =
                 new GURL(
                         IntentUtils.safeGetStringExtra(
-                                intent, DataSharingNotificationManager.DATA_SHARING_EXTRA));
+                                intent, DataSharingNotificationManager.INVITATION_URL_EXTRA));
         Runnable showJoinFlowRunnable =
                 () -> {
                     mRootUiCoordinator.getDataSharingTabManager().initiateJoinFlow(this, url);
