@@ -42,11 +42,8 @@ try_.defaults.set(
 def gpu_android_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
-        pool = "luci.chromium.gpu.try",
         builder_group = "tryserver.chromium.android",
         builderless = True,
-        max_concurrent_builds = 1,
-        os = os.LINUX_DEFAULT,
         siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
@@ -59,6 +56,7 @@ gpu_android_builder(
         "ci/Android FYI Release (Nexus 5X)",
     ],
     gn_args = "ci/GPU FYI Android arm64 Builder",
+    pool = "luci.chromium.gpu.android.nexus5x.try",
 )
 
 gpu_android_builder(
@@ -68,6 +66,7 @@ gpu_android_builder(
         "ci/Android FYI Release (NVIDIA Shield TV)",
     ],
     gn_args = "ci/GPU FYI Android arm Builder",
+    pool = "luci.chromium.gpu.android.nvidia.shield.tv.try",
 )
 
 gpu_android_builder(
@@ -77,6 +76,7 @@ gpu_android_builder(
         "ci/Android FYI Release (Pixel 2)",
     ],
     gn_args = "ci/GPU FYI Android arm Builder",
+    pool = "luci.chromium.gpu.android.pixel2.chromium.try",
 )
 
 gpu_android_builder(
@@ -86,6 +86,7 @@ gpu_android_builder(
         "ci/Android FYI Release (Pixel 4)",
     ],
     gn_args = "ci/GPU FYI Android arm Builder",
+    pool = "luci.chromium.gpu.android.pixel4.try",
 )
 
 gpu_android_builder(
@@ -95,6 +96,7 @@ gpu_android_builder(
         "ci/Android FYI Release (Pixel 6)",
     ],
     gn_args = "ci/GPU FYI Android arm64 Builder",
+    pool = "luci.chromium.gpu.android.pixel6.try",
 )
 
 gpu_android_builder(
@@ -105,6 +107,7 @@ gpu_android_builder(
         "ci/Android FYI Experimental Release (Pixel 6)",
     ],
     gn_args = "ci/GPU FYI Android arm64 Builder",
+    pool = "luci.chromium.gpu.android.pixel6.try",
 )
 
 gpu_android_builder(
@@ -115,6 +118,7 @@ gpu_android_builder(
         "ci/Android FYI Release (Motorola Moto G Power 5G)",
     ],
     gn_args = "ci/GPU FYI Android arm64 Builder",
+    pool = "luci.chromium.gpu.android.moto-g-power-5g.try",
 )
 
 gpu_android_builder(
@@ -125,6 +129,7 @@ gpu_android_builder(
         "ci/Android FYI Release (Samsung S23)",
     ],
     gn_args = "ci/GPU FYI Android arm64 Builder",
+    pool = "luci.chromium.gpu.android.s23.try",
 )
 
 gpu_android_builder(
@@ -143,6 +148,7 @@ gpu_android_builder(
             "static_angle",
         ],
     ),
+    pool = "luci.chromium.gpu.android.nexus5x.try",
 )
 
 gpu_android_builder(
@@ -151,16 +157,14 @@ gpu_android_builder(
         "ci/Android Release (Pixel 2)",
     ],
     gn_args = "ci/Android Release (Pixel 2)",
+    pool = "luci.chromium.gpu.android.pixel2.chromium.try",
 )
 
 def gpu_chromeos_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
-        pool = "luci.chromium.gpu.try",
         builder_group = "tryserver.chromium.chromiumos",
         builderless = True,
-        max_concurrent_builds = 1,
-        os = os.LINUX_DEFAULT,
         siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
@@ -172,6 +176,7 @@ gpu_chromeos_builder(
         "ci/ChromeOS FYI Release (amd64-generic)",
     ],
     gn_args = "ci/ChromeOS FYI Release (amd64-generic)",
+    pool = "luci.chromium.gpu.chromeos.amd64.generic.try",
 )
 
 gpu_chromeos_builder(
@@ -181,16 +186,14 @@ gpu_chromeos_builder(
         "ci/ChromeOS FYI Release Skylab (volteer)",
     ],
     gn_args = "ci/ChromeOS FYI Release Skylab (volteer)",
+    pool = "luci.chromium.gpu.chromeos.volteer.try",
 )
 
 def gpu_linux_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
-        pool = "luci.chromium.gpu.try",
         builder_group = "tryserver.chromium.linux",
         builderless = True,
-        max_concurrent_builds = 1,
-        os = os.LINUX_DEFAULT,
         siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
@@ -204,6 +207,7 @@ gpu_linux_builder(
         "ci/Linux Wayland FYI Release (AMD)",
     ],
     gn_args = "ci/GPU FYI Linux Wayland Builder",
+    pool = "luci.chromium.gpu.linux.amd.try",
 )
 
 gpu_linux_builder(
@@ -214,6 +218,7 @@ gpu_linux_builder(
         "ci/Linux Wayland FYI Release (Intel)",
     ],
     gn_args = "ci/GPU FYI Linux Wayland Builder",
+    pool = "luci.chromium.gpu.linux.intel.try",
 )
 
 gpu_linux_builder(
@@ -223,6 +228,7 @@ gpu_linux_builder(
         "ci/Linux FYI Release (AMD RX 5500 XT)",
     ],
     gn_args = "ci/GPU FYI Linux Builder",
+    pool = "luci.chromium.gpu.linux.amd.try",
 )
 
 gpu_linux_builder(
@@ -232,6 +238,7 @@ gpu_linux_builder(
         "ci/Linux FYI Experimental Release (Intel UHD 630)",
     ],
     gn_args = "ci/GPU FYI Linux Builder",
+    pool = "luci.chromium.gpu.linux.intel.try",
 )
 
 gpu_linux_builder(
@@ -241,6 +248,7 @@ gpu_linux_builder(
         "ci/Linux FYI Release (Intel UHD 630)",
     ],
     gn_args = "ci/GPU FYI Linux Builder",
+    pool = "luci.chromium.gpu.linux.intel.try",
 )
 
 gpu_linux_builder(
@@ -251,6 +259,7 @@ gpu_linux_builder(
         "ci/Linux FYI Release (Intel UHD 770)",
     ],
     gn_args = "ci/GPU FYI Linux Builder",
+    pool = "luci.chromium.gpu.linux.intel.uhd770.try",
 )
 
 gpu_linux_builder(
@@ -260,6 +269,7 @@ gpu_linux_builder(
         "ci/Linux FYI Debug (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Linux Builder (dbg)",
+    pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
 gpu_linux_builder(
@@ -269,6 +279,7 @@ gpu_linux_builder(
         "ci/Linux FYI Experimental Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Linux Builder",
+    pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
 gpu_linux_builder(
@@ -278,6 +289,7 @@ gpu_linux_builder(
         "ci/Linux FYI Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Linux Builder",
+    pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
 gpu_linux_builder(
@@ -286,6 +298,7 @@ gpu_linux_builder(
         "ci/Linux FYI GPU TSAN Release",
     ],
     gn_args = "ci/Linux FYI GPU TSAN Release",
+    pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
 gpu_linux_builder(
@@ -295,6 +308,7 @@ gpu_linux_builder(
         "ci/Linux Debug (NVIDIA)",
     ],
     gn_args = "ci/GPU Linux Builder (dbg)",
+    pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
 gpu_linux_builder(
@@ -309,6 +323,7 @@ gpu_linux_builder(
             "no_symbols",
         ],
     ),
+    pool = "luci.chromium.gpu.linux.nvidia.try",
 )
 
 def gpu_mac_builder(*, name, **kwargs):
@@ -506,10 +521,8 @@ gpu_mac_builder(
 def gpu_win_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
-        pool = "luci.chromium.gpu.try",
         builder_group = "tryserver.chromium.win",
         builderless = True,
-        max_concurrent_builds = 1,
         os = os.WINDOWS_ANY,
         siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
@@ -523,6 +536,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 Release (AMD RX 5500 XT)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.amd.try",
 )
 
 gpu_win_builder(
@@ -532,6 +546,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 Experimental Release (Intel)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.intel.try",
 )
 
 gpu_win_builder(
@@ -541,6 +556,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 Release (Intel)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.intel.try",
 )
 
 gpu_win_builder(
@@ -551,6 +567,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 Release (Intel UHD 770)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.intel.uhd770.try",
 )
 
 gpu_win_builder(
@@ -560,6 +577,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 Debug (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder (dbg)",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 
 gpu_win_builder(
@@ -569,6 +587,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 
 gpu_win_builder(
@@ -578,6 +597,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 DX12 Vulkan Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Win x64 DX12 Vulkan Builder",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 
 gpu_win_builder(
@@ -587,6 +607,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 Exp Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 
 gpu_win_builder(
@@ -596,6 +617,7 @@ gpu_win_builder(
         "ci/Win10 FYI x86 Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Win Builder",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 
 gpu_win_builder(
@@ -605,6 +627,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 Release (NVIDIA)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 
 gpu_win_builder(
@@ -615,6 +638,7 @@ gpu_win_builder(
         "ci/Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 
 gpu_win_builder(
@@ -625,6 +649,7 @@ gpu_win_builder(
         "ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)",
     ],
     gn_args = "ci/GPU FYI Win arm64 Builder",
+    pool = "luci.chromium.gpu.win11.qualcomm.try",
 )
 
 gpu_win_builder(
@@ -634,4 +659,5 @@ gpu_win_builder(
         "ci/Win10 x64 Debug (NVIDIA)",
     ],
     gn_args = "ci/GPU Win x64 Builder (dbg)",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
 )
