@@ -43,6 +43,7 @@ from collections import OrderedDict
 import json
 import os
 import pathlib
+import shlex
 import shutil
 import sys
 import time
@@ -1021,7 +1022,9 @@ def parse_arguments(args):
                       required=False,
                       default=False)
   options, leftover_args = parser.parse_known_args(args)
-  options.passthrough_args.extend(leftover_args)
+  if leftover_args:
+    for arg in leftover_args:
+      options.passthrough_args.extend(shlex.split(arg))
   return options
 
 
