@@ -2121,7 +2121,6 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
         min_max_content_contributions.depends_on_block_constraints;
 
     MinMaxSizes item_final_contribution;
-    const ComputedStyle& child_style = *item.style_;
     const LayoutUnit flex_base_size_border_box =
         item.flex_base_content_size_ + item.main_axis_border_padding_;
     const LayoutUnit hypothetical_main_size_border_box =
@@ -2138,9 +2137,9 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
       const LayoutUnit min_contribution =
           min_max_content_contributions.sizes.min_size;
       const bool cant_move = (min_contribution > flex_base_size_border_box &&
-                              child_style.ResolvedFlexGrow(Style()) == 0.f) ||
+                              item.flex_grow_ == 0.f) ||
                              (min_contribution < flex_base_size_border_box &&
-                              child_style.ResolvedFlexShrink(Style()) == 0.f);
+                              item.flex_shrink_ == 0.f);
       if (cant_move && !item.is_used_flex_basis_indefinite_) {
         item_final_contribution.min_size = hypothetical_main_size_border_box;
       } else {
@@ -2151,9 +2150,9 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
     const LayoutUnit max_contribution =
         min_max_content_contributions.sizes.max_size;
     const bool cant_move = (max_contribution > flex_base_size_border_box &&
-                            child_style.ResolvedFlexGrow(Style()) == 0.f) ||
+                            item.flex_grow_ == 0.f) ||
                            (max_contribution < flex_base_size_border_box &&
-                            child_style.ResolvedFlexShrink(Style()) == 0.f);
+                            item.flex_shrink_ == 0.f);
     if (cant_move && !item.is_used_flex_basis_indefinite_) {
       item_final_contribution.max_size = hypothetical_main_size_border_box;
     } else {

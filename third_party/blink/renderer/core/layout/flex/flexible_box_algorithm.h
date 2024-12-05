@@ -147,6 +147,8 @@ class FlexItem {
 
   const FlexibleBoxAlgorithm* algorithm_;
   Member<const ComputedStyle> style_;
+  const float flex_grow_;
+  const float flex_shrink_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;
   const LayoutUnit hypothetical_main_content_size_;

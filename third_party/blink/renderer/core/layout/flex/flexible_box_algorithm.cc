@@ -89,6 +89,8 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
                    bool depends_on_min_max_sizes)
     : algorithm_(algorithm),
       style_(style),
+      flex_grow_(style.ResolvedFlexGrow(algorithm_->StyleRef())),
+      flex_shrink_(style.ResolvedFlexShrink(algorithm_->StyleRef())),
       flex_base_content_size_(flex_base_content_size),
       min_max_main_sizes_(min_max_main_sizes),
       hypothetical_main_content_size_(
@@ -350,25 +352,21 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
 }
 
 void FlexLine::FreezeViolations(ViolationsVector& violations) {
-  const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (wtf_size_t i = 0; i < violations.size(); ++i) {
-    DCHECK(!violations[i]->frozen_) << i;
-    const ComputedStyle& child_style = *violations[i]->style_;
-    LayoutUnit child_size = violations[i]->flexed_content_size_;
+  for (auto* violation : violations) {
+    DCHECK(!violation->frozen_);
     remaining_free_space_ -=
-        child_size - violations[i]->flex_base_content_size_;
-    total_flex_grow_ -= child_style.ResolvedFlexGrow(flex_box_style);
-    const float flex_shrink = child_style.ResolvedFlexShrink(flex_box_style);
-    total_flex_shrink_ -= flex_shrink;
+        violation->flexed_content_size_ - violation->flex_base_content_size_;
+    total_flex_grow_ -= violation->flex_grow_;
+    total_flex_shrink_ -= violation->flex_shrink_;
     total_weighted_flex_shrink_ -=
-        flex_shrink * violations[i]->flex_base_content_size_;
+        violation->flex_shrink_ * violation->flex_base_content_size_;
     // total_weighted_flex_shrink can be negative when we exceed the precision
     // of a double when we initially calculate total_weighted_flex_shrink. We
     // then subtract each child's weighted flex shrink with full precision, now
     // leading to a negative result. See
     // css3/flexbox/large-flex-shrink-assert.html
     total_weighted_flex_shrink_ = std::max(total_weighted_flex_shrink_, 0.0);
-    violations[i]->frozen_ = true;
+    violation->frozen_ = true;
   }
 }
 
@@ -376,18 +374,15 @@ void FlexLine::FreezeInflexibleItems() {
   // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths step 2,
   // we freeze all items with a flex factor of 0 as well as those with a min/max
   // size violation.
-  FlexSign flex_sign = Sign();
+  const FlexSign flex_sign = Sign();
   remaining_free_space_ = container_main_inner_size_ - sum_flex_base_size_;
 
   ViolationsVector new_inflexible_items;
-  const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
-    FlexItem& flex_item = line_items_[i];
-    DCHECK(!flex_item.frozen_) << i;
-    float flex_factor =
-        (flex_sign == kPositiveFlexibility)
-            ? flex_item.style_->ResolvedFlexGrow(flex_box_style)
-            : flex_item.style_->ResolvedFlexShrink(flex_box_style);
+  for (auto& flex_item : line_items_) {
+    DCHECK(!flex_item.frozen_);
+    float flex_factor = (flex_sign == kPositiveFlexibility)
+                            ? flex_item.flex_grow_
+                            : flex_item.flex_shrink_;
     if (flex_factor == 0 ||
         (flex_sign == kPositiveFlexibility &&
          flex_item.flex_base_content_size_ >
@@ -410,21 +405,17 @@ bool FlexLine::ResolveFlexibleLengths() {
   ViolationsVector min_violations;
   ViolationsVector max_violations;
 
-  FlexSign flex_sign = Sign();
-  double sum_flex_factors = (flex_sign == kPositiveFlexibility)
-                                ? total_flex_grow_
-                                : total_flex_shrink_;
+  const FlexSign flex_sign = Sign();
+  const double sum_flex_factors = (flex_sign == kPositiveFlexibility)
+                                      ? total_flex_grow_
+                                      : total_flex_shrink_;
   if (sum_flex_factors > 0 && sum_flex_factors < 1) {
     LayoutUnit fractional(initial_free_space_ * sum_flex_factors);
     if (fractional.Abs() < remaining_free_space_.Abs())
       remaining_free_space_ = fractional;
   }
 
-  const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
-    FlexItem& flex_item = line_items_[i];
-
-    // This check also covers out-of-flow children.
+  for (auto& flex_item : line_items_) {
     if (flex_item.frozen_)
       continue;
 
@@ -432,15 +423,13 @@ bool FlexLine::ResolveFlexibleLengths() {
     double extra_space = 0;
     if (remaining_free_space_ > 0 && total_flex_grow_ > 0 &&
         flex_sign == kPositiveFlexibility && std::isfinite(total_flex_grow_)) {
-      extra_space = remaining_free_space_ *
-                    flex_item.style_->ResolvedFlexGrow(flex_box_style) /
-                    total_flex_grow_;
+      extra_space =
+          remaining_free_space_ * flex_item.flex_grow_ / total_flex_grow_;
     } else if (remaining_free_space_ < 0 && total_weighted_flex_shrink_ > 0 &&
                flex_sign == kNegativeFlexibility &&
                std::isfinite(total_weighted_flex_shrink_) &&
-               flex_item.style_->ResolvedFlexShrink(flex_box_style)) {
-      extra_space = remaining_free_space_ *
-                    flex_item.style_->ResolvedFlexShrink(flex_box_style) *
+               flex_item.flex_shrink_) {
+      extra_space = remaining_free_space_ * flex_item.flex_shrink_ *
                     flex_item.flex_base_content_size_ /
                     total_weighted_flex_shrink_;
     }
@@ -645,11 +634,10 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
     line_has_in_flow_item = true;
     sum_flex_base_size +=
         flex_item.FlexBaseMarginBoxSize() + gap_between_items_;
-    total_flex_grow += flex_item.style_->ResolvedFlexGrow(StyleRef());
-    const float flex_shrink = flex_item.style_->ResolvedFlexShrink(StyleRef());
-    total_flex_shrink += flex_shrink;
+    total_flex_grow += flex_item.flex_grow_;
+    total_flex_shrink += flex_item.flex_shrink_;
     total_weighted_flex_shrink +=
-        flex_shrink * flex_item.flex_base_content_size_;
+        flex_item.flex_shrink_ * flex_item.flex_base_content_size_;
     sum_hypothetical_main_size +=
         flex_item.HypotheticalMainAxisMarginBoxSize() + gap_between_items_;
   }
