@@ -112,8 +112,7 @@ struct RWBuffer::BufferHead {
       // `buffer_` has a `raw_ptr` that needs to be destroyed to
       // properly lower the refcount.
       block_.~BufferBlock();
-      WTF::Partitions::BufferFree(
-          reinterpret_cast<void*>(const_cast<RWBuffer::BufferHead*>(this)));
+      WTF::Partitions::BufferFree(const_cast<RWBuffer::BufferHead*>(this));
       while (block) {
         RWBuffer::BufferBlock* next = block->next_;
         block->~BufferBlock();
@@ -144,27 +143,24 @@ struct RWBuffer::BufferHead {
   }
 };
 
-size_t RWBuffer::ROIter::size() const {
-  if (!block_) {
-    return 0;
-  }
-
-  return std::min(block_->capacity_, remaining_);
-}
-
 RWBuffer::ROIter::ROIter(RWBuffer* rw_buffer, size_t available)
     : rw_buffer_(rw_buffer), remaining_(available) {
   DCHECK(rw_buffer_);
   block_ = &rw_buffer_->head_->block_;
 }
 
-const uint8_t* RWBuffer::ROIter::data() const {
-  return remaining_ ? block_->startData() : nullptr;
+base::span<const uint8_t> RWBuffer::ROIter::operator*() const {
+  if (!remaining_) {
+    return {};
+  }
+  DCHECK(block_);
+  return base::span(block_->startData(),
+                    std::min(block_->capacity_, remaining_));
 }
 
 bool RWBuffer::ROIter::Next() {
   if (remaining_) {
-    size_t current_size = size();
+    const size_t current_size = std::min(block_->capacity_, remaining_);
     DCHECK_LE(current_size, remaining_);
     remaining_ -= current_size;
     if (remaining_ == 0) {
@@ -225,24 +221,19 @@ void ROBuffer::Iter::Reset(const ROBuffer* buffer) {
   }
 }
 
-const uint8_t* ROBuffer::Iter::data() const {
-  return remaining_ ? block_->startData() : nullptr;
-}
-
-size_t ROBuffer::Iter::size() const {
-  if (!block_) {
-    return 0;
-  }
-  return std::min(block_->capacity_, remaining_);
-}
-
 base::span<const uint8_t> ROBuffer::Iter::operator*() const {
-  return base::span(data(), size());
+  if (!remaining_) {
+    return {};
+  }
+  DCHECK(block_);
+  return base::span(block_->startData(),
+                    std::min(block_->capacity_, remaining_));
 }
 
 bool ROBuffer::Iter::Next() {
   if (remaining_) {
-    remaining_ -= size();
+    const size_t current_size = std::min(block_->capacity_, remaining_);
+    remaining_ -= current_size;
     if (buffer_->tail_ == block_) {
       // There are more blocks, but buffer_ does not know about them.
       DCHECK_EQ(0u, remaining_);

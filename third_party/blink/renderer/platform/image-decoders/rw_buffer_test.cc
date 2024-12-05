@@ -29,18 +29,20 @@ void check_abcs(const char buffer[], size_t size) {
 
 // reader should contains an integral number of copies of gABC.
 void check_alphabet_buffer(const ROBuffer* reader) {
-  size_t size = reader->size();
+  const size_t size = reader->size();
   ASSERT_EQ(size % 26, 0u);
 
   std::vector<char> storage(size);
+  auto dest = base::as_writable_byte_span(storage);
+
   ROBuffer::Iter iter(reader);
-  size_t offset = 0;
   do {
-    ASSERT_LE(offset + iter.size(), size);
-    memcpy(storage.data() + offset, iter.data(), iter.size());
-    offset += iter.size();
+    auto src = *iter;
+    ASSERT_LE(src.size(), dest.size());
+    dest.copy_prefix_from(src);
+    dest = dest.subspan(src.size());
   } while (iter.Next());
-  ASSERT_EQ(offset, size);
+  ASSERT_TRUE(dest.empty());
   check_abcs(storage.data(), size);
 }
 
@@ -128,12 +130,12 @@ TEST(RWBufferTest, Size) {
 
   scoped_refptr<ROBuffer> roBuffer(buffer.MakeROBufferSnapshot());
   ROBuffer::Iter iter(roBuffer.get());
-  EXPECT_TRUE(iter.data());
-  EXPECT_EQ(iter.size(), 26u);
+  EXPECT_TRUE((*iter).data());
+  EXPECT_EQ((*iter).size(), 26u);
 
   // There is only one block in this buffer.
   EXPECT_TRUE(!iter.Next());
-  EXPECT_EQ(0u, iter.size());
+  EXPECT_TRUE((*iter).empty());
 }
 
 // Tests that operations (including the destructor) are safe on an RWBuffer
@@ -147,8 +149,8 @@ TEST(RWBufferTest, Empty) {
   if (roBuffer) {
     EXPECT_EQ(roBuffer->size(), 0u);
     ROBuffer::Iter iter(roBuffer.get());
-    EXPECT_EQ(iter.size(), 0u);
-    EXPECT_TRUE(!iter.data());
+    EXPECT_TRUE((*iter).empty());
+    EXPECT_TRUE(!(*iter).data());
     EXPECT_TRUE(!iter.Next());
   }
 }
@@ -204,7 +206,7 @@ TEST(RWBufferTest, FunctionConstructorSmall) {
 
   scoped_refptr<ROBuffer> roBuffer = buffer.MakeROBufferSnapshot();
   ROBuffer::Iter iter(roBuffer.get());
-  EXPECT_EQ(0, memcmp(iter.data(), gABC, 20U));
+  EXPECT_EQ(*iter, base::span_from_cstring(gABC).first(20U));
 }
 
 TEST(RWBufferTest, FunctionConstructorLarge) {
