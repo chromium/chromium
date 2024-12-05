@@ -46,7 +46,7 @@ try_.builder(
     # TODO: crbug.com/370594503 - Add documents for compile-size.
     description_html = "Measures and prevents unexpected compile input size " +
                        "growth. See docs for details.",
-    executable = "recipe:build_size_trybot",
+    executable = "recipe:compile_size_trybot",
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
