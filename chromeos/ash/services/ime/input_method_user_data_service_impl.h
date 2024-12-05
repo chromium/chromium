@@ -58,6 +58,10 @@ class InputMethodUserDataServiceImpl
       uint64_t dict_id,
       DeleteJapaneseDictionaryCallback callback) override;
 
+  void ExportJapaneseDictionary(
+      uint64_t dict_id,
+      ExportJapaneseDictionaryCallback callback) override;
+
   void AddReceiver(
       mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver);
 

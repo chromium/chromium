@@ -81,6 +81,16 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
     }
   }
 
+  // Export dictionary.
+  private async exportDictionary_(): Promise<void> {
+    const a = document.createElement('a');
+    a.href = `jp-export-dictionary/${this.dict.id}`;
+    // In case there is no name, use a placeholder name.
+    const fileName = this.dict.name || 'unnamed-dictionary';
+    a.download = `${fileName}.txt`;
+    a.click();
+  }
+
   // Returns true if this entry is a locally added entry.
   private locallyAdded_(entryIndex: number): boolean {
     // This entry falls outside of the range of entries that were initially

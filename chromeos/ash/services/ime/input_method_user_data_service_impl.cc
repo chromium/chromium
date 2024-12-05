@@ -201,6 +201,20 @@ void InputMethodUserDataServiceImpl::DeleteJapaneseDictionary(
   std::move(callback).Run(std::move(response));
 }
 
+void InputMethodUserDataServiceImpl::ExportJapaneseDictionary(
+    uint64_t dict_id,
+    ExportJapaneseDictionaryCallback callback) {
+  chromeos_input::UserDataRequest user_data_request;
+  user_data_request.mutable_export_japanese_dictionary()->set_dictionary_id(
+      dict_id);
+
+  chromeos_input::UserDataResponse user_data_response =
+      c_api_->ProcessUserDataRequest(user_data_request);
+
+  std::move(callback).Run(
+      std::move(user_data_response.export_japanese_dictionary()));
+}
+
 void InputMethodUserDataServiceImpl::AddReceiver(
     mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
   receiver_set_.Add(this, std::move(receiver));
