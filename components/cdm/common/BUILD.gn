@@ -7,6 +7,16 @@ import("//third_party/widevine/cdm/widevine.gni")
 static_library("common") {
   sources = []
 
+  # See //components/cdm/README.md
+  visibility = [
+    "//android_webview/*",
+    "//chrome/*",
+    "//chromecast/*",
+    "//components/cdm/*",
+    "//content/shell/*",
+    "//fuchsia_web/*",
+  ]
+
   deps = [
     "//base",
     "//content/public/common",
