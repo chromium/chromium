@@ -2529,7 +2529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.InputTiming.InputToNavigationStart"
-    units="ms" expires_after="2025-05-11">
+    units="ms" expires_after="2025-12-04">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -2551,7 +2551,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick"
-    units="ms" expires_after="2024-12-24">
+    units="ms" expires_after="2025-12-04">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -2562,7 +2562,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromOmnibox"
-    units="ms" expires_after="2024-12-24">
+    units="ms" expires_after="2025-12-04">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -2872,8 +2872,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.PaintTiming.InputToFirstContentfulPaint"
-    units="ms" expires_after="2025-05-11">
+    units="ms" expires_after="2025-12-04">
   <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The time between the OS-level input event that initiated a navigation, and
     the first contentful paint of the page that was loaded in the navigation.
