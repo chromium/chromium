@@ -82,6 +82,30 @@ bool MatchClientCertificateIssuers(
 
 }  // namespace
 
+ClientCertIssuerSourceInMemory::ClientCertIssuerSourceInMemory(
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs)
+    : certs_(std::move(certs)) {
+  for (const auto& cert : certs_) {
+    std::string_view subject;
+    if (asn1::ExtractSubjectFromDERCert(
+            x509_util::CryptoBufferAsStringPiece(cert.get()), &subject)) {
+      cert_map_.emplace(base::as_byte_span(subject), cert.get());
+    }
+  }
+}
+
+ClientCertIssuerSourceInMemory::~ClientCertIssuerSourceInMemory() = default;
+
+std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
+ClientCertIssuerSourceInMemory::GetCertsByName(base::span<const uint8_t> name) {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> result;
+  auto range = cert_map_.equal_range(name);
+  for (auto it = range.first; it != range.second; ++it) {
+    result.push_back(bssl::UpRef(it->second));
+  }
+  return result;
+}
+
 void FilterMatchingClientCertIdentities(
     ClientCertIdentityList* identities,
     const SSLCertRequestInfo& request,

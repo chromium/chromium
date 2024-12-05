@@ -4,6 +4,7 @@
 
 #include "chrome/browser/net/profile_network_context_service.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -1093,6 +1094,71 @@ void ProfileNetworkContextService::SetDiscardDomainReliabilityUploadsForTesting(
   g_discard_domain_reliability_uploads_for_testing = new bool(value);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ProfileNetworkContextService::CreateClientCertIssuerSourcesWithDBCerts(
+    net::ClientCertIssuerSourceGetterCallback callback,
+    std::vector<net::ServerCertificateDatabase::CertInformation>
+        db_cert_infos) {
+  cert_verifier::mojom::AdditionalCertificatesPtr policy_certs =
+      GetCertificatePolicy(profile_->GetDefaultStoragePartition()->GetPath());
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs;
+  for (const auto& cert : policy_certs->all_certificates) {
+    certs.push_back(net::x509_util::CreateCryptoBuffer(cert));
+  }
+  for (const auto& cert : db_cert_infos) {
+    certs.push_back(net::x509_util::CreateCryptoBuffer(cert.der_cert));
+  }
+  net::ClientCertIssuerSourceCollection sources;
+  if (!certs.empty()) {
+    sources.push_back(std::make_unique<net::ClientCertIssuerSourceInMemory>(
+        std::move(certs)));
+  }
+
+  // Intermediates from NSS are used unconditionally. There are 2 reasons why
+  // the NSS source is used:
+  // 1) If the ServerCertificateDatabase feature is not enabled
+  // (kEnableCertManagementUIV2Write is false), user-added intermediates
+  // still come from NSS, so checking NSS is required.
+  // 2) Device-wide ONC intermediate certificates may be needed as well. It's
+  // unclear if the use of device-wide policy in non-signin-profile client cert
+  // verification was intended or just an accidental side effect of NSS state
+  // being global, but enterprises might be depending on it (at least one
+  // browser_test depends on it:
+  // SuccessViaCaAndIntermediate/SigninFrameWebviewClientCertsLoginTest.LockscreenTest/0).
+  // TODO(https://crbug.com/40554868): once kEnableCertManagementUIV2Write has
+  // fully launched, consider removing the NSS source and making this read from
+  // the device ONC policy directly (or decide if using the device ONC policy
+  // here is not intended and change the test to not do that).
+  sources.push_back(
+      std::make_unique<net::ClientCertStoreNSS::IssuerSourceNSS>());
+
+  std::move(callback).Run(std::move(sources));
+}
+
+void ProfileNetworkContextService::CreateClientCertIssuerSources(
+    net::ClientCertIssuerSourceGetterCallback callback) {
+  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
+    net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(profile_)
+        ->GetAllCertificates(
+            base::BindOnce(&ProfileNetworkContextService::
+                               CreateClientCertIssuerSourcesWithDBCerts,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  CreateClientCertIssuerSourcesWithDBCerts(std::move(callback),
+                                           /*db_cert_infos=*/{});
+}
+
+net::ClientCertIssuerSourceGetter
+ProfileNetworkContextService::GetClientCertIssuerSourceFactory() {
+  return base::BindOnce(
+      &ProfileNetworkContextService::CreateClientCertIssuerSources,
+      weak_factory_.GetWeakPtr());
+}
+#endif
+
 std::unique_ptr<net::ClientCertStore>
 ProfileNetworkContextService::CreateClientCertStore() {
   if (!client_cert_store_factory_.is_null())
@@ -1123,7 +1189,8 @@ ProfileNetworkContextService::CreateClientCertStore() {
   if (ash::features::ShouldUseKcerClientCertStore()) {
     return std::make_unique<ash::ClientCertStoreKcer>(
         std::move(certificate_provider),
-        kcer::KcerFactoryAsh::GetKcer(profile_));
+        kcer::KcerFactoryAsh::GetKcer(profile_),
+        GetClientCertIssuerSourceFactory());
   } else {
     std::string username_hash;
     const user_manager::User* user =
