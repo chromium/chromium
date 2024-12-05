@@ -45,9 +45,9 @@ class NET_EXPORT CookieAccessDelegate {
   virtual CookieAccessSemantics GetAccessSemantics(
       const CanonicalCookie& cookie) const = 0;
 
-  // Gets the access to legacy cookie scope `cookie`, based on its domain (i.e.,
+  // Gets the scope semantics to apply to `cookie`, based on its domain (i.e.,
   // whether a policy specifies this legacy cookie scope should apply).
-  virtual CookieLegacyScope GetAccessForLegacyCookieScope(
+  virtual CookieScopeSemantics GetScopeSemantics(
       const CanonicalCookie& cookie) const = 0;
 
   // Returns whether a cookie should be attached regardless of its SameSite

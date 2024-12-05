@@ -50,6 +50,7 @@
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
@@ -646,7 +647,8 @@ IN_PROC_BROWSER_TEST_F(
           net::CookieInclusionStatus::MakeFromReasonsForTesting(
               /*exclusions=*/{},
               /*warnings=*/{net::CookieInclusionStatus::WARN_PORT_MISMATCH}),
-          net::CookieAccessSemantics::NONLEGACY, true)};
+          net::CookieAccessSemantics::NONLEGACY,
+          net::CookieScopeSemantics::UNKNOWN, true)};
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
               testing::ElementsAre(
                   // a.test/title1.html
@@ -673,7 +675,8 @@ IN_PROC_BROWSER_TEST_F(
       content::CookieAccessDetails::Type::kRead, "Cookie", "1",
       net::CookieAccessResult(net::CookieEffectiveSameSite::NO_RESTRICTION,
                               expected_third_party_inclusion_status,
-                              net::CookieAccessSemantics::NONLEGACY, true)};
+                              net::CookieAccessSemantics::NONLEGACY,
+                              net::CookieScopeSemantics::UNKNOWN, true)};
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
               testing::ElementsAre(
                   // a.test iframe under b.test

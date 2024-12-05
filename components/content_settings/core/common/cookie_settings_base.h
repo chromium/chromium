@@ -336,7 +336,7 @@ class CookieSettingsBase {
   //
   // Legacy behavior is based on the domain of the cookie itself, effectively
   // the domain of the requested URL, which may be embedded in another domain.
-  net::CookieLegacyScope GetCookieLegacyScopeForDomain(
+  net::CookieScopeSemantics GetCookieScopeSemanticsForDomain(
       const std::string& cookie_domain) const;
 
   // Returns whether a cookie should be attached regardless of its SameSite

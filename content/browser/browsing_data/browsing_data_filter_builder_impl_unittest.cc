@@ -18,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_deletion_info.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -81,9 +82,10 @@ void RunTestCase(TestCase test_case,
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
-        delete_info.Matches(*cookie,
-                            net::CookieAccessParams{
-                                net::CookieAccessSemantics::NONLEGACY, false}))
+        delete_info.Matches(
+            *cookie,
+            net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY,
+                                    net::CookieScopeSemantics::UNKNOWN, false}))
         << cookie->DebugString();
   }
 
@@ -93,9 +95,10 @@ void RunTestCase(TestCase test_case,
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
-        delete_info.Matches(*cookie,
-                            net::CookieAccessParams{
-                                net::CookieAccessSemantics::NONLEGACY, false}))
+        delete_info.Matches(
+            *cookie,
+            net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY,
+                                    net::CookieScopeSemantics::UNKNOWN, false}))
         << cookie->DebugString();
   }
 
@@ -105,9 +108,10 @@ void RunTestCase(TestCase test_case,
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
-        delete_info.Matches(*cookie,
-                            net::CookieAccessParams{
-                                net::CookieAccessSemantics::NONLEGACY, false}))
+        delete_info.Matches(
+            *cookie,
+            net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY,
+                                    net::CookieScopeSemantics::UNKNOWN, false}))
         << cookie->DebugString();
   }
 
@@ -117,9 +121,10 @@ void RunTestCase(TestCase test_case,
   if (cookie) {
     EXPECT_EQ(
         test_case.should_match,
-        delete_info.Matches(*cookie,
-                            net::CookieAccessParams{
-                                net::CookieAccessSemantics::NONLEGACY, false}))
+        delete_info.Matches(
+            *cookie,
+            net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY,
+                                    net::CookieScopeSemantics::UNKNOWN, false}))
         << cookie->DebugString();
   }
 }
@@ -466,7 +471,8 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
     EXPECT_EQ(test_case.should_match,
               delete_info.Matches(
                   *cookie, net::CookieAccessParams{
-                               net::CookieAccessSemantics::NONLEGACY, false}));
+                               net::CookieAccessSemantics::NONLEGACY,
+                               net::CookieScopeSemantics::UNKNOWN, false}));
   }
 }
 
@@ -1247,7 +1253,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   EXPECT_TRUE(cookie);
   EXPECT_FALSE(delete_info.Matches(
       *cookie,
-      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY,
+                              net::CookieScopeSemantics::UNKNOWN, false}));
 
   // Partitioned cookie should match.
   cookie = net::CanonicalCookie::CreateForTesting(
@@ -1259,7 +1266,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   EXPECT_TRUE(cookie);
   EXPECT_TRUE(delete_info.Matches(
       *cookie,
-      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY,
+                              net::CookieScopeSemantics::UNKNOWN, false}));
 
   // Nonced partitioned cookie should match.
   cookie = net::CanonicalCookie::CreateForTesting(
@@ -1273,7 +1281,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   EXPECT_TRUE(cookie);
   EXPECT_TRUE(delete_info.Matches(
       *cookie,
-      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY,
+                              net::CookieScopeSemantics::UNKNOWN, false}));
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, CopyAndEquality) {

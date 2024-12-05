@@ -386,15 +386,15 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
   }
 }
 
-net::CookieLegacyScope CookieSettingsBase::GetCookieLegacyScopeForDomain(
+net::CookieScopeSemantics CookieSettingsBase::GetCookieScopeSemanticsForDomain(
     const std::string& cookie_domain) const {
   ContentSetting setting = GetSettingForLegacyCookieScope(cookie_domain);
   DCHECK(IsValidSettingForLegacyAccess(setting));
   switch (setting) {
     case CONTENT_SETTING_ALLOW:
-      return net::CookieLegacyScope::LEGACY;
+      return net::CookieScopeSemantics::LEGACY;
     case CONTENT_SETTING_BLOCK:
-      return net::CookieLegacyScope::NONLEGACY;
+      return net::CookieScopeSemantics::NONLEGACY;
     default:
       NOTREACHED();
   }

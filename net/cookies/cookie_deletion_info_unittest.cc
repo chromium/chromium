@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -122,10 +123,12 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchSessionControl) {
   EXPECT_TRUE(delete_info.Matches(
       *persistent_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       *session_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   delete_info.session_control =
@@ -133,10 +136,12 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchSessionControl) {
   EXPECT_TRUE(delete_info.Matches(
       *persistent_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       *session_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   delete_info.session_control =
@@ -144,10 +149,12 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchSessionControl) {
   EXPECT_FALSE(delete_info.Matches(
       *persistent_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       *session_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 }
 
@@ -181,40 +188,48 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchHost) {
   EXPECT_TRUE(delete_info.Matches(
       *domain_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       *host_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   delete_info.host = "thehost.hosting.com";
   EXPECT_FALSE(delete_info.Matches(
       *domain_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       *host_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   delete_info.host = "otherhost.hosting.com";
   EXPECT_FALSE(delete_info.Matches(
       *domain_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       *host_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   delete_info.host = "thehost.otherhosting.com";
   EXPECT_FALSE(delete_info.Matches(
       *domain_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       *host_cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 }
 
@@ -245,10 +260,12 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchName) {
   EXPECT_TRUE(delete_info.Matches(
       *cookie1,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       *cookie2,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 }
 
@@ -279,10 +296,12 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchValue) {
   EXPECT_FALSE(delete_info.Matches(
       *cookie1,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       *cookie2,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 }
 
@@ -303,12 +322,14 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchUrl) {
   EXPECT_TRUE(delete_info.Matches(
       *cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   delete_info.url = GURL("https://www.example.com/another/path");
   EXPECT_FALSE(delete_info.Matches(
       *cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   delete_info.url = GURL("http://www.example.com/path");
@@ -316,6 +337,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchUrl) {
   EXPECT_FALSE(delete_info.Matches(
       *cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   // Secure cookie on http:// URL, but delegate says treat is as trustworhy ->
@@ -323,6 +345,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchUrl) {
   EXPECT_TRUE(delete_info.Matches(
       *cookie,
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/true}));
 }
 
@@ -356,6 +379,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoDomainMatchesDomain) {
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("example.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   const char kExtensionHostname[] = "mgndgikekgjfcpckkfioiadnlibdjbkf";
@@ -367,30 +391,37 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoDomainMatchesDomain) {
   EXPECT_TRUE(delete_info.Matches(
       create_cookie(".example.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("example.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       create_cookie(".another.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("192.168.0.1"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie(".nomatch.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie("192.168.0.2"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie(kExtensionHostname),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 }
 
@@ -416,6 +447,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("anything.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   // With only an "to_delete" list.
@@ -423,14 +455,17 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("includea.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("includeb.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie("anything.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   // With only an "to_ignore" list.
@@ -439,10 +474,12 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("anything.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie("exclude.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   // Now with both lists populated.
@@ -463,18 +500,22 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("left.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie("mid.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie("right.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie("outside.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   // An empty list of deleted domains shouldn't delete anything.
@@ -483,6 +524,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
   EXPECT_FALSE(delete_info.Matches(
       create_cookie("outside.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 
   // An empty list of ignored domains should delete everything.
@@ -491,6 +533,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("inside.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 }
 
@@ -508,14 +551,17 @@ TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
   EXPECT_TRUE(delete_info.Matches(
       *cookie,
       CookieAccessParams{CookieAccessSemantics::UNKNOWN,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       *cookie,
       CookieAccessParams{CookieAccessSemantics::LEGACY,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
   EXPECT_TRUE(delete_info.Matches(
       *cookie,
       CookieAccessParams{CookieAccessSemantics::NONLEGACY,
+                         net::CookieScopeSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false}));
 }
 
@@ -574,6 +620,7 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
               delete_info.Matches(
                   *cookie, CookieAccessParams{
                                net::CookieAccessSemantics::UNKNOWN,
+                               net::CookieScopeSemantics::UNKNOWN,
                                /*delegate_treats_url_as_trustworthy=*/false}));
   }
 }
@@ -619,6 +666,7 @@ TEST(CookieDeletionInfoTest, MatchesExcludeUnpartitionedCookies) {
               delete_info.Matches(
                   *cookie, CookieAccessParams{
                                net::CookieAccessSemantics::UNKNOWN,
+                               net::CookieScopeSemantics::UNKNOWN,
                                /*delegate_treats_url_as_trustworthy=*/false}));
   }
 }

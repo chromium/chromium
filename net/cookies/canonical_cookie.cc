@@ -138,8 +138,10 @@ auto GetAllDataMembersAsTuple(const CanonicalCookie& c) {
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
+                                       CookieScopeSemantics scope_semantics,
                                        bool delegate_treats_url_as_trustworthy)
     : access_semantics(access_semantics),
+      scope_semantics(scope_semantics),
       delegate_treats_url_as_trustworthy(delegate_treats_url_as_trustworthy) {}
 
 CanonicalCookie::CanonicalCookie() = default;

@@ -828,6 +828,7 @@ bool CookieMonster::MatchCookieDeletionInfo(
 
   return delete_info.Matches(
       cookie, CookieAccessParams{GetAccessSemanticsForCookie(cookie),
+                                 GetScopeSemanticsForCookie(cookie),
                                  delegate_treats_url_as_trustworthy});
 }
 
@@ -1380,6 +1381,7 @@ void CookieMonster::FilterCookiesWithOptions(
     CookieAccessResult access_result = cookie_ptr->IncludeForRequestURL(
         url, options,
         CookieAccessParams{GetAccessSemanticsForCookie(*cookie_ptr),
+                           GetScopeSemanticsForCookie(*cookie_ptr),
                            delegate_treats_url_as_trustworthy});
     cookies_and_access_results.emplace_back(cookie_ptr, access_result);
 
@@ -1724,6 +1726,7 @@ void CookieMonster::SetCanonicalCookie(
   CookieAccessResult access_result = cc->IsSetPermittedInContext(
       source_url, options,
       CookieAccessParams(GetAccessSemanticsForCookie(*cc),
+                         GetScopeSemanticsForCookie(*cc),
                          delegate_treats_url_as_trustworthy),
       cookieable_schemes_, cookie_access_result);
 
@@ -1937,10 +1940,10 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
   change_dispatcher_.DispatchChange(
       CookieChangeInfo(
           *cc,
-          CookieAccessResult(CookieEffectiveSameSite::UNDEFINED,
-                             CookieInclusionStatus(),
-                             GetAccessSemanticsForCookie(*cc),
-                             true /* is_allowed_to_access_secure_cookies */),
+          CookieAccessResult(
+              CookieEffectiveSameSite::UNDEFINED, CookieInclusionStatus(),
+              GetAccessSemanticsForCookie(*cc), GetScopeSemanticsForCookie(*cc),
+              true /* is_allowed_to_access_secure_cookies */),
           mapping.cause),
       mapping.notify);
 
@@ -1992,10 +1995,10 @@ void CookieMonster::InternalDeletePartitionedCookie(
   change_dispatcher_.DispatchChange(
       CookieChangeInfo(
           *cc,
-          CookieAccessResult(CookieEffectiveSameSite::UNDEFINED,
-                             CookieInclusionStatus(),
-                             GetAccessSemanticsForCookie(*cc),
-                             true /* is_allowed_to_access_secure_cookies */),
+          CookieAccessResult(
+              CookieEffectiveSameSite::UNDEFINED, CookieInclusionStatus(),
+              GetAccessSemanticsForCookie(*cc), GetScopeSemanticsForCookie(*cc),
+              true /* is_allowed_to_access_secure_cookies */),
           mapping.cause),
       mapping.notify);
 
@@ -2542,6 +2545,14 @@ CookieAccessSemantics CookieMonster::GetAccessSemanticsForCookie(
   if (cookie_access_delegate())
     return cookie_access_delegate()->GetAccessSemantics(cookie);
   return CookieAccessSemantics::UNKNOWN;
+}
+
+CookieScopeSemantics CookieMonster::GetScopeSemanticsForCookie(
+    const CanonicalCookie& cookie) const {
+  if (cookie_access_delegate()) {
+    return cookie_access_delegate()->GetScopeSemantics(cookie);
+  }
+  return CookieScopeSemantics::UNKNOWN;
 }
 
 // Test to see if stats should be recorded, and record them if so.
