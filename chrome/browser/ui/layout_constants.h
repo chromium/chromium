@@ -98,6 +98,9 @@ enum LayoutConstant {
   // The size of icons used in PageInfo bubbles.
   PAGE_INFO_ICON_SIZE,
 
+  // The size of icons in star rating view.
+  STAR_RATING_ICON_SIZE,
+
   // Padding after the tab title.
   TAB_AFTER_TITLE_PADDING,
 

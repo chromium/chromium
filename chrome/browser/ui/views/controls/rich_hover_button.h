@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "ui/views/layout/table_layout.h"
 
 namespace test {
 class PageInfoBubbleViewTestApi;
@@ -70,7 +71,14 @@ class RichHoverButton : public HoverButton {
   // |      | |custom_view|                                                    |
   // *-------------------------------------------------------------------------*
   template <typename T>
-  T* AddCustomSubtitle(std::unique_ptr<T> custom_view);
+  T* AddCustomSubtitle(std::unique_ptr<T> custom_view) {
+    static_cast<views::TableLayout*>(GetLayoutManager())
+        ->AddRows(1, views::TableLayout::kFixedSize);
+    AddChildView(std::make_unique<views::View>());  // main icon column
+    auto* view = AddChildView(std::move(custom_view));
+    AddFillerViews();
+    return view;
+  }
 
   const views::Label* GetTitleViewForTesting() const;
   const views::Label* GetSubTitleViewForTesting() const;

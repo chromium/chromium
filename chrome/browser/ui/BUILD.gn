@@ -4374,6 +4374,8 @@ static_library("ui") {
       "views/page_info/safety_tip_page_info_bubble_view.h",
       "views/page_info/security_information_view.cc",
       "views/page_info/security_information_view.h",
+      "views/page_info/star_rating_view.cc",
+      "views/page_info/star_rating_view.h",
       "views/page_info/web_view_side_panel_view.cc",
       "views/page_info/web_view_side_panel_view.h",
       "views/passwords/account_chooser_dialog_view.cc",

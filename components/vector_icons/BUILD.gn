@@ -211,6 +211,8 @@ aggregate_vector_icons("components_vector_icons") {
     "smart_card_reader.icon",
     "smart_card_reader_off.icon",
     "sms.icon",
+    "star.icon",
+    "star_half.icon",
     "stop_circle.icon",
     "storage_access.icon",
     "storage_access_off.icon",
