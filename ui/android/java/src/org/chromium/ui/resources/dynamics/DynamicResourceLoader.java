@@ -68,6 +68,7 @@ public class DynamicResourceLoader extends ResourceLoader {
 
     /**
      * Unregisters a {@link DynamicResource} specified by {@code resId}.
+     *
      * @param resId The Android id representing the {@link DynamicResource}.
      */
     public void unregisterResource(int resId) {
@@ -79,8 +80,22 @@ public class DynamicResourceLoader extends ResourceLoader {
     }
 
     /**
-     * Called when a {@link DynamicResource} was requested.  This will notify the
-     * {@link ResourceLoaderCallback} if the resource has new contents.
+     * Retrieves the {@link DynamicResource} associated with the specified {@code resId}.
+     *
+     * @param resId The Android resource ID representing the {@link DynamicResource}.
+     * @return The {@link DynamicResource} corresponding to the provided {@code resId}, or {@code
+     *     null} if no matching resource is found.
+     */
+    public DynamicResource getResource(int resId) {
+        DynamicResourceHolder dynamicResourceHolder = mDynamicResourceHolders.get(resId);
+        if (dynamicResourceHolder == null) return null;
+        return dynamicResourceHolder.getDynamicResource();
+    }
+
+    /**
+     * Called when a {@link DynamicResource} was requested. This will notify the {@link
+     * ResourceLoaderCallback} if the resource has new contents.
+     *
      * @param resId The Android id representing the {@link DynamicResource}.
      */
     @Override

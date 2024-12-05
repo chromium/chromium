@@ -9,6 +9,10 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
+import android.view.View;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -35,17 +39,12 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
  */
 @JNINamespace("android")
 public class LayerTitleCache {
-    // TODO(zheliooo): Use Resources.ID_NULL for invalid resource and update occurrences in cc
-    // files.
-    private static final int INVALID_RESOURCE_ID = -1;
-    private static int sNextResourceId = 1;
-
     private final Context mContext;
     private TabModelSelector mTabModelSelector;
 
     private final SparseArray<FaviconTitle> mTabTitles = new SparseArray<>();
     private final SparseArray<Title> mGroupTitles = new SparseArray<>();
-    private final SparseArray<ViewResourceAdapter> mSharedAvatars = new SparseArray<>();
+    private final SparseIntArray mSharedAvatarResIds = new SparseIntArray();
     private final int mFaviconSize;
     private final int mSharedGroupAvatarPaddingPx;
 
@@ -205,9 +204,11 @@ public class LayerTitleCache {
                 titleBitmapFactory.getGroupTitleBitmap(filter, mContext, rootId, titleString);
         title.set(titleBitmap);
 
-        ViewResourceAdapter avatarResource = mSharedAvatars.get(rootId);
-        if (avatarResource != null) {
-            avatarResource.invalidate(null);
+        int avatarResId = mSharedAvatarResIds.get(rootId, ResourcesCompat.ID_NULL);
+        ViewResourceAdapter avatarResource = null;
+        if (avatarResId != ResourcesCompat.ID_NULL) {
+            avatarResource = getResourceAdapterFromLoader(avatarResId);
+            if (avatarResource != null) avatarResource.invalidate(null);
         }
 
         if (mNativeLayerTitleCache != 0) {
@@ -221,9 +222,7 @@ public class LayerTitleCache {
                             LayerTitleCache.this,
                             rootId,
                             title.getTitleResId(),
-                            avatarResource == null
-                                    ? INVALID_RESOURCE_ID
-                                    : avatarResource.getResId(),
+                            avatarResource == null ? ResourcesCompat.ID_NULL : avatarResId,
                             avatarResource == null ? 0 : mSharedGroupAvatarPaddingPx,
                             incognito,
                             isRtl);
@@ -278,11 +277,16 @@ public class LayerTitleCache {
         return originalFavicon;
     }
 
-    public void registerSharedGroupAvatar(int rootId, ViewResourceAdapter avatarResource) {
-        avatarResource.setResId(sNextResourceId++);
-        mSharedAvatars.put(rootId, avatarResource);
+    private ViewResourceAdapter getResourceAdapterFromLoader(int resId) {
         DynamicResourceLoader dynamicResourceLoader = mResourceManager.getDynamicResourceLoader();
-        dynamicResourceLoader.registerResource(avatarResource.getResId(), avatarResource);
+        return (ViewResourceAdapter) dynamicResourceLoader.getResource(resId);
+    }
+
+    public void registerSharedGroupAvatar(int rootId, ViewResourceAdapter avatarResource) {
+        DynamicResourceLoader dynamicResourceLoader = mResourceManager.getDynamicResourceLoader();
+        int resId = View.generateViewId();
+        dynamicResourceLoader.registerResource(resId, avatarResource);
+        mSharedAvatarResIds.put(rootId, resId);
     }
 
     private void unregisterSharedGroupAvatar(int resId) {
@@ -339,8 +343,8 @@ public class LayerTitleCache {
                         mNativeLayerTitleCache,
                         LayerTitleCache.this,
                         tabId,
-                        INVALID_RESOURCE_ID,
-                        INVALID_RESOURCE_ID,
+                        ResourcesCompat.ID_NULL,
+                        ResourcesCompat.ID_NULL,
                         false,
                         false);
     }
@@ -356,23 +360,22 @@ public class LayerTitleCache {
                         mNativeLayerTitleCache,
                         LayerTitleCache.this,
                         rootId,
-                        INVALID_RESOURCE_ID,
-                        INVALID_RESOURCE_ID,
+                        ResourcesCompat.ID_NULL,
+                        ResourcesCompat.ID_NULL,
                         0,
                         false,
                         false);
     }
 
     public void removeSharedGroupAvatar(int rootId) {
-        ViewResourceAdapter viewResourceAdapter = mSharedAvatars.get(rootId);
-        if (viewResourceAdapter != null) {
-            unregisterSharedGroupAvatar(viewResourceAdapter.getResId());
-        }
-        mSharedAvatars.remove(rootId);
+        int resId = mSharedAvatarResIds.get(rootId, ResourcesCompat.ID_NULL);
+        if (resId == ResourcesCompat.ID_NULL) return;
+        unregisterSharedGroupAvatar(resId);
+        mSharedAvatarResIds.delete(rootId);
     }
 
     private class Title {
-        final BitmapDynamicResource mTitle = new BitmapDynamicResource(sNextResourceId++);
+        final BitmapDynamicResource mTitle = new BitmapDynamicResource(View.generateViewId());
 
         public Title() {}
 
@@ -396,7 +399,8 @@ public class LayerTitleCache {
     }
 
     private class FaviconTitle extends Title {
-        private final BitmapDynamicResource mFavicon = new BitmapDynamicResource(sNextResourceId++);
+        private final BitmapDynamicResource mFavicon =
+                new BitmapDynamicResource(View.generateViewId());
 
         // We don't want to override updated favicon (e.g. from Tab#onFaviconAvailable) with one
         // fetched from history. You can set this to true / false to control that.
@@ -448,8 +452,6 @@ public class LayerTitleCache {
                 ResourceManager resourceManager);
 
         void destroy(long nativeLayerTitleCache);
-
-        void clearExcept(long nativeLayerTitleCache, LayerTitleCache caller, int exceptId);
 
         void updateLayer(
                 long nativeLayerTitleCache,

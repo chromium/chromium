@@ -65,7 +65,8 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
                                   bool is_rtl) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
   if (title_layer) {
-    if (title_resource_id != -1 && icon_resource_id != -1) {
+    if (title_resource_id != ui::Resource::kInvalidResourceId &&
+        icon_resource_id != ui::Resource::kInvalidResourceId) {
       title_layer->Update(title_resource_id, icon_resource_id, fade_width_,
                           icon_start_padding_, icon_end_padding_, is_incognito,
                           is_rtl);
@@ -92,7 +93,7 @@ void LayerTitleCache::UpdateGroupLayer(JNIEnv* env,
                                        bool is_rtl) {
   DecorationIconTitle* title_layer = group_layer_cache_.Lookup(group_root_id);
   if (title_layer) {
-    if (title_resource_id != -1) {
+    if (title_resource_id != ui::Resource::kInvalidResourceId) {
       title_layer->Update(title_resource_id, avatar_resource_id, fade_width_,
                           kEmptyWidth, avatar_padding, is_incognito, is_rtl);
     } else {
@@ -112,24 +113,8 @@ void LayerTitleCache::UpdateIcon(JNIEnv* env,
                                  jint tab_id,
                                  jint icon_resource_id) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
-  if (title_layer && icon_resource_id != -1) {
+  if (title_layer && icon_resource_id != ui::Resource::kInvalidResourceId) {
     title_layer->SetIconResourceId(icon_resource_id);
-  }
-}
-
-void LayerTitleCache::ClearExcept(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
-                                  jint except_id) {
-  if (except_id == -1) {
-    layer_cache_.Clear();
-    return;
-  }
-  base::IDMap<std::unique_ptr<DecorationTabTitle>>::iterator iter(
-      &layer_cache_);
-  for (; !iter.IsAtEnd(); iter.Advance()) {
-    const int id = iter.GetCurrentKey();
-    if (id != except_id)
-      layer_cache_.Remove(id);
   }
 }
 
