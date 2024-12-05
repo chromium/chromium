@@ -592,6 +592,9 @@
 [submodule "third_party/webgpu-cts/src"]
 	path = third_party/webgpu-cts/src
 	url = https://chromium.googlesource.com/external/github.com/gpuweb/cts
+[submodule "third_party/webpagereplay"]
+	path = third_party/webpagereplay
+	url = https://chromium.googlesource.com/webpagereplay
 [submodule "third_party/webrtc"]
 	path = third_party/webrtc
 	url = https://webrtc.googlesource.com/src

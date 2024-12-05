@@ -224,6 +224,7 @@ per-file third_party/wayland/src=*
 per-file third_party/webdriver/pylib=*
 per-file third_party/webgl/src=*
 per-file third_party/webgpu-cts/src=*
+per-file third_party/webpagereplay=*
 per-file third_party/webrtc=*
 per-file third_party/weston/src=*
 per-file third_party/widevine/cdm/chromeos=*

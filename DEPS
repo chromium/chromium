@@ -490,6 +490,10 @@ vars = {
   # and whatever else without interference from each other.
   'betocore_revision': '89563fec14c756482afa08b016eeba9087c8d1e3',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling tsproxy
+  # and whatever else without interference from each other.
+  'webpagereplay_revision': 'd812e180206934eb3b7ae411d82d61bc21c22f70',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
   'llvm_libc_revision':    'c56fe1b396da95bfc149d991a7554d889d3c528e',
@@ -2658,6 +2662,9 @@ deps = {
 
   'src/third_party/webgpu-cts/src':
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'ed1b78a79ad5220701330e7311b528f174097dfe',
+
+  'src/third_party/webpagereplay':
+    Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
     Var('webrtc_git') + '/src.git' + '@' + '9d0799f9432c295842a89eb20107d711970eed92',
