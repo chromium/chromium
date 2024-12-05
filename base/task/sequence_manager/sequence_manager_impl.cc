@@ -114,11 +114,6 @@ using TimeRecordingPolicy =
 namespace {
 
 constexpr TimeDelta kLongTaskTraceEventThreshold = Milliseconds(50);
-// Proportion of tasks which will record thread time for metrics.
-const double kTaskSamplingRateForRecordingCPUTime = 0.01;
-// Proprortion of SequenceManagers which will record thread time for each task,
-// enabling advanced metrics.
-const double kThreadSamplingRateForRecordingCPUTime = 0.0001;
 
 void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
   queue->ReclaimMemory(lazy_now->Now());
@@ -129,17 +124,6 @@ void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
     queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
     queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
   }
-}
-
-SequenceManager::MetricRecordingSettings InitializeMetricRecordingSettings(
-    bool randomised_sampling_enabled) {
-  if (!randomised_sampling_enabled)
-    return SequenceManager::MetricRecordingSettings(0);
-  bool records_cpu_time_for_each_task =
-      base::RandDouble() < kThreadSamplingRateForRecordingCPUTime;
-  return SequenceManager::MetricRecordingSettings(
-      records_cpu_time_for_each_task ? 1
-                                     : kTaskSamplingRateForRecordingCPUTime);
 }
 
 // Writes |address| in hexadecimal ("0x11223344") form starting from |output|
@@ -185,10 +169,7 @@ SequenceManagerImpl::SequenceManagerImpl(
     : associated_thread_(controller->GetAssociatedThread()),
       controller_(std::move(controller)),
       settings_(std::move(settings)),
-      metric_recording_settings_(InitializeMetricRecordingSettings(
-          settings_.randomised_sampling_enabled)),
       add_queue_time_to_tasks_(settings_.add_queue_time_to_tasks),
-
       empty_queues_to_reload_(associated_thread_),
       main_thread_only_(this, associated_thread_, settings_, settings_.clock),
       clock_(settings_.clock) {
@@ -261,11 +242,7 @@ SequenceManagerImpl::MainThreadOnly::MainThreadOnly(
       wake_up_queue(std::make_unique<DefaultWakeUpQueue>(associated_thread,
                                                          sequence_manager)),
       non_waking_wake_up_queue(
-          std::make_unique<NonWakingWakeUpQueue>(associated_thread)) {
-  if (settings.randomised_sampling_enabled) {
-    metrics_subsampler = base::MetricsSubSampler();
-  }
-}
+          std::make_unique<NonWakingWakeUpQueue>(associated_thread)) {}
 
 SequenceManagerImpl::MainThreadOnly::~MainThreadOnly() = default;
 
@@ -819,8 +796,7 @@ TaskQueue::TaskTiming SequenceManagerImpl::InitializeTaskTiming(
     internal::TaskQueueImpl* task_queue) {
   bool records_wall_time =
       ShouldRecordTaskTiming(task_queue) == TimeRecordingPolicy::DoRecord;
-  bool records_thread_time = records_wall_time && ShouldRecordCPUTimeForTask();
-  return TaskQueue::TaskTiming(records_wall_time, records_thread_time);
+  return TaskQueue::TaskTiming(records_wall_time);
 }
 
 TimeRecordingPolicy SequenceManagerImpl::ShouldRecordTaskTiming(
@@ -1084,20 +1060,6 @@ const TickClock* SequenceManagerImpl::GetTickClock() const {
 
 TimeTicks SequenceManagerImpl::NowTicks() const {
   return any_thread_clock()->NowTicks();
-}
-
-bool SequenceManagerImpl::ShouldRecordCPUTimeForTask() {
-  DCHECK(ThreadTicks::IsSupported() ||
-         !metric_recording_settings_.records_cpu_time_for_some_tasks());
-  return metric_recording_settings_.records_cpu_time_for_some_tasks() &&
-         main_thread_only().metrics_subsampler->ShouldSample(
-             metric_recording_settings_
-                 .task_sampling_rate_for_recording_cpu_time);
-}
-
-const SequenceManager::MetricRecordingSettings&
-SequenceManagerImpl::GetMetricRecordingSettings() const {
-  return metric_recording_settings_;
 }
 
 void SequenceManagerImpl::SetTaskExecutionAllowedInNativeNestedLoop(

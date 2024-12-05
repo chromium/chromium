@@ -21,25 +21,13 @@ FakeTask::FakeTask(TaskType task_type)
            TimeTicks(),
            WakeUpResolution::kLow) {}
 
-FakeTaskTiming::FakeTaskTiming()
-    : TaskTiming(false /* has_wall_time */, false /* has_thread_time */) {}
+FakeTaskTiming::FakeTaskTiming() : TaskTiming(false /* has_wall_time */) {}
 
 FakeTaskTiming::FakeTaskTiming(TimeTicks start, TimeTicks end)
     : FakeTaskTiming() {
   has_wall_time_ = true;
   start_time_ = start;
   end_time_ = end;
-  state_ = State::Finished;
-}
-
-FakeTaskTiming::FakeTaskTiming(TimeTicks start,
-                               TimeTicks end,
-                               ThreadTicks thread_start,
-                               ThreadTicks thread_end)
-    : FakeTaskTiming(start, end) {
-  has_thread_time_ = true;
-  start_thread_time_ = thread_start;
-  end_thread_time_ = thread_end;
   state_ = State::Finished;
 }
 

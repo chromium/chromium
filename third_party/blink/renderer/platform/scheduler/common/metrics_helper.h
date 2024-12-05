@@ -31,7 +31,7 @@ class PLATFORM_EXPORT MetricsHelper {
   DISALLOW_NEW();
 
  public:
-  MetricsHelper(ThreadType thread_type, bool has_cpu_timing_for_each_task);
+  MetricsHelper();
   MetricsHelper(const MetricsHelper&) = delete;
   MetricsHelper& operator=(const MetricsHelper&) = delete;
   ~MetricsHelper();
@@ -40,9 +40,6 @@ class PLATFORM_EXPORT MetricsHelper {
   bool ShouldDiscardTask(
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
-
- protected:
-  const ThreadType thread_type_;
 };
 
 }  // namespace scheduler

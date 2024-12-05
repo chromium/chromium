@@ -18,11 +18,9 @@ constexpr base::TimeDelta kLongTaskDiscardingThreshold = base::Seconds(30);
 
 }  // namespace
 
-MetricsHelper::MetricsHelper(ThreadType thread_type,
-                             bool has_cpu_timing_for_each_task)
-    : thread_type_(thread_type) {}
+MetricsHelper::MetricsHelper() = default;
 
-MetricsHelper::~MetricsHelper() {}
+MetricsHelper::~MetricsHelper() = default;
 
 bool MetricsHelper::ShouldDiscardTask(
     const base::sequence_manager::Task& task,

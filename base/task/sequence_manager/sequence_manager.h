@@ -45,29 +45,6 @@ class BASE_EXPORT SequenceManager {
     virtual void OnExitNestedRunLoop() = 0;
   };
 
-  struct MetricRecordingSettings {
-    // This parameter will be updated for consistency on creation (setting
-    // value to 0 when ThreadTicks are not supported).
-    explicit MetricRecordingSettings(
-        double task_sampling_rate_for_recording_cpu_time);
-
-    // The proportion of the tasks for which the cpu time will be
-    // sampled or 0 if this is not enabled.
-    // Since randomised sampling requires the use of Rand(), it is enabled only
-    // on platforms which support it.
-    // If it is 1 then cpu time is measured for each task, so the integral
-    // metrics (as opposed to per-task metrics) can be recorded.
-    double task_sampling_rate_for_recording_cpu_time = 0;
-
-    bool records_cpu_time_for_some_tasks() const {
-      return task_sampling_rate_for_recording_cpu_time > 0.0;
-    }
-
-    bool records_cpu_time_for_all_tasks() const {
-      return task_sampling_rate_for_recording_cpu_time == 1.0;
-    }
-  };
-
   class BASE_EXPORT PrioritySettings {
    public:
     // This limit is based on an implementation detail of `TaskQueueSelector`'s
@@ -151,8 +128,7 @@ class BASE_EXPORT SequenceManager {
 #endif
   };
 
-  // Settings defining the desired SequenceManager behaviour: the type of the
-  // MessageLoop and whether randomised sampling should be enabled.
+  // Settings defining the desired SequenceManager behaviour.
   struct BASE_EXPORT Settings {
     class Builder;
 
@@ -166,7 +142,6 @@ class BASE_EXPORT SequenceManager {
     ~Settings();
 
     MessagePumpType message_loop_type = MessagePumpType::DEFAULT;
-    bool randomised_sampling_enabled = false;
     raw_ptr<const TickClock, DanglingUntriaged> clock =
         DefaultTickClock::GetInstance();
 
@@ -275,9 +250,6 @@ class BASE_EXPORT SequenceManager {
   // Key names must be thread-specific to avoid races and corrupted crash dumps.
   virtual void EnableCrashKeys(const char* async_stack_crash_key) = 0;
 
-  // Returns the metric recording configuration for the current SequenceManager.
-  virtual const MetricRecordingSettings& GetMetricRecordingSettings() const = 0;
-
   virtual TaskQueue::QueuePriority GetPriorityCount() const = 0;
 
   // Creates a `TaskQueue` and returns a `TaskQueue::Handle`for it. The queue is
@@ -320,8 +292,6 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
 
   // Sets the MessagePumpType which is used to create a MessagePump.
   Builder& SetMessagePumpType(MessagePumpType message_loop_type);
-
-  Builder& SetRandomisedSamplingEnabled(bool randomised_sampling_enabled);
 
   // Sets the TickClock the SequenceManager uses to obtain Now.
   Builder& SetTickClock(const TickClock* clock);

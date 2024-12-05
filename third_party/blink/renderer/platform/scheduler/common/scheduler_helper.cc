@@ -158,13 +158,5 @@ base::TimeTicks SchedulerHelper::NowTicks() const {
   return base::TimeTicks::Now();
 }
 
-bool SchedulerHelper::HasCPUTimingForEachTask() const {
-  if (sequence_manager_) {
-    return sequence_manager_->GetMetricRecordingSettings()
-        .records_cpu_time_for_all_tasks();
-  }
-  return false;
-}
-
 }  // namespace scheduler
 }  // namespace blink

@@ -46,11 +46,9 @@ constexpr int kMainThreadTaskLoadLowPercentage = 25;
 
 MainThreadMetricsHelper::MainThreadMetricsHelper(
     MainThreadSchedulerImpl* main_thread_scheduler,
-    bool has_cpu_timing_for_each_task,
     base::TimeTicks now,
     bool renderer_backgrounded)
-    : MetricsHelper(ThreadType::kMainThread, has_cpu_timing_for_each_task),
-      main_thread_scheduler_(main_thread_scheduler),
+    : main_thread_scheduler_(main_thread_scheduler),
       renderer_shutting_down_(false),
       main_thread_load_tracker_(
           now,

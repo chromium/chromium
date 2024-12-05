@@ -34,8 +34,7 @@ namespace scheduler {
 CompositorThreadSchedulerImpl::CompositorThreadSchedulerImpl(
     base::sequence_manager::SequenceManager* sequence_manager)
     : NonMainThreadSchedulerBase(sequence_manager,
-                                 TaskType::kCompositorThreadTaskQueueDefault),
-      compositor_metrics_helper_(GetHelper().HasCPUTimingForEachTask()) {
+                                 TaskType::kCompositorThreadTaskQueueDefault) {
   DCHECK(!g_compositor_thread_scheduler);
   g_compositor_thread_scheduler = this;
 }

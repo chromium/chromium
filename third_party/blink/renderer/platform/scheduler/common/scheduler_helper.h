@@ -110,7 +110,6 @@ class PLATFORM_EXPORT SchedulerHelper
   void SetTimeDomain(base::sequence_manager::TimeDomain* time_domain);
   void ResetTimeDomain();
   bool GetAndClearSystemIsQuiescentBit();
-  bool HasCPUTimingForEachTask() const;
 
   bool IsInNestedRunloop() const {
     CheckOnValidThread();
