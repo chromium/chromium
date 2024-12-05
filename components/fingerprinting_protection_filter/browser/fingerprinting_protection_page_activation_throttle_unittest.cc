@@ -603,8 +603,7 @@ TEST_P(FPFPageActivationThrottleTestGetActivationTest,
 
   if (test_case.site_has_tp_exception) {
     test_support_.tracking_protection_settings()
-        ->AddTrackingProtectionException(GetTestUrl(),
-                                         /*is_user_bypass_exception=*/true);
+        ->AddTrackingProtectionException(GetTestUrl());
   }
   // Prepare the manager under test and input with initial_decision param.
   auto test_throttle = FingerprintingProtectionPageActivationThrottle(

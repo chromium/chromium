@@ -48,14 +48,11 @@ class TrackingProtectionSettings : public KeyedService {
   // Returns whether IP protection is enabled.
   bool IsIpProtectionEnabled() const;
 
-  // Adds a Tracking Protection site-scoped (wildcarded) exception for a given
-  // url. `is_user_bypass_exception` should be true if the exception was set via
-  // user bypass and will therefore be temporary.
-  void AddTrackingProtectionException(const GURL& first_party_url,
-                                      bool is_user_bypass_exception = false);
+  // Adds a Tracking Protection site-scoped exception for `first_party_url`.
+  void AddTrackingProtectionException(const GURL& first_party_url);
 
-  // Removes a Tracking Protection exception for a given url.
-  // This removes both site-scoped (wildcarded) and origin-scoped exceptions.
+  // Removes a Tracking Protection exception for `first_party_url`.
+  // Can remove both site-scoped (wildcarded) and origin-scoped exceptions.
   void RemoveTrackingProtectionException(const GURL& first_party_url);
 
   // Returns the tracking protection setting for `first_party_url`. This will be

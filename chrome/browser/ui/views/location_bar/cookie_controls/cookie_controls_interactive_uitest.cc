@@ -785,7 +785,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
   tracking_protection_settings()->AddTrackingProtectionException(
-      third_party_cookie_page_url(), /*is_user_bypass_exception=*/true);
+      third_party_cookie_page_url());
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
