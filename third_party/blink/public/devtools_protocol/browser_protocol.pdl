@@ -7314,6 +7314,9 @@ domain Network
       # are represented by the invalid cookie line string instead of a proper cookie.
       array of BlockedSetCookieWithReason blockedCookies
       # Raw response headers as they were received over the wire.
+      # Duplicate headers in the response are represented as a single key with their values
+      # concatentated using `\n` as the separator.
+      # See also `headersText` that contains verbatim text for HTTP/1.*.
       Headers headers
       # The IP address space of the resource. The address space can only be determined once the transport
       # established the connection, so we can't send it in `requestWillBeSentExtraInfo`.
@@ -7342,6 +7345,9 @@ domain Network
       # Request identifier. Used to match this information to another responseReceived event.
       RequestId requestId
       # Raw response headers as they were received over the wire.
+      # Duplicate headers in the response are represented as a single key with their values
+      # concatentated using `\n` as the separator.
+      # See also `headersText` that contains verbatim text for HTTP/1.*.
       Headers headers
 
   # Fired exactly once for each Trust Token operation. Depending on
