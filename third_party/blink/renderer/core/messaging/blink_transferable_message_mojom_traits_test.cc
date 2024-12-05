@@ -142,7 +142,8 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   ASSERT_EQ(originalContentsData, deserialized_contents.Data());
 
   // The original ArrayBufferContents should be detached.
-  ASSERT_EQ(nullptr, v8_buffer->GetBackingStore()->Data());
+  ASSERT_TRUE(v8_buffer->WasDetached());
+  ASSERT_EQ(0UL, v8_buffer->GetBackingStore()->ByteLength());
   ASSERT_TRUE(original_array_buffer->IsDetached());
 }
 
