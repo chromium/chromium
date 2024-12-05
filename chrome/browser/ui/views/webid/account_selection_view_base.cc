@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
@@ -639,6 +640,9 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
                         : nullptr,
         /*add_vertical_label_spacing=*/true, footer, brand_icon_image_view_ptr,
         *clickable_position);
+    row->SetProperty(views::kElementIdentifierKey,
+                     kFedCmAccountChooserDialogAccountElementId);
+
     row->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         /*vertical=*/additional_vertical_padding,
         /*horizontal=*/is_modal_dialog ? fedcm::kModalHorizontalSpacing
