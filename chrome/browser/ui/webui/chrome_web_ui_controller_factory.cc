@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
@@ -91,7 +90,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/url_constants.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -105,11 +104,6 @@
 #include "ash/webui/vc_background_ui/url_constants.h"
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
-#include "url/url_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
@@ -448,127 +442,10 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (page_url.host_piece() == chrome::kChromeUIOSSettingsHost)
     return settings_utils::GetFaviconResourceBytes(scale_factor);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return nullptr;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-const std::vector<GURL>&
-ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
-  // clang-format off
-  static const base::NoDestructor<std::vector<GURL>> urls({
-    // Pages that exist in Ash and in Lacros (separately), with both instances
-    // accessible. The Lacros instance is reachable via chrome:// and the Ash
-    // instance is reachable via os:// (from Lacros). For convenience and to
-    // avoid confusion, the two instances should provide a link to each other.
-    GURL(chrome::kChromeUIAboutURL),
-    GURL(chrome::kChromeUIAppServiceInternalsURL),
-    GURL(chrome::kChromeUIChromeURLsURL),
-    GURL(chrome::kChromeUIComponentsUrl),
-    GURL(chrome::kChromeUICreditsURL),
-    GURL(chrome::kChromeUIDeviceLogUrl),
-    GURL(chrome::kChromeUIDlpInternalsURL),
-    GURL(chrome::kChromeUIExtensionsInternalsURL),
-    GURL(chrome::kChromeUIExtensionsURL),
-    GURL(chrome::kChromeUIFlagsURL),
-    GURL(chrome::kChromeUIGpuURL),
-    GURL(chrome::kChromeUIHistogramsURL),
-    GURL(chrome::kChromeUIInspectURL),
-    GURL(chrome::kChromeUIManagementURL),
-    GURL(chrome::kChromeUINetExportURL),
-    GURL(chrome::kChromeUIPrefsInternalsURL),
-    GURL(chrome::kChromeUIRestartURL),
-    GURL(chrome::kChromeUISignInInternalsUrl),
-    GURL(chrome::kChromeUISyncInternalsUrl),
-    GURL(chrome::kChromeUISystemURL),
-    GURL(chrome::kChromeUITermsURL),
-    GURL(chrome::kChromeUIVersionURL),
-    GURL(chrome::kChromeUIWebAppInternalsURL),
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Pages that exist only in Ash, i.e. have no immediate counterpart in
-    // Lacros. They are reachable via both chrome:// and os:// (from Lacros).
-    // Note: chrome://os-settings is also reachable via os://settings.
-    GURL(ash::file_manager::kChromeUIFileManagerUntrustedURL),
-    GURL(ash::file_manager::kChromeUIFileManagerURL),
-    GURL(ash::kChromeUICameraAppURL),
-    GURL(ash::kChromeUIFilesInternalsURL),
-    GURL(ash::kChromeUIHelpAppURL),
-    GURL(ash::kChromeUIMallUrl),
-    GURL(ash::kChromeUIPrintPreviewCrosURL),
-    GURL(ash::kGrowthInternalsURL),
-    GURL(ash::multidevice::kChromeUIProximityAuthURL),
-    GURL(ash::kChromeUIRecorderAppURL),
-    GURL(ash::vc_background_ui::kChromeUIVcBackgroundURL),
-    GURL(chrome::kChromeUIAccountManagerErrorURL),
-    GURL(chrome::kChromeUIAccountMigrationWelcomeURL),
-    GURL(chrome::kChromeUIAddSupervisionURL),
-    GURL(chrome::kChromeUIAppDisabledURL),
-    GURL(chrome::kChromeUIArcOverviewTracingURL),
-    GURL(chrome::kChromeUIArcPowerControlURL),
-    GURL(chrome::kChromeUIAssistantOptInURL),
-    GURL(chrome::kChromeUIBluetoothInternalsURL),
-    GURL(chrome::kChromeUIBluetoothPairingURL),
-    GURL(chrome::kChromeUIBorealisCreditsURL),
-    GURL(chrome::kChromeUIBorealisInstallerUrl),
-    GURL(chrome::kChromeUICloudUploadURL),
-    GURL(chrome::kChromeUILocalFilesMigrationURL),
-    GURL(chrome::kChromeUIConnectivityDiagnosticsAppURL),
-    GURL(chrome::kChromeUICrashesUrl),
-    GURL(chrome::kChromeUICrostiniCreditsURL),
-    GURL(chrome::kChromeUICrostiniInstallerUrl),
-    GURL(chrome::kChromeUICrostiniUpgraderUrl),
-    GURL(chrome::kChromeUICryptohomeURL),
-    GURL(chrome::kChromeUIDeviceEmulatorURL),
-    GURL(chrome::kChromeUIDiagnosticsAppURL),
-    GURL(chrome::kChromeUIDriveInternalsUrl),
-    GURL(chrome::kChromeUIEmojiPickerURL),
-    GURL(chrome::kChromeUIEnterpriseReportingURL),
-    GURL(chrome::kChromeUIFirmwareUpdaterAppURL),
-    GURL(chrome::kChromeUIFocusModeMediaURL),
-    GURL(chrome::kChromeUIHealthdInternalsURL),
-    GURL(chrome::kChromeUIInternetConfigDialogURL),
-    GURL(chrome::kChromeUIInternetDetailDialogURL),
-    GURL(chrome::kChromeUILauncherInternalsURL),
-    GURL(chrome::kChromeUILockScreenNetworkURL),
-    GURL(chrome::kChromeUILockScreenStartReauthURL),
-    GURL(chrome::kChromeUIManageMirrorSyncURL),
-    GURL(chrome::kChromeUIMultiDeviceInternalsURL),
-    GURL(chrome::kChromeUIMultiDeviceSetupUrl),
-    GURL(chrome::kChromeUINearbyInternalsURL),
-    GURL(chrome::kChromeUINetworkUrl),
-    GURL(chrome::kChromeUINotificationTesterURL),
-    GURL(chrome::kChromeUIOfficeFallbackURL),
-    GURL(chrome::kChromeUIOSCreditsURL),
-    GURL(chrome::kChromeUIOSSettingsURL),
-    GURL(chrome::kChromeUIPowerUrl),
-    GURL(chrome::kChromeUIPrintManagementUrl),
-    GURL(chrome::kChromeUISanitizeAppURL),
-    GURL(chrome::kChromeUIScanningAppURL),
-    GURL(chrome::kChromeUISensorInfoURL),
-    GURL(chrome::kChromeUISetTimeURL),
-    GURL(chrome::kChromeUISlowURL),
-    GURL(chrome::kChromeUISmbShareURL),
-    GURL(chrome::kChromeUISupportToolURL),
-    GURL(chrome::kChromeUISysInternalsUrl),
-    GURL(chrome::kChromeUIUntrustedCroshURL),
-    GURL(chrome::kChromeUIUntrustedTerminalURL),
-    GURL(chrome::kChromeUIUserImageURL),
-    GURL(chrome::kChromeUIVmUrl),
-    GURL(scalable_iph::kScalableIphDebugURL),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  });
-  // clang-format on
-  return *urls;
-}
-
-bool ChromeWebUIControllerFactory::CanHandleUrl(const GURL& url) {
-  return crosapi::gurl_os_handler_utils::IsAshUrlInList(
-      url, GetListOfAcceptableURLs());
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
