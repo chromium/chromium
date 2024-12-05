@@ -3186,10 +3186,10 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
 void InterestGroupAuction::StartBiddingAndScoringPhase(
     std::optional<DebugReportLockoutAndCooldowns>
         debug_report_lockout_and_cooldowns,
-    base::OnceClosure on_seller_receiver_callback,
+    base::OnceClosure on_seller_process_assigned_callback,
     AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback) {
   DCHECK(bidding_and_scoring_phase_callback);
-  DCHECK(!on_seller_receiver_callback_);
+  DCHECK(!on_seller_process_assigned_callback_);
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
   DCHECK(!final_auction_result_);
@@ -3207,7 +3207,8 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
     debug_report_lockout_and_cooldowns_ = *debug_report_lockout_and_cooldowns;
   }
 
-  on_seller_receiver_callback_ = std::move(on_seller_receiver_callback);
+  on_seller_process_assigned_callback_ =
+      std::move(on_seller_process_assigned_callback);
   bidding_and_scoring_phase_callback_ =
       std::move(bidding_and_scoring_phase_callback);
 
@@ -4998,7 +4999,8 @@ void InterestGroupAuction::RequestSellerWorklet() {
       devtools_auction_id_, *config_->decision_logic_url,
       config_->trusted_scoring_signals_url, config_->seller_experiment_group_id,
       config_->non_shared_params.trusted_scoring_signals_coordinator,
-      /*process_assigned_callback=*/base::OnceClosure(),
+      base::BindOnce(&InterestGroupAuction::OnSellerProcessAssigned,
+                     base::Unretained(this)),
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
                      base::Unretained(this)),
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletFatalError,
@@ -5006,16 +5008,21 @@ void InterestGroupAuction::RequestSellerWorklet() {
       seller_worklet_handle_, auction_metrics_recorder_);
 }
 
+void InterestGroupAuction::OnSellerProcessAssigned() {
+  DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
+  if (on_seller_process_assigned_callback_) {
+    std::move(on_seller_process_assigned_callback_).Run();
+  }
+}
+
 void InterestGroupAuction::OnSellerWorkletReceived() {
   DCHECK(!seller_worklet_received_);
+  // This should have been invoked already, if non-null.
+  DCHECK(!on_seller_process_assigned_callback_);
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "request_seller_worklet",
                                   *trace_id_);
-
-  if (on_seller_receiver_callback_) {
-    std::move(on_seller_receiver_callback_).Run();
-  }
 
   seller_worklet_received_ = true;
 
@@ -5955,11 +5962,11 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
     seller_worklet_handle_.reset();
   }
 
-  // If the seller loaded callback hasn't been invoked yet, call it now. This
-  // is needed in the case the phase ended without receiving the seller
-  // worklet (e.g., in the case no bidder worklet bids).
-  if (on_seller_receiver_callback_) {
-    std::move(on_seller_receiver_callback_).Run();
+  // If the seller worklet received callback hasn't been invoked yet, call it
+  // now. This is needed in the case the phase ended without receiving the
+  // seller worklet (e.g., in the case no bidder worklet bids).
+  if (on_seller_process_assigned_callback_) {
+    std::move(on_seller_process_assigned_callback_).Run();
   }
 
   bool success = auction_result == AuctionResult::kSuccess;
