@@ -11,7 +11,6 @@ per-file privacy_sandbox_handler*=file://components/privacy_sandbox/OWNERS
 per-file *site_settings*=msramek@chromium.org
 per-file *site_settings*=fsenra@google.com
 per-file safety_hub_handler*=sideyilmaz@chromium.org,rainhard@chromium.org
-per-file safety_check_handler*=andzaytsev@google.com,rainhard@chromium.org,sideyilmaz@chromium.org
 per-file settings_clear_browsing_data_handler*=msramek@chromium.org
 per-file settings_localized_strings_privacy_sandbox_provider.cc=file://components/privacy_sandbox/OWNERS
 per-file settings_localized_strings_provider*=rainhard@chromium.org,sideyilmaz@chromium.org

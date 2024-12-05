@@ -53,7 +53,6 @@ export interface SettingsRoutes {
   PRIVACY_SANDBOX_MANAGE_TOPICS: Route;
   RESET: Route;
   RESET_DIALOG: Route;
-  SAFETY_CHECK: Route;
   SAFETY_HUB: Route;
   SEARCH: Route;
   SEARCH_ENGINES: Route;

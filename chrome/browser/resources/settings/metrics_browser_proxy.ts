@@ -65,36 +65,6 @@ export enum SafetyHubCardState {
 }
 
 /**
- * Contains all safety check interactions.
- *
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- *
- * Must be kept in sync with the SafetyCheckInteractions enum in
- * histograms/enums.xml
- */
-export enum SafetyCheckInteractions {
-  RUN_SAFETY_CHECK = 0,
-  UPDATES_RELAUNCH = 1,
-  PASSWORDS_MANAGE_COMPROMISED_PASSWORDS = 2,
-  SAFE_BROWSING_MANAGE = 3,
-  EXTENSIONS_REVIEW = 4,
-  // Deprecated in https://crbug.com/1407233.
-  CHROME_CLEANER_REBOOT = 5,
-  // Deprecated in https://crbug.com/1407233.
-  CHROME_CLEANER_REVIEW_INFECTED_STATE = 6,
-  PASSWORDS_CARET_NAVIGATION = 7,
-  SAFE_BROWSING_CARET_NAVIGATION = 8,
-  EXTENSIONS_CARET_NAVIGATION = 9,
-  // Deprecated in https://crbug.com/1407233.
-  CHROME_CLEANER_CARET_NAVIGATION = 10,
-  PASSWORDS_MANAGE_WEAK_PASSWORDS = 11,
-  UNUSED_SITE_PERMISSIONS_REVIEW = 12,
-  // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 13,
-}
-
-/**
  * Contains all safety check notifications module interactions.
  *
  * These values are persisted to logs. Entries should not be renumbered and
@@ -453,26 +423,6 @@ export interface MetricsBrowserProxy {
 
   /**
    * Helper function that calls recordHistogram for the
-   * Settings.SafetyCheck.Interactions histogram
-   */
-  recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions):
-      void;
-
-  /**
-   * Helper function that calls recordBooleanHistogram for the
-   * Settings.SafetyCheck.NotificationsModuleEntryPointShown histogram
-   */
-  recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean): void;
-
-  /**
-   * Helper function that calls recordBooleanHistogram for the
-   * Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown histogram
-   */
-  recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible: boolean):
-      void;
-
-  /**
-   * Helper function that calls recordHistogram for the
    * Settings.SafetyHub.EntryPointShown histogram
    */
   recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint): void;
@@ -655,29 +605,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordBooleanHistogram(histogramName: string, visible: boolean): void {
     chrome.send('metricsHandler:recordBooleanHistogram', [
       histogramName,
-      visible,
-    ]);
-  }
-
-  recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.Interactions',
-      interaction,
-      SafetyCheckInteractions.MAX_VALUE,
-    ]);
-  }
-
-  recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean) {
-    chrome.send('metricsHandler:recordBooleanHistogram', [
-      'Settings.SafetyCheck.NotificationsModuleEntryPointShown',
-      visible,
-    ]);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible:
-                                                                  boolean) {
-    chrome.send('metricsHandler:recordBooleanHistogram', [
-      'Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown',
       visible,
     ]);
   }
