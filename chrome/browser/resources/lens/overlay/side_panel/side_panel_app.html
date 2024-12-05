@@ -187,7 +187,7 @@
     display: block;
   }
 </style>
-<div id="searchboxContainer">
+<div id="searchboxContainer" on-escape-searchbox="handleEscapeSearchbox">
   <template is="dom-if" if="[[isBackArrowVisible]]">
     <cr-icon-button id="backButton" class="action-icon icon-arrow-back"
         on-click="onBackArrowClick" aria-label="$i18n{backButton}">

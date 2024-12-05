@@ -36,6 +36,7 @@ import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
 import {PerformanceTracker} from './performance_tracker.js';
+import {handleEscapeSearchbox, onEscapeKeyPressed, onSearchboxKeydown} from './searchbox_utils.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {TranslateButtonElement} from './translate_button.js';
@@ -135,11 +136,27 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      suppressGhostLoader: {
+        type: Boolean,
+        value: false,
+      },
+      showGhostLoader: {
+        type: Boolean,
+        computed: `computeShowGhostLoader(isSearchboxFocused,
+            suppressGhostLoader)`,
+        reflectToAttribute: true,
+      },
       areLanguagePickersOpen: Boolean,
       toastMessage: String,
     };
   }
 
+  // Whether the user is currently focused into the searchbox.
+  isSearchboxFocused: boolean = false;
+  // Whether to purposely suppress the ghost loader. Done when escaping from
+  // the searchbox when there's text (this doesn't create a zero suggset
+  // request).
+  suppressGhostLoader: boolean;
   // Whether the translate button is enabled.
   private isTranslateButtonEnabled: boolean;
   // Whether the image has finished rendering.
@@ -172,8 +189,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the contextual searchbox is visible to the user.
   private isLensOverlayContextualSearchboxVisible: boolean = false;
   private toastMessage: string = '';
-  // Whether the user is current focused into the searchbox.
-  private isSearchboxFocused: boolean = false;
+  // Whether to show the ghost loader.
+  private showGhostLoader: boolean;
   // Whether the translate language pickers are open.
   private areLanguagePickersOpen: boolean = false;
 
@@ -246,6 +263,16 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(document, 'language-picker-opened', () => {
       this.handleLanguagePickersOpened();
     });
+    this.eventTracker_.add(document, 'keydown', (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' && this.isSearchboxFocused) {
+        onSearchboxKeydown(this, this.$.searchbox);
+      }
+      if (event.key === 'Escape') {
+        onEscapeKeyPressed(this, event);
+      }
+    });
+    this.eventTracker_.add(
+        document, 'pointermove', this.updateCursorPosition.bind(this));
 
     this.performanceTracker.startSession();
   }
@@ -260,7 +287,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   override ready() {
     super.ready();
-    this.addEventListener('pointermove', this.updateCursorPosition.bind(this));
     recordTimeToWebUIReady(Number(Date.now() - this.invocationTime));
   }
 
@@ -290,6 +316,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private handleSearchboxFocused() {
+    this.suppressGhostLoader = false;
     this.isSearchboxFocused = true;
     this.$.translateButtonContainer.classList.remove('searchbox-unfocused');
 
@@ -347,6 +374,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.searchboxBoundingClientRectObserver.disconnect();
   }
 
+  private handleEscapeSearchbox(e: CustomEvent) {
+    handleEscapeSearchbox(this, this.$.searchbox, e);
+  }
+
   private handleLanguagePickersOpened() {
     this.areLanguagePickersOpen = true;
   }
@@ -387,6 +418,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     });
     this.moreOptionsMenuVisible = false;
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kLearnMore);
+  }
+
+  private computeShowGhostLoader(): boolean {
+    return this.isSearchboxFocused && !this.suppressGhostLoader;
   }
 
   private onMoreOptionsButtonClick() {
@@ -509,6 +544,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     const g = parseInt(hex.substring(3, 5), 16);
     const b = parseInt(hex.substring(5, 7), 16);
     return `${r}, ${g}, ${b}`;
+  }
+
+  setSearchboxFocusForTesting(isFocused: boolean) {
+    this.isSearchboxFocused = isFocused;
+  }
+
+  handleEscapeSearchboxForTesting(e: CustomEvent) {
+    this.handleEscapeSearchbox(e);
   }
 }
 

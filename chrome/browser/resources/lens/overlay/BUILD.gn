@@ -71,6 +71,7 @@ build_webui("build_overlay") {
     "post_selection_paint_worklet.ts",
     "screenshot_bitmap_browser_proxy.ts",
     "screenshot_utils.ts",
+    "searchbox_utils.ts",
     "selection_utils.ts",
     "side_panel/side_panel_browser_proxy.ts",
     "values_converter.ts",
