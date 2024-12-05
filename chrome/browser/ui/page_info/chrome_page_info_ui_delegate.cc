@@ -40,7 +40,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/extensions/window_controller_list.h"  // nogncheck
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"

@@ -27,12 +27,21 @@ source_set("extensions") {
   # TODO(https://crbug.com/356905053): When files support being built on
   # desktop android, move them outside the if (enable_extensions) block.
   sources = [
+    "api/tabs/windows_util.cc",
+    "api/tabs/windows_util.h",
     "chrome_extensions_browser_api_provider.cc",
     "chrome_extensions_browser_api_provider.h",
     "extension_special_storage_policy.cc",
     "extension_special_storage_policy.h",
+    "extension_tab_util.cc",
+    "extension_tab_util.h",
     "extension_util.cc",
     "extension_util.h",
+    "window_controller.cc",
+    "window_controller.h",
+    "window_controller_list.cc",
+    "window_controller_list.h",
+    "window_controller_list_observer.h",
   ]
   configs += [
     "//build/config:precompiled_headers",
@@ -42,6 +51,7 @@ source_set("extensions") {
     "//base",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/extensions/api:api_registration",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//components/content_settings/core/browser:cookie_settings",
@@ -325,8 +335,6 @@ source_set("extensions") {
       "api/tabs/tabs_windows_api.h",
       "api/tabs/windows_event_router.cc",
       "api/tabs/windows_event_router.h",
-      "api/tabs/windows_util.cc",
-      "api/tabs/windows_util.h",
       "api/top_sites/top_sites_api.cc",
       "api/top_sites/top_sites_api.h",
       "api/webstore_private/extension_install_status.cc",
@@ -485,8 +493,6 @@ source_set("extensions") {
       "extension_system_factory.h",
       "extension_system_impl.cc",
       "extension_system_impl.h",
-      "extension_tab_util.cc",
-      "extension_tab_util.h",
       "extension_telemetry_service_verdict_handler.cc",
       "extension_telemetry_service_verdict_handler.h",
       "extension_ui_util.cc",
@@ -647,11 +653,6 @@ source_set("extensions") {
       "webstore_reinstaller.h",
       "webstore_standalone_installer.cc",
       "webstore_standalone_installer.h",
-      "window_controller.cc",
-      "window_controller.h",
-      "window_controller_list.cc",
-      "window_controller_list.h",
-      "window_controller_list_observer.h",
     ]
 
     # Chrome OS does not support Native Messaging policies.

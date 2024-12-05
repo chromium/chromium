@@ -4,8 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("cookies") {
   sources = [
@@ -23,6 +23,7 @@ source_set("cookies") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//components/safe_browsing/core/common:features",
+    "//extensions/browser",
     "//skia",
   ]
 }
@@ -39,7 +40,6 @@ source_set("helpers") {
     "//base",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common/extensions/api",
     "//extensions/common",
     "//net",

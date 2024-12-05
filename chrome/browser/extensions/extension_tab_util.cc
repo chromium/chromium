@@ -12,6 +12,21 @@
 #include <optional>
 #include <utility>
 
+#include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+// gn check doesn't understand this conditional, hence the nogncheck directives
+// below.
 #include "base/containers/fixed_flat_set.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,44 +35,36 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process.h"  // nogncheck
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/extensions/window_controller_list.h"
-#include "chrome/browser/platform_util.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/platform_util.h"  // nogncheck
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/recently_audible_helper.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/browser.h"                   // nogncheck
+#include "chrome/browser/ui/browser_finder.h"            // nogncheck
+#include "chrome/browser/ui/browser_navigator.h"         // nogncheck
+#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
+#include "chrome/browser/ui/browser_window.h"            // nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"  // nogncheck
+#include "chrome/browser/ui/recently_audible_helper.h"             // nogncheck
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"     // nogncheck
+#include "chrome/browser/ui/singleton_tabs.h"                      // nogncheck
+#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"  // nogncheck
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"  // nogncheck
+#include "chrome/browser/ui/tabs/tab_enums.h"        // nogncheck
+#include "chrome/browser/ui/tabs/tab_group_model.h"  // nogncheck
+#include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
+#include "chrome/browser/ui/tabs/tab_utils.h"        // nogncheck
+#include "chrome/browser/ui/ui_features.h"           // nogncheck
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/url_constants.h"
-#include "components/sessions/content/session_tab_helper.h"
-#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_id.h"  // nogncheck
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
@@ -70,15 +77,16 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/blink/public/common/chrome_debug_urls.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
+#endif
 
 using content::NavigationEntry;
 using content::WebContents;
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
+
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -423,11 +431,13 @@ int ExtensionTabUtil::GetWindowIdOfTabStripModel(
   }
   return -1;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 int ExtensionTabUtil::GetTabId(const WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForTab(web_contents).id();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 int ExtensionTabUtil::GetWindowIdOfTab(const WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForWindowContainingTab(web_contents)
       .id();
@@ -658,6 +668,7 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
 content::WebContents* ExtensionTabUtil::GetActiveTab(Browser* browser) {
   return WindowControllerFromBrowser(browser)->GetActiveTab();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 bool ExtensionTabUtil::GetTabById(int tab_id,
@@ -774,6 +785,7 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
                     contents, nullptr);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 int ExtensionTabUtil::GetGroupId(const tab_groups::TabGroupId& id) {
   uint32_t hash = base::PersistentHash(id.ToString());
@@ -1253,5 +1265,6 @@ bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
 
   return tab_group_service->GetGroup(tab_group_id.value()).has_value();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
