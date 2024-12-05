@@ -1473,7 +1473,7 @@ void LayerTreeHost::SetVisualDeviceViewportSize(
 }
 
 void LayerTreeHost::SetMaxSafeAreaInsets(
-    const gfx::Insets& max_safe_area_insets) {
+    const gfx::InsetsF& max_safe_area_insets) {
   if (pending_commit_state()->max_safe_area_insets == max_safe_area_insets) {
     return;
   }

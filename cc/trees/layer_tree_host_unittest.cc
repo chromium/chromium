@@ -11046,13 +11046,17 @@ class LayerTreeHostTestSetMaxSafeAreaInsets : public LayerTreeHostTest {
   void SetupTree() override {
     LayerTreeHostTest::SetupTree();
 
-    gfx::Insets insets(10);
+    gfx::InsetsF insets(10);
     insets.set_bottom(20);
     layer_tree_host()->SetMaxSafeAreaInsets(insets);
   }
 
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_EQ(20, host_impl->MaxSafeAreaInsets().bottom());
+    EXPECT_EQ(20, host_impl->pending_tree()->max_safe_area_inset_bottom());
+
+    host_impl->pending_tree()->PushPropertiesTo(host_impl->active_tree());
+    EXPECT_EQ(20, host_impl->active_tree()->max_safe_area_inset_bottom());
+
     EndTest();
   }
 };

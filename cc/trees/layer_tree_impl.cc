@@ -476,7 +476,7 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   delta_from_top_controls +=
       bottom_controls_layout_height - bottom_content_offset;
 
-  // TODO: use MaxSafeAreaInsets().bottom() for SafeAreaInsets support.
+  // TODO: use max_safe_area_inset_bottom() for SafeAreaInsets support.
 
   // Adjust the viewport layers by shrinking/expanding the container to account
   // for changes in the size (e.g. browser controls) since the last resize from
@@ -525,10 +525,6 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   // Viewport scrollbar positions are determined using the viewport bounds
   // delta.
   UpdateViewportScrollbarGeometries();
-}
-
-gfx::Insets LayerTreeImpl::MaxSafeAreaInsets() const {
-  return host_impl_->MaxSafeAreaInsets();
 }
 
 bool LayerTreeImpl::IsRootLayer(const LayerImpl* layer) const {
@@ -792,6 +788,8 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
   SetDeviceScaleFactor(commit_state.device_scale_factor);
   SetDeviceViewportRect(commit_state.device_viewport_rect);
 
+  SetMaxSafeAreaInsetBottom(commit_state.max_safe_area_insets.bottom());
+
   if (commit_state.new_local_surface_id_request)
     RequestNewLocalSurfaceId();
 
@@ -895,6 +893,8 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   target_tree->set_painted_device_scale_factor(painted_device_scale_factor());
   target_tree->SetDeviceScaleFactor(device_scale_factor());
   target_tree->SetDeviceViewportRect(device_viewport_rect_);
+
+  target_tree->SetMaxSafeAreaInsetBottom(max_safe_area_inset_bottom_);
 
   if (TakeNewLocalSurfaceIdRequest())
     target_tree->RequestNewLocalSurfaceId();
@@ -1478,6 +1478,11 @@ gfx::Rect LayerTreeImpl::GetDeviceViewport() const {
   if (external_viewport.IsEmpty())
     return device_viewport_rect_;
   return external_viewport;
+}
+
+void LayerTreeImpl::SetMaxSafeAreaInsetBottom(
+    float max_safe_area_inset_bottom) {
+  max_safe_area_inset_bottom_ = max_safe_area_inset_bottom;
 }
 
 void LayerTreeImpl::SetDisplayColorSpaces(

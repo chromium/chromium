@@ -1319,7 +1319,7 @@ void WebViewImpl::DidUpdateBrowserControls() {
 }
 
 void WebViewImpl::DidUpdateMaxSafeAreaInsets(
-    const gfx::Insets& max_safe_area_insets) {
+    const gfx::InsetsF& max_safe_area_insets) {
   WebLocalFrameImpl* main_frame = MainFrameImpl();
   if (!main_frame || !main_frame->IsOutermostMainFrame()) {
     return;

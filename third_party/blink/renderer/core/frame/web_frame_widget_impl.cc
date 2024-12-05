@@ -2159,7 +2159,7 @@ void WebFrameWidgetImpl::SetBrowserControlsParams(
 }
 
 void WebFrameWidgetImpl::SetMaxSafeAreaInsets(
-    const gfx::Insets& max_safe_area_insets) {
+    const gfx::InsetsF& max_safe_area_insets) {
   widget_base_->LayerTreeHost()->SetMaxSafeAreaInsets(max_safe_area_insets);
 }
 

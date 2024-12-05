@@ -101,7 +101,8 @@ struct CC_EXPORT CommitState {
   gfx::Rect device_viewport_rect;
   gfx::Size visual_device_viewport_size;
   gfx::Vector2dF elastic_overscroll;
-  gfx::Insets max_safe_area_insets;
+  // The scaled max safe area insets in physical pixels.
+  gfx::InsetsF max_safe_area_insets;
   int hud_layer_id = Layer::INVALID_ID;
   int source_frame_number = 0;
   LayerSelection selection;
