@@ -726,6 +726,66 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
       DepictFrameTree(root));
 }
 
+// Simple test to set up a A(B,C) page and then navigate the C subframe to D.
+// This can be used to study performance of proxy creation code.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateABCToABD) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // Add a new child frame and navigate it to B.
+  RenderFrameHostCreatedObserver frame_observer(shell()->web_contents(), 1);
+  EXPECT_TRUE(ExecJs(
+      root, "document.body.appendChild(document.createElement('iframe'));"));
+  frame_observer.Wait();
+
+  FrameTreeNode* child1 = root->child_at(0);
+  {
+    RenderFrameDeletedObserver deleted_observer(child1->current_frame_host());
+    GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+    EXPECT_TRUE(NavigateToURLFromRenderer(child1, b_url));
+    deleted_observer.WaitUntilDeleted();
+  }
+
+  // Add a second child frame and navigate it to C.
+  RenderFrameHostCreatedObserver frame_observer2(shell()->web_contents(), 1);
+  EXPECT_TRUE(ExecJs(
+      root, "document.body.appendChild(document.createElement('iframe'));"));
+  frame_observer2.Wait();
+
+  FrameTreeNode* child2 = root->child_at(1);
+  {
+    RenderFrameDeletedObserver deleted_observer(child2->current_frame_host());
+    GURL c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+    EXPECT_TRUE(NavigateToURLFromRenderer(child2, c_url));
+    deleted_observer.WaitUntilDeleted();
+  }
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "   |--Site B ------- proxies for A C\n"
+      "   +--Site C ------- proxies for A B\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      C = http://c.com/",
+      DepictFrameTree(root));
+
+  // Navigate second child frame from C to D.
+  {
+    RenderFrameDeletedObserver deleted_observer(child2->current_frame_host());
+    GURL d_url(embedded_test_server()->GetURL("d.com", "/title1.html"));
+    EXPECT_TRUE(NavigateToURLFromRenderer(child2, d_url));
+    deleted_observer.WaitUntilDeleted();
+  }
+  EXPECT_EQ(
+      " Site A ------------ proxies for B D\n"
+      "   |--Site B ------- proxies for A D\n"
+      "   +--Site D ------- proxies for A B\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(root));
+}
+
 // Ensure that processes for iframes correctly track whether or not they have a
 // local main frame.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
