@@ -1731,6 +1731,7 @@ if (is_android) {
         "../browser/extensions/api/i18n/i18n_apitest.cc",
         "../browser/extensions/api/idle/idle_apitest.cc",
         "../browser/extensions/api/notifications/notifications_apitest.cc",
+        "../browser/extensions/api/offscreen/audio_lifetime_enforcer_browsertest.cc",
         "../browser/extensions/api/offscreen/offscreen_apitest.cc",
         "../browser/extensions/api/offscreen/offscreen_document_manager_browsertest.cc",
         "../browser/extensions/api/web_request/web_request_apitest.cc",
