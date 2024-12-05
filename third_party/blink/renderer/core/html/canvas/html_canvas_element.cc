@@ -712,9 +712,7 @@ void HTMLCanvasElement::DisableAcceleration(
   // Create and configure an unaccelerated Canvas2DLayerBridge.
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
-  if (canvas2d_bridge_) {
-    ReplaceExisting2dLayerBridge(std::move(new_provider_for_testing));
-  }
+  ReplaceExisting2dLayerBridge(std::move(new_provider_for_testing));
 
   // We must force a paint invalidation on the canvas even if it's
   // content did not change because it layer was destroyed.
