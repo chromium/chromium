@@ -19,8 +19,6 @@
 
 namespace {
 
-constexpr char kSyncRequested[] = "sync.requested";
-
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kExampleDomain[] = "example.com";
 #endif
@@ -43,40 +41,6 @@ class BrowserPrefsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
-
-TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefSyncRequestedDefaultValue) {
-  MigrateObsoleteProfilePrefs(&prefs_, /*profile_path=*/base::FilePath());
-  EXPECT_EQ(nullptr, prefs_.GetUserPrefValue(kSyncRequested));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(nullptr, prefs_.GetUserPrefValue(
-                         syncer::prefs::internal::kSyncDisabledViaDashboard));
-#endif
-}
-
-TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefSyncRequestedSetToTrue) {
-  prefs_.SetBoolean(kSyncRequested, true);
-  MigrateObsoleteProfilePrefs(&prefs_, /*profile_path=*/base::FilePath());
-  EXPECT_EQ(nullptr, prefs_.GetUserPrefValue(kSyncRequested));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(nullptr, prefs_.GetUserPrefValue(
-                         syncer::prefs::internal::kSyncDisabledViaDashboard));
-#endif
-}
-
-TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefSyncRequestedSetToFalse) {
-  prefs_.SetBoolean(kSyncRequested, false);
-  MigrateObsoleteProfilePrefs(&prefs_, /*profile_path=*/base::FilePath());
-  EXPECT_EQ(nullptr, prefs_.GetUserPrefValue(kSyncRequested));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_NE(nullptr, prefs_.GetUserPrefValue(
-                         syncer::prefs::internal::kSyncDisabledViaDashboard));
-  EXPECT_TRUE(
-      prefs_.GetBoolean(syncer::prefs::internal::kSyncDisabledViaDashboard));
-#endif
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefTabDiscardingExceptions) {
