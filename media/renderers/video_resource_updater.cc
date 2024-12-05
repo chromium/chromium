@@ -619,10 +619,9 @@ void VideoResourceUpdater::ObtainFrameResource(
       CreateExternalResourceFromVideoFrame(video_frame);
   frame_resource_type_ = external_resource.type;
 
-  external_resource.resource.origin =
-      video_frame->metadata().texture_origin_is_top_left
-          ? kTopLeft_GrSurfaceOrigin
-          : kBottomLeft_GrSurfaceOrigin;
+  external_resource.resource.origin = video_frame->IsTextureOriginTopLeft()
+                                          ? kTopLeft_GrSurfaceOrigin
+                                          : kBottomLeft_GrSurfaceOrigin;
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));

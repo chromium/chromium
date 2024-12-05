@@ -810,6 +810,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     ycbcr_info_ = ycbcr_info;
   }
 
+  // TODO(crbug.com/378688985): Remove once all call-sites use origin from the
+  // SharedImage.
+  bool IsTextureOriginTopLeft() const;
+
  protected:
   friend class base::RefCountedThreadSafe<VideoFrame>;
 
