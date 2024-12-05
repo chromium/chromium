@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/context_menu/ui_bundled/image_preview_view_controller.h"
 
-#import <WebKit/WebKit.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -15,53 +13,29 @@
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 
 namespace {
-const char kLoadImageHTML[] = R"(
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, shrink-to-fit=YES">
-  </head>
-  <body style='margin: 0px;' width='100%' height='100%'>
-    <img id='image' width='100%' height='100%'/>
-    <script>
-      var imageElement = document.getElementById('image');
-      function imageLoaded() {
-        window.webkit.messageHandlers.imageLoaded.postMessage({
-              'success':true,
-              'width': imageElement.naturalWidth,
-              'height': imageElement.naturalHeight
-        });
-      }
-      function imageLoadedError() {
-        window.webkit.messageHandlers.imageLoaded.postMessage({
-              'success':false
-        });
-      }
-      imageElement.addEventListener('load', imageLoaded);
-      imageElement.addEventListener('error', imageLoadedError);
-      imageElement.src = 'data:;base64,IMAGE_DATA_PLACEHOLDER';
-    </script>
-  </body>
-</html>
-)";
-
 // Default time interval to wait before showing a spinner.
 constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
 }
 
-@interface ImagePreviewViewController () <WKScriptMessageHandler>
+@interface ImagePreviewViewController ()
 @end
 
 @implementation ImagePreviewViewController {
   // The URL of the image to load.
   NSURL* _imageURL;
 
-  // A WKWebView to load and display the image. Do not use a webState as the
-  // only purpose of the webView is to display a data image.
-  WKWebView* _webView;
+  // Image transcoder used to convert untrusted image data into safe
+  // locally-encoded image data, which can then be safely decoded using UIImage
+  // in Chrome process.
+  web::JavaScriptImageTranscoder _imageTranscoder;
+
+  // Image view that contains the preview image.
+  UIImageView* _imageView;
 
   // The image data. This is not considered trusted data, so do not process
   // it in Chrome process.
@@ -122,10 +96,10 @@ constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
   }
 }
 
-#pragma mark - WKScriptMessageHandler
+#pragma mark - Private methods.
 
-- (void)userContentController:(WKUserContentController*)userContentController
-      didReceiveScriptMessage:(WKScriptMessage*)message {
+// Called when safe image data is received from the image data transcoder.
+- (void)safeImageDataReceived:(NSData*)safeImageData error:(NSError*)error {
   if (!_webState || _webState->IsBeingDestroyed()) {
     return;
   }
@@ -134,12 +108,12 @@ constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
   }
   _spinnerView.hidden = YES;
 
-  auto imageSize = [self parseResponse:message];
-  base::UmaHistogramBoolean("IOS.ContextMenu.ImagePreviewDisplayed",
-                            imageSize.has_value());
-  if (imageSize.has_value()) {
-    _webView.hidden = NO;
-    self.preferredContentSize = imageSize.value();
+  UIImage* image = [UIImage imageWithData:safeImageData];
+  base::UmaHistogramBoolean("IOS.ContextMenu.ImagePreviewDisplayed", !error);
+  if (!error) {
+    _imageView.image = image;
+    _imageView.hidden = NO;
+    self.preferredContentSize = image.size;
     return;
   }
 
@@ -158,65 +132,35 @@ constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
   errorImageView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 
-#pragma mark - Private methods.
-
 // Load the image in the WKWebView and display it.
 - (void)showImage {
   if (!self.viewLoaded || !_imageData || !_webState ||
       _webState->IsBeingDestroyed()) {
     return;
   }
-  NSString* htmlString = [base::SysUTF8ToNSString(kLoadImageHTML)
-      stringByReplacingOccurrencesOfString:@"IMAGE_DATA_PLACEHOLDER"
-                                withString:
-                                    [_imageData
-                                        base64EncodedStringWithOptions:0]];
-  _webView = [[WKWebView alloc] init];
-  _webView.userInteractionEnabled = NO;
-  _webView.configuration.ignoresViewportScaleLimits = YES;
-  _webView.contentMode = UIViewContentModeScaleToFill;
-  _webView.translatesAutoresizingMaskIntoConstraints = NO;
-  _webView.accessibilityIdentifier =
+
+  _imageView = [[UIImageView alloc] init];
+  _imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _imageView.accessibilityIdentifier =
       kContextMenuImagePreviewAccessibilityIdentifier;
-  _webView.backgroundColor = [UIColor clearColor];
-  _webView.scrollView.backgroundColor = [UIColor clearColor];
-  _webView.opaque = false;
-  _webView.hidden = YES;
+  _imageView.backgroundColor = [UIColor clearColor];
+  _imageView.opaque = NO;
+  _imageView.hidden = YES;
 
-  [self.view addSubview:_webView];
-  AddSameConstraints(self.view, _webView);
-  [_webView.configuration.userContentController
-      addScriptMessageHandler:self
-                         name:@"imageLoaded"];
-  [_webView loadHTMLString:htmlString
-                   baseURL:[NSURL URLWithString:@"about:blank"]];
-}
-
-// Parses the JS message and return the size of the image if `message` is
-// correctly formed.
-- (std::optional<CGSize>)parseResponse:(WKScriptMessage*)message {
-  if (![message.body isKindOfClass:[NSDictionary class]]) {
-    return std::nullopt;
-  }
-  NSDictionary* body = message.body;
-  if (![body[@"success"] isKindOfClass:[NSNumber class]]) {
-    return std::nullopt;
-  }
-  NSNumber* success = body[@"success"];
-  if (!success.boolValue) {
-    return std::nullopt;
-  }
-  if (![body[@"height"] isKindOfClass:[NSNumber class]] ||
-      ![body[@"width"] isKindOfClass:[NSNumber class]]) {
-    return std::nullopt;
-  }
-  CGFloat height = base::apple::ObjCCast<NSNumber>(body[@"height"]).doubleValue;
-  CGFloat width = base::apple::ObjCCast<NSNumber>(body[@"width"]).doubleValue;
-
-  if (isnan(height) || isnan(width) || height <= 0 || width <= 0) {
-    return std::nullopt;
-  }
-  return CGSizeMake(width, height);
+  [self.view addSubview:_imageView];
+  AddSameConstraints(self.view, _imageView);
+  __weak __typeof(self) weakSelf = self;
+  // Invoke the transcoder which will convert `_imageData` to safe image data
+  // and update `_imageView.image` accordingly once safe image data is ready.
+  _imageTranscoder.TranscodeImage(
+      _imageData, @"image/png", nil, nil, nil,
+      base::BindOnce(
+          [](ImagePreviewViewController* imagePreviewViewController,
+             NSData* safeData, NSError* error) {
+            [imagePreviewViewController safeImageDataReceived:safeData
+                                                        error:error];
+          },
+          weakSelf));
 }
 
 // Called when image data is received.

@@ -74,6 +74,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/util",
     "//ios/web/common:features",
     "//ios/web/public",
+    "//ios/web/public/js_image_transcoder",
     "//ios/web/public/ui",
     "//net",
     "//url",
