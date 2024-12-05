@@ -100,6 +100,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gmock:gmock",
     "//testing/gtest",
+    "//third_party/snappy:snappy",
   ]
 
   sources = [

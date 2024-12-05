@@ -42,11 +42,11 @@ namespace {
 const base::FeatureParam<std::string> kTracingTriggerRulesConfig{
     &kTracingTriggers, "config", ""};
 const base::FeatureParam<bool> kTracingTriggerRulesCompressed{
-    &kTracingTriggers, "compressed", false};
+    &kTracingTriggers, "compressed", true};
 const base::FeatureParam<std::string> kFieldTracingConfig{&kFieldTracing,
                                                           "config", ""};
 const base::FeatureParam<bool> kFieldTracingCompressed{&kFieldTracing,
-                                                       "compressed", false};
+                                                       "compressed", true};
 const base::FeatureParam<bool> kFieldTracingAnonymized{&kFieldTracing,
                                                        "anonymized", true};
 const base::FeatureParam<bool> kFieldTracingForceUploads{
@@ -58,7 +58,7 @@ const base::FeatureParam<bool> kStartupFieldTracing{&kFieldTracing, "startup",
 const base::FeatureParam<std::string> kPresetTracingConfig{&kPresetTracing,
                                                            "config", ""};
 const base::FeatureParam<bool> kPresetTracingCompressed{&kPresetTracing,
-                                                        "compressed", false};
+                                                        "compressed", true};
 
 bool BlockingWriteTraceToFile(const base::FilePath& output_file,
                               std::string file_contents) {
