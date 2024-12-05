@@ -19,6 +19,11 @@
 
 namespace {
 
+// Valid URL for testing.
+const std::string kTestURL = "https://www.chromium.org/";
+// Valid URL for NTP.
+const std::string kNewTabURL = "chrome://newtab";
+
 // Dimension of the WebState's view.
 constexpr CGSize kWebStateViewSize = {300, 400};
 
@@ -76,6 +81,7 @@ TEST_F(LegacySnapshotGeneratorTest, GenerateUIViewSnapshot) {
 TEST_F(LegacySnapshotGeneratorTest, GenerateWebViewSnapshot) {
   // Enable the flag to take a snapshot with WebKit-based API.
   web_state_.SetCanTakeSnapshot(true);
+  web_state_.SetCurrentURL(GURL(kTestURL));
 
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
@@ -91,6 +97,29 @@ TEST_F(LegacySnapshotGeneratorTest, GenerateWebViewSnapshot) {
   ASSERT_TRUE(snapshot);
   EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
   EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor blueColor]));
+}
+
+// Tests the snapshot on the new tab page.
+TEST_F(LegacySnapshotGeneratorTest, GenerateWebViewSnapshotWithNTP) {
+  // Enable the flag to take a snapshot with WebKit-based API.
+  web_state_.SetCanTakeSnapshot(true);
+  // UIKit-based API should be used for NTP.
+  web_state_.SetCurrentURL(GURL(kNewTabURL));
+
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
+  __block UIImage* snapshot = nil;
+  [generator_ generateSnapshotWithCompletion:^(UIImage* image) {
+    snapshot = image;
+    run_loop_ptr->Quit();
+  }];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
+  EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor redColor]));
 }
 
 class SnapshotGeneratorTest : public PlatformTest {
@@ -130,6 +159,8 @@ TEST_F(SnapshotGeneratorTest, GenerateUIViewSnapshot) {
 TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshot) {
   // Enable the flag to take a snapshot with WebKit-based API.
   web_state_.SetCanTakeSnapshot(true);
+  // Set a valid URL.
+  web_state_.SetCurrentURL(GURL(kTestURL));
 
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
@@ -145,6 +176,50 @@ TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshot) {
   ASSERT_TRUE(snapshot);
   EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
   EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor blueColor]));
+}
+
+// Tests the snapshot taken by WebKit-based API with invalid URL.
+TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshotWithInvalidURL) {
+  // Enable the flag to take a snapshot with WebKit-based API.
+  web_state_.SetCanTakeSnapshot(true);
+  // Set an invalid URL.
+  web_state_.SetCurrentURL(GURL());
+
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
+  __block UIImage* snapshot = nil;
+  [generator_ generateSnapshotWithCompletion:^(UIImage* image) {
+    snapshot = image;
+    run_loop_ptr->Quit();
+  }];
+
+  run_loop.Run();
+
+  ASSERT_FALSE(snapshot);
+}
+
+// Tests the snapshot on the new tab page.
+TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshotWithNTP) {
+  // Enable the flag to take a snapshot with WebKit-based API.
+  web_state_.SetCanTakeSnapshot(true);
+  // UIKit-based API should be used for NTP.
+  web_state_.SetCurrentURL(GURL(kNewTabURL));
+
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
+  __block UIImage* snapshot = nil;
+  [generator_ generateSnapshotWithCompletion:^(UIImage* image) {
+    snapshot = image;
+    run_loop_ptr->Quit();
+  }];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(snapshot);
+  EXPECT_TRUE(CGSizeEqualToSize(snapshot.size, kWebStateViewSize));
+  EXPECT_TRUE(IsDominantColorForImage(snapshot, [UIColor redColor]));
 }
 
 @interface FakeOverlaysSnapshotGeneratorDelegate : FakeSnapshotGeneratorDelegate
@@ -203,6 +278,7 @@ TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateUIViewSnapshot) {
 TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
   // Enable the flag to take a snapshot with WebKit-based API.
   web_state_.SetCanTakeSnapshot(true);
+  web_state_.SetCurrentURL(GURL(kTestURL));
 
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
@@ -260,6 +336,7 @@ TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateUIViewSnapshot) {
 TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
   // Enable the flag to take a snapshot with WebKit-based API.
   web_state_.SetCanTakeSnapshot(true);
+  web_state_.SetCurrentURL(GURL(kTestURL));
 
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
