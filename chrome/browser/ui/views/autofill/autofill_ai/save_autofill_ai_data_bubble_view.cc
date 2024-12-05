@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/save_autofill_ai_data_bubble_view.h"
 
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -30,7 +30,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 
-namespace autofill {
+namespace autofill_ai {
 
 namespace {
 
@@ -64,33 +64,30 @@ std::unique_ptr<views::View> BuildPredictedValueRow(const std::string key,
       .Build();
 }
 
-SaveAutofillPredictionImprovementsController::
-    PredictionImprovementsBubbleClosedReason
-    GetPredictionImprovementsBubbleClosedReasonFromWidget(
-        const views::Widget* widget) {
+SaveAutofillAiDataController::AutofillAiBubbleClosedReason
+GetAutofillAiBubbleClosedReasonFromWidget(const views::Widget* widget) {
   DCHECK(widget);
   if (!widget->IsClosed()) {
-    return SaveAutofillPredictionImprovementsController::
-        PredictionImprovementsBubbleClosedReason::kUnknown;
+    return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::kUnknown;
   }
 
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
-      return SaveAutofillPredictionImprovementsController::
-          PredictionImprovementsBubbleClosedReason::kNotInteracted;
+      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kNotInteracted;
     case views::Widget::ClosedReason::kEscKeyPressed:
     case views::Widget::ClosedReason::kCloseButtonClicked:
-      return SaveAutofillPredictionImprovementsController::
-          PredictionImprovementsBubbleClosedReason::kClosed;
+      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kClosed;
     case views::Widget::ClosedReason::kLostFocus:
-      return SaveAutofillPredictionImprovementsController::
-          PredictionImprovementsBubbleClosedReason::kLostFocus;
+      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kLostFocus;
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      return SaveAutofillPredictionImprovementsController::
-          PredictionImprovementsBubbleClosedReason::kAccepted;
+      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kAccepted;
     case views::Widget::ClosedReason::kCancelButtonClicked:
-      return SaveAutofillPredictionImprovementsController::
-          PredictionImprovementsBubbleClosedReason::kCancelled;
+      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kCancelled;
   }
 }
 
@@ -118,16 +115,14 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
   button->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   button->SetLayoutManager(std::make_unique<views::BoxLayout>());
   // This is used in tests only.
-  button->SetID(
-      is_thumbs_up
-          ? SaveAutofillPredictionImprovementsBubbleView::kThumbsUpButtonViewID
-          : SaveAutofillPredictionImprovementsBubbleView::
-                kThumbsDownButtonViewID);
+  button->SetID(is_thumbs_up
+                    ? SaveAutofillAiDataBubbleView::kThumbsUpButtonViewID
+                    : SaveAutofillAiDataBubbleView::kThumbsDownButtonViewID);
   return button;
 }
 
 std::unique_ptr<views::View> CreateFooterView(
-    base::WeakPtr<SaveAutofillPredictionImprovementsController> controller,
+    base::WeakPtr<SaveAutofillAiDataController> controller,
     const std::u16string& domain) {
   auto footer_container =
       views::Builder<views::BoxLayoutView>()
@@ -153,8 +148,7 @@ std::unique_ptr<views::View> CreateFooterView(
 
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &SaveAutofillPredictionImprovementsController::OnLearnMoreClicked,
-          controller));
+          &SaveAutofillAiDataController::OnLearnMoreClicked, controller));
   style_info.text_style = views::style::TextStyle::STYLE_LINK_5;
 
   std::vector<size_t> replacement_offsets;
@@ -180,8 +174,7 @@ std::unique_ptr<views::View> CreateFooterView(
                           manage_prediction_improvements_link_text.length()),
                   style_info)
               // This is used in tests only.
-              .SetID(SaveAutofillPredictionImprovementsBubbleView::
-                         kLearnMoreStyledLabelViewID)
+              .SetID(SaveAutofillAiDataBubbleView::kLearnMoreStyledLabelViewID)
               .Build()),
       1);
 
@@ -192,25 +185,22 @@ std::unique_ptr<views::View> CreateFooterView(
                              .Build();
   buttons_wrapper->AddChildView(CreateFeedbackButton(
       vector_icons::kThumbUpIcon,
-      base::BindRepeating(
-          &SaveAutofillPredictionImprovementsController::OnThumbsUpClicked,
-          controller)));
+      base::BindRepeating(&SaveAutofillAiDataController::OnThumbsUpClicked,
+                          controller)));
   buttons_wrapper->AddChildView(CreateFeedbackButton(
       vector_icons::kThumbDownIcon,
-      base::BindRepeating(
-          &SaveAutofillPredictionImprovementsController::OnThumbsDownClicked,
-          controller)));
+      base::BindRepeating(&SaveAutofillAiDataController::OnThumbsDownClicked,
+                          controller)));
   feedback_container->AddChildView(std::move(buttons_wrapper));
 
   return footer_container;
 }
 }  // namespace
 
-SaveAutofillPredictionImprovementsBubbleView::
-    SaveAutofillPredictionImprovementsBubbleView(
-        views::View* anchor_view,
-        content::WebContents* web_contents,
-        SaveAutofillPredictionImprovementsController* controller)
+SaveAutofillAiDataBubbleView::SaveAutofillAiDataBubbleView(
+    views::View* anchor_view,
+    content::WebContents* web_contents,
+    SaveAutofillAiDataController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller->GetWeakPtr()) {
   set_fixed_width(kBubbleWidth);
@@ -232,7 +222,7 @@ SaveAutofillPredictionImprovementsBubbleView::
                        .Build());
 
   for (const optimization_guide::proto::UserAnnotationsEntry&
-           prediction_improvement : controller_->GetPredictionImprovements()) {
+           prediction_improvement : controller_->GetAutofillAiData()) {
     improved_predicted_values_container->AddChildView(BuildPredictedValueRow(
         prediction_improvement.key(), prediction_improvement.value()));
   }
@@ -251,24 +241,22 @@ SaveAutofillPredictionImprovementsBubbleView::
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON));
   SetAcceptCallback(base::BindOnce(
-      &SaveAutofillPredictionImprovementsBubbleView::OnDialogAccepted,
-      base::Unretained(this)));
+      &SaveAutofillAiDataBubbleView::OnDialogAccepted, base::Unretained(this)));
   SetShowCloseButton(true);
 }
 
-SaveAutofillPredictionImprovementsBubbleView::
-    ~SaveAutofillPredictionImprovementsBubbleView() = default;
+SaveAutofillAiDataBubbleView::~SaveAutofillAiDataBubbleView() = default;
 
-void SaveAutofillPredictionImprovementsBubbleView::Hide() {
+void SaveAutofillAiDataBubbleView::Hide() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPredictionImprovementsBubbleClosedReasonFromWidget(GetWidget()));
+        GetAutofillAiBubbleClosedReasonFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
 
-void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
+void SaveAutofillAiDataBubbleView::AddedToWidget() {
   const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
   auto header_container =
@@ -298,21 +286,21 @@ void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
   GetBubbleFrameView()->SetHeaderView(std::move(header_container));
 }
 
-void SaveAutofillPredictionImprovementsBubbleView::WindowClosing() {
+void SaveAutofillAiDataBubbleView::WindowClosing() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPredictionImprovementsBubbleClosedReasonFromWidget(GetWidget()));
+        GetAutofillAiBubbleClosedReasonFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
 
-void SaveAutofillPredictionImprovementsBubbleView::OnDialogAccepted() {
+void SaveAutofillAiDataBubbleView::OnDialogAccepted() {
   if (controller_) {
     controller_->OnSaveButtonClicked();
   }
 }
 
-BEGIN_METADATA(SaveAutofillPredictionImprovementsBubbleView)
+BEGIN_METADATA(SaveAutofillAiDataBubbleView)
 END_METADATA
-}  // namespace autofill
+}  // namespace autofill_ai

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_AUTOFILL_PREDICTION_IMPROVEMENTS_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_AUTOFILL_PREDICTION_IMPROVEMENTS_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
 
 #include <vector>
 
@@ -16,17 +16,17 @@ namespace optimization_guide::proto {
 class UserAnnotationsEntry;
 }
 
-namespace autofill {
+namespace autofill_ai {
 
-// Interface that exposes controller functionality to save prediction
-// improvements bubble.
-class SaveAutofillPredictionImprovementsController {
+// Interface that exposes controller functionality to the save Autofill AI data
+// bubble.
+class SaveAutofillAiDataController {
  public:
   using LearnMoreClickedCallback = base::RepeatingCallback<void()>;
   using UserFeedbackCallback =
-      base::RepeatingCallback<void(AutofillAiDelegate::UserFeedback)>;
+      base::RepeatingCallback<void(autofill::AutofillAiDelegate::UserFeedback)>;
 
-  enum class PredictionImprovementsBubbleClosedReason {
+  enum class AutofillAiBubbleClosedReason {
     // Bubble closed reason not specified.
     kUnknown,
     // The user explicitly accepted the bubble.
@@ -41,18 +41,16 @@ class SaveAutofillPredictionImprovementsController {
     kLostFocus,
   };
 
-  SaveAutofillPredictionImprovementsController() = default;
-  SaveAutofillPredictionImprovementsController(
-      const SaveAutofillPredictionImprovementsController&) = delete;
-  SaveAutofillPredictionImprovementsController& operator=(
-      const SaveAutofillPredictionImprovementsController&) = delete;
-  virtual ~SaveAutofillPredictionImprovementsController() = default;
+  SaveAutofillAiDataController() = default;
+  SaveAutofillAiDataController(const SaveAutofillAiDataController&) = delete;
+  SaveAutofillAiDataController& operator=(const SaveAutofillAiDataController&) =
+      delete;
+  virtual ~SaveAutofillAiDataController() = default;
 
-  static SaveAutofillPredictionImprovementsController* GetOrCreate(
+  static SaveAutofillAiDataController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Shows a save improved predictions bubble which the user can accept or
-  // decline.
+  // Shows a save Autofill AI data bubble which the user can accept or decline.
   virtual void OfferSave(
       std::vector<optimization_guide::proto::UserAnnotationsEntry>
           prediction_improvements,
@@ -60,7 +58,7 @@ class SaveAutofillPredictionImprovementsController {
       LearnMoreClickedCallback learn_more_clicked_callback,
       UserFeedbackCallback user_feedback_callback) = 0;
 
-  // Called when the user accepts to save prediction improvements.
+  // Called when the user accepts to save Autofill AI data.
   virtual void OnSaveButtonClicked() = 0;
 
   // Called when the user clicks on the thumbs up button in the dialog.
@@ -72,18 +70,16 @@ class SaveAutofillPredictionImprovementsController {
   // Called when the user clicks on the learn more button in the dialog.
   virtual void OnLearnMoreClicked() = 0;
 
-  // Returns the prediction improvements to be displayed in the UI.
+  // Returns the Autofill AI data to be displayed in the UI.
   virtual const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-  GetPredictionImprovements() const = 0;
+  GetAutofillAiData() const = 0;
 
-  // Called when the prediction improvements bubble is closed.
-  virtual void OnBubbleClosed(
-      PredictionImprovementsBubbleClosedReason closed_reason) = 0;
+  // Called when the Autofill AI data bubble is closed.
+  virtual void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) = 0;
 
-  virtual base::WeakPtr<SaveAutofillPredictionImprovementsController>
-  GetWeakPtr() = 0;
+  virtual base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() = 0;
 };
 
-}  // namespace autofill
+}  // namespace autofill_ai
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_AUTOFILL_PREDICTION_IMPROVEMENTS_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_

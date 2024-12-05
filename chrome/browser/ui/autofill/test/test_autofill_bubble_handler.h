@@ -47,9 +47,9 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       content::WebContents* contents,
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) override;
-  AutofillBubbleBase* ShowSaveAutofillPredictionImprovementsBubble(
+  AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
-      SaveAutofillPredictionImprovementsController* controller) override;
+      autofill_ai::SaveAutofillAiDataController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* contents,
       std::unique_ptr<SaveAddressBubbleController> controller,
@@ -99,8 +99,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> save_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> update_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> address_sign_in_promo_bubble_view_;
-  std::unique_ptr<TestAutofillBubble>
-      save_autofill_prediction_improvements_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> save_autofill_ai_data_bubble_view_;
   std::unique_ptr<TestAutofillBubble> add_new_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> edit_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> filled_card_information_bubble_view_;

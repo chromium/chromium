@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/save_autofill_ai_data_bubble_view.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -24,12 +24,11 @@
 
 // TODO(crbug.com/362227379): Consider having an interactive UI test to evaluate
 // both the controller and the view working together.
-namespace autofill {
+namespace autofill_ai {
 
-class MockSaveAutofillPredictionImprovementsController
-    : public SaveAutofillPredictionImprovementsController {
+class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
  public:
-  MockSaveAutofillPredictionImprovementsController() = default;
+  MockSaveAutofillAiDataController() = default;
   MOCK_METHOD(
       void,
       OfferSave,
@@ -40,32 +39,26 @@ class MockSaveAutofillPredictionImprovementsController
       (override));
   MOCK_METHOD(
       const std::vector<optimization_guide::proto::UserAnnotationsEntry>&,
-      GetPredictionImprovements,
+      GetAutofillAiData,
       (),
       (const override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
   MOCK_METHOD(void, OnThumbsUpClicked, (), (override));
   MOCK_METHOD(void, OnThumbsDownClicked, (), (override));
   MOCK_METHOD(void, OnLearnMoreClicked, (), (override));
-  MOCK_METHOD(void,
-              OnBubbleClosed,
-              (PredictionImprovementsBubbleClosedReason),
-              (override));
-  base::WeakPtr<SaveAutofillPredictionImprovementsController> GetWeakPtr()
-      override {
+  MOCK_METHOD(void, OnBubbleClosed, (AutofillAiBubbleClosedReason), (override));
+  base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  base::WeakPtrFactory<SaveAutofillPredictionImprovementsController>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<SaveAutofillAiDataController> weak_ptr_factory_{this};
 };
 
-class SaveAutofillPredictionImprovementsBubbleViewTest
-    : public ChromeViewsTestBase {
+class SaveAutofillAiDataBubbleViewTest : public ChromeViewsTestBase {
  public:
-  SaveAutofillPredictionImprovementsBubbleViewTest() = default;
-  ~SaveAutofillPredictionImprovementsBubbleViewTest() override = default;
+  SaveAutofillAiDataBubbleViewTest() = default;
+  ~SaveAutofillAiDataBubbleViewTest() override = default;
 
   // views::ViewsTestBase:
   void SetUp() override {
@@ -82,8 +75,8 @@ class SaveAutofillPredictionImprovementsBubbleViewTest
     ChromeViewsTestBase::TearDown();
   }
 
-  SaveAutofillPredictionImprovementsBubbleView& view() { return *view_; }
-  MockSaveAutofillPredictionImprovementsController& mock_controller() {
+  SaveAutofillAiDataBubbleView& view() { return *view_; }
+  MockSaveAutofillAiDataController& mock_controller() {
     return mock_controller_;
   }
 
@@ -100,12 +93,11 @@ class SaveAutofillPredictionImprovementsBubbleViewTest
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<SaveAutofillPredictionImprovementsBubbleView> view_ = nullptr;
-  testing::NiceMock<MockSaveAutofillPredictionImprovementsController>
-      mock_controller_;
+  raw_ptr<SaveAutofillAiDataBubbleView> view_ = nullptr;
+  testing::NiceMock<MockSaveAutofillAiDataController> mock_controller_;
 };
 
-void SaveAutofillPredictionImprovementsBubbleViewTest::CreateViewAndShow() {
+void SaveAutofillAiDataBubbleViewTest::CreateViewAndShow() {
   // The bubble needs the parent as an anchor.
   views::Widget::InitParams params =
       CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -114,65 +106,59 @@ void SaveAutofillPredictionImprovementsBubbleViewTest::CreateViewAndShow() {
   anchor_widget_->Init(std::move(params));
   anchor_widget_->Show();
 
-  ON_CALL(mock_controller(), GetPredictionImprovements())
+  ON_CALL(mock_controller(), GetAutofillAiData())
       .WillByDefault(testing::ReturnRefOfCopy(
           std::vector<optimization_guide::proto::UserAnnotationsEntry>()));
 
-  auto view_unique =
-      std::make_unique<SaveAutofillPredictionImprovementsBubbleView>(
-          anchor_widget_->GetContentsView(), web_contents_.get(),
-          &mock_controller_);
+  auto view_unique = std::make_unique<SaveAutofillAiDataBubbleView>(
+      anchor_widget_->GetContentsView(), web_contents_.get(),
+      &mock_controller_);
   view_ = view_unique.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(view_unique))->Show();
 }
 
-TEST_F(SaveAutofillPredictionImprovementsBubbleViewTest, HasCloseButton) {
+TEST_F(SaveAutofillAiDataBubbleViewTest, HasCloseButton) {
   CreateViewAndShow();
   EXPECT_TRUE(view().ShouldShowCloseButton());
 }
 
-TEST_F(SaveAutofillPredictionImprovementsBubbleViewTest,
-       AcceptInvokesTheController) {
+TEST_F(SaveAutofillAiDataBubbleViewTest, AcceptInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(mock_controller(), OnSaveButtonClicked);
   view().AcceptDialog();
 }
 
-TEST_F(SaveAutofillPredictionImprovementsBubbleViewTest,
-       CancelInvokesTheController) {
+TEST_F(SaveAutofillAiDataBubbleViewTest, CancelInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(mock_controller(), OnBubbleClosed);
   view().CancelDialog();
 }
 
-TEST_F(SaveAutofillPredictionImprovementsBubbleViewTest,
-       ThumbsUpInvokesTheController) {
+TEST_F(SaveAutofillAiDataBubbleViewTest, ThumbsUpInvokesTheController) {
   CreateViewAndShow();
 
   // Assert that the controller respective method is called.
   EXPECT_CALL(mock_controller(), OnThumbsUpClicked);
 
   // Clicks on the thumbs up button.
-  ClickButton(views::AsViewClass<
-              views::ImageButton>(view().GetBubbleFrameView()->GetViewByID(
-      SaveAutofillPredictionImprovementsBubbleView::kThumbsUpButtonViewID)));
+  ClickButton(views::AsViewClass<views::ImageButton>(
+      view().GetBubbleFrameView()->GetViewByID(
+          SaveAutofillAiDataBubbleView::kThumbsUpButtonViewID)));
 }
 
-TEST_F(SaveAutofillPredictionImprovementsBubbleViewTest,
-       ThumbsDownInvokesTheController) {
+TEST_F(SaveAutofillAiDataBubbleViewTest, ThumbsDownInvokesTheController) {
   CreateViewAndShow();
 
   // Assert that the controller respective method is called.
   EXPECT_CALL(mock_controller(), OnThumbsDownClicked);
 
   // Clicks on the thumbs down button.
-  ClickButton(views::AsViewClass<
-              views::ImageButton>(view().GetBubbleFrameView()->GetViewByID(
-      SaveAutofillPredictionImprovementsBubbleView::kThumbsDownButtonViewID)));
+  ClickButton(views::AsViewClass<views::ImageButton>(
+      view().GetBubbleFrameView()->GetViewByID(
+          SaveAutofillAiDataBubbleView::kThumbsDownButtonViewID)));
 }
 
-TEST_F(SaveAutofillPredictionImprovementsBubbleViewTest,
-       LearnMoreClickTriggersCallback) {
+TEST_F(SaveAutofillAiDataBubbleViewTest, LearnMoreClickTriggersCallback) {
   CreateViewAndShow();
 
   // Assert that the controller respective method is called.
@@ -180,8 +166,7 @@ TEST_F(SaveAutofillPredictionImprovementsBubbleViewTest,
 
   auto* suggestion_text = views::AsViewClass<views::StyledLabel>(
       view().GetBubbleFrameView()->GetViewByID(
-          SaveAutofillPredictionImprovementsBubbleView::
-              kLearnMoreStyledLabelViewID));
+          SaveAutofillAiDataBubbleView::kLearnMoreStyledLabelViewID));
   suggestion_text->ClickFirstLinkForTesting();
 }
-}  // namespace autofill
+}  // namespace autofill_ai
