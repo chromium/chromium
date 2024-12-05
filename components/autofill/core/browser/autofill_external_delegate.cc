@@ -671,6 +671,13 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       // improvements.
       break;
     case SuggestionType::kAddressEntryOnTyping:
+      CHECK(suggestion.field_by_field_filling_type_used);
+      if (std::optional<AutofillProfile> profile =
+              GetProfileFromPayload(manager_->client().GetPersonalDataManager(),
+                                    suggestion.payload)) {
+        PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
+      }
+      break;
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -881,6 +888,14 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // If the selected element is a warning we don't want to do anything.
       break;
     case SuggestionType::kAddressEntryOnTyping:
+      CHECK(suggestion.field_by_field_filling_type_used);
+      if (std::optional<AutofillProfile> profile =
+              GetProfileFromPayload(manager_->client().GetPersonalDataManager(),
+                                    suggestion.payload)) {
+        FillAddressFieldByFieldFillingSuggestion(*profile, suggestion,
+                                                 metadata);
+      }
+      break;
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kPasswordEntry:
@@ -1121,9 +1136,13 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
         mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
         query_form_, query_field_, filling_value, suggestion.type,
         suggestion.field_by_field_filling_type_used);
-    manager_->OnDidFillAddressFormFillingSuggestion(
-        profile, query_form_.global_id(), query_field_.global_id(),
-        TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+    if (suggestion.type != SuggestionType::kAddressEntryOnTyping) {
+      // Ensure that `SuggestionType::kAddressEntryOnTyping` do not (at least
+      // yet) affect key metrics.
+      manager_->OnDidFillAddressFormFillingSuggestion(
+          profile, query_form_.global_id(), query_field_.global_id(),
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+    }
   }
 }
 

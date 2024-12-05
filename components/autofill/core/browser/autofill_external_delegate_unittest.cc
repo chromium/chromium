@@ -2492,6 +2492,37 @@ TEST_F(AutofillExternalDelegateTest,
 }
 
 TEST_F(AutofillExternalDelegateTest,
+       ExternalDelegateFillFieldWithValue_AutofillAddressOnTyping) {
+  EXPECT_CALL(client(), HideAutofillSuggestions(
+                            SuggestionHidingReason::kAcceptSuggestion));
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().address_data_manager().AddProfile(profile);
+  IssueOnQuery();
+
+  std::u16string dummy_autocomplete_string(u"Jon doe");
+  Suggestion suggestion = test::CreateAutofillSuggestion(
+      SuggestionType::kAddressEntryOnTyping, dummy_autocomplete_string,
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
+  suggestion.field_by_field_filling_type_used = NAME_FULL;
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(
+      manager(),
+      FillOrPreviewField(
+          mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+          HasQueriedFormId(), HasQueriedFieldId(),
+          profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
+          SuggestionType::kAddressEntryOnTyping, std::optional(NAME_FULL)));
+  EXPECT_CALL(manager(), OnDidFillAddressFormFillingSuggestion).Times(0);
+
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+
+  histogram_tester.ExpectUniqueSample("Autofill.Suggestions.AcceptedType",
+                                      SuggestionType::kAddressEntryOnTyping, 1);
+}
+
+TEST_F(AutofillExternalDelegateTest,
        ExternalDelegateFillFieldWithValue_MerchantPromoCode) {
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
