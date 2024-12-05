@@ -1464,3 +1464,7 @@ crbug.com/374045525 [ Debug Mac14 ] webaudio/AudioParam/audioparam-rate-change-3
 crbug.com/375337253 external/wpt/shadow-dom/reference-target/tentative/property-reflection.html [ Slow ]
 
 crbug.com/378325771 [ Mac ] wpt_internal/css/css-overflow/scroll-markers-updated-by-user-scroll.html [ Slow ]
+
+crbug.com/381648149 [ Mac14 ] wpt_internal/hid/hidDevice_reports.https.window.html [ Slow ]
+crbug.com/382173821 [ Mac11 ] wpt_internal/hid/hid_requestDevice.https.window.html [ Slow ]
+crbug.com/382173821 [ Mac12 ] wpt_internal/hid/hid_requestDevice.https.window.html [ Slow ]
