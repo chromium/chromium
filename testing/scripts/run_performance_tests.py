@@ -1257,6 +1257,10 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
         options.passthrough_args.extend(benchmark_args)
       options.benchmarks = benchmark
       crossbench_test = CrossbenchTest(options, isolated_out_dir)
+      # CrossbenchTest may filter some arguments.
+      benchmark_args = [
+          x for x in benchmark_args if x in options.passthrough_args
+      ]
       for run_num in range(options.benchmark_max_runs):
         print(f'\n### {display_name} (attempt #{run_num}) ###')
         return_code = crossbench_test.execute_benchmark(benchmark, display_name,
