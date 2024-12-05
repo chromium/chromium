@@ -110,6 +110,13 @@ proto::EnterpriseCompanionMetadata GetMetadata() {
   return metadata;
 }
 
+proto::Status ToProtoStatus(EnterpriseCompanionStatus status) {
+  proto::Status proto_status;
+  proto_status.set_space(status.space());
+  proto_status.set_code(status.code());
+  return proto_status;
+}
+
 class EventUploader {
  public:
   explicit EventUploader(
@@ -330,7 +337,7 @@ class EnterpriseCompanionEventLoggerImpl
       const EnterpriseCompanionStatus& status) override {
     VLOG(2) << __func__ << ": status=" << status.description();
     proto::EnterpriseCompanionEvent event;
-    *event.mutable_status() = status.ToProtoStatus();
+    *event.mutable_status() = ToProtoStatus(status);
     event.set_duration_ms((base::Time::Now() - start_time).InMilliseconds());
     *event.mutable_browser_enrollment_event() = proto::BrowserEnrollmentEvent();
     impl_->Log(event);
@@ -341,7 +348,7 @@ class EnterpriseCompanionEventLoggerImpl
                            const EnterpriseCompanionStatus& status) override {
     VLOG(2) << __func__ << ": status=" << status.description();
     proto::EnterpriseCompanionEvent event;
-    *event.mutable_status() = status.ToProtoStatus();
+    *event.mutable_status() = ToProtoStatus(status);
     event.set_duration_ms((base::Time::Now() - start_time).InMilliseconds());
     *event.mutable_policy_fetch_event() = proto::PolicyFetchEvent();
     impl_->Log(event);

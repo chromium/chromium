@@ -124,7 +124,9 @@ Matcher CreateEventLogMatcher(
             [](const proto::EnterpriseCompanionEvent& event) {
               return std::make_pair(
                   event.event_case(),
-                  EnterpriseCompanionStatus::FromProtoStatus(event.status()));
+                  EnterpriseCompanionStatus::FromPersistedError(PersistedError(
+                      event.status().space(), event.status().code(),
+                      "<missing description>")));
             });
       },
       test_server.event_logging_url(), std::move(expected_events));

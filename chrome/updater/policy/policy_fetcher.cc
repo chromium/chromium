@@ -21,6 +21,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/updater/configurator.h"
@@ -304,12 +305,15 @@ void OutOfProcessPolicyFetcher::OnConnected(
 }
 
 void OutOfProcessPolicyFetcher::OnPoliciesFetched(
-    enterprise_companion::mojom::StatusPtr status) {
+    enterprise_companion::mojom::StatusPtr mojom_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "Policy fetch status: " << status->code
-          << ", space: " << status->space
-          << ", description: " << status->description;
-  if (status->code == 0 && status->space == 0) {
+  VLOG(1) << "Policy fetch status: " << mojom_status->code
+          << ", space: " << mojom_status->space
+          << ", description: " << mojom_status->description;
+  enterprise_companion::EnterpriseCompanionStatus status =
+      enterprise_companion::EnterpriseCompanionStatus::FromMojomStatus(
+          std::move(mojom_status));
+  if (status.ok()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
         base::BindOnce(
@@ -324,7 +328,16 @@ void OutOfProcessPolicyFetcher::OnPoliciesFetched(
             },
             std::move(fetch_complete_callback_)));
   } else {
-    std::move(fetch_complete_callback_).Run(kErrorPolicyFetchFailed, nullptr);
+    int result = kErrorPolicyFetchFailed;
+    if (status.EqualsApplicationError(enterprise_companion::ApplicationError::
+                                          kRegistrationPreconditionFailed)) {
+      scoped_refptr<device_management_storage::DMStorage> dm_storage =
+          device_management_storage::GetDefaultDMStorage();
+      result = (dm_storage && dm_storage->IsEnrollmentMandatory())
+                   ? kErrorDMRegistrationFailed
+                   : kErrorOk;
+    }
+    std::move(fetch_complete_callback_).Run(result, nullptr);
   }
 }
 
