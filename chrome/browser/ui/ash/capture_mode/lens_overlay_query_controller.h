@@ -16,10 +16,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-// TODO(b/362363034): Remove `chrome/browser/ui/lens/` dependencies.
-#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
-#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/ash/capture_mode/lens_overlay_request_id_generator.h"
 // TODO(b/362363034): Determine whether to use `LensOverlayClientLogs` for
 // client metrics.
 #include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
@@ -79,14 +76,11 @@ class LensOverlayQueryController {
       signin::IdentityManager* identity_manager,
       Profile* profile,
       lens::LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode,
-      lens::LensOverlayGen204Controller* gen204_controller);
+      bool use_dark_mode);
   LensOverlayQueryController(const LensOverlayQueryController&) = delete;
   LensOverlayQueryController& operator=(const LensOverlayQueryController&) =
       delete;
   ~LensOverlayQueryController();
-
-  uint64_t gen204_id() const { return gen204_id_; }
 
   // Starts a query flow by sending a request to Lens using the screenshot,
   // returning the response to the full image callback. Should be called
@@ -149,12 +143,6 @@ class LensOverlayQueryController {
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
-  // Sends a task completion Gen204 ping for certain user actions.
-  void SendTaskCompletionGen204IfEnabled(lens::mojom::UserAction user_action);
-
-  // Sends a semantic event Gen204 ping.
-  void SendSemanticEventGen204IfEnabled(lens::mojom::SemanticEvent event);
-
   // Testing method to reset the cluster info state.
   void ResetRequestClusterInfoStateForTesting();
 
@@ -174,15 +162,6 @@ class LensOverlayQueryController {
       const base::TimeDelta& timeout,
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers);
-
-  // Sends a latency Gen204 ping if enabled, calculating the latency duration
-  // from the start time ticks and base::TimeTicks::Now().
-  void SendLatencyGen204IfEnabled(
-      lens::LensOverlayGen204Controller::LatencyType latency_type,
-      base::TimeTicks start_time_ticks,
-      std::string vit_query_param_value,
-      std::optional<base::TimeDelta> cluster_info_latency,
-      std::optional<std::string> encoded_analytics_id);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -398,18 +377,6 @@ class LensOverlayQueryController {
   // Runs the interaction callback with empty response data, for errors.
   void RunInteractionCallbackForError();
 
-  // Sends a full image request latency Gen204 ping if enabled. Also logs the
-  // cluster info latency if it is available.
-  void SendFullImageLatencyGen204IfEnabled(base::TimeTicks start_time_ticks,
-                                           bool is_translate_query,
-                                           std::string vit_query_param_value);
-
-  // Logs a latency gen204 for an initial latency gen204, only once per type
-  // per query flow, if gen204 logging is enabled.
-  void SendInitialLatencyGen204IfNotAlreadySent(
-      lens::LensOverlayGen204Controller::LatencyType latency_type,
-      std::string vit_query_param_value);
-
   // Creates an endpoint fetcher with the given request_headers to perform the
   // given request. Calls fetcher_created_callback when the EndpointFetcher is
   // created to keep it alive while the request is being made.
@@ -471,7 +438,7 @@ class LensOverlayQueryController {
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   // The request id generator.
-  std::unique_ptr<lens::LensOverlayRequestIdGenerator> request_id_generator_;
+  std::unique_ptr<LensOverlayRequestIdGenerator> request_id_generator_;
 
   // The original screenshot image.
   SkBitmap original_screenshot_;
@@ -616,22 +583,9 @@ class LensOverlayQueryController {
   // per session.
   bool use_dark_mode_;
 
-  // The controller for sending gen204 pings. Owned and set by the overlay
-  // controller. Guaranteed to outlive this class.
-  const raw_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
-
-  // The current gen204 id for logging, set on each overlay invocation.
-  uint64_t gen204_id_ = 0;
-
   // The time it took from sending the cluster info request to receiving
   // the response.
   std::optional<base::TimeDelta> cluster_info_fetch_response_time_;
-
-  // Latency event gen204 request tracker. Used to determine whether or not to
-  // log initial latency metrics for the request. This is only used to track
-  // latency events that should only be logged once per query flow.
-  base::flat_set<lens::LensOverlayGen204Controller::LatencyType>
-      sent_initial_latency_request_events_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

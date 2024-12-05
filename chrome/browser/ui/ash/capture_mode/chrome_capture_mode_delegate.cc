@@ -518,9 +518,6 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
     return;
   }
   DCHECK(ash::IsSunfishFeatureEnabledWithFeatureKey());
-  if (!gen204_controller_) {
-    gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
-  }
   if (!lens_overlay_query_controller_) {
     lens_overlay_query_controller_ =
         std::make_unique<LensOverlayQueryController>(
@@ -538,8 +535,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
                 weak_ptr_factory_.GetWeakPtr()),
             profile->GetVariationsClient(), /*identity_manager=*/nullptr,
             profile, lens::LensOverlayInvocationSource(),
-            /*use_dark_mode=*/false,
-            /*gen204_controller=*/gen204_controller_.get());
+            /*use_dark_mode=*/false);
   }
   on_search_url_fetched_callback_ = std::move(callback);
   lens_overlay_query_controller_->StartQueryFlow(
