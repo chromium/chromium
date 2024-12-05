@@ -155,8 +155,9 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
     DCHECK(template_areas);
     const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
     const wtf_size_t grid_area_column_count = template_areas->ColumnCount();
-    wtf_size_t grid_area_index = 0;
+    wtf_size_t row = 0;
 
+    // Add in specified row values.
     for (const auto& row_value : *template_row_value_list) {
       if (row_value->IsGridLineNamesValue()) {
         template_row_list->Append(*row_value);
@@ -164,8 +165,8 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
       }
       StringBuilder grid_area_text;
       for (wtf_size_t column = 0; column < grid_area_column_count; ++column) {
-        grid_area_text.Append(NamedGridAreaTextForPosition(
-            grid_area_map, grid_area_index, column));
+        grid_area_text.Append(
+            NamedGridAreaTextForPosition(grid_area_map, row, column));
         if (column != grid_area_column_count - 1) {
           grid_area_text.Append(' ');
         }
@@ -173,7 +174,7 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
       if (!grid_area_text.empty()) {
         template_row_list->Append(*MakeGarbageCollected<CSSStringValue>(
             grid_area_text.ReleaseString()));
-        ++grid_area_index;
+        ++row;
       }
 
       // Omit `auto` values.
@@ -181,6 +182,25 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
         template_row_list->Append(*row_value);
       }
     }
+
+    // Add in remaining grid areas. These always default to `auto` sizing (per
+    // https://www.w3.org/TR/css-grid-2/#grid-template-ascii) so we should omit
+    // sizes to ensure shortest-possible serialization.
+    StringBuilder grid_area_text;
+    for (; row < template_areas->RowCount(); ++row) {
+      for (wtf_size_t column = 0; column < grid_area_column_count; ++column) {
+        grid_area_text.Append(
+            NamedGridAreaTextForPosition(grid_area_map, row, column));
+        if (column != grid_area_column_count - 1) {
+          grid_area_text.Append(' ');
+        }
+      }
+      if (!grid_area_text.empty()) {
+        template_row_list->Append(*MakeGarbageCollected<CSSStringValue>(
+            grid_area_text.ReleaseString()));
+      }
+    }
+
     list->Append(*template_row_list);
   }
 
