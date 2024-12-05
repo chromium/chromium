@@ -892,33 +892,23 @@ def FindThirdPartyDeps(gn_out_dir: str,
 
   # Generate gn project in temp directory and use it to find dependencies.
   # Current gn directory cannot be used when we run this script in a gn action
-  # rule, because gn doesn't allow recursive invocations due to potential side
-  # effects.
-  try:
-    with tempfile.TemporaryDirectory(dir=gn_out_dir) as tmp_dir:
-      shutil.copy(os.path.join(gn_out_dir, "args.gn"), tmp_dir)
-      subprocess.check_output(
-          [_GnBinary(), "gen",
-           "--root=%s" % _REPOSITORY_ROOT, tmp_dir])
-      gn_deps = subprocess.check_output([
-          _GnBinary(), "desc",
-          "--root=%s" % _REPOSITORY_ROOT, tmp_dir, gn_target, "deps",
-          "--as=buildfile", "--all"
-      ])
-      if isinstance(gn_deps, bytes):
-        gn_deps = gn_deps.decode("utf-8")
-  except:
-    if sys.platform == 'win32':
-      print("""
-      ##########################################################################
-
-      This is a known issue; please report the failure to
-      https://crbug.com/1208393.
-
-      ##########################################################################
-      """)
-      subprocess.check_call(['tasklist.exe'])
-    raise
+  # rule, because gn always evaluate *.gn/*.gni and causes side-effect
+  # by `write_file`, `exec_script` or so, and "gn desc" requires "gn gen".
+  # If only "args.gn", it fails with "ERROR Not a build directory."
+  with tempfile.TemporaryDirectory(
+      dir=os.path.join(gn_out_dir, '..')) as tmp_dir:
+    shutil.copy(os.path.join(gn_out_dir, "args.gn"), tmp_dir)
+    subprocess.check_output(
+        [_GnBinary(), "gen",
+         "--root=%s" % _REPOSITORY_ROOT, tmp_dir])
+    gn_deps = subprocess.check_output([
+        _GnBinary(), "desc",
+        "--root=%s" % _REPOSITORY_ROOT, tmp_dir, gn_target, "deps",
+        "--as=buildfile", "--all"
+    ],
+                                      stderr=sys.stderr)
+    if isinstance(gn_deps, bytes):
+      gn_deps = gn_deps.decode("utf-8")
 
   third_party_deps = GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os,
                                                        extra_allowed_dirs)
