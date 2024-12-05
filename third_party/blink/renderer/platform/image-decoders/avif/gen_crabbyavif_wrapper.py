@@ -150,12 +150,16 @@ _TEST_REPLACEMENTS = (
     (r"\bStaticAVIFTests\b", "CrabbyStaticAVIFTests"),
 )
 
+_FUZZER_REMPLACEMENTS = (
+  (r"kAvifDecoder", "kCrabbyAvifDecoder"),
+)
 
 def main():
     _generate_crabbyavif_file("avif_image_decoder.h", _HEADER_REPLACEMENTS)
     _generate_crabbyavif_file("avif_image_decoder.cc", _CC_REPLACEMENTS)
     _generate_crabbyavif_file("avif_image_decoder_test.cc", _TEST_REPLACEMENTS)
-    _generate_crabbyavif_file("avif_image_decoder_fuzzer.cc", [])
+    _generate_crabbyavif_file("avif_image_decoder_fuzzer.cc",
+                              _FUZZER_REMPLACEMENTS)
 
 
 if __name__ == "__main__":
