@@ -105,12 +105,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public AccessTokenData getAuthToken(Account account, String authTokenScope)
-            throws AuthException {
-        return getAccessToken(account, authTokenScope);
-    }
-
-    @Override
     public AccessTokenData getAccessToken(Account account, String authTokenScope)
             throws AuthException {
         ThreadUtils.assertOnBackgroundThread();
@@ -129,11 +123,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         } catch (IOException ex) {
             throw new AuthException(AuthException.TRANSIENT, ex);
         }
-    }
-
-    @Override
-    public void invalidateAuthToken(String authToken) throws AuthException {
-        invalidateAccessToken(authToken);
     }
 
     @Override

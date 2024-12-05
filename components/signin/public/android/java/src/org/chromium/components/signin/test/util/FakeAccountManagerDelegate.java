@@ -93,12 +93,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public AccessTokenData getAuthToken(Account account, String authTokenScope)
-            throws AuthException {
-        return getAccessToken(account, authTokenScope);
-    }
-
-    @Override
     public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
         AccountHolder accountHolder = tryGetAccountHolder(account.name);
         if (accountHolder == null) {
@@ -107,11 +101,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
                     "Cannot get auth token for unknown account '" + account + "'");
         }
         return accountHolder.getAccessTokenOrGenerateNew(scope);
-    }
-
-    @Override
-    public void invalidateAuthToken(String authToken) throws AuthException {
-        invalidateAccessToken(authToken);
     }
 
     @Override

@@ -49,14 +49,6 @@ public interface AccountManagerDelegate {
     @WorkerThread
     Account[] getAccountsSynchronous() throws AccountManagerDelegateException;
 
-    // TODO(crbug.com/40745233): Delete this method once all implementations are updated.
-    @Deprecated(since = "Use the getAccessToken method below instead.")
-    @WorkerThread
-    default AccessTokenData getAuthToken(Account account, String authTokenScope)
-            throws AuthException {
-        return null;
-    }
-
     /**
      * Get an auth token.
      *
@@ -69,11 +61,6 @@ public interface AccountManagerDelegate {
      */
     @WorkerThread
     AccessTokenData getAccessToken(Account account, String authTokenScope) throws AuthException;
-
-    // TODO(crbug.com/40745233): Delete this method once all implementations are updated.
-    @Deprecated(since = "Use the getAccessToken method below instead.")
-    @WorkerThread
-    default void invalidateAuthToken(String authToken) throws AuthException {}
 
     /**
      * @param authToken The auth token to invalidate.
