@@ -319880,7 +319880,7 @@
       []
      ],
      "event-dispatch.tentative-expected.txt": [
-      "52ecf8ac7e68648d3765a38bd6c16d010621b5c9",
+      "95050d6ebffae9d67b961c6e834898161c3bbaf8",
       []
      ],
      "event-order.tentative-expected.txt": [
@@ -320132,7 +320132,7 @@
       ]
      },
      "background-332-expected.txt": [
-      "f7ae9b663deec0f785b0b77fb12ed8641c766caa",
+      "9849d63d179291c4b9e9978ab63a4fe8c0b989ed",
       []
      ],
      "background-attachment-fixed-border-radius-offset-ref.html": [
@@ -320790,7 +320790,7 @@
       }
      },
      "background-size-001-expected.txt": [
-      "b3b577adde8e56c38fad32243d763d2954e1c894",
+      "ee87544a4938c921186bde9cead489fcd1ca321d",
       []
      ],
      "background-size-cover-003-ref.html": [
@@ -346901,27 +346901,27 @@
      ],
      "parsing": {
       "block-step-align-computed-expected.txt": [
-       "69b12c9b45a2a788233fbe3358032a95bb23d781",
+       "72be57e520da1a4fa3cf6c09b8b9031f05afffbf",
        []
       ],
       "block-step-align-valid-expected.txt": [
-       "0370d04982be4339045daee347534a6c804511dd",
+       "2c38d3940822a6adec1d3fbef9f386e6e20b0a2f",
        []
       ],
       "block-step-insert-computed-expected.txt": [
-       "c5afd9e09234278c91e61c6822bee23b548b76d8",
+       "a7626935cd561efcb4ba73cd06ddf0ee2f16ea8d",
        []
       ],
       "block-step-insert-valid-expected.txt": [
-       "43a0e46409b5bc5a115c121d2f6a3234010ed5d6",
+       "febacd4b02d6b44978c19151416dcca25de6e7a8",
        []
       ],
       "block-step-round-computed-expected.txt": [
-       "04b802f5f77f8371aa0c2198218bf58d3b071056",
+       "62531544b6526d6724f56ca1b721d350a33b31ad",
        []
       ],
       "block-step-round-valid-expected.txt": [
-       "f5b9d82ddedd0934713fc93964635849aa6abe2d",
+       "d82be67a03b3a4324117e25e4ac84eb8999ac849",
        []
       ],
       "block-step-size-computed-expected.txt": [
@@ -459071,13 +459071,6 @@
     "navigation": {
      "javascript-url-navigation-evaluated-to-string-inherits-csp.html": [
       "c775d00a3c45ae3f4cf3c7e988e8bff490469f62",
-      [
-       null,
-       {}
-      ]
-     ],
-     "javascript-url-navigation-to-child-checks-snapshotted-csp-during-task-creation.html": [
-      "dbd8fe882d1dc0b5ac6273a1a523f04235317714",
       [
        null,
        {}
