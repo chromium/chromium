@@ -2442,6 +2442,14 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   metadata.page_scale_factor = active_tree_->current_page_scale_factor();
   metadata.scrollable_viewport_size = active_tree_->ScrollableViewportSize();
 
+  if (InnerViewportScrollNode()) {
+    // Uses InnerViewportScrollNode's container bounds in since it represents
+    // visual scroll layers.
+    metadata.visible_viewport_size =
+        gfx::ScaleToFlooredSize(InnerViewportScrollNode()->container_bounds,
+                                1 / metadata.device_scale_factor);
+  }
+
   metadata.root_background_color = active_tree_->background_color();
   metadata.may_throttle_if_undrawn_frames = may_throttle_if_undrawn_frames_;
 

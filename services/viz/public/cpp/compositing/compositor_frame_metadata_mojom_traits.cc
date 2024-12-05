@@ -37,6 +37,9 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   out->page_scale_factor = data.page_scale_factor();
   if (!data.ReadScrollableViewportSize(&out->scrollable_viewport_size))
     return false;
+  if (!data.ReadVisibleViewportSize(&out->visible_viewport_size)) {
+    return false;
+  }
 
   if (data.frame_token() == 0u)
     return false;

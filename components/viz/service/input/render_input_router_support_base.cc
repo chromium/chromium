@@ -98,8 +98,11 @@ const FrameSinkId& RenderInputRouterSupportBase::GetFrameSinkId() const {
 }
 
 gfx::Size RenderInputRouterSupportBase::GetVisibleViewportSize() {
-  // TODO(374119530): Implement GetVisibleViewportSize in Viz.
-  NOTREACHED();
+  auto* metadata = delegate_->GetLastActivatedFrameMetadata(GetFrameSinkId());
+  if (!metadata) {
+    return gfx::Size();
+  }
+  return metadata->visible_viewport_size;
 }
 
 void RenderInputRouterSupportBase::OnAutoscrollStart() {

@@ -30,6 +30,7 @@ struct CompositorFrameMetadata {
   gfx.mojom.PointF root_scroll_offset;
   float page_scale_factor;
   gfx.mojom.SizeF scrollable_viewport_size;
+  gfx.mojom.Size visible_viewport_size;
   gfx.mojom.ContentColorUsage content_color_usage;
   bool may_contain_video;
   bool may_throttle_if_undrawn_frames;
