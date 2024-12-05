@@ -73,6 +73,7 @@ class RenderWidgetHostImpl;
 class ScopedViewTransitionResources;
 class TextInputManager;
 class TouchSelectionControllerClientManager;
+class TouchSelectionControllerInputObserver;
 class WebContentsAccessibility;
 class DelegatedFrameHost;
 class SyntheticGestureTarget;
@@ -184,7 +185,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // This only needs to be overridden by RenderWidgetHostViewBase subclasses
   // that handle content embedded within other RenderWidgetHostViews.
   gfx::PointF TransformPointToRootCoordSpaceF(
-      const gfx::PointF& point) override;
+      const gfx::PointF& point) const override;
 
   // Returns the value for whether the auto-resize has been enabled or not.
   bool IsAutoResizeEnabled();
@@ -277,7 +278,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // other kinds of embeddable RWHVs are created, this should be renamed to
   // a more generic term -- in which case, static casts to RWHVChildFrame will
   // need to also be resolved.
-  virtual bool IsRenderWidgetHostViewChildFrame();
+  virtual bool IsRenderWidgetHostViewChildFrame() const;
 
   // Returns true if this view's size have been initialized.
   virtual bool HasSize() const;
@@ -416,6 +417,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // Gets the DisplayFeature whose offset and mask_length are expressed in DIPs
   // relative to the view. See display_feature.h for more details.
   virtual std::optional<DisplayFeature> GetDisplayFeature() = 0;
+
+  // TODO(crbug.com/375388841): Update the comment once Aura also uses
+  // TouchSelecitonControllerInputObserver.
+  // This only returns non-null on root view on Android.
+  virtual TouchSelectionControllerInputObserver*
+  GetTouchSelectionControllerInputObserver();
 
   virtual void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) = 0;

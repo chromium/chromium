@@ -55,6 +55,7 @@
 #include "content/browser/renderer_host/delegated_frame_host_client_android.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_android.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_manager_android.h"
+#include "content/browser/renderer_host/input/touch_selection_controller_input_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -647,6 +648,14 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
   host()->SetView(this);
   touch_selection_controller_client_manager_ =
       std::make_unique<TouchSelectionControllerClientManagerAndroid>(this);
+  touch_selection_controller_ = CreateSelectionController(
+      touch_selection_controller_client_manager_.get(), true);
+  touch_selection_controller_input_observer_ =
+      std::make_unique<TouchSelectionControllerInputObserver>(
+          touch_selection_controller_.get(),
+          touch_selection_controller_client_manager_.get());
+  host()->AddInputEventObserver(
+      touch_selection_controller_input_observer_.get());
 
   // `parent_native_view` and `parent_layer` must be null or non-null at the
   // same time.
@@ -1597,6 +1606,8 @@ void RenderWidgetHostViewAndroid::RenderProcessGone() {
 void RenderWidgetHostViewAndroid::Destroy() {
   host()->render_frame_metadata_provider()->RemoveObserver(this);
   host()->ViewDestroyed();
+  host()->RemoveInputEventObserver(
+      touch_selection_controller_input_observer_.get());
   UpdateNativeViewTree(/*parent_native_view=*/nullptr,
                        /*parent_layer=*/nullptr);
   delegated_frame_host_.reset();
@@ -1841,17 +1852,15 @@ void RenderWidgetHostViewAndroid::OnDragUpdate(
   selection_popup_controller_->OnDragUpdate(type, position);
 }
 
-ui::TouchSelectionControllerClient*
-RenderWidgetHostViewAndroid::GetSelectionControllerClientManagerForTesting() {
-  return touch_selection_controller_client_manager_.get();
-}
-
 void RenderWidgetHostViewAndroid::SetSelectionControllerClientForTesting(
     std::unique_ptr<ui::TouchSelectionControllerClient> client) {
   touch_selection_controller_client_for_test_.swap(client);
 
   touch_selection_controller_ = CreateSelectionController(
       touch_selection_controller_client_for_test_.get(), !!view_.parent());
+  touch_selection_controller_input_observer_
+      ->SetTouchSelectionControllerForTesting(
+          touch_selection_controller_.get());  // IN-TEST
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
@@ -2206,8 +2215,6 @@ void RenderWidgetHostViewAndroid::GestureEventAck(
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
-
-  HandleSwipeToMoveCursorGestureAck(event);
 }
 
 blink::mojom::InputEventResultState
@@ -2361,37 +2368,6 @@ void RenderWidgetHostViewAndroid::SendGestureEvent(
     return;
   }
 
-  // We let the touch selection controller see gesture events here, since they
-  // may be routed and not make it to FilterInputEvent().
-  if (touch_selection_controller_ &&
-      event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) {
-    switch (event.GetType()) {
-      case blink::WebInputEvent::Type::kGestureLongPress:
-        touch_selection_controller_->HandleLongPressEvent(
-            event.TimeStamp(), event.PositionInWidget());
-        break;
-
-      case blink::WebInputEvent::Type::kGestureTapDown:
-        if (event.data.tap_down.tap_down_count == 2) {
-          touch_selection_controller_->HandleDoublePressEvent(
-              event.TimeStamp(), event.PositionInWidget());
-        }
-        break;
-
-      case blink::WebInputEvent::Type::kGestureTap:
-        touch_selection_controller_->HandleTapEvent(event.PositionInWidget(),
-                                                    event.data.tap.tap_count);
-        break;
-
-      case blink::WebInputEvent::Type::kGestureScrollBegin:
-        touch_selection_controller_->OnScrollBeginEvent();
-        break;
-
-      default:
-        break;
-    }
-  }
-
   ui::LatencyInfo latency_info;
   if (event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) {
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
@@ -2499,7 +2475,6 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
 
   bool resize = false;
   if (will_build_tree != has_view_tree) {
-    touch_selection_controller_.reset();
     if (has_view_tree) {
       view_.RemoveObserver(this);
       view_.RemoveFromParent();
@@ -2520,6 +2495,9 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
       resize = true;
     has_view_tree = will_build_tree;
   }
+
+  touch_selection_controller_->OnUpdateNativeViewTree(parent_native_view,
+                                                      parent_layer);
 
   if (!has_view_tree) {
     ResetSynchronousCompositor();
@@ -2543,15 +2521,6 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
         cc::DeadlinePolicy::UseSpecifiedDeadline(
             ui::DelegatedFrameHostAndroid::ResizeTimeoutFrames()),
         std::nullopt);
-  }
-
-  if (!touch_selection_controller_) {
-    ui::TouchSelectionControllerClient* client =
-        touch_selection_controller_client_manager_.get();
-    if (touch_selection_controller_client_for_test_)
-      client = touch_selection_controller_client_for_test_.get();
-
-    touch_selection_controller_ = CreateSelectionController(client, true);
   }
 
   CreateOverscrollControllerIfPossible();
@@ -2579,6 +2548,11 @@ RenderWidgetHostViewAndroid::GetMouseWheelPhaseHandler() {
 TouchSelectionControllerClientManager*
 RenderWidgetHostViewAndroid::GetTouchSelectionControllerClientManager() {
   return touch_selection_controller_client_manager_.get();
+}
+
+TouchSelectionControllerInputObserver*
+RenderWidgetHostViewAndroid::GetTouchSelectionControllerInputObserver() {
+  return touch_selection_controller_input_observer_.get();
 }
 
 const viz::LocalSurfaceId& RenderWidgetHostViewAndroid::GetLocalSurfaceId()
@@ -3224,47 +3198,6 @@ void RenderWidgetHostViewAndroid::InvalidateLocalSurfaceIdAndAllocationGroup() {
       /*also_invalidate_allocation_group=*/true);
 }
 
-void RenderWidgetHostViewAndroid::HandleSwipeToMoveCursorGestureAck(
-    const blink::WebGestureEvent& event) {
-  if (!touch_selection_controller_ || !selection_popup_controller_) {
-    swipe_to_move_cursor_activated_ = false;
-    return;
-  }
-
-  switch (event.GetType()) {
-    case blink::WebInputEvent::Type::kGestureScrollBegin: {
-      if (!event.data.scroll_begin.cursor_control)
-        break;
-      swipe_to_move_cursor_activated_ = true;
-      touch_selection_controller_->OnSwipeToMoveCursorBegin();
-      OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STARTED);
-      break;
-    }
-    case blink::WebInputEvent::Type::kGestureScrollUpdate: {
-      if (!swipe_to_move_cursor_activated_)
-        break;
-      gfx::RectF rect = touch_selection_controller_->GetRectBetweenBounds();
-      // Suppress this when the input is not focused, in which case rect will be
-      // 0x0.
-      if (rect.width() != 0.f || rect.height() != 0.f) {
-        selection_popup_controller_->OnDragUpdate(
-            ui::TouchSelectionDraggable::Type::kNone,
-            gfx::PointF(event.PositionInWidget().x(), rect.right_center().y()));
-      }
-      break;
-    }
-    case blink::WebInputEvent::Type::kGestureScrollEnd: {
-      if (!swipe_to_move_cursor_activated_)
-        break;
-      swipe_to_move_cursor_activated_ = false;
-      touch_selection_controller_->OnSwipeToMoveCursorEnd();
-      OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);
-      break;
-    }
-    default:
-      break;
-  }
-}
 
 void RenderWidgetHostViewAndroid::WasEvicted() {
   // Eviction can occur when the CompositorFrameSink has changed. This can

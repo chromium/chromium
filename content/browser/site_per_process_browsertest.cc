@@ -9566,7 +9566,8 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
         root->current_frame_host()->GetRenderWidgetHost()->GetView());
     selection_controller_client_ =
         new TouchSelectionControllerClientTestWrapper(
-            root_rwhv_->GetSelectionControllerClientManagerForTesting());
+            static_cast<TouchSelectionControllerClientManagerAndroid*>(
+                root_rwhv_->GetTouchSelectionControllerClientManager()));
     root_rwhv_->SetSelectionControllerClientForTesting(
         base::WrapUnique(selection_controller_client_.get()));
 
