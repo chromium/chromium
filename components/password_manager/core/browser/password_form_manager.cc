@@ -1206,6 +1206,8 @@ void PasswordFormManager::FillNow() {
       !parsed_observed_form_->IsSingleUsername()) {
     metrics_recorder_->RecordPotentialPreferredMatch(
         form_fetcher_->GetPreferredOrPotentialMatchedFormType());
+    metrics_recorder_->RecordFillSuggestionHasGroupedMatch(
+        form_fetcher_->GetBestMatches());
   }
 
   SendFillInformationToRenderer(

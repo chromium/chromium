@@ -1027,6 +1027,10 @@ void MaybeLogMetricsForPasswordAndWebauthnCounts(
 // Emits a user action that the dropdown was hidden.
 void LogPasswordDropdownHidden();
 
+// Emits UMA if grouped match was accepted. Should be called only if grouped
+// match filling was available to the user.
+void LogFillSuggestionGroupedMatchAccepted(bool grouped_match_accepted);
+
 }  // namespace password_manager::metrics_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_METRICS_UTIL_H_

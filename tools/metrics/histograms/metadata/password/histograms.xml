@@ -1667,6 +1667,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FillSuggestionsGroupedMatchAccepted"
+    enum="Boolean" expires_after="M137">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    This metric tracks if the grouped match suggestion was accepted. It is only
+    recorded at the moment the filling occurs and if at least one grouped match
+    was available for filling to the user.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FillSuggestionsHasGroupedMatch" enum="Boolean"
+    expires_after="M137">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    This metric tracks if there is at least one fill suggestion that is coming
+    from grouped affiliation. It is only recorded on password form being parsed
+    for filling case and if there is at least one fill suggestion.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FillSuggestionsIncludeAndroidAppCredentials"
     enum="PasswordManagerOfferedAndroidCredentials" expires_after="2025-03-30">
   <owner>kazinova@google.com</owner>

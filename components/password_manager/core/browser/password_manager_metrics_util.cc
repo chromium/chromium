@@ -602,4 +602,11 @@ void LogPasswordDropdownHidden() {
   base::RecordAction(
       base::UserMetricsAction("PasswordManager.PasswordDropdownHidden"));
 }
+
+void LogFillSuggestionGroupedMatchAccepted(bool grouped_match_accepted) {
+  base::UmaHistogramBoolean(
+      "PasswordManager.FillSuggestionsGroupedMatchAccepted",
+      grouped_match_accepted);
+}
+
 }  // namespace password_manager::metrics_util

@@ -651,7 +651,7 @@ void PasswordFormMetricsRecorder::RecordFirstWaitForUsernameReason(
 
 void PasswordFormMetricsRecorder::RecordMatchedFormType(
     const PasswordForm& form) {
-  if (std::exchange(recorded_preferred_matched_password_type, true)) {
+  if (std::exchange(recorded_preferred_matched_password_type_, true)) {
     return;
   }
 
@@ -683,11 +683,29 @@ void PasswordFormMetricsRecorder::RecordPotentialPreferredMatch(
   if (!form_type) {
     return;
   }
-  if (std::exchange(recorded_potential_preferred_matched_password_type, true)) {
+  if (std::exchange(recorded_potential_preferred_matched_password_type_,
+                    true)) {
     return;
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.PotentialBestMatchFormType",
                             form_type.value());
+}
+
+void PasswordFormMetricsRecorder::RecordFillSuggestionHasGroupedMatch(
+    base::span<const PasswordForm> best_matches) {
+  // Do not record the UMA if there is nothing to fill.
+  if (best_matches.empty()) {
+    return;
+  }
+  if (std::exchange(recorded_fill_suggestion_has_grouped_match_, true)) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "PasswordManager.FillSuggestionsHasGroupedMatch",
+      base::ranges::find_if(best_matches, [](const PasswordForm& match) {
+        return password_manager_util::GetMatchType(match) ==
+               password_manager_util::GetLoginMatchType::kGrouped;
+      }) != best_matches.end());
 }
 
 void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(

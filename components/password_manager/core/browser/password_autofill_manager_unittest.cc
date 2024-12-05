@@ -2411,6 +2411,32 @@ TEST_F(PasswordAutofillManagerTest, ShowCrossDomainConfirmationPopup) {
           cross_domain_fill_data.preferred_login.username_value),
       SuggestionPosition{.row = 0});
 }
+
+TEST_F(PasswordAutofillManagerTest, EmitUMAIfAtLeastOneGroupedCredential) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+  autofill::PasswordFormFillData cross_domain_fill_data =
+      CreateTestFormFillData();
+  autofill::PasswordAndMetadata grouped_match_credential;
+  grouped_match_credential.username_value = u"";
+  grouped_match_credential.password_value = u"";
+  grouped_match_credential.realm = "http://grouped-realm.com";
+  grouped_match_credential.is_grouped_affiliation = true;
+  cross_domain_fill_data.additional_logins.push_back(grouped_match_credential);
+
+  password_autofill_manager_->OnAddPasswordFillData(cross_domain_fill_data);
+
+  base::HistogramTester histograms;
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kPasswordEntry,
+          cross_domain_fill_data.preferred_login.username_value),
+      SuggestionPosition{.row = 0});
+  histograms.ExpectUniqueSample(
+      "PasswordManager.FillSuggestionsGroupedMatchAccepted", /*sample=*/false,
+      /*expected_bucket_count=*/1);
+}
 #endif
 
 }  // namespace
