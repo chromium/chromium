@@ -154,8 +154,6 @@ blink_core_sources_layout = [
   "geometry/box_sides.h",
   "geometry/box_strut.cc",
   "geometry/box_strut.h",
-  "geometry/flex_offset.cc",
-  "geometry/flex_offset.h",
   "geometry/fragment_geometry.h",
   "geometry/logical_offset.cc",
   "geometry/logical_offset.h",

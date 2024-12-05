@@ -1428,12 +1428,14 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           is_column_ ? fragment.InlineSize() : fragment.BlockSize();
 
       main_axis_offset += item->FlowAwareMarginStart();
+      const LayoutUnit item_cross_axis_offset =
+          cross_axis_offset +
+          item->CrossAxisOffset(line_output, cross_axis_size);
 
-      flex_item.offset =
-          FlexOffset(main_axis_offset,
-                     cross_axis_offset +
-                         item->CrossAxisOffset(line_output, cross_axis_size));
-      const LogicalOffset offset = flex_item.offset.ToLogicalOffset(is_column_);
+      const LogicalOffset offset =
+          is_column_ ? LogicalOffset(item_cross_axis_offset, main_axis_offset)
+                     : LogicalOffset(main_axis_offset, item_cross_axis_offset);
+      flex_item.offset = offset;
 
       main_axis_offset += item->FlexedBorderBoxSize() +
                           item->FlowAwareMarginEnd() + space_between_items +
@@ -1567,8 +1569,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     LayoutUnit row_block_offset =
         !is_column_ ? line_output.cross_axis_offset : LayoutUnit();
-    LogicalOffset original_offset =
-        flex_item->offset.ToLogicalOffset(is_column_);
+    const LogicalOffset original_offset = flex_item->offset;
     LogicalOffset offset = original_offset;
 
     // If a row or item broke before, subsequent items and lines need to be
