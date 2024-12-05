@@ -182,6 +182,8 @@ class PropertyTreeManager {
   // RasterInducingScroll.
   static bool UsesCompositedScrolling(const cc::LayerTreeHost&,
                                       const ScrollPaintPropertyNode&);
+  static bool UsesRasterInducingScroll(const cc::LayerTreeHost&,
+                                       const ScrollPaintPropertyNode&);
 
   // Updates conditional render surface reasons for all effect nodes in
   // |GetEffectTree|. Every effect is supposed to have render surface enabled

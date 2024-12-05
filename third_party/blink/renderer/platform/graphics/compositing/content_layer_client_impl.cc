@@ -194,6 +194,11 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   }
 }
 
+bool ContentLayerClientImpl::HasRasterInducingScroll() const {
+  return cc_display_item_list_ &&
+         !cc_display_item_list_->raster_inducing_scrolls().empty();
+}
+
 void ContentLayerClientImpl::InvalidateRect(const gfx::Rect& rect) {
   cc_display_item_list_ = nullptr;
   cc_picture_layer_->SetNeedsDisplayRect(rect);

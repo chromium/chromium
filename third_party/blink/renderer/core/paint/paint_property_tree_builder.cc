@@ -2912,6 +2912,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollTranslation() {
         effective_change_type =
             PaintPropertyChangeType::kChangedOnlyCompositedValues;
         properties_->ScrollTranslation()->CompositorSimpleValuesUpdated();
+        if (paint_artifact_compositor->UsesRasterInducingScroll(
+                *properties_->Scroll())) {
+          paint_artifact_compositor->SetNeedsUpdateForRasterInducingScroll();
+        }
       }
     }
   }

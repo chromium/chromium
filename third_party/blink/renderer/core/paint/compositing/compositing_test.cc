@@ -622,10 +622,12 @@ TEST_P(CompositingTest,
     </div>
   )HTML");
 
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   GetElementById("scroll")->scrollTo(0, 2);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kFull);
   UpdateAllLifecyclePhases();
 }
 
@@ -642,10 +644,12 @@ TEST_P(CompositingTest,
     </div>
   )HTML");
 
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   GetElementById("scroll")->scrollTo(0, 2);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kFull);
   UpdateAllLifecyclePhases();
 }
 
@@ -1027,10 +1031,12 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
   UpdateAllLifecyclePhasesExceptPaint();
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     // All scroll offset changes were directly updated.
-    EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+    EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+              PaintArtifactCompositor::UpdateType::kRasterInducingScroll);
   } else {
     // Non-composited scrolls need PaintArtifactCompositor update.
-    EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+    EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+              PaintArtifactCompositor::UpdateType::kFull);
   }
   UpdateAllLifecyclePhases();
   // Some scrollers no longer have the foreground paint chunk, which caused a
@@ -1071,8 +1077,11 @@ TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
 
   GetElementById("scroller")->scrollTo(0, 3000);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   UpdateAllLifecyclePhases();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::UpdateType::kRepaint);
   // The scroll caused only repaint.
   EXPECT_EQ(sequence_number, GetPropertyTrees()->sequence_number());
   // Now the cull rect covers all scrolling contents.
@@ -1082,8 +1091,11 @@ TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
   scroller->GetLayoutBox()->Layer()->SetNeedsRepaint();
   // Force a repaint to proactively update cull rect.
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   UpdateAllLifecyclePhases();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::UpdateType::kRepaint);
   EXPECT_EQ(sequence_number, GetPropertyTrees()->sequence_number());
   CheckCullRect("scroller", gfx::Rect(0, 1000, 200, 5100));
 }
@@ -1417,7 +1429,8 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
 
   // Initially, transform should be unchanged.
   EXPECT_FALSE(transform_node->transform_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Modifying the transform in a simple way allowed for a direct update.
   outer_element->setAttribute(
@@ -1425,7 +1438,8 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
       AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // After a frame the |transform_changed| value should be reset.
   Compositor().BeginFrame();
@@ -1481,7 +1495,8 @@ TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
   const auto* transform_node =
       GetPropertyTrees()->transform_tree().Node(transform_tree_index);
   EXPECT_FALSE(transform_node->transform_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_EQ(100.0f, transform_node->local.To2dTranslation().x());
 
   // Change the transform style and ensure the blink and cc transform nodes are
@@ -1491,7 +1506,8 @@ TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Continue to run the lifecycle to paint and ensure that updates are
   // performed.
@@ -1501,7 +1517,8 @@ TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
   EXPECT_EQ(400.0f, transform_node->local.To2dTranslation().x());
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_TRUE(transform_node->transform_changed);
 
   // After a frame the |transform_changed| value should be reset.
@@ -1552,7 +1569,8 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
   const auto* effect_node =
       GetPropertyTrees()->effect_tree().Node(effect_tree_index);
   EXPECT_FALSE(effect_node->effect_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_NEAR(0.1, effect_node->opacity, 0.001);
 
   // Change the effect style and ensure the blink and cc effect nodes are
@@ -1561,7 +1579,8 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Continue to run the lifecycle to paint and ensure that updates are
   // performed.
@@ -1570,7 +1589,8 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
   EXPECT_NEAR(0.15, effect_node->opacity, 0.001);
   EXPECT_TRUE(effect_node->effect_changed);
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_TRUE(effect_node->effect_changed);
 
   // After a frame the |opacity_changed| value should be reset.
@@ -1611,7 +1631,8 @@ TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
 
   // Initially, transform should be unchanged.
   EXPECT_FALSE(transform_node->transform_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Modifying the transform in a simple way allowed for a direct update.
   auto* will_change_element = GetElementById("willChangeWithAnimation");
@@ -1620,7 +1641,8 @@ TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
       AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // After a frame the |transform_changed| value should be reset.
   Compositor().BeginFrame();
@@ -1680,7 +1702,8 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   // Initially, the transforms should be unchanged.
   EXPECT_FALSE(outer_transform_node->transform_changed);
   EXPECT_FALSE(inner_transform_node->transform_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Modifying the outer transform in a simple way should allow for a direct
   // update of the outer transform. Modifying the inner transform in a
@@ -1693,7 +1716,8 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(outer_transform_node->transform_changed);
   EXPECT_FALSE(inner_transform_node->transform_changed);
-  EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kFull);
 
   // After a PaintArtifactCompositor update, which was needed due to the inner
   // element's transform change, both the inner and outer transform nodes
@@ -1801,14 +1825,16 @@ TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
 
   // Initially, transform should be unchanged.
   EXPECT_FALSE(transform_node->transform_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Modifying the transform-origin in a simple way allowed for a direct update.
   box_element->setAttribute(html_names::kStyleAttr,
                             AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // After a frame the |transform_changed| value should be reset.
   Compositor().BeginFrame();
@@ -2436,7 +2462,8 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
   // The scroll offset change should be directly updated, and the direct update
   // should not schedule commit because the scroll offset is the same as the
   // current cc scroll offset.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
 
   // Update just the blink lifecycle because a full frame would clear the bit
@@ -2480,10 +2507,12 @@ TEST_P(CompositingSimTest, RasterInducingScrollSkipsCommit) {
     // The scroll offset change should be directly updated, and the direct
     // update should not schedule commit because the scroll offset is the same
     // as the current cc scroll offset.
-    EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+    EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+              PaintArtifactCompositor::UpdateType::kRasterInducingScroll);
     EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
   } else {
-    EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+    EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+              PaintArtifactCompositor::UpdateType::kFull);
     EXPECT_TRUE(Compositor().LayerTreeHost()->CommitRequested());
   }
 
@@ -2820,7 +2849,8 @@ TEST_P(CompositingSimTest, BackgroundColorChangeUsesRepaintUpdate) {
             SkColors::kWhite);
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -2831,7 +2861,7 @@ TEST_P(CompositingSimTest, BackgroundColorChangeUsesRepaintUpdate) {
                                AtomicString("background: black"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+            PaintArtifactCompositor::UpdateType::kRepaint);
 
   // Though a repaint-only update was done, the background color should still
   // be updated.
@@ -2889,7 +2919,7 @@ TEST_P(CompositingSimTest, MultipleChunkBackgroundColorChangeRepaintUpdate) {
                                    AtomicString("background: white"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+            PaintArtifactCompositor::UpdateType::kRepaint);
 
   // Though a repaint-only update was done, the background color should still
   // be updated.
@@ -2923,7 +2953,8 @@ TEST_P(CompositingSimTest, SVGColorChangeUsesRepaintUpdate) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -2933,7 +2964,7 @@ TEST_P(CompositingSimTest, SVGColorChangeUsesRepaintUpdate) {
   rect_element->setAttribute(svg_names::kFillAttr, AtomicString("black"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+            PaintArtifactCompositor::UpdateType::kRepaint);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -2944,7 +2975,7 @@ TEST_P(CompositingSimTest, SVGColorChangeUsesRepaintUpdate) {
                             AtomicString("background: black"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+            PaintArtifactCompositor::UpdateType::kRepaint);
 }
 
 TEST_P(CompositingSimTest, ChangingOpaquenessRequiresFullUpdate) {
@@ -2964,7 +2995,8 @@ TEST_P(CompositingSimTest, ChangingOpaquenessRequiresFullUpdate) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_TRUE(CcLayerByDOMElementId("target")->contents_opaque());
 
   // Clear the previous update to ensure we record a new one in the next update.
@@ -2978,7 +3010,7 @@ TEST_P(CompositingSimTest, ChangingOpaquenessRequiresFullUpdate) {
                                AtomicString("background: rgba(1, 0, 0, 0.1)"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque());
 }
 
@@ -3008,7 +3040,8 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque());
   EXPECT_TRUE(CcLayerByDOMElementId("target")->contents_opaque_for_text());
 
@@ -3024,7 +3057,7 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
       html_names::kStyleAttr, AtomicString("background: rgba(1, 0, 0, 0.1)"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque());
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque_for_text());
 }
@@ -3045,7 +3078,8 @@ TEST_P(CompositingSimTest, ChangingDrawsContentRequiresFullUpdate) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_FALSE(CcLayerByDOMElementId("target")->draws_content());
 
   // Clear the previous update to ensure we record a new one in the next update.
@@ -3059,7 +3093,7 @@ TEST_P(CompositingSimTest, ChangingDrawsContentRequiresFullUpdate) {
                        AtomicString("background: rgba(0,0,0,0.5)"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
   EXPECT_TRUE(CcLayerByDOMElementId("target")->draws_content());
 }
 
@@ -3149,7 +3183,8 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -3161,7 +3196,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   b_element->setAttribute(html_names::kStyleAttr, AtomicString("z-index: 5"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -3171,7 +3206,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
                           AtomicString("display: none"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -3180,7 +3215,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   b_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -3189,7 +3224,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   b_element->setAttribute(html_names::kStyleAttr, AtomicString("width: 101px"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
 }
 
 // Similar to |FullCompositingUpdateReasons| but for changes in post-paint
@@ -3212,7 +3247,8 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasonWithCompositedSVG) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -3222,7 +3258,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasonWithCompositedSVG) {
   rect->setAttribute(html_names::kStyleAttr, AtomicString("width: 101px"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
 }
 
 TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
@@ -3247,7 +3283,8 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -3260,7 +3297,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
                        AtomicString("firstLetterStyle"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
 }
 
 TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
@@ -3297,7 +3334,8 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -3309,7 +3347,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
                        AtomicString("background: lightgreen"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
+            PaintArtifactCompositor::UpdateType::kFull);
 }
 
 TEST_P(CompositingSimTest, DecompositeScrollerInHiddenIframe) {
@@ -3369,7 +3407,8 @@ TEST_P(CompositingSimTest, ForeignLayersInMovedSubsequence) {
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -3380,7 +3419,7 @@ TEST_P(CompositingSimTest, ForeignLayersInMovedSubsequence) {
                                AtomicString("background: green;"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kRepaint);
+            PaintArtifactCompositor::UpdateType::kRepaint);
 
   remote_frame->Detach();
 }

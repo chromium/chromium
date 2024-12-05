@@ -1659,9 +1659,11 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   // Change of animation status should update PaintArtifactCompositor.
   auto* paint_artifact_compositor =
       GetDocument().View()->GetPaintArtifactCompositor();
-  EXPECT_TRUE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kFull);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Simulates changing transform and transform-origin during an animation.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
@@ -1693,7 +1695,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   EXPECT_TRUE(transform_node->BackfaceVisibilitySameAsParent());
   // Changing only transform or transform-origin values during a composited
   // animation should not schedule a PaintArtifactCompositor update.
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Simulates changing backface visibility during animation.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
@@ -1713,7 +1716,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   // Only transform and transform-origin value changes during composited
   // animation should not schedule PaintArtifactCompositor update. Backface
   // visibility changes should schedule an update.
-  EXPECT_TRUE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kFull);
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, BackfaceVisibilityInvalidatesProperties) {
@@ -1818,15 +1822,18 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollNonStackingContextContainingStacked) {
   auto* paint_artifact_compositor =
       GetDocument().View()->GetPaintArtifactCompositor();
   ASSERT_TRUE(paint_artifact_compositor);
-  ASSERT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // We need PaintArtifactCompositor update on scroll because the scroller is
   // not a stacking context but contains stacked descendants.
   scroller->setScrollTop(100);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Remove "position:relative" from |content|.
   content->setAttribute(html_names::kStyleAttr, g_empty_atom);
@@ -1836,9 +1843,11 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollNonStackingContextContainingStacked) {
   // has stacked descendants.
   scroller->setScrollTop(110);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Make scroller a stacking context with stacked contents.
   scroller->setAttribute(
@@ -1852,9 +1861,11 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollNonStackingContextContainingStacked) {
   // stacking context.
   scroller->setScrollTop(120);
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ScrollOriginChange) {
@@ -2176,7 +2187,8 @@ TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
             gfx::Vector2dF(0, -300));
 
   // Anchor positioning scroll update should not require main thread commits.
-  EXPECT_FALSE(GetFrame().View()->GetPaintArtifactCompositor()->NeedsUpdate());
+  EXPECT_EQ(GetFrame().View()->GetPaintArtifactCompositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ElementCaptureUpdate) {
