@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -17,6 +18,7 @@
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/service/sync_prefs.h"
+#include "device/fido/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/android/cable_module_android.h"
@@ -96,6 +98,9 @@ DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
 syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 DeviceInfoSyncClientImpl::GetPhoneAsASecurityKeyInfo() const {
 #if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnPublishPrelinkingInfo)) {
+    return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
+  }
   return webauthn::authenticator::GetSyncDataIfRegistered();
 #else
   return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
