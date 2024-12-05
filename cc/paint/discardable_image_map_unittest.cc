@@ -168,7 +168,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
@@ -239,7 +239,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
@@ -338,7 +338,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectOnePixelQuery) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
@@ -371,7 +371,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMassiveImage) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
@@ -399,7 +399,7 @@ TEST_F(DiscardableImageMapTest, PaintDestroyedWhileImageIsDrawn) {
   display_list->Finalize();
 
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
   EXPECT_EQ(1u, images.size());
@@ -416,7 +416,7 @@ TEST_F(DiscardableImageMapTest, RestoreSavedBigLayers) {
   display_list->push<DrawRectOp>(rect, flags);
   display_list->EndPaintOfUnpaired(gfx::Rect(INT_MAX, INT_MAX));
   display_list->Finalize();
-  display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+  display_list->GenerateDiscardableImageMap();
 }
 
 // Test if SaveLayer and Restore work together.
@@ -457,7 +457,7 @@ TEST_F(DiscardableImageMapTest, RestoreSavedTransformedLayers) {
   display_list->Finalize();
 
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 200, 200));
   EXPECT_EQ(3u, images.size());
@@ -484,7 +484,7 @@ TEST_F(DiscardableImageMapTest, NullPaintOnSaveLayer) {
   display_list->Finalize();
 
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
   EXPECT_EQ(1u, images.size());
@@ -506,7 +506,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImage) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(*image_map, gfx::Rect(42, 42, 1, 1));
@@ -547,7 +547,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImageMaxLayer) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
@@ -593,7 +593,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesRectInBounds) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(*image_map, gfx::Rect(0, 0, 1, 1));
@@ -658,7 +658,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInShader) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
@@ -712,7 +712,7 @@ TEST_F(DiscardableImageMapTest, ClipsImageRects) {
   display_list->Finalize();
 
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(*image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
@@ -740,8 +740,8 @@ TEST_F(DiscardableImageMapTest, GathersDiscardableImagesFromNestedOps) {
   PaintOpBuffer root_buffer;
   root_buffer.push<DrawRecordOp>(internal_buffer.ReleaseAsRecord());
   root_buffer.push<DrawRecordOp>(buffer2.ReleaseAsRecord());
-  scoped_refptr<DiscardableImageMap> image_map = DiscardableImageMap::Generate(
-      root_buffer, gfx::Rect(200, 200), ScrollOffsetMap());
+  scoped_refptr<DiscardableImageMap> image_map =
+      DiscardableImageMap::Generate(root_buffer, gfx::Rect(200, 200));
 
   std::vector<const DrawImage*> images =
       image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 5, 95));
@@ -777,7 +777,7 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   const auto& animated_images_metadata = image_map->animated_images_metadata();
 
   ASSERT_EQ(animated_images_metadata.size(), 1u);
@@ -820,7 +820,7 @@ TEST_F(DiscardableImageMapTest, GathersPaintWorklets) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   const auto& paint_worklet_inputs = image_map->paint_worklet_inputs();
   ASSERT_EQ(paint_worklet_inputs.size(), 1u);
@@ -863,7 +863,7 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
   EXPECT_EQ(flags.getShader()->image_analysis_state(),
             ImageAnalysisState::kNoAnalysis);
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   EXPECT_EQ(flags.getShader()->image_analysis_state(),
             ImageAnalysisState::kAnimatedImages);
 
@@ -908,7 +908,7 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintFilters) {
   EXPECT_EQ(flags.getImageFilter()->image_analysis_state(),
             ImageAnalysisState::kNoAnalysis);
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   EXPECT_EQ(flags.getImageFilter()->image_analysis_state(),
             ImageAnalysisState::kAnimatedImages);
 
@@ -942,7 +942,7 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInSaveLayers) {
   display_list->Finalize();
 
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   std::vector<PositionScaleDrawImage> draw_images =
       GetDiscardableImagesInRect(*image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(draw_images);
@@ -981,7 +981,7 @@ TEST_F(DiscardableImageMapTest, EmbeddedShaderWithAnimatedImages) {
   display_list->push<DrawRectOp>(SkRect::MakeWH(200, 200), flags);
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
-  display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+  display_list->GenerateDiscardableImageMap();
   EXPECT_EQ(shader_with_image->image_analysis_state(),
             ImageAnalysisState::kAnimatedImages);
   EXPECT_EQ(shader_with_shader_with_image->image_analysis_state(),
@@ -1017,7 +1017,7 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsBasic) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   auto decode_hints = image_map->TakeDecodingModeMap();
   EXPECT_EQ(decode_hints.size(), 3u);
   EXPECT_TRUE(base::Contains(decode_hints, 1));
@@ -1083,7 +1083,7 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   auto decode_hints = image_map->TakeDecodingModeMap();
   EXPECT_EQ(decode_hints.size(), 3u);
@@ -1117,7 +1117,7 @@ TEST_F(DiscardableImageMapTest, TracksImageRegions) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
 
   std::vector<gfx::Rect> rects = {gfx::Rect(100, 100),
                                   gfx::Rect(400, 400, 100, 100)};
@@ -1171,31 +1171,20 @@ TEST_F(DiscardableImageMapTest, ImagesUnderDrawScrollingContentsOp) {
   display_list->EndPaintOfPairedEnd();
   display_list->Finalize();
 
-  ScrollOffsetMap scroll_offsets;
-  scroll_offsets[scroll_element_id1] = gfx::PointF();
-  scroll_offsets[scroll_element_id2] = gfx::PointF();
-
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(scroll_offsets);
-  // The image rect is the union of the two appearances of image1.
-  EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(1000, 1000)),
-              UnorderedElementsAre(
-                  FieldsAre(ImageIsSame(image1), gfx::Rect(-1, -1, 202, 502),
-                            SkSize::Make(1, 1)),
-                  FieldsAre(ImageIsSame(image1), gfx::Rect(-1, -1, 202, 502),
-                            SkSize::Make(1, 1))));
-
-  // The first scroller scrolls to make both images invisible.
-  scroll_offsets[scroll_element_id1] = gfx::PointF(200, 100);
-  // The second scroller scrolls to make both images visible.
-  scroll_offsets[scroll_element_id2] = gfx::PointF(0, 250);
-  image_map = display_list->GenerateDiscardableImageMap(scroll_offsets);
-  EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(1000, 1000)),
-              UnorderedElementsAre(
-                  FieldsAre(ImageIsSame(image1), gfx::Rect(99, 299, 102, 52),
-                            SkSize::Make(1, 1)),
-                  FieldsAre(ImageIsSame(image2), gfx::Rect(199, 399, 102, 102),
-                            SkSize::Make(1, 1))));
+      display_list->GenerateDiscardableImageMap();
+  // All images appearances should be collected, including those currently out
+  // of view. The image rect is the union of the appearances of each image,
+  // using the bounding box of the containing DrawScrollingContentsOps.
+  gfx::Rect expected_rect(-1, -1, 302, 502);
+  SkSize expected_scale = SkSize::Make(1, 1);
+  EXPECT_THAT(
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(1000, 1000)),
+      UnorderedElementsAre(
+          FieldsAre(ImageIsSame(image1), expected_rect, expected_scale),
+          FieldsAre(ImageIsSame(image1), expected_rect, expected_scale),
+          FieldsAre(ImageIsSame(image2), expected_rect, expected_scale),
+          FieldsAre(ImageIsSame(image2), expected_rect, expected_scale)));
 }
 
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
@@ -1212,7 +1201,7 @@ TEST_F(DiscardableImageMapTest,
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(2048, 2048)),
               IsEmpty());
 }
@@ -1242,7 +1231,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectSkottieWithImages) {
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   // Left Half of screen should return no images.
   EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(1023, 2048)),
               IsEmpty());
@@ -1282,7 +1271,7 @@ TEST_F(DiscardableImageMapTest,
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   std::vector<PositionScaleDrawImage> images_out =
       GetDiscardableImagesInRect(*image_map, visible_rect);
   ASSERT_THAT(images_out, SizeIs(2));
@@ -1331,7 +1320,7 @@ TEST_F(DiscardableImageMapTest, PreserveImageQuality) {
   display_list->Finalize();
 
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap();
   std::vector<const DrawImage*> images =
       image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 200, 200));
   EXPECT_EQ(3u, images.size());

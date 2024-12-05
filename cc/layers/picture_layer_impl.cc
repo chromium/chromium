@@ -811,7 +811,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
       RegisterAnimatedImages();
     }
   } else if (recording_updated) {
-    needs_regenerate_discardable_image_map_ = true;
+    RegenerateDiscardableImageMap();
   }
 
   // The |new_invalidation| must be cleared before updating tilings since they
@@ -851,18 +851,13 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
   }
 }
 
-void PictureLayerImpl::RegenerateDiscardableImageMapIfNeeded() {
+void PictureLayerImpl::RegenerateDiscardableImageMap() {
   CHECK(layer_tree_impl()->IsSyncTree());
-  if (!needs_regenerate_discardable_image_map_) {
-    return;
-  }
-  needs_regenerate_discardable_image_map_ = false;
 
   UnregisterAnimatedImages();
   if (const auto* display_list = raster_source_->GetDisplayItemList().get()) {
     scoped_refptr<DiscardableImageMap> image_map =
-        display_list->GenerateDiscardableImageMap(
-            GetRasterInducingScrollOffsets());
+        display_list->GenerateDiscardableImageMap();
     SetPaintWorkletInputs(image_map->paint_worklet_inputs());
     layer_tree_impl()->UpdateImageDecodingHints(
         image_map->TakeDecodingModeMap());
@@ -2151,14 +2146,8 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
       UnionUpdateRect(it->second.visual_rect);
       has_non_animated_image_update_rect_ = true;
       invalidation.Union(it->second.visual_rect);
-      needs_regenerate_discardable_image_map_ |=
-          it->second.has_discardable_images;
     }
   }
-
-  // Raster-inducing scroll may affect the discardable image map due to changed
-  // scroll offsets.
-  RegenerateDiscardableImageMapIfNeeded();
 
   if (!invalidation.IsEmpty()) {
     invalidation_.Union(invalidation);

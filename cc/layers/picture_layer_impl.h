@@ -103,7 +103,6 @@ class CC_EXPORT PictureLayerImpl
 
   void UpdateRasterSource(scoped_refptr<RasterSource> raster_source,
                           Region* new_invalidation);
-  void RegenerateDiscardableImageMapIfNeeded();
   bool UpdateTiles();
 
   // Mask-related functions.
@@ -230,6 +229,7 @@ class CC_EXPORT PictureLayerImpl
       const PictureLayerTilingSet* pending_set,
       const PaintWorkletRecordMap* pending_paint_worklet_records,
       const DiscardableImageMap* pending_discardable_image_map);
+  void RegenerateDiscardableImageMap();
 
   bool IsDirectlyCompositedImage() const;
   void UpdateDirectlyCompositedImageFromRasterSource();
@@ -317,8 +317,6 @@ class CC_EXPORT PictureLayerImpl
   bool raster_source_size_changed_ : 1 = false;
 
   bool directly_composited_image_default_raster_scale_changed_ : 1 = false;
-
-  bool needs_regenerate_discardable_image_map_ : 1 = false;
 
   // Keep track of if a non-empty update_rect is due to animated image or other
   // reasons.
