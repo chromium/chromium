@@ -149,7 +149,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       descriptorD_: {type: Array},
       errorState_: {type: Object},
       emptyHistoryContainers_: {type: Object},
-      emptyResultContainers_: {type: Object},
       expandedCategories_: {type: Object},
       loading_: {type: Boolean},
       history_: {type: Array},
@@ -180,7 +179,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private descriptors_: Descriptors|null = null;
   protected descriptorD_: string[] = DESCRIPTOR_D_VALUE.map(value => value.hex);
   protected emptyHistoryContainers_: number[] = [];
-  protected emptyResultContainers_: number[] = [];
   private errorCallback_: (() => void)|undefined;
   protected errorState_: ErrorState|null = null;
   private expandedCategories_: {[categoryIndex: number]: boolean} = {};
@@ -710,7 +708,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.selectedDescriptorA_ = selectedDescriptorA;
     this.loading_ = true;
     this.results_ = [];
-    this.emptyResultContainers_ = [];
     announcer.announce(this.i18n('wallpaperSearchLoadingA11yMessage'));
     const descriptors: ResultDescriptors = {
       subject: this.selectedDescriptorA_!,
@@ -741,7 +738,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
           }
           recordStatusChange(status);
           this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;
-          this.emptyResultContainers_ = this.calculateEmptyTiles(results);
         }
       }
     } else {
@@ -805,10 +801,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   protected shouldShowFeedbackButtons_() {
     return !this.loading_ && this.results_.length > 0;
-  }
-
-  protected shouldShowGrid_(): boolean {
-    return this.results_.length > 0 || this.emptyResultContainers_.length > 0;
   }
 }
 
