@@ -1,6 +1,0 @@
-[wrap-file]
-directory = codespan-reporting-0.11.1
-source_url = https://static.crates.io/crates/codespan-reporting/0.11.1/download
-source_filename = codespan-reporting-0.11.1.tar.gz
-source_hash = 3538270d33cc669650c4b093848450d380def10c331d38c768e34cac80576e6e
-patch_directory = codespan-reporting

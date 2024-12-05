@@ -4,4 +4,4 @@
 
 # The version of cxx under //third_party/rust/chromium_crates_io/vendor.
 # Update this whenever cxx is rolled.
-cxx_version = "1.0.130"
+cxx_version = "1.0.131"

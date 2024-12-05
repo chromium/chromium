@@ -953,6 +953,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.129 -> 1.0.130"
 
+[[audits.cxxbridge-flags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.130 -> 1.0.131"
+notes = "no grep hits for cipher, crypto, fs, net, or unsafe"
+
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
 criteria = "does-not-implement-crypto"
@@ -1163,6 +1169,17 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.34 -> 1.0.35"
 notes = "There are no significant code changes in this delta (just one string constant change). Note that prior audits may have been partial."
+
+[[audits.foldhash]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.1.3"
+notes = """
+`ub-risk-2` review notes can be found in https://crrev.com/c/6071306/5/third_party/rust/chromium_crates_io/vendor/foldhash-0.1.3/src/seed.rs
+
+`does-not-implement-crypto` based on `README.md` which explicitly says that
+\"Foldhash is **not appropriate for any cryptographic purpose**.\"
+"""
 
 [[audits.font-types]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
