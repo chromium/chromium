@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/js/jstemplate_compiled.js';
-
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {HIDDEN_CLASS} from './constants.js';
 import {Runner} from './dino_game/offline.js';
@@ -15,6 +14,7 @@ import {Runner} from './dino_game/offline.js';
 declare global {
   interface Window {
     errorPageController?: ErrorPageController;
+    // `loadTimeDataRaw` is injected to the `window` scope from C++.
     loadTimeDataRaw: LoadTimeDataRaw;
   }
 }
@@ -29,22 +29,54 @@ interface ErrorPageController {
   cancelSavePage(): void;
 }
 
-interface WithDetailsText {
-  detailsText: string;
-  hideDetailsText: string;
+interface TemplateData {
+  // Properties that exist in both error pages and chrome://dino.
+  errorCode: string;
+  heading: {
+    hostName: string,
+    msg: string,
+  };
+  iconClass: string;
+
+  // Properties that exist only when there is an actual error and not when
+  // visiting chrome://dino directly.
+  details?: string;
+  hideDetails?: string;
+  suggestionsDetails?: Array<{header: string, body: string}>;
+  suggestionsSummaryList?: Array<{summary: string}>;
+  suggestionsSummaryListHeader?: string;
+
+  summary?: {
+    failedUrl: string,
+    hostName: string,
+    msg: string,
+  };
+
+  reloadButton?: {
+    msg: string,
+    reloadUrl: string,
+  };
+
+  // TODO(crbug.com/378692755): Mark as Android only.
+  downloadButton?: {
+    msg: string,
+    disabledMsg: string,
+  };
+
+  // TODO(crbug.com/378692755): Mark as Android only.
+  savePageLater?: {
+    savePageMsg: string,
+    cancelMsg: string,
+  };
 }
 
-function toggleHelpBox() {
-  const wrapper = getRequiredElement('main-frame-error');
-  wrapper.classList.toggle('showing-details');
+let showingDetails: boolean = false;
+let lastData: TemplateData|null = null;
 
-  const detailsButton =
-      getRequiredElement<HTMLElement&WithDetailsText>('details-button');
-  if (!wrapper.classList.contains('showing-details')) {
-    detailsButton.innerText = detailsButton.detailsText;
-  } else {
-    detailsButton.innerText = detailsButton.hideDetailsText;
-  }
+function toggleHelpBox() {
+  showingDetails = !showingDetails;
+  assert(lastData);
+  render(getHtml(lastData, showingDetails), getRequiredElement('content'));
 }
 
 function diagnoseErrors() {
@@ -68,30 +100,38 @@ if (window.top!.location !== window.location) {
   isSubFrame = true;
 }
 
-// Re-renders the error page using |strings| as the dictionary of values.
+// Re-renders the error page using |data| as the dictionary of values.
 // Used by NetErrorTabHelper to update DNS error pages with probe results.
-function updateForDnsProbe(strings: any) {
-  const context = new JsEvalContext(strings);
-  jstProcess(context, document.body);
-  onDocumentLoadOrUpdate();
+function updateForDnsProbe(newData: TemplateData) {
+  onTemplateDataReceived(newData);
 }
 
-// Adds an icon class to the list and removes classes previously set.
-function updateIconClass(newClass: string) {
-  const frameSelector = isSubFrame ? '#sub-frame-error' : '#main-frame-error';
-  const iconEl = document.querySelector(frameSelector + ' .icon');
-  assert(iconEl);
+function getMainFrameErrorCssClass(showingDetails: boolean): string {
+  return showingDetails ? 'showing-details' : '';
+}
 
-  if (iconEl.classList.contains(newClass)) {
-    return;
-  }
+function getMainFrameErrorIconCssClass(data: TemplateData): string {
+  return isSubFrame ? '' : data.iconClass;
+}
 
-  iconEl.className = 'icon ' + newClass;
+function getSubFrameErrorIconCssClass(data: TemplateData): string {
+  return isSubFrame ? data.iconClass : '';
+}
+
+function shouldShowSuggestionsSummaryList(data: TemplateData): boolean {
+  return !!data.suggestionsSummaryList &&
+      data.suggestionsSummaryList.length > 0;
+}
+
+function getSuggestionsSummaryItemCssClass(data: TemplateData): string {
+  assert(data.suggestionsSummaryList);
+  return data.suggestionsSummaryList.length === 1 ? 'single-suggestion' : '';
 }
 
 // Implements button clicks.  This function is needed during the transition
 // between implementing these in trunk chromium and implementing them in iOS.
-function reloadButtonClick(url: string) {
+function reloadButtonClick(e: Event) {
+  const url = (e.target as HTMLElement).dataset['url'];
   if (window.errorPageController) {
     // <if expr="is_ios">
     window.errorPageController.reloadButtonClick(url);
@@ -101,6 +141,7 @@ function reloadButtonClick(url: string) {
     window.errorPageController.reloadButtonClick();
     // </if>
   } else {
+    assert(url);
     window.location.href = url;
   }
 }
@@ -124,14 +165,8 @@ function detailsButtonClick() {
   if (window.errorPageController) {
     window.errorPageController.detailsButtonClick();
   }
+  toggleHelpBox();
 }
-
-let primaryControlOnLeft = true;
-// clang-format off
-// <if expr="is_macosx or is_ios or is_linux or is_chromeos or is_android">
-// clang-format on
-primaryControlOnLeft = false;
-// </if>
 
 function setAutoFetchState(scheduled: boolean, canSchedule: boolean) {
   getRequiredElement('cancel-save-page-button')
@@ -155,51 +190,145 @@ function cancelSavePageClick() {
   setAutoFetchState(false, true);
 }
 
-// Called on document load, and from updateForDnsProbe().
-function onDocumentLoadOrUpdate() {
-  const downloadButtonVisible = loadTimeData.valueExists('downloadButton') &&
-      loadTimeData.getValue('downloadButton').msg;
-  const detailsButton = getRequiredElement('details-button');
+function shouldShowControlButtons(data: TemplateData): boolean {
+  const downloadButtonVisible =
+      !!data.downloadButton && !!data.downloadButton.msg;
+  const reloadButtonVisible = !!data.reloadButton && !!data.reloadButton.msg;
+  return reloadButtonVisible || downloadButtonVisible;
+}
 
-  const reloadButtonVisible = loadTimeData.valueExists('reloadButton') &&
-      loadTimeData.getValue('reloadButton').msg;
+function shouldShowDetailsButton(data: TemplateData): boolean {
+  return !!data.suggestionsDetails && data.suggestionsDetails.length > 0;
+}
 
-  const reloadButton = getRequiredElement('reload-button');
-  const downloadButton = getRequiredElement('download-button');
-  if (reloadButton.style.display === 'none' &&
-      downloadButton.style.display === 'none') {
-    detailsButton.classList.add('singular');
-  }
+function getDetailsButtonCssClass(data: TemplateData): string {
+  return shouldShowControlButtons(data) ? '' : 'singular';
+}
 
-  // Show or hide control buttons.
-  const controlButtonDiv = getRequiredElement('control-buttons');
-  controlButtonDiv.hidden = !(reloadButtonVisible || downloadButtonVisible);
+function getDetailsButtonText(
+    data: TemplateData, showingDetails: boolean): string {
+  assert(data.details);
+  assert(data.hideDetails);
+  return showingDetails ? data.hideDetails : data.details;
+}
 
-  const iconClass = loadTimeData.valueExists('iconClass') &&
-      loadTimeData.getValue('iconClass');
+// Sets up the proper button layout for the current platform.
+function getButtonsCssClass(): string {
+  let primaryControlOnLeft = true;
+  // clang-format off
+  // <if expr="is_macosx or is_ios or is_linux or is_chromeos or is_android">
+  // clang-format on
+  primaryControlOnLeft = false;
+  // </if>
 
-  updateIconClass(iconClass);
+  return primaryControlOnLeft ? 'suggested-left' : 'suggested-right';
+}
 
-  if (!isSubFrame && iconClass === 'icon-offline') {
+function onDocumentLoad() {
+  onTemplateDataReceived(window.loadTimeDataRaw as TemplateData);
+}
+
+function onTemplateDataReceived(newData: TemplateData) {
+  lastData = newData as TemplateData;
+  render(getHtml(lastData, showingDetails), getRequiredElement('content'));
+
+  if (!isSubFrame && newData.iconClass === 'icon-offline') {
     document.documentElement.classList.add('offline');
+    // Set loadTimeData.data because it is used by the dino code.
+    loadTimeData.data = newData;
     new Runner('.interstitial-wrapper');
   }
 }
 
-function onDocumentLoad() {
-  // `loadTimeDataRaw` is injected to the `window` scope from C++.
-  loadTimeData.data = window.loadTimeDataRaw;
-  jstProcess(new JsEvalContext(window.loadTimeDataRaw), document.body);
+function getHtml(data: TemplateData, showingDetails: boolean) {
+  // clang-format off
+  return html`
+    <div id="main-frame-error" class="interstitial-wrapper ${getMainFrameErrorCssClass(showingDetails)}">
+      <div id="main-content">
+        <div class="icon ${getMainFrameErrorIconCssClass(data)}"></div>
+        <div id="main-message">
+          <h1>
+            <span .innerHTML="${data.heading.msg}"></span>
+          </h1>
+          ${data.summary ? html`
+            <p .innerHTML="${data.summary.msg}"></p>
+          ` : ''}
 
-  // Sets up the proper button layout for the current platform.
-  const buttonsDiv = getRequiredElement('buttons');
-  if (primaryControlOnLeft) {
-    buttonsDiv.classList.add('suggested-left');
-  } else {
-    buttonsDiv.classList.add('suggested-right');
-  }
+          ${shouldShowSuggestionsSummaryList(data) ? html`
+            <div id="suggestions-list">
+              <p>${data.suggestionsSummaryListHeader}</p>
+              <ul class="${getSuggestionsSummaryItemCssClass(data)}">
+                ${data.suggestionsSummaryList!.map(item => html`
+                  <li .innerHTML="${item.summary}"></li>
+                `)}
+              </ul>
+            </div>
+          ` : ''}
 
-  onDocumentLoadOrUpdate();
+          <div class="error-code">${data.errorCode}</div>
+
+          ${data.savePageLater ? html`
+            <div id="save-page-for-later-button">
+              <a class="link-button" @click="${savePageLaterClick}">
+                ${data.savePageLater.savePageMsg}
+              </a>
+            </div>
+            <div id="cancel-save-page-button" class="hidden"
+                @click="${cancelSavePageClick}"
+                .innerHTML="${data.savePageLater.cancelMsg}">
+            </div>
+          ` : ''}
+        </div>
+      </div>
+      <div id="buttons" class="nav-wrapper ${getButtonsCssClass()}">
+        <div id="control-buttons" ?hidden="${!shouldShowControlButtons(data)}">
+          ${data.reloadButton ? html`
+            <button id="reload-button"
+                class="blue-button text-button"
+                @click="${reloadButtonClick}"
+                data-url="${data.reloadButton.reloadUrl}">
+              ${data.reloadButton.msg}
+            </button>
+          ` : ''}
+          ${data.downloadButton ? html`
+            <button id="download-button"
+                class="blue-button text-button"
+                @click="${downloadButtonClick}"
+                .disabledText="${data.downloadButton.disabledMsg}">
+              ${data.downloadButton.msg}
+            </button>
+          ` : ''}
+        </div>
+        ${shouldShowDetailsButton(data) ? html`
+          <button id="details-button" class="secondary-button text-button
+              small-link ${getDetailsButtonCssClass(data)}"
+              @click="${detailsButtonClick}">
+            ${getDetailsButtonText(data, showingDetails)}
+          </button>
+        ` : ''}
+      </div>
+      ${data.suggestionsDetails ? html`
+        <div id="details">
+          ${data.suggestionsDetails.map(item => html`
+            <div class="suggestions">
+              <div class="suggestion-header" .innerHTML="${item.header}"></div>
+              <div class="suggestion-body" .innerHTML="${item.body}"></div>
+            </div>
+          `)}
+        </div>
+      ` : ''}
+    </div>
+    ${data.summary ? html`
+      <div id="sub-frame-error">
+        <!-- Show details when hovering over the icon, in case the details are
+             hidden because they're too large. -->
+        <div class="icon ${getSubFrameErrorIconCssClass(data)}"></div>
+        <div id="sub-frame-error-details" .innerHTML="${data.summary.msg}">
+        </div>
+      </div>
+    ` : ''}
+  `;
+  // clang-format on
 }
 
 // Expose methods that are triggered either
@@ -209,13 +338,8 @@ function onDocumentLoad() {
 //
 //  since those need to be available on the 'window' object.
 Object.assign(window, {
-  cancelSavePageClick,
-  detailsButtonClick,
   diagnoseErrors,
-  downloadButtonClick,
   portalSignin,
-  reloadButtonClick,
-  savePageLaterClick,
   toggleHelpBox,
   updateForDnsProbe,
 });
