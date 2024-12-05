@@ -1094,9 +1094,13 @@ void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
       CreateCredentialedResourceRequest(
           metrics_endpoint_url,
           CredentialedResourceRequestType::kOriginWithoutCORS);
-  DownloadJsonAndParse(std::move(resource_request), url_encoded_post_data,
-                       IdpNetworkRequestManager::ParseJsonCallback(),
-                       maxResponseSizeInKiB * 1024);
+  // Typically, this IdpNetworkRequestManager will be destroyed after
+  // we return, but because the SimpleURLLoader is owned by the callback
+  // object, the load will not be aborted.
+  // The result of the download is not important, so we pass an empty
+  // DownloadCallback.
+  DownloadUrl(std::move(resource_request), url_encoded_post_data,
+              DownloadCallback(), maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
@@ -1108,9 +1112,13 @@ void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
       CreateUncredentialedResourceRequest(metrics_endpoint_url,
                                           /*send_origin=*/false);
 
-  DownloadJsonAndParse(std::move(resource_request), url_encoded_post_data,
-                       IdpNetworkRequestManager::ParseJsonCallback(),
-                       maxResponseSizeInKiB * 1024);
+  // Typically, this IdpNetworkRequestManager will be destroyed after
+  // we return, but because the SimpleURLLoader is owned by the callback
+  // object, the load will not be aborted.
+  // The result of the download is not important, so we pass an empty
+  // DownloadCallback.
+  DownloadUrl(std::move(resource_request), url_encoded_post_data,
+              DownloadCallback(), maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
