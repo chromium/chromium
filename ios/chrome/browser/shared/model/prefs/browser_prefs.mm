@@ -129,12 +129,6 @@
 
 namespace {
 
-// Deprecated 10/2023.
-// Boolean whether has requested sync to be enabled. This is set early in the
-// sync setup flow, after the user has pressed "turn on sync" but before they
-// have accepted the confirmation dialog.
-inline constexpr char kSyncRequested[] = "sync.requested";
-
 // Deprecated 12/2023.
 const char kSigninLastAccounts[] = "ios.signin.last_accounts";
 const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
@@ -1005,8 +999,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(kLastUsedFeedForGoodVisitsKey, 0);
   registry->RegisterListPref(kActivityBucketLastReportedDateArrayKey);
 
-  registry->RegisterBooleanPref(kSyncRequested, false);
-
   registry->RegisterBooleanPref(prefs::kDetectUnitsEnabled, true);
 
   registry->RegisterTimePref(prefs::kLastSigninTimestamp, base::Time());
@@ -1200,9 +1192,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // TODO(crbug.com/40933843) To be removed after a few milestones.
   MigrateNSDatePreferenceFromUserDefaults(kActivityBucketLastReportedDateKey,
                                           prefs, defaults);
-
-  // Added 10/2023.
-  prefs->ClearPref(kSyncRequested);
 
   // Added 10/2023.
   // TODO(crbug.com/40933843) To be removed after a few milestones.
