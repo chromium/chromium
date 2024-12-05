@@ -20,6 +20,11 @@ BASE_FEATURE(kLogBubblingTouchscreenGesturesForDebug,
 );
 
 // Flag guard for fix for crbug.com/346629231.
+BASE_FEATURE(kIgnoreBubblingCollisionIfSourceDevicesMismatch,
+             "IgnoreBubblingCollisionIfSourceDevicesMismatch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Flag guard for fix for crbug.com/346629231.
 BASE_FEATURE(kScrollBubblingFix,
              "ScrollBubblingFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
