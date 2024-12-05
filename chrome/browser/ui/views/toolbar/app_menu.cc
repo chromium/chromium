@@ -1586,12 +1586,9 @@ void AppMenu::CreateBookmarkMenu() {
   // TODO(oshima): Replace with views only API.
   views::Widget* parent = views::Widget::GetWidgetForNativeWindow(
       browser_->window()->GetNativeWindow());
-  bookmark_menu_delegate_ =
-      std::make_unique<BookmarkMenuDelegate>(browser_, parent);
-  bookmark_menu_delegate_->Init(this, bookmark_menu_,
-                                model->bookmark_bar_node(), 0,
-                                BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kAppMenu);
+  bookmark_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
+      browser_, parent, this, BookmarkLaunchLocation::kAppMenu);
+  bookmark_menu_delegate_->BuildFullMenu(bookmark_menu_);
 }
 
 size_t AppMenu::ModelIndexFromCommandId(int command_id) const {

@@ -47,37 +47,30 @@ class Widget;
 class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
                              public BookmarkContextMenuObserver {
  public:
-  enum ShowOptions {
-    // Indicates a menu should be added containing the permanent folders (other
-    // than then bookmark bar folder). This only makes sense when showing the
-    // contents of the bookmark bar folder.
-    SHOW_PERMANENT_FOLDERS,
-
-    // Don't show any additional folders.
-    HIDE_PERMANENT_FOLDERS
-  };
-
-  BookmarkMenuDelegate(Browser* browser, views::Widget* parent);
+  BookmarkMenuDelegate(Browser* browser,
+                       views::Widget* parent,
+                       views::MenuDelegate* real_delegate,
+                       BookmarkLaunchLocation location);
 
   BookmarkMenuDelegate(const BookmarkMenuDelegate&) = delete;
   BookmarkMenuDelegate& operator=(const BookmarkMenuDelegate&) = delete;
 
   ~BookmarkMenuDelegate() override;
 
-  // Creates the menus from the model.
-  void Init(views::MenuDelegate* real_delegate,
-            views::MenuItemView* parent,
-            const bookmarks::BookmarkNode* node,
-            size_t start_child_index,
-            ShowOptions show_options,
-            BookmarkLaunchLocation location);
-
-  // Returns the id given to the next menu.
-  int next_menu_id() const { return next_menu_id_; }
+  // Extends the `parent` menu by adding items for all relevant bookmark nodes,
+  // including:
+  // - a folder for managed nodes, if any
+  // - each bookmark bar node
+  // - a folder for 'other' nodes, if any
+  // - a folder for mobile nodes, if any
+  void BuildFullMenu(views::MenuItemView* parent);
 
   // Makes the menu for |node| the active menu. |start_index| is the index of
   // the first child of |node| to show in the menu.
   void SetActiveMenu(const bookmarks::BookmarkNode* node, size_t start_index);
+
+  // Returns the id given to the next menu.
+  int next_menu_id() const { return next_menu_id_; }
 
   bookmarks::BookmarkModel* GetBookmarkModel() {
     return const_cast<bookmarks::BookmarkModel*>(
@@ -166,8 +159,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
 
   // Creates a menu. This uses BuildMenu() to recursively populate the menu.
   views::MenuItemView* CreateMenu(const bookmarks::BookmarkNode* parent,
-                                  size_t start_child_index,
-                                  ShowOptions show_options);
+                                  size_t start_child_index);
 
   // Invokes BuildMenuForPermanentNode() for the permanent nodes (excluding
   // 'other bookmarks' folder).
@@ -221,7 +213,8 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // Used when a context menu is shown.
   std::unique_ptr<BookmarkContextMenu> context_menu_;
 
-  // If non-NULL this is the |parent| passed to Init and is NOT owned by us.
+  // If non-NULL this is the |parent| passed to BuildFullMenu and is NOT owned
+  // by us.
   raw_ptr<views::MenuItemView> parent_menu_item_;
 
   // Maps from node to menu.
@@ -239,7 +232,9 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   BookmarkLaunchLocation location_;
 
   // Whether the involved menu uses mnemonics or not. If it does, ampersands
-  // inside bookmark titles need to be escaped.
+  // inside bookmark titles need to be escaped. In cases where the
+  // BookmarkMenuDelegate will be the root, client code does not currently
+  // enable mnemonics.
   bool menu_uses_mnemonics_;
 
   base::ScopedObservation<bookmarks::BookmarkModel,

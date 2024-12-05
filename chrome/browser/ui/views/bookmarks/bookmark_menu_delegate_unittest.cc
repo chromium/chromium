@@ -93,26 +93,27 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
     if (!bookmark_menu_delegate_.get())
       return;
 
+    views::MenuItemView* menu = bookmark_menu_delegate_->menu();
+    bookmark_menu_delegate_.reset();
     // Since we never show the menu we need to pass the MenuItemView to
     // MenuRunner so that the MenuItemView is destroyed.
-    views::MenuRunner menu_runner(
-        base::WrapUnique(bookmark_menu_delegate_->menu()), 0);
-    bookmark_menu_delegate_.reset();
+    if (menu) {
+      views::MenuRunner menu_runner(base::WrapUnique(menu), 0);
+    }
   }
 
   void NewDelegate() {
     DestroyDelegate();
 
-    bookmark_menu_delegate_ =
-        std::make_unique<BookmarkMenuDelegate>(browser(), nullptr);
+    bookmark_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
+        browser(), nullptr, &test_delegate_, BookmarkLaunchLocation::kNone);
   }
 
-  void NewAndInitDelegateForPermanent() {
-    const BookmarkNode* node = model()->bookmark_bar_node();
+  void NewAndBuildFullMenu() {
+    root_menu_ = std::make_unique<views::MenuItemView>();
+    root_menu_->CreateSubmenu();
     NewDelegate();
-    bookmark_menu_delegate_->Init(&test_delegate_, nullptr, node, 0,
-                                  BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,
-                                  BookmarkLaunchLocation::kNone);
+    bookmark_menu_delegate_->BuildFullMenu(root_menu_.get());
   }
 
   const BookmarkNode* GetNodeForMenuItem(views::MenuItemView* menu) {
@@ -125,20 +126,6 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
 
   // Forces all the menus to load by way of invoking WillShowMenu() on all menu
   // items of tyep SUBMENU.
-  void LoadAllMenus() { LoadAllMenus(bookmark_menu_delegate_->menu()); }
-
-  BookmarkModel* model() {
-    return BookmarkModelFactory::GetForBrowserContext(profile());
-  }
-
-  const BookmarkNode* managed_node() {
-    return ManagedBookmarkServiceFactory::GetForProfile(profile())
-        ->managed_node();
-  }
-
-  std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
-
- private:
   void LoadAllMenus(views::MenuItemView* menu) {
     EXPECT_EQ(views::MenuItemView::Type::kSubMenu, menu->GetType());
 
@@ -150,6 +137,26 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
     }
   }
 
+  BookmarkModel* model() {
+    return BookmarkModelFactory::GetForBrowserContext(profile());
+  }
+
+  const BookmarkNode* managed_node() {
+    return ManagedBookmarkServiceFactory::GetForProfile(profile())
+        ->managed_node();
+  }
+
+  // Returns the menu being used for the test.
+  views::MenuItemView* menu() {
+    return root_menu_.get() ? root_menu_.get()
+                            : bookmark_menu_delegate_->menu();
+  }
+
+  std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
+
+  std::unique_ptr<views::MenuItemView> root_menu_;
+
+ private:
   // Creates the following structure:
   // bookmark bar node
   //   a
@@ -189,8 +196,8 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
-  NewAndInitDelegateForPermanent();
-  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
+  NewAndBuildFullMenu();
+  views::MenuItemView* root_item = menu();
   ASSERT_TRUE(root_item->HasSubmenu());
   EXPECT_EQ(6u, root_item->GetSubmenu()->GetMenuItems().size());
   EXPECT_EQ(7u, root_item->GetSubmenu()->children().size());  // + separator
@@ -238,10 +245,8 @@ TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
   views::MenuDelegate test_delegate;
   const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
-                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
-  LoadAllMenus();
+  bookmark_menu_delegate_->SetActiveMenu(node, 0);
+  LoadAllMenus(menu());
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
       {
           node->children()[1].get(),
@@ -257,9 +262,7 @@ TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   views::MenuDelegate test_delegate;
   const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
-                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
+  bookmark_menu_delegate_->SetActiveMenu(node, 0);
   // Any nodes on the bookmark bar should close on remove.
   EXPECT_TRUE(
       ShouldCloseOnRemove(model()->bookmark_bar_node()->children()[2].get()));
@@ -280,9 +283,7 @@ TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   }
 
   NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
-                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
+  bookmark_menu_delegate_->SetActiveMenu(node, 0);
   // Any nodes on the bookmark bar should close on remove.
   EXPECT_TRUE(ShouldCloseOnRemove(model()->other_node()->children()[0].get()));
 }
@@ -291,12 +292,10 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
   views::MenuDelegate test_delegate;
   const BookmarkNode* f1 = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr, f1, 0,
-                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
-  LoadAllMenus();
+  bookmark_menu_delegate_->SetActiveMenu(f1, 0);
+  views::MenuItemView* root_item = menu();
+  LoadAllMenus(root_item);
 
-  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
   gfx::Point menu_loc;
   views::View::ConvertPointToScreen(root_item, &menu_loc);
   ui::OSExchangeData drop_data;
@@ -330,12 +329,10 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
   views::MenuDelegate test_delegate;
   const BookmarkNode* f1 = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr, f1, 0,
-                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
-  LoadAllMenus();
+  bookmark_menu_delegate_->SetActiveMenu(f1, 0);
+  views::MenuItemView* root_item = menu();
+  LoadAllMenus(root_item);
 
-  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
   gfx::Point menu_loc;
   views::View::ConvertPointToScreen(root_item, &menu_loc);
   ui::OSExchangeData drop_data;
@@ -370,12 +367,10 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
   views::MenuDelegate test_delegate;
   const BookmarkNode* f1 = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr, f1, 0,
-                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
-  LoadAllMenus();
+  bookmark_menu_delegate_->SetActiveMenu(f1, 0);
+  views::MenuItemView* root_item = menu();
+  LoadAllMenus(root_item);
 
-  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
   gfx::Point menu_loc;
   views::View::ConvertPointToScreen(root_item, &menu_loc);
   ui::OSExchangeData drop_data;
@@ -409,12 +404,10 @@ TEST_F(BookmarkMenuDelegateTest, DropCallbackModelChanged) {
   views::MenuDelegate test_delegate;
   const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
-                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
-  LoadAllMenus();
+  bookmark_menu_delegate_->SetActiveMenu(node, 0);
+  views::MenuItemView* root_item = menu();
+  LoadAllMenus(root_item);
 
-  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
   gfx::Point menu_loc;
   views::View::ConvertPointToScreen(root_item, &menu_loc);
   ui::OSExchangeData drop_data;
@@ -439,14 +432,9 @@ TEST_F(BookmarkMenuDelegateTest, DropCallbackModelChanged) {
 }
 
 TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
-  views::MenuDelegate test_delegate;
-  NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr,
-                                model()->bookmark_bar_node(), 0,
-                                BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
-  LoadAllMenus();
-  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
+  NewAndBuildFullMenu();
+  views::MenuItemView* root_item = menu();
+  LoadAllMenus(root_item);
 
   ui::OSExchangeData drop_data;
   drop_data.SetURL(GURL("http://www.chromium.org/"), std::u16string(u"z"));
@@ -516,14 +504,10 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
 }
 
 TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterManagedNode) {
-  views::MenuDelegate test_delegate;
-  NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr,
-                                model()->bookmark_bar_node(), 0,
-                                BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
-  LoadAllMenus();
-  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
+  NewAndBuildFullMenu();
+  views::MenuItemView* root_item = menu();
+  LoadAllMenus(root_item);
+
   auto* managed_folder_menu = root_item->GetSubmenu()->GetMenuItemAt(0);
   ASSERT_EQ(managed_folder_menu->title(), managed_node()->GetTitle());
 
@@ -558,14 +542,10 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterManagedNode) {
 }
 
 TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeOtherNode) {
-  views::MenuDelegate test_delegate;
-  NewDelegate();
-  bookmark_menu_delegate_->Init(&test_delegate, nullptr,
-                                model()->bookmark_bar_node(), 0,
-                                BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,
-                                BookmarkLaunchLocation::kNone);
-  LoadAllMenus();
-  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
+  NewAndBuildFullMenu();
+  views::MenuItemView* root_item = menu();
+  LoadAllMenus(root_item);
+
   size_t bookmark_bar_nodes_size =
       model()->bookmark_bar_node()->children().size();
   auto* other_folder_menu = root_item->GetSubmenu()->GetMenuItemAt(
