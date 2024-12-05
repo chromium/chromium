@@ -242,17 +242,21 @@ void SharedStorageHeaderObserver::HeaderReceived(
   FrameTreeNodeId main_frame_id = GetMainFrameIdFromNavigationOrDocumentHandle(
       navigation_or_document_handle);
 
+  std::vector<MethodWithOptionsPtr> cloned_methods_with_options;
+  cloned_methods_with_options.reserve(methods_with_options.size());
+
   for (auto& method_with_options : methods_with_options) {
-    auto cloned_method_with_options = method_with_options.Clone();
-    storage_partition_->GetSharedStorageRuntimeManager()
-        ->lock_manager()
-        .SharedStorageUpdate(
-            std::move(method_with_options), request_origin,
-            AccessScope::kHeader, main_frame_id,
-            base::BindOnce(&SharedStorageHeaderObserver::OnMethodFinished,
-                           weak_ptr_factory_.GetWeakPtr(), request_origin,
-                           std::move(cloned_method_with_options)));
+    cloned_methods_with_options.push_back(method_with_options.Clone());
   }
+
+  storage_partition_->GetSharedStorageRuntimeManager()
+      ->lock_manager()
+      .SharedStorageBatchUpdate(
+          std::move(methods_with_options), /*with_lock=*/std::nullopt,
+          request_origin, AccessScope::kHeader, main_frame_id,
+          base::BindOnce(&SharedStorageHeaderObserver::OnBatchUpdateFinished,
+                         weak_ptr_factory_.GetWeakPtr(), request_origin,
+                         std::move(cloned_methods_with_options)));
 
   OnHeaderProcessed(request_origin);
   std::move(callback).Run();

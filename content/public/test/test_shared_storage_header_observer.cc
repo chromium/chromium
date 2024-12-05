@@ -42,12 +42,12 @@ void TestSharedStorageHeaderObserver::OnHeaderProcessed(
   header_results_.emplace_back(request_origin);
 }
 
-void TestSharedStorageHeaderObserver::OnMethodFinished(
+void TestSharedStorageHeaderObserver::OnBatchUpdateFinished(
     const url::Origin& request_origin,
-    MethodWithOptionsPtr method_with_options,
+    std::vector<MethodWithOptionsPtr> methods_with_options,
     const std::string& error_message) {
   bool success = error_message.empty();
-  operations_.emplace_back(request_origin, std::move(method_with_options),
+  operations_.emplace_back(request_origin, std::move(methods_with_options),
                            success);
 
   if (loop_ && loop_->running() && operations_.size() >= expected_total_) {

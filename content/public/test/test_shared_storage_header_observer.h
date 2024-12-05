@@ -49,9 +49,10 @@ class TestSharedStorageHeaderObserver : public SharedStorageHeaderObserver {
  private:
   // SharedStorageHeaderObserver:
   void OnHeaderProcessed(const url::Origin& request_origin) override;
-  void OnMethodFinished(const url::Origin& request_origin,
-                        MethodWithOptionsPtr method_with_options,
-                        const std::string& error_message) override;
+  void OnBatchUpdateFinished(
+      const url::Origin& request_origin,
+      std::vector<MethodWithOptionsPtr> methods_with_options,
+      const std::string& error_message) override;
 
   std::unique_ptr<base::RunLoop> loop_;
   size_t expected_total_;
