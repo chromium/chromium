@@ -100,7 +100,9 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str],
       feature_dict: Data for the new What's New feature.
       feature_type: Newly added WhatsNewType for the new What's New feature.
   """
-    instruction_steps = feature_dict['Instructions'].splitlines()
+
+    # Format and clean up the instructions text field ID.
+    instruction_steps = StripWhitespacesAndEmptyLines(feature_dict['Instructions'])
     serialized_animation_texts = feature_dict['Animation texts'].splitlines()
     animation_text_dict = {}
     for animation_text_string in serialized_animation_texts:
@@ -290,7 +292,7 @@ def UploadScreenshots(feature_dict: dict[str, str],
     titles.append(feature_dict['Title'])
     titles.append(feature_dict['Subtitle'])
     feature_screenshot = feature_dict['Feature screenshot']
-    titles.extend(feature_dict['Instructions'].splitlines())
+    titles.extend(StripWhitespacesAndEmptyLines(feature_dict['Instructions']))
     animation_texts_string = feature_dict['Animation texts'].splitlines()
     titles.extend(json.loads(a)['value'] for a in animation_texts_string)
     screenshot_dir = os.path.join(
@@ -467,3 +469,16 @@ def ValidateWhatsNewData(feature_dict: dict[str, str]) -> str:
                 f'icon name: {feature_dict["Icon name"]}')
 
     return ""
+
+def StripWhitespacesAndEmptyLines(text: str) -> list[str]:
+    """Strips all whitespace and empty lines from text including whitespace
+    between words.
+
+    Args:
+        text: The raw string.
+
+    Returns:
+        A formatted string with no whitespace or empty lines.
+    """
+    lines = text.splitlines()
+    return ["".join(line.split()) for line in lines if line.strip()]
