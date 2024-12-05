@@ -2363,7 +2363,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
 }
 
 TEST_F(PrivateAggregationHostDeveloperModeTest,
-       TimeoutSet_ScheduledReportTimeIsAtTimeout) {
+       TimeoutSet_ScheduledReportTimeIsNotDelayed) {
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -2373,7 +2373,8 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   EXPECT_TRUE(host_->BindNewReceiver(
       kExampleOrigin, kMainFrameOrigin,
       PrivateAggregationCallerApi::kProtectedAudience,
-      /*context_id=*/"example_context_id", /*timeout=*/base::Seconds(30),
+      /*context_id=*/"example_context_id",
+      /*timeout=*/base::Seconds(30),
       /*aggregation_coordinator_origin=*/std::nullopt,
       PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
       remote.BindNewPipeAndPassReceiver()));
@@ -2397,10 +2398,11 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
 
   ASSERT_TRUE(validated_request);
 
-  // We're using `MOCK_TIME` so we can be sure no time has advanced.
-  EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
-            base::Time::Now() + base::Seconds(30) +
-                PrivateAggregationHost::kTimeForLocalProcessing);
+  // We're using `MOCK_TIME` so we can be sure no time has advanced. The
+  // requested timeout is ignored because developer mode is enabled.
+  EXPECT_EQ(
+      validated_request->shared_info().scheduled_report_time,
+      base::Time::Now() + PrivateAggregationHost::kTimeForLocalProcessing);
 }
 
 }  // namespace

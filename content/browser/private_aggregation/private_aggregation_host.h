@@ -131,10 +131,10 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   // Binds a new pending receiver for a worklet, allowing messages to be sent
   // and processed. However, the receiver is not bound if the `worklet_origin`
-  // is not potentially trustworthy or if `context_id` is too long.  If
-  // `timeout` is set, the report will be sent as if the pipe closed after the
-  // timeout, regardless of when the disconnection actually happens. `timeout`
-  // must be positive if set. If `timeout` is set, then
+  // is not potentially trustworthy or if `context_id` is too long. If `timeout`
+  // is set and developer mode is not enabled, the report will be sent as if the
+  // pipe closed after the timeout, regardless of when the disconnection
+  // actually happens. `timeout` must be positive if set. If `timeout` is set,
   // `PrivateAggregationManager::ShouldSendReportDeterministically(context_id,
   // filtering_id_max_bytes)` should return true. If
   // `aggregation_coordinator_origin` is set, the origin must be on the

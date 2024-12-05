@@ -562,6 +562,12 @@ void PrivateAggregationHost::OnReceiverDisconnected() {
     remaining_timeout = base::TimeDelta();
   }
 
+  // Speed up tests when developer mode is enabled by ignoring the remaining
+  // timeout. See https://crbug.com/362901607#comment7 for context.
+  if (should_not_delay_reports_) {
+    remaining_timeout = base::TimeDelta();
+  }
+
   SendReportOnTimeoutOrDisconnect(current_context, remaining_timeout);
 }
 
