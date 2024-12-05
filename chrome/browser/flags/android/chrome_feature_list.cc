@@ -67,6 +67,7 @@
 #include "components/visited_url_ranking/public/features.h"
 #include "components/viz/common/features.h"
 #include "components/webapps/browser/features.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
 #include "services/device/public/cpp/device_features.h"
@@ -1091,7 +1092,12 @@ BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid,
 
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kVoiceSearchAudioCapturePolicy,
              "VoiceSearchAudioCapturePolicy",
