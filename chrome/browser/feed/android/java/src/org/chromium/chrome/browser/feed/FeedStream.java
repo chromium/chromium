@@ -853,7 +853,7 @@ public class FeedStream implements Stream {
         mSliceViewTracker.bind();
 
         rootView.addOnScrollListener(mMainScrollListener);
-        rootView.getAdapter().registerAdapterDataObserver(mRestoreScrollObserver);
+        renderer.getAdapter().registerAdapterDataObserver(mRestoreScrollObserver);
         mRecyclerView = rootView;
         mContentManager = manager;
         mSurfaceScope = surfaceScope;
@@ -923,7 +923,7 @@ public class FeedStream implements Stream {
         mContentManager = null;
 
         mRecyclerView.removeOnScrollListener(mMainScrollListener);
-        mRecyclerView.getAdapter().unregisterAdapterDataObserver(mRestoreScrollObserver);
+        mRenderer.getAdapter().unregisterAdapterDataObserver(mRestoreScrollObserver);
         mRecyclerView = null;
 
         if (mWindowAndroid.getDisplay() != null) {
