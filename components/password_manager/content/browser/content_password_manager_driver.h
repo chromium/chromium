@@ -73,6 +73,14 @@ class ContentPasswordManagerDriver final
   void FillField(
       const std::u16string& value,
       autofill::AutofillSuggestionTriggerSource suggestion_source) override;
+  void SubmitChangePasswordForm(
+      autofill::FieldRendererId password_element_id,
+      autofill::FieldRendererId new_password_element_id,
+      autofill::FieldRendererId confirm_password_element_id,
+      const std::u16string& old_password,
+      const std::u16string& new_password,
+      base::OnceCallback<void(const autofill::FormData&)> form_data_callback)
+      override;
   void FillSuggestion(const std::u16string& username,
                       const std::u16string& password,
                       base::OnceCallback<void(bool)> success_callback) override;
@@ -191,6 +199,10 @@ class ContentPasswordManagerDriver final
 
   const mojo::AssociatedRemote<autofill::mojom::PasswordGenerationAgent>&
   GetPasswordGenerationAgent();
+
+  void OnChangePasswordFormFilled(
+      base::OnceCallback<void(const autofill::FormData&)> form_data_callback,
+      const autofill::FormData& raw_form);
 
   const raw_ptr<content::RenderFrameHost> render_frame_host_;
   const raw_ptr<PasswordManagerClient> client_;

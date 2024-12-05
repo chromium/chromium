@@ -151,6 +151,18 @@ interface PasswordAutofillAgent {
   FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
     AutofillSuggestionTriggerSource suggestion_source);
 
+  // Fills and submits a given change password form, specifically
+  // `password_element_id` with `old_password` and `new_password_element_id`,
+  // `confirm_password_element_id` with `new_password`. Upon completion
+  // asynchronously returns `form_data` with filled values. Submission
+  // happens by simulating Enter on the last input field.
+  SubmitChangePasswordForm(FieldRendererId password_element_id,
+                         FieldRendererId new_password_element_id,
+                         FieldRendererId confirm_password_element_id,
+                         mojo_base.mojom.String16 old_password,
+                         mojo_base.mojom.String16 new_password)
+      => (FormData form_data);
+
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);

@@ -1053,6 +1053,45 @@ void PasswordAutofillAgent::FillField(
   DoFillField(input_element, value, GetFieldFlags(suggestion_source));
 }
 
+void PasswordAutofillAgent::SubmitChangePasswordForm(
+    FieldRendererId password_element_id,
+    FieldRendererId new_password_element_id,
+    FieldRendererId confirm_password_element_id,
+    const std::u16string& old_password,
+    const std::u16string& new_password,
+    SubmitChangePasswordFormCallback callback) {
+  WebInputElement last_element;
+
+  auto filling_tasks = {
+      std::make_pair(password_element_id, old_password),
+      std::make_pair(new_password_element_id, new_password),
+      std::make_pair(confirm_password_element_id, new_password)};
+  for (const auto& task : filling_tasks) {
+    WebFormControlElement form_control =
+        form_util::GetFormControlByRendererId(task.first);
+    WebInputElement input_element = form_control.DynamicTo<WebInputElement>();
+    if (!input_element) {
+      continue;
+    }
+
+    DoFillField(input_element, task.second,
+                FieldPropertiesFlags::kAutofilledOnPageLoad);
+    last_element = input_element;
+  }
+
+  if (!last_element) {
+    return;
+  }
+  std::optional<FormData> form_data =
+      GetFormDataFromWebForm(form_util::GetOwningForm(last_element));
+  if (!form_data) {
+    return;
+  }
+
+  last_element.DispatchSimulatedEnter();
+  std::move(callback).Run(*form_data);
+}
+
 void PasswordAutofillAgent::DoPreviewField(WebInputElement input,
                                            const std::u16string& credential,
                                            bool is_password) {
