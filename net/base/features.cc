@@ -595,6 +595,10 @@ BASE_FEATURE(kOptimizeParsingDataUrls,
              "OptimizeParsingDataUrls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSimdutfBase64Support,
+             "SimdutfBase64Support",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/347047841): Remove this flag when we branch for M131 or later,
 // if we haven't had to turn this off.
 BASE_FEATURE(kLegacyPKCS1ForTLS13,
