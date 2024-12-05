@@ -19,9 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_browser_bound_signature.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
@@ -248,11 +246,6 @@ TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
         ConvertTo<blink::AuthenticationExtensionsSupplementalPubKeysOutputs*>(
             extensions->supplemental_pub_keys));
   }
-  if (extensions->payment) {
-    extension_outputs->setPayment(
-        ConvertTo<blink::AuthenticationExtensionsPaymentOutputs*>(
-            extensions->payment));
-  }
   if (extensions->echo_prf) {
     auto* prf_outputs = blink::AuthenticationExtensionsPRFOutputs::Create();
     if (extensions->prf_results) {
@@ -289,33 +282,6 @@ TypeConverter<blink::AuthenticationExtensionsSupplementalPubKeysOutputs*,
       blink::AuthenticationExtensionsSupplementalPubKeysOutputs::Create();
   spk_outputs->setSignatures(std::move(signatures));
   return spk_outputs;
-}
-
-// static
-blink::AuthenticationExtensionsPaymentOutputs*
-TypeConverter<blink::AuthenticationExtensionsPaymentOutputs*,
-              blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr>::
-    Convert(
-        const blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr&
-            payment_response) {
-  auto* payment_outputs =
-      blink::AuthenticationExtensionsPaymentOutputs::Create();
-  if (!payment_response->browser_bound_signatures.empty()) {
-    blink::HeapVector<blink::Member<
-        blink::AuthenticationExtensionsPaymentBrowserBoundSignature>>
-        signatures;
-    signatures.reserve(payment_response->browser_bound_signatures.size());
-    for (const auto& mojo_signature :
-         payment_response->browser_bound_signatures) {
-      auto* browser_bound_signature =
-          blink::AuthenticationExtensionsPaymentBrowserBoundSignature::Create();
-      browser_bound_signature->setSignatureOutput(
-          blink::DOMArrayBuffer::Create(std::move(mojo_signature)));
-      signatures.push_back(std::move(browser_bound_signature));
-    }
-    payment_outputs->setBrowserBoundSignatures(signatures);
-  }
-  return payment_outputs;
 }
 
 // static

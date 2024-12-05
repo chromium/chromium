@@ -209,7 +209,6 @@ android_library("full_java") {
   ]
   resources_package = "org.chromium.components.payments"
   deps = [
-    ":browser_binding_java",
     ":feature_list_java",
     ":java_resources",
     ":minimal_java",
@@ -246,48 +245,6 @@ android_library("full_java") {
     ":prefs_strings_generated_srcjar",
   ]
   resources_package = "org.chromium.components.payments"
-}
-
-generate_jni("browser_binding_jni") {
-  sources = [
-    "java/src/org/chromium/components/payments/browser_binding/BrowserBoundKey.java",
-    "java/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyStore.java",
-  ]
-}
-
-android_library("browser_binding_java") {
-  sources = [
-    "java/src/org/chromium/components/payments/browser_binding/BrowserBoundKey.java",
-    "java/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyStore.java",
-  ]
-  deps = [
-    "//base:base_java",
-    "//build/android:build_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
-  ]
-}
-
-robolectric_library("browser_binding_junit_test") {
-  sources = [ "junit/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyTest.java" ]
-  deps = [
-    ":browser_binding_java",
-    "//base:base_junit_test_support",
-    "//third_party/junit:junit",
-  ]
-}
-
-android_library("browser_binding_unit_device_javatests") {
-  testonly = true
-  sources = [ "javatests/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyStoreTest.java" ]
-  deps = [
-    ":browser_binding_java",
-    "//base:base_java_test_support",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
-    "//ui/android:ui_java_test_support",
-  ]
 }
 
 android_library("pre_purchase_query_enum_java") {
@@ -428,7 +385,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredTest.java",
   ]
   deps = [
-    ":browser_binding_junit_test",
     ":java",
     ":junit_test_support",
     ":payments_java_test_support",
@@ -459,7 +415,6 @@ android_library("unit_device_javatests") {
   testonly = true
   sources = [ "javatests/src/org/chromium/components/payments/AndroidPaymentAppUnitTest.java" ]
   deps = [
-    ":browser_binding_unit_device_javatests",
     ":java",
     "//base:base_java_test_support",
     "//components/payments/mojom:mojom_java",

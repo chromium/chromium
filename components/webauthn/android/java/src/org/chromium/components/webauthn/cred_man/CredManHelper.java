@@ -599,8 +599,7 @@ public class CredManHelper {
                     + " responses also need to be updated. Flip `kUpdateRobolectricTests` in"
                     + " `value_conversions_unittest.cc`, run `component_unittests"
                     + " --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java"
-                    + " literals for `Fido2ApiTestHelper.java`. Run against an Android target"
-                    + " otherwise decoding may still fail in tests.",
+                    + " literals for `Fido2ApiTestHelper.java`.",
                 e);
     }
 }

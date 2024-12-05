@@ -5,16 +5,14 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_APP_H_
 #define COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_APP_H_
 
-#include <stdint.h>
+#include "components/payments/content/payment_app.h"
 
+#include <stdint.h>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/payments/content/browser_binding/browser_bound_key.h"
-#include "components/payments/content/browser_binding/browser_bound_key_store.h"
-#include "components/payments/content/payment_app.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -107,9 +105,6 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   std::u16string issuer_label() const { return issuer_label_; }
   SkBitmap issuer_icon() const { return issuer_icon_; }
 
-  void SetBrowserBoundKeyStoreForTesting(
-      std::unique_ptr<BrowserBoundKeyStore> key_store);
-
  private:
   void OnGetAssertion(
       base::WeakPtr<Delegate> delegate,
@@ -129,8 +124,6 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   const base::WeakPtr<PaymentRequestSpec> spec_;
   const mojom::SecurePaymentConfirmationRequestPtr request_;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
-  std::unique_ptr<BrowserBoundKeyStore> browser_bound_key_store_;
-  std::unique_ptr<BrowserBoundKey> browser_bound_key_;
   std::string challenge_;
   blink::mojom::GetAssertionAuthenticatorResponsePtr response_;
 

@@ -21,8 +21,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_browser_bound_signature.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
@@ -211,29 +209,6 @@ TEST(CredentialManagerTypeConvertersTest,
               DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
   EXPECT_THAT(blink_type->supplementalPubKeys()->signatures()[1],
               DOMArrayBufferEqualTo(Vector<uint8_t>{4, 5, 6}));
-}
-
-TEST(CredentialManagerTypeConvertersTest,
-     AuthenticationExtensionsClientOutputs_payment) {
-  auto mojo_type =
-      blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
-  mojo_type->payment =
-      blink::mojom::blink::AuthenticationExtensionsPaymentResponse::New(
-          /*browser_bound_signatures=*/Vector<Vector<uint8_t>>{{1, 2, 3},
-                                                               {4, 5, 6}});
-
-  auto* blink_type =
-      ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
-
-  EXPECT_TRUE(blink_type->hasPayment());
-  EXPECT_TRUE(blink_type->payment()->hasBrowserBoundSignatures());
-  ASSERT_EQ(blink_type->payment()->browserBoundSignatures().size(), 2u);
-  EXPECT_THAT(
-      blink_type->payment()->browserBoundSignatures()[0]->signatureOutput(),
-      DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
-  EXPECT_THAT(
-      blink_type->payment()->browserBoundSignatures()[1]->signatureOutput(),
-      DOMArrayBufferEqualTo(Vector<uint8_t>{4, 5, 6}));
 }
 
 TEST(CredentialManagerTypeConvertersTest,
