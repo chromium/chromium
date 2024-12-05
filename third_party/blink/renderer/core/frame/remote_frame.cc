@@ -126,6 +126,7 @@ RemoteFrame::RemoteFrame(
       task_runner_(page.GetPageScheduler()
                        ->GetAgentGroupScheduler()
                        .DefaultTaskRunner()) {
+  TRACE_EVENT("navigation", "RemoteFrame");
   auto frame_tracking_result = GetRemoteFramesMap().insert(
       RemoteFrameToken::Hasher()(frame_token), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
