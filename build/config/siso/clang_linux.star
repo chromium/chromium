@@ -287,7 +287,6 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
-            "exclude_input_patterns": ["*.stamp"],
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
             "canonicalize_dir": canonicalize_dir,
@@ -300,7 +299,6 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
-            "exclude_input_patterns": ["*.stamp"],
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
             "canonicalize_dir": canonicalize_dir,
@@ -325,7 +323,6 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
-            "exclude_input_patterns": ["*.stamp"],
             "handler": "clang_compile_coverage",
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
@@ -339,7 +336,6 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
-            "exclude_input_patterns": ["*.stamp"],
             "handler": "clang_compile_coverage",
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
@@ -359,7 +355,6 @@ def __step_config(ctx, step_config):
                 "*.js",
                 "*.pak",
                 "*.py",
-                "*.stamp",
             ],
             "handler": "clang_alink",
             "remote": config.get(ctx, "remote-link"),
@@ -378,7 +373,6 @@ def __step_config(ctx, step_config):
                 "*.js",
                 "*.pak",
                 "*.py",
-                "*.stamp",
             ],
             "remote": config.get(ctx, "remote-link"),
             "canonicalize_dir": True,
@@ -395,7 +389,6 @@ def __step_config(ctx, step_config):
                 "*.js",
                 "*.pak",
                 "*.py",
-                "*.stamp",
             ],
             "remote": config.get(ctx, "remote-link"),
             "canonicalize_dir": True,
@@ -412,7 +405,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "remote": True,
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
@@ -425,7 +417,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "remote": True,
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,

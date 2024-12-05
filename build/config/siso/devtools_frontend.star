@@ -31,9 +31,6 @@ def __step_config(ctx, step_config):
             {
                 "name": "devtools-frontend/typescript/ts_library",
                 "command_prefix": "python3 ../../third_party/devtools-frontend/src/third_party/typescript/ts_library.py",
-                "exclude_input_patterns": [
-                    "*.stamp",
-                ],
                 "remote": True,
                 "handler": "devtools_frontend/typescript_ts_library",
                 "output_local": True,

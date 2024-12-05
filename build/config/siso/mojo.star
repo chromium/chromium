@@ -19,9 +19,6 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/mojom_bindings_generator",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/mojom_bindings_generator.py",
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
             "restat": True,
             "remote": True,
             "canonicalize_dir": True,
@@ -32,9 +29,6 @@ def __step_config(ctx, step_config):
         {
             "name": "mojo/mojom_parser",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/mojom/mojom_parser.py",
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
             # TODO: b/285078792 - Win cross compile on Linux worker doesn't work with input_root_absolute_path=true.
             "remote": runtime.os != "windows",
             "canonicalize_dir": True,
