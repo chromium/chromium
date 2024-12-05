@@ -65,7 +65,7 @@ constexpr NSString* kModelIdLogitech4KPro =
 constexpr gfx::ColorSpace kColorSpaceRec709Apple(
     gfx::ColorSpace::PrimaryID::BT709,
     gfx::ColorSpace::TransferID::BT709_APPLE,
-    gfx::ColorSpace::MatrixID::SMPTE170M,
+    gfx::ColorSpace::MatrixID::BT709,
     gfx::ColorSpace::RangeID::LIMITED);
 
 constexpr int kTimeToWaitBeforeStoppingPhotoOutputInSeconds = 60;
