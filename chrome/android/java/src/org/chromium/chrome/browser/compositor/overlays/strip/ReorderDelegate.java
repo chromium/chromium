@@ -12,9 +12,12 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.graphics.PointF;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -31,6 +34,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +68,28 @@ public class ReorderDelegate {
     // Reorder State.
     private final ObservableSupplierImpl<Boolean> mInReorderModeSupplier =
             new ObservableSupplierImpl<>(/* initialValue= */ false);
+    // TODO(crbug.com/381285152): Cleanup mReorderingForTabDrop - duplicate of
+    // ReorderType.EXTERNAL_VIEW_IN_STRIP.
     private boolean mReorderingForTabDrop;
+
+    @IntDef({ReorderType.VIEW_IN_STRIP, ReorderType.VIEW_DRAG, ReorderType.EXTERNAL_VIEW_IN_STRIP})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ReorderType {
+        /*
+         * Interacting view belongs to and is reordered within strip.
+         */
+        int VIEW_IN_STRIP = 0;
+        /*
+         * Interacting view belongs to strip and could being dragged out-of / on-to strip.
+         */
+        int VIEW_DRAG = 1;
+        /*
+         * An external view (eg: tab from another strip) is being dragged onto and reordered
+         * with-in strip for drop. Interacting view here is the view being hovered on by the
+         * external view.
+         */
+        int EXTERNAL_VIEW_IN_STRIP = 2;
+    }
 
     /** The last x-position we processed for reorder. */
     private float mLastReorderX;
@@ -76,7 +102,7 @@ public class ReorderDelegate {
     private ReorderStrategy mActiveStrategy;
     private final TabReorderStrategy mTabStrategy = new TabReorderStrategy();
     private final GroupReorderStrategy mGroupStrategy = new GroupReorderStrategy();
-    private final DragDropReorderStrategy mDragDropStrategy = new DragDropReorderStrategy();
+    @Nullable private DragDropReorderStrategy mDragDropStrategy;
 
     // Auto-scroll State.
     private long mLastReorderScrollTime;
@@ -127,8 +153,10 @@ public class ReorderDelegate {
     }
 
     private ReorderStrategy getReorderStrategy(
-            StripLayoutView interactingView, boolean isReorderForDrop) {
-        if (isReorderForDrop) {
+            StripLayoutView interactingView, @ReorderType int reorderType) {
+        if (mDragDropStrategy != null
+                && interactingView instanceof StripLayoutTab
+                && reorderType == ReorderType.VIEW_DRAG) {
             return mDragDropStrategy;
         } else if (interactingView instanceof StripLayoutTab) {
             return mTabStrategy;
@@ -137,6 +165,30 @@ public class ReorderDelegate {
         }
         assert false : "Attempted to start reorder on an unexpected view type: " + interactingView;
         return null;
+    }
+
+    // TODO(crbug.com/381285152): Remove get/set viewBeingDragged once DragDropReorderStrategy is
+    // complete.
+    StripLayoutView getViewBeingDragged() {
+        if (mDragDropStrategy == null) return null;
+        return mDragDropStrategy.mViewBeingDragged;
+    }
+
+    void setViewBeingDragged(StripLayoutView view) {
+        if (mDragDropStrategy == null) return;
+        mDragDropStrategy.mViewBeingDragged = view;
+    }
+
+    // TODO(crbug.com/381285152): Remove get/set dragLastOffsetX once DragDropReorderStrategy is
+    // complete.
+    float getDragLastOffsetX() {
+        if (mDragDropStrategy == null) return 0f;
+        return mDragDropStrategy.mLastOffsetX;
+    }
+
+    void setDragLastOffsetX(float offsetX) {
+        if (mDragDropStrategy == null) return;
+        mDragDropStrategy.mLastOffsetX = offsetX;
     }
 
     // ============================================================================================
@@ -151,6 +203,8 @@ public class ReorderDelegate {
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} for accessing tab state.
      * @param scrollDelegate The {@link ScrollDelegate} for updating scroll offset. actions, such as
      *     delete and ungroup.
+     * @param tabDragSource The drag-drop manager {@link TabDragSource} for triggering Android
+     *     drag-drop and listen to drag events. Builds and manages the drag shadow.
      * @param groupIdToHideSupplier The {@link ObservableSupplierImpl} for the group ID to hide.
      * @param containerView The tab strip container {@link View}.
      */
@@ -158,6 +212,7 @@ public class ReorderDelegate {
             AnimationHost animationHost,
             TabGroupModelFilter tabGroupModelFilter,
             ScrollDelegate scrollDelegate,
+            TabDragSource tabDragSource,
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
             View containerView) {
         mAnimationHost = animationHost;
@@ -167,6 +222,10 @@ public class ReorderDelegate {
         mContainerView = containerView;
 
         mModel = mTabGroupModelFilter.getTabModel();
+
+        if (tabDragSource != null) {
+            mDragDropStrategy = new DragDropReorderStrategy(tabDragSource);
+        }
         mInitialized = true;
     }
 
@@ -177,13 +236,20 @@ public class ReorderDelegate {
     /** See {@link ReorderStrategy#startReorderMode} */
     void startReorderMode(
             StripLayoutTab[] stripTabs,
+            StripLayoutGroupTitle[] stripGroupTitles,
             @NonNull StripLayoutView interactingView,
             float effectiveTabWidth,
-            float x) {
-        assert mActiveStrategy == null && !getInReorderMode();
-        // TODO(crbug.com/381285152): Pass isReorderForDrop as arg.
-        mActiveStrategy = getReorderStrategy(interactingView, /* isReorderForDrop= */ false);
-        mActiveStrategy.startReorderMode(stripTabs, interactingView, effectiveTabWidth, x);
+            PointF startPoint,
+            @ReorderType int reorderType) {
+        assert mInitialized && mActiveStrategy == null && !getInReorderMode();
+        mActiveStrategy = getReorderStrategy(interactingView, reorderType);
+        mActiveStrategy.startReorderMode(
+                stripTabs,
+                stripGroupTitles,
+                interactingView,
+                effectiveTabWidth,
+                startPoint,
+                reorderType);
     }
 
     /** See {@link ReorderStrategy#updateReorderPosition} */
@@ -351,9 +417,11 @@ public class ReorderDelegate {
         @Override
         public void startReorderMode(
                 StripLayoutTab[] stripTabs,
+                StripLayoutGroupTitle[] stripGroupTitles,
                 StripLayoutView interactingTab,
                 float effectiveTabWidth,
-                float x) {
+                PointF startPoint,
+                @ReorderType int reorderType) {
             RecordUserAction.record("MobileToolbarStartReorderTab");
             setInteractingTab((StripLayoutTab) interactingTab);
 
@@ -366,7 +434,7 @@ public class ReorderDelegate {
                     mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getTabId()));
 
             // 3. Set initial state.
-            prepareStripForReorder(stripTabs, effectiveTabWidth, x);
+            prepareStripForReorder(stripTabs, effectiveTabWidth, startPoint.x);
 
             // 4. Lift the container off the toolbar and perform haptic feedback.
             ArrayList<Animator> animationList = new ArrayList<>();
@@ -714,9 +782,11 @@ public class ReorderDelegate {
         @Override
         public void startReorderMode(
                 StripLayoutTab[] stripTabs,
+                StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
                 float effectiveTabWidth,
-                float x) {
+                PointF startPoint,
+                @ReorderType int reorderType) {
             // TODO(crbug.com/376069497): Implement.
         }
 
@@ -747,15 +817,56 @@ public class ReorderDelegate {
         mActiveStrategy = mTabStrategy;
     }
 
-    private static class DragDropReorderStrategy implements ReorderStrategy {
+    private class DragDropReorderStrategy implements ReorderStrategy {
+        // Drag helpers
+        private final TabDragSource mTabDragSource;
 
+        // View on strip being dragged.
+        private StripLayoutView mViewBeingDragged;
+        // View offsetX when it was dragged off the strip. Used to re-position the view when dragged
+        // back onto strip.
+        private float mLastOffsetX;
+
+        public DragDropReorderStrategy(@NonNull TabDragSource tabDragSource) {
+            mTabDragSource = tabDragSource;
+        }
+
+        /** Initiate Android Drag-Drop for interactingView. */
         @Override
         public void startReorderMode(
                 StripLayoutTab[] stripTabs,
+                StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
                 float effectiveTabWidth,
-                float x) {
-            // TODO(crbug.com/381285152): Implement.
+                PointF startPoint,
+                @ReorderType int reorderType) {
+            Tab tab = mModel.getTabById(((StripLayoutTab) interactingView).getTabId());
+            boolean dragStarted =
+                    mTabDragSource.startTabDragAction(
+                            mContainerView,
+                            tab,
+                            startPoint,
+                            interactingView.getDrawX(),
+                            interactingView.getWidth());
+            if (dragStarted) {
+                mViewBeingDragged = interactingView;
+                mLastOffsetX = 0.f;
+            } else {
+                // Drag did not start. Stop this strategy to reset state.
+                // TODO(crbug.com/381285152): Call ReorderDelegate#stopReorderMode instead to
+                // cleanup any parent state and reset activeStrategy.
+                stopReorderMode(stripGroupTitles, stripTabs);
+                mActiveStrategy = null;
+
+                // Fallback to reorder view in strip.
+                ReorderDelegate.this.startReorderMode(
+                        stripTabs,
+                        stripGroupTitles,
+                        interactingView,
+                        effectiveTabWidth,
+                        startPoint,
+                        ReorderType.VIEW_IN_STRIP);
+            }
         }
 
         @Override
@@ -771,6 +882,8 @@ public class ReorderDelegate {
         public void stopReorderMode(
                 StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
             // TODO(crbug.com/381285152): Implement.
+            mViewBeingDragged = null;
+            mLastOffsetX = 0;
         }
     }
 
