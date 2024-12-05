@@ -72,6 +72,8 @@ namespace {
 using ::chromeos::mahi::ButtonType;
 
 constexpr char kWidgetName[] = "MahiMenuViewWidget";
+constexpr char16_t kCardShownAnnouncement[] =
+    u"Help Me Read, press tab to focus the Help Me Read card.";
 
 constexpr gfx::Insets kMenuPadding = gfx::Insets::TLBR(12, 16, 12, 14);
 constexpr int kButtonHeight = 16;
@@ -386,6 +388,16 @@ void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   // place for use
   GetWidget()->SetBounds(editor_menu::GetEditorMenuBounds(
       anchor_view_bounds, this, editor_menu::CardType::kMahiDefaultMenu));
+}
+
+void MahiMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
+                                             bool visible) {
+  if (visible && !announcement_alerted_) {
+    GetViewAccessibility().AnnounceAlert(kCardShownAnnouncement);
+    announcement_alerted_ = true;
+  } else if (!visible) {
+    announcement_alerted_ = false;
+  }
 }
 
 void MahiMenuView::OnButtonPressed(ButtonType button_type) {
