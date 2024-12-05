@@ -210,6 +210,7 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
 
       wgpu::FeatureName::DawnLoadResolveTexture,
       wgpu::FeatureName::DawnPartialLoadResolveTexture,
+      wgpu::FeatureName::DawnTexelCopyBufferRowAlignment,
   };
 
   for (auto feature : kOptionalFeatures) {
