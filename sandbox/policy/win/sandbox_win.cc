@@ -338,9 +338,6 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kXrCompositing:
       sandbox_base_name = std::string("cr.sb.xr");
       break;
-    case Sandbox::kGpu:
-      sandbox_base_name = std::string("cr.sb.gpu");
-      break;
     case Sandbox::kMediaFoundationCdm:
       sandbox_base_name = std::string("cr.sb.cdm");
       break;
@@ -382,8 +379,7 @@ void AddCapabilitiesFromString(AppContainer* container,
 ResultCode SetupAppContainerProfile(AppContainer* container,
                                     const base::CommandLine& command_line,
                                     Sandbox sandbox_type) {
-  if (sandbox_type != Sandbox::kGpu &&
-      sandbox_type != Sandbox::kXrCompositing &&
+  if (sandbox_type != Sandbox::kXrCompositing &&
       sandbox_type != Sandbox::kMediaFoundationCdm &&
       sandbox_type != Sandbox::kNetwork &&
       sandbox_type != Sandbox::kOnDeviceModelExecution &&
@@ -396,16 +392,6 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
 
   container->AddCapability(kLpacChromeInstallFiles);
   container->AddCapability(kRegistryRead);
-
-  if (sandbox_type == Sandbox::kGpu) {
-    container->AddImpersonationCapability(kChromeInstallFiles);
-    container->AddCapability(kLpacPnpNotifications);
-    AddCapabilitiesFromString(
-        container,
-        command_line.GetSwitchValueNative(switches::kAddGpuAppContainerCaps));
-    container->SetEnableLowPrivilegeAppContainer(
-        base::FeatureList::IsEnabled(features::kGpuLPAC));
-  }
 
   if (sandbox_type == Sandbox::kXrCompositing) {
     container->AddCapability(kChromeInstallFiles);
@@ -794,9 +780,6 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
 
   if (sandbox_type == Sandbox::kMediaFoundationCdm)
     return true;
-
-  if (sandbox_type == Sandbox::kGpu)
-    return base::FeatureList::IsEnabled(features::kGpuAppContainer);
 
   if (sandbox_type == Sandbox::kNetwork) {
     return true;

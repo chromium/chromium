@@ -382,12 +382,7 @@ class GpuSandboxedProcessLauncherDelegate
  public:
   explicit GpuSandboxedProcessLauncherDelegate(
       const base::CommandLine& cmd_line)
-      :
-#if BUILDFLAG(IS_WIN)
-        enable_appcontainer_(true),
-#endif
-        cmd_line_(cmd_line) {
-  }
+      : cmd_line_(cmd_line) {}
 
   ~GpuSandboxedProcessLauncherDelegate() override = default;
 
@@ -397,22 +392,6 @@ class GpuSandboxedProcessLauncherDelegate
   std::string GetSandboxTag() override {
     return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
         "gpu", GetSandboxType());
-  }
-
-  enum GPUAppContainerEnableState{
-      AC_ENABLED = 0,
-      AC_DISABLED_GL = 1,
-      AC_DISABLED_FORCE = 2,
-      MAX_ENABLE_STATE = 3,
-  };
-
-  bool GetAppContainerId(std::string* appcontainer_id) override {
-    if (!enable_appcontainer_) {
-      return false;
-    }
-
-    *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
-    return true;
   }
 
   // For the GPU process we gotten as far as USER_LIMITED. The next level
@@ -463,9 +442,6 @@ class GpuSandboxedProcessLauncherDelegate
 
     return true;
   }
-
-  // TODO: Remove this once AppContainer sandbox is enabled by default.
-  void DisableAppContainer() { enable_appcontainer_ = false; }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)
@@ -538,8 +514,6 @@ class GpuSandboxedProcessLauncherDelegate
     }
     return true;
   }
-
-  bool enable_appcontainer_;
 #endif
 
   base::CommandLine cmd_line_;
@@ -1353,10 +1327,6 @@ bool GpuProcessHost::LaunchGpuProcess() {
 
   std::unique_ptr<GpuSandboxedProcessLauncherDelegate> delegate =
       std::make_unique<GpuSandboxedProcessLauncherDelegate>(*cmd_line);
-#if BUILDFLAG(IS_WIN)
-  if (crashed_before_)
-    delegate->DisableAppContainer();
-#endif  // BUILDFLAG(IS_WIN)
 
   // Do not call process_->Launch() here.
   // AppendExtraCommandLineSwitches will be called again in process_->Launch(),
