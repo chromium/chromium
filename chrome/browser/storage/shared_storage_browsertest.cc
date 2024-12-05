@@ -4090,7 +4090,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletNumPerPage_Two) {
+// TODO(crbug.com/382530217): Test is flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WorkletNumPerPage_Two DISABLED_WorkletNumPerPage_Two
+#else
+#define MAYBE_WorkletNumPerPage_Two WorkletNumPerPage_Two
+#endif
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
+                       MAYBE_WorkletNumPerPage_Two) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
   // The test assumes pages get deleted after navigation. To ensure this,
