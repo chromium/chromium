@@ -7,9 +7,10 @@
  * 'privacy-guide-msbb-fragment' is the fragment in a privacy guide card
  * that contains the MSBB setting with a two-column description.
  */
+
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '/shared/settings/prefs/prefs.js';
 import '../../controls/settings_toggle_button.js';
-import './privacy_guide_description_item.js';
 import './privacy_guide_fragment_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';

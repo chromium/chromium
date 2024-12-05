@@ -120,7 +120,6 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_ad_topics_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_completion_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_cookies_fragment.ts",
-    "privacy_page/privacy_guide/privacy_guide_description_item.ts",
     "privacy_page/privacy_guide/privacy_guide_dialog.ts",
     "privacy_page/privacy_guide/privacy_guide_history_sync_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_msbb_fragment.ts",
