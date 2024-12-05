@@ -140,6 +140,22 @@ source_set("network_issue_alert_presenter") {
   ]
 }
 
+source_set("consent_presenter") {
+  sources = [
+    "lens_overlay_consent_presenter.h",
+    "lens_overlay_consent_presenter.mm",
+  ]
+  deps = [
+    ":protocols",
+    ":view_controller",
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ui/base",
+    "//url",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true

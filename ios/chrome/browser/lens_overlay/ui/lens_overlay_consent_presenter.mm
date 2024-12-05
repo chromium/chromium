@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_consent_presenter.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_presenter.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
