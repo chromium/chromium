@@ -1151,11 +1151,9 @@ void PopulateChromeWebUIFrameBinders(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsBluetoothDisconnectWarningEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::mojom::HidPreservingBluetoothStateController,
-        ash::settings::OSSettingsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::mojom::HidPreservingBluetoothStateController,
+      ash::settings::OSSettingsUI>(map);
 #endif  // defined(IS_CHROMEOS_ASH)
 
   RegisterWebUIControllerInterfaceBinder<

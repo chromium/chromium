@@ -6044,12 +6044,6 @@ const char kBluetoothFlossTelephonyDescription[] =
     "Enable Floss to create a Bluetooth HID device that allows applications to "
     "access Bluetooth telephony functions through WebHID.";
 
-const char kBluetoothDisconnectWarningName[] = "Bluetooth Disconnect Warning";
-const char kBluetoothDisconnectWarningDescription[] =
-    "Enables Bluetooth Disconnect Warning feature. When enabled, a "
-    "warning dialog will be shown when a user tries to disable Bluetooth "
-    "while only Bluetooth input devices are connected to the host.";
-
 const char kBluetoothCoredumpName[] = "Enable Bluetooth Device Coredump";
 const char kBluetoothCoredumpDescription[] =
     "Enable Bluetooth coredump collection if supported. Please note that "

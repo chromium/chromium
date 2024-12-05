@@ -46,16 +46,10 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
   });
 
   async function init(
-      isBluetoothDisconnectWarningEnabled: boolean = false,
       urlParams?: URLSearchParams): Promise<void> {
-    if (isBluetoothDisconnectWarningEnabled) {
-      loadTimeData.overrideValues({'bluetoothDisconnectWarningFlag': true});
       hidPreservingController = new FakeHidPreservingBluetoothStateController();
       hidPreservingController.setBluetoothConfigForTesting(bluetoothConfig);
       setHidPreservingControllerForTesting(hidPreservingController);
-    } else {
-      loadTimeData.overrideValues({'bluetoothDisconnectWarningFlag': false});
-    }
 
     bluetoothDevicesSubpage =
         document.createElement('os-settings-bluetooth-devices-subpage');
@@ -443,7 +437,7 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
     flush();
     const params = new URLSearchParams();
     params.append('settingId', settingMojom.Setting.kBluetoothOnOff.toString());
-    await init(false, params);
+    await init(params);
 
     const deepLinkElement = bluetoothDevicesSubpage.shadowRoot!.querySelector(
         '#enableBluetoothToggle');
@@ -459,7 +453,7 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
     flush();
     const params = new URLSearchParams();
     params.append('settingId', settingMojom.Setting.kFastPairOnOff.toString());
-    await init(false, params);
+    await init(params);
 
     const fastPairToggle = bluetoothDevicesSubpage.shadowRoot!.querySelector(
         '#enableFastPairToggle');
@@ -521,10 +515,10 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
     assertGT(sepLines.length, 1);
   });
 
-  test('Toggle Bluetooth with bluetoothDisconnectWarningFlag on', async () => {
+  test('Toggle Bluetooth', async () => {
     bluetoothConfig.setSystemState(BluetoothSystemState.kDisabled);
     await flushTasks();
-    await init(/* isBluetoothDisconnectWarningEnabled= */ true);
+    await init();
 
     const enableBluetoothToggle =
         bluetoothDevicesSubpage.shadowRoot!.querySelector<CrToggleElement>(

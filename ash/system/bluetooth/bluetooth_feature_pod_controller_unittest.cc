@@ -587,9 +587,6 @@ class BluetoothFeaturePodControllerDisconnectWarningTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kBluetoothDisconnectWarning);
-
     GetPrimaryUnifiedSystemTray()->ShowBubble();
 
     hid_preserving_bluetooth_state_test_helper_ =

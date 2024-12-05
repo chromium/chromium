@@ -3507,9 +3507,6 @@ extern const char kBluetoothBtsnoopInternalsDescription[];
 extern const char kBluetoothFlossTelephonyName[];
 extern const char kBluetoothFlossTelephonyDescription[];
 
-extern const char kBluetoothDisconnectWarningName[];
-extern const char kBluetoothDisconnectWarningDescription[];
-
 extern const char kBluetoothCoredumpName[];
 extern const char kBluetoothCoredumpDescription[];
 

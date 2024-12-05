@@ -55,10 +55,8 @@ BluetoothFeaturePodController::BluetoothFeaturePodController(
   remote_cros_bluetooth_config_->ObserveSystemProperties(
       cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
 
-  if (features::IsBluetoothDisconnectWarningEnabled()) {
-    GetHidPreservingBluetoothStateControllerService(
-        remote_hid_preserving_bluetooth_.BindNewPipeAndPassReceiver());
-  }
+  GetHidPreservingBluetoothStateControllerService(
+      remote_hid_preserving_bluetooth_.BindNewPipeAndPassReceiver());
 }
 
 BluetoothFeaturePodController::~BluetoothFeaturePodController() = default;
@@ -98,12 +96,9 @@ void BluetoothFeaturePodController::OnIconPressed() {
   }
 
   const bool is_toggled = IsButtonToggled();
-  if (features::IsBluetoothDisconnectWarningEnabled()) {
-    remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
-        !is_toggled, mojom::HidWarningDialogSource::kQuickSettings);
-  } else {
-    remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
-  }
+  remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
+      !is_toggled, mojom::HidWarningDialogSource::kQuickSettings);
+
   TrackToggleUMA(/*target_toggle_state=*/!is_toggled);
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {

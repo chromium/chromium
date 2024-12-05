@@ -975,11 +975,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "bluetooth-disconnect-warning",
-    "owners": [ "tjohnsonkanu@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "bluetooth-floss-availability-check",
     "owners": [ "howardchung@google.com", "chromeos-bt-team@google.com" ],
     "expiry_milestone": 136

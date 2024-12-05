@@ -34,9 +34,8 @@ constexpr size_t kMaxDeviceListLength = 3;
 
 }  // namespace
 
-DisableBluetoothDialogControllerImpl::DisableBluetoothDialogControllerImpl() {
-  CHECK(features::IsBluetoothDisconnectWarningEnabled());
-}
+DisableBluetoothDialogControllerImpl::DisableBluetoothDialogControllerImpl() =
+    default;
 
 DisableBluetoothDialogControllerImpl::~DisableBluetoothDialogControllerImpl() {
   if (dialog_widget_ && !dialog_widget_->IsClosed()) {

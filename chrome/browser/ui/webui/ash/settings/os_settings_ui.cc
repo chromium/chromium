@@ -496,7 +496,6 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<ash::mojom::HidPreservingBluetoothStateController>
         receiver) {
-  DCHECK(features::IsBluetoothDisconnectWarningEnabled());
   GetHidPreservingBluetoothStateControllerService(std::move(receiver));
 }
 
