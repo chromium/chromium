@@ -216,11 +216,19 @@ const CSSPropertyValueSet* ParseDeclarationBlock(const String& block_text,
 }
 
 StyleRuleBase* ParseRule(Document& document, String text) {
+  return ParseNestedRule(document, text, CSSNestingType::kNone,
+                         /*parent_rule_for_nesting=*/nullptr);
+}
+
+StyleRuleBase* ParseNestedRule(Document& document,
+                               String text,
+                               CSSNestingType nesting_type,
+                               StyleRule* parent_rule_for_nesting) {
   auto* sheet = CSSStyleSheet::CreateInline(
       document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  return CSSParser::ParseRule(context, sheet->Contents(), CSSNestingType::kNone,
-                              /*parent_rule_for_nesting=*/nullptr, text);
+  return CSSParser::ParseRule(context, sheet->Contents(), nesting_type,
+                              parent_rule_for_nesting, text);
 }
 
 const CSSValue* ParseValue(Document& document, String syntax, String value) {

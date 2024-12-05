@@ -91,6 +91,10 @@ const CSSPropertyValueSet* ParseDeclarationBlock(
     const String& block_text,
     CSSParserMode mode = kHTMLStandardMode);
 StyleRuleBase* ParseRule(Document& document, String text);
+StyleRuleBase* ParseNestedRule(Document& document,
+                               String text,
+                               CSSNestingType,
+                               StyleRule* parent_rule_for_nesting);
 
 // Parse a value according to syntax defined by:
 // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings

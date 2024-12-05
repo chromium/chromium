@@ -1366,4 +1366,17 @@ TEST(CSSParserImplTest, InvalidRuleError) {
   EXPECT_EQ(" foo; bar", stream.RemainingText());
 }
 
+TEST(CSSParserImplTest, ParseNestedRule) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  auto* a = To<StyleRule>(css_test_helpers::ParseRule(*document, ".a{}"));
+  StyleRuleBase* nested = css_test_helpers::ParseNestedRule(
+      *document, "&{}", CSSNestingType::kNesting, a);
+  EXPECT_EQ(":is(.a)", To<StyleRule>(nested)
+                           ->FirstSelector()
+                           ->SelectorTextExpandingPseudoParent());
+}
+
 }  // namespace blink
