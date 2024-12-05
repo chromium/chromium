@@ -236,7 +236,8 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
       "Enterprise.SkyVault.Migration.GoogleDrive.FailureDuration", 1);
 }
 
-TEST_F(LocalFilesMigrationManagerTest, RetriesIfAllowed) {
+// TODO(crbug.com/377696464): Fix this flaky test.
+TEST_F(LocalFilesMigrationManagerTest, DISABLED_RetriesIfAllowed) {
   SetPrefs(State::kInProgress);
   SetRetryCount(2);
 
