@@ -240,7 +240,11 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
                                  base::PortProvider* port_provider,
                                  mojom::RawOSMemDump* dump) {
   auto process_metrics =
+#if BUILDFLAG(IS_IOS)
+      base::ProcessMetrics::CreateProcessMetrics(handle);
+#else
       base::ProcessMetrics::CreateProcessMetrics(handle, port_provider);
+#endif
   auto info = process_metrics->GetMemoryInfo();
   if (!info.has_value()) {
     return false;
