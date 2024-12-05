@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/audio/audio_destination_uma_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -237,6 +238,7 @@ class PLATFORM_EXPORT AudioDestination final
   DeviceState device_state_ = kStopped;
 
   AudioCallbackMetricReporter metric_reporter_;
+  AudioDestinationUmaReporter uma_reporter_;
 
   // Collect the device latency matric only from the initial callback.
   bool is_latency_metric_collected_ = false;

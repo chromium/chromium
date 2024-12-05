@@ -413,6 +413,7 @@ AudioDestination::AudioDestination(
       render_bus_(
           AudioBus::Create(number_of_output_channels, render_quantum_frames)),
       callback_(callback),
+      uma_reporter_(AudioDestinationUmaReporter(latency_hint)),
       is_output_buffer_bypassed_(BypassOutputBuffer(latency_hint)) {
   CHECK(web_audio_device_);
 
@@ -558,10 +559,11 @@ void AudioDestination::RequestRender(
   }
 
   // FIFO contains audio at the output device sample rate.
-  delay_to_report_ =
-      delay + audio_utilities::FramesToTime(fifo_->GetFramesAvailable(),
-                                            web_audio_device_->SampleRate());
+  base::TimeDelta fifo_delay = audio_utilities::FramesToTime(
+      fifo_->GetFramesAvailable(), web_audio_device_->SampleRate());
+  uma_reporter_.UpdateFifoDelay(fifo_delay);
 
+  delay_to_report_ = delay + fifo_delay;
   glitch_info_to_report_.Add(glitch_info);
 
   output_position_.position =
@@ -605,6 +607,7 @@ void AudioDestination::RequestRender(
 
   frames_elapsed_ += frames_requested;
 
+  uma_reporter_.Report();
   metric_reporter_.EndTrace();
 }
 
@@ -614,14 +617,14 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
   // resampling.
   TRACE_EVENT("webaudio", "AudioDestination::ProvideResamplerInput",
               "delay (frames)", resampler_frame_delay);
-  auto adjusted_delay =
-      delay_to_report_ + audio_utilities::FramesToTime(resampler_frame_delay,
-                                                       context_sample_rate_);
+  auto adjusted_delay = delay_to_report_ + audio_utilities::FramesToTime(
+      resampler_frame_delay, context_sample_rate_);;
   PullFromCallback(dest, adjusted_delay);
 }
 
 void AudioDestination::PullFromCallback(AudioBus* destination_bus,
                                         base::TimeDelta delay) {
+  uma_reporter_.UpdateTotalPlayoutDelay(delay);
   callback_->Render(destination_bus, render_quantum_frames_, output_position_,
                     metric_reporter_.GetMetric(), delay,
                     glitch_info_to_report_.GetAndReset());
