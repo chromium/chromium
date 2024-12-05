@@ -103,10 +103,6 @@ BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
 const char kPrivacySandboxEnrollmentOverrides[] =
     "privacy-sandbox-enrollment-overrides";
 
-BASE_FEATURE(kPrivacySandboxAttestationsLoadPreInstalledComponent,
-             "PrivacySandboxAttestationsLoadPreInstalledComponent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
              "AttributionDebugReportingCookieDeprecationTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
