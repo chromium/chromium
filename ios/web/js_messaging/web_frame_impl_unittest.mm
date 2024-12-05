@@ -63,18 +63,21 @@ class WebFrameImplTest : public web::WebTest {
   WKContentWorld* last_received_content_world_;
 
   FakeWebState fake_web_state_;
-  GURL security_origin_;
+  GURL security_origin_gurl_;
+  url::Origin security_origin_;
 };
 
 // Tests creation of a WebFrame for the main frame.
 TEST_F(WebFrameImplTest, CreateWebFrameForMainFrame) {
   WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
                          /*is_main_frame=*/true, security_origin_,
-                         &fake_web_state_, ContentWorld::kPageContentWorld);
+                         security_origin_gurl_, &fake_web_state_,
+                         ContentWorld::kPageContentWorld);
 
   EXPECT_EQ(&fake_web_state_, web_frame.GetWebState());
   EXPECT_TRUE(web_frame.IsMainFrame());
-  EXPECT_EQ(security_origin_, web_frame.GetSecurityOriginDeprecated());
+  EXPECT_EQ(security_origin_gurl_, web_frame.GetSecurityOriginDeprecated());
+  EXPECT_EQ(security_origin_, web_frame.GetSecurityOrigin());
   EXPECT_EQ(kFrameId, web_frame.GetFrameId());
 }
 
@@ -82,7 +85,8 @@ TEST_F(WebFrameImplTest, CreateWebFrameForMainFrame) {
 TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrame) {
   WebFrameImpl web_frame(mock_frame_info_, kFrameId,
                          /*is_main_frame=*/true, security_origin_,
-                         &fake_web_state_, ContentWorld::kPageContentWorld);
+                         security_origin_gurl_, &fake_web_state_,
+                         ContentWorld::kPageContentWorld);
 
   base::Value::List function_params;
   EXPECT_TRUE(
@@ -110,7 +114,8 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrame) {
 TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
   WebFrameImpl web_frame(mock_frame_info_, kFrameId,
                          /*is_main_frame=*/false, security_origin_,
-                         &fake_web_state_, ContentWorld::kIsolatedWorld);
+                         security_origin_gurl_, &fake_web_state_,
+                         ContentWorld::kIsolatedWorld);
 
   base::Value::List function_params;
 
@@ -144,13 +149,15 @@ TEST_F(WebFrameImplTest, ExecuteJavaScript) {
 
   WebFrameImpl web_frame(mock_frame_info_, kFrameId,
                          /*is_main_frame=*/true, security_origin_,
-                         &fake_web_state_, ContentWorld::kPageContentWorld);
+                         security_origin_gurl_, &fake_web_state_,
+                         ContentWorld::kPageContentWorld);
 
   EXPECT_TRUE(web_frame.ExecuteJavaScript(base::SysNSStringToUTF16(script)));
 
   WebFrameImpl web_frame2(mock_frame_info_, kFrameId,
                           /*is_main_frame=*/false, security_origin_,
-                          &fake_web_state_, ContentWorld::kPageContentWorld);
+                          security_origin_gurl_, &fake_web_state_,
+                          ContentWorld::kPageContentWorld);
   EXPECT_TRUE(web_frame2.ExecuteJavaScript(base::SysNSStringToUTF16(script)));
 }
 
@@ -163,7 +170,8 @@ TEST_F(WebFrameImplTest, ExecuteJavaScriptWithCallback) {
 
   WebFrameImpl web_frame(mock_frame_info_, kFrameId,
                          /*is_main_frame=*/true, security_origin_,
-                         &fake_web_state_, ContentWorld::kPageContentWorld);
+                         security_origin_gurl_, &fake_web_state_,
+                         ContentWorld::kPageContentWorld);
 
   EXPECT_TRUE(
       web_frame.ExecuteJavaScript(base::SysNSStringToUTF16(script),
@@ -172,7 +180,8 @@ TEST_F(WebFrameImplTest, ExecuteJavaScriptWithCallback) {
 
   WebFrameImpl web_frame2(mock_frame_info_, kFrameId,
                           /*is_main_frame=*/false, security_origin_,
-                          &fake_web_state_, ContentWorld::kPageContentWorld);
+                          security_origin_gurl_, &fake_web_state_,
+                          ContentWorld::kPageContentWorld);
 
   EXPECT_TRUE(
       web_frame2.ExecuteJavaScript(base::SysNSStringToUTF16(script),
