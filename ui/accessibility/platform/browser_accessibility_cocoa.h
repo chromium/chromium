@@ -107,7 +107,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 @property(nonatomic, readonly) NSNumber* insertionPointLineNumber;
 @property(nonatomic, readonly) NSNumber* maxValue;
 @property(nonatomic, readonly) NSNumber* minValue;
-@property(nonatomic, readonly) NSNumber* numberOfCharacters;
 @property(nonatomic, readonly) NSString* orientation;
 @property(nonatomic, readonly) NSValue* position;
 // A string indicating the role of this object as far as accessibility

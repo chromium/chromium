@@ -2169,9 +2169,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return [NSValue valueWithRange:NSMakeRange(0, 0)];
 }
 
+// LINT.IfChange
 - (NSNumber*)AXNumberOfCharacters {
   return @([[self getAXValueAsString] length]);
 }
+// LINT.ThenChange(accessibilityNumberOfCharacters)
 
 - (NSValue*)AXVisibleCharacterRange {
   return [NSValue valueWithRange:{0, [[self getAXValueAsString] length]}];
@@ -2868,12 +2870,15 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return [[self AXInsertionPointLineNumber] integerValue];
 }
 
+// LINT.IfChange
 - (NSInteger)accessibilityNumberOfCharacters {
-  if (!_node)
+  if (![self instanceActive]) {
     return 0;
+  }
 
-  return [[self AXNumberOfCharacters] integerValue];
+  return [[self getAXValueAsString] length];
 }
+// LINT.ThenChange(AXNumberOfCharacters)
 
 - (NSString*)accessibilityPlaceholderValue {
   if (![self instanceActive])

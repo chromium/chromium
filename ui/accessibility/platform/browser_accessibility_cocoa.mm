@@ -538,7 +538,6 @@ bool ui::IsNSRange(id value) {
       {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
       {NSAccessibilityMaxValueAttribute, @"maxValue"},
       {NSAccessibilityMinValueAttribute, @"minValue"},
-      {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
       {NSAccessibilityOrientationAttribute, @"orientation"},
       {NSAccessibilityPositionAttribute, @"position"},
       {NSAccessibilityRoleAttribute, @"role"},
@@ -967,15 +966,29 @@ bool ui::IsNSRange(id value) {
   return @"";
 }
 
-- (NSNumber*)AXNumberOfCharacters {
-  return [self numberOfCharacters];
-}
+// LINT.IfChange
+- (NSInteger)accessibilityNumberOfCharacters {
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (![self instanceActive] || !_owner->IsTextField()) {
+    return 0;
+  }
 
-- (NSNumber*)numberOfCharacters {
-  if ([self instanceActive] && _owner->IsTextField())
-    return @(static_cast<int>(_owner->GetValueForControl().size()));
-  return nil;
+  return static_cast<int>(_owner->GetValueForControl().size());
 }
+// LINT.ThenChange(AXNumberOfCharacters)
+
+// LINT.IfChange
+- (NSNumber*)AXNumberOfCharacters {
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (![self instanceActive] || !_owner->IsTextField()) {
+    return nil;
+  }
+
+  return @(static_cast<int>(_owner->GetValueForControl().size()));
+}
+// LINT.ThenChange(accessibilityNumberOfCharacters)
 
 - (id)accessibilityParent {
   if (![self instanceActive]) {

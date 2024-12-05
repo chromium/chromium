@@ -901,4 +901,15 @@ TEST_P(AXPlatformNodeCocoaTest,
   EXPECT_NSEQ([node accessibilityPlaceholderValue], @"foo-name");
 }
 
+// `accessibilityNumberOfCharacters` on a text field.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityNumberOfCharactersOnTextField) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue, "hello world");
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  EXPECT_EQ([node accessibilityNumberOfCharacters], 11);
+}
+
 }  // namespace ui

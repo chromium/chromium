@@ -5588,6 +5588,8 @@ data/accessibility/mac/methods/accessibility-is-ignored-expected.txt
 data/accessibility/mac/methods/accessibility-is-ignored.html
 data/accessibility/mac/methods/accessibility-label-expected.txt
 data/accessibility/mac/methods/accessibility-label.html
+data/accessibility/mac/methods/accessibility-number-of-characters-expected.txt
+data/accessibility/mac/methods/accessibility-number-of-characters.html
 data/accessibility/mac/methods/accessibility-placeholder-value-expected.txt
 data/accessibility/mac/methods/accessibility-placeholder-value.html
 data/accessibility/mac/methods/accessibility-role-description-expected.txt
