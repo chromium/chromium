@@ -918,10 +918,9 @@ bool ExternalCanvasResource::
   GenOrFlushSyncToken();
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      client_si_, transferable_resource_.texture_target(),
-      transferable_resource_.sync_token(), transferable_resource_.size,
-      transferable_resource_.format,
-      transferable_resource_.is_overlay_candidate,
+      client_si_, client_si_->GetTextureTarget(),
+      transferable_resource_.sync_token(), client_si_->size(),
+      client_si_->format(), transferable_resource_.is_overlay_candidate,
       transferable_resource_.resource_source);
   out_resource->color_space = transferable_resource_.color_space;
   out_resource->hdr_metadata = transferable_resource_.hdr_metadata;
