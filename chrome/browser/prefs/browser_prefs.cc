@@ -1178,6 +1178,12 @@ inline constexpr char kHatsPrivacyHubPostLaunchCycleEndTs[] =
     "hats_privacy_hub_postlaunch_end_timestamp";
 #endif
 
+// Deprecated 12/2024.
+inline constexpr char kDeleteTimePeriodV2[] =
+    "browser.clear_data.time_period_v2";
+inline constexpr char kDeleteTimePeriodV2Basic[] =
+    "browser.clear_data.time_period_v2_basic";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1673,6 +1679,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kHatsPrivacyHubPostLaunchIsSelected, false);
   registry->RegisterInt64Pref(kHatsPrivacyHubPostLaunchCycleEndTs, 0);
 #endif
+
+  // Deprecated 12/2024.
+  registry->RegisterIntegerPref(kDeleteTimePeriodV2, -1);
+  registry->RegisterIntegerPref(kDeleteTimePeriodV2Basic, -1);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -3040,6 +3050,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsPrivacyHubPostLaunchIsSelected);
   profile_prefs->ClearPref(kHatsPrivacyHubPostLaunchCycleEndTs);
 #endif
+
+  // Added 12/2024.
+  profile_prefs->ClearPref(kDeleteTimePeriodV2);
+  profile_prefs->ClearPref(kDeleteTimePeriodV2Basic);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

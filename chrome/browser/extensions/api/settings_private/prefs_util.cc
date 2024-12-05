@@ -523,10 +523,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[browsing_data::prefs::kDeleteTimePeriodBasic] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)[browsing_data::prefs::kDeleteTimePeriodV2] =
-      settings_api::PrefType::kNumber;
-  (*s_allowlist)[browsing_data::prefs::kDeleteTimePeriodV2Basic] =
-      settings_api::PrefType::kNumber;
   (*s_allowlist)[browsing_data::prefs::kLastClearBrowsingDataTab] =
       settings_api::PrefType::kNumber;
 
