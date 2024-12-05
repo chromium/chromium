@@ -99,19 +99,6 @@ class LensOverlayQueryController {
   // Clears the state and resets stored values.
   void EndQuery();
 
-  // Sends a full image request to translate the page.
-  void SendFullPageTranslateQuery(const std::string& source_language,
-                                  const std::string& target_language);
-
-  // Sends a full image request with no translate options as a result of
-  // ending translate mode.
-  void SendEndTranslateModeQuery();
-
-  // Sends a request to the server to update the page content.
-  void SendPageContentUpdateRequest(base::span<const uint8_t> new_content_bytes,
-                                    lens::MimeType new_content_type,
-                                    GURL new_page_url);
-
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
   // the region out of the screenshot. This should be used to provide a higher
@@ -122,19 +109,6 @@ class LensOverlayQueryController {
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
-  // Sends a text-only interaction. Expected to be called multiple times.
-  void SendTextOnlyQuery(
-      const std::string& query_text,
-      lens::LensOverlaySelectionType lens_selection_type,
-      std::map<std::string, std::string> additional_search_query_params);
-
-  // Sends a text query interaction contextualized to the current page. Expected
-  // to be called multiple times.
-  void SendContextualTextQuery(
-      const std::string& query_text,
-      lens::LensOverlaySelectionType lens_selection_type,
-      std::map<std::string, std::string> additional_search_query_params);
-
   // Sends a multimodal interaction. Expected to be called multiple times.
   void SendMultimodalRequest(
       lens::mojom::CenterRotatedBoxPtr region,
@@ -142,15 +116,6 @@ class LensOverlayQueryController {
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
-
-  // Testing method to reset the cluster info state.
-  void ResetRequestClusterInfoStateForTesting();
-
-  // Sets the query controller to a valid post-full image response state,
-  // including setting fake cluster info, for testing.
-  // TODO(crbug.com/376737029): Remove this method after mocking out network
-  // requests in the browser tests.
-  void SetStateToReceivedFullImageResponseForTesting();
 
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
@@ -296,18 +261,6 @@ class LensOverlayQueryController {
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();
 
-  // Creates a full image request with the page content bytes and sends it to
-  // the server.
-  void PrepareAndFetchPageContentRequest();
-
-  // Performs the page content request. This is a send and forget request, so we
-  // are not expecting a response.
-  void PerformPageContentRequest(lens::LensOverlayServerRequest request,
-                                 std::vector<std::string> headers);
-
-  // Handles the endpoint fetch response for the page content request.
-  void PageContentResponseHandler(std::unique_ptr<EndpointResponse> response);
-
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
   void SendInteraction(
@@ -413,8 +366,6 @@ class LensOverlayQueryController {
       std::optional<lens::ImageCrop> image_crop,
       lens::LensOverlayClientLogs client_logs);
 
-  lens::Payload CreatePageContentPayload();
-
   // Resets the request cluster info state.
   void ResetRequestClusterInfoState();
 
@@ -427,10 +378,6 @@ class LensOverlayQueryController {
 
   // Callback for when the full image endpoint fetcher is created.
   void OnFullImageEndpointFetcherCreated(
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
-
-  // Callback for when the page content endpoint fetcher is created.
-  void OnPageContentEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   // Callback for when the interaction endpoint fetcher is created.
@@ -471,12 +418,6 @@ class LensOverlayQueryController {
   // Else 0.
   float ui_scale_factor_ = 0;
 
-  // The time the query flow was invoked.
-  base::TimeTicks invocation_time_;
-
-  // The time the page contents request was started.
-  base::TimeTicks page_contents_request_start_time_;
-
   // The current state.
   QueryControllerState query_controller_state_ = QueryControllerState::kOff;
 
@@ -504,10 +445,6 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       full_image_access_token_fetcher_;
 
-  // The access token fetcher used for getting OAuth for page content requests.
-  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-      page_content_access_token_fetcher_;
-
   // The access token fetcher used for getting OAuth for interaction requests.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       interaction_access_token_fetcher_;
@@ -525,9 +462,6 @@ class LensOverlayQueryController {
 
   // The endpoint fetcher used for the full image request.
   std::unique_ptr<EndpointFetcher> full_image_endpoint_fetcher_;
-
-  // The endpoint fetcher used for the page content request.
-  std::unique_ptr<EndpointFetcher> page_content_endpoint_fetcher_;
 
   // The endpoint fetcher used for the interaction request. Only the last
   // endpoint fetcher is kept; additional fetch requests will discard
