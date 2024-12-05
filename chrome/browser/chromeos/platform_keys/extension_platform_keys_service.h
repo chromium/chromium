@@ -191,12 +191,29 @@ class ExtensionPlatformKeysService : public KeyedService {
       SelectCertificatesCallback callback,
       content::WebContents* web_contents);
 
+  using SetKeyTagCallback = base::OnceCallback<void(
+      std::optional<crosapi::mojom::KeystoreError> error)>;
+
+  // Sets a custom |tag| to a key that matches |public_key_spki_der|. This tag
+  // can later be used to find the key based on some external logic.
+  // |token_id| represents the token where the key is located.
+  // If the extension does not have permissions to use this key, the
+  // operation aborts. In any case |callback| will be invoked and if the
+  // operation failed it will contain an error. Will only call back during the
+  // lifetime of this object.
+  void SetKeyTag(platform_keys::TokenId token_id,
+                 std::vector<uint8_t> tag,
+                 std::vector<uint8_t> public_key_spki_der,
+                 std::string extension_id,
+                 SetKeyTagCallback callback);
+
  private:
   class GenerateRSAKeyTask;
   class GenerateECKeyTask;
   class GenerateKeyTask;
   class SelectTask;
   class SignTask;
+  class SetKeyTagTask;
   class Task;
 
   // Starts |task| eventually. To ensure that at most one |Task| is running at a
