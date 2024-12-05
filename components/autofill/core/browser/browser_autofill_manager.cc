@@ -919,7 +919,8 @@ void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
   if (pending_form_data_ &&
       (base::FeatureList::IsEnabled(
            features::kAutofillUseFewerFormAndFieldComparison)
-           ? pending_form_data_->global_id() != form.global_id()
+           ? CalculateFormSignature(*pending_form_data_) !=
+                 CalculateFormSignature(form)
            : !pending_form_data_->SameFormAs(form))) {
     ProcessPendingFormForUpload();
   }
