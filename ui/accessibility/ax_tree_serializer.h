@@ -147,7 +147,7 @@ class AXTreeSerializer {
   // as explored by the serializer.
   size_t ClientTreeNodeCount() const;
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   std::vector<AXNodeID> ClientTreeNodeIds() const;
 
   AXSourceNode ParentOf(AXNodeID id);
@@ -386,7 +386,7 @@ size_t AXTreeSerializer<AXSourceNode,
   return client_id_map_.size();
 }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
 template <typename AXSourceNode,
           typename AXSourceNodeVectorType,
           typename AXTreeUpdateType,
@@ -421,7 +421,7 @@ AXSourceNode AXTreeSerializer<AXSourceNode,
   }
   return tree_->GetFromId(node->parent->id);
 }
-#endif  // defined(AX_FAIL_FAST_BUILD)
+#endif  // AX_FAIL_FAST_BUILD()
 
 template <typename AXSourceNode,
           typename AXSourceNodeVectorType,
@@ -860,7 +860,7 @@ void AXTreeSerializer<AXSourceNode,
     // caller makes it difficult to debug whether extra resets / lost virtual
     // buffer positions are occurring because of this code. Therefore, a DCHECK
     // has been added in order to debug if or when this condition may occur.
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
     CHECK(!crash_on_error_)
         << "Attempt to delete entire client subtree, including the root.";
 #else

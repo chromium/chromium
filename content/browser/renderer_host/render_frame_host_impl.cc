@@ -322,7 +322,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #endif
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
 #include "base/command_line.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -7916,7 +7916,7 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
     UnrecoverableAccessibilityError();
   }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // Don't exercise the accessibility tree when we either had an
   // accessibility failure or if we are not allowed to fire events
   if (!accessibility_error && browser_accessibility_manager_->CanFireEvents()) {
@@ -7926,7 +7926,7 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
 }
 
 void RenderFrameHostImpl::ExerciseAccessibilityForTest() {
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // When running a debugging/sanitizer build with
   // --force-renderer-accessibility, exercise the properties for every node, to
   // ensure no crashes or assertions are triggered. This helpfully runs for all

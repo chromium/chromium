@@ -468,7 +468,7 @@ TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
   update.node_id_to_clear = 2;
   update.nodes.resize(1);
   update.nodes[0].id = 3;
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(update),
                             "Nodes left pending by the update: 2");
 #else
@@ -499,7 +499,7 @@ TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
   update.nodes.resize(1);
   update.nodes[0].id = 1;
   update.nodes[0].child_ids.push_back(2);
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(update),
                             "Nodes left pending by the update: 2");
 #else
@@ -531,7 +531,7 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
   update.nodes[0].child_ids.push_back(2);
   update.nodes[0].child_ids.push_back(2);
   update.nodes[1].id = 2;
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(update),
                             "Node 1 has duplicate child id 2");
 #else
@@ -570,7 +570,7 @@ TEST(AXTreeTest, InvalidReparentingFails) {
   update.nodes[0].child_ids.push_back(2);
   update.nodes[1].id = 2;
   update.nodes[2].id = 3;
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(
       tree.Unserialize(update),
       "Node 3 is not marked for destruction, would be reparented to 1");
@@ -1263,7 +1263,7 @@ TEST(AXTreeTest, BogusAXTree2) {
   node2.child_ids.push_back(1);
   initial_state.nodes.push_back(node2);
   AXTree tree;
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
                             "Node 1 has duplicate child id 1");
 #else
@@ -1287,7 +1287,7 @@ TEST(AXTreeTest, BogusAXTree3) {
   initial_state.nodes.push_back(node2);
 
   AXTree tree;
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(initial_state),
                             "Node 1 has duplicate child id 2");
 #else
@@ -5043,7 +5043,7 @@ TEST(AXTreeTest, UnserializeErrors) {
   AXNodeData disconnected_node;
   disconnected_node.id = 2;
   tree_update_3.nodes.push_back(disconnected_node);
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(
       tree.Unserialize(tree_update_3),
       "2 will not be in the tree and is not the new root");

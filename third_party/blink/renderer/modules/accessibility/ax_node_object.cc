@@ -2560,7 +2560,7 @@ void AXNodeObject::Init(AXObject* parent) {
 }
 
 void AXNodeObject::Detach() {
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   SANITIZER_CHECK(!is_adding_children_)
       << "Cannot detach |this| during AddChildren(): " << GetNode();
 #endif
@@ -5014,7 +5014,7 @@ String AXNodeObject::TextFromDescendants(
   CHECK(!NeedsToUpdateCachedValues());
 
   const AXObjectVector& children = ChildrenIncludingIgnored();
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
   wtf_size_t num_children = children.size();
@@ -5870,7 +5870,7 @@ void AXNodeObject::AddChildren() {
                             << this << "\nFirst child is " << children_[0];
 #endif
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   SANITIZER_CHECK(!is_computing_text_from_descendants_)
       << "Should not attempt to simultaneously compute text from descendants "
          "and add children on: "

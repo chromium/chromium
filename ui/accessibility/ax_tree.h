@@ -269,7 +269,7 @@ class AX_EXPORT AXTree {
   // `SetFocusedNodeShouldNeverBeIgnored` above).
   static bool is_focused_node_always_unignored_;
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   void CheckTreeConsistency(const AXTreeUpdate& update);
 #endif
 

@@ -263,7 +263,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   String detached_object_debug_info_;
 #endif
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   bool is_adding_children_ = false;
   mutable bool is_computing_text_from_descendants_ = false;
 #endif
@@ -1246,7 +1246,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Is this the root of this object hierarchy.
   bool IsRoot() const;
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // Get/Prints the entire AX subtree to the screen for debugging, with |this|
   // highlighted via a "*" notation.
   std::string GetAXTreeForThis() const;

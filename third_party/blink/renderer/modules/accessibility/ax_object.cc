@@ -117,7 +117,7 @@
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlight_type.h"
@@ -153,7 +153,7 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
 // TODO(accessibility) Move this out of DEBUG by having a new enum in
 // ax_enums.mojom, and a matching ToString() in ax_enum_utils, as well as move
 // out duplicate code of String IgnoredReasonName(AXIgnoredReason reason) in
@@ -709,7 +709,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
     }
     ancestor->SetHasDirtyDescendants(true);
   }
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // Walk up the tree looking for dirty bits that failed to be set. If any
   // are found, this is a bug.
   for (auto* obj = ParentObject(); obj; obj = obj->ParentObject()) {
@@ -718,7 +718,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
                    << ParentChainToStringHelper(this);
     }
   }
-#endif  // defined(AX_FAIL_FAST_BUILD)
+#endif  // AX_FAIL_FAST_BUILD()
 }
 
 void AXObject::Init(AXObject* parent) {
@@ -776,7 +776,7 @@ void AXObject::Detach() {
   cached_is_ignored_ = true;
   cached_is_ignored_but_included_in_tree_ = false;
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   SANITIZER_CHECK(ax_object_cache_);
   SANITIZER_CHECK(!ax_object_cache_->IsFrozen())
       << "Do not detach children while the tree is frozen, in order to avoid "
@@ -1165,7 +1165,7 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
   return cache.Get(parent_node);
 }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
 std::string AXObject::GetAXTreeForThis() const {
   return TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(), this);
 }
@@ -3441,7 +3441,7 @@ bool AXObject::IsIgnored() const {
 bool AXObject::IsIgnored() {
   CheckCanAccessCachedValues();
   UpdateCachedAttributeValuesIfNeeded();
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   if (!cached_is_ignored_ && IsDetached()) {
     NOTREACHED()
         << "A detached node cannot be ignored: " << this
@@ -3705,7 +3705,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     OnInheritedCachedValuesChanged();
   }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   CHECK(!NeedsToUpdateCachedValues())
       << "While recomputing cached values, they were invalidated again.";
   if (included_in_tree_changed) {
@@ -6524,7 +6524,7 @@ void AXObject::SetNeedsToUpdateChildren(bool update) {
     return;
   }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   SANITIZER_CHECK(!is_adding_children_)
       << "Should not invalidate children while adding them: " << this;
 #endif
@@ -6633,7 +6633,7 @@ void AXObject::ClearChildren() {
 
   // Loop through AXObject children.
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   SANITIZER_CHECK(!is_adding_children_)
       << "Should not attempt to simultaneously add and clear children on: "
       << this;
@@ -8231,7 +8231,7 @@ void AXObject::PreSerializationConsistencyCheck() const{
     DUMP_WILL_BE_NOTREACHED() << "Do not serialize unincluded nodes: " << this
                               << "\nIncluded parent: " << included_parent;
   }
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // A bit more expensive, so only check in builds used for testing.
   CHECK_EQ(IsAriaHidden(), !!FindAncestorWithAriaHidden(this))
       << "IsAriaHidden() doesn't match existence of an aria-hidden ancestor: "
@@ -8330,7 +8330,7 @@ String AXObject::ToString(bool verbose) const {
     }
     if (IsIgnored()) {
       string_builder = string_builder + " isIgnored";
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
       // TODO(accessibility) Move this out of AX_FAIL_FAST_BUILD by having a new
       // ax_enum, and a ToString() in ax_enum_utils, as well as move out of
       // String IgnoredReasonName(AXIgnoredReason reason) in
