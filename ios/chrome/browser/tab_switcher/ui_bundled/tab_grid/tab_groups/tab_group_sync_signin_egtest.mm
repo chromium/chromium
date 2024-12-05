@@ -325,8 +325,10 @@ void CloseGroupAtIndex(int group_cell_index) {
   [SigninEarlGrey signOut];
 }
 
+// TODO(crbug.com/382480026): Deflake this test.
+//
 // Tests that tab groups don't get reopened after signing out and back in
-- (void)testSignOutAndBackInDoesNotReopenGroups {
+- (void)FLAKY_testSignOutAndBackInDoesNotReopenGroups {
   // Ensure that there are no tab groups initially.
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
