@@ -89,20 +89,21 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // the user to sign in to an RP with an account from an IDP.
   std::unique_ptr<views::View> CreateHeader();
 
-  // Returns a View for single account chooser. It contains a row of account
-  // information. `should_hover` determines whether the row is clickable.
-  // `show_disclosure_label` determines whether disclosure text is shown.
-  std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const content::IdentityRequestAccount& account,
-      bool should_hover,
-      bool show_disclosure_label,
-      bool show_separator,
-      int additional_row_vertical_padding);
-
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
       const std::vector<IdentityRequestAccountPtr>& accounts);
+
+  // Returns a View to display account rows. It contains one row per account.
+  // `should_hover` determines whether the rows are clickable.
+  // `show_separator` determines whether rows should be surrounded by a
+  // separator.
+  std::unique_ptr<views::View> CreateAccountRows(
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      bool should_hover,
+      bool show_separator,
+      bool is_single_account_chooser,
+      int additional_row_vertical_padding);
 
   // Returns a View for an account row that acts as a placeholder.
   std::unique_ptr<views::View> CreatePlaceholderAccountRow();
@@ -164,6 +165,10 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       views::MdTextButton* button,
       ui::ColorId spinner_color = ui::kColorButtonForeground,
       ui::ColorId button_color = ui::kColorButtonBackground);
+
+  // Helper method to show the given accounts.
+  void ShowAccounts(const std::vector<IdentityRequestAccountPtr>& accounts,
+                    bool is_single_account_chooser);
 
   // View containing the header.
   raw_ptr<views::View> header_view_ = nullptr;
