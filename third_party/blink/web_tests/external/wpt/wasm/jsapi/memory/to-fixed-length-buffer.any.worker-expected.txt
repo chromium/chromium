@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] API surface
+  assert_equals: expected "object" but got "undefined"
+[FAIL] toFixedLengthBuffer caching behavior
+  memory.toFixedLengthBuffer is not a function
+Harness: the test ran to completion.
+
