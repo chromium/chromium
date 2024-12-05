@@ -205,7 +205,7 @@
 <translation id="1901600657316773839">الاحتفاظ بالاختيار</translation>
 <translation id="1904580727789512086">‏يتم حفظ عناوين URL التي تنتقل إليها في حسابك على Google.</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
-<translation id="1923342640370224680">الساعة الأخيرة</translation>
+<translation id="1923342640370224680">آخر ساعة</translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
 <translation id="1943478190258551035">القائمة ← الإعدادات</translation>
 <translation id="1952728750904661634">تسجيل الدخول باستخدام حساب مُدار</translation>
@@ -221,7 +221,7 @@
 <translation id="1977621687170192347">فعِّل خيار "طلب فتح روابط من تطبيقات أخرى في وضع التصفُّح المتخفي".</translation>
 <translation id="1979188886349613713">تضمين امتدادات الملفات غير المحدّدة بواسطة الموقع الإلكتروني</translation>
 <translation id="1980417445547898121">{count,plural, =1{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على علامة تبويب واحدة ({count}) نشطة مؤخرًا على جهازك الآخر.}zero{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}two{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على علامتَي تبويب ({count}) نشطتَين مؤخرًا على جهازك الآخر.}few{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامات تبويب نشطة مؤخرًا على جهازك الآخر.}many{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}other{‏يمكنك استخدام هاتف iPhone هذا للاطّلاع على {count} علامة تبويب نشطة مؤخرًا على جهازك الآخر.}}</translation>
-<translation id="1981118202195772574">الجهاز الجوّال</translation>
+<translation id="1981118202195772574">للأجهزة الجوّالة</translation>
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="1989404831625305000">إخفاء "مدير كلمات المرور"</translation>
@@ -944,9 +944,7 @@
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{هناك كلمة مرور واحدة ({COUNT}) ضعيفة}zero{هناك {COUNT} كلمة مرور ضعيفة}two{هناك كلمتا مرور ({COUNT}) ضعيفتان}few{هناك {COUNT} كلمات مرور ضعيفة}many{هناك {COUNT} كلمة مرور ضعيفة}other{هناك {COUNT} كلمة مرور ضعيفة}}</translation>
 <translation id="5532545557415295622">مربّع حوار تأكيد مهلة عدم استخدام الجهاز</translation>
-<translation id="5548760955356983418">‏يتيح لك Handoff بدء تصفح موقع على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع المفتوح حاليًا على Dock بـ Mac.
-
-لابد من تفعيل Handoff كذلك في القسم العام من الإعدادات، ولابد من استخدام أجهزتك لنفس حساب iCloud.</translation>
+<translation id="5548760955356983418">‏تتيح لك ميزة "التسليم" (Handoff) بدء تصفح موقع إلكتروني على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع الإلكتروني المفتوح حاليًا في "شريط الأيقونات" (Dock) على Mac. يجب أيضًا تفعيل ميزة "التسليم" (Handoff) في القسم "عام" (General) من" الإعدادات" (Settings)، ويجب استخدام حساب iCloud نفسه على كل أجهزتك.</translation>
 <translation id="5551825465462320939">تابِع الأخبار والرياضة وغير ذلك حسب اهتماماتك.</translation>
 <translation id="5555008247722361784">‏تم تسجيل الدخول باسم "<ph name="USER_EMAIL" />". حدث خطأ في حساب Google. يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
@@ -1514,7 +1512,7 @@
 <translation id="7996239959906074962">إعداد…</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
 <translation id="8005666035647241369">‏حفظ كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
-<translation id="8011489434346330032">‏Web Inspector (أداة فحص الويب)</translation>
+<translation id="8011489434346330032">‏أداة فحص الويب (Web Inspector) </translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8023878949384262191">توسيع القسم.</translation>
 <translation id="8027581147000338959">الفتح في نافذة جديدة</translation>
@@ -1528,7 +1526,7 @@
 <translation id="8058655154417507695">سنة انتهاء الصلاحية</translation>
 <translation id="8059533439631660104">طي القسم.</translation>
 <translation id="8061584726507121204">السجلّ</translation>
-<translation id="8069394452933076548">اختيار وقت نقل علامات التبويب غير المستخدَمة مؤخرًا إلى قسم علامات التبويب غير النشِطة</translation>
+<translation id="8069394452933076548">يمكنك اختيار وقت نقل علامات التبويب غير المستخدَمة مؤخرًا إلى قسم علامات التبويب غير النشطة.</translation>
 <translation id="8073670137947914548">اكتمل التنزيل</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8079530767338315840">تكرار</translation>
@@ -1736,7 +1734,7 @@
 <translation id="8921902386312975525">خيارات تتبُّع الطرود</translation>
 <translation id="8923178205567790913">كلمات المرور</translation>
 <translation id="892776311701544612">مزيد من المعلومات…</translation>
-<translation id="8928133177108699615">الإصدار المخصّص لأجهزة الكمبيوتر</translation>
+<translation id="8928133177108699615">لأجهزة الكمبيوتر</translation>
 <translation id="894191600409472540">يجب إنشاء كلمات مرور قوية</translation>
 <translation id="8943780400130412484">هل تريد بدء عملية تنزيل جديدة؟</translation>
 <translation id="8944844131570002190">‏فتح عنوان URL…</translation>
@@ -1761,7 +1759,7 @@
 <translation id="9029650858822697271">تم تسجيل خروجك من الحساب</translation>
 <translation id="9032405509996909363">تأكيد حذف بيانات التصفّح</translation>
 <translation id="9034759925968272072">‏لن يتم تسجيل خروجك من حسابك في Google. قد يتضمن حسابك في Google نماذج أخرى من سجل التصفح في <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
-<translation id="9039373489628511875">النطاق الترددي</translation>
+<translation id="9039373489628511875">معدّل نقل البيانات</translation>
 <translation id="9057972802061533987">تتعذّر المتابعة. حدث خطأ.</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9066097352053395362">إخفاء خيار "تعديل الإشارة المرجعية"</translation>
@@ -1795,7 +1793,7 @@
 <translation id="9191031968346938109">إضافة إلى…</translation>
 <translation id="9196007736149429065">تعذَّر فتح هذا الملف</translation>
 <translation id="9200875785104711666">قبل <ph name="TIME" /> يوم</translation>
-<translation id="9203116392574189331">Handoff</translation>
+<translation id="9203116392574189331">‏التسليم (Handoff)</translation>
 <translation id="9203951165704618409">يمكنك نقل شريط العناوين من أعلى الشاشة إلى أسفلها لتخصيص تجربة التصفُّح.</translation>
 <translation id="9205189991633470489">قفل وضع التصفّح المتخفي</translation>
 <translation id="9206887540681440657">السرعة</translation>

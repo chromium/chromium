@@ -6132,7 +6132,7 @@
 <translation id="5376931455988532197">الملف كبير جدًا</translation>
 <translation id="5377367976106153749">هل تريد تفعيل إمكانية الوصول إلى الكاميرا؟</translation>
 <translation id="5379140238605961210">متابعة حظر الدخول إلى الميكروفون</translation>
-<translation id="5380424552031517043">تمت إزالة إذن <ph name="PERMISSION" />.</translation>
+<translation id="5380424552031517043">تمت إزالة <ph name="PERMISSION" />.</translation>
 <translation id="5380526436444479273">يُرجى الانتظار بضع دقائق ثم إعادة المحاولة.</translation>
 <translation id="5382591305415226340">إدارة الروابط المدعومة</translation>
 <translation id="5383740867328871413">مجموعة لم تتم تسميتها - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
