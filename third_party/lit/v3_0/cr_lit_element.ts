@@ -8,7 +8,7 @@ type ElementCache = Record<string, HTMLElement|SVGElement>;
 
 // Converts a 'nameLikeThis' to 'name-like-this'.
 function toDashCase(name: string): string {
-  return name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
 export class CrLitElement extends LitElement {
