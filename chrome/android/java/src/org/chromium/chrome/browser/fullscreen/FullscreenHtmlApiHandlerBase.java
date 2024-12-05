@@ -672,8 +672,8 @@ public abstract class FullscreenHtmlApiHandlerBase
                         // directly in the onLayoutChange would have no effect.
                         mHandler.sendEmptyMessage(MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS);
 
-                        if ((bottom - top) <= (oldBottom - oldTop)
-                                && (right - left) <= (oldRight - oldLeft)
+                        if ((bottom - top) < (oldBottom - oldTop)
+                                && (right - left) < (oldRight - oldLeft)
                                 // Some automotive devices never hide the system bars, so Chrome
                                 // can't rely on detecting a change in insets.
                                 && !BuildInfo.getInstance().isAutomotive) {
