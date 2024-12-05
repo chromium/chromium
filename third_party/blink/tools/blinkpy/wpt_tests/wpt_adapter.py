@@ -60,16 +60,10 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         return f'virtual/{subsuite}{test_name}' if subsuite else test_name[1:]
 
     def log(self, data):
-        offset = datetime.now() - self._start
-        minutes, seconds = divmod(max(0, offset.total_seconds()), 60)
-        hours, minutes = divmod(minutes, 60)
-        milliseconds, _ = divmod(offset.microseconds, 1000)
-        # A relative timestamp is more useful for comparing event timings than
-        # an absolute one.
-        timestamp = f'{int(hours):02}:{int(minutes):02}:{int(seconds):02}.{int(milliseconds):03}'
+        timestamp = datetime.now().isoformat(sep=' ', timespec='milliseconds')
         # Place mandatory fields first so that logs are vertically aligned as
         # much as possible.
-        message = f'{timestamp} {data["level"]}: {data["message"]}'
+        message = f'{timestamp} {data["level"]} {data["message"]}'
         if 'stack' in data:
             message = f'{message}\n{data["stack"]}'
         return self.generate_output(text=message + '\n')
@@ -121,7 +115,9 @@ class StructuredLogAdapter(logging.Handler):
         self._logger = logger
         self._fallback_handler = logging.StreamHandler()
         self._fallback_handler.setFormatter(
-            logging.Formatter('%(name)s %(levelname)s %(message)s'))
+            logging.Formatter(
+                fmt='%(asctime)s.%(msecs)03d %(levelname)s %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S'))
 
     def emit(self, record):
         log = getattr(self._logger, record.levelname.lower(),
