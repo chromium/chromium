@@ -36,24 +36,30 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
             }
         })
 
-    [navigation_result,
-     navigation_aborted_event] = await read_sorted_messages(2)
-    assert navigation_result == AnyExtending({
-        'id': command_id,
-        'type': 'success'
-    })
-    initial_navigation_id = navigation_result['result']['navigation']
+    messages = await read_sorted_messages(2,
+                                          keys_to_stabilize=['navigation'],
+                                          check_no_other_messages=True)
 
-    assert navigation_aborted_event == AnyExtending({
-        'method': 'browsingContext.navigationAborted',
-        'type': 'event',
-        'params': {
-            'context': context_id,
-            'navigation': initial_navigation_id,
-            'timestamp': ANY_TIMESTAMP,
-            'url': initial_url
-        }
-    })
+    assert messages == [
+        {
+            'id': command_id,
+            'result': {
+                'navigation': 'navigation_0',
+                'url': initial_url,
+            },
+            'type': 'success',
+        },
+        {
+            'method': 'browsingContext.navigationAborted',
+            'params': {
+                'context': context_id,
+                'navigation': 'navigation_0',
+                'timestamp': ANY_TIMESTAMP,
+                'url': initial_url,
+            },
+            'type': 'event',
+        },
+    ]
 
 
 @pytest.mark.asyncio
@@ -420,17 +426,24 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
             }
         })
 
-    messages = await read_sorted_messages(3)
+    messages = await read_sorted_messages(3,
+                                          keys_to_stabilize=['navigation'],
+                                          check_no_other_messages=True)
+
     assert messages == [
-        AnyExtending({
+        {
             'id': command_id,
+            'result': {
+                'navigation': 'navigation_0',
+                'url': page_url,
+            },
             'type': 'success',
-        }),
+        },
         {
             'method': 'browsingContext.navigationStarted',
             'params': {
                 'context': context_id,
-                'navigation': ANY_UUID,
+                'navigation': 'navigation_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': page_url,
             },
@@ -440,7 +453,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
             'method': 'browsingContext.navigationStarted',
             'params': {
                 'context': ANY_STR,
-                'navigation': ANY_UUID,
+                'navigation': 'navigation_1',
                 'timestamp': ANY_TIMESTAMP,
                 'url': iframe_url,
             },
@@ -474,7 +487,10 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
             }
         })
 
-    messages = await read_sorted_messages(3)
+    messages = await read_sorted_messages(3,
+                                          keys_to_stabilize=['navigation'],
+                                          check_no_other_messages=True)
+
     assert messages == [
         AnyExtending({
             'id': command_id,
@@ -484,7 +500,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
             'method': 'browsingContext.navigationStarted',
             'params': {
                 'context': context_id,
-                'navigation': ANY_UUID,
+                'navigation': 'navigation_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': page_url,
             },
@@ -494,7 +510,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
             'method': 'browsingContext.navigationStarted',
             'params': {
                 'context': ANY_STR,
-                'navigation': ANY_UUID,
+                'navigation': 'navigation_1',
                 'timestamp': ANY_TIMESTAMP,
                 'url': iframe_url,
             },
@@ -520,22 +536,27 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
             }
         })
 
-    messages = await read_sorted_messages(2)
-    assert messages == [
-        AnyExtending({
-            'id': command_id,
-            'type': 'success',
-        }), {
-            'method': 'browsingContext.navigationStarted',
-            'params': {
-                'context': context_id,
-                'navigation': ANY_UUID,
-                'timestamp': ANY_TIMESTAMP,
-                'url': url,
-            },
-            'type': 'event',
-        }
-    ]
+    messages = await read_sorted_messages(2,
+                                          keys_to_stabilize=['navigation'],
+                                          check_no_other_messages=True)
+
+    assert messages == [{
+        'id': command_id,
+        'result': {
+            'navigation': 'navigation_0',
+            'url': url,
+        },
+        'type': 'success',
+    }, {
+        'method': 'browsingContext.navigationStarted',
+        'params': {
+            'context': context_id,
+            'navigation': 'navigation_0',
+            'timestamp': ANY_TIMESTAMP,
+            'url': url,
+        },
+        'type': 'event',
+    }]
 
 
 @pytest.mark.asyncio

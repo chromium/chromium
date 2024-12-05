@@ -438,3 +438,111 @@ def test_merge_dicts_nested_with_arrays():
     }
     assert merge_dicts_recursively(default_dict,
                                    custom_dict) == expected_result
+
+
+def stabilize_key_values(obj,
+                         keys_to_stabilize: list[str],
+                         known_values: dict[str, list[str]] | None = None):
+    """
+    Recursively traverses the provided object and replaces the values associated
+    with specified keys with stable, predictable placeholders. This ensures
+    consistent test assertions even if the original values vary between test
+    runs, e.g. UUIDs.
+
+    This stabilization process guarantees:
+    - Consistent Replacement: Identical original values associated with a given
+      key are replaced by the same placeholder.
+    - Key and Order Dependence: The placeholder value depends on the key and the
+      order in which unique values are encountered for that key. For example,
+      the first unique value for the "id" key is replaced with "id_0",
+      the second with "id_1", and so on. Subsequent occurrences of the first
+      value are also replaced with "id_0".
+
+    :return a mapping of original values to their corresponding placeholders,
+            which can be reused for consistent comparisons across multiple
+            objects.
+
+    # empty object
+    >>> x={}; stabilize_key_values(x, ['KEY_1']); x;
+    {}
+    {}
+
+    # empty fields to hash
+    >>> x={'KEY_1': 1}; stabilize_key_values(x, ['KEY_1']); x;
+    {'KEY_1': [1]}
+    {'KEY_1': 'KEY_1_0'}
+
+    # simple replace
+    >>> x={'KEY_1': 1}; stabilize_key_values(x, ['KEY_1']); x;
+    {'KEY_1': [1]}
+    {'KEY_1': 'KEY_1_0'}
+
+    # nested replace
+    >>> x={'KEY_1': {'KEY_2': 1}}; stabilize_key_values(x, ['KEY_2']); x;
+    {'KEY_2': [1]}
+    {'KEY_1': {'KEY_2': 'KEY_2_0'}}
+
+    # list replace
+    >>> x={'KEY_1': [1, 2]}; stabilize_key_values(x, ['KEY_1']); x;
+    {'KEY_1': [[1, 2]]}
+    {'KEY_1': 'KEY_1_0'}
+
+    # nested list replace
+    >>> x={'KEY_1': [{'KEY_2': 1}, {'KEY_2': 2}]}; stabilize_key_values(x, ['KEY_2']); x;
+    {'KEY_2': [1, 2]}
+    {'KEY_1': [{'KEY_2': 'KEY_2_0'}, {'KEY_2': 'KEY_2_1'}]}
+
+    # different keys same values
+    >>> x={'KEY_1': 1, 'KEY_2': 1}; stabilize_key_values(x, ['KEY_1', 'KEY_2']); x;
+    {'KEY_1': [1], 'KEY_2': [1]}
+    {'KEY_1': 'KEY_1_0', 'KEY_2': 'KEY_2_0'}
+
+    # same key different values
+    >>> x={'KEY_1': 1, 'KEY_2': 2}; stabilize_key_values(x, ['KEY_1', 'KEY_2']); x;
+    {'KEY_1': [1], 'KEY_2': [2]}
+    {'KEY_1': 'KEY_1_0', 'KEY_2': 'KEY_2_0'}
+
+    # value of list
+    >>> x={'KEY_1': [1, 2, 1], 'KEY_2': {'KEY_1': [1, 2, 1],}}; stabilize_key_values(x, ['KEY_1']); x;
+    {'KEY_1': [[1, 2, 1]]}
+    {'KEY_1': 'KEY_1_0', 'KEY_2': {'KEY_1': 'KEY_1_0'}}
+
+    # nested values of list
+    >>> x={'KEY_1': [1, 2, {'KEY_2': 1}, {'KEY_2': 2}, {'KEY_2': 1}]}; stabilize_key_values(x, ['KEY_2']); x;
+    {'KEY_2': [1, 2]}
+    {'KEY_1': [1, 2, {'KEY_2': 'KEY_2_0'}, {'KEY_2': 'KEY_2_1'}, {'KEY_2': 'KEY_2_0'}]}
+
+    """
+
+    if known_values is None:
+        known_values = {}
+
+    if len(keys_to_stabilize) == 0:
+        # Nothing to stabilize.
+        return known_values
+
+    if type(obj) is list:
+        for _, value in enumerate(obj):
+            stabilize_key_values(value, keys_to_stabilize, known_values)
+
+    def _get_stable_value(key, index):
+        return f"{key}_{index}"
+
+    if type(obj) is dict:
+        for key in obj.keys():
+            if key in keys_to_stabilize:
+                if key not in known_values:
+                    known_values[key] = []
+                old_value = obj[key]
+                if old_value in known_values[key]:
+                    # The value was already met. Use the same value.
+                    new_value = _get_stable_value(
+                        key, known_values[key].index(old_value))
+                else:
+                    new_value = _get_stable_value(key, len(known_values[key]))
+                    known_values[key].append(old_value)
+                obj[key] = new_value
+            else:
+                stabilize_key_values(obj[key], keys_to_stabilize, known_values)
+
+    return known_values

@@ -14,8 +14,8 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, read_JSON_message, send_JSON_command,
+                          subscribe)
 
 
 @pytest.mark.asyncio
@@ -44,8 +44,7 @@ async def test_browsingContext_domContentLoaded_create_notReceived(
 
 @pytest.mark.asyncio
 async def test_browsingContext_domContentLoaded_navigate_received(
-        websocket, context_id, url_example, assert_no_more_messages,
-        read_sorted_messages):
+        websocket, context_id, url_example, read_sorted_messages):
     await subscribe(websocket, ["browsingContext.domContentLoaded"])
 
     command_id = await send_JSON_command(
@@ -58,12 +57,15 @@ async def test_browsingContext_domContentLoaded_navigate_received(
             }
         })
 
-    messages = await read_sorted_messages(2)
+    messages = await read_sorted_messages(2,
+                                          keys_to_stabilize=['navigation'],
+                                          check_no_other_messages=True)
+
     assert messages == [
         {
             'id': command_id,
             'result': {
-                'navigation': ANY_UUID,
+                'navigation': 'navigation_0',
                 'url': url_example,
             },
             'type': 'success',
@@ -72,12 +74,10 @@ async def test_browsingContext_domContentLoaded_navigate_received(
             'method': 'browsingContext.domContentLoaded',
             'params': {
                 'context': context_id,
-                'navigation': ANY_UUID,
+                'navigation': 'navigation_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': url_example,
             },
             'type': 'event',
         },
     ]
-
-    await assert_no_more_messages()

@@ -23,7 +23,8 @@ import pytest_asyncio
 import websockets
 from test_helpers import (AnyExtending, execute_command, get_tree, goto_url,
                           merge_dicts_recursively, read_JSON_message,
-                          send_JSON_command, wait_for_event, wait_for_events)
+                          send_JSON_command, stabilize_key_values,
+                          wait_for_event, wait_for_events)
 
 from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
@@ -299,12 +300,25 @@ def url_cacheable(local_server_http):
 
 
 @pytest.fixture
-def read_sorted_messages(websocket):
-    """Read the given number of messages from the websocket, and returns them
-    in consistent order. Ignore messages that do not match the filter."""
+def read_sorted_messages(websocket, read_all_messages):
+    """
+    Reads the specified number of messages from the WebSocket, returning them in
+    a consistent order.
+
+    Messages not matching the provided filter are ignored.
+
+    Specified keys within the messages can be stabilized. Stabilization replaces
+    certain values with predictable placeholders, ensuring consistent
+    comparisons across test runs even if the original values change. The same
+    original value is always replaced with the same placeholder. The placeholder
+    is determined by the key and the order in which unique values for that key
+    are encountered.
+    """
     async def read_sorted_messages(
             message_count,
-            filter_lambda: Callable[[dict], bool] = lambda _: True):
+            filter_lambda: Callable[[dict], bool] = lambda _: True,
+            keys_to_stabilize: list[str] = [],
+            check_no_other_messages: bool = False):
         messages = []
         for _ in range(message_count):
             # Get the next message matching the filter.
@@ -313,41 +327,71 @@ def read_sorted_messages(websocket):
                 if filter_lambda(message):
                     break
             messages.append(message)
+
+        if check_no_other_messages:
+            messages = messages + await read_all_messages()
+
         messages.sort(key=lambda x: x["method"]
                       if "method" in x else str(x["id"]) if "id" in x else "")
+        # Stabilize some values through the messages.
+        stabilize_key_values(messages, keys_to_stabilize)
+
+        if len(messages) > message_count:
+            # "Assert equals" to produce a readable overview of all received
+            # messages.
+            assert messages == [
+                {} for _ in range(message_count)
+            ], f" Expected {message_count}, but received {len(messages)} messages."
+
         return messages
 
     return read_sorted_messages
 
 
 @pytest.fixture
-def assert_no_more_messages(websocket):
-    """Assert that there are no more messages on the websocket."""
-    async def assert_no_more_messages():
+def read_all_messages(websocket):
+    async def read_all_messages():
+        messages = []
         """ Walk through all the browsing contexts and evaluate an async script"""
         command_id = await send_JSON_command(websocket, {
             'method': 'browsingContext.getTree',
             'params': {}
         })
         message = await read_JSON_message(websocket)
-        if message != AnyExtending({'type': 'success', 'id': command_id}):
-            raise Exception(f"Unexpected message {message}")
+        if message != AnyExtending({'id': command_id}):
+            # Unexpected message. Add to the result list.
+            messages.append(message)
+        else:
+            assert message == AnyExtending({
+                'type': 'success',
+                'id': command_id
+            }), "Unexpected command failure"
+            for context in message['result']['contexts']:
+                command_id = await send_JSON_command(
+                    websocket, {
+                        "method": "script.evaluate",
+                        "params": {
+                            "expression": "Promise.resolve()",
+                            "target": {
+                                "context": context['context']
+                            },
+                            "awaitPromise": True,
+                        }
+                    })
+                message = await read_JSON_message(websocket)
+                if message != AnyExtending({'id': command_id}):
+                    # Ignore both success and failure command result.
+                    messages.append(message)
+        return messages
 
-        for context in message['result']['contexts']:
-            command_id = await send_JSON_command(
-                websocket, {
-                    "method": "script.evaluate",
-                    "params": {
-                        "expression": "Promise.resolve()",
-                        "target": {
-                            "context": context['context']
-                        },
-                        "awaitPromise": True,
-                    }
-                })
-            message = await read_JSON_message(websocket)
-            if message != AnyExtending({'type': 'success', 'id': command_id}):
-                raise Exception(f"Unexpected message {message}")
+    return read_all_messages
+
+
+@pytest.fixture
+def assert_no_more_messages(read_all_messages):
+    """Assert that there are no more messages on the websocket."""
+    async def assert_no_more_messages():
+        assert await read_all_messages() == [], "No more messages are expected"
 
     return assert_no_more_messages
 
