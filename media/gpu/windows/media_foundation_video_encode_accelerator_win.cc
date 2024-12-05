@@ -135,11 +135,11 @@ constexpr gfx::Size kDefaultMinResolution(32, 32);
 // to `6799902`, resulting chromium think 8K & 30fps is supported, and some
 // Intel GPUs only support level 5.2. Since most devices only support up to 4K,
 // so we set level 5.2 as the max allowed level here to limit max resolution and
-// framerate combination can only go up to 2K & 172fps, or 4K & 66fps.
+// framerate combination can only go up to 2K & 172fps, or 4K & 64fps.
 constexpr FramerateAndResolution kLegacy2KMaxFramerateAndResolution = {
     172, gfx::Size(1920, 1080)};
 constexpr FramerateAndResolution kLegacy4KMaxFramerateAndResolution = {
-    66, gfx::Size(3840, 2160)};
+    64, gfx::Size(3840, 2160)};
 
 // For H.265/AV1, some NVIDIA GPUs may report `MF_VIDEO_MAX_MB_PER_SEC` value
 // equals to `7255273`, resulting chromium think 2K & 880fps is supported. Since
@@ -679,8 +679,7 @@ std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
     VideoCodec codec,
     IMFTransform* encoder) {
   ComPtr<IMFMediaType> media_type;
-  std::vector<FramerateAndResolution> framerate_and_resolutions = {
-      kDefaultMaxFramerateAndResolution};
+  std::vector<FramerateAndResolution> framerate_and_resolutions;
   RETURN_ON_HR_FAILURE(MFCreateMediaType(&media_type),
                        "Create media type failed", framerate_and_resolutions);
   RETURN_ON_HR_FAILURE(media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video),
@@ -747,7 +746,6 @@ std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
     max_framerate_and_resolutions.push_back(kModern8KMaxFramerateAndResolution);
   }
 
-  framerate_and_resolutions.clear();
   for (auto& max_framerate_and_resolution : max_framerate_and_resolutions) {
     FramerateAndResolution framerate_and_resolution = {
         CalculateMaxFramerateFromMacroBlocksPerSecond(
