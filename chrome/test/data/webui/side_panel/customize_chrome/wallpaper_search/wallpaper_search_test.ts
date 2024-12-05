@@ -521,18 +521,14 @@ suite('WallpaperSearchTest', () => {
           'getWallpaperSearchResults', newResultsResolver.promise);
 
       // Check that the previous tiles disappear after click until promise is
-      // resolved, including the empty tiles.
+      // resolved.
       wallpaperSearchElement.$.submitButton.click();
       await microtasksFinished();
-      result =
-          $$(wallpaperSearchElement,
-             '#wallpaperSearch .tile.result, #wallpaperSearch .tile.empty');
+      result = $$(wallpaperSearchElement, '#wallpaperSearch .tile.result');
       assertFalse(!!result);
       newResultsResolver.resolve(exampleResults);
       await microtasksFinished();
-      result =
-          $$(wallpaperSearchElement,
-             '#wallpaperSearch .tile.result, #wallpaperSearch .tile.empty');
+      result = $$(wallpaperSearchElement, '#wallpaperSearch .tile.result');
       assertTrue(!!result);
     });
 
@@ -892,12 +888,9 @@ suite('WallpaperSearchTest', () => {
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
       const historyTiles =
-          wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.result');
-      const historyEmptyTiles =
-          wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.empty');
+          wallpaperSearchElement.$.historyCard.querySelectorAll('.tile');
       assertFalse(!!wallpaperSearchElement.$.historyCard.hidden);
       assertEquals(historyTiles.length, 2);
-      assertEquals(historyEmptyTiles.length, 4);
       assertEquals(
           (historyTiles[0]! as HTMLElement).getAttribute('aria-label'),
           'Recent AI theme 1');

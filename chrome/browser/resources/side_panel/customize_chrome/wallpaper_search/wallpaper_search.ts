@@ -148,7 +148,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       descriptors_: {type: Object},
       descriptorD_: {type: Array},
       errorState_: {type: Object},
-      emptyHistoryContainers_: {type: Object},
       expandedCategories_: {type: Object},
       loading_: {type: Boolean},
       history_: {type: Array},
@@ -178,7 +177,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   };
   private descriptors_: Descriptors|null = null;
   protected descriptorD_: string[] = DESCRIPTOR_D_VALUE.map(value => value.hex);
-  protected emptyHistoryContainers_: number[] = [];
   private errorCallback_: (() => void)|undefined;
   protected errorState_: ErrorState|null = null;
   private expandedCategories_: {[categoryIndex: number]: boolean} = {};
@@ -240,7 +238,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.wallpaperSearchCallbackRouter_.setHistory.addListener(
             (history: WallpaperSearchResult[]) => {
               this.history_ = history;
-              this.emptyHistoryContainers_ = this.calculateEmptyTiles(history);
               this.openInspirations_ = !this.computeShouldShowHistory_();
             });
     this.wallpaperSearchHandler_.updateHistory();
@@ -283,11 +280,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   focusOnBackButton() {
     this.$.heading.getBackButton().focus();
-  }
-
-  private calculateEmptyTiles(filledTiles: WallpaperSearchResult[]): number[] {
-    return Array.from(
-        {length: filledTiles.length > 0 ? 6 - filledTiles.length : 0}, () => 0);
   }
 
   private computeErrorState_() {
