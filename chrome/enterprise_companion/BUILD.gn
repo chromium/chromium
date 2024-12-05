@@ -96,6 +96,7 @@ source_set("base") {
     "//chrome/enterprise_companion/telemetry_logger/proto",
     "//chrome/updater:public_sources",
     "//chrome/updater/protos:omaha_proto",
+    "//components/crash/core/common",
     "//components/named_mojo_ipc_server",
     "//components/named_system_lock",
     "//components/policy/core/common",

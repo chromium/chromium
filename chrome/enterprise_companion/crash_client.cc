@@ -29,6 +29,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
@@ -234,6 +235,11 @@ class CrashClient {
       VLOG(1) << "Failed to start handler.";
       return false;
     }
+
+    static crash_reporter::CrashKeyString<64> crash_key_cohort_id("cohort_id");
+    crash_key_cohort_id.Set(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kCohortIdSwitch));
 
     VLOG(1) << "Crash handler launched and ready";
     return true;
