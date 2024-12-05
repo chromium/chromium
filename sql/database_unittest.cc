@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <cstring>
 #include <memory>
 #include <optional>
 #include <string>
@@ -37,6 +36,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
