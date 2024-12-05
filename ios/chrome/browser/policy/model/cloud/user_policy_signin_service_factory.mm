@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 
 #import "base/memory/ref_counted.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -26,19 +25,19 @@ policy::DeviceManagementService* g_device_management_service_for_testing = NULL;
 namespace policy {
 
 UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "UserPolicySigninService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("UserPolicySigninService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() {}
+UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() = default;
 
 // static
 UserPolicySigninService* UserPolicySigninServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<UserPolicySigninService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<UserPolicySigninService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -79,18 +78,6 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
 void UserPolicySigninServiceFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   user_prefs->RegisterInt64Pref(policy_prefs::kLastPolicyCheckTime, 0);
-}
-
-bool UserPolicySigninServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  // When Enterprise Policy is enabled, initialize the UserPolicySigninService
-  // early when creating the BrowserState. This will make sure that the user
-  // polices are fetched if there is no cache at startup when the account is
-  // already syncing and eligible for user policy.
-  return true;
-}
-
-bool UserPolicySigninServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace policy
