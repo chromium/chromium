@@ -3066,7 +3066,6 @@ if (enable_java_templates) {
   #    error-prone constructs in the language. If not provided, whether this is
   #    enabled depends on chromium_code and the global
   #    use_errorprone_java_compiler variable.
-  #  enable_nullaway: If True, enable @Nullable checking via NullAway.
   #  use_turbine: If True, compile headers using turbine.py.
   #  apk_name: Optional APK name. If provided, will tell compile_java.py to also
   #    generate an .apk.jar.info file under size-info/${apk_name}.apk.jar.info
@@ -3258,15 +3257,14 @@ if (enable_java_templates) {
           # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
           "//tools/android/errorprone_plugin/OWNERS",
         ]
-        if (defined(invoker.enable_nullaway) && invoker.enable_nullaway) {
+        if (defined(testonly) && testonly) {
+          args += [ "--testonly" ]
+        } else {
           inputs += [ _nullaway_jar ]
           args += [
             "--processorpath=$_rebased_nullaway_jar",
             "--enable-nullaway",
           ]
-        }
-        if (defined(testonly) && testonly) {
-          args += [ "--testonly" ]
         }
       }
       if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
@@ -4105,7 +4103,6 @@ if (enable_java_templates) {
         _compile_java_errorprone_target = "${_main_target_name}__errorprone"
         compile_java_helper(_compile_java_errorprone_target) {
           forward_variables_from(invoker, _compile_java_forward_variables)
-          forward_variables_from(invoker, [ "enable_nullaway" ])
           enable_errorprone = true
           if (defined(invoker.errorprone_args)) {
             if (!defined(javac_args)) {
@@ -4124,8 +4121,6 @@ if (enable_java_templates) {
           output_jar_path = "$target_out_dir/$target_name.errorprone.stamp"
         }
         _java_validate_deps += [ ":$_compile_java_errorprone_target" ]
-      } else {
-        not_needed(invoker, [ "enable_nullaway" ])
       }
     }  # _has_sources
 

@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.AlwaysInline;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Locale;
 
@@ -20,6 +21,7 @@ import java.util.Locale;
  *
  * <p>Usage documentation: {@code //docs/android_logging.md}.
  */
+@NullMarked
 public class Log {
     /** Convenience property, same as {@link android.util.Log#ASSERT}. */
     public static final int ASSERT = android.util.Log.ASSERT;
