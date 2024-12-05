@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -659,53 +658,6 @@ public class EdgeToEdgeControllerTest {
         mEdgeToEdgeControllerImpl.onExitFullscreen(mTab);
         assertToNormalExpectations();
         assertBottomInsetForSafeArea(0);
-    }
-
-    @Test
-    public void fullscreenWorkaround_DisabledInPictureInPicture() {
-        // Set a mock visibility rect for view mock.
-        final Rect windowVisibleRect = new Rect(0, TOP_INSET, 400, 400);
-        final Rect contentVisibleRect = new Rect(0, 0, 400, 400);
-        doAnswer(
-                        invocationOnMock -> {
-                            Rect outRect = invocationOnMock.getArgument(0);
-                            outRect.set(windowVisibleRect);
-                            return null;
-                        })
-                .when(mViewMock)
-                .getWindowVisibleDisplayFrame(any());
-
-        View content = Mockito.mock(View.class);
-        doReturn(content).when(mActivity).findViewById(android.R.id.content);
-        doAnswer(
-                        invocationOnMock -> {
-                            Rect outRect = invocationOnMock.getArgument(0);
-                            outRect.set(contentVisibleRect);
-                            return null;
-                        })
-                .when(content)
-                .getGlobalVisibleRect(any());
-
-        // Init the test case with top inset only.
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_TOP_INSETS_ONLY);
-
-        // Enter full screen mode.
-        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
-        mEdgeToEdgeControllerImpl.onEnterFullscreen(mTab, new FullscreenOptions(false, false));
-        verify(mOsWrapper, atLeastOnce()).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
-
-        // Assume entering pip mode. Work around padding should be disabled.
-        clearInvocations(mOsWrapper);
-        doReturn(true).when(mActivity).isInPictureInPictureMode();
-        mEdgeToEdgeControllerImpl.handleWindowInsets(
-                mViewMock, new WindowInsetsCompat.Builder().build());
-        verify(mOsWrapper, atLeastOnce()).setPadding(any(), eq(0), eq(0), eq(0), eq(0));
-
-        // Assume exiting pip mode. Work around should be applied again.
-        clearInvocations(mOsWrapper);
-        doReturn(false).when(mActivity).isInPictureInPictureMode();
-        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_TOP_INSETS_ONLY);
-        verify(mOsWrapper, atLeastOnce()).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
     }
 
     @Test
