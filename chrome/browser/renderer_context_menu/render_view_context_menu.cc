@@ -2161,7 +2161,7 @@ void RenderViewContextMenu::AppendVideoItems() {
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
     const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
 
-    if (GetBrowser()
+    if (GetBrowser() && GetBrowser()
             ->GetFeatures()
             .lens_overlay_entry_point_controller()
             ->IsEnabled() &&
