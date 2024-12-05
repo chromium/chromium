@@ -30,6 +30,7 @@ class SafeBrowsingBlockingPage
 
   // IOSSecurityInterstitialPage::
   void ShowInfobar() override;
+  void WasDismissed() override;
 
  private:
   // Controller client used for SafeBrowsing blocking page.
