@@ -29,6 +29,10 @@ namespace {
 // The size of the symbol image.
 const CGFloat kSymbolToolbarPointSize = 24;
 
+// The padding to be added to the bottom of the system share icon to balance
+// the white space on top.
+const CGFloat kShareIconBalancingHeightPadding = 1;
+
 }  // namespace
 
 @implementation ToolbarButtonFactory
@@ -151,7 +155,20 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
 - (ToolbarButton*)shareButton {
   auto loadImageBlock = ^UIImage* {
-    return DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize);
+    UIImage* image =
+        DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize);
+
+    // The system share image has uneven vertical padding. Add a small bottom
+    // padding to balance it.
+    UIGraphicsBeginImageContextWithOptions(
+        CGSizeMake(image.size.width,
+                   image.size.height + kShareIconBalancingHeightPadding),
+        NO, 0.0);
+    [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return newImage;
   };
 
   ToolbarButton* shareButton =

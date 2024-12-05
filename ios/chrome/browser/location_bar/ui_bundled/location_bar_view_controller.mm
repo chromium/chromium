@@ -62,6 +62,10 @@ const CGFloat kSymbolImagePointSize = 18.;
 // element.
 const NSString* kScribbleOmniboxElementId = @"omnibox";
 
+// The padding to be added to the bottom of the system share icon to balance
+// the white space on top.
+const CGFloat kShareIconBalancingHeightPadding = 1;
+
 }  // namespace
 
 @interface LocationBarViewController () <UIContextMenuInteractionDelegate,
@@ -570,9 +574,20 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                     action:@selector(shareButtonPressed)
           forControlEvents:UIControlEventTouchUpInside];
 
+      // The system share image has uneven vertical padding. Add a small bottom
+      // padding to balance it.
       UIImage* shareImage =
           DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize);
-      [self.locationBarSteadyView.trailingButton setImage:shareImage
+      UIGraphicsBeginImageContextWithOptions(
+          CGSizeMake(shareImage.size.width,
+                     shareImage.size.height + kShareIconBalancingHeightPadding),
+          NO, 0.0);
+      [shareImage drawInRect:CGRectMake(0, 0, shareImage.size.width,
+                                        shareImage.size.height)];
+      UIImage* paddedShareImage = UIGraphicsGetImageFromCurrentImageContext();
+      UIGraphicsEndImageContext();
+
+      [self.locationBarSteadyView.trailingButton setImage:paddedShareImage
                                                  forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SHARE);
