@@ -59,4 +59,10 @@ struct SRIMessageSignature {
   string? keyid;
   string? nonce;
   string? tag;
+
+  // The serialized `@signature-params` component of the signature base. We'll
+  // generate this when parsing the header, as we have all the context necessary
+  // (in particular, the order in which the signature metadata was delivered in
+  // the response headers).
+  string serialized_signature_params;
 };
