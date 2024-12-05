@@ -550,6 +550,29 @@ public class AwPrerenderTest extends AwParameterizedTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
+    // Tests WebView prerendering trigger with null activation callback.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testNullActivationCallback() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(
+                        /* additionalHeaders= */ null,
+                        /* noVarySearchData= */ null,
+                        /* isJavascriptEnabled= */ true);
+        startPrerenderingAndWait(
+                mPrerenderingUrl, prefetchParameters, /* activationCallback= */ null);
+
+        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
     // Tests FrameTree swap of AwContentsIoThreadClient by observing that callbacks are correctly
     // called after prerender activation.
     @Test
