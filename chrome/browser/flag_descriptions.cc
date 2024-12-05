@@ -5,7 +5,6 @@
 #include "chrome/browser/flag_descriptions.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "flag_descriptions.h"
 #include "media/gpu/buildflags.h"
 #include "pdf/buildflags.h"
@@ -123,11 +122,11 @@ const char kAndroidBrowserControlsInVizDescription[] =
     "Let viz move browser controls when scrolling. For now, this applies only "
     "to top controls.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kAnnotatorModeName[] = "Enable annotator tool";
 const char kAnnotatorModeDescription[] =
     "Enables the tool for annotating across the OS.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kAriaElementReflectionName[] = "Enable ARIA element reflection";
 const char kAriaElementReflectionDescription[] =
@@ -157,13 +156,13 @@ const char kBiometricAuthIdentityCheckDescription[] =
     "biometric checks.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kBirchWeatherName[] = "Birch weather";
 const char kBirchWeatherDescription[] =
     "Shows the weather suggestion chip in the birch suggestions UI. Note that "
     "the chip only shows certain times of day, so it may not immediately "
     "appear after enabling this feature.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName[] =
     "Blink Scheduler Discrete Input Matches Responsiveness Metrics";
@@ -242,7 +241,7 @@ const char kContentSettingsPartitioningName[] = "Content Settings Partitioning";
 const char kContentSettingsPartitioningDescription[] =
     "Partition content settings by StoragePartitions";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kCoralFeatureKeyName[] = "Secret key for Coral feature.";
 const char kCoralFeatureKeyDescription[] =
     "Secret key for Coral feature. Incorrect values will cause chrome crashes.";
@@ -250,7 +249,7 @@ const char kCoralFeatureKeyDescription[] =
 const char kCrosSwitcherName[] = "ChromeOS Switcher feature.";
 const char kCrosSwitcherDescription[] =
     "Enable/Disable ChromeOS Switcher feature.";
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 
 const char kCssGamutMappingName[] = "CSS Gamut Mapping";
 const char kCssGamutMappingDescription[] =
@@ -325,7 +324,7 @@ const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
     "Chrome start-up.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kForestFeatureName[] = "Forest";
 const char kForestFeatureDescription[] = "Enable Forest experiment.";
 #endif
@@ -1117,12 +1116,12 @@ const char kDisallowDocWrittenScriptsUiDescription[] =
     "Disallows fetches for third-party parser-blocking scripts inserted into "
     "the main frame via document.write.";
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 const char kDisallowManagedProfileSignoutName[] =
     "Disallow managed profile signout";
 const char kDisallowManagedProfileSignoutDescription[] =
     "Disallows signing out from managed profiles.";
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 const char kViewTransitionLayeredCaptureName[] =
     "CSS view transition layered capture";
@@ -1906,8 +1905,8 @@ const char kExtensionWebFileHandlersDescription[] =
     "Enable Extension Web File Handlers, which allows extensions to operate on "
     "the native file system. An extension can register to read and edit files, "
     "specified in the manifest, by their file extension or mime type.";
-#endif  // IS_CHROMEOS
-#endif  // ENABLE_EXTENSIONS
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";
 const char kExtensionsOnChromeUrlsDescription[] =
@@ -2181,7 +2180,7 @@ const char kCastEnableStreamingWithHiDPIDescription[] =
     "reduce performance on some platforms and also improve quality of video "
     "frames.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kFlexFirmwareUpdateName[] = "ChromeOS Flex Firmware Updates";
 const char kFlexFirmwareUpdateDescription[] =
     "Allow firmware updates from LVFS to be installed on ChromeOS Flex.";
@@ -2502,7 +2501,7 @@ const char kLoginDbDeprecationAndroidDescription[] =
 const char kMantisFeatureKeyName[] = "Secret key for Mantis feature.";
 const char kMantisFeatureKeyDescription[] =
     "Feature key to use the Mantis feature on ChromeOS.";
-#endif  // IS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
@@ -4168,12 +4167,12 @@ const char kPredictableReportedQuotaDescription[] =
     "estimate API. This flag is intended only for validating if this change "
     "caused an unforseen bug.";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 const char kRunVideoCaptureServiceInBrowserProcessName[] =
     "Run video capture service in browser";
 const char kRunVideoCaptureServiceInBrowserProcessDescription[] =
     "Run the video capture service in the browser process.";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 const char kPromptAPIForGeminiNanoName[] = "Prompt API for Gemini Nano";
 const char kPromptAPIForGeminiNanoDescription[] =
@@ -5732,7 +5731,7 @@ const char kUseAngleDefault[] = "Default";
 
 // ChromeOS -------------------------------------------------------------------
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 const char kAcceleratedMjpegDecodeName[] =
     "Hardware-accelerated mjpeg decode for captured frame";
@@ -6163,7 +6162,7 @@ const char kCloudGamingDeviceName[] = "Enable cloud game search";
 const char kCloudGamingDeviceDescription[] =
     "Enables cloud game search results in the launcher.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kCampaignsComponentUpdaterTestTagName[] = "Campaigns test tag";
 const char kCampaignsComponentUpdaterTestTagDescription[] =
     "Tags used for component updater to selet Omaha cohort for Growth "
@@ -6171,7 +6170,7 @@ const char kCampaignsComponentUpdaterTestTagDescription[] =
 const char kCampaignsOverrideName[] = "Campaigns override";
 const char kCampaignsOverrideDescription[] =
     "Base64 encoded Growth campaigns used for testing.";
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kComponentUpdaterTestRequestName[] =
     "Enable the component updater check 'test-request' parameter";
@@ -6280,11 +6279,11 @@ const char kConchSystemAudioFromMicName[] = "System audio capture for Conch";
 const char kConchSystemAudioFromMicDescription[] =
     "Capture system audio from microphone for Conch on ChromeOS.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kDemoModeComponentUpdaterTestTagName[] = "Demo Mode test tag";
 const char kDemoModeComponentUpdaterTestTagDescription[] =
     "Tags used for component updater to select Omaha cohort for Demo Mode.";
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kDeskProfilesName[] = "Desk profiles";
 const char kDeskProfilesDescription[] =
@@ -7552,18 +7551,7 @@ const char kTetheringExperimentalFunctionalityDescription[] =
 
 // Prefer keeping this section sorted to adding new definitions down here.
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kBlinkExtensionName[] = "Experimental Blink Extension";
-const char kBlinkExtensionDescription[] =
-    "Enable the experimental Blink Extension.";
-
-const char kBlinkExtensionDiagnosticsName[] =
-    "Experimental Diagnostics Blink Extension";
-const char kBlinkExtensionDiagnosticsDescription[] =
-    "Enable the experimental Diagnostics Blink Extension.";
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 const char kGetAllScreensMediaName[] = "GetAllScreensMedia API";
@@ -7845,12 +7833,12 @@ const char kWaylandUiScalingDescription[] =
 
 // Random platform combinations -----------------------------------------------
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kZeroCopyVideoCaptureName[] = "Enable Zero-Copy Video Capture";
 const char kZeroCopyVideoCaptureDescription[] =
     "Camera produces a gpu friendly buffer on capture and, if there is, "
     "hardware accelerated video encoder consumes the buffer";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -7927,14 +7915,14 @@ const char kCupsIppPrintingBackendDescription[] =
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kScreenlockReauthCardName[] =
     "Show screenlock reauth before filling password setting in password "
     "manager";
 const char kScreenlockReauthCardDescription[] =
     "Enables setting for requiring reauth before filling passwords "
     "in password manager settings. The default for setting is turned off.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 const char kChromeWideEchoCancellationName[] = "Chrome-wide echo cancellation";
@@ -8073,7 +8061,7 @@ const char kWebrtcPipeWireCameraDescription[] =
     "When enabled the PipeWire multimedia server will be used for cameras.";
 #endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kPromiseIconsName[] = "Promise Icons";
 const char kPromiseIconsDescription[] =
     "Enables promise icons in the Launcher and Shelf (if the app is pinned) "
@@ -8083,7 +8071,7 @@ const char kEnableAudioFocusEnforcementName[] = "Audio Focus Enforcement";
 const char kEnableAudioFocusEnforcementDescription[] =
     "Enables enforcement of a single media session having audio focus at "
     "any one time. Requires #enable-media-session-service to be enabled too.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 const char kComposeId[] = "CCO";
@@ -8171,7 +8159,7 @@ const char kEnableBuiltinHlsDescription[] =
     "Enables chrome's builtin HLS player instead of Android's MediaPlayer";
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kProfilesReorderingName[] = "Profiles Reordering";
 const char kProfilesReorderingDescription[] =
     "Enables profiles reordering in the Profile Picker main view by drag and "
@@ -8229,11 +8217,11 @@ const char kEnableCertManagementV2UIWriteDescription[] =
     "chrome://certificate-manager";
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kOverlayScrollbarsOSSettingsName[] = "Overlay Scrollbar OS Settings";
 const char kOverlayScrollbarsOSSettingsDescription[] =
     "Enable the os settings for overlay scrollbars on ChromeOS.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kSupervisedProfileHideGuestName[] = "Supervised Profile Hide Guest";

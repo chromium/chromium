@@ -63,7 +63,6 @@ const struct {
     {kOsLinux, "Linux"},     {kOsCrOS, "ChromeOS"},
     {kOsAndroid, "Android"}, {kOsCrOSOwnerOnly, "ChromeOS (owner only)"},
     {kOsIos, "iOS"},         {kOsFuchsia, "Fuchsia"},
-    {kOsLacros, "Lacros"},
 };
 
 // Adds a |StringValue| to |list| for each platform where |bitmask| indicates
@@ -752,8 +751,6 @@ unsigned short FlagsState::GetCurrentPlatform() {
   return kOsWin;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return kOsCrOS;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return kOsLacros;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_OPENBSD)
   return kOsLinux;
 #elif BUILDFLAG(IS_ANDROID)
