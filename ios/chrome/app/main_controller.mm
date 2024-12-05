@@ -960,6 +960,14 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
         // Nothing to do.
         break;
     }
+
+    if (fromInitStage == ProfileInitStage::kFirstRun) {
+      // Clear -isFirstRun once the first profile is done presenting the FRE
+      // (it should not be presented if e.g. the user sign-in with a managed
+      // profile on their first run of the app after completing the FRE on
+      // the personal profile).
+      _isFirstRun = NO;
+    }
   }
 }
 
