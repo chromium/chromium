@@ -5271,63 +5271,6 @@
             ]
         }
     ],
-    "ClankMostVisitedTilesReselect": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_PartialMatch_Arm3",
-                    "params": {
-                        "lax_path": "true",
-                        "lax_query": "true",
-                        "lax_ref": "true",
-                        "lax_scheme_host": "true"
-                    },
-                    "enable_features": [
-                        "MostVisitedTilesReselect"
-                    ]
-                },
-                {
-                    "name": "Enabled_PartialMatch_Arm2",
-                    "params": {
-                        "lax_path": "false",
-                        "lax_query": "true",
-                        "lax_ref": "true",
-                        "lax_scheme_host": "true"
-                    },
-                    "enable_features": [
-                        "MostVisitedTilesReselect"
-                    ]
-                },
-                {
-                    "name": "Enabled_PartialMatch_Arm1",
-                    "params": {
-                        "lax_path": "false",
-                        "lax_query": "false",
-                        "lax_ref": "true",
-                        "lax_scheme_host": "true"
-                    },
-                    "enable_features": [
-                        "MostVisitedTilesReselect"
-                    ]
-                },
-                {
-                    "name": "Enabled_ExactMatch",
-                    "params": {
-                        "lax_path": "false",
-                        "lax_query": "false",
-                        "lax_ref": "false",
-                        "lax_scheme_host": "false"
-                    },
-                    "enable_features": [
-                        "MostVisitedTilesReselect"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClankTabResumpton": [
         {
             "platforms": [
