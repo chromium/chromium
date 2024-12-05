@@ -589,12 +589,15 @@ _WIN_11_EXECUTABLE_CONFIGS = frozenset([
     _views_perftests(),
 ])
 _WIN_ARM64_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('blink_perf.dom'),
     _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('media.desktop'),
     _GetBenchmarkConfig('rendering.desktop', abridged=True),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
-    _GetBenchmarkConfig('system_health.common_desktop', abridged=True),
+    _GetBenchmarkConfig('system_health.common_desktop'),
+    _GetBenchmarkConfig('v8.browsing_desktop'),
 ])
 _WIN_ARM64_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(200),
