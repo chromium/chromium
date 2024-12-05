@@ -14,6 +14,8 @@ group("installer_policies") {
 # Prefer adding installer policies here.
 static_library("installer_policies_no_content_deps") {
   sources = [
+    "amount_extraction_heuristic_regexes_component_installer.cc",
+    "amount_extraction_heuristic_regexes_component_installer.h",
     "autofill_states_component_installer.cc",
     "autofill_states_component_installer.h",
     "first_party_sets_component_installer_policy.cc",
