@@ -132,7 +132,7 @@ std::unique_ptr<EndpointFetcher> ClusterServerProxy::CreateEndpointFetcher(
       url_loader_factory_, kOAuthName, url, kPostHttpMethod, kContentType,
       std::vector<std::string>{kOAuthScope}, base::Milliseconds(kTimeoutMs),
       post_data, kGetComparableProductsTrafficAnnotation, identity_manager_,
-      signin::ConsentLevel::kSignin);
+      signin::ConsentLevel::kSync);
 }
 
 void ClusterServerProxy::HandleCompareResponse(

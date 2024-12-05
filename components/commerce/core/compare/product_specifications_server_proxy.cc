@@ -294,12 +294,11 @@ ProductSpecificationsServerProxy::CreateEndpointFetcher(
     const GURL& url,
     const std::string& http_method,
     const std::string& post_data) {
-  signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin;
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
       std::vector<std::string>{kOAuthScope}, base::Milliseconds(kTimeoutMs),
       post_data, kShoppingListTrafficAnnotation, identity_manager_,
-      consent_level);
+      signin::ConsentLevel::kSync);
 }
 
 std::optional<ProductSpecifications>
