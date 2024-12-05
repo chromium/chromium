@@ -40,6 +40,7 @@ $ ./run_tests ScriptsSmokeTest.testRunPerformanceTests
 
 import argparse
 from collections import OrderedDict
+import datetime
 import json
 import os
 import pathlib
@@ -173,6 +174,14 @@ class OutputFilePaths(object):
     passes --output-format=csv.
     """
     return os.path.join(self.benchmark_path, 'perf_results.csv')
+
+
+def print_start(step, attempt=None):
+  if attempt is None:
+    attempt_str = ''
+  else:
+    attempt_str = f' (attempt #{attempt})'
+  print(f'\n### {step}{attempt_str} {datetime.datetime.now()} ###')
 
 
 def print_duration(step, start):
@@ -1121,7 +1130,7 @@ def main(sys_args):
     if not benchmark_name:
       benchmark_name = options.executable
     output_paths = OutputFilePaths(isolated_out_dir, benchmark_name).SetUp()
-    print('\n### {folder} ###'.format(folder=benchmark_name))
+    print_start(benchmark_name)
     overall_return_code = execute_gtest_perf_test(
         command_generator,
         output_paths,
@@ -1133,8 +1142,7 @@ def main(sys_args):
     for benchmark in benchmarks:
       command_generator = TelemetryCommandGenerator(benchmark, options)
       for run_num in range(options.benchmark_max_runs):
-        print('\n### {folder} (attempt #{num}) ###'.format(folder=benchmark,
-                                                           num=run_num))
+        print_start(benchmark, run_num)
         output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
         return_code = execute_telemetry_benchmark(
             command_generator,
@@ -1191,8 +1199,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
           benchmark, options, story_selection_config=story_selection_config)
       for run_num in range(options.benchmark_max_runs):
         output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
-        print('\n### {folder} (attempt #{num}) ###'.format(folder=benchmark,
-                                                           num=run_num))
+        print_start(benchmark, run_num)
         return_code = execute_telemetry_benchmark(
             command_generator,
             output_paths,
@@ -1212,8 +1219,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
             options,
             story_selection_config=story_selection_config,
             is_reference=True)
-        print(
-            '\n### {folder} ###'.format(folder=reference_benchmark_foldername))
+        print_start(reference_benchmark_foldername)
         # We intentionally ignore the return code and test results of the
         # reference build.
         execute_telemetry_benchmark(
@@ -1235,8 +1241,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
           ignore_shard_env_vars=True)
       for run_num in range(options.benchmark_max_runs):
         output_paths = OutputFilePaths(isolated_out_dir, name).SetUp()
-        print('\n### {folder} (attempt #{num}) ###'.format(folder=name,
-                                                           num=run_num))
+        print_start(name, run_num)
         return_code = execute_gtest_perf_test(command_generator, output_paths,
                                               options.xvfb)
         if return_code == 0:
@@ -1259,7 +1264,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
           x for x in benchmark_args if x in options.passthrough_args
       ]
       for run_num in range(options.benchmark_max_runs):
-        print(f'\n### {display_name} (attempt #{run_num}) ###')
+        print_start(display_name, run_num)
         return_code = crossbench_test.execute_benchmark(benchmark, display_name,
                                                         benchmark_args)
         if return_code == 0:
