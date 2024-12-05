@@ -154,16 +154,11 @@ void AppInstall::SendPing(int exit_code, base::OnceClosure callback) {
 
 void AppInstall::PingAndShutdown(int exit_code) {
   app_install_controller_->Exit(exit_code);
-  SendPing(exit_code,
-           base::BindOnce(&AppInstall::AppShutdown, this, exit_code));
+  SendPing(exit_code, base::BindOnce(&AppInstall::Shutdown, this, exit_code));
 }
 
-void AppInstall::Shutdown(int exit_code) {
+void AppInstall::ShutdownNow(int exit_code) {
   app_install_controller_->Exit(exit_code);
-  App::Shutdown(exit_code);
-}
-
-void AppInstall::AppShutdown(int exit_code) {
   App::Shutdown(exit_code);
 }
 
@@ -325,7 +320,7 @@ void AppInstall::RegisterUpdater() {
 void AppInstall::MaybeInstallApp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (app_id_.empty()) {
-    Shutdown(kErrorOk);
+    ShutdownNow(kErrorOk);
     return;
   }
 
@@ -336,11 +331,10 @@ void AppInstall::MaybeInstallApp() {
     // because `base::CommandLine::HasSwitch()` recognizes switches that
     // begin with '/' on Windows.
     app_install_controller_->InstallAppOffline(
-        app_id_, app_name_, base::BindOnce(&AppInstall::Shutdown, this));
-
+        app_id_, app_name_, base::BindOnce(&AppInstall::ShutdownNow, this));
   } else {
     app_install_controller_->InstallApp(
-        app_id_, app_name_, base::BindOnce(&AppInstall::Shutdown, this));
+        app_id_, app_name_, base::BindOnce(&AppInstall::ShutdownNow, this));
   }
 }
 

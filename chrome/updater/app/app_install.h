@@ -64,8 +64,7 @@ class AppInstall : public App {
 
   void SendPing(int exit_code, base::OnceClosure callback);
   void PingAndShutdown(int exit_code);
-  void Shutdown(int exit_code);
-  void AppShutdown(int exit_code);
+  void ShutdownNow(int exit_code);
 
   // Overrides for App.
   [[nodiscard]] int Initialize() override;
