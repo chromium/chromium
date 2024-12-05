@@ -1667,13 +1667,27 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-    label = "//chrome/test:performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+    name = "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+    label = "//chrome/test:performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
 )
 
 targets.binaries.generated_script(
+    name = "performance_test_suite_android_trichrome_chrome_google_bundle",
+    label = "//chrome/test:performance_test_suite_android_trichrome_chrome_google_bundle",
+)
+
+# TODO(https://crbug.com/378731077): Remove when migration is done.
+targets.binaries.generated_script(
+    name = "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+    label = "//chrome/test:performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+    skip_usage_check = True,  # Necessary until Pinpoint targets are migrated.
+)
+
+# TODO(https://crbug.com/378731077): Remove when migration is done.
+targets.binaries.generated_script(
     name = "performance_test_suite_android_clank_trichrome_bundle",
     label = "//chrome/test:performance_test_suite_android_clank_trichrome_bundle",
+    skip_usage_check = True,  # Necessary until Pinpoint targets are migrated.
 )
 
 targets.binaries.script(
