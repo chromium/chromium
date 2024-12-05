@@ -6142,12 +6142,6 @@ const char kClipboardHistoryLongpressDescription[] =
     "the clipboard history menu. If an item is selected to paste, it replaces "
     "the content initially pasted by Ctrl+V.";
 
-const char kClipboardHistoryRefreshName[] = "Clipboard history refresh";
-const char kClipboardHistoryRefreshDescription[] =
-    "Enables the following updates to the clipboard history feature: a new "
-    "educational nudge, refreshed menu UI, and a clipboard history submenu "
-    "embedded in context menus.";
-
 const char kClipboardHistoryUrlTitlesName[] =
     "Show page titles for copied URLs in the clipboard history menu";
 const char kClipboardHistoryUrlTitlesDescription[] =

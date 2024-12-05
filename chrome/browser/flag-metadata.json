@@ -1482,11 +1482,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "clipboard-history-refresh",
-    "owners": ["newcomer@google.com", "multipaste@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "clipboard-history-url-titles",
     "owners": ["newcomer@google.com", "multipaste@google.com"],
     "expiry_milestone": 125
