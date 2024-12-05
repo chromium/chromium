@@ -532,9 +532,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                                                 "1 First Section\r\n");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText", true,
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2",
+                               /*sample=*/true,
                                /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText",
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
                               /*expected_count=*/1);
 }
 
@@ -586,9 +587,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   WaitForAccessibilityTreeToContainNodeWithName(contents, kUnlabeledImageName);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText", false,
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2", false,
                                /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText",
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
                               /*expected_count=*/1);
 }
 
@@ -1073,7 +1074,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionAccessibilityTreeDumpTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, HelloWorld) {
+  base::HistogramTester histograms;
   RunPDFTest(FILE_PATH_LITERAL("hello-world.pdf"));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2",
+                               /*sample=*/true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
+                              /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
@@ -1533,8 +1541,15 @@ IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, EnsureScreenAIInitializes) {
 // TODO(crbug.com/360803943): Add a test case with more than one image.
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, HelloWorld) {
+  base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("hello-world-in-image.pdf",
                        GetExpectedStatus(/*has_content=*/true));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2",
+                               /*sample=*/false,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
+                              /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, ThreePagePDF) {
