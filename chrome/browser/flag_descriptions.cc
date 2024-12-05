@@ -712,13 +712,6 @@ const char kAutofillEnableVirtualCardMetadataDescription[] =
     "When enabled, Chrome will show metadata together with other card "
     "information when the virtual card is presented to users.";
 
-const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[] =
-    "Highlight only changed values in preview mode.";
-const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[] =
-    "When Autofill is previewing filling a form, already autofilled values "
-    "and other values that are not changed by accepting the preview should "
-    "not be highlighted.";
-
 const char kAutofillImprovedLabelsName[] =
     "Autofill suggestions with improved labels";
 const char kAutofillImprovedLabelsDescription[] =
