@@ -318,30 +318,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.LegacyResourceTypeFilterItemSelected"
-    enum="DevToolsLegacyResourceTypeFilterItemSelected"
-    expires_after="2025-05-25">
-  <owner>yangguo@google.com</owner>
-  <owner>bmeurer@google.com</owner>
-  <owner>wolfi@google.com</owner>
-  <summary>
-    Records when a resource type is selected in the Network panel's legacy
-    filter bar.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.LegacyResourceTypeFilterNumberOfSelectedChanged"
-    enum="DevToolsLegacyResourceTypeFilterNumberOfSelectedChanged"
-    expires_after="2025-05-25">
-  <owner>yangguo@google.com</owner>
-  <owner>bmeurer@google.com</owner>
-  <owner>wolfi@google.com</owner>
-  <summary>
-    Records the number of selected resource types in the Network panel's legacy
-    filter bar.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.LighthouseCategoryUsed"
     enum="DevToolsLighthouseCategoryUsed" expires_after="2025-03-30">
   <owner>asraine@google.com</owner>
@@ -475,28 +451,6 @@ chromium-metrics-reviews@google.com.
   <owner>yangguo@google.com</owner>
   <summary>
     Recorded when a recording is started or finished in the Recorder panel.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.ResourceTypeFilterItemSelected"
-    enum="DevToolsResourceTypeFilterItemSelected" expires_after="2025-01-12">
-  <owner>yangguo@google.com</owner>
-  <owner>bmeurer@google.com</owner>
-  <owner>wolfi@google.com</owner>
-  <summary>
-    Records when a resource type is selected in the Network panel's filter bar.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.ResourceTypeFilterNumberOfSelectedChanged"
-    enum="DevToolsResourceTypeFilterNumberOfSelectedChanged"
-    expires_after="2025-01-12">
-  <owner>yangguo@google.com</owner>
-  <owner>bmeurer@google.com</owner>
-  <owner>wolfi@google.com</owner>
-  <summary>
-    Records the number of selected resource types in the Network panel's filter
-    bar.
   </summary>
 </histogram>
 
