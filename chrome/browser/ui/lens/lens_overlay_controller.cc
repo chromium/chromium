@@ -56,7 +56,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_metrics.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -257,6 +257,17 @@ std::vector<std::string> JSONArrayToVector(const std::string& json_array) {
     }
   }
   return result;
+}
+
+lens::MimeType StringMimeTypeToDocumentType(const std::string& mime_type) {
+  if (mime_type == "application/pdf") {
+    return lens::MimeType::kPdf;
+  } else if (mime_type == "text/html") {
+    return lens::MimeType::kHtml;
+  } else if (mime_type == "text/plain") {
+    return lens::MimeType::kPlainText;
+  }
+  return lens::MimeType::kUnknown;
 }
 
 }  // namespace
@@ -1505,7 +1516,7 @@ void LensOverlayController::ContinueCreateInitializationData(
 void LensOverlayController::StorePageContentAndContinueInitialization(
     std::unique_ptr<OverlayInitializationData> initialization_data,
     std::vector<uint8_t> bytes,
-    lens::PageContentMimeType content_type,
+    lens::MimeType content_type,
     std::optional<uint32_t> page_count) {
   initialization_data->page_content_bytes_ = bytes;
   initialization_data->page_content_type_ = content_type;
@@ -1518,8 +1529,8 @@ void LensOverlayController::GetPageContextualization(
     PageContentRetrievedCallback callback) {
   // If the contextual searchbox is disabled, exit early.
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
-    std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kNone, std::nullopt);
+    std::move(callback).Run(std::vector<uint8_t>(), lens::MimeType::kUnknown,
+                            std::nullopt);
     return;
   }
 
@@ -1558,8 +1569,8 @@ void LensOverlayController::GetPageContextualization(
     return;
   }
 
-  std::move(callback).Run(std::vector<uint8_t>(),
-                          lens::PageContentMimeType::kNone, std::nullopt);
+  std::move(callback).Run(std::vector<uint8_t>(), lens::MimeType::kUnknown,
+                          std::nullopt);
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -1570,11 +1581,11 @@ void LensOverlayController::OnPdfBytesReceived(
     uint32_t page_count) {
   // TODO(b/370530197): Show user error message if status is not success.
   if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
-    std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kPdf, page_count);
+    std::move(callback).Run(std::vector<uint8_t>(), lens::MimeType::kPdf,
+                            page_count);
     return;
   }
-  std::move(callback).Run(bytes, lens::PageContentMimeType::kPdf, page_count);
+  std::move(callback).Run(bytes, lens::MimeType::kPdf, page_count);
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -1583,14 +1594,13 @@ void LensOverlayController::OnInnerTextReceived(
     std::unique_ptr<content_extraction::InnerTextResult> result) {
   if (!result || result->inner_text.size() >
                      lens::features::GetLensOverlayFileUploadLimitBytes()) {
-    std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kPlainText,
+    std::move(callback).Run(std::vector<uint8_t>(), lens::MimeType::kPlainText,
                             std::nullopt);
     return;
   }
   std::move(callback).Run(std::vector<uint8_t>(result->inner_text.begin(),
                                                result->inner_text.end()),
-                          lens::PageContentMimeType::kPlainText, std::nullopt);
+                          lens::MimeType::kPlainText, std::nullopt);
 }
 
 void LensOverlayController::OnInnerHtmlReceived(
@@ -1598,12 +1608,12 @@ void LensOverlayController::OnInnerHtmlReceived(
     const std::optional<std::string>& result) {
   if (!result.has_value() ||
       result->size() > lens::features::GetLensOverlayFileUploadLimitBytes()) {
-    std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kHtml, std::nullopt);
+    std::move(callback).Run(std::vector<uint8_t>(), lens::MimeType::kHtml,
+                            std::nullopt);
     return;
   }
   std::move(callback).Run(std::vector<uint8_t>(result->begin(), result->end()),
-                          lens::PageContentMimeType::kHtml, std::nullopt);
+                          lens::MimeType::kHtml, std::nullopt);
 }
 
 void LensOverlayController::AddBoundingBoxesToInitializationData(
@@ -1657,7 +1667,7 @@ void LensOverlayController::TryUpdatePageContextualization() {
 
 void LensOverlayController::UpdatePageContextualization(
     std::vector<uint8_t> bytes,
-    lens::PageContentMimeType content_type,
+    lens::MimeType content_type,
     std::optional<uint32_t> page_count) {
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     return;
@@ -1882,10 +1892,6 @@ void LensOverlayController::InitializeOverlay(
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
 
-  // UMA invocation.
-  lens::RecordInvocation(invocation_source_,
-                         initialization_data_->page_content_type_);
-
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
   if (!pending_region_ && !lens::features::IsLensOverlaySearchBubbleEnabled()) {
@@ -1943,6 +1949,8 @@ void LensOverlayController::InitializeOverlayUI(
     contextual_zps_shown_in_session_ = false;
   }
   initial_page_content_type_ = init_data.page_content_type_;
+  initial_document_type_ =
+      StringMimeTypeToDocumentType(tab_->GetContents()->GetContentsMimeType());
   page_->ShouldShowContextualSearchBox(should_show_contextual_search_box);
 
   page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
@@ -1956,6 +1964,8 @@ void LensOverlayController::InitializeOverlayUI(
     page_->SetPostRegionSelection(pending_region_->Clone());
   }
 
+  // UMA invocation.
+  lens::RecordInvocation(invocation_source_, initial_document_type_);
   MaybeRecordContextualSearchBoxShown(should_show_contextual_search_box,
                                       init_data.page_content_type_);
 }
@@ -2067,7 +2077,7 @@ void LensOverlayController::OnOmniboxFocusChanged(
 
 void LensOverlayController::OnFindEmptyText(
     content::WebContents* web_contents) {
-  if(state_ == State::kLivePageAndResults)  {
+  if (state_ == State::kLivePageAndResults) {
     return;
   }
   CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
@@ -2075,7 +2085,7 @@ void LensOverlayController::OnFindEmptyText(
 
 void LensOverlayController::OnFindResultAvailable(
     content::WebContents* web_contents) {
-    if(state_ == State::kLivePageAndResults)  {
+  if (state_ == State::kLivePageAndResults) {
     return;
   }
   CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
@@ -2789,21 +2799,20 @@ void LensOverlayController::RecordDocumentMetrics(
   lens::RecordDocumentSizeBytes(
       content_type, initialization_data_->page_content_bytes_.size());
 
-  if (page_count.has_value() &&
-      content_type == lens::PageContentMimeType::kPdf) {
+  if (page_count.has_value() && content_type == lens::MimeType::kPdf) {
     lens::RecordPdfPageCount(page_count.value());
     return;
   }
 
   // Fetch and record the other content type for representing the webpage.
   auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
-  if (content_type == lens::PageContentMimeType::kHtml) {
+  if (content_type == lens::MimeType::kHtml) {
     // Fetch the innerText to log the size.
     content_extraction::GetInnerText(
         *render_frame_host, /*node_id=*/std::nullopt,
         base::BindOnce(&LensOverlayController::RecordInnerTextSize,
                        weak_factory_.GetWeakPtr()));
-  } else if (content_type == lens::PageContentMimeType::kPlainText) {
+  } else if (content_type == lens::MimeType::kPlainText) {
     // Fetch the innerHtml bytes to log the size.
     content_extraction::GetInnerHtml(
         *render_frame_host,
@@ -2817,7 +2826,7 @@ void LensOverlayController::RecordInnerTextSize(
   if (!result) {
     return;
   }
-  lens::RecordDocumentSizeBytes(lens::PageContentMimeType::kPlainText,
+  lens::RecordDocumentSizeBytes(lens::MimeType::kPlainText,
                                 result->inner_text.size());
 }
 
@@ -2826,8 +2835,7 @@ void LensOverlayController::RecordInnerHtmlSize(
   if (!result) {
     return;
   }
-  lens::RecordDocumentSizeBytes(lens::PageContentMimeType::kHtml,
-                                result->size());
+  lens::RecordDocumentSizeBytes(lens::MimeType::kHtml, result->size());
 }
 
 void LensOverlayController::MaybeLaunchSurvey() {

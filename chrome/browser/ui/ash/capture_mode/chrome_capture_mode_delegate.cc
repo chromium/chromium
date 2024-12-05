@@ -56,7 +56,7 @@
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "components/drive/file_errors.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/audio_service.h"
@@ -536,7 +536,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
       /*page_title=*/std::nullopt, /*significant_region_boxes=*/
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/base::span<const uint8_t>(),
-      /*underlying_content_type=*/lens::PageContentMimeType(),
+      /*underlying_content_type=*/lens::MimeType(),
       /*ui_scale_factor=*/1.f);
   lens_overlay_query_controller_->SendRegionSearch(
       lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
