@@ -382,6 +382,8 @@ public abstract class ChromeFeatureList {
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
     public static final String MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
             "MultiInstanceApplicationStatusCleanup";
+    public static final String NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE =
+            "NativePageTransitionHardwareCapture";
     public static final String NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND =
             "NavBarColorMatchesTabBackground";
     public static final String NEW_TAB_SEARCH_ENGINE_URL_ANDROID = "NewTabSearchEngineUrlAndroid";
