@@ -277,12 +277,6 @@ bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
     }
   }
 
-  if (methods_with_options.empty()) {
-    // Either the header value parsed to an empty list, or else none of the
-    // items on the list parsed to a recognized `SharedStorageModifierMethod`.
-    return false;
-  }
-
   observer_->OnSharedStorageHeaderReceived(
       url::Origin::Create(request.url()), std::move(methods_with_options),
       base::BindOnce(&SharedStorageRequestHelper::OnMethodsQueued,
