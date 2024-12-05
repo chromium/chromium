@@ -5536,7 +5536,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4878718769565915065">Kan vingerafdruk niet toevoegen aan deze beveiligingssleutel</translation>
 <translation id="4879491255372875719">Automatisch (standaard)</translation>
 <translation id="4880315242806573837">Beveiligingsupdates worden binnenkort beëindigd. Upgrade naar een nieuwe Chromebook.</translation>
-<translation id="4880827082731008257">Geschiedenis doorzoeken</translation>
+<translation id="4880827082731008257">Zoek in de geschiedenis</translation>
 <translation id="4881685975363383806">Niet opnieuw herinneren</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4882312758060467256">Heeft toegang tot deze site</translation>
@@ -5994,7 +5994,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5214639857958972833">Bookmark <ph name="BOOKMARK_TITLE" /> gemaakt.</translation>
 <translation id="5215450412607891876">Uitgebreide beveiligingsupdates aanzetten</translation>
 <translation id="5215502535566372932">Land selecteren</translation>
-<translation id="5216674789212441076">Vertaalt live ondertiteling automatisch. Ondertiteling wordt naar Google gestuurd voor vertaling.</translation>
+<translation id="5216674789212441076">Vertaalt automatisch live ondertiteling. Ondertiteling wordt naar Google gestuurd voor vertaling.</translation>
 <translation id="5220011581825921581">zoeken + pijl-omhoog</translation>
 <translation id="5221516927483787768">Kan <ph name="HOST_NAME" /> niet casten</translation>
 <translation id="5222403284441421673">Onveilige download geblokkeerd</translation>
@@ -7940,7 +7940,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6651495917527016072">Wifi-netwerken synchroniseren met je telefoon. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6651762277693024112">Wordt elke keer automatisch uitgevoerd als je deze site bezoekt</translation>
 <translation id="6654509035557065241">Standaardnetwerk kiezen</translation>
-<translation id="6655190889273724601">Ontwikkelaarmodus</translation>
+<translation id="6655190889273724601">Ontwikkelaarsmodus</translation>
 <translation id="6655458902729017087">Accounts verbergen</translation>
 <translation id="6657180931610302174">Gebruikersnaam toevoegen?</translation>
 <translation id="6657240842932274095">Systeemservices toestaan je locatie te gebruiken?</translation>
@@ -8949,7 +8949,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="737728204345822099">Er kan een record van je bezoek aan deze site worden geregistreerd in je beveiligingssleutel.</translation>
 <translation id="7377451353532943397">Toegang tot sensoren blijven blokkeren</translation>
 <translation id="7377481913241237033">Koppelen met een code</translation>
-<translation id="73786666777299047">Chrome Web Store openen</translation>
+<translation id="73786666777299047">Open de Chrome Web Store</translation>
 <translation id="7380272457268061606">Herstel van lokale gegevens uitzetten?</translation>
 <translation id="7380459290951585794">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="7380622428988553498">Apparaatnaam bevat ongeldige tekens</translation>
@@ -10564,7 +10564,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8505669004895429027">Kleine besparingen</translation>
 <translation id="8507227974644337342">Schermresolutie</translation>
 <translation id="850763987657366362">Kan certificaat niet importeren</translation>
-<translation id="8509177919508253835">Beveiligingssleutels resetten en pincodes maken</translation>
+<translation id="8509177919508253835">Reset beveiligingssleutels en maak pincodes</translation>
 <translation id="8509646642152301857">Downloaden van woordenboek voor spellingcontrole is mislukt.</translation>
 <translation id="8509967119010808787">Klik hier om je tabbladen te zoeken</translation>
 <translation id="8512476990829870887">Proces beëindigen</translation>
