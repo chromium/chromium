@@ -87,6 +87,11 @@ FileSystemAccessChangeSource::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+size_t FileSystemAccessChangeSource::current_usage() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return 0;
+}
+
 void FileSystemAccessChangeSource::NotifyOfChange(
     const storage::FileSystemURL& changed_url,
     bool error,
