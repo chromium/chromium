@@ -194,7 +194,6 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
-  CHECK(on_started_callback_.is_null());
   if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
     std::move(on_started_callback).Run();
     return;
@@ -211,8 +210,6 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
 
   key_distribution_info_observation_.Observe(
       IwaKeyDistributionInfoProvider::GetInstance());
-
-  on_started_callback_ = std::move(on_started_callback);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -234,9 +231,7 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
         kIsolatedWebAppForceInstallEmergencyDelay);
   }
 
-  if (!on_started_callback_.is_null()) {
-    std::move(on_started_callback_).Run();
-  }
+  std::move(on_started_callback).Run();
 }
 
 void IsolatedWebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
@@ -559,10 +554,6 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
       std::exchange(current_process_log_, base::Value::Dict()));
 
   policy_is_being_processed_ = false;
-
-  if (!on_started_callback_.is_null()) {
-    std::move(on_started_callback_).Run();
-  }
 
   if (reprocess_policy_needed_) {
     reprocess_policy_needed_ = false;

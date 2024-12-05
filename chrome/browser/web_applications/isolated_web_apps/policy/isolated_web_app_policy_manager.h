@@ -96,7 +96,6 @@ class IsolatedWebAppPolicyManager
   raw_ptr<WebAppProvider> provider_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   ProcessLogs process_logs_;
-  base::OnceClosure on_started_callback_;
 
   bool reprocess_policy_needed_ = false;
   bool policy_is_being_processed_ = false;
