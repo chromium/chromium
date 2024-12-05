@@ -135,16 +135,16 @@ ShortcutsDatabase::Shortcut::~Shortcut() = default;
 // ShortcutsDatabase ----------------------------------------------------------
 
 ShortcutsDatabase::ShortcutsDatabase(const base::FilePath& database_path)
-    : db_({// Set the database page size to something a little larger to give us
+    : db_(
+          {// Set the database page size to something a little larger to give us
            // better performance (we're typically seek rather than bandwidth
            // limited). Must be a power of 2 and a max of 65536.
            .page_size = 4096,
-           .cache_size = 500}),
+           .cache_size = 500},
+          /*tag=*/"Shortcuts"),
       database_path_(database_path) {}
 
 bool ShortcutsDatabase::Init() {
-  db_.set_histogram_tag("Shortcuts");
-
   if (!db_.has_error_callback()) {
     // The error callback may be reset if recovery was attempted, so ensure the
     // callback is re-set when the database is re-opened.

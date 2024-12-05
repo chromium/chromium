@@ -24,11 +24,7 @@ namespace {
 
 class StatementTest : public testing::Test {
  public:
-  ~StatementTest() override = default;
-
   void SetUp() override {
-    db_.set_histogram_tag("Test");
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(
         db_.Open(temp_dir_.GetPath().AppendASCII("statement_test.sqlite")));
@@ -36,7 +32,7 @@ class StatementTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  Database db_;
+  Database db_{"Test"};
 };
 
 TEST_F(StatementTest, Assign) {

@@ -90,20 +90,20 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
     Profile* profile,
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : db_path_(profile->GetPath().Append(kPredictorDatabaseName)),
-      db_(std::make_unique<sql::Database>(sql::DatabaseOptions{
-          .page_size = 4096,
-          .cache_size = 500,
-          // TODO(pwnall): Add a meta table and remove this option.
-          .mmap_alt_status_discouraged = true,
-          .enable_views_discouraged = true,  // Required by mmap_alt_status.
-      })),
+      db_(std::make_unique<sql::Database>(
+          sql::DatabaseOptions{
+              .page_size = 4096,
+              .cache_size = 500,
+              // TODO(pwnall): Add a meta table and remove this option.
+              .mmap_alt_status_discouraged = true,
+              .enable_views_discouraged = true,  // Required by mmap_alt_status.
+          },
+          /*tag=*/"Predictor")),
       db_task_runner_(db_task_runner),
       autocomplete_table_(
           new AutocompleteActionPredictorTable(db_task_runner_)),
       resource_prefetch_tables_(
           new ResourcePrefetchPredictorTables(db_task_runner_)) {
-  db_->set_histogram_tag("Predictor");
-
   is_loading_predictor_enabled_ = IsLoadingPredictorEnabled(profile);
 }
 

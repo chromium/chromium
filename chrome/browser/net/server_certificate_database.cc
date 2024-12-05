@@ -43,7 +43,8 @@ namespace {
 }  // namespace
 
 ServerCertificateDatabase::ServerCertificateDatabase(
-    const base::FilePath& storage_dir) {
+    const base::FilePath& storage_dir)
+    : db_(/*tag=*/"ServerCertificate") {
   auto status = InitInternal(storage_dir);
 
   CHECK(status == sql::InitStatus::INIT_OK);
@@ -54,8 +55,6 @@ ServerCertificateDatabase::~ServerCertificateDatabase() = default;
 sql::InitStatus ServerCertificateDatabase::InitInternal(
     const base::FilePath& storage_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  db_.set_histogram_tag("ServerCertificate");
 
   base::FilePath db_file_path =
       storage_dir.Append(kServerCertificateDatabaseName);

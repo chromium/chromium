@@ -108,10 +108,6 @@ void DatabaseErrorCallback(sql::Database* db,
 }
 
 void InitDatabase(sql::Database* db, base::FilePath path) {
-  // TODO(crbug.com/40134470): Migrate to OptOutBlocklist and update any backend
-  // code that may depend on this tag.
-  db->set_histogram_tag("OptOutBlacklist");
-
   if (!db->has_error_callback()) {
     // The error callback may be reset if recovery was attempted, so ensure the
     // callback is re-set when the database is re-opened.
@@ -385,20 +381,24 @@ void OptOutStoreSQL::LoadBlockList(
     LoadBlockListCallback callback) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!db_) {
-    db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-        // The entry size should be between 11 and 10 + x bytes, where x is the
-        // the length of the host name string in bytes.
-        // The total number of entries per host is bounded at 32, and the total
-        // number of hosts is currently unbounded (but typically expected to be
-        // under 100). Assuming average of 100 bytes per entry, and 100 hosts,
-        // the total size will be 4096 * 78. 250 allows room for extreme cases
-        // such as many host names or very long host names. The average case
-        // should be much smaller as users rarely visit hosts that are not in
-        // their top 20 hosts. It should be closer to 32 * 100 * 20 for most
-        // users, which is about 4096 * 15. The total size of the database will
-        // be capped at 3200 entries.
-        .page_size = 4096,
-        .cache_size = 250});
+    db_ = std::make_unique<sql::Database>(
+        sql::DatabaseOptions{
+            // The entry size should be between 11 and 10 + x bytes, where x is
+            // the the length of the host name string in bytes. The total number
+            // of entries per host is bounded at 32, and the total number of
+            // hosts is currently unbounded (but typically expected to be under
+            // 100). Assuming average of 100 bytes per entry, and 100 hosts, the
+            // total size will be 4096 * 78. 250 allows room for extreme cases
+            // such as many host names or very long host names. The average case
+            // should be much smaller as users rarely visit hosts that are not
+            // in their top 20 hosts. It should be closer to 32 * 100 * 20 for
+            // most users, which is about 4096 * 15. The total size of the
+            // database will be capped at 3200 entries.
+            .page_size = 4096,
+            .cache_size = 250},
+        // TODO(crbug.com/40134470): Migrate to OptOutBlocklist and update any
+        // backend code that may depend on this tag.
+        /*tag=*/"OptOutBlacklist");
   }
   background_task_runner_->PostTask(
       FROM_HERE,

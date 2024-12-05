@@ -105,10 +105,12 @@ DatabaseTracker::DatabaseTracker(
       db_dir_(is_incognito_
                   ? profile_path_.Append(kIncognitoDatabaseDirectoryName)
                   : profile_path_.Append(kDatabaseDirectoryName)),
-      db_(std::make_unique<sql::Database>(sql::DatabaseOptions{
-          .page_size = 4096,
-          .cache_size = 500,
-      })),
+      db_(std::make_unique<sql::Database>(
+          sql::DatabaseOptions{
+              .page_size = 4096,
+              .cache_size = 500,
+          },
+          /*tag=*/"DatabaseTracker")),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -542,8 +544,6 @@ bool DatabaseTracker::LazyInit() {
         base::DeletePathRecursively(directory);
       }
     }
-
-    db_->set_histogram_tag("DatabaseTracker");
 
     // If the tracker database exists, but it's corrupt or doesn't
     // have a meta table, delete the database directory.

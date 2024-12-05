@@ -93,11 +93,11 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
 
   // TODO(crbug.com/40262972): Remove explicit_locking = false. This currently
   // needs to be set to false because of several failing MigrationTests.
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = false,
-      .exclusive_database_file_lock = enable_exclusive_access_});
-
-  db_->set_histogram_tag(histogram_tag_);
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{
+          .exclusive_locking = false,
+          .exclusive_database_file_lock = enable_exclusive_access_},
+      histogram_tag_);
 
   // base::Unretained is safe because |this| owns (and therefore outlives) the
   // sql::Database held by |db_|.

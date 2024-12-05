@@ -237,10 +237,12 @@ bool FaviconDatabase::IconMappingEnumerator::GetNextIconMapping(
 }
 
 FaviconDatabase::FaviconDatabase()
-    : db_({// Favicons db only stores favicons, so we don't need that big a page
+    : db_(
+          {// Favicons db only stores favicons, so we don't need that big a page
            // size or cache.
            .page_size = 2048,
-           .cache_size = 32}) {}
+           .cache_size = 32},
+          /*tag=*/"Thumbnail") {}
 
 FaviconDatabase::~FaviconDatabase() {
   // The DBCloseScoper will delete the DB and the cache.
@@ -997,8 +999,6 @@ favicon_base::IconType FaviconDatabase::FromPersistedIconType(int icon_type) {
 
 sql::InitStatus FaviconDatabase::OpenDatabase(sql::Database* db,
                                               const base::FilePath& db_name) {
-  db->set_histogram_tag("Thumbnail");
-
   // `OpenDatabase()` may be called repeatedly on the same `db`. Ensure that we
   // don't attempt to overwrite an existing error callback.
   if (!db_.has_error_callback()) {

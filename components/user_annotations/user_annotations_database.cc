@@ -62,8 +62,6 @@ sql::InitStatus UserAnnotationsDatabase::InitInternal(
     const base::FilePath& storage_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  db_.set_histogram_tag("UserAnnotations");
-
   base::FilePath db_file_path = storage_dir.Append(kUserAnnotationsName);
   if (!db_.Open(db_file_path)) {
     return sql::InitStatus::INIT_FAILURE;

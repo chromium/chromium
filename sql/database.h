@@ -280,10 +280,10 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Most operations on the new instance will fail until Open() / OpenInMemory()
   // is called.
-  explicit Database(DatabaseOptions options);
+  explicit Database(DatabaseOptions options, std::string_view tag = {});
 
   // Convenience constructor for callers that use default options.
-  Database();
+  explicit Database(std::string_view tag = {});
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;
@@ -331,13 +331,6 @@ class COMPONENT_EXPORT(SQL) Database {
   }
   void reset_error_callback() { error_callback_.Reset(); }
   bool has_error_callback() const { return !error_callback_.is_null(); }
-
-  // Developer-friendly database ID used in logging output and memory dumps.
-  void set_histogram_tag(const std::string& histogram_tag) {
-    DCHECK(!is_open());
-    histogram_tag_ = histogram_tag;
-    tracing_track_name_ = "Database: " + histogram_tag;
-  }
 
   const std::string& histogram_tag() const { return histogram_tag_; }
 

@@ -84,7 +84,8 @@ ClientTraceReport::ClientTraceReport() = default;
 ClientTraceReport::~ClientTraceReport() = default;
 
 TraceReportDatabase::TraceReportDatabase()
-    : database_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128}) {
+    : database_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128},
+                /*tag=*/"LocalTraces") {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -95,9 +96,6 @@ bool TraceReportDatabase::OpenDatabase(const base::FilePath& path) {
   }
 
   db_file_path_ = path.Append(kLocalTracesDatabasePath);
-
-  // For logging memory dumps
-  database_.set_histogram_tag("LocalTraces");
 
   const base::FilePath dir = db_file_path_.DirName();
   if (!base::DirectoryExists(dir) && !base::CreateDirectory(dir)) {

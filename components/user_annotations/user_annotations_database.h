@@ -65,7 +65,7 @@ class UserAnnotationsDatabase {
 
   // The underlying SQL database.
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      sql::Database(sql::DatabaseOptions{});
+      sql::Database(sql::DatabaseOptions{}, /*tag=*/"UserAnnotations");
   os_crypt_async::Encryptor encryptor_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

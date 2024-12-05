@@ -1035,10 +1035,8 @@ QuotaError QuotaDatabase::EnsureOpened() {
       .cache_size = 500,
   };
 
-  db_ = std::make_unique<sql::Database>(std::move(options));
+  db_ = std::make_unique<sql::Database>(std::move(options), /*tag=*/"Quota");
   meta_table_ = std::make_unique<sql::MetaTable>();
-
-  db_->set_histogram_tag("Quota");
 
   db_->set_error_callback(base::BindRepeating(&QuotaDatabase::OnSqliteError,
                                               base::Unretained(this)));

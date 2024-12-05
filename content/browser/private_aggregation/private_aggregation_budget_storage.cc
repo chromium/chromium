@@ -113,7 +113,8 @@ PrivateAggregationBudgetStorage::PrivateAggregationBudgetStorage(
                     kFlushDelay),
       db_task_runner_(std::move(db_task_runner)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{.page_size = 4096, .cache_size = 32})) {}
+          sql::DatabaseOptions{.page_size = 4096, .cache_size = 32},
+          /*tag=*/"PrivateAggregation")) {}
 
 PrivateAggregationBudgetStorage::~PrivateAggregationBudgetStorage() {
   Shutdown();
@@ -125,8 +126,6 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
     base::FilePath path_to_db_dir) {
   CHECK(db_task_runner_->RunsTasksInCurrentSequence());
   CHECK(db);
-
-  db->set_histogram_tag("PrivateAggregation");
 
   // TODO(crbug.com/40224647): Record histograms for the different
   // outcomes/errors.

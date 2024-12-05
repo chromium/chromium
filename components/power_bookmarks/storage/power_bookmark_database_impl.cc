@@ -154,7 +154,8 @@ bool SqliteDatabaseTransaction::Commit() {
 
 PowerBookmarkDatabaseImpl::PowerBookmarkDatabaseImpl(
     const base::FilePath& database_dir)
-    : db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128}),
+    : db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128},
+          /*tag=*/"PowerBookmarks"),
       database_path_(database_dir.Append(kDatabaseName)) {
   sync_db_ =
       std::make_unique<PowerBookmarkSyncMetadataDatabase>(&db_, &meta_table_);
@@ -177,7 +178,6 @@ bool PowerBookmarkDatabaseImpl::Init() {
   db_.set_error_callback(
       base::BindRepeating(&PowerBookmarkDatabaseImpl::DatabaseErrorCallback,
                           base::Unretained(this)));
-  db_.set_histogram_tag("PowerBookmarks");
 
   const base::FilePath dir = database_path_.DirName();
   bool dir_exists = base::DirectoryExists(dir);
