@@ -110,6 +110,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/cache_storage/multi_cache_query_options.idl",
   "//third_party/blink/renderer/modules/cache_storage/window_cache_storage.idl",
   "//third_party/blink/renderer/modules/cache_storage/worker_cache_storage.idl",
+  "//third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_gpu_transfer.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_gpu_transfer_option.idl",
