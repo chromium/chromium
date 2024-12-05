@@ -87,10 +87,10 @@ bool IsDefaultValue(const FeatureEntry& entry,
     case FeatureEntry::ENABLE_DISABLE_VALUE:
     case FeatureEntry::FEATURE_VALUE:
     case FeatureEntry::FEATURE_WITH_PARAMS_VALUE:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case FeatureEntry::PLATFORM_FEATURE_NAME_VALUE:
     case FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       for (int i = 0; i < entry.NumOptions(); ++i) {
         if (enabled_entries.count(entry.NameForOption(i)) > 0)
           return false;
@@ -108,10 +108,10 @@ base::Value::List CreateOptionsData(
          entry.type == FeatureEntry::ENABLE_DISABLE_VALUE ||
          entry.type == FeatureEntry::FEATURE_VALUE ||
          entry.type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
          || entry.type == FeatureEntry::PLATFORM_FEATURE_NAME_VALUE ||
          entry.type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   );
   base::Value::List result;
   for (int i = 0; i < entry.NumOptions(); ++i) {
@@ -242,7 +242,7 @@ std::string GetCombinedStringValue(const FlagsStorage& flags_storage,
   return new_value;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Removes the specified command line switch (if present).
 void RemoveCommandLineSwitch(base::CommandLine* current_cl,
                              const std::string& switch_to_remove) {
@@ -421,7 +421,7 @@ void FlagsState::SetFeatureEntryEnabled(FlagsStorage* flags_storage,
     else
       needs_restart_ |= (enabled_entries.erase(internal_name) > 0);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // If a string or origin list was enabled or disabled, update the command
     // line flag.
     if (enable) {
@@ -466,7 +466,7 @@ void FlagsState::SetOriginListFlag(const std::string& internal_name,
       CombineAndSanitizeOriginLists(std::string(), value);
   flags_storage->SetOriginListFlag(internal_name, new_value);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const FeatureEntry* entry = FindFeatureEntryByName(internal_name);
   DCHECK(entry);
 
@@ -483,7 +483,7 @@ void FlagsState::SetStringFlag(const std::string& internal_name,
                                FlagsStorage* flags_storage) {
   flags_storage->SetStringFlag(internal_name, value);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const FeatureEntry* entry = FindFeatureEntryByName(internal_name);
   DCHECK(entry);
 
@@ -577,9 +577,9 @@ std::vector<std::string> FlagsState::RegisterEnabledFeatureVariationParameters(
   // First collect all the data for each trial.
   for (const FeatureEntry& entry : feature_entries) {
     if (entry.type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         || entry.type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     ) {
       for (int j = 0; j < entry.NumOptions(); ++j) {
         if (entry.StateForOption(j) == FeatureEntry::FeatureState::ENABLED &&
@@ -591,14 +591,14 @@ std::vector<std::string> FlagsState::RegisterEnabledFeatureVariationParameters(
             enabled_features_by_trial_name[trial_name].insert(
                 entry.feature.feature->name);
           }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           else {
             trial_name = entry.platform_feature_name.feature_trial_name;
             // The user has chosen to enable the feature by this option.
             enabled_features_by_trial_name[trial_name].insert(
                 entry.platform_feature_name.name);
           }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
           const FeatureEntry::FeatureVariation* variation =
               entry.VariationForOption(j);
@@ -707,16 +707,16 @@ void FlagsState::GetFlagFeatureEntries(
       case FeatureEntry::ENABLE_DISABLE_VALUE:
       case FeatureEntry::FEATURE_VALUE:
       case FeatureEntry::FEATURE_WITH_PARAMS_VALUE:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       case FeatureEntry::PLATFORM_FEATURE_NAME_VALUE:
       case FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         data.Set("options", CreateOptionsData(entry, enabled_entries));
         break;
     }
 
     bool supported = (entry.supported_platforms & current_platform) != 0;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (access == kOwnerAccessToFlags &&
         (entry.supported_platforms & kOsCrOSOwnerOnly) != 0) {
       supported = true;
@@ -732,7 +732,7 @@ void FlagsState::GetFlagFeatureEntries(
       supported = false;
     }
 #endif  // BUILDFLAG(ENABLED_BANNED_BASE_FEATURE_PREFIX)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (supported)
       supported_entries.Append(std::move(data));
@@ -749,7 +749,7 @@ unsigned short FlagsState::GetCurrentPlatform() {
   return kOsMac;
 #elif BUILDFLAG(IS_WIN)
   return kOsWin;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return kOsCrOS;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_OPENBSD)
   return kOsLinux;
@@ -922,7 +922,7 @@ void FlagsState::GetSanitizedEnabledFlagsForCurrentPlatform(
   GetSanitizedEnabledFlags(flags_storage, result);
 
   int platform_mask = GetCurrentPlatform();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   platform_mask |= kOsCrOSOwnerOnly;
 #endif
   std::set<std::string> platform_entries =
@@ -994,10 +994,10 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
 
       case FeatureEntry::FEATURE_VALUE:
       case FeatureEntry::FEATURE_WITH_PARAMS_VALUE:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       case FeatureEntry::PLATFORM_FEATURE_NAME_VALUE:
       case FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         for (int j = 0; j < entry.NumOptions(); ++j) {
           FeatureEntry::FeatureState state = entry.StateForOption(j);
           if (state == FeatureEntry::FeatureState::DEFAULT) {
@@ -1011,11 +1011,11 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
                 entry.type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
               feature_name = entry.feature.feature->name;
             }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             else {
               feature_name = entry.platform_feature_name.name;
             }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
             std::vector<std::string> params_value;
 
             std::string variation_id;

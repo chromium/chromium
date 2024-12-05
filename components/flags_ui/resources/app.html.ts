@@ -41,7 +41,7 @@ export function getHtml(this: AppElement) {
     <div class="blurb-container">
       <span class="blurb-warning">$i18n{page-warning}</span>
       <span>$i18n{page-warning-explanation}</span>
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
       <p id="owner-warning" ?hidden="${!this.data.showOwnerWarning}">
         $i18n{owner-warning}
       </p>
