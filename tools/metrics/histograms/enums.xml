@@ -18850,6 +18850,7 @@ from previous Chrome versions.
   <int value="-604068396" label="disable-input-ime-api"/>
   <int value="-603649079" label="ContextualSearchRankerQuery:enabled"/>
   <int value="-602721511" label="NtpPhotosModuleCustomizedOptInTitle:disabled"/>
+  <int value="-601427689" label="FloatingSnackbar:enabled"/>
   <int value="-601384286" label="disable-contextual-search"/>
   <int value="-600792432" label="WebVrAutopresentFromIntent:disabled"/>
   <int value="-600726805" label="DeprecateMenagerieAPI:disabled"/>
@@ -24158,6 +24159,7 @@ from previous Chrome versions.
   <int value="1518946321" label="DisableProcessReuse:disabled"/>
   <int value="1519067750" label="ActionableContentSettings:disabled"/>
   <int value="1519228932" label="OmniboxAnswerActions:enabled"/>
+  <int value="1519310490" label="FloatingSnackbar:disabled"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>
   <int value="1520754417" label="ConfirmationChip:enabled"/>
   <int value="1521290440" label="ModalMemorySaver:disabled"/>

@@ -4666,6 +4666,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "floating-snackbar",
+    "owners": [ "eleanorlee@google.com", "clhager@google.com", "twellington@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "fluent-overlay-scrollbars",
     "owners": [
       "gastonr@microsoft.com",

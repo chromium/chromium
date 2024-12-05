@@ -4585,6 +4585,10 @@ const char kFetchGaiaHashOnSignInDescription[] =
     "Enable retrieving email, salt, and hashed password from SharedPreferences "
     "for password reuse detection when a user signs in.";
 
+const char kFloatingSnackbarName[] = "FloatingSnackbar";
+const char kFloatingSnackbarDescription[] =
+    "Enables the snackbar to float on top of the web content.";
+
 const char kForceListTabSwitcherName[] =
     "Force list tab switcher for low-end devices";
 const char kForceListTabSwitcherDescription[] =

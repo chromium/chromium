@@ -262,6 +262,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeWebOptIn,
     &kEnableXAxisActivityTransition,
     &kExperimentsForAgsa,
+    &kFloatingSnackbar,
     &kFocusOmniboxInIncognitoTabIntents,
     &kForceBrowserControlsUponExitingFullscreen,
     &kForceListTabSwitcher,
@@ -773,6 +774,10 @@ BASE_FEATURE(kEnableXAxisActivityTransition,
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFloatingSnackbar,
+             "FloatingSnackbar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceBrowserControlsUponExitingFullscreen,
              "ForceBrowserControlsUponExitingFullscreen",

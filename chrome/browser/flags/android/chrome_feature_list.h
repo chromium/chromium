@@ -103,6 +103,7 @@ BASE_DECLARE_FEATURE(kDragDropIntoOmnibox);
 BASE_DECLARE_FEATURE(kDragDropTabTearing);
 BASE_DECLARE_FEATURE(kDragDropTabTearingEnableOEM);
 BASE_DECLARE_FEATURE(kExperimentsForAgsa);
+BASE_DECLARE_FEATURE(kFloatingSnackbar);
 BASE_DECLARE_FEATURE(kFocusOmniboxInIncognitoTabIntents);
 BASE_DECLARE_FEATURE(kForceBrowserControlsUponExitingFullscreen);
 BASE_DECLARE_FEATURE(kForceListTabSwitcher);

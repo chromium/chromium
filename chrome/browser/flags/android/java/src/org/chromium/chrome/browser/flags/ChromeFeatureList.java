@@ -339,6 +339,7 @@ public abstract class ChromeFeatureList {
     public static final String FINGERPRINTING_PROTECTION_UX = "FingerprintingProtectionUx";
     public static final String FINGERPRINTING_PROTECTION_USER_BYPASS =
             "FingerprintingProtectionUserBypass";
+    public static final String FLOATING_SNACKBAR = "FloatingSnackbar";
     public static final String FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS =
             "FocusOmniboxInIncognitoTabIntents";
     public static final String FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN =
@@ -666,6 +667,8 @@ public abstract class ChromeFeatureList {
                     ESB_AI_STRING_UPDATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+
+    public static final CachedFlag sFloatingSnackbar = newCachedFlag(FLOATING_SNACKBAR, false);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
@@ -816,6 +819,7 @@ public abstract class ChromeFeatureList {
                     sEnableDiscountInfoApi,
                     sEnableXAxisActivityTransition,
                     sEsbAiStringUpdate,
+                    sFloatingSnackbar,
                     sForceListTabSwitcher,
                     sForceTranslucentNotificationTrampoline,
                     sFullscreenInsetsApiMigration,

@@ -2659,6 +2659,9 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kFetchGaiaHashOnSignInName[];
 extern const char kFetchGaiaHashOnSignInDescription[];
 
+extern const char kFloatingSnackbarName[];
+extern const char kFloatingSnackbarDescription[];
+
 extern const char kForceListTabSwitcherName[];
 extern const char kForceListTabSwitcherDescription[];
 
