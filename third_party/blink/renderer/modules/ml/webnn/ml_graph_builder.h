@@ -293,13 +293,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   const MLGemmOptions* options,
                   ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> gru(MLOperand* input,
-                                          MLOperand* weight,
-                                          MLOperand* recurrent_weight,
-                                          const uint32_t steps,
-                                          const uint32_t hidden_size,
-                                          MLGruOptions* options,
-                                          ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> gru(MLOperand* input,
+                                    MLOperand* weight,
+                                    MLOperand* recurrent_weight,
+                                    const uint32_t steps,
+                                    const uint32_t hidden_size,
+                                    MLGruOptions* options,
+                                    ExceptionState& exception_state);
 
   MLOperand* gruCell(MLOperand* input,
                      MLOperand* weight,
@@ -334,22 +334,22 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     const MLLinearOptions* options,
                     ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> lstm(MLOperand* input,
-                                           MLOperand* weight,
-                                           MLOperand* recurrent_weight,
-                                           const uint32_t steps,
-                                           const uint32_t hidden_size,
-                                           MLLstmOptions* options,
-                                           ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> lstm(MLOperand* input,
+                                     MLOperand* weight,
+                                     MLOperand* recurrent_weight,
+                                     const uint32_t steps,
+                                     const uint32_t hidden_size,
+                                     MLLstmOptions* options,
+                                     ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> lstmCell(MLOperand* input,
-                                               MLOperand* weight,
-                                               MLOperand* recurrent_weight,
-                                               MLOperand* hidden_state,
-                                               MLOperand* cell_state,
-                                               uint32_t hidden_size,
-                                               MLLstmCellOptions* options,
-                                               ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> lstmCell(MLOperand* input,
+                                         MLOperand* weight,
+                                         MLOperand* recurrent_weight,
+                                         MLOperand* hidden_state,
+                                         MLOperand* cell_state,
+                                         uint32_t hidden_size,
+                                         MLLstmCellOptions* options,
+                                         ExceptionState& exception_state);
 
   MLOperand* matmul(MLOperand* a,
                     MLOperand* b,
@@ -473,14 +473,14 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       const MLOperatorOptions* options,
                       ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> split(MLOperand* input,
-                                            const uint32_t splits,
-                                            const MLSplitOptions* options,
-                                            ExceptionState& exception_state);
-  HeapVector<Member<const MLOperand>> split(MLOperand* input,
-                                            const Vector<uint32_t>& splits,
-                                            const MLSplitOptions* options,
-                                            ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> split(MLOperand* input,
+                                      const uint32_t splits,
+                                      const MLSplitOptions* options,
+                                      ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> split(MLOperand* input,
+                                      const Vector<uint32_t>& splits,
+                                      const MLSplitOptions* options,
+                                      ExceptionState& exception_state);
 
   MLOperand* tanh(MLOperand* input,
                   const MLOperatorOptions* options,
