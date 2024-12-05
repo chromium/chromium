@@ -136,7 +136,9 @@ class TabSearchPageHandler
                     TabChangeType change_type) override;
 
   // TabDeclutterObserver:
-  void OnStaleTabsProcessed(std::vector<tabs::TabInterface*> tabs) override;
+  void OnUnusedTabsProcessed(
+      std::vector<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) override;
 
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;

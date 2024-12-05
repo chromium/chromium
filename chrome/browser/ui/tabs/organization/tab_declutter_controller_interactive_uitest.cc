@@ -39,26 +39,20 @@ class FakeTabDeclutterObserver : public TabDeclutterObserver {
  public:
   FakeTabDeclutterObserver() = default;
 
-  void OnStaleTabsProcessed(
-      const std::vector<tabs::TabInterface*> tabs) override {
-    stale_tabs_processed_count_++;
-    processed_stale_tabs_ = tabs;
-  }
-
   void OnTriggerDeclutterUIVisibility() override {
     trigger_declutter_ui_visibility_count_++;
   }
 
-  void OnDuplicateTabsProcessed(std::map<GURL, std::vector<tabs::TabInterface*>>
-                                    duplicate_tabs) override {
-    duplicate_tabs_processed_count_++;
+  void OnUnusedTabsProcessed(std::vector<tabs::TabInterface*> stale_tabs,
+                             std::map<GURL, std::vector<tabs::TabInterface*>>
+                                 duplicate_tabs) override {
+    unused_tabs_processed_count_++;
     processed_duplicate_tabs_ = duplicate_tabs;
+    processed_stale_tabs_ = stale_tabs;
   }
 
-  int stale_tabs_processed_count() const { return stale_tabs_processed_count_; }
-
-  int duplicate_tabs_processed_count() const {
-    return duplicate_tabs_processed_count_;
+  int unused_tabs_processed_count() const {
+    return unused_tabs_processed_count_;
   }
 
   int trigger_declutter_ui_visibility_count() const {
@@ -75,8 +69,7 @@ class FakeTabDeclutterObserver : public TabDeclutterObserver {
   }
 
  private:
-  int stale_tabs_processed_count_ = 0;
-  int duplicate_tabs_processed_count_ = 0;
+  int unused_tabs_processed_count_ = 0;
   int trigger_declutter_ui_visibility_count_ = 0;
   std::vector<tabs::TabInterface*> processed_stale_tabs_;
   std::map<GURL, std::vector<tabs::TabInterface*>> processed_duplicate_tabs_;
@@ -162,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   task_runner->FastForwardBy(
       tab_declutter_controller()->declutter_timer_interval());
 
-  EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_EQ(fake_observer.unused_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 
   // Tabs at index 3 and 4 are stale tabs.
@@ -193,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   task_runner->FastForwardBy(
       tab_declutter_controller()->nudge_timer_interval());
 
-  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_GE(fake_observer.unused_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
 }
 
@@ -217,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   task_runner->FastForwardBy(
       tab_declutter_controller()->nudge_timer_interval());
 
-  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_GE(fake_observer.unused_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
 
   // Move forward in time to simulate declutter timer triggering.
@@ -244,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   task_runner->FastForwardBy(
       tab_declutter_controller()->nudge_timer_interval());
 
-  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_GE(fake_observer.unused_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 }
 
@@ -268,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   task_runner->FastForwardBy(
       tab_declutter_controller()->nudge_timer_interval());
 
-  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_GE(fake_observer.unused_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 }
 
@@ -384,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   task_runner->FastForwardBy(
       tab_declutter_controller()->declutter_timer_interval());
 
-  EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_EQ(fake_observer.unused_tabs_processed_count(), 1);
 
   // Verify that the excluded tab is not part of the processed stale tabs.
   std::vector<tabs::TabInterface*> processed_stale_tabs =
@@ -427,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   task_runner->FastForwardBy(
       tab_declutter_controller()->nudge_timer_interval());
 
-  EXPECT_GE(fake_observer.stale_tabs_processed_count(), 1);
+  EXPECT_GE(fake_observer.unused_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 }
 

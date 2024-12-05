@@ -87,10 +87,14 @@ void TabDeclutterController::ProcessTabs() {
   std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
 
   if (features::IsTabstripDedupeEnabled()) {
-    duplicate_tabs = ProcessDuplicateTabs();
+    duplicate_tabs = GetDuplicateTabs();
   }
 
-  std::vector<tabs::TabInterface*> stale_tabs = ProcessStaleTabs();
+  std::vector<tabs::TabInterface*> stale_tabs = GetStaleTabs();
+
+  for (auto& observer : observers_) {
+    observer.OnUnusedTabsProcessed(stale_tabs, duplicate_tabs);
+  }
 
   if (DeclutterNudgeCriteriaMet(stale_tabs, duplicate_tabs)) {
     next_nudge_valid_time_ticks_ =
@@ -107,30 +111,6 @@ void TabDeclutterController::ProcessTabs() {
       tabs_previous_nudge_.insert(tabs.begin(), tabs.end());
     }
   }
-}
-
-std::map<GURL, std::vector<tabs::TabInterface*>>
-TabDeclutterController::ProcessDuplicateTabs() {
-  CHECK(features::IsTabstripDedupeEnabled());
-  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs =
-      GetDuplicateTabs();
-  for (auto& observer : observers_) {
-    observer.OnDuplicateTabsProcessed(duplicate_tabs);
-  }
-
-  return duplicate_tabs;
-}
-
-std::vector<tabs::TabInterface*> TabDeclutterController::ProcessStaleTabs() {
-  CHECK(features::IsTabstripDeclutterEnabled());
-
-  std::vector<tabs::TabInterface*> tabs = GetStaleTabs();
-
-  for (auto& observer : observers_) {
-    observer.OnStaleTabsProcessed(tabs);
-  }
-
-  return tabs;
 }
 
 std::map<GURL, std::vector<tabs::TabInterface*>>

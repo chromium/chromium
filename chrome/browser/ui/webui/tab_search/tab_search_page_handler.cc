@@ -1023,11 +1023,12 @@ void TabSearchPageHandler::SetTabDeclutterController(
   }
 }
 
-void TabSearchPageHandler::OnStaleTabsProcessed(
-    std::vector<tabs::TabInterface*> tabs) {
+void TabSearchPageHandler::OnUnusedTabsProcessed(
+    std::vector<tabs::TabInterface*> stale_tabs,
+    std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) {
   stale_tabs_.clear();
   UnregisterTabCallbacks();
-  stale_tabs_ = tabs;
+  stale_tabs_ = stale_tabs;
   for (tabs::TabInterface* tab : stale_tabs_) {
     RegisterTabDeclutterCallbacks(tab);
   }

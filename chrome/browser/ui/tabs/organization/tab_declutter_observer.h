@@ -21,11 +21,9 @@ class TabDeclutterObserver : public base::CheckedObserver {
   // nudge to action UI.
   virtual void OnTriggerDeclutterUIVisibility() {}
 
-  // Called whenevener the service processes the tabstrip for stale tabs.
-  virtual void OnStaleTabsProcessed(std::vector<tabs::TabInterface*> tabs) {}
-
-  // Called whenevener the service processes the tabstrip for duplicate tabs.
-  virtual void OnDuplicateTabsProcessed(
+  // Called whenevener the service processes the tabstrip for unused tabs.
+  virtual void OnUnusedTabsProcessed(
+      std::vector<tabs::TabInterface*> stale_tabs,
       std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) {}
 };
 

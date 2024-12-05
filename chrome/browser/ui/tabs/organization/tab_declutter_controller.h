@@ -129,10 +129,6 @@ class TabDeclutterController {
   bool IsNewTabDetectedForNudge(base::span<tabs::TabInterface*> tabs) const;
   void ProcessTabs();
 
-  std::map<GURL, std::vector<tabs::TabInterface*>> ProcessDuplicateTabs();
-
-  std::vector<tabs::TabInterface*> ProcessStaleTabs();
-
   void StartNudgeTimer();
 
   bool IsTabExcluded(tabs::TabInterface* tab) const;
