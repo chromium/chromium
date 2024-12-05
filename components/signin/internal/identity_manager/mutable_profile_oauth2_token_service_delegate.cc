@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -28,6 +29,7 @@
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "crypto/process_bound_string.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -146,6 +148,33 @@ void RecordTokenBindingHistogramsOnCredentialsLoaded(
     base::UmaHistogramBoolean("Signin.TokenBinding.BoundToTheSameKey",
                               token_binding_helper->AreAllBindingKeysSame());
   }
+}
+
+// Determines whether `account_id` can be moved to `destination_service`.
+// An account cannot be moved if `destination_service` has accounts bound to a
+// different binding key.
+bool CanMoveAccountToService(
+    const ProfileOAuth2TokenService& destination_service,
+    const CoreAccountId& account_id,
+    const std::vector<uint8_t>& wrapped_binding_key) {
+  if (wrapped_binding_key.empty()) {
+    // Unbound refresh tokens can always be moved.
+    return true;
+  }
+
+  for (const auto& account : destination_service.GetAccounts()) {
+    if (account == account_id) {
+      // Ignore `account_id` as it will get a new refresh token after the move.
+      continue;
+    }
+    std::vector<uint8_t> other_wrapped_binding_key =
+        destination_service.GetWrappedBindingKey(account);
+    if (!other_wrapped_binding_key.empty() &&
+        other_wrapped_binding_key != wrapped_binding_key) {
+      return false;
+    }
+  }
+  return true;
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -843,14 +872,34 @@ void MutableProfileOAuth2TokenServiceDelegate::CancelWebTokenFetch() {
 void MutableProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
     ProfileOAuth2TokenService* to_service,
     const CoreAccountId& account_id) {
-  to_service->UpdateCredentials(account_id, GetRefreshToken(account_id),
-                                signin_metrics::SourceForRefreshTokenOperation::
-                                    kTokenService_ExtractCredentials
+  bool should_update_credentials = true;
+  std::string refresh_token = GetRefreshToken(account_id);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                                ,
-                                GetWrappedBindingKey(account_id)
+  std::vector<uint8_t> wrapped_binding_key = GetWrappedBindingKey(account_id);
+  if (!CanMoveAccountToService(*to_service, account_id, wrapped_binding_key)) {
+    if (to_service->HasRefreshToken(account_id)) {
+      // `to_service` already has this account. Do not override the existing,
+      // potentially valid token.
+      should_update_credentials = false;
+    } else {
+      // Insert an account without a token.
+      refresh_token = GaiaConstants::kInvalidRefreshToken;
+      wrapped_binding_key = std::vector<uint8_t>();
+    }
+  }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+
+  if (should_update_credentials) {
+    to_service->UpdateCredentials(
+        account_id, refresh_token,
+        signin_metrics::SourceForRefreshTokenOperation::
+            kTokenService_ExtractCredentials
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+        ,
+        wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    );
+  }
   RevokeCredentialsImpl(account_id, /*revoke_on_server=*/false);
 }
 

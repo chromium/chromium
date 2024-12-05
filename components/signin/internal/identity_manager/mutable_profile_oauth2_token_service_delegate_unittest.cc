@@ -67,6 +67,50 @@ using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
 namespace {
 constexpr char kTestTokenDatabase[] = "TestTokenDatabase";
 constexpr char kNoBindingChallenge[] = "";
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+struct ExtractCredentialsTestCase {
+  struct AccountCredentials {
+    std::string gaia_id;
+    std::string refresh_token;
+    std::vector<uint8_t> binding_key;
+  };
+
+  std::string test_suffix;
+  AccountCredentials account_before_move;
+  std::vector<AccountCredentials> existing_accounts;
+  AccountCredentials account_after_move;
+};
+
+const ExtractCredentialsTestCase kExtractCredentialsTestCases[] = {
+    {.test_suffix = "NotMovedKeyConflictExistingBound",
+     .account_before_move = {"A", "new_tokenA", {1}},
+     .existing_accounts = {{"A", "old_tokenA", {2}}, {"B", "old_tokenB", {2}}},
+     .account_after_move = {"A", "old_tokenA", {2}}},
+    {.test_suffix = "NotMovedKeyConflictExistingUnbound",
+     .account_before_move = {"A", "new_tokenA", {1}},
+     .existing_accounts = {{"A", "old_tokenA"}, {"B", "old_tokenB", {2}}},
+     .account_after_move = {"A", "old_tokenA"}},
+    {.test_suffix = "MovedBoundOverridesExisting",
+     .account_before_move = {"A", "new_tokenA", {1}},
+     .existing_accounts = {{"A", "old_tokenA", {2}}, {"B", "old_tokenB"}},
+     .account_after_move = {"A", "new_tokenA", {1}}},
+    {.test_suffix = "MovedUnboundOverridesExisting",
+     .account_before_move = {"A", "new_tokenA"},
+     .existing_accounts = {{"A", "old_tokenA", {2}}, {"B", "old_tokenB", {2}}},
+     .account_after_move = {"A", "new_tokenA"}},
+    {.test_suffix = "MovedBoundNoExisting",
+     .account_before_move = {"A", "new_tokenA", {1}},
+     .existing_accounts = {{"B", "old_tokenB"}},
+     .account_after_move = {"A", "new_tokenA", {1}}},
+    {.test_suffix = "MovedWithoutTokenKeyConflictNoExisting",
+     .account_before_move = {"A", "new_tokenA", {1}},
+     .existing_accounts = {{"B", "old_tokenB", {2}}},
+     .account_after_move = {"A", GaiaConstants::kInvalidRefreshToken}},
+};
+
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }
 
 class MutableProfileOAuth2TokenServiceDelegateTest
@@ -1926,6 +1970,74 @@ INSTANTIATE_TEST_SUITE_P(
     [](const auto& info) {
       return info.param.empty() ? "NoChallenge" : "HasChallenge";
     });
+
+class MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest
+    : public MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
+      public testing::WithParamInterface<ExtractCredentialsTestCase> {
+ public:
+  void AddAccount(
+      ProfileOAuth2TokenServiceDelegate& delegate,
+      const ExtractCredentialsTestCase::AccountCredentials& account) {
+    static constexpr auto kSigninSource = signin_metrics::
+        SourceForRefreshTokenOperation::kDiceResponseHandler_Signin;
+    delegate.UpdateCredentials(CoreAccountId::FromGaiaId(account.gaia_id),
+                               account.refresh_token, kSigninSource,
+                               account.binding_key);
+  }
+};
+
+TEST_P(MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest,
+       ExtractCredentials) {
+  // Gaia ID shouldn't change after move. The test currently doesn't support a
+  // missing account after the move (as it never happens).
+  CHECK_EQ(GetParam().account_before_move.gaia_id,
+           GetParam().account_after_move.gaia_id);
+
+  // Initialize the source token service.
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
+  // Create the target token service.
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  ProfileOAuth2TokenService::RegisterProfilePrefs(prefs.registry());
+  std::unique_ptr<FakeProfileOAuth2TokenServiceDelegate> delegate =
+      std::make_unique<FakeProfileOAuth2TokenServiceDelegate>();
+  FakeProfileOAuth2TokenServiceDelegate* target_delegate = delegate.get();
+  ProfileOAuth2TokenService target_token_service(&prefs, std::move(delegate));
+  target_token_service.LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
+
+  // Add credentials to the source token service.
+  AddAccount(*oauth2_service_delegate_, GetParam().account_before_move);
+  // Add credentials to the target token service.
+  for (const auto& account : GetParam().existing_accounts) {
+    AddAccount(*target_delegate, account);
+  }
+
+  // Extract the credentials.
+  ResetObserverCounts();
+  const CoreAccountId account_to_move =
+      CoreAccountId::FromGaiaId(GetParam().account_before_move.gaia_id);
+  oauth2_service_delegate_->ExtractCredentials(&target_token_service,
+                                               account_to_move);
+
+  // The account should be removed from the source token service.
+  EXPECT_EQ(1, token_revoked_count_);
+  EXPECT_FALSE(
+      oauth2_service_delegate_->RefreshTokenIsAvailable(account_to_move));
+  // Verify the account in the target service after the move.
+  EXPECT_TRUE(target_delegate->RefreshTokenIsAvailable(account_to_move));
+  EXPECT_EQ(target_delegate->GetRefreshToken(account_to_move),
+            GetParam().account_after_move.refresh_token);
+  EXPECT_EQ(target_delegate->GetWrappedBindingKey(account_to_move),
+            GetParam().account_after_move.binding_key);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest,
+    testing::ValuesIn(kExtractCredentialsTestCases),
+    [](const auto& info) { return info.param.test_suffix; });
+
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest
