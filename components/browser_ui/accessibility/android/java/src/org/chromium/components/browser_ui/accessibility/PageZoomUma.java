@@ -15,7 +15,8 @@ public class PageZoomUma {
     private static int sMaxZoomValue = (int) (PageZoomUtils.PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL * 100);
     private static int sZoomValueBucketCount = (int) ((sMaxZoomValue - sMinZoomValue) / 5) + 2;
 
-    // AccessibilityPageZoomAppMenuEnabledState defined in tools/metrics/histograms/enums.xml.
+    // AccessibilityPageZoomAppMenuEnabledState defined in
+    // tools/metrics/histograms/metadata/accessibility/enums.xml.
     // Add new values before MAX_VALUE.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -39,6 +40,32 @@ public class PageZoomUma {
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityPageZoomAppMenuEnabledState)
+
+    // AccessibilityPageZoomUsageType defined in
+    // tools/metrics/histograms/metadata/accessibility/enums.xml.
+    // Add new values before MAX_VALUE.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    //
+    // LINT.IfChange(AccessibilityPageZoomUsageType)
+    @IntDef({
+        AccessibilityPageZoomUsageType.NO_USAGE,
+        AccessibilityPageZoomUsageType.SITE_LEVEL,
+        AccessibilityPageZoomUsageType.DEFAULT_ZOOM,
+        AccessibilityPageZoomUsageType.BOTH_SITE_LEVEL_AND_DEFAULT_ZOOM,
+        AccessibilityPageZoomUsageType.MAX_VALUE
+    })
+    public @interface AccessibilityPageZoomUsageType {
+        int NO_USAGE = 0;
+        int SITE_LEVEL = 1;
+        int DEFAULT_ZOOM = 2;
+        int BOTH_SITE_LEVEL_AND_DEFAULT_ZOOM = 3;
+
+        // Be sure to also update enums.xml when updating these values.
+        int MAX_VALUE = 4;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityPageZoomUsageType)
 
     // Page Zoom histogram values
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -65,10 +92,14 @@ public class PageZoomUma {
     public static final String PAGE_ZOOM_SETTINGS_DEFAULT_ZOOM_LEVEL_VALUE_HISTOGRAM =
             "Accessibility.Android.PageZoom.SettingsDefaultZoomLevelValue";
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String PAGE_ZOOM_FEATURE_USAGE = "Accessibility.Android.PageZoom.Usage";
+
     /**
      * Log the enabled state of the page zoom slider option in the app menu.
+     *
      * @param value the enum value representing whether the zoom option is not enabled, enabled by
-     *         the user, or enabled due to the OS font settings.
+     *     the user, or enabled due to the OS font settings.
      */
     public static void logAppMenuEnabledStateHistogram(
             @AccessibilityPageZoomAppMenuEnabledState int value) {
@@ -121,5 +152,29 @@ public class PageZoomUma {
                 sMinZoomValue,
                 sMaxZoomValue,
                 sZoomValueBucketCount);
+    }
+
+    /**
+     * If a user has used the Page Zoom feature, log the type of usage. Otherwise, log that the user
+     * has not used the Page Zoom feature.
+     *
+     * @param hasSiteLevelZoom whether or not any site has a saved zoom level
+     * @param hasDefaultZoom whether or not the user has a default zoom setting
+     */
+    public static void logFeatureUsageHistogram(boolean hasSiteLevelZoom, boolean hasDefaultZoom) {
+        if (hasSiteLevelZoom && hasDefaultZoom) {
+            recordUsageMetric(AccessibilityPageZoomUsageType.BOTH_SITE_LEVEL_AND_DEFAULT_ZOOM);
+        } else if (hasSiteLevelZoom) {
+            recordUsageMetric(AccessibilityPageZoomUsageType.SITE_LEVEL);
+        } else if (hasDefaultZoom) {
+            recordUsageMetric(AccessibilityPageZoomUsageType.DEFAULT_ZOOM);
+        } else {
+            recordUsageMetric(AccessibilityPageZoomUsageType.NO_USAGE);
+        }
+    }
+
+    private static void recordUsageMetric(@AccessibilityPageZoomUsageType int usageType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                PAGE_ZOOM_FEATURE_USAGE, usageType, AccessibilityPageZoomUsageType.MAX_VALUE);
     }
 }

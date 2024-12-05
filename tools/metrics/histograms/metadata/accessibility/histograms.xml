@@ -368,6 +368,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.PageZoom.Usage"
+    enum="AccessibilityPageZoomUsageType" expires_after="2025-05-04">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks what type of user the current user is considered for the
+    Accessibility Page Zoom feature. The user can be in one of four buckets: a
+    user that has saved a custom zoom level on at least one site; a user that
+    has a default zoom level choice for all sites; a user that has both; a user
+    that has none. Any of the former three is considered an active user of the
+    feature. This is tracked once on browser start up.
+
+    Note: Users can move between these groups, although they can only be in one
+    group at a time.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
     enum="BooleanHit" expires_after="2025-05-04">
   <owner>mschillaci@google.com</owner>
