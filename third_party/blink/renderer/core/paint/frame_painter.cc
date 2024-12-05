@@ -68,7 +68,7 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
       "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
       &GetFrameView().GetFrame(), layout_view,
       GetQuadForTraceEvent(GetFrameView(),
-                           layout_view->FirstFragment().GetCullRect()),
+                           layout_view->FirstFragment().GetContentsCullRect()),
       /*layer_id=*/0);
 
   bool is_top_level_painter = !in_paint_contents_;
