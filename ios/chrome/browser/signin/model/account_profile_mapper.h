@@ -29,6 +29,9 @@ class AccountProfileMapper {
     // Called when the list of identities in a profile has changed.
     virtual void OnIdentityListChanged() {}
 
+    // Called when the list of identities on device has changed.
+    virtual void OnIdentitiesOnDeviceChanged() {}
+
     // Called when information about `identity` (such as the name or the image)
     // have been updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
@@ -114,6 +117,9 @@ class AccountProfileMapper {
       IdentityIteratorCallback callback,
       id<SystemIdentity> identity);
 
+  // Called by the Assigner whenever the list of identities on the device
+  // changes.
+  void IdentitiesOnDeviceChanged();
   // Called by the Assigner when any profile<->account mappings have been
   // updated.
   void MappingUpdated(const ProfileNameToGaiaIds& old_mapping,

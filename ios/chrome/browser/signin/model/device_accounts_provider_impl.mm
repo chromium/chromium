@@ -125,6 +125,7 @@ DeviceAccountsProviderImpl::DeviceAccountsProviderImpl(
     ChromeAccountManagerService* account_manager_service)
     : account_manager_service_(account_manager_service) {
   DCHECK(account_manager_service_);
+  chrome_account_manager_observation_.Observe(account_manager_service_);
 }
 
 DeviceAccountsProviderImpl::~DeviceAccountsProviderImpl() = default;
@@ -178,4 +179,10 @@ DeviceAccountsProviderImpl::GetAccountsOnDevice() const {
       account_manager_service_->GetAllIdentitiesOnDevice(
           base::PassKey<DeviceAccountsProviderImpl>());
   return ConvertSystemIdentitiesToAccountInfos(identities);
+}
+
+void DeviceAccountsProviderImpl::OnIdentitiesOnDeviceChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountsOnDeviceChanged();
+  }
 }
