@@ -6,7 +6,7 @@ syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
-package history_embeddings.proto;
+package optimization_guide.proto;
 
 message PassageEmbeddingsModelMetadata {
   // The size of the input window expected by the model.

@@ -97,8 +97,9 @@ SqlDatabase::SqlDatabase(const base::FilePath& storage_dir)
 
 SqlDatabase::~SqlDatabase() = default;
 
-void SqlDatabase::SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
-                                      os_crypt_async::Encryptor encryptor) {
+void SqlDatabase::SetEmbedderMetadata(
+    passage_embeddings::EmbedderMetadata embedder_metadata,
+    os_crypt_async::Encryptor encryptor) {
   embedder_metadata_ = embedder_metadata;
   CHECK(!encryptor_.has_value()) << "Cannot call SetEmbedderMetadata twice.";
   encryptor_.emplace(std::move(encryptor));

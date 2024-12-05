@@ -18,6 +18,7 @@
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 
@@ -39,8 +40,9 @@ class SqlDatabase : public VectorDatabase {
 
   // Provides embedder metadata to the database. The database cannot be
   // initialized until valid metadata is provided.
-  void SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
-                           os_crypt_async::Encryptor encryptor);
+  void SetEmbedderMetadata(
+      passage_embeddings::EmbedderMetadata embedder_metadata,
+      os_crypt_async::Encryptor encryptor);
 
   // Gets the passages associated with `url_id`. Returns nullopt if there's
   // nothing available.
@@ -119,7 +121,7 @@ class SqlDatabase : public VectorDatabase {
   const base::FilePath storage_dir_;
 
   // Metadata of the embeddings model.
-  std::optional<EmbedderMetadata> embedder_metadata_;
+  std::optional<passage_embeddings::EmbedderMetadata> embedder_metadata_;
 
   std::optional<os_crypt_async::Encryptor> encryptor_;
 

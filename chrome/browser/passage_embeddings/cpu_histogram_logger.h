@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
-#define CHROME_BROWSER_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
+#ifndef CHROME_BROWSER_PASSAGE_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
+#define CHROME_BROWSER_PASSAGE_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
 
 #include <memory>
 
@@ -13,7 +13,7 @@ class BrowserChildProcessHost;
 
 }  // namespace content
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 // Measures the CPU usage of the service process at fixed intervals.
 class CpuHistogramLogger {
@@ -37,6 +37,6 @@ class CpuHistogramLogger {
   std::unique_ptr<CpuObserver> cpu_observer_;
 };
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings
 
-#endif  // CHROME_BROWSER_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
+#endif  // CHROME_BROWSER_PASSAGE_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_

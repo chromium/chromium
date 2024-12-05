@@ -106,7 +106,8 @@ void FinishSearchResultWithHistory(
 // don't), then 0.9 will be used. This allows finch and command line to override
 // the threshold if necessary while ensuring different users with different
 // models are all using the correct threshold for their model.
-float GetScoreThreshold(const EmbedderMetadata& embedder_metadata) {
+float GetScoreThreshold(
+    const passage_embeddings::EmbedderMetadata& embedder_metadata) {
   if (GetFeatureParameters().search_score_threshold >= 0) {
     return GetFeatureParameters().search_score_threshold;
   }
@@ -369,14 +370,14 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(
 }
 
 void HistoryEmbeddingsService::OnEmbedderMetadataReady(
-    EmbedderMetadata metadata) {
+    passage_embeddings::EmbedderMetadata metadata) {
   subscription_ = os_crypt_async_->GetInstance(
       base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
                      weak_ptr_factory_.GetWeakPtr(), metadata));
 }
 
 void HistoryEmbeddingsService::OnOsCryptAsyncReady(
-    EmbedderMetadata metadata,
+    passage_embeddings::EmbedderMetadata metadata,
     os_crypt_async::Encryptor encryptor,
     bool success) {
   embedder_metadata_ = metadata;
@@ -461,8 +462,9 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResult result,
     std::vector<std::string> query_passages,
     std::vector<Embedding> query_embeddings,
-    ComputeEmbeddingsStatus status) {
-  bool succeeded = status == ComputeEmbeddingsStatus::SUCCESS;
+    passage_embeddings::ComputeEmbeddingsStatus status) {
+  bool succeeded =
+      status == passage_embeddings::ComputeEmbeddingsStatus::KSuccess;
   base::UmaHistogramBoolean("History.Embeddings.QueryEmbeddingSucceeded",
                             succeeded);
 
@@ -667,7 +669,7 @@ HistoryEmbeddingsService::Storage::Storage(const base::FilePath& storage_dir)
     : sql_database(storage_dir) {}
 
 void HistoryEmbeddingsService::Storage::SetEmbedderMetadata(
-    EmbedderMetadata metadata,
+    passage_embeddings::EmbedderMetadata metadata,
     os_crypt_async::Encryptor encryptor) {
   sql_database.SetEmbedderMetadata(metadata, std::move(encryptor));
 }
@@ -830,7 +832,7 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
     UrlData url_passages,
     std::vector<std::string> passages,
     std::vector<Embedding> embeddings,
-    ComputeEmbeddingsStatus status) {
+    passage_embeddings::ComputeEmbeddingsStatus status) {
   // Merge new and cached embeddings, expanding the `embeddings`
   // vector to fit the passages structure of `url_passages.passages`.
   size_t passages_index = 0;

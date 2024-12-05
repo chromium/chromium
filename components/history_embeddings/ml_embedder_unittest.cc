@@ -11,16 +11,22 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/history_embeddings/passage_embeddings_service_controller.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {
+
+using passage_embeddings::ComputeEmbeddingsStatus;
+using passage_embeddings::EmbedderMetadata;
+using passage_embeddings::EmbeddingsModelInfoStatus;
+using passage_embeddings::kModelInfoMetricName;
 
 namespace {
 
@@ -44,7 +50,7 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
   base::FilePath sp_path = test_data_dir.AppendASCII("fake_model_file");
 
   // Create serialized metadata.
-  proto::PassageEmbeddingsModelMetadata model_metadata;
+  optimization_guide::proto::PassageEmbeddingsModelMetadata model_metadata;
   model_metadata.set_input_window_size(kEmbeddingsModelInputWindowSize);
   model_metadata.set_output_size(kEmbeddingsModelOutputSize);
 
@@ -121,7 +127,7 @@ class FakePassageEmbeddingsService
 };
 
 class FakePassageEmbeddingsServiceController
-    : public PassageEmbeddingsServiceController {
+    : public passage_embeddings::PassageEmbeddingsServiceController {
  public:
   FakePassageEmbeddingsServiceController() = default;
   ~FakePassageEmbeddingsServiceController() override = default;
@@ -320,7 +326,7 @@ TEST_F(MlEmbedderTest, GeneratesEmbeddings) {
                                          {"foo", "bar"}, future.GetCallback());
   auto [passages, embeddings, status] = future.Get();
 
-  EXPECT_EQ(status, ComputeEmbeddingsStatus::SUCCESS);
+  EXPECT_EQ(status, ComputeEmbeddingsStatus::KSuccess);
   EXPECT_EQ(passages[0], "foo");
   EXPECT_EQ(passages[1], "bar");
   EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
@@ -343,7 +349,7 @@ TEST_F(MlEmbedderTest, ReturnsModelUnavailableErrorIfModelInfoNotValid) {
                                          {"foo", "bar"}, future.GetCallback());
   auto [passages, embeddings, status] = future.Get();
 
-  EXPECT_EQ(status, ComputeEmbeddingsStatus::MODEL_UNAVAILABLE);
+  EXPECT_EQ(status, ComputeEmbeddingsStatus::KModelUnavailable);
   EXPECT_TRUE(passages.empty());
   EXPECT_TRUE(embeddings.empty());
   histogram_tester_.ExpectTotalCount(kModelInfoMetricName, 1);
@@ -363,7 +369,7 @@ TEST_F(MlEmbedderTest, ReturnsExecutionFailure) {
                                          {"error"}, future.GetCallback());
   auto [passages, embeddings, status] = future.Get();
 
-  EXPECT_EQ(status, ComputeEmbeddingsStatus::EXECUTION_FAILURE);
+  EXPECT_EQ(status, ComputeEmbeddingsStatus::kExecutionFailure);
   EXPECT_TRUE(passages.empty());
   EXPECT_TRUE(embeddings.empty());
 }

@@ -52,6 +52,7 @@ proto_library("optimization_guide_proto") {
     "page_topics_model_metadata.proto",
     "page_topics_override_list.proto",
     "parser_kind.proto",
+    "passage_embeddings_model_metadata.proto",
     "push_notification.proto",
     "redaction.proto",
     "salient_image_metadata.proto",

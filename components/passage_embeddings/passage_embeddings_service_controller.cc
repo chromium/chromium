@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
-#include "components/history_embeddings/embedder.h"
-#include "components/history_embeddings/history_embeddings_features.h"
-#include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+
+namespace passage_embeddings {
 
 namespace {
 
-passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr MakeModelParams(
+mojom::PassageEmbeddingsLoadModelsParamsPtr MakeModelParams(
     const base::FilePath& embeddings_path,
     const base::FilePath& sp_path,
     uint32_t input_window_size) {
-  auto params =
-      passage_embeddings::mojom::PassageEmbeddingsLoadModelsParams::New();
+  auto params = mojom::PassageEmbeddingsLoadModelsParams::New();
   params->embeddings_model = base::File(
       embeddings_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   params->sp_model =
@@ -31,23 +29,17 @@ class ScopedEmbeddingsModelInfoStatusLogger {
  public:
   ScopedEmbeddingsModelInfoStatusLogger() = default;
   ~ScopedEmbeddingsModelInfoStatusLogger() {
-    CHECK_NE(history_embeddings::EmbeddingsModelInfoStatus::kUnknown, status_);
-    base::UmaHistogramEnumeration(history_embeddings::kModelInfoMetricName,
-                                  status_);
+    CHECK_NE(EmbeddingsModelInfoStatus::kUnknown, status_);
+    base::UmaHistogramEnumeration(kModelInfoMetricName, status_);
   }
 
-  void set_status(history_embeddings::EmbeddingsModelInfoStatus status) {
-    status_ = status;
-  }
+  void set_status(EmbeddingsModelInfoStatus status) { status_ = status; }
 
  private:
-  history_embeddings::EmbeddingsModelInfoStatus status_ =
-      history_embeddings::EmbeddingsModelInfoStatus::kUnknown;
+  EmbeddingsModelInfoStatus status_ = EmbeddingsModelInfoStatus::kUnknown;
 };
 
 }  // namespace
-
-namespace history_embeddings {
 
 PassageEmbeddingsServiceController::PassageEmbeddingsServiceController() =
     default;
@@ -84,9 +76,9 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
     logger.set_status(EmbeddingsModelInfoStatus::kNoMetadata);
     return false;
   }
-  std::optional<proto::PassageEmbeddingsModelMetadata> embeddings_metadata =
-      optimization_guide::ParsedAnyMetadata<
-          proto::PassageEmbeddingsModelMetadata>(*metadata);
+  std::optional<optimization_guide::proto::PassageEmbeddingsModelMetadata>
+      embeddings_metadata = optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::PassageEmbeddingsModelMetadata>(*metadata);
   if (!embeddings_metadata) {
     logger.set_status(EmbeddingsModelInfoStatus::kInvalidMetadata);
     return false;
@@ -104,8 +96,8 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
 }
 
 void PassageEmbeddingsServiceController::LoadModelsToService(
-    mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder> model,
-    passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr params) {
+    mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
+    mojom::PassageEmbeddingsLoadModelsParamsPtr params) {
   if (!service_remote_) {
     // Close the model files in a background thread.
     base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
@@ -114,7 +106,7 @@ void PassageEmbeddingsServiceController::LoadModelsToService(
   }
 
   service_remote_->LoadModels(
-      std::move(params), std::move(model),
+      std::move(params), std::move(receiver),
       base::BindOnce(&PassageEmbeddingsServiceController::OnLoadModelsResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -136,12 +128,12 @@ EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
 
 void PassageEmbeddingsServiceController::GetEmbeddings(
     std::vector<std::string> passages,
-    passage_embeddings::mojom::PassagePriority priority,
+    mojom::PassagePriority priority,
     GetEmbeddingsCallback callback) {
   if (embeddings_model_path_.empty() || sp_model_path_.empty()) {
     VLOG(1) << "Missing model path: embeddings='" << embeddings_model_path_
             << "'; sp='" << sp_model_path_ << "'";
-    std::move(callback).Run({}, {}, ComputeEmbeddingsStatus::MODEL_UNAVAILABLE);
+    std::move(callback).Run({}, ComputeEmbeddingsStatus::KModelUnavailable);
     return;
   }
 
@@ -158,7 +150,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
         base::BindOnce(&PassageEmbeddingsServiceController::OnDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
     embedder_remote_.set_idle_handler(
-        history_embeddings::GetFeatureParameters().embeddings_service_timeout,
+        base::Seconds(60),
         base::BindRepeating(&PassageEmbeddingsServiceController::ResetRemotes,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -167,19 +159,11 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
       std::move(passages), priority,
       base::BindOnce(
           [](GetEmbeddingsCallback callback,
-             std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr>
-                 results) {
-            std::vector<std::string> result_passages;
-            std::vector<Embedding> result_embeddings;
-            for (auto& result : results) {
-              result_passages.push_back(result->passage);
-              result_embeddings.emplace_back(result->embeddings);
-              result_embeddings.back().Normalize();
-            }
-            std::move(callback).Run(
-                std::move(result_passages), std::move(result_embeddings),
-                results.empty() ? ComputeEmbeddingsStatus::EXECUTION_FAILURE
-                                : ComputeEmbeddingsStatus::SUCCESS);
+             std::vector<mojom::PassageEmbeddingsResultPtr> results) {
+            auto status = results.empty()
+                              ? ComputeEmbeddingsStatus::kExecutionFailure
+                              : ComputeEmbeddingsStatus::KSuccess;
+            std::move(callback).Run(std::move(results), status);
           },
           std::move(callback)));
 }
@@ -197,4 +181,4 @@ void PassageEmbeddingsServiceController::OnDisconnected() {
   embedder_remote_.reset();
 }
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings

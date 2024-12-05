@@ -6,6 +6,7 @@ include_rules = [
   "+components/optimization_guide/proto",
   "+components/os_crypt/async",
   "+components/page_content_annotations/core",
+  "+components/passage_embeddings",
   "+mojo/public/cpp/bindings",
   "+services/passage_embeddings",
   "+sql",

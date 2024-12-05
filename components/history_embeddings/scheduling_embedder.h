@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/history_embeddings/embedder.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace history_embeddings {
 
@@ -67,13 +68,13 @@ class SchedulingEmbedder : public Embedder {
   // embedder isn't ready. For the MlEmbedder, this avoids failing when the
   // model hasn't loaded yet. We just wait until it's ready, then start work.
   void OnEmbedderReady(OnEmbedderReadyCallback callback,
-                       EmbedderMetadata metadata);
+                       passage_embeddings::EmbedderMetadata metadata);
 
   // Invoked after the embedding for the current job has been computed.
   // Continues processing next job if one is pending.
   void OnEmbeddingsComputed(std::vector<std::string> passages,
                             std::vector<Embedding> embedding,
-                            ComputeEmbeddingsStatus status);
+                            passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Stable-sort jobs by priority and submit a batch of work to embedder.
   // This should only be called when the embedder is not already working.

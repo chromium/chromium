@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/history_embeddings/cpu_histogram_logger.h"
+#include "chrome/browser/passage_embeddings/cpu_histogram_logger.h"
 
 #include <memory>
 #include <utility>
@@ -27,7 +27,7 @@ constexpr int kBucketCount = 100;
 
 }  // namespace
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 class CpuHistogramLogger::CpuObserver
     : public resource_attribution::QueryResultObserver {
@@ -132,4 +132,4 @@ void CpuHistogramLogger::StopLoggingAfterNextUpdate() {
   }
 }
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings

@@ -38,9 +38,10 @@ void MockEmbedder::ComputePassagesEmbeddings(
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(passages),
-                                ComputeEmbeddingsForPassages(passages),
-                                ComputeEmbeddingsStatus::SUCCESS));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(passages),
+                     ComputeEmbeddingsForPassages(passages),
+                     passage_embeddings::ComputeEmbeddingsStatus::KSuccess));
 }
 
 void MockEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_CHROME_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
-#define CHROME_BROWSER_HISTORY_EMBEDDINGS_CHROME_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_PASSAGE_EMBEDDINGS_CHROME_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
+#define CHROME_BROWSER_PASSAGE_EMBEDDINGS_CHROME_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/history_embeddings/cpu_histogram_logger.h"
-#include "components/history_embeddings/passage_embeddings_service_controller.h"
+#include "chrome/browser/passage_embeddings/cpu_histogram_logger.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 
 namespace base {
 
@@ -16,7 +16,7 @@ class Process;
 
 }  // namespace base
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 // Chrome uses a single instance of PassageEmbeddingsServiceController. We only
 // want to load the model once, not once per Profile. To do otherwise would
@@ -55,6 +55,6 @@ class ChromePassageEmbeddingsServiceController
       weak_ptr_factory_{this};
 };
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings
 
-#endif  // CHROME_BROWSER_HISTORY_EMBEDDINGS_CHROME_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_PASSAGE_EMBEDDINGS_CHROME_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_

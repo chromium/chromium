@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/history_embeddings/chrome_passage_embeddings_service_controller.h"
+#include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
-#include "chrome/browser/history_embeddings/cpu_histogram_logger.h"
+#include "chrome/browser/passage_embeddings/cpu_histogram_logger.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,7 +17,7 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/process_type.h"
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 // static
 ChromePassageEmbeddingsServiceController*
@@ -47,8 +47,7 @@ void ChromePassageEmbeddingsServiceController::LaunchService() {
       base::BindRepeating(
           &ChromePassageEmbeddingsServiceController::ResetRemotes,
           base::Unretained(this)));
-  content::ServiceProcessHost::Launch<
-      passage_embeddings::mojom::PassageEmbeddingsService>(
+  content::ServiceProcessHost::Launch<mojom::PassageEmbeddingsService>(
       std::move(receiver),
       content::ServiceProcessHost::Options()
           .WithDisplayName("Passage Embeddings Service")
@@ -91,4 +90,4 @@ void ChromePassageEmbeddingsServiceController::InitializeCpuLogger() {
   NOTREACHED();
 }
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings

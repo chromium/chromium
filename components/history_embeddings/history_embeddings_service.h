@@ -32,6 +32,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -247,7 +248,7 @@ class HistoryEmbeddingsService : public KeyedService,
 
     // Associate the given metadata with this Storage instance. The storage is
     // not considered initialized until this metadata is supplied.
-    void SetEmbedderMetadata(EmbedderMetadata metadata,
+    void SetEmbedderMetadata(passage_embeddings::EmbedderMetadata metadata,
                              os_crypt_async::Encryptor encryptor);
 
     // Called on the worker sequence to persist passages and embeddings.
@@ -296,9 +297,9 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Called when the embedder metadata is available. Passes the metadata to
   // the internal storage.
-  void OnEmbedderMetadataReady(EmbedderMetadata metadata);
+  void OnEmbedderMetadataReady(passage_embeddings::EmbedderMetadata metadata);
 
-  void OnOsCryptAsyncReady(EmbedderMetadata metadata,
+  void OnOsCryptAsyncReady(passage_embeddings::EmbedderMetadata metadata,
                            os_crypt_async::Encryptor encryptor,
                            bool success);
 
@@ -312,16 +313,17 @@ class HistoryEmbeddingsService : public KeyedService,
       UrlData url_passages,
       std::vector<std::string> passages,
       std::vector<Embedding> embeddings,
-      ComputeEmbeddingsStatus status);
+      passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Invoked after the embedding for the original search query has been
   // computed.
-  void OnQueryEmbeddingComputed(SearchResultCallback callback,
-                                SearchParams search_params,
-                                SearchResult result,
-                                std::vector<std::string> query_passages,
-                                std::vector<Embedding> query_embedding,
-                                ComputeEmbeddingsStatus status);
+  void OnQueryEmbeddingComputed(
+      SearchResultCallback callback,
+      SearchParams search_params,
+      SearchResult result,
+      std::vector<std::string> query_passages,
+      std::vector<Embedding> query_embedding,
+      passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Finishes a search result by combining found data with additional data from
   // history database. Moves each ScoredUrl into a more complete structure with
@@ -410,7 +412,7 @@ class HistoryEmbeddingsService : public KeyedService,
   std::unique_ptr<IntentClassifier> intent_classifier_;
 
   // Metadata about the embedder.
-  std::optional<EmbedderMetadata> embedder_metadata_;
+  std::optional<passage_embeddings::EmbedderMetadata> embedder_metadata_;
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.

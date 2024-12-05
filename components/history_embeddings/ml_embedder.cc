@@ -5,14 +5,16 @@
 #include "components/history_embeddings/ml_embedder.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/history_embeddings/passage_embeddings_service_controller.h"
+#include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
+#include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
 namespace history_embeddings {
 
 MlEmbedder::MlEmbedder(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    PassageEmbeddingsServiceController* service_controller)
+    passage_embeddings::PassageEmbeddingsServiceController* service_controller)
     : model_provider_(model_provider), service_controller_(service_controller) {
   if (model_provider_) {
     model_provider_->AddObserverForOptimizationTargetModel(
@@ -36,8 +38,25 @@ void MlEmbedder::ComputePassagesEmbeddings(
       kind == PassageKind::QUERY
           ? passage_embeddings::mojom::PassagePriority::kUserInitiated
           : passage_embeddings::mojom::PassagePriority::kPassive;
-  service_controller_->GetEmbeddings(std::move(passages), priority,
-                                     std::move(callback));
+
+  service_controller_->GetEmbeddings(
+      std::move(passages), priority,
+      base::BindOnce(
+          [](ComputePassagesEmbeddingsCallback callback,
+             std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr>
+                 results,
+             passage_embeddings::ComputeEmbeddingsStatus status) {
+            std::vector<std::string> result_passages;
+            std::vector<Embedding> result_embeddings;
+            for (auto& result : results) {
+              result_passages.push_back(result->passage);
+              result_embeddings.emplace_back(result->embeddings);
+              result_embeddings.back().Normalize();
+            }
+            std::move(callback).Run(std::move(result_passages),
+                                    std::move(result_embeddings), status);
+          },
+          std::move(callback)));
 }
 
 void MlEmbedder::OnModelUpdated(
