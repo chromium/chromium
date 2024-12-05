@@ -649,14 +649,23 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
       compression_session_.get(), pixel_buffer.get(), timestamp_cm, duration_cm,
       NSToCFPtrCast(frame_props), reinterpret_cast<void*>(request.get()),
       nullptr);
+  if (status == kVTVideoEncoderNotAvailableNowErr ||
+      status == kVTCouldNotCreateInstanceErr) {
+    NotifyErrorStatus({EncoderStatus::Codes::kOutOfPlatformEncoders,
+                       "No more encoders available. " +
+                           logging::DescriptionFromOSStatus(status)});
+    return;
+  }
   if (status != noErr) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "VTCompressionSessionEncodeFrame failed: " +
                            logging::DescriptionFromOSStatus(status)});
-  } else {
-    ++pending_encodes_;
-    CHECK(request.release());
+    return;
   }
+  ++pending_encodes_;
+  // We successfully passed ownership to `sourceFrameRefcon` parameter
+  // of `VTCompressionSessionEncodeFrame`, release the smart pointer.
+  request.release();
 }
 
 void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
@@ -818,9 +827,15 @@ void VTVideoEncodeAccelerator::CompressionCallbackTask(
   --pending_encodes_;
   DCHECK_GE(pending_encodes_, 0);
 
-  if (status != noErr) {
+  if (status == kVTVideoEncoderNotAvailableNowErr ||
+      status == kVTCouldNotCreateInstanceErr) {
+    NotifyErrorStatus({EncoderStatus::Codes::kOutOfPlatformEncoders,
+                       "No more encoders available. " +
+                           logging::DescriptionFromOSStatus(status)});
+    return;
+  } else if (status != noErr) {
     NotifyErrorStatus(
-        {EncoderStatus::Codes::kEncoderFailedEncode,
+        {EncoderStatus::Codes::kSystemAPICallError,
          "Encode failed: " + logging::DescriptionFromOSStatus(status)});
     return;
   }
@@ -918,9 +933,14 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession() {
       created.has_value()) {
     compression_session_ = std::move(created.value());
   } else {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
-                       "VTCompressionSessionCreate failed: " +
-                           logging::DescriptionFromOSStatus(created.error())});
+    EncoderStatusTraits::Codes status_code =
+        (created.error() == kVTVideoEncoderNotAvailableNowErr ||
+         created.error() == kVTCouldNotCreateInstanceErr)
+            ? EncoderStatus::Codes::kOutOfPlatformEncoders
+            : EncoderStatus::Codes::kEncoderInitializationError;
+    NotifyErrorStatus(
+        {status_code, "VTCompressionSessionCreate failed: " +
+                          logging::DescriptionFromOSStatus(created.error())});
     return false;
   }
 
