@@ -348,6 +348,16 @@ class AXPlatformNodeCocoaTest
     EXPECT_EQ(unexpected_attributes, 0);
   }
 
+  void TestUIElements(NSArray* got_array,
+                      const std::vector<int32_t>& expected_ids) {
+    EXPECT_EQ([got_array count], expected_ids.size());
+    for (NSUInteger i = 0; i < [got_array count]; ++i) {
+      EXPECT_EQ([[got_array objectAtIndex:i] node]->GetUniqueId(),
+                [GetCocoaNode(expected_ids[i]) node]->GetUniqueId())
+          << "Mismatch at index " << i;
+    }
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -528,6 +538,102 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowsOnColumn) {
   EXPECT_EQ([rows count], 1UL);
   EXPECT_EQ([[rows firstObject] node]->GetUniqueId(),
             [row node]->GetUniqueId());
+}
+
+// accessibilityRowHeaderUIElements on a text field.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowHeaderUIElementsOnTextField) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTextField
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(1);
+  EXPECT_EQ([text_field accessibilityRowHeaderUIElements], nil);
+}
+
+// accessibilityRowHeaderUIElements on a table with no header rows.
+TEST_P(AXPlatformNodeCocoaTest,
+       AccessibilityRowHeaderUIElementsOnNoHeaderRowsTable) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+    ++++++4 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  EXPECT_EQ([table accessibilityRowHeaderUIElements], nil);
+}
+
+// accessibilityRowHeaderUIElements on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowHeaderUIElementsOnTable) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kRowHeader
+    ++++++4 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  TestUIElements([table accessibilityRowHeaderUIElements], { 3 });
+}
+
+// accessibilityRowHeaderUIElements on a cell.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowHeaderUIElementsOnCell) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kRowHeader
+    ++++++4 kCell
+  )HTML"));
+  Init(update);
+
+  // Row headers on a cell.
+  AXPlatformNodeCocoa* cell = GetCocoaNode(4);
+  TestUIElements([cell accessibilityRowHeaderUIElements], { 3 });
+}
+
+// accessibilityRowHeaderUIElements on a table with two header rows in a row.
+TEST_P(AXPlatformNodeCocoaTest,
+       AccessibilityRowHeaderUIElementsOnMultipleHeaderRowsTable) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kRowHeader
+    ++++++4 kRowHeader
+    ++++++5 kCell
+    ++++6 kRow
+    ++++++7 kRowHeader
+    ++++++8 kRowHeader
+    ++++++9 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  TestUIElements([table accessibilityRowHeaderUIElements], { 3, 4, 7, 8 });
+}
+
+// accessibilityRowHeaderUIElements on a cell of a table with two header rows in
+// a row.
+TEST_P(AXPlatformNodeCocoaTest,
+       AccessibilityRowHeaderUIElementsOnMultipleHeaderRowsTableCell) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kRowHeader
+    ++++++4 kRowHeader
+    ++++++5 kCell
+    ++++6 kRow
+    ++++++7 kRowHeader
+    ++++++8 kRowHeader
+    ++++++9 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* cell = GetCocoaNode(5);
+  TestUIElements([cell accessibilityRowHeaderUIElements], { 3, 4 });
 }
 
 // accessibilityRowIndexRange on a table cell.

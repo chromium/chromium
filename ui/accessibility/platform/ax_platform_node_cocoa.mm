@@ -283,6 +283,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilityHeader" : NSAccessibilityHeaderAttribute,
       @"accessibilityIndex" : NSAccessibilityIndexAttribute,
       @"accessibilityRowCount" : NSAccessibilityRowCountAttribute,
+      @"accessibilityRowHeaderUIElements" :
+          NSAccessibilityRowHeaderUIElementsAttribute,
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
       @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
       @"accessibilityVisibleColumns" : NSAccessibilityVisibleColumnsAttribute,
@@ -2749,6 +2751,78 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   return -1;
 }
+
+// LINT.IfChange(accessibilityRowHeaderUIElements)
+- (NSArray*)accessibilityRowHeaderUIElements {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  ax::mojom::Role role = [self internalRole];
+  bool isCellOrTableHeader = ui::IsCellOrTableHeader(role);
+  bool isTableLike = ui::IsTableLike(role);
+  if (!isTableLike && !isCellOrTableHeader) {
+    return nil;
+  }
+
+  ui::AXPlatformNodeDelegate* delegate = [self nodeDelegate];
+  gfx::NativeViewAccessible table = delegate->GetTableAncestor();
+  if (!table) {
+    return nil;
+  }
+
+  ui::AXPlatformNode* tableNode =
+      ui::AXPlatformNode::FromNativeViewAccessible(table);
+  if (!tableNode) {
+    return nil;
+  }
+
+  ui::AXPlatformNodeDelegate* tableDelegate = tableNode->GetDelegate();
+  if (!tableDelegate) {
+    return nil;
+  }
+
+  // A table with no row headers.
+  if (isTableLike && !tableDelegate->GetTableRowCount().has_value()) {
+    return nil;
+  }
+
+  NSMutableArray* rowHeaders = [[NSMutableArray alloc] init];
+
+  if (isTableLike) {
+    // Return the table's row headers.
+    std::set<int32_t> headerIds;
+
+    int numberOfRows = tableDelegate->GetTableRowCount().value();
+
+    // Rows can have more than one row header cell. Also, we apparently need
+    // to guard against duplicate row header ids. Storing in a set dedups.
+    for (int i = 0; i < numberOfRows; i++) {
+      std::vector<int32_t> rowHeaderIds = tableDelegate->GetRowHeaderNodeIds(i);
+      for (int32_t rowHeaderId : rowHeaderIds) {
+        headerIds.insert(rowHeaderId);
+      }
+    }
+
+    for (int32_t headerId : headerIds) {
+      ui::AXPlatformNode* cellNode = tableDelegate->GetFromNodeID(headerId);
+      if (cellNode) {
+        [rowHeaders addObject:cellNode->GetNativeViewAccessible()];
+      }
+    }
+  } else {
+    // Otherwise this is a cell, return the row headers for this cell.
+    for (int32_t nodeId : delegate->GetRowHeaderNodeIds()) {
+      ui::AXPlatformNode* cellNode = delegate->GetFromNodeID(nodeId);
+      if (cellNode) {
+        [rowHeaders addObject:cellNode->GetNativeViewAccessible()];
+      }
+    }
+  }
+
+  return [rowHeaders count] ? rowHeaders : nil;
+}
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityRowHeaderUIElements)
 
 // LINT.IfChange(accessibilityColumns)
 - (NSArray*)accessibilityColumns {

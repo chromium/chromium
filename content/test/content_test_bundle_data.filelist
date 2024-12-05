@@ -5598,6 +5598,8 @@ data/accessibility/mac/methods/accessibility-role-description-expected.txt
 data/accessibility/mac/methods/accessibility-role-description.html
 data/accessibility/mac/methods/accessibility-row-count-expected.txt
 data/accessibility/mac/methods/accessibility-row-count.html
+data/accessibility/mac/methods/accessibility-row-header-ui-elements-expected.txt
+data/accessibility/mac/methods/accessibility-row-header-ui-elements.html
 data/accessibility/mac/methods/accessibility-row-index-range-expected.txt
 data/accessibility/mac/methods/accessibility-row-index-range.html
 data/accessibility/mac/methods/accessibility-rows-expected.txt

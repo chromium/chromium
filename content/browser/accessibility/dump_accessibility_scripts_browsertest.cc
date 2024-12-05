@@ -574,6 +574,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityRows) {
   RunTypedTest<kMacMethods>("accessibility-rows.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityRowHeaderUIElements) {
+  RunTypedTest<kMacMethods>("accessibility-row-header-ui-elements.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilitySelected) {
   RunTypedTest<kMacMethods>("accessibility-selected.html");
 }

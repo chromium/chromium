@@ -1,0 +1,5 @@
+table.accessibilityRowHeaderUIElements=[:9]
+rowheader.accessibilityRowHeaderUIElements=[:9]
+cell.accessibilityRowHeaderUIElements=[:9]
+columnheader1.accessibilityRowHeaderUIElements=NULL
+columnheader2.accessibilityRowHeaderUIElements=NULL

@@ -1145,6 +1145,7 @@ bool ui::IsNSRange(id value) {
   return cocoa_role;
 }
 
+// LINT.IfChange(accessibilityRowHeaderUIElements)
 - (NSArray*)rowHeaders {
   if (![self instanceActive]) {
     return nil;
@@ -1201,6 +1202,7 @@ bool ui::IsNSRange(id value) {
 
   return [rowHeaders count] ? rowHeaders : nil;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityRowHeaderUIElements)
 
 - (NSValue*)rowIndexRange {
   // Note: keep in sync with accessibilityRowIndexRange.
