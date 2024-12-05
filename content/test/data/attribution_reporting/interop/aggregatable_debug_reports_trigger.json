@@ -1,8 +1,5 @@
 {
   "description": "Aggregatable debug reports creation for trigger registrations",
-  "api_config": {
-    "needs_aggregatable_debug": true
-  },
   "input": {
     "registrations": [
       {

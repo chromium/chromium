@@ -40,7 +40,6 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/privacy_math.h"
@@ -3244,9 +3243,6 @@ TEST_F(AttributionManagerImplTest,
 }
 
 TEST_F(AttributionManagerImplTest, AggregatableDebugReport_ReportSent) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      attribution_reporting::features::kAttributionAggregatableDebugReporting);
-
   MockAttributionObserver observer;
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
       &observer);
@@ -3350,9 +3346,6 @@ TEST_F(AttributionManagerImplTest, AggregatableDebugReport_ReportSent) {
 
 TEST_F(AttributionManagerImplTest,
        EmbedderDisallowsSourceAggregatableDebugReport_ReportNotSent) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      attribution_reporting::features::kAttributionAggregatableDebugReporting);
-
   const auto source_origin = *SuitableOrigin::Deserialize("https://s.test");
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
 
@@ -3401,9 +3394,6 @@ TEST_F(AttributionManagerImplTest,
 
 TEST_F(AttributionManagerImplTest,
        EmbedderDisallowsTriggerAggregatableDebugReport_ReportNotSent) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      attribution_reporting::features::kAttributionAggregatableDebugReporting);
-
   const auto destination_origin =
       *SuitableOrigin::Deserialize("https://s.test");
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");

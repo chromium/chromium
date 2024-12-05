@@ -446,10 +446,6 @@ RunAttributionInteropSimulation(
         network::features::kAttributionReportingCrossAppWeb);
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
   }
-  if (run.config.needs_aggregatable_debug) {
-    enabled_features.emplace_back(attribution_reporting::features::
-                                      kAttributionAggregatableDebugReporting);
-  }
 
   if (run.config.needs_attribution_scopes) {
     enabled_features.emplace_back(

@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
-#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -27,7 +26,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/debug_types.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
@@ -330,11 +328,6 @@ uint32_t AggregatableDebugReportingContribution::value() const {
 base::expected<AggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
 AggregatableDebugReportingConfig::Parse(base::Value::Dict& dict) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
-    return AggregatableDebugReportingConfig();
-  }
-
   auto parsed = ParseTriggerConfig(dict);
   if (!parsed.has_value()) {
     base::UmaHistogramEnumeration(
@@ -371,11 +364,6 @@ AggregatableDebugReportingConfig& AggregatableDebugReportingConfig::operator=(
 
 void AggregatableDebugReportingConfig::Serialize(
     base::Value::Dict& dict) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
-    return;
-  }
-
   base::Value::Dict body;
   SerializeConfig(body, *this);
   dict.Set(kAggregatableDebugReporting, std::move(body));
@@ -385,11 +373,6 @@ void AggregatableDebugReportingConfig::Serialize(
 base::expected<SourceAggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
 SourceAggregatableDebugReportingConfig::Parse(base::Value::Dict& dict) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
-    return SourceAggregatableDebugReportingConfig();
-  }
-
   auto parsed = ParseSourceConfig(dict);
   if (!parsed.has_value()) {
     base::UmaHistogramEnumeration(
@@ -440,9 +423,7 @@ SourceAggregatableDebugReportingConfig::operator=(
 void SourceAggregatableDebugReportingConfig::Serialize(
     base::Value::Dict& dict) const {
   // `budget_` is 0 when aggregatable debug reporting is not opted in.
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting) ||
-      budget_ == 0) {
+  if (budget_ == 0) {
     return;
   }
 
