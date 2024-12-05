@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/page_info/core/merchant_trust_service.h"
+#include "components/page_info/core/page_info_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -54,7 +55,8 @@ MerchantTrustSidePanelCoordinator::MerchantTrustSidePanelCoordinator(
     content::WebContents* web_contents)
     : content::WebContentsUserData<MerchantTrustSidePanelCoordinator>(
           *web_contents),
-      content::WebContentsObserver(web_contents) {}
+      content::WebContentsObserver(web_contents),
+      weak_ptr_factory_(this) {}
 
 MerchantTrustSidePanelCoordinator::~MerchantTrustSidePanelCoordinator() =
     default;
@@ -142,10 +144,11 @@ GURL MerchantTrustSidePanelCoordinator::GetOpenInNewTabUrl() {
   return last_url_info_.value().new_tab_url;
 }
 
-std::optional<page_info::MerchantData>
-MerchantTrustSidePanelCoordinator::GetMerchantTrustInfo(const GURL& url) const {
+void MerchantTrustSidePanelCoordinator::GetMerchantTrustInfo(
+    const GURL& url,
+    page_info::MerchantDataCallback callback) const {
   auto* service = MerchantTrustServiceFactory::GetForProfile(GetProfile());
-  return service->GetMerchantTrustInfo(url);
+  service->GetMerchantTrustInfo(url, std::move(callback));
 }
 
 void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
@@ -178,12 +181,11 @@ void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
                                        SidePanelEntry::Id::kMerchantTrust) {
     // TODO(crbug.com/378818867): TBD update the URL
     // with query params if needed.
-    auto merchant_info = GetMerchantTrustInfo(navigation_handle->GetURL());
-    if (merchant_info.has_value()) {
-      RegisterEntryAndShow(merchant_info->page_url);
-    } else {
-      side_panel_ui->Close();
-    }
+    GetMerchantTrustInfo(
+        navigation_handle->GetURL(),
+        base::BindOnce(
+            &MerchantTrustSidePanelCoordinator::OnMerchantTrustDataFetched,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   // If the merchant trust side panel is no longer being shown and the view is
@@ -195,6 +197,20 @@ void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
         SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust));
     DCHECK(entry);
     entry->ClearCachedView();
+  }
+}
+
+void MerchantTrustSidePanelCoordinator::OnMerchantTrustDataFetched(
+    const GURL& url,
+    std::optional<page_info::MerchantData> merchant_data) {
+  if (merchant_data.has_value()) {
+    RegisterEntryAndShow(merchant_data->page_url);
+  } else {
+    SidePanelUI* side_panel_ui = GetSidePanelUI();
+    if (!side_panel_ui) {
+      return;
+    }
+    side_panel_ui->Close();
   }
 }
 

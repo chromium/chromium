@@ -84,6 +84,7 @@ source_set("unit_tests") {
     "//components/commerce/core:proto",
     "//components/history/core/browser",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines:search_engines",
     "//components/search_engines:test_support",
