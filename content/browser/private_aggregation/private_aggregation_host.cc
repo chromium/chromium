@@ -250,6 +250,7 @@ bool PrivateAggregationHost::BindNewReceiver(
   if (!network::IsOriginPotentiallyTrustworthy(worklet_origin)) {
     return false;
   }
+
   if (context_id.has_value() &&
       context_id.value().size() > kMaxContextIdLength) {
     return false;
@@ -267,10 +268,8 @@ bool PrivateAggregationHost::BindNewReceiver(
     return false;
   }
 
-  // Timeouts should only be set for deterministic reports.
-  // TODO(alexmt): Consider requiring timeouts for deterministic reports.
-  if (timeout.has_value() &&
-      !PrivateAggregationManager::ShouldSendReportDeterministically(
+  if (timeout.has_value() !=
+      PrivateAggregationManager::ShouldSendReportDeterministically(
           context_id, filtering_id_max_bytes)) {
     return false;
   }

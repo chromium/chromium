@@ -129,19 +129,24 @@ class CONTENT_EXPORT PrivateAggregationHost
   PrivateAggregationHost& operator=(const PrivateAggregationHost&) = delete;
   ~PrivateAggregationHost() override;
 
-  // Binds a new pending receiver for a worklet, allowing messages to be sent
-  // and processed. However, the receiver is not bound if the `worklet_origin`
-  // is not potentially trustworthy or if `context_id` is too long. If `timeout`
-  // is set and developer mode is not enabled, the report will be sent as if the
-  // pipe closed after the timeout, regardless of when the disconnection
-  // actually happens. `timeout` must be positive if set. If `timeout` is set,
-  // `PrivateAggregationManager::ShouldSendReportDeterministically(context_id,
-  // filtering_id_max_bytes)` should return true. If
-  // `aggregation_coordinator_origin` is set, the origin must be on the
-  // allowlist. `filtering_id_max_bytes` must be positive and no greater than
-  // `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`. The
-  // return value indicates whether the receiver was accepted. Virtual for
-  // testing.
+  // Attempts to bind a new pending receiver for a worklet, allowing messages to
+  // be sent and processed. The return value indicates whether the receiver was
+  // accepted. Virtual for testing.
+  //
+  // The receiver will only be bound when all of these conditions are met:
+  // * `worklet_origin` is potentially trustworthy.
+  // * `context_id`, if set, is not too long.
+  // * `aggregation_coordinator_origin`, if set, is on the allowlist.
+  // * `filtering_id_max_bytes` is positive and no greater than
+  //   `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`.
+  // * `timeout` is set iff a report should be sent deterministically, i.e.
+  //   `PrivateAggregationManager::ShouldSendReportDeterministically(context_id,
+  //   filtering_id_max_bytes)` is true.
+  //
+  // When `timeout` is set and developer mode is not enabled, this host will
+  // send a report after the given duration of time has passed, regardless of
+  // when the receiver is actually disconnected. It is a fatal error for
+  // `timeout` to be zero or negative.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,

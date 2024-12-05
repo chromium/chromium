@@ -1635,8 +1635,7 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
           private_aggregation_config->filtering_id_max_bytes);
 
   std::optional<base::TimeDelta> timeout;
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
-      PrivateAggregationManager::ShouldSendReportDeterministically(
+  if (PrivateAggregationManager::ShouldSendReportDeterministically(
           private_aggregation_config->context_id,
           private_aggregation_config->filtering_id_max_bytes)) {
     timeout = base::Seconds(5);
