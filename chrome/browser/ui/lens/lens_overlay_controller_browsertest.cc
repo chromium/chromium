@@ -4165,6 +4165,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
                        PdfBytesExcludedInRequest) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
@@ -4194,6 +4195,14 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ContextualSuggest.ZPS.ShownInSession",
       /*expected_count=*/0);
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
+          kEntryName);
+  EXPECT_EQ(0u, entries.size());
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kEntryName);
+  EXPECT_EQ(0u, entries.size());
 }
 
 // This test is wrapped in this BUILDFLAG block because the fallback region
@@ -4927,6 +4936,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        RecordSearchboxFocusedInSessionHistograms) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
   // State should start in off.
@@ -4967,11 +4977,26 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
       "FocusedInSession",
       true, /*expected_count=*/1);
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
+          kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
+          kAllPageContentTypesName,
+      true);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
+          kPlainTextName,
+      true);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        RecordSearchboxNotFocusedInSessionHistograms) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
   // State should start in off.
@@ -5009,11 +5034,26 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
       "FocusedInSession",
       false, /*expected_count=*/1);
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
+          kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
+          kAllPageContentTypesName,
+      false);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
+          kPlainTextName,
+      false);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        RecordContextualZpsShownInSessionHistograms) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
   // State should start in off.
@@ -5053,11 +5093,26 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
       "ShownInSession",
       true, /*expected_count=*/1);
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kAllPageContentTypesName,
+      true);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kPlainTextName,
+      true);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        RecordContextualZpsNotShownInSessionHistograms) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
   // State should start in off.
@@ -5095,6 +5150,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
       "ShownInSession",
       false, /*expected_count=*/1);
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kAllPageContentTypesName,
+      false);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kPlainTextName,
+      false);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
