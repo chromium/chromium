@@ -18,3 +18,4 @@ This is a testharness.js-based test.
 [FAIL] background-size_percentage_auto
   assert_equals: background-size supporting value expected "50% auto" but got "50%"
 Harness: the test ran to completion.
+
