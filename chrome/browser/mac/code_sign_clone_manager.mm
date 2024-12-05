@@ -42,6 +42,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_thread.h"
@@ -523,7 +524,11 @@ CodeSignCloneManager::CodeSignCloneManager(
       main_executable_name.empty()) {
     return;
   }
-
+// Chrome for Testing does not support auto-updates and
+// this feature is specific to the update functionality,
+// therefore, we disable this feature for Chrome for Testing.
+// See crbug.com/379125944.
+#if !BUILDFLAG(CHROME_FOR_TESTING)
   // Post a background task to perform the clone. If the task has not yet
   // started and Chrome is shutdown, the `SKIP_ON_SHUTDOWN` behavior will drop
   // the task. This is okay. If Chrome is shutting down, there is no need for a
@@ -538,6 +543,7 @@ CodeSignCloneManager::CodeSignCloneManager(
       FROM_HERE,
       base::BindOnce(&CodeSignCloneManager::Clone, base::Unretained(this),
                      src_path, main_executable_name, std::move(callback)));
+#endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 CodeSignCloneManager::~CodeSignCloneManager() {

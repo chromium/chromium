@@ -28,11 +28,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(CHROME_FOR_TESTING)
 
 namespace {
 
@@ -481,3 +484,5 @@ TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceHardLink) {
 }
 
 }  // namespace code_sign_clone_manager
+
+#endif  // #if !BUILDFLAG(CHROME_FOR_TESTING)
