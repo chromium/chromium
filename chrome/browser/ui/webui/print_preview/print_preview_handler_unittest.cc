@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 
+#include <array>
 #include <map>
 #include <optional>
 #include <string>
@@ -110,18 +106,18 @@ constexpr char kCallbackId[] = "test-callback-id-1";
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 // Array of all mojom::PrinterTypes.
-constexpr mojom::PrinterType kAllTypes[] = {mojom::PrinterType::kExtension,
-                                            mojom::PrinterType::kPdf,
-                                            mojom::PrinterType::kLocal};
+constexpr std::array kAllTypes{mojom::PrinterType::kExtension,
+                               mojom::PrinterType::kPdf,
+                               mojom::PrinterType::kLocal};
 
 // Array of all mojom::PrinterTypes that have working PrinterHandlers.
-constexpr mojom::PrinterType kAllSupportedTypes[] = {
-    mojom::PrinterType::kExtension, mojom::PrinterType::kPdf,
-    mojom::PrinterType::kLocal};
+constexpr std::array kAllSupportedTypes{mojom::PrinterType::kExtension,
+                                        mojom::PrinterType::kPdf,
+                                        mojom::PrinterType::kLocal};
 
 // Both printer types that implement PrinterHandler::StartGetPrinters().
-constexpr mojom::PrinterType kFetchableTypes[] = {
-    mojom::PrinterType::kExtension, mojom::PrinterType::kLocal};
+constexpr std::array kFetchableTypes{mojom::PrinterType::kExtension,
+                                     mojom::PrinterType::kLocal};
 
 struct PrinterInfo {
   std::string id;
