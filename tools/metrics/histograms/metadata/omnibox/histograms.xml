@@ -1560,7 +1560,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SearchEngineType{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-20">
+    enum="OmniboxSearchEngineType" expires_after="2025-12-04">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1571,6 +1571,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
   <token key="Population">
     <variant name="" summary="Reported for all users."/>
+    <variant name=".Fallback.DefaultSearchProvider"
+        summary="Reported for users whose default search engine was
+                 pre-populated based on country/distribution channel."/>
     <variant name=".SetByEnterprisePolicy"
         summary="Reported for users with search engine set by Enterprise
                  policy."/>
@@ -1596,6 +1599,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
         summary="Reported for users with search engine set by an extension
                  using the Settings Override API and setting is_default to
                  false."/>
+    <variant name=".SetByUser.DefaultSearchProvider"
+        summary="Reported for users who selected their default search engine
+                 using chrome://settings or a choice screen."/>
   </token>
 </histogram>
 
