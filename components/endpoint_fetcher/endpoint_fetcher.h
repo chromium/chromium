@@ -126,6 +126,12 @@ class EndpointFetcher {
 
   // Preferred constructor - forms identity_manager and url_loader_factory.
   // OAUTH authentication is used for this constructor.
+  //
+  // Note: When using signin::ConsentLevel::kSignin, please also make sure that
+  // your `scopes` are correctly set in AccessTokenRestrictions, otherwise
+  // AccessTokenFetcher will assume the `scopes` requires full access and crash
+  // if user doesn't have full access (e.g. sign in but not sync).
+  // TODO(crbug.com/382343700): Add a DCHECK to enforce this in EndPointFetcher.
   EndpointFetcher(
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const std::string& oauth_consumer_name,
