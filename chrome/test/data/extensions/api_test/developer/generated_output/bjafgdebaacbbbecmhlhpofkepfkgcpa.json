@@ -10,7 +10,8 @@
       "suspiciousInstall": false,
       "updateRequired": false,
       "publishedInStoreRequired": false,
-      "unsupportedManifestVersion": false
+      "unsupportedManifestVersion": false,
+      "unsupportedDeveloperExtension": false
    },
    "errorCollection": {
       "isActive": false,

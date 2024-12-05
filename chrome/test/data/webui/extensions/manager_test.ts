@@ -4,9 +4,11 @@
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
-import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
+import {getToastManager, navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {createExtensionInfo} from './test_util.js';
 
 interface ChromeEventWithDispatch extends
     ChromeEvent<(data: chrome.developerPrivate.EventData) => void> {
@@ -42,12 +44,12 @@ suite('ExtensionManagerTest', function() {
     return manager.shadowRoot!.querySelector('extensions-item-list')!.apps;
   }
 
-  test('ItemListVisibility', async () => {
-    function getExtensionByName(name: string):
+  function getExtensionByName(name: string):
         chrome.developerPrivate.ExtensionInfo|null {
-      return getExtensions().find(el => el.name === name) || null;
-    }
+    return getExtensions().find(el => el.name === name) || null;
+  }
 
+  test('ItemListVisibility', async () => {
     const extension = getExtensionByName('My extension 1');
     assertTrue(!!extension);
 
@@ -199,5 +201,53 @@ suite('ExtensionManagerTest', function() {
     navigation.navigateTo({page: Page.SITE_PERMISSIONS_ALL_SITES});
     await microtasksFinished();
     assertViewActive('extensions-site-permissions-by-site');
+  });
+
+  test('ShowUnsupportedDeveloperExtensionDisabledToast', async () => {
+    // Set developer mode to true and add an unpacked extension.
+    manager.inDevMode = true;
+    const unpackedInfo = createExtensionInfo({
+      location: chrome.developerPrivate.Location.UNPACKED,
+      name: 'Unpacked Extension',
+      state: chrome.developerPrivate.ExtensionState.ENABLED,
+    });
+
+    const target = Service.getInstance().getItemStateChangedTarget() as
+        ChromeEventWithDispatch;
+    target.dispatch<chrome.developerPrivate.EventData>({
+      event_type: chrome.developerPrivate.EventType.INSTALLED,
+      extensionInfo: unpackedInfo,
+      item_id: unpackedInfo.id,
+    });
+    await microtasksFinished();
+
+    // Verify the unpacked extension is added correctly.
+    const extension = getExtensionByName(unpackedInfo.name);
+    assertTrue(!!extension);
+    assertEquals(extension, unpackedInfo);
+
+    const toastManager = getToastManager();
+    assertFalse(toastManager.isToastOpen);
+
+    // Set developer mode to false and disable the unpacked extension with the
+    // unsupportedDeveloperExtension reason.
+    manager.inDevMode = false;
+    const disabledUnpackedInfo = createExtensionInfo(unpackedInfo);
+    disabledUnpackedInfo.state =
+        chrome.developerPrivate.ExtensionState.DISABLED;
+    disabledUnpackedInfo.disableReasons.unsupportedDeveloperExtension = true;
+
+    target.dispatch<chrome.developerPrivate.EventData>({
+      event_type: chrome.developerPrivate.EventType.UNLOADED,
+      extensionInfo: disabledUnpackedInfo,
+      item_id: disabledUnpackedInfo.id,
+    });
+    await microtasksFinished();
+
+    // Verify the unpacked extension is disabled and the toast is shown.
+    const disabledExtension = getExtensionByName(disabledUnpackedInfo.name);
+    assertTrue(!!disabledExtension);
+    assertEquals(disabledExtension, disabledUnpackedInfo);
+    assertTrue(toastManager.isToastOpen);
   });
 });

@@ -603,6 +603,15 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#allowlist-warning', false);
   });
 
+  test('UnsupportedDeveloperExtensionWarning', async () => {
+    assertFalse(
+        isChildVisible(item, '#unsupported-developer-extension-warning'));
+
+    await updateItemDisableReasons({unsupportedDeveloperExtension: true});
+    assertTrue(
+        isChildVisible(item, '#unsupported-developer-extension-warning'));
+  });
+
   test('NoSiteAccessWithEnhancedSiteControls', async () => {
     const testIsVisible = isChildVisible.bind(null, item);
 

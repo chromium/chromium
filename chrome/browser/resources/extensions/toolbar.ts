@@ -16,6 +16,7 @@ import {listenOnce} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {TOAST_DURATION_MS} from './item_util.js';
 import {getCss} from './toolbar.css.js';
 import {getHtml} from './toolbar.html.js';
 
@@ -183,7 +184,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
         .then((success) => {
           if (success) {
             const toastManager = getToastManager();
-            toastManager.duration = 3000;
+            toastManager.duration = TOAST_DURATION_MS;
             toastManager.show(this.i18n('toolbarLoadUnpackedDone'));
           }
         })
@@ -219,7 +220,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
         .then(
             () => {
               toastManager.hide();
-              toastManager.duration = 3000;
+              toastManager.duration = TOAST_DURATION_MS;
               toastManager.show(this.i18n('toolbarUpdateDone'));
               this.isUpdating_ = false;
             },
