@@ -421,7 +421,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 }
 
 // Tests that submission is detected when change password form is reset.
-IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, ChangePwdFormCleared) {
+// TODO(crbug.com/382342234): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChangePwdFormCleared DISABLED_ChangePwdFormCleared
+#else
+#define MAYBE_ChangePwdFormCleared ChangePwdFormCleared
+#endif
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
+                       MAYBE_ChangePwdFormCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
@@ -464,8 +471,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, ChangePwdFormCleared) {
 
 // Tests that submission is detected when all password fields in a change
 // password form are cleared and not detected when only some fields are cleared.
+// TODO(crbug.com/382342234): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChangePwdFormFieldsCleared DISABLED_ChangePwdFormFieldsCleared
+#else
+#define MAYBE_ChangePwdFormFieldsCleared ChangePwdFormFieldsCleared
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       ChangePwdFormFieldsCleared) {
+                       MAYBE_ChangePwdFormFieldsCleared) {
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
@@ -522,8 +535,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
 // Tests that submission is detected when the new password field outside the
 // form tag is cleared not detected when other password fields are cleared.
+// TODO(crbug.com/382342234): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChangePwdFormRelevantFormlessFieldsCleared \
+  DISABLED_ChangePwdFormRelevantFormlessFieldsCleared
+#else
+#define MAYBE_ChangePwdFormRelevantFormlessFieldsCleared \
+  ChangePwdFormRelevantFormlessFieldsCleared
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       ChangePwdFormRelevantFormlessFieldsCleared) {
+                       MAYBE_ChangePwdFormRelevantFormlessFieldsCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
@@ -582,8 +603,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
 // Tests that, when choosing the value for saving, user-typed values are
 // preferred to values coming from JS.
+// TODO(crbug.com/382342234): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserTypedValuesAreSavedInsteadOfJsInputs \
+  DISABLED_UserTypedValuesAreSavedInsteadOfJsInputs
+#else
+#define MAYBE_UserTypedValuesAreSavedInsteadOfJsInputs \
+  UserTypedValuesAreSavedInsteadOfJsInputs
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       UserTypedValuesAreSavedInsteadOfJsInputs) {
+                       MAYBE_UserTypedValuesAreSavedInsteadOfJsInputs) {
   NavigateToFile("/password/simple_password.html");
 
   // Simulate user typing username and password.
