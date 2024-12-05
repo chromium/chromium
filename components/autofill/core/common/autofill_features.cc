@@ -245,7 +245,7 @@ BASE_FEATURE(kAutofillFixCurrentValueInImport,
 // `cached_form->autofill_count() != 0`.
 BASE_FEATURE(kAutofillDecoupleAutofillCountFromCache,
              "AutofillDecoupleAutofillCountFromCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Gives precedence to local heuristics if they indicate that a field is an
 // EMAIL_ADDRESS field and the server believes that it is a USERNAME or
