@@ -130,19 +130,6 @@ source_set("screen_delegate") {
   sources = [ "first_run_screen_delegate.h" ]
 }
 
-source_set("interruptible_chrome_coordinator") {
-  sources = [
-    "interruptible_chrome_coordinator.h",
-    "interruptible_chrome_coordinator.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/ui/authentication/signin:constants",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
