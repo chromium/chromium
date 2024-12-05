@@ -1147,6 +1147,14 @@ if (use_blink && !is_cronet_build) {
                       root_out_dir) + ")",
     ]
   }
+  if (is_chrome_for_testing) {
+    _common_web_test_options += [
+      "--additional-expectations",
+      "@WrappedPath(" +
+          rebase_path("//third_party/blink/web_tests/CfTTestExpecations",
+                      root_out_dir) + ")",
+    ]
+  }
   if (is_msan) {
     _common_web_test_options += [
       "--enable-sanitizer",
@@ -1497,6 +1505,9 @@ if (use_blink && !is_cronet_build) {
     if (is_asan) {
       data += [ "//third_party/blink/web_tests/ASANExpectations" ]
     }
+    if (is_chrome_for_testing) {
+      data += [ "//third_party/blink/web_tests/CfTTestExpecations" ]
+    }
     if (is_msan) {
       data += [ "//third_party/blink/web_tests/MSANExpectations" ]
     }
@@ -1672,6 +1683,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/renderer/build/scripts/",
       "//third_party/blink/tools/",
       "//third_party/blink/web_tests/ASANExpectations",
+      "//third_party/blink/web_tests/CfTTestExpecations",
       "//third_party/blink/web_tests/FlagExpectations/",
       "//third_party/blink/web_tests/LeakExpectations",
       "//third_party/blink/web_tests/MSANExpectations",
