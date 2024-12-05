@@ -8,7 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -18,7 +18,7 @@ class SendTabToSelfSyncService;
 
 // Singleton that owns all SendTabToSelfSyncService and associates them with
 // ProfileIOS.
-class SendTabToSelfSyncServiceFactory : public BrowserStateKeyedServiceFactory {
+class SendTabToSelfSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static send_tab_to_self::SendTabToSelfSyncService* GetForProfile(
       ProfileIOS* profile);
@@ -27,11 +27,6 @@ class SendTabToSelfSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   // Returns the default factory used to build SendTabToSelfSyncService. Can be
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
-
-  SendTabToSelfSyncServiceFactory(const SendTabToSelfSyncServiceFactory&) =
-      delete;
-  SendTabToSelfSyncServiceFactory& operator=(
-      const SendTabToSelfSyncServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<SendTabToSelfSyncServiceFactory>;
