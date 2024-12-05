@@ -1412,7 +1412,7 @@ deps = {
   'src/tools/luci-go': {
       'packages': [
         {
-          'package': 'infra/tools/luci/cas/${{platform}}',
+          'package': 'infra/tools/luci/isolate/${{platform}}',
           'version': Var('luci_go'),
         },
         {
