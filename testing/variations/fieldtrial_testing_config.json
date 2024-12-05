@@ -16559,6 +16559,25 @@
             ]
         }
     ],
+    "PasswordLeakToggleMove": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordLeakToggleMove"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordManualFallbackAvailable": [
         {
             "platforms": [
