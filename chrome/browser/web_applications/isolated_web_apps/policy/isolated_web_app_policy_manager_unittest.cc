@@ -721,8 +721,9 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppNotInstalledIncorrectPinnedVersion) {
 
   task_environment()->RunUntilIdle();
 
-  ASSERT_FALSE(fake_provider().registrar_unsafe().IsInstallState(
-      url_info.app_id(), {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  ASSERT_NE(
+      fake_provider().registrar_unsafe().GetInstallState(url_info.app_id()),
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
 }
 
 TEST_F(IsolatedWebAppPolicyManagerTest,
