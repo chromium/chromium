@@ -118,7 +118,11 @@ public class PrivacySandboxDialogController {
             case PromptType.M1_NOTICE_ROW:
                 dialog =
                         new PrivacySandboxDialogNoticeROW(
-                                context, privacySandboxBridge, surfaceType);
+                                context,
+                                privacySandboxBridge,
+                                surfaceType,
+                                profile,
+                                activityWindowAndroid);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
