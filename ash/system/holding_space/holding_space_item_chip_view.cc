@@ -394,6 +394,24 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   UpdateImage();
   UpdateImageAndProgressIndicatorVisibility();
   UpdateLabels();
+
+  UpdateTooltipText();
+  primary_label_text_changed_subscription_ =
+      primary_label_->AddTextChangedCallback(
+          base::BindRepeating(&HoldingSpaceItemChipView::UpdateTooltipText,
+                              weak_ptr_factory_.GetWeakPtr()));
+  secondary_label_text_changed_subscription_ =
+      secondary_label_->AddTextChangedCallback(
+          base::BindRepeating(&HoldingSpaceItemChipView::UpdateTooltipText,
+                              weak_ptr_factory_.GetWeakPtr()));
+  primary_label_tooltiptext_changed_subscription_ =
+      primary_label_->AddTooltipTextChangedCallback(
+          base::BindRepeating(&HoldingSpaceItemChipView::UpdateTooltipText,
+                              weak_ptr_factory_.GetWeakPtr()));
+  secondary_label_tooltiptext_changed_subscription_ =
+      secondary_label_->AddTooltipTextChangedCallback(
+          base::BindRepeating(&HoldingSpaceItemChipView::UpdateTooltipText,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
@@ -402,39 +420,6 @@ views::View* HoldingSpaceItemChipView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   // Tooltip events should be handled top level, not by descendents.
   return HitTestPoint(point) ? this : nullptr;
-}
-
-std::u16string HoldingSpaceItemChipView::GetTooltipText(
-    const gfx::Point& point) const {
-  std::u16string primary_tooltip = primary_label_->GetTooltipText(point);
-  std::u16string secondary_tooltip = secondary_label_->GetTooltipText(point);
-
-  // If there is neither a primary nor a secondary tooltip which should be
-  // shown, then there is no tooltip to be shown at all.
-  if (primary_tooltip.empty() && secondary_tooltip.empty()) {
-    return std::u16string();
-  }
-
-  // If there is no primary tooltip, fallback to using the primary text. This
-  // would occur if the `primary_label_` is not elided in same way.
-  if (primary_tooltip.empty())
-    primary_tooltip = primary_label_->GetText();
-
-  // If there is no secondary tooltip, fallback to using the secondary text.
-  // This would occur if the `secondary_label_` is not elided in some way.
-  if (secondary_tooltip.empty())
-    secondary_tooltip = secondary_label_->GetText();
-
-  // If there still is no secondary tooltip, only the primary tooltip should be
-  // shown. This would occur if there is no visible `secondary_label_`.
-  if (secondary_tooltip.empty())
-    return primary_tooltip;
-
-  // Otherwise, concatenate and return the primary and secondary tooltips. This
-  // will look something of the form: "filename.txt, Paused, 10/100 MB".
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, primary_tooltip,
-      secondary_tooltip);
 }
 
 void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
@@ -478,6 +463,44 @@ void HoldingSpaceItemChipView::OnThemeChanged() {
 
   UpdateImage();
   UpdateLabels();
+}
+
+void HoldingSpaceItemChipView::UpdateTooltipText() {
+  std::u16string primary_tooltip = primary_label_->GetTooltipText(gfx::Point());
+  std::u16string secondary_tooltip =
+      secondary_label_->GetTooltipText(gfx::Point());
+
+  // If there is neither a primary nor a secondary tooltip which should be
+  // shown, then there is no tooltip to be shown at all.
+  if (primary_tooltip.empty() && secondary_tooltip.empty()) {
+    SetCachedTooltipText(std::u16string());
+    return;
+  }
+
+  // If there is no primary tooltip, fallback to using the primary text. This
+  // would occur if the `primary_label_` is not elided in same way.
+  if (primary_tooltip.empty()) {
+    primary_tooltip = primary_label_->GetText();
+  }
+
+  // If there is no secondary tooltip, fallback to using the secondary text.
+  // This would occur if the `secondary_label_` is not elided in some way.
+  if (secondary_tooltip.empty()) {
+    secondary_tooltip = secondary_label_->GetText();
+  }
+
+  // If there still is no secondary tooltip, only the primary tooltip should be
+  // shown. This would occur if there is no visible `secondary_label_`.
+  if (secondary_tooltip.empty()) {
+    SetCachedTooltipText(primary_tooltip);
+    return;
+  }
+
+  // Otherwise, concatenate and return the primary and secondary tooltips. This
+  // will look something of the form: "filename.txt, Paused, 10/100 MB".
+  SetCachedTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, primary_tooltip,
+      secondary_tooltip));
 }
 
 void HoldingSpaceItemChipView::OnPaintLabelMask(views::Label* label,
@@ -664,13 +687,6 @@ void HoldingSpaceItemChipView::UpdateLabels() {
   }
 
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
-
-  // Tooltip.
-  // NOTE: Only necessary if the displayed text has changed.
-  if (primary_label_->GetText() != last_primary_text ||
-      secondary_label_->GetText() != last_secondary_text) {
-    TooltipTextChanged();
-  }
 }
 
 void HoldingSpaceItemChipView::UpdateSecondaryAction() {

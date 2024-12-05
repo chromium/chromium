@@ -97,9 +97,6 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // Update the view according to the shelf alignment.
   void UpdateAlignmentForShelf(Shelf* shelf);
 
-  // TrayItemView:
-  std::u16string GetTooltipText(const gfx::Point& point) const override;
-
   // Update the view's visibility based on camera/mic access and screen sharing
   // state.
   void UpdateVisibility();
@@ -150,6 +147,8 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
 
   // Record repeated shows metric when the timer is stop.
   void RecordRepeatedShows();
+
+  void UpdateTooltipText();
 
   raw_ptr<views::BoxLayout> layout_manager_ = nullptr;
 
