@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "v8/include/v8-profiler.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -248,6 +250,8 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
     WTF::AddFloatToHash(hash, end_time);
     String serialized_detail = GetSerializedDetail(detail);
     auto source_location = CaptureSourceLocation();
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::CpuProfiler::CollectSample(isolate);
     if (serialized_detail.length()) {
       TRACE_EVENT_BEGIN("blink.user_timing", nullptr, perfetto::Track(hash),
                         unsafe_start_time, "startTime", start_time,
