@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/safe_ref.h"
-#include "components/variations/net/omnibox_url_loader_throttle.h"
 #include "components/variations/net/variations_url_loader_throttle.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/client_hints/critical_client_hints_throttle.h"
@@ -49,7 +48,6 @@ CreateContentBrowserURLLoaderThrottles(
       GetContentClient()->browser()->CreateURLLoaderThrottles(
           request, browser_context, wc_getter, navigation_ui_data,
           frame_tree_node_id, navigation_id);
-  variations::OmniboxURLLoaderThrottle::AppendThrottleIfNeeded(&throttles);
   // TODO(crbug.com/40135370): Consider whether we want to use the WebContents
   // to determine the value for variations::Owner. Alternatively, this is the
   // browser side, and we might be fine with Owner::kUnknown.
@@ -143,7 +141,6 @@ CreateContentBrowserURLLoaderThrottlesForKeepAlive(
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       GetContentClient()->browser()->CreateURLLoaderThrottlesForKeepAlive(
           request, browser_context, wc_getter, frame_tree_node_id);
-  variations::OmniboxURLLoaderThrottle::AppendThrottleIfNeeded(&throttles);
   // TODO(crbug.com/40135370): Consider whether we want to use the WebContents
   // to determine the value for variations::Owner. Alternatively, this is the
   // browser side, and we might be fine with Owner::kUnknown.
