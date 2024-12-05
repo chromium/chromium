@@ -18,10 +18,6 @@ BASE_FEATURE(kLensStandalone,
              "LensStandalone",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensSearchOptimizations,
-             "LensSearchOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableLatencyLogging,
              "LensImageLatencyLogging",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -366,9 +362,6 @@ constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
 constexpr base::FeatureParam<bool> kShouldIssueProcessPrewarmingForLens{
     &kLensStandalone, "lens-issue-process-prewarming", true};
 
-const base::FeatureParam<bool> kEnableLensFullscreenSearch{
-    &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
-
 bool GetEnableLatencyLogging() {
   return base::FeatureList::IsEnabled(kEnableLatencyLogging) &&
          base::FeatureList::IsEnabled(kLensStandalone);
@@ -380,12 +373,6 @@ std::string GetHomepageURLForLens() {
 
 bool GetEnableLensHtmlRedirectFix() {
   return kEnableLensHtmlRedirectFix.Get();
-}
-
-bool IsLensFullscreenSearchEnabled() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
-         kEnableLensFullscreenSearch.Get();
 }
 
 bool GetShouldIssuePreconnectForLens() {
