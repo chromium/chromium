@@ -1782,6 +1782,9 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
   } else {
     // Simplify multiplying or dividing by a number for simplifiable types.
     DCHECK(op == CSSMathOperator::kMultiply || op == CSSMathOperator::kDivide);
+    if (right_category != kCalcNumber && op == CSSMathOperator::kDivide) {
+      return nullptr;
+    }
     const CSSMathExpressionNode* number_side =
         GetNumericLiteralSide(left_side, right_side);
     if (!number_side) {
