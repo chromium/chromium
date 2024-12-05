@@ -70,6 +70,7 @@ import org.chromium.ui.display.DisplaySwitches;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+import org.chromium.ui.util.AttrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -231,7 +232,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     protected void initializeSystemBarColors() {
         // TODO(crbug.com/379174458): Set color from Theme.
         final @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(this);
-        mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper().setStatusBarColor(defaultBgColor);
+        @ColorInt
+        int defaultStatusBarColor =
+                AttrUtils.resolveColor(getTheme(), android.R.attr.statusBarColor);
+        // Check if defaultStatusBarColor is transparent
+        defaultStatusBarColor =
+                (defaultStatusBarColor != 0) ? defaultStatusBarColor : defaultBgColor;
+
+        mEdgeToEdgeManager
+                .getEdgeToEdgeSystemBarColorHelper()
+                .setStatusBarColor(defaultStatusBarColor);
         mEdgeToEdgeManager
                 .getEdgeToEdgeSystemBarColorHelper()
                 .setNavigationBarColor(defaultBgColor);
@@ -584,7 +594,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     }
 
     /** Returns the {@link EdgeToEdgeManager} for access to core edge-to-edge logic. */
-    protected EdgeToEdgeManager getEdgeToEdgeManager() {
+    @VisibleForTesting
+    public EdgeToEdgeManager getEdgeToEdgeManager() {
         return mEdgeToEdgeManager;
     }
 
