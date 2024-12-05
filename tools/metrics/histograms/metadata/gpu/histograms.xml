@@ -1263,6 +1263,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.OutputSurface.InsertRenderPassRecording" enum="Boolean"
+    expires_after="2025-08-01">
+  <owner>kylechar@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records if graphite::Recording to draw a render pass was succesfully
+    inserted into the graphite::Context. Recorded for each insertRecording()
+    call made with a render pass recording.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.OutputSurface.ScheduleOverlaysUs" units="microseconds"
     expires_after="2025-01-05">
   <owner>magchen@chromium.org</owner>
@@ -1895,6 +1906,17 @@ chromium-metrics-reviews@google.com.
     33 ms.
 
     This metric is only for Mac clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Viz.CreateFallbackImageResult"
+    enum="CreateFallbackImageResult" expires_after="2025-08-01">
+  <owner>kylechar@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    This is recorded each time SkiaRenderer attempts to create a fallback image
+    to replace a missing shared image. The result captures success and failure
+    with a reason for the failure.
   </summary>
 </histogram>
 
