@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/views/glic/border/border_view.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
@@ -60,6 +61,8 @@ void GlicKeyedService::ClosePanel() {
   if (window_controller_) {
     window_controller_->Close();
   }
+  BorderView::CancelAllAnimationsForProfile(
+      Profile::FromBrowserContext(browser_context_));
 }
 
 std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
@@ -99,6 +102,9 @@ void GlicKeyedService::GetContextFromFocusedTab(
             std::move(callback).Run(std::move(tab_context_result));
           },
           std::move(fetcher), std::move(callback)));
+  if (BorderView* border = BorderView::FindBorderForWebContents(web_contents)) {
+    border->StartAnimation();
+  }
 }
 
 }  // namespace glic

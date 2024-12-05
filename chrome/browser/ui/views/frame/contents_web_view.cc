@@ -21,6 +21,10 @@
 #include "ui/wm/core/window_util.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/ui/views/glic/border/border_view.h"
+#endif
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
                                       kContentsWebViewElementId);
 
@@ -28,9 +32,24 @@ ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
     : views::WebView(browser_context),
       status_bubble_(nullptr) {
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
+#if BUILDFLAG(ENABLE_GLIC)
+  glic_border_ = AddChildView(std::make_unique<glic::BorderView>());
+  // Become the contents web view's observer immediately to make sure
+  // `glic_border_` is always the z-topmost child.
+  AddObserver(glic_border_);
+  // `glic_border_` should never receive input events.
+  glic_border_->SetCanProcessEventsWithinSubtree(false);
+#endif
 }
 
 ContentsWebView::~ContentsWebView() {
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::BorderView* glic_border = glic_border_;
+  glic_border_ = nullptr;
+  CHECK_EQ(glic_border->parent(), this);
+  CHECK(HasObserver(glic_border));
+  RemoveObserver(glic_border);
+#endif
 }
 
 void ContentsWebView::SetStatusBubble(StatusBubbleViews* status_bubble) {

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
+#include "chrome/common/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -19,6 +20,12 @@ class StatusBubbleViews;
 namespace ui {
 class LayerTreeOwner;
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class BorderView;
+}  // namespace glic
+#endif
 
 // ContentsWebView is used to present the WebContents of the active tab.
 class ContentsWebView : public views::WebView,
@@ -60,6 +67,10 @@ class ContentsWebView : public views::WebView,
   void CloneWebContentsLayer() override;
   void DestroyClonedLayer() override;
 
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::BorderView* glic_border() const { return glic_border_; }
+#endif
+
  private:
   void UpdateBackgroundColor();
   raw_ptr<StatusBubbleViews> status_bubble_;
@@ -69,6 +80,13 @@ class ContentsWebView : public views::WebView,
   gfx::RoundedCornersF background_radii_;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Always non-null, except during the View tree destruction. It draws a border
+  // around the web contents area, and is always the z-topmost child View of
+  // `this`.
+  raw_ptr<glic::BorderView> glic_border_ = nullptr;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_WEB_VIEW_H_

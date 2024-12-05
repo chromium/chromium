@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLIC_BORDER_BORDER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLIC_BORDER_BORDER_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
+
+class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace gfx {
 class Canvas;
@@ -16,9 +23,18 @@ class Canvas;
 namespace glic {
 
 class BorderView : public views::View,
-                   views::ViewObserver,
-                   ui::CompositorAnimationObserver {
+                   public views::ViewObserver,
+                   public ui::CompositorAnimationObserver {
+  METADATA_HEADER(BorderView, views::View)
+
  public:
+  // Helper function to find the `BorderView` for `web_contents`. Returns null
+  // if there isn't a browser / browser view for `web_contents`.
+  static BorderView* FindBorderForWebContents(
+      content::WebContents* web_contents);
+
+  static void CancelAllAnimationsForProfile(Profile* profile);
+
   BorderView();
   BorderView(const BorderView&) = delete;
   BorderView& operator=(const BorderView&) = delete;
