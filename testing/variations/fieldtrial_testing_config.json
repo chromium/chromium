@@ -10232,23 +10232,6 @@
             ]
         }
     ],
-    "GlobalMediaControlsUpdatedUI": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlobalMediaControlsUpdatedUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlobalVaapiLock": [
         {
             "platforms": [
