@@ -6257,14 +6257,16 @@
       name: "column-rule-style",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
-      field_template: "keyword",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/gap_data_list.h"],
       keywords: [
         "none", "hidden", "inset", "groove", "outset", "ridge", "dotted",
         "dashed", "solid", "double"
       ],
-      default_value: "none",
-      type_name: "EBorderStyle",
+      default_value: "GapDataList<EBorderStyle>::DefaultGapStyleDataList()",
+      type_name: "GapDataList<EBorderStyle>",
       typedom_types: ["Keyword"],
+      converter: "ConvertGapDecorationStyleDataList",
       invalidate: ["paint"],
     },
     {

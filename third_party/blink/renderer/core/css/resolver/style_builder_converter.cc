@@ -2268,6 +2268,14 @@ int ConvertGapDecorationPropertyValue<int>(StyleResolverState& state,
       StyleBuilderConverter::ConvertBorderWidth(state, value));
 }
 
+template <>
+EBorderStyle ConvertGapDecorationPropertyValue<EBorderStyle>(
+    StyleResolverState& state,
+    const CSSValue& value,
+    bool for_visited_link) {
+  return To<CSSIdentifierValue>(value).ConvertTo<blink::EBorderStyle>();
+}
+
 template <typename T>
 GapDataList<T> ConvertGapDecorationDataList(StyleResolverState& state,
                                             const CSSValue& value,
@@ -2335,6 +2343,13 @@ GapDataList<int> StyleBuilderConverter::ConvertGapDecorationWidthDataList(
     StyleResolverState& state,
     const CSSValue& value) {
   return ConvertGapDecorationDataList<int>(state, value);
+}
+
+GapDataList<EBorderStyle>
+StyleBuilderConverter::ConvertGapDecorationStyleDataList(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return ConvertGapDecorationDataList<EBorderStyle>(state, value);
 }
 
 ShadowData StyleBuilderConverter::ConvertShadow(

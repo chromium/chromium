@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_H_
 
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
@@ -87,5 +88,7 @@ class CORE_EXPORT GapData {
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::GapData<blink::StyleColor>)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GapData<int>)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::GapData<blink::EBorderStyle>)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_H_

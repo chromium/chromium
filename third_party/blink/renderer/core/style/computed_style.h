@@ -590,8 +590,8 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // column-rule-width
   GapDataList<int> ColumnRuleWidth() const {
-    if (ColumnRuleStyle() == EBorderStyle::kNone ||
-        ColumnRuleStyle() == EBorderStyle::kHidden) {
+    if (ColumnRuleStyle().GetLegacyValue() == EBorderStyle::kNone ||
+        ColumnRuleStyle().GetLegacyValue() == EBorderStyle::kHidden) {
       return GapDataList<int>(0);
     }
     return ColumnRuleWidthInternal();
@@ -1009,7 +1009,7 @@ class ComputedStyle final : public ComputedStyleBase {
       return false;
     }
     return ColumnRuleWidth().GetLegacyValue() && !ColumnRuleIsTransparent() &&
-           BorderStyleIsVisible(ColumnRuleStyle());
+           BorderStyleIsVisible(ColumnRuleStyle().GetLegacyValue());
   }
 
   // Flex utility functions.

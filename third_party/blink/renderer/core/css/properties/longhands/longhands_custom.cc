@@ -2296,7 +2296,8 @@ const CSSValue* ColumnRuleStyle::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.ColumnRuleStyle());
+  return ComputedStyleUtils::ValueForGapDecorationStyleDataList(
+      style.ColumnRuleStyle(), style, value_phase);
 }
 
 const CSSValue* ColumnRuleWidth::ParseSingleValue(
