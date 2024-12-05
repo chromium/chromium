@@ -284,18 +284,6 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
 OFFICIAL_BENCHMARK_NAMES = frozenset(
     b.name for b in OFFICIAL_BENCHMARK_CONFIGS.Frozenset())
 
-# TODO(crbug.com/40110184): Stop using these 'OFFICIAL_EXCEPT' suites and
-# instead define each benchmarking config separately as is already done for
-# many of the suites below.
-_OFFICIAL_EXCEPT_DISPLAY_LOCKING = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove(
-    ['blink_perf.display_locking'])
-_OFFICIAL_EXCEPT_JETSTREAM2 = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove(
-    ['jetstream2'])
-_OFFICIAL_EXCEPT_DISPLAY_LOCKING_JETSTREAM2 = PerfSuite(
-    OFFICIAL_BENCHMARK_CONFIGS).Remove(
-        ['blink_perf.display_locking', 'jetstream2'])
-
-
 def _sync_performance_tests(estimated_runtime=110,
                             path=None,
                             additional_flags=None):
@@ -491,7 +479,6 @@ for board, pb_name in _PB_IMAGE_PATHS.items():
                               additional_flags=FUCHSIA_EXEC_ARGS[board]),
   ])
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ]).Add([
     'blink_perf.svg',
@@ -513,25 +500,7 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     _tint_benchmark(),
     _tracing_perftests(5),
 ])
-_MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'blink_perf.display_locking',
-    'v8.runtime_stats.top_25',
-])
-_MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
-    _base_perftests(300),
-    _dawn_perf_tests(330),
-    _tint_benchmark(),
-    _views_perftests(),
-])
-_MAC_LOW_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'jetstream2',
-    'v8.runtime_stats.top_25',
-])
-_MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
-    _load_library_perf_tests(),
-])
 _MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
     'rendering.desktop',
 ])
@@ -544,7 +513,6 @@ _MAC_INTEL_EXECUTABLE_CONFIGS = frozenset([
 ])
 _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
-        'blink_perf.display_locking',
         'v8.runtime_stats.top_25',
     ]).Add([
         'jetstream2-minorms',
@@ -580,7 +548,6 @@ _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
     _views_perftests(),
 ])
 _MAC_M2_PRO_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ]).Add([
     'jetstream2-minorms',
@@ -589,7 +556,6 @@ _MAC_M2_PRO_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ])
 _WIN_10_EXECUTABLE_CONFIGS = frozenset([
@@ -598,10 +564,7 @@ _WIN_10_EXECUTABLE_CONFIGS = frozenset([
     _dawn_perf_tests(600),
     _views_perftests(),
 ])
-_WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(
-    OFFICIAL_BENCHMARK_CONFIGS).Remove([
-        'blink_perf.display_locking',
-    ])
+_WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS)
 _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('v8.browsing_desktop'),
     _GetBenchmarkConfig('rendering.desktop', abridged=True),
@@ -613,7 +576,6 @@ _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer3'),
 ])
 _WIN_11_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'blink_perf.display_locking',
     'rendering.desktop',
     'rendering.desktop.notracing',
     'system_health.common_desktop',
@@ -650,21 +612,19 @@ _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer3'),
 ])
 _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS = _ANDROID_GO_BENCHMARK_CONFIGS
-_ANDROID_PIXEL4_BENCHMARK_CONFIGS = PerfSuite(_OFFICIAL_EXCEPT_DISPLAY_LOCKING)
+_ANDROID_PIXEL4_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS)
 _ANDROID_PIXEL4_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
 _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
-        'blink_perf.display_locking',
         'jetstream2',
         'v8.browsing_mobile-future',
     ])
-_ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(
-    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add(
-        [_GetBenchmarkConfig('system_health.scroll_jank_mobile')]).Repeat([
-            'speedometer3',
-        ], 4)
+_ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Add(
+    [_GetBenchmarkConfig('system_health.scroll_jank_mobile')]).Repeat([
+        'speedometer3',
+    ], 4)
 _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_mobile'),
     _GetBenchmarkConfig('jetstream2'),
@@ -675,7 +635,7 @@ _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer3-predictable'),
 ])
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
-    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
+    OFFICIAL_BENCHMARK_CONFIGS).Add([
         _GetBenchmarkConfig('jetstream2-minorms'),
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms'),
@@ -691,7 +651,7 @@ _ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS = frozenset([
 ])
 # Pixel fold
 _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS = PerfSuite(
-    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
+    OFFICIAL_BENCHMARK_CONFIGS).Add([
         _GetBenchmarkConfig('jetstream2-minorms'),
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms'),
@@ -701,7 +661,7 @@ _ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS = frozenset([
 ])
 # Pixel Tangor
 _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
-    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
+    OFFICIAL_BENCHMARK_CONFIGS).Add([
         _GetBenchmarkConfig('jetstream2-minorms'),
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms')
@@ -758,38 +718,6 @@ LINUX_R350 = PerfPlatform('linux-r350-perf',
                           crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 
 # Mac
-MAC_HIGH_END_LAPTOP = PerfPlatform(
-    'mac-laptop_high_end-perf',
-    'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
-    _MAC_HIGH_END_BENCHMARK_CONFIGS,
-    23,
-    'mac',
-    executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS,
-    crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-MAC_HIGH_END_LAPTOP_PGO = PerfPlatform(
-    'mac-laptop_high_end-perf-pgo',
-    'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
-    _MAC_HIGH_END_BENCHMARK_CONFIGS,
-    26,
-    'mac',
-    executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS,
-    pinpoint_only=True)
-MAC_LOW_END_LAPTOP = PerfPlatform(
-    'mac-laptop_low_end-perf',
-    'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',
-    _MAC_LOW_END_BENCHMARK_CONFIGS,
-    23,
-    'mac',
-    executables=_MAC_LOW_END_EXECUTABLE_CONFIGS,
-    crossbench=_CROSSBENCH_MOTIONMARK_SPEEDOMETER)
-MAC_LOW_END_LAPTOP_PGO = PerfPlatform(
-    'mac-laptop_low_end-perf-pgo',
-    'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',
-    _MAC_LOW_END_BENCHMARK_CONFIGS,
-    26,
-    'mac',
-    executables=_MAC_LOW_END_EXECUTABLE_CONFIGS,
-    pinpoint_only=True)
 MAC_INTEL = PerfPlatform('mac-intel-perf',
                          'Mac Mini 8,1, Core i7 3.2 GHz',
                          _MAC_INTEL_BENCHMARK_CONFIGS,

@@ -2,19 +2,29 @@
     "0": {
         "benchmarks": {
             "media.mobile": {
+                "end": 6,
                 "abridged": false
             }
         }
     },
     "1": {
         "benchmarks": {
-            "speedometer2": {
+            "media.mobile": {
+                "begin": 6,
+                "end": 12,
                 "abridged": false
             }
         }
     },
     "2": {
         "benchmarks": {
+            "media.mobile": {
+                "begin": 12,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
             "speedometer3": {
                 "abridged": false
             }
@@ -22,12 +32,12 @@
     },
     "extra_infos": {
         "num_stories": 18,
-        "predicted_min_shard_time": 10,
-        "predicted_min_shard_index": 2,
-        "predicted_max_shard_time": 485.0,
-        "predicted_max_shard_index": 1,
-        "shard #0": 160,
-        "shard #1": 485.0,
-        "shard #2": 10
+        "predicted_min_shard_time": 60,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 60,
+        "predicted_max_shard_index": 0,
+        "shard #0": 60,
+        "shard #1": 60,
+        "shard #2": 60
     }
 }
