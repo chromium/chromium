@@ -949,6 +949,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
+    @DisabledTest(message = "Flaky, see crbug.com/382493910")
     public void testNavigationHistoryNavigationToEvictedPageBFCacheEnabled() throws Throwable {
         mAwContents.getSettings().setBackForwardCacheEnabled(true);
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
