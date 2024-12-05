@@ -9,7 +9,6 @@
 
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "components/sync/protocol/entity_specifics.pb.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
 
