@@ -26,23 +26,6 @@ PerfettoProducer::PerfettoProducer(
 
 PerfettoProducer::~PerfettoProducer() = default;
 
-void PerfettoProducer::BindStartupTargetBuffer(
-    uint16_t target_buffer_reservation_id,
-    perfetto::BufferID startup_target_buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(MaybeSharedMemoryArbiter());
-  MaybeSharedMemoryArbiter()->BindStartupTargetBuffer(
-      target_buffer_reservation_id, startup_target_buffer);
-}
-
-void PerfettoProducer::AbortStartupTracingForReservation(
-    uint16_t target_buffer_reservation_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(MaybeSharedMemoryArbiter());
-  MaybeSharedMemoryArbiter()->AbortStartupTracingForReservation(
-      target_buffer_reservation_id);
-}
-
 std::unique_ptr<perfetto::TraceWriter> PerfettoProducer::CreateTraceWriter(
     perfetto::BufferID target_buffer,
     perfetto::BufferExhaustedPolicy buffer_exhausted_policy) {

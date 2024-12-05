@@ -50,23 +50,12 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
 
   ~ProducerClient() override;
 
-  void Connect(mojo::PendingRemote<mojom::PerfettoService> perfetto_service);
-  void BindInProcessSharedMemoryArbiter(
-      perfetto::TracingService::ProducerEndpoint*,
-      base::tracing::PerfettoTaskRunner*);
-
   void Disconnect() override;
 
   // PerfettoProducer implementation.
-  void BindStartupTargetBuffer(
-      uint16_t target_buffer_reservation_id,
-      perfetto::BufferID startup_target_buffer) override;
-  void AbortStartupTracingForReservation(
-      uint16_t target_buffer_reservation_id) override;
   perfetto::SharedMemoryArbiter* MaybeSharedMemoryArbiter() override;
   void NewDataSourceAdded(
       const PerfettoTracedProcess::DataSourceBase* const data_source) override;
-  bool IsTracingActive() override;
 
   // mojom::ProducerClient implementation.
   // Called through Mojo by the ProducerHost on the service-side to control
@@ -137,8 +126,6 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   uint32_t data_sources_tracing_ = 0;
   std::unique_ptr<mojo::Receiver<mojom::ProducerClient>> receiver_;
   mojo::Remote<mojom::ProducerHost> producer_host_;
-  raw_ptr<base::tracing::PerfettoTaskRunner> in_process_arbiter_task_runner_ =
-      nullptr;
   // First value is the flush ID, the second is the number of
   // replies we're still waiting for.
   std::pair<uint64_t, size_t> pending_replies_for_latest_flush_;
