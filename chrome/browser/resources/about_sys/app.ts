@@ -36,10 +36,6 @@ export class AppElement extends CrLitElement {
     return {
       entries_: {type: Array},
 
-      // <if expr="chromeos_ash">
-      isLacrosEnabled_: {type: Boolean},
-      // </if>
-
       loading_: {
         type: Boolean,
         reflect: true,
@@ -48,18 +44,10 @@ export class AppElement extends CrLitElement {
   }
 
   protected entries_: KeyValuePairEntry[] = [];
-  // <if expr="chromeos_ash">
-  protected isLacrosEnabled_: boolean = false;
-  // </if>
   protected loading_: boolean = false;
 
   override async connectedCallback() {
     super.connectedCallback();
-
-    // <if expr="chromeos_ash">
-    this.isLacrosEnabled_ =
-        await BrowserProxyImpl.getInstance().isLacrosEnabled();
-    // </if>
 
     this.loading_ = true;
     const logs = await BrowserProxyImpl.getInstance().requestSystemInfo();
@@ -74,26 +62,6 @@ export class AppElement extends CrLitElement {
     // Dispatch event used by tests.
     this.dispatchEvent(new CustomEvent('ready-for-testing'));
   }
-
-  // <if expr="chromeos_ash">
-  protected onOsLinkContainerClick_(event: MouseEvent) {
-    this.handleOsLinkContainerClick_(event);
-  }
-
-  protected onOsLinkContainerAuxClick_(event: MouseEvent) {
-    // Make middle-clicks have the same effects as Ctrl+clicks
-    if (event.button === 1) {
-      this.handleOsLinkContainerClick_(event);
-    }
-  }
-
-  private handleOsLinkContainerClick_(event: MouseEvent) {
-    if (event.target instanceof Element && event.target.id === 'osLinkHref') {
-      event.preventDefault();
-      BrowserProxyImpl.getInstance().openLacrosSystemPage();
-    }
-  }
-  // </if>
 }
 
 declare global {

@@ -560,7 +560,6 @@ inline constexpr char kChromeUIOSSettingsHost[] = "os-settings";
 inline constexpr char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
 inline constexpr char kChromeUIOsUrlAppURL[] = "chrome://internal/";
 inline constexpr char kChromeUISystemURL[] = "chrome://system";
-inline constexpr char16_t kChromeUISystemURL16[] = u"chrome://system";
 inline constexpr char kOsUIComponentsURL[] = "os://components";
 inline constexpr char kOsUIConnectivityDiagnosticsAppURL[] =
     "os://connectivity-diagnostics";

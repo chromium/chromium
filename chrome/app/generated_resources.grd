@@ -7389,17 +7389,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_ABOUT_SYS_PARSE_ERROR" desc="error message displayed if parsing of custom uploaded log fails">
           Unable to parse file: <ph name="FILE_NAME">$1<ex>Log.txt</ex></ph>
         </message>
-
-        <if expr="chromeos_ash">
-          <message name="IDS_ABOUT_SYS_OS_LINK_CONTAINER" desc="Text and link on the Ash side os://system page which directs a user to the Lacros side system page">
-          Looking for browser system page? Visit<ph name="BEGIN_LINK">&lt;a href="#" id="osLinkHref" class="os-link-href"&gt;</ph><ph name="CHROME_ABOUT_SYS_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-          </message>
-        </if>
-        <if expr="chromeos_lacros">
-          <message name="IDS_ABOUT_SYS_OS_LINK_CONTAINER" desc="Text and link on the Lacros side chrome://system page which directs a user to the Ash side system page">
-          Looking for OS system page? Visit<ph name="BEGIN_LINK">&lt;a href="$1" id="osLinkHref" class="os-link-href"&gt;</ph><ph name="CHROME_ABOUT_SYS_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-          </message>
-        </if>
       </if>
 
       <!-- chrome://browser-switch strings -->
