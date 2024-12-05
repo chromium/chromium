@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 namespace {
 
 using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
 
-class PredictionImprovementsLoadingStateViewTest : public ChromeViewsTestBase {
-};
+using AutofillAiLoadingStateViewTest = ChromeViewsTestBase;
 
-TEST_F(PredictionImprovementsLoadingStateViewTest, CanInitialize) {
+TEST_F(AutofillAiLoadingStateViewTest, CanInitialize) {
   Suggestion suggestion{SuggestionType::kPredictionImprovementsLoadingState};
-  PredictionImprovementsLoadingStateView v{suggestion};
+  AutofillAiLoadingStateView v{suggestion};
 }
 }  // namespace
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

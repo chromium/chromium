@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_animated_gradient_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_animated_gradient_view.h"
 
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/test_animation_delegate.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 namespace {
 
-class PredictionImprovementsAnimatedGradientViewTest
-    : public ChromeViewsTestBase {};
+using AutofillAiAnimatedGradientViewTest = ChromeViewsTestBase;
 
-TEST_F(PredictionImprovementsAnimatedGradientViewTest,
-       StopsAnimatingWhenDestroyed) {
+TEST_F(AutofillAiAnimatedGradientViewTest, StopsAnimatingWhenDestroyed) {
   gfx::TestAnimationDelegate animation_delegate;
   {
-    PredictionImprovementsAnimatedGradientView v;
+    AutofillAiAnimatedGradientView v;
     EXPECT_TRUE(v.IsAnimatingForTest());
     v.SetAnimationDelegateForTest(&animation_delegate);
     EXPECT_FALSE(animation_delegate.finished());
@@ -28,4 +26,4 @@ TEST_F(PredictionImprovementsAnimatedGradientViewTest,
 }
 
 }  // namespace
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

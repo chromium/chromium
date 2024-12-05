@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_animated_gradient_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_animated_gradient_view.h"
 
 #include "base/numerics/angle_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -22,7 +22,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 namespace {
 
@@ -42,9 +42,9 @@ constexpr gfx::RectF kRectBottom(0.0f,
                                  kRectBottomDistanceToTop,
                                  kRectBottomWidth,
                                  kRectHeight);
-// Width of `PredictionImprovementsAnimatedGradientView`.
+// Width of `AutofillAiAnimatedGradientView`.
 constexpr int kWidth = kRectTop.right();
-// Height of `PredictionImprovementsAnimatedGradientView`.
+// Height of `AutofillAiAnimatedGradientView`.
 constexpr int kHeight = kRectBottom.bottom();
 
 // Duration of one animation cycle.
@@ -97,8 +97,7 @@ constexpr float kGradientLengthMultiplier = 1.5;
 
 }  // namespace
 
-PredictionImprovementsAnimatedGradientView::
-    PredictionImprovementsAnimatedGradientView()
+AutofillAiAnimatedGradientView::AutofillAiAnimatedGradientView()
     : corner_radius_(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kLow)),
       end_point_offset_(CalculateGradientEndPoint()),
@@ -116,21 +115,20 @@ PredictionImprovementsAnimatedGradientView::
   animation_.Start();
 }
 
-PredictionImprovementsAnimatedGradientView::
-    ~PredictionImprovementsAnimatedGradientView() {
+AutofillAiAnimatedGradientView::~AutofillAiAnimatedGradientView() {
   animation_.Stop();
   if (views::Widget* widget = GetWidget()) {
     widget->Close();
   }
 }
 
-void PredictionImprovementsAnimatedGradientView::AnimationProgressed(
+void AutofillAiAnimatedGradientView::AnimationProgressed(
     const gfx::Animation* animation) {
   current_animation_state_ = animation->GetCurrentValue();
   OnPropertyChanged(&current_animation_state_, views::kPropertyEffectsPaint);
 }
 
-void PredictionImprovementsAnimatedGradientView::OnPaint(gfx::Canvas* canvas) {
+void AutofillAiAnimatedGradientView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaintBackground(canvas);
 
   if (is_first_paint_) {
@@ -159,16 +157,16 @@ void PredictionImprovementsAnimatedGradientView::OnPaint(gfx::Canvas* canvas) {
   canvas->Restore();
 }
 
-sk_sp<cc::PaintShader> PredictionImprovementsAnimatedGradientView::
-    CreateGradientForCurrentAnimationState() {
+sk_sp<cc::PaintShader>
+AutofillAiAnimatedGradientView::CreateGradientForCurrentAnimationState() {
   std::array<SkPoint, 2> points = CalculateGradientStartAndEndPoints();
   return cc::PaintShader::MakeLinearGradient(
       points.data(), gradient_colors_.data(), kGradientPositions,
       kNoGradientStops, SkTileMode::kRepeat);
 }
 
-std::array<SkPoint, 2> PredictionImprovementsAnimatedGradientView::
-    CalculateGradientStartAndEndPoints() {
+std::array<SkPoint, 2>
+AutofillAiAnimatedGradientView::CalculateGradientStartAndEndPoints() {
   // The `start` point should be the top-left corner of the view's rectangle,
   // shifted by the `current_animation_state_`.
   gfx::Point start = bounds().origin();
@@ -181,8 +179,7 @@ std::array<SkPoint, 2> PredictionImprovementsAnimatedGradientView::
   return {gfx::PointToSkPoint(start), gfx::PointToSkPoint(end)};
 }
 
-gfx::Vector2d
-PredictionImprovementsAnimatedGradientView::CalculateGradientEndPoint() {
+gfx::Vector2d AutofillAiAnimatedGradientView::CalculateGradientEndPoint() {
   const float cos_a = std::cos(kGradientAngleInRad);
   const float sin_a = std::sin(kGradientAngleInRad);
   const float e_length = kHeight * cos_a + kWidth * sin_a;
@@ -191,14 +188,13 @@ PredictionImprovementsAnimatedGradientView::CalculateGradientEndPoint() {
           SkScalarRoundToInt(e_length_4_stops * sin_a)};
 }
 
-float PredictionImprovementsAnimatedGradientView::
-    CalculateOverflowPointXValue() {
+float AutofillAiAnimatedGradientView::CalculateOverflowPointXValue() {
   return bounds().origin().x() +
          kGradientLengthMultiplier *
              (kWidth + kHeight * std::tan(k90DegInRad - kGradientAngleInRad));
 }
 
-BEGIN_METADATA(PredictionImprovementsAnimatedGradientView)
+BEGIN_METADATA(AutofillAiAnimatedGradientView)
 END_METADATA
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

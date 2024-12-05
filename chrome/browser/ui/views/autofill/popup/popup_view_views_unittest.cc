@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -2000,8 +2000,7 @@ TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
-      absl::get_if<autofill_prediction_improvements::
-                       PredictionImprovementsLoadingStateView*>(
+      absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(
           &test_api(view()).rows()[0]);
   ASSERT_TRUE(row_view);
 
@@ -2016,8 +2015,7 @@ TEST_F(PopupViewViewsTest,
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
-      absl::get_if<autofill_prediction_improvements::
-                       PredictionImprovementsLoadingStateView*>(
+      absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(
           &test_api(view()).rows()[0]);
   ASSERT_TRUE(row_view);
 

@@ -33,8 +33,8 @@ class BoxLayoutView;
 class ScrollView;
 }  // namespace views
 
-namespace autofill_prediction_improvements {
-class PredictionImprovementsLoadingStateView;
+namespace autofill_ai {
+class AutofillAiLoadingStateView;
 }
 
 namespace autofill {
@@ -73,8 +73,7 @@ class PopupViewViews : public PopupBaseView,
                                    PopupSeparatorView*,
                                    PopupTitleView*,
                                    PopupWarningView*,
-                                   autofill_prediction_improvements::
-                                       PredictionImprovementsLoadingStateView*>;
+                                   autofill_ai::AutofillAiLoadingStateView*>;
 
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kMouseOpenSubPopupDelay =

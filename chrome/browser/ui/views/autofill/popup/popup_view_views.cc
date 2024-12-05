@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
@@ -1034,8 +1034,7 @@ void PopupViewViews::CreateSuggestionViews() {
 
         case SuggestionType::kPredictionImprovementsLoadingState:
           rows_.push_back(body_container->AddChildView(
-              std::make_unique<autofill_prediction_improvements::
-                                   PredictionImprovementsLoadingStateView>(
+              std::make_unique<autofill_ai::AutofillAiLoadingStateView>(
                   suggestions[current_line_number])));
           break;
 
@@ -1441,9 +1440,7 @@ void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
   RowPointer first_row = rows_[0];
   views::View* view_to_focus = nullptr;
   if (auto* loading_view =
-          absl::get_if<autofill_prediction_improvements::
-                           PredictionImprovementsLoadingStateView*>(
-              &first_row)) {
+          absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(&first_row)) {
     view_to_focus = *loading_view;
   } else if (auto* warning_view = absl::get_if<PopupWarningView*>(&first_row)) {
     view_to_focus = *warning_view;

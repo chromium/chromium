@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/prediction_improvements_icon_background.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_background.h"
 
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -12,22 +12,19 @@
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/view.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
-PredictionImprovementsIconBackground::PredictionImprovementsIconBackground(
-    views::Emphasis radius)
+AutofillAiIconBackground::AutofillAiIconBackground(views::Emphasis radius)
     : radius_(radius) {}
 
-PredictionImprovementsIconBackground::~PredictionImprovementsIconBackground() =
-    default;
+AutofillAiIconBackground::~AutofillAiIconBackground() = default;
 
-void PredictionImprovementsIconBackground::OnViewThemeChanged(
-    views::View* view) {
+void AutofillAiIconBackground::OnViewThemeChanged(views::View* view) {
   view->SchedulePaint();
 }
 
-void PredictionImprovementsIconBackground::Paint(gfx::Canvas* canvas,
-                                                 views::View* view) const {
+void AutofillAiIconBackground::Paint(gfx::Canvas* canvas,
+                                     views::View* view) const {
   if (ui::ColorProvider* color_provider = view->GetColorProvider()) {
     const gfx::Rect bounds = view->GetContentsBounds();
     const std::array<gfx::Point, 2> points = {bounds.origin(),
@@ -48,4 +45,4 @@ void PredictionImprovementsIconBackground::Paint(gfx::Canvas* canvas,
   }
 }
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai

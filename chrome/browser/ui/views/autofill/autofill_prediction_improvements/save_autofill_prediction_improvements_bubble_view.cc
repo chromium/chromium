@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/prediction_improvements_icon_image_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -287,8 +287,7 @@ void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
               kHeaderPadding))
           .Build();
   header_container->AddChildView(
-      autofill_prediction_improvements::
-          CreateLargePredictionImprovementsIconImageView());
+      autofill_ai::CreateLargeAutofillAiIconImageView());
   header_container->AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(

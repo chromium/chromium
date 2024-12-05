@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_PREDICTION_IMPROVEMENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_ANIMATED_GRADIENT_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_PREDICTION_IMPROVEMENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_ANIMATED_GRADIENT_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_AI_AUTOFILL_AI_ANIMATED_GRADIENT_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_AI_AUTOFILL_AI_ANIMATED_GRADIENT_VIEW_H_
 
 #include "cc/paint/paint_shader.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -12,7 +12,7 @@
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/views/layout/box_layout_view.h"
 
-namespace autofill_prediction_improvements {
+namespace autofill_ai {
 
 // This view generates an animated, repeating linear gradient at an angle across
 // its rectangle. In its `OnPaint()` method only path `mask_` will be drawn.
@@ -27,15 +27,13 @@ namespace autofill_prediction_improvements {
 // +-------------------------------+
 // bars `kRectTop` and `kRectBottom` will be visible in the UI, showing the
 // animated gradient "washing" over them.
-class PredictionImprovementsAnimatedGradientView
-    : public gfx::AnimationDelegate,
-      public views::BoxLayoutView {
-  METADATA_HEADER(PredictionImprovementsAnimatedGradientView,
-                  views::BoxLayoutView)
+class AutofillAiAnimatedGradientView : public gfx::AnimationDelegate,
+                                       public views::BoxLayoutView {
+  METADATA_HEADER(AutofillAiAnimatedGradientView, views::BoxLayoutView)
 
  public:
-  PredictionImprovementsAnimatedGradientView();
-  ~PredictionImprovementsAnimatedGradientView() override;
+  AutofillAiAnimatedGradientView();
+  ~AutofillAiAnimatedGradientView() override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -143,6 +141,6 @@ class PredictionImprovementsAnimatedGradientView
   bool is_first_paint_ = true;
 };
 
-}  // namespace autofill_prediction_improvements
+}  // namespace autofill_ai
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_PREDICTION_IMPROVEMENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_ANIMATED_GRADIENT_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_AUTOFILL_AI_AUTOFILL_AI_ANIMATED_GRADIENT_VIEW_H_
