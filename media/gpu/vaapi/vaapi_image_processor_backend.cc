@@ -110,11 +110,11 @@ VaapiImageProcessorBackend::VaapiImageProcessorBackend(
 VaapiImageProcessorBackend::~VaapiImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.IsEmpty());
+  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.empty());
   if (vaapi_wrapper_) {
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.Clear();
+    allocated_va_surfaces_.clear();
   }
 }
 
@@ -126,9 +126,10 @@ const ScopedVASurface* VaapiImageProcessorBackend::GetOrCreateSurfaceForFrame(
     const FrameResource& frame,
     bool use_protected) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
-  const auto shared_memory_id = frame.GetSharedMemoryId().id;
-  const auto* surface = allocated_va_surfaces_.Lookup(shared_memory_id);
-  if (surface) {
+  const auto& tracking_token = frame.tracking_token();
+  const auto iter = allocated_va_surfaces_.find(tracking_token);
+  if (iter != allocated_va_surfaces_.end()) {
+    const auto* surface = iter->second.get();
     CHECK_EQ(frame.coded_size(), surface->size());
     const auto buffer_format =
         VideoPixelFormatToGfxBufferFormat(frame.format());
@@ -148,8 +149,10 @@ const ScopedVASurface* VaapiImageProcessorBackend::GetOrCreateSurfaceForFrame(
     return nullptr;
   }
 
-  allocated_va_surfaces_.AddWithID(std::move(va_surface), shared_memory_id);
-  return allocated_va_surfaces_.Lookup(shared_memory_id);
+  const auto result = allocated_va_surfaces_.insert_or_assign(
+      tracking_token, std::move(va_surface));
+  CHECK(result.second);
+  return result.first->second.get();
 }
 
 void VaapiImageProcessorBackend::ProcessFrame(
@@ -270,11 +273,11 @@ void VaapiImageProcessorBackend::Reset() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.IsEmpty());
+  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.empty());
   if (vaapi_wrapper_) {
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.Clear();
+    allocated_va_surfaces_.clear();
   }
   needs_context_ = true;
 }
