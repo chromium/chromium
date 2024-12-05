@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -17,21 +18,45 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
+PerformanceLongAnimationFrameTiming*
+PerformanceLongAnimationFrameTiming::Create(
+    AnimationFrameTimingInfo* info,
+    base::TimeTicks time_origin,
+    bool cross_origin_isolated_capability,
+    DOMWindow* source,
+    const std::optional<DOMPaintTimingInfo>& paint_timing_info) {
+  Performance* performance =
+      DOMWindowPerformance::performance(*source->ToLocalDOMWindow());
+  DOMHighResTimeStamp startTime =
+      performance->MonotonicTimeToDOMHighResTimeStamp(info->FrameStartTime());
+  double duration = paint_timing_info
+                        ? (paint_timing_info->paint_time - startTime)
+                        : info->Duration().InMillisecondsF();
+  PerformanceLongAnimationFrameTiming* entry =
+      MakeGarbageCollected<PerformanceLongAnimationFrameTiming>(
+          duration, startTime, info, time_origin,
+          cross_origin_isolated_capability, source);
+  if (paint_timing_info.has_value()) {
+    entry->SetPaintTimingInfo(*paint_timing_info);
+  }
+  return entry;
+}
+
 PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
+    double duration,
+    DOMHighResTimeStamp startTime,
     AnimationFrameTimingInfo* info,
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
     DOMWindow* source)
-    : PerformanceEntry(
-          info->Duration().InMilliseconds(),
-          AtomicString("long-animation-frame"),
-          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
-              ->MonotonicTimeToDOMHighResTimeStamp(info->FrameStartTime()),
-          source) {
-  info_ = info;
-  time_origin_ = time_origin;
-  cross_origin_isolated_capability_ = cross_origin_isolated_capability;
-}
+    : PerformanceEntry(duration,
+                       AtomicString("long-animation-frame"),
+                       startTime,
+                       source),
+      time_origin_(time_origin),
+      cross_origin_isolated_capability_(cross_origin_isolated_capability),
+      info_(info) {}
 
 PerformanceLongAnimationFrameTiming::~PerformanceLongAnimationFrameTiming() =
     default;
@@ -94,7 +119,6 @@ DOMHighResTimeStamp PerformanceLongAnimationFrameTiming::blockingDuration()
     const {
   return info_->TotalBlockingDuration().InMilliseconds();
 }
-
 void PerformanceLongAnimationFrameTiming::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);

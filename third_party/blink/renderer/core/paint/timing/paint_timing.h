@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -16,7 +15,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_info.h"
+#include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -27,6 +26,7 @@ class TickClock;
 
 namespace blink {
 
+struct DOMPaintTimingInfo;
 class LocalFrame;
 
 // PaintTiming is responsible for tracking paint-related timings for a given
@@ -43,6 +43,14 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
  public:
   static const char kSupplementName[];
+
+  struct PaintTimingInfo {
+    // https://w3c.github.io/paint-timing/#paint-timing-info-rendering-update-end-time
+    base::TimeTicks rendering_update_end_time;
+
+    // https://w3c.github.io/paint-timing/#paint-timing-info-implementation-defined-presentation-time
+    base::TimeTicks presentation_time;
+  };
 
   explicit PaintTiming(Document&);
   PaintTiming(const PaintTiming&) = delete;
@@ -80,6 +88,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       base::TimeTicks presentation_time,
       FirstMeaningfulPaintDetector::HadUserInput had_input);
   void NotifyPaint(bool is_first_paint, bool text_painted, bool image_painted);
+  void NotifyPaintFinished() { MarkPaintTimingInternal(); }
 
   // The getters below return monotonically-increasing seconds, or zero if the
   // given paint event has not yet occurred. See the comments for
@@ -174,9 +183,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   void SoftNavigationDetected();
 
-  void SetRenderingUpdateEndTime(base::TimeTicks rendering_update_end_time) {
-    last_rendering_update_end_time_ = rendering_update_end_time;
-  }
+  void MarkPaintTiming();
 
   void Trace(Visitor*) const override;
 
@@ -185,6 +192,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   LocalFrame* GetFrame() const;
   void NotifyPaintTimingChanged();
+
+  void MarkPaintTimingInternal();
 
   // Set*() set the timing for the given paint event to the given timestamp if
   // the value is currently zero, and queue a presentation promise to record the
@@ -216,7 +225,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void SetRequestAnimationFrameAfterBackForwardCacheRestore(wtf_size_t index,
                                                             size_t count);
 
-  void RegisterNotifyPresentationTime(PaintEvent);
+  void Mark(PaintEvent);
   void RegisterNotifyFirstPaintAfterBackForwardCacheRestorePresentationTime(
       wtf_size_t index);
 
@@ -245,6 +254,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
                                : paint_details_;
   }
 
+  DOMPaintTimingInfo ToDOMPaintTimingInfo(const PaintTimingInfo&) const;
+
   PaintDetails paint_details_;
   PaintDetails soft_navigation_pending_paint_details_;
   std::optional<PaintTimingInfo>
@@ -269,7 +280,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks lcp_mouse_over_dispatch_time_;
 
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
-
   // The callback ID for requestAnimationFrame to record its time after the page
   // is restored from the back-forward cache.
   int raf_after_bfcache_restore_measurement_callback_id_ = 0;
@@ -278,6 +288,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
                            TwoLayoutsSignificantFirst);
+  HashSet<PaintEvent> pending_paint_events_;
 };
 
 }  // namespace blink

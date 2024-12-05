@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
@@ -167,6 +168,9 @@ void PaintTimingDetector::NotifyPaintFinished() {
   if (window) {
     DOMWindowPerformance::performance(*window)->OnPaintFinished();
   }
+
+  PaintTiming::From(*frame_view_->GetFrame().GetDocument())
+      .NotifyPaintFinished();
 }
 
 // static

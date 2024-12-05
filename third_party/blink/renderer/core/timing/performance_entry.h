@@ -49,6 +49,14 @@ class V8ObjectBuilder;
 using PerformanceEntryType = unsigned;
 using PerformanceEntryTypeMask = unsigned;
 
+struct DOMPaintTimingInfo {
+  // https://w3c.github.io/paint-timing/#paint-timing-info-rendering-update-end-time
+  DOMHighResTimeStamp paint_time;
+
+  // https://w3c.github.io/paint-timing/#paint-timing-info-implementation-defined-presentation-time
+  DOMHighResTimeStamp presentation_time;
+};
+
 class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -107,6 +115,10 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
         return true;
       } else if (b->EntryTypeEnum() == kNavigation) {
         return false;
+      } else if (a->EntryTypeEnum() == kPaint) {
+        return true;
+      } else if (b->EntryTypeEnum() == kPaint) {
+        return false;
       } else {
         return a->index_ < b->index_;
       }
@@ -147,7 +159,17 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     return is_triggered_by_soft_navigation_;
   }
 
+  // PaintTimingMixin. It's implemented here for simplicity.
+  // If an interface doesn't have PaintTimingMixin, these functions
+  // would not be exposed by WebIDL.
+  DOMHighResTimeStamp paintTime() const;
+  DOMHighResTimeStamp presentationTime() const;
+
   void Trace(Visitor*) const override;
+
+  void SetPaintTimingInfo(const DOMPaintTimingInfo& paint_timing_info) {
+    paint_timing_info_ = paint_timing_info;
+  }
 
  protected:
   PerformanceEntry(const AtomicString& name,
@@ -174,6 +196,8 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   // source_ will be null if the PerformanceEntry did not originate from a
   // Window context.
   const WeakMember<DOMWindow> source_;
+  // For entries implementing PaintTimingMixin.
+  std::optional<DOMPaintTimingInfo> paint_timing_info_;
   const bool is_triggered_by_soft_navigation_;
 };
 

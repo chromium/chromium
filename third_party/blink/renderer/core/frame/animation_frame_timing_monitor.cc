@@ -93,13 +93,14 @@ void AnimationFrameTimingMonitor::WillPerformStyleAndLayoutCalculation() {
       base::TimeTicks::Now());
 }
 
-void AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
+AnimationFrameTimingInfo*
+AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
     LocalDOMWindow& local_root_window,
     base::TimeTicks rendering_update_end_time) {
   // This can happen if the AnimationFrameTimingMonitor instance is created
   // in the middle of a frame, or if some testing scenarios paint synchronously.
   if (!current_frame_timing_info_ || state_ != State::kRenderingFrame) {
-    return;
+    return nullptr;
   }
 
   current_frame_timing_info_->SetRenderEndTime(rendering_update_end_time);
@@ -110,7 +111,9 @@ void AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   did_pause_ = false;
 
   current_frame_timing_info_->SetScripts(current_scripts_);
+  AnimationFrameTimingInfo* long_animation_frame = nullptr;
   if (current_frame_timing_info_->Duration() >= kLongAnimationFrameDuration) {
+    long_animation_frame = current_frame_timing_info_;
     if (!first_ui_event_timestamp_.is_null()) {
       current_frame_timing_info_->SetFirstUIEventTime(
           first_ui_event_timestamp_);
@@ -134,8 +137,6 @@ void AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
     }
 
     current_frame_timing_info_->SetTotalBlockingDuration(blocking_duration);
-
-    client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
   }
   RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_,
                                       local_root_window);
@@ -146,6 +147,7 @@ void AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
       base::TimeDelta();
   state_ = State::kIdle;
+  return long_animation_frame;
 }
 
 void AnimationFrameTimingMonitor::WillProcessTask(base::TimeTicks start_time) {
@@ -271,7 +273,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   }
 
   DOMWindowPerformance::performance(*frame->DomWindow())
-      ->ReportLongAnimationFrameTiming(timing_info);
+      ->QueueLongAnimationFrameTiming(timing_info);
   RecordLongAnimationFrameUKMAndTrace(*timing_info, *frame->DomWindow());
 }
 
@@ -316,10 +318,10 @@ void AnimationFrameTimingMonitor::RequestPresentationTimeForTracing(
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
   if (tracing_enabled) {
     frame.GetChromeClient().NotifyPresentationTime(
-        frame,
-        BindOnce(&AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
-                 WrapWeakPersistent(this),
-                 current_frame_timing_info_->GetTraceId()));
+        frame, WTF::BindOnce(
+                   &AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
+                   WrapWeakPersistent(this),
+                   current_frame_timing_info_->GetTraceId()));
   }
 }
 

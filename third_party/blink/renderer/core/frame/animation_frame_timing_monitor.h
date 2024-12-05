@@ -33,7 +33,6 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
  public:
   class Client {
    public:
-    virtual void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo*) = 0;
     virtual void ReportLongTaskTiming(base::TimeTicks start,
                                       base::TimeTicks end,
                                       ExecutionContext* context) = 0;
@@ -55,8 +54,9 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void BeginMainFrame(LocalDOMWindow& local_root_window);
   void WillPerformStyleAndLayoutCalculation();
-  void RecordRenderingUpdateEndTime(LocalDOMWindow& local_root_window,
-                                    base::TimeTicks);
+  AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
+      LocalDOMWindow& local_root_window,
+      base::TimeTicks);
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time,
                        LocalFrame* frame);

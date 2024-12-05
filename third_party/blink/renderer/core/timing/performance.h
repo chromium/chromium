@@ -72,7 +72,6 @@ class LayoutShift;
 class MemoryInfo;
 class MemoryMeasurement;
 class Node;
-struct PaintTimingInfo;
 class PerformanceElementTiming;
 class PerformanceEventTiming;
 class PerformanceMark;
@@ -211,12 +210,6 @@ class CORE_EXPORT Performance : public EventTarget {
 
   void NotifyNavigationTimingToObservers();
 
-  void AddFirstPaintTiming(const PaintTimingInfo& paint_timing_info,
-                           bool is_triggered_by_soft_navigation);
-
-  void AddFirstContentfulPaintTiming(const PaintTimingInfo& paint_timing_info,
-                                     bool is_triggered_by_soft_navigation);
-
   bool IsElementTimingBufferFull() const;
   void AddToElementTimingBuffer(PerformanceElementTiming&);
 
@@ -243,11 +236,6 @@ class CORE_EXPORT Performance : public EventTarget {
                                       base::TimeTicks pageshow_start_time,
                                       base::TimeTicks pageshow_end_time);
 
-  void AddRenderCoarsenedEntry(
-      base::OnceCallback<void(Performance&)>,
-      DOMHighResTimeStamp earliest_timestamp_for_timeline);
-  void SchedulePendingRenderCoarsenedEntries(base::TimeTicks target_time);
-  void FlushPendingRenderCoarsenedEntries();
 
   // This enum is used to index different possible strings for for UMA enum
   // histogram. New enum values can be added, but existing enums must never be
@@ -338,15 +326,15 @@ class CORE_EXPORT Performance : public EventTarget {
     cross_origin_isolated_capability_ = is_isolated;
   }
 
+  bool CrossOriginIsolatedCapability() const {
+    return cross_origin_isolated_capability_;
+  }
+
   // TODO(https://crbug.com/1457049): remove this once visited links are
   // partitioned.
   bool softNavPaintMetricsSupported() const;
 
  private:
-  void AddPaintTiming(PerformancePaintTiming::PaintType,
-                      const PaintTimingInfo& paint_timing_info,
-                      bool is_triggered_by_soft_navigation);
-
   PerformanceMeasure* MeasureInternal(
       ScriptState* script_state,
       const AtomicString& measure_name,
@@ -407,7 +395,9 @@ class CORE_EXPORT Performance : public EventTarget {
 
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
-  void AddPendingRenderCoarsenedEntries();
+  void AddPaintTiming(PerformancePaintTiming::PaintType,
+                      const DOMPaintTimingInfo& paint_timing_info,
+                      bool is_triggered_by_soft_navigation);
 
   PerformanceEntryVector resource_timing_buffer_;
   // The secondary RT buffer, used to store incoming entries after the main
@@ -453,9 +443,6 @@ class CORE_EXPORT Performance : public EventTarget {
 
   // See crbug.com/1181774.
   Member<BackgroundTracingHelper> background_tracing_helper_;
-
-  Vector<std::pair<base::OnceCallback<void(Performance&)>, base::TimeTicks>>
-      pending_entry_operations_with_render_coarsening_;
 
   // Running counter for LongTask observations.
   size_t long_task_counter_ = 0;
