@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /** {@link SigninPromoDelegate} for recent tabs signin promo. */
@@ -47,7 +48,7 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    boolean canShowPromo() {
+    boolean canShowPromo(@Nullable CoreAccountInfo visibleAccount) {
         // TODO(crbug.com/327387704): Import additional logic from SyncPromoController.
         return true;
     }
