@@ -29,7 +29,7 @@ class RequestCoordinator;
 // Manages showing the in-progress notification.
 class AutoFetchNotifier {
  public:
-  virtual ~AutoFetchNotifier() {}
+  virtual ~AutoFetchNotifier() = default;
   // Ensures that the in-progress notification is showing with the appropriate
   // request count.
   virtual void NotifyInProgress(int in_flight_count) {}
@@ -82,7 +82,7 @@ class InternalImpl {
   // We need this because we can't call these functions directly.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     // Sets the notification state of a request to
     // |SavePageRequest::AutoFetchNotificationState::kShown|. Results in a call
     // to |SetNotificationStateComplete|.

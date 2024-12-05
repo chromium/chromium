@@ -52,7 +52,7 @@ void ComputeDigestOnFileThread(
 }  // namespace
 
 // static
-OfflinePageMHTMLArchiver::OfflinePageMHTMLArchiver() {}
+OfflinePageMHTMLArchiver::OfflinePageMHTMLArchiver() = default;
 
 OfflinePageMHTMLArchiver::~OfflinePageMHTMLArchiver() {
 }

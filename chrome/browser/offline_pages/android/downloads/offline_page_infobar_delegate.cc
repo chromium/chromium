@@ -24,7 +24,7 @@ void OfflinePageInfoBarDelegate::Create(base::OnceClosure confirm_continuation,
               page_to_download, exists_duplicate_request))));
 }
 
-OfflinePageInfoBarDelegate::~OfflinePageInfoBarDelegate() {}
+OfflinePageInfoBarDelegate::~OfflinePageInfoBarDelegate() = default;
 
 OfflinePageInfoBarDelegate::OfflinePageInfoBarDelegate(
     base::OnceClosure confirm_continuation,

@@ -105,7 +105,7 @@ OfflinePageArchivePublisherImpl::OfflinePageArchivePublisherImpl(
     ArchiveManager* archive_manager)
     : archive_manager_(archive_manager), delegate_(GetDefaultDelegate()) {}
 
-OfflinePageArchivePublisherImpl::~OfflinePageArchivePublisherImpl() {}
+OfflinePageArchivePublisherImpl::~OfflinePageArchivePublisherImpl() = default;
 
 void OfflinePageArchivePublisherImpl::SetDelegateForTesting(
     OfflinePageArchivePublisherImpl::Delegate* delegate) {

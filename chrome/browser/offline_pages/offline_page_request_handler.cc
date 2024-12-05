@@ -302,7 +302,7 @@ OfflinePageRequestHandler::OfflinePageRequestHandler(
   offline_header_ = OfflinePageHeader(offline_header_value);
 }
 
-OfflinePageRequestHandler::~OfflinePageRequestHandler() {}
+OfflinePageRequestHandler::~OfflinePageRequestHandler() = default;
 
 OfflinePageRequestHandler::NetworkState
 OfflinePageRequestHandler::GetNetworkState() const {

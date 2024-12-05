@@ -32,7 +32,7 @@ constexpr int kMaximumInFlight = 3;
 
 class AutoFetchNotifierImpl : public AutoFetchNotifier {
  public:
-  ~AutoFetchNotifierImpl() override {}
+  ~AutoFetchNotifierImpl() override = default;
   // Ensures that the in-progress notification is showing with the appropriate
   // request count.
   void NotifyInProgress(int in_flight_count) override {

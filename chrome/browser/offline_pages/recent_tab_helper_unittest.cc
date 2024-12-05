@@ -46,7 +46,7 @@ class TestDelegate: public RecentTabHelper::Delegate {
       OfflinePageTestArchiver::Observer* observer,
       int tab_id,
       bool tab_id_result);
-  ~TestDelegate() override {}
+  ~TestDelegate() override = default;
 
   std::unique_ptr<OfflinePageArchiver> CreatePageArchiver(
         content::WebContents* web_contents) override;
@@ -92,7 +92,7 @@ class RecentTabHelperTest
   RecentTabHelperTest(const RecentTabHelperTest&) = delete;
   RecentTabHelperTest& operator=(const RecentTabHelperTest&) = delete;
 
-  ~RecentTabHelperTest() override {}
+  ~RecentTabHelperTest() override = default;
 
   void SetUp() override;
   void TearDown() override;

@@ -17,7 +17,7 @@ OfflinePageURLLoaderRequestInterceptor::OfflinePageURLLoaderRequestInterceptor(
       frame_tree_node_id_(frame_tree_node_id) {}
 
 OfflinePageURLLoaderRequestInterceptor::
-    ~OfflinePageURLLoaderRequestInterceptor() {}
+    ~OfflinePageURLLoaderRequestInterceptor() = default;
 
 void OfflinePageURLLoaderRequestInterceptor::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,

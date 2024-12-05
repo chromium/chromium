@@ -44,7 +44,7 @@ class OfflinePageModelFactory : public SimpleKeyedServiceFactory {
   friend base::NoDestructor<OfflinePageModelFactory>;
 
   OfflinePageModelFactory();
-  ~OfflinePageModelFactory() override {}
+  ~OfflinePageModelFactory() override = default;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;

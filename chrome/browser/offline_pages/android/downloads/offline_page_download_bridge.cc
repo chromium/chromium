@@ -362,7 +362,7 @@ OfflinePageDownloadBridge::OfflinePageDownloadBridge(
     const JavaParamRef<jobject>& obj)
     : weak_java_ref_(env, obj) {}
 
-OfflinePageDownloadBridge::~OfflinePageDownloadBridge() {}
+OfflinePageDownloadBridge::~OfflinePageDownloadBridge() = default;
 
 void OfflinePageDownloadBridge::Destroy(JNIEnv* env,
                                         const JavaParamRef<jobject>&) {

@@ -32,7 +32,7 @@ class RequestCoordinatorFactory : public ProfileKeyedServiceFactory {
   friend base::NoDestructor<RequestCoordinatorFactory>;
 
   RequestCoordinatorFactory();
-  ~RequestCoordinatorFactory() override {}
+  ~RequestCoordinatorFactory() override = default;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;

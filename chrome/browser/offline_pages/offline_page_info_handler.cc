@@ -23,9 +23,9 @@ void OfflinePageInfoHandler::Register() {
       ->RegisterExtendedInfoHandler(kOfflinePageInfoKey, std::move(instance));
 }
 
-OfflinePageInfoHandler::OfflinePageInfoHandler() {}
+OfflinePageInfoHandler::OfflinePageInfoHandler() = default;
 
-OfflinePageInfoHandler::~OfflinePageInfoHandler() {}
+OfflinePageInfoHandler::~OfflinePageInfoHandler() = default;
 
 std::string OfflinePageInfoHandler::GetExtendedInfo(
     content::NavigationEntry* entry) const {

@@ -88,7 +88,7 @@ BackgroundLoaderOffliner::BackgroundLoaderOffliner(
   }
 }
 
-BackgroundLoaderOffliner::~BackgroundLoaderOffliner() {}
+BackgroundLoaderOffliner::~BackgroundLoaderOffliner() = default;
 
 // static
 BackgroundLoaderOffliner* BackgroundLoaderOffliner::FromWebContents(

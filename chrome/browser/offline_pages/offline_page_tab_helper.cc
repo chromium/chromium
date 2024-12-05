@@ -107,7 +107,7 @@ OfflinePageTabHelper::OfflinePageTabHelper(content::WebContents* web_contents)
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 }
 
-OfflinePageTabHelper::~OfflinePageTabHelper() {}
+OfflinePageTabHelper::~OfflinePageTabHelper() = default;
 
 void OfflinePageTabHelper::NotifyMhtmlPageLoadAttempted(
     MHTMLLoadResult load_result,

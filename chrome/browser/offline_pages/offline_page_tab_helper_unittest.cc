@@ -46,7 +46,7 @@ class OfflinePageTabHelperTest : public content::RenderViewHostTestHarness {
   OfflinePageTabHelperTest(const OfflinePageTabHelperTest&) = delete;
   OfflinePageTabHelperTest& operator=(const OfflinePageTabHelperTest&) = delete;
 
-  ~OfflinePageTabHelperTest() override {}
+  ~OfflinePageTabHelperTest() override = default;
 
   void SetUp() override;
   void TearDown() override;

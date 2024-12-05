@@ -148,7 +148,7 @@ InternalImpl::InternalImpl(AutoFetchNotifier* notifier,
       delegate_(delegate),
       tab_finder_(std::move(tab_finder)) {}
 
-InternalImpl::~InternalImpl() {}
+InternalImpl::~InternalImpl() = default;
 
 void InternalImpl::RequestListInitialized(std::vector<RequestInfo> request) {
   DCHECK(!requests_initialized_);
