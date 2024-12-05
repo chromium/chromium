@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_COMMERCE_MODEL_SESSION_PROTO_DB_FACTORY_H_
 #define IOS_CHROME_BROWSER_COMMERCE_MODEL_SESSION_PROTO_DB_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
 #import "base/no_destructor.h"
+#import "base/notreached.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #import "components/session_proto_db/session_proto_db.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -27,38 +27,37 @@ template <typename T>
 std::unique_ptr<KeyedService> BuildSessionProtoDB(web::BrowserState* state) {
   DCHECK(!state->IsOffTheRecord());
 
-  if (std::is_base_of<
-          commerce_subscription_db::CommerceSubscriptionContentProto,
-          T>::value) {
+  if constexpr (std::is_base_of<
+                    commerce_subscription_db::CommerceSubscriptionContentProto,
+                    T>::value) {
     return std::make_unique<SessionProtoDB<T>>(
         state->GetProtoDatabaseProvider(),
         state->GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
         web::GetUIThreadTaskRunner({}));
-  } else if (std::is_base_of<parcel_tracking_db::ParcelTrackingContent,
-                             T>::value) {
+  }
+
+  if constexpr (std::is_base_of<parcel_tracking_db::ParcelTrackingContent,
+                                T>::value) {
     return std::make_unique<SessionProtoDB<T>>(
         state->GetProtoDatabaseProvider(),
         state->GetStatePath().AppendASCII(kParcelTrackingDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_PARCEL_TRACKING_DATABASE,
         web::GetUIThreadTaskRunner({}));
-  } else {
-    // Must add in leveldb_proto::ProtoDbType and database directory folder
-    // new protos.
-    DCHECK(false) << "Provided template is not supported. To support add "
-                     "unique folder in the above proto -> folder name mapping. "
-                     "This check could also fail because the template is not "
-                     "supported on current platform.";
   }
+
+  // Must add in leveldb_proto::ProtoDbType and database directory folder
+  // new protos.
+  NOTREACHED() << "Provided template is not supported. To support add "
+                  "unique folder in the above proto -> folder name mapping. "
+                  "This check could also fail because the template is not "
+                  "supported on current platform.";
 }
 }  // namespace session_proto_db::internal
 
 template <typename T>
-class SessionProtoDBFactory : public BrowserStateKeyedServiceFactory {
+class SessionProtoDBFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  SessionProtoDBFactory(const SessionProtoDBFactory&) = delete;
-  SessionProtoDBFactory& operator=(const SessionProtoDBFactory&) = delete;
-
   static SessionProtoDBFactory<T>* GetInstance();
   static SessionProtoDB<T>* GetForProfile(ProfileIOS* profile);
 
@@ -78,8 +77,8 @@ class SessionProtoDBFactory : public BrowserStateKeyedServiceFactory {
 template <typename T>
 SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SessionProtoDB<T>*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->template GetServiceForProfileAs<SessionProtoDB<T>>(
+      profile, /*create=*/true);
 }
 
 template <typename T>
@@ -91,9 +90,7 @@ SessionProtoDBFactory<T>::GetDefaultFactory() {
 
 template <typename T>
 SessionProtoDBFactory<T>::SessionProtoDBFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SessionProtoDB",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("SessionProtoDB") {}
 
 template <typename T>
 std::unique_ptr<KeyedService> SessionProtoDBFactory<T>::BuildServiceInstanceFor(
