@@ -16935,35 +16935,19 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, NoKAnonInResponse) {
           }),
       main_rfh());
 
-  switch (GetParam()) {
-    case KAnonState::kNoEnforcement:
-    case KAnonState::kSimulateOnDeviceNoneOnServer:
-    case KAnonState::kEnforceOnDeviceNoneOnServer:
-    case KAnonState::kNoneOnDeviceEnforceOnServer:
-    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
-      EXPECT_TRUE(result);
-      InvokeCallbackForURN(*result);
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
 
-      // Fast forward enough for all k-anon joins to be sent.
-      task_environment()->FastForwardBy(base::Hours(1));
-      EXPECT_THAT(
-          GetKAnonJoinedIds(),
-          ::testing::UnorderedElementsAre(
-              HashedKAnonKeyForAdBid(
-                  interest_group, interest_group.ads.value()[0].render_url()),
-              HashedKAnonKeyForAdNameReporting(
-                  interest_group, interest_group.ads.value()[0],
-                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
-
-      break;
-    }
-    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
-      EXPECT_FALSE(result);
-      task_environment()->FastForwardBy(base::Hours(1));
-      EXPECT_THAT(GetKAnonJoinedIds(), ::testing::UnorderedElementsAre());
-      break;
-    }
-  }
+  // Fast forward enough for all k-anon joins to be sent.
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_THAT(
+      GetKAnonJoinedIds(),
+      ::testing::UnorderedElementsAre(
+          HashedKAnonKeyForAdBid(interest_group,
+                                 interest_group.ads.value()[0].render_url()),
+          HashedKAnonKeyForAdNameReporting(
+              interest_group, interest_group.ads.value()[0],
+              /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
 }
 
 TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, AdInResponseNotInGroup) {

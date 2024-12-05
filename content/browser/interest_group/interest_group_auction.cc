@@ -6406,6 +6406,16 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
       kanon_modified_bid_params,
       non_kanon_modified_bid_params;
 
+  // Enable k-anon support if Chrome is in k-anonymity enforcement mode for B&A
+  // and the server also supports k-anonymity.
+  bool server_supports_kanon =
+      saved_response_->k_anon_join_candidate.has_value() ||
+      saved_response_->k_anon_ghost_winner.has_value();
+  bool enable_kanon =
+      server_supports_kanon &&
+      kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kEnforce &&
+      base::FeatureList::IsEnabled(features::kEnableBandAKAnonEnforcement);
+
   if (parent_) {
     // Component auction.
     if (!blink::VerifyAdCurrencyCode(config_->non_shared_params.seller_currency,
@@ -6432,8 +6442,7 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
           saved_response_->ad_metadata.value_or("null");
     }
 
-    if (kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kEnforce &&
-        base::FeatureList::IsEnabled(features::kEnableBandAKAnonEnforcement)) {
+    if (enable_kanon) {
       non_kanon_modified_bid_params =
           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New();
       if (saved_response_->k_anon_ghost_winner &&
@@ -6465,8 +6474,7 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
     }
   }
 
-  if (kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kEnforce &&
-      base::FeatureList::IsEnabled(features::kEnableBandAKAnonEnforcement)) {
+  if (enable_kanon) {
     if (saved_response_->ad_render_url.is_valid()) {
       kanon_bid = CreatePrimaryBidFromServerResponse(
           auction_worklet::mojom::BidRole::kEnforcedKAnon);
