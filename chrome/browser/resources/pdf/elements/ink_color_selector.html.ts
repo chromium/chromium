@@ -14,6 +14,8 @@ export function getHtml(this: InkColorSelectorElement) {
           <input type="radio" class="color-chip" data-index="${index}"
               name="${this.getColorName_()}" .value="${item.color}"
               .style="--item-color: ${this.getVisibleColor_(item.color)}"
+              aria-label="${this.i18n(item.label)}"
+              title="${this.i18n(item.label)}"
               @click="${this.onColorClick_}"
               ?checked="${this.isCurrentColor_(item.color)}">
         </label>`)}

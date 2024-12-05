@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -15,54 +16,53 @@ import {getHtml} from './ink_color_selector.html.js';
 const NUM_OPTION_COLUMNS: number = 5;
 
 interface ColorOption {
-  name: string;
+  label: string;
   color: string;
 }
 
 const HIGHLIGHTER_COLORS: ColorOption[] = [
   // LINT.IfChange(HighlighterColors)
   // Row 1:
-  {name: 'highlighterColorLightRed', color: '#f28b82'},
-  {name: 'highlighterColorLightYellow', color: '#fdd663'},
-  {name: 'highlighterColorLightGreen', color: '#34a853'},
-  {name: 'highlighterColorLightBlue', color: '#4285f4'},
-  {name: 'highlighterColorLightOrange', color: '#ffae80'},
+  {label: 'ink2BrushColorLightRed', color: '#f28b82'},
+  {label: 'ink2BrushColorLightYellow', color: '#fdd663'},
+  {label: 'annotationColorLightGreen', color: '#34a853'},
+  {label: 'annotationColorLightBlue', color: '#4285f4'},
+  {label: 'annotationColorLightOrange', color: '#ffae80'},
   // Row 2:
-  {name: 'highlighterColorRed', color: '#d93025'},
-  {name: 'highlighterColorYellow', color: '#ddf300'},
-  {name: 'highlighterColorGreen', color: '#25e387'},
-  {name: 'highlighterColorBlue', color: '#5379ff'},
-  {name: 'highlighterColorOrange', color: '#ff630c'},
+  {label: 'annotationColorRed', color: '#d93025'},
+  {label: 'annotationColorYellow', color: '#ddf300'},
+  {label: 'annotationColorGreen', color: '#25e387'},
+  {label: 'annotationColorBlue', color: '#5379ff'},
+  {label: 'annotationColorOrange', color: '#ff630c'},
   // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:HighlighterColors)
-
 ];
 
 const PEN_COLORS: ColorOption[] = [
   // LINT.IfChange(PenColors)
   // Row 1:
-  {name: 'penColorBlack', color: '#000000'},
-  {name: 'penColorDarkGrey2', color: '#5f6368'},
-  {name: 'penColorDarkGrey1', color: '#9aa0a6'},
-  {name: 'penColorLightGrey', color: '#dadce0'},
-  {name: 'penColorWhite', color: '#ffffff'},
+  {label: 'annotationColorBlack', color: '#000000'},
+  {label: 'ink2BrushColorDarkGrey2', color: '#5f6368'},
+  {label: 'ink2BrushColorDarkGrey1', color: '#9aa0a6'},
+  {label: 'annotationColorLightGrey', color: '#dadce0'},
+  {label: 'annotationColorWhite', color: '#ffffff'},
   // Row 2:
-  {name: 'penColorRed1', color: '#f28b82'},
-  {name: 'penColorYellow1', color: '#fdd663'},
-  {name: 'penColorGreen1', color: '#81c995'},
-  {name: 'penColorBlue1', color: '#8ab4f8'},
-  {name: 'penColorTan1', color: '#eec9ae'},
+  {label: 'ink2BrushColorRed1', color: '#f28b82'},
+  {label: 'ink2BrushColorYellow1', color: '#fdd663'},
+  {label: 'ink2BrushColorGreen1', color: '#81c995'},
+  {label: 'ink2BrushColorBlue1', color: '#8ab4f8'},
+  {label: 'ink2BrushColorTan1', color: '#eec9ae'},
   // Row 3:
-  {name: 'penColorRed2', color: '#ea4335'},
-  {name: 'penColorYellow2', color: '#fbbc04'},
-  {name: 'penColorGreen2', color: '#34a853'},
-  {name: 'penColorBlue2', color: '#4285f4'},
-  {name: 'penColorTan2', color: '#e2a185'},
+  {label: 'ink2BrushColorRed2', color: '#ea4335'},
+  {label: 'ink2BrushColorYellow2', color: '#fbbc04'},
+  {label: 'ink2BrushColorGreen2', color: '#34a853'},
+  {label: 'ink2BrushColorBlue2', color: '#4285f4'},
+  {label: 'ink2BrushColorTan2', color: '#e2a185'},
   // Row 4:
-  {name: 'penColorRed3', color: '#c5221f'},
-  {name: 'penColorYellow3', color: '#f29900'},
-  {name: 'penColorGreen3', color: '#188038'},
-  {name: 'penColorBlue3', color: '#1967d2'},
-  {name: 'penColorTan3', color: '#885945'},
+  {label: 'ink2BrushColorRed3', color: '#c5221f'},
+  {label: 'ink2BrushColorYellow3', color: '#f29900'},
+  {label: 'ink2BrushColorGreen3', color: '#188038'},
+  {label: 'ink2BrushColorBlue3', color: '#1967d2'},
+  {label: 'ink2BrushColorTan3', color: '#885945'},
   // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:PenColors)
 ];
 
@@ -121,7 +121,10 @@ function getNewColorIndex(
   return currentIndex + delta;
 }
 
-export class InkColorSelectorElement extends CrLitElement {
+
+const InkColorSelectorElementBase = I18nMixinLit(CrLitElement);
+
+export class InkColorSelectorElement extends InkColorSelectorElementBase {
   static get is() {
     return 'ink-color-selector';
   }
