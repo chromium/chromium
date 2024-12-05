@@ -38,10 +38,8 @@ class FileSystemChangeRecord : public ScriptWrappable {
                          const Vector<String>& relative_path_components,
                          mojom::blink::FileSystemAccessChangeTypePtr type);
 
-  const FileSystemHandle* root() const { return root_.Get(); }
-  const FileSystemHandle* changedHandle() const {
-    return changed_handle_.Get();
-  }
+  FileSystemHandle* root() const { return root_.Get(); }
+  FileSystemHandle* changedHandle() const { return changed_handle_.Get(); }
   const Vector<String>& relativePathComponents() const {
     return relative_path_components_;
   }
