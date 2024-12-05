@@ -37,6 +37,7 @@ namespace blink {
 
 class Document;
 class ExceptionState;
+class PointerEvent;
 
 enum class ClosedByState {
   kAny,
@@ -74,7 +75,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   String closedBy() const;
   void setClosedBy(const String& return_value);
 
-  static void HandleDialogLightDismiss(const Event& event,
+  static void HandleDialogLightDismiss(const PointerEvent& pointer_event,
                                        const Node& target_node);
 
   void CloseWatcherFiredCancel(Event*);

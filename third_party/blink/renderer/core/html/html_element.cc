@@ -2213,15 +2213,11 @@ const HTMLElement* FindTopmostRelatedPopover(
 }  // namespace
 
 // static
-void HTMLElement::HandlePopoverLightDismiss(const Event& event,
+void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
                                             const Node& target_node) {
   CHECK(event.isTrusted());
   auto& document = target_node.GetDocument();
   if (!document.TopmostPopoverOrHint()) {
-    return;
-  }
-
-  if (!IsA<PointerEvent>(event)) {
     return;
   }
 

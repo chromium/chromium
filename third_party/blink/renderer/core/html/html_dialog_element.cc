@@ -286,20 +286,17 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
 
 // static
 // https://html.spec.whatwg.org/interactive-elements.html#light-dismiss-open-dialogs
-void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
-                                                 const Node& target_node) {
+void HTMLDialogElement::HandleDialogLightDismiss(
+    const PointerEvent& pointer_event,
+    const Node& target_node) {
   if (!RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
     return;
   }
-  CHECK(event.isTrusted());
-  const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
-  if (!pointer_event) {
-    return;
-  }
+  CHECK(pointer_event.isTrusted());
   // PointerEventManager will call this function before actually dispatching
   // the event.
-  CHECK(!event.HasEventPath());
-  CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
+  CHECK(!pointer_event.HasEventPath());
+  CHECK_EQ(Event::PhaseType::kNone, pointer_event.eventPhase());
 
   // If there aren't any open dialogs, there's nothing to light dismiss.
   auto& document = target_node.GetDocument();
@@ -307,9 +304,9 @@ void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
     return;
   }
 
-  const AtomicString& event_type = event.type();
+  const AtomicString& event_type = pointer_event.type();
   const HTMLDialogElement* ancestor_dialog =
-      FindNearestDialog(target_node, *pointer_event);
+      FindNearestDialog(target_node, pointer_event);
   if (event_type == event_type_names::kPointerdown) {
     document.SetDialogPointerdownTarget(ancestor_dialog);
   } else if (event_type == event_type_names::kPointerup) {
