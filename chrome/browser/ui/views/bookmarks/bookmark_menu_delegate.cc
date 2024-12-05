@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
-#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
@@ -243,54 +242,65 @@ std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> GetUnderlyingNodes(
 }  // namespace
 
 BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
-                                           views::Widget* parent,
-                                           views::MenuDelegate* real_delegate,
-                                           BookmarkLaunchLocation location)
+                                           views::Widget* parent)
     : browser_(browser),
       profile_(browser->profile()),
       parent_(parent),
       menu_(nullptr),
       parent_menu_item_(nullptr),
       next_menu_id_(AppMenuModel::kMinBookmarksCommandId),
-      real_delegate_(real_delegate),
+      real_delegate_(nullptr),
       is_mutating_model_(false),
-      location_(location) {
-  bookmark_model_observation_.Observe(GetBookmarkModel());
-}
+      location_(BookmarkLaunchLocation::kNone) {}
 
 BookmarkMenuDelegate::~BookmarkMenuDelegate() {
   bookmark_model_observation_.Reset();
 }
 
-void BookmarkMenuDelegate::BuildFullMenu(MenuItemView* parent) {
-  CHECK(!parent_menu_item_);
-  CHECK(parent);
-  CHECK(parent->GetSubmenu());
-  parent_menu_item_ = parent;
+void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
+                                MenuItemView* parent,
+                                const BookmarkNode* node,
+                                size_t start_child_index,
+                                ShowOptions show_options,
+                                BookmarkLaunchLocation location) {
+  bookmark_model_observation_.Observe(GetBookmarkModel());
+  real_delegate_ = real_delegate;
+  location_ = location;
   // Assume that the menu will only use mnemonics if there's already a parent
-  // menu that uses them.
-  menu_uses_mnemonics_ = parent_menu_item_->GetRootMenuItem()->has_mnemonics();
+  // menu and that parent uses them. In cases where the BookmarkMenuDelegate
+  // will be the root, client code does not current enable mnemonics.
+  menu_uses_mnemonics_ = parent && parent->GetRootMenuItem()->has_mnemonics();
+  if (parent) {
+    parent_menu_item_ = parent;
 
-  BookmarkModel* model = GetBookmarkModel();
-  bookmarks::ManagedBookmarkService* managed = GetManagedBookmarkService();
-  const bool managed_node_has_children =
-      !managed->managed_node()->children().empty();
-  const bool bookmark_bar_has_children =
-      !model->bookmark_bar_node()->children().empty();
-  const bool should_add_bookmarks_title =
-      (bookmark_bar_has_children || managed_node_has_children) &&
-      !parent_menu_item_->GetSubmenu()->GetMenuItems().empty();
-  if (should_add_bookmarks_title) {
-    parent->AppendSeparator();
-    // Add a "Bookmarks" title.
-    parent->AppendTitle(l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
-  }
+    // Add a separator if there are existing items in the menu, and if the
+    // current node has children. If |node| is the bookmark bar then the
+    // managed node is shown as its first child, if it's not empty.
+    BookmarkModel* model = GetBookmarkModel();
+    bookmarks::ManagedBookmarkService* managed = GetManagedBookmarkService();
+    bool show_forced_folders = show_options == SHOW_PERMANENT_FOLDERS &&
+                               node == model->bookmark_bar_node();
+    bool show_managed =
+        show_forced_folders && !managed->managed_node()->children().empty();
+    bool has_children =
+        (start_child_index < node->children().size()) || show_managed;
+    if (has_children && parent->GetSubmenu() &&
+        !parent->GetSubmenu()->GetMenuItems().empty()) {
+      parent->AppendSeparator();
+      // Add a "Bookmarks" title.
+      parent->AppendTitle(l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
+    }
 
-  if (managed_node_has_children) {
-    BuildMenuForManagedNode(parent);
+    if (show_managed) {
+      BuildMenuForManagedNode(parent);
+    }
+    BuildMenu(node, start_child_index, parent);
+    if (show_options == SHOW_PERMANENT_FOLDERS) {
+      BuildMenusForPermanentNodes(parent);
+    }
+  } else {
+    menu_ = CreateMenu(node, start_child_index, show_options);
   }
-  BuildMenu(model->bookmark_bar_node(), 0, parent);
-  BuildMenusForPermanentNodes(parent);
 }
 
 const BookmarkModel* BookmarkMenuDelegate::GetBookmarkModel() const {
@@ -306,7 +316,7 @@ void BookmarkMenuDelegate::SetActiveMenu(const BookmarkNode* node,
                                          size_t start_index) {
   DCHECK(!parent_menu_item_);
   if (!node_to_menu_map_[node]) {
-    CreateMenu(node, start_index);
+    CreateMenu(node, start_index, HIDE_PERMANENT_FOLDERS);
   }
   menu_ = node_to_menu_map_[node];
 }
@@ -712,11 +722,19 @@ bool BookmarkMenuDelegate::ShouldCloseOnRemove(const BookmarkNode* node) const {
 }
 
 MenuItemView* BookmarkMenuDelegate::CreateMenu(const BookmarkNode* parent,
-                                               size_t start_child_index) {
+                                               size_t start_child_index,
+                                               ShowOptions show_options) {
   MenuItemView* menu = new MenuItemView(real_delegate_);
   menu->SetCommand(GetAndIncrementNextMenuID());
   AddMenuToMaps(menu, parent);
+  bool show_permanent = show_options == SHOW_PERMANENT_FOLDERS;
+  if (show_permanent && parent == GetBookmarkModel()->bookmark_bar_node()) {
+    BuildMenuForManagedNode(menu);
+  }
   BuildMenu(parent, start_child_index, menu);
+  if (show_permanent) {
+    BuildMenusForPermanentNodes(menu);
+  }
   return menu;
 }
 
