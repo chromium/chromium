@@ -564,10 +564,13 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
 
 TEST_F(OnDeviceModelServiceTest, AddContextWithImages) {
   auto model = LoadModel();
+  auto params = mojom::LoadAdaptationParams::New();
+  params->enable_image_input = true;
+  auto adaptation = LoadAdaptationWithParams(*model, std::move(params));
 
   TestResponseHolder response;
   mojo::Remote<mojom::Session> session;
-  model->StartSession(session.BindNewPipeAndPassReceiver());
+  adaptation->StartSession(session.BindNewPipeAndPassReceiver());
 
   {
     std::vector<ml::InputPiece> pieces;

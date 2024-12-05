@@ -103,6 +103,9 @@ struct LoadAdaptationParams {
   // When set to 0, the original `max_tokens` set by the base model will be
   // used.
   uint32 max_tokens = 0;
+
+  // Whether this model will handle InputPieces containing images.
+  [MinVersion=1] bool enable_image_input = false;
 };
 
 // The set of tokens that can be added as part of an input.

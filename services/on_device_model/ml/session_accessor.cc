@@ -112,17 +112,21 @@ void SessionAccessor::CreateInternal(
     on_device_model::mojom::LoadAdaptationParamsPtr params) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (params) {
+    ChromeMLAdaptationDescriptor descriptor = {
+        .max_tokens = params->max_tokens,
+        .enable_image_input = params->enable_image_input,
+    };
+
     ChromeMLModelData data;
     std::string weights_path_str = params->assets.weights_path.AsUTF8Unsafe();
-    if (params->assets.weights.IsValid()) {
-      data.weights_file = params->assets.weights.TakePlatformFile();
-    } else {
-      data.model_path = weights_path_str.data();
+    if (params->assets.weights.IsValid() || !weights_path_str.empty()) {
+      if (params->assets.weights.IsValid()) {
+        data.weights_file = params->assets.weights.TakePlatformFile();
+      } else {
+        data.model_path = weights_path_str.data();
+      }
+      descriptor.model_data = &data;
     }
-    ChromeMLAdaptationDescriptor descriptor = {
-        .model_data = &data,
-        .max_tokens = params->max_tokens,
-    };
     session_ = chrome_ml_->api().CreateSession(model_, &descriptor);
   } else {
     session_ = chrome_ml_->api().CreateSession(model_, nullptr);

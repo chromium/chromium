@@ -73,6 +73,7 @@ struct FakeSessionInstance {
   std::string adaptation_data_;
   std::vector<std::string> context_;
   bool cloned;
+  bool enable_image_input;
 };
 
 struct FakeTsModelInstance {
@@ -118,13 +119,17 @@ ChromeMLSession CreateSession(ChromeMLModel model,
   auto* model_instance = reinterpret_cast<FakeModelInstance*>(model);
   auto* instance = new FakeSessionInstance{};
   if (descriptor) {
-    if (model_instance->backend_type_ == ModelBackendType::kGpuBackend) {
-      instance->adaptation_data_ =
-          ReadFile(descriptor->model_data->weights_file);
-    } else if (model_instance->backend_type_ == ModelBackendType::kApuBackend) {
-      base::ReadFileToString(
-          base::FilePath::FromUTF8Unsafe(descriptor->model_data->model_path),
-          &instance->adaptation_data_);
+    instance->enable_image_input = descriptor->enable_image_input;
+    if (descriptor->model_data) {
+      if (model_instance->backend_type_ == ModelBackendType::kGpuBackend) {
+        instance->adaptation_data_ =
+            ReadFile(descriptor->model_data->weights_file);
+      } else if (model_instance->backend_type_ ==
+                 ModelBackendType::kApuBackend) {
+        base::ReadFileToString(
+            base::FilePath::FromUTF8Unsafe(descriptor->model_data->model_path),
+            &instance->adaptation_data_);
+      }
     }
   }
   return reinterpret_cast<ChromeMLSession>(instance);
@@ -136,6 +141,7 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
       .adaptation_data_ = instance->adaptation_data_,
       .context_ = instance->context_,
       .cloned = true,
+      .enable_image_input = instance->enable_image_input,
   });
 }
 
@@ -163,6 +169,9 @@ bool SessionExecuteModel(ChromeMLSession session,
       // not improve real-world coverage.
       CHECK(options->token_offset == 0);
     }
+
+    CHECK(!std::holds_alternative<SkBitmap>(piece) ||
+          instance->enable_image_input);
 
     text += PieceToString(piece);
   }
