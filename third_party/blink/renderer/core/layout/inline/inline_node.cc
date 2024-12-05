@@ -261,14 +261,8 @@ class ReusingTextShaper final {
       const ShapeResult* const shape_result = item->TextShapeResult();
       if (!shape_result || item->Direction() != direction)
         continue;
-      if (RuntimeEnabledFeatures::ReuseShapeResultsByFontsEnabled()) {
-        if (item->Style()->GetFont() != font) {
-          continue;
-        }
-      } else {
-        if (shape_result->PrimaryFont() != font.PrimaryFont()) {
-          continue;
-        }
+      if (item->Style()->GetFont() != font) {
+        continue;
       }
       if (shape_result->IsAppliedSpacing())
         continue;

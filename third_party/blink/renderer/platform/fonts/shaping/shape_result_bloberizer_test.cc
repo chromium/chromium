@@ -531,8 +531,7 @@ TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs. Interleave fonts to ensure run changes.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(&font, direction)->CopyRange(0u, range_a.length(), result);
   shaper_b.Shape(&font2, direction)->CopyRange(0u, range_b.length(), result);
   shaper_c.Shape(&font, direction)->CopyRange(0u, range_c.length(), result);
@@ -595,8 +594,7 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs. Interleave fonts to ensure run changes.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(&font, direction)->CopyRange(0u, range_a.length(), result);
   shaper_b.Shape(&font2, direction)->CopyRange(0u, range_b.length(), result);
   shaper_c.Shape(&font, direction)->CopyRange(0u, range_c.length(), result);

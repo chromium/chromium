@@ -87,7 +87,6 @@ struct SameSizeAsShapeResult {
   UntracedMember<void*> deprecated_ink_bounds_;
   Vector<int> runs_;
   Vector<int> character_position_;
-  UntracedMember<void*> primary_font_;
   unsigned start_index_;
   unsigned num_characters_;
   unsigned bitfields : 32;
@@ -399,25 +398,15 @@ void ShapeResult::RunInfo::CharacterIndexForXPosition(
   }
 }
 
-ShapeResult::ShapeResult(const SimpleFontData* font_data,
-                         unsigned start_index,
+ShapeResult::ShapeResult(unsigned start_index,
                          unsigned num_characters,
                          TextDirection direction)
-    : primary_font_(font_data),
-      start_index_(start_index),
+    : start_index_(start_index),
       num_characters_(num_characters),
       direction_(static_cast<unsigned>(direction)) {}
 
-ShapeResult::ShapeResult(const Font* font,
-                         unsigned start_index,
-                         unsigned num_characters,
-                         TextDirection direction)
-    : ShapeResult(font->PrimaryFont(), start_index, num_characters, direction) {
-}
-
 ShapeResult::ShapeResult(const ShapeResult& other)
     : width_(other.width_),
-      primary_font_(other.primary_font_),
       start_index_(other.start_index_),
       num_characters_(other.num_characters_),
       num_glyphs_(other.num_glyphs_),
@@ -435,7 +424,6 @@ void ShapeResult::Trace(Visitor* visitor) const {
   visitor->Trace(deprecated_ink_bounds_);
   visitor->Trace(runs_);
   visitor->Trace(character_position_);
-  visitor->Trace(primary_font_);
 }
 
 size_t ShapeResult::ByteSize() const {
@@ -1739,8 +1727,7 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
 
 ShapeResult* ShapeResult::SubRange(unsigned start_offset,
                                    unsigned end_offset) const {
-  ShapeResult* sub_range =
-      MakeGarbageCollected<ShapeResult>(primary_font_.Get(), 0, 0, Direction());
+  ShapeResult* sub_range = MakeGarbageCollected<ShapeResult>(0, 0, Direction());
   CopyRange(start_offset, end_offset, sub_range);
   return sub_range;
 }
@@ -1812,7 +1799,7 @@ const ShapeResult* ShapeResult::CreateForTabulationCharacters(
   const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(font, start_index, length, direction);
+      MakeGarbageCollected<ShapeResult>(start_index, length, direction);
   result->num_glyphs_ = length;
   DCHECK_EQ(result->num_glyphs_, length);  // no overflow
   result->has_vertical_offsets_ =
@@ -1859,7 +1846,7 @@ const ShapeResult* ShapeResult::CreateForSpaces(const Font* font,
   const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(font, start_index, length, direction);
+      MakeGarbageCollected<ShapeResult>(start_index, length, direction);
   result->num_glyphs_ = length;
   DCHECK_EQ(result->num_glyphs_, length);  // no overflow
   result->has_vertical_offsets_ =
@@ -1888,8 +1875,8 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
     float stretch_size) {
   unsigned start_index = 0;
   unsigned num_characters = 1;
-  ShapeResult* result = MakeGarbageCollected<ShapeResult>(
-      font, start_index, num_characters, direction);
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(start_index, num_characters, direction);
 
   hb_direction_t hb_direction = HB_DIRECTION_LTR;
   unsigned glyph_index = 0;
@@ -1920,8 +1907,8 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
       stretch_axis == OpenTypeMathStretchData::StretchAxis::Horizontal;
   unsigned start_index = 0;
   unsigned num_characters = 1;
-  ShapeResult* result = MakeGarbageCollected<ShapeResult>(
-      font, start_index, num_characters, direction);
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(start_index, num_characters, direction);
 
   hb_direction_t hb_direction =
       is_horizontal_assembly ? HB_DIRECTION_LTR : HB_DIRECTION_TTB;

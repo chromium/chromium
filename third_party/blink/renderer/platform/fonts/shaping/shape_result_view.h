@@ -116,10 +116,7 @@ class PLATFORM_EXPORT ShapeResultView final
   ShapeResultView& operator=(const ShapeResultView&) = delete;
   ~ShapeResultView() = default;
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(parts_);
-    visitor->Trace(primary_font_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(parts_); }
 
   ShapeResult* CreateShapeResult() const;
 
@@ -160,7 +157,6 @@ class PLATFORM_EXPORT ShapeResultView final
   // bounds.
   gfx::RectF ComputeInkBounds() const;
 
-  const SimpleFontData* PrimaryFont() const { return primary_font_.Get(); }
   void GetRunFontData(HeapVector<ShapeResult::RunFontData>*) const;
 
   void ExpandRangeToIncludePartialGlyphs(unsigned* from, unsigned* to) const;
@@ -294,7 +290,6 @@ class PLATFORM_EXPORT ShapeResultView final
   unsigned StartIndexOffsetForRun() const { return char_index_offset_; }
 
   HeapVector<RunInfoPart, 1> parts_;
-  Member<const SimpleFontData> const primary_font_;
 
   const unsigned start_index_;
 

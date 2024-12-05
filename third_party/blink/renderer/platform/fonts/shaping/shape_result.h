@@ -136,21 +136,13 @@ typedef void (*GraphemeClusterCallback)(void* context,
 
 class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
  public:
-  ShapeResult(const SimpleFontData*,
-              unsigned start_index,
-              unsigned num_characters,
-              TextDirection);
-  ShapeResult(const Font*,
-              unsigned start_index,
-              unsigned num_characters,
-              TextDirection);
+  ShapeResult(unsigned start_index, unsigned num_characters, TextDirection);
   ShapeResult(const ShapeResult&);
 
   void Trace(Visitor*) const;
 
   static ShapeResult* CreateEmpty(const ShapeResult& other) {
-    return MakeGarbageCollected<ShapeResult>(other.primary_font_.Get(), 0, 0,
-                                             other.Direction());
+    return MakeGarbageCollected<ShapeResult>(0, 0, other.Direction());
   }
   static const ShapeResult* CreateForTabulationCharacters(
       const Font* font,
@@ -181,7 +173,6 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }
   unsigned NumCharacters() const { return num_characters_; }
   unsigned NumGlyphs() const { return num_glyphs_; }
-  const SimpleFontData* PrimaryFont() const { return primary_font_.Get(); }
   bool HasFallbackFonts(const SimpleFontData* primary_font) const;
 
   // TODO(eae): Remove start_x and return value once ShapeResultBuffer has been
@@ -519,7 +510,6 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // index to x-position and O(log n) time, using binary search, from
   // x-position to character index.
   mutable HeapVector<ShapeResultCharacterData> character_position_;
-  Member<const SimpleFontData> primary_font_;
 
   unsigned start_index_ = 0;
   unsigned num_characters_ = 0;

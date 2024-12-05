@@ -199,9 +199,7 @@ class HarfBuzzShaperTest : public FontTestBase {
   }
 
   const ShapeResult* CreateMissingRunResult(TextDirection direction) {
-    Font font(font_description);
-    ShapeResult* result =
-        MakeGarbageCollected<ShapeResult>(&font, 2, 8, direction);
+    ShapeResult* result = MakeGarbageCollected<ShapeResult>(2, 8, direction);
     result->InsertRunForTesting(2, 1, direction, {0});
     result->InsertRunForTesting(3, 3, direction, {0, 1});
     // The character index 6 and 7 is missing.
@@ -562,7 +560,7 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalUpright) {
       shaper.Shape(&font, direction, 3, string.length());
 
   ShapeResult* composite_result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result1->CopyRange(0, 3, composite_result);
   result2->CopyRange(3, string.length(), composite_result);
 
@@ -585,7 +583,7 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalUprightIdeograph) {
       shaper.Shape(&font, direction, 3, string.length());
 
   ShapeResult* composite_result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result1->CopyRange(0, 3, composite_result);
   result2->CopyRange(3, string.length(), composite_result);
 
@@ -649,7 +647,7 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalMixed) {
       shaper.Shape(&font, direction, 3, string.length());
 
   ShapeResult* composite_result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result1->CopyRange(0, 3, composite_result);
   result2->CopyRange(3, string.length(), composite_result);
 
@@ -1439,15 +1437,13 @@ TEST_P(ShapeResultCopyRangeTest, Split) {
   const ShapeResult* result = shaper.Shape(&font, direction);
 
   // Split the result.
-  ShapeResult* result1 =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+  ShapeResult* result1 = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(0, test_data.break_point, result1);
   EXPECT_EQ(test_data.break_point, result1->NumCharacters());
   EXPECT_EQ(0u, result1->StartIndex());
   EXPECT_EQ(test_data.break_point, result1->EndIndex());
 
-  ShapeResult* result2 =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+  ShapeResult* result2 = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(test_data.break_point, string.length(), result2);
   EXPECT_EQ(string.length() - test_data.break_point, result2->NumCharacters());
   EXPECT_EQ(test_data.break_point, result2->StartIndex());
@@ -1455,7 +1451,7 @@ TEST_P(ShapeResultCopyRangeTest, Split) {
 
   // Combine them.
   ShapeResult* composite_result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result1->CopyRange(0, test_data.break_point, composite_result);
   result2->CopyRange(0, string.length(), composite_result);
   EXPECT_EQ(string.length(), composite_result->NumCharacters());
@@ -1490,7 +1486,7 @@ TEST_P(ShapeResultCopyRangeTest, ShapeRange) {
 
   // Combine them.
   ShapeResult* composite_result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result1->CopyRange(0, test_data.break_point, composite_result);
   result2->CopyRange(0, string.length(), composite_result);
   EXPECT_EQ(string.length(), composite_result->NumCharacters());
@@ -1513,7 +1509,7 @@ TEST_F(HarfBuzzShaperTest, ShapeResultCopyRangeIntoLatin) {
   const ShapeResult* result = shaper.Shape(&font, direction);
 
   ShapeResult* composite_result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(0, 10, composite_result);
   result->CopyRange(10, 20, composite_result);
   result->CopyRange(20, 30, composite_result);
@@ -1546,7 +1542,7 @@ TEST_F(HarfBuzzShaperTest, ShapeResultCopyRangeIntoArabicThaiHanLatin) {
   const ShapeResult* result = shaper.Shape(&font, direction);
 
   ShapeResult* composite_result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(0, 4, composite_result);
   result->CopyRange(4, 6, composite_result);
   result->CopyRange(6, 8, composite_result);
@@ -1586,8 +1582,7 @@ TEST_P(ShapeParameterTest, ShapeResultCopyRangeAcrossRuns) {
   const ShapeResult* result = shaper.Shape(&font, direction);
 
   // CopyRange(5, 7) should copy 1 character from [1] and 1 from [2].
-  ShapeResult* target =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+  ShapeResult* target = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(5, 7, target);
   EXPECT_EQ(2u, target->NumCharacters());
 }
@@ -1621,7 +1616,7 @@ TEST_F(HarfBuzzShaperTest, ShapeResultCopyRangeSegmentGlyphBoundingBox) {
       shaper.Shape(&font, direction, 6, string.length());
 
   ShapeResult* composite_result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result1->CopyRange(0, 6, composite_result);
   result2->CopyRange(6, string.length(), composite_result);
 
@@ -1649,7 +1644,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinCommonLigatures) {
   ligatures.common = FontDescription::kEnabledLigaturesState;
 
   // MEgalopolis Extra has a lot of ligatures which this test relies on.
-  Font testFont = blink::test::CreateTestFont(
+  Font font = blink::test::CreateTestFont(
       AtomicString("MEgalopolis"),
       blink::test::PlatformTestDataPath(
           "third_party/MEgalopolis/MEgalopolisExtra.woff"),
@@ -1657,7 +1652,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinCommonLigatures) {
 
   String string = To16Bit("ffi ff");
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(&testFont, TextDirection::kLtr);
+  const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
   EXPECT_EQ(0u, result->NextSafeToBreakOffset(0));  // At start of string.
   EXPECT_EQ(3u, result->NextSafeToBreakOffset(1));  // At end of "ffi" ligature.
@@ -1670,7 +1665,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinCommonLigatures) {
   // Verify safe to break information in copied results to ensure that both
   // copying and multi-run break information works.
   ShapeResult* copied_result =
-      MakeGarbageCollected<ShapeResult>(&testFont, 0, 0, TextDirection::kLtr);
+      MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kLtr);
   result->CopyRange(0, 3, copied_result);
   result->CopyRange(3, string.length(), copied_result);
 
@@ -1688,7 +1683,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakPreviousLatinCommonLigatures) {
   ligatures.common = FontDescription::kEnabledLigaturesState;
 
   // MEgalopolis Extra has a lot of ligatures which this test relies on.
-  Font testFont = blink::test::CreateTestFont(
+  Font font = blink::test::CreateTestFont(
       AtomicString("MEgalopolis"),
       blink::test::PlatformTestDataPath(
           "third_party/MEgalopolis/MEgalopolisExtra.woff"),
@@ -1696,7 +1691,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakPreviousLatinCommonLigatures) {
 
   String string = To16Bit("ffi ff");
   HarfBuzzShaper shaper(string);
-  const ShapeResult* result = shaper.Shape(&testFont, TextDirection::kLtr);
+  const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
   EXPECT_EQ(6u, result->PreviousSafeToBreakOffset(6));  // At end of "ff" liga.
   EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(5));  // At end of "ff" liga.
@@ -1709,7 +1704,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakPreviousLatinCommonLigatures) {
   // Verify safe to break information in copied results to ensure that both
   // copying and multi-run break information works.
   ShapeResult* copied_result =
-      MakeGarbageCollected<ShapeResult>(&testFont, 0, 0, TextDirection::kLtr);
+      MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kLtr);
   result->CopyRange(0, 3, copied_result);
   result->CopyRange(3, string.length(), copied_result);
 
@@ -1728,7 +1723,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinDiscretionaryLigatures) {
   ligatures.discretionary = FontDescription::kEnabledLigaturesState;
 
   // MEgalopolis Extra has a lot of ligatures which this test relies on.
-  Font testFont = blink::test::CreateTestFont(
+  Font font = blink::test::CreateTestFont(
       AtomicString("MEgalopolis"),
       blink::test::PlatformTestDataPath(
           "third_party/MEgalopolis/MEgalopolisExtra.woff"),
@@ -1742,7 +1737,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinDiscretionaryLigatures) {
   String test_word(u"RADDAYoVaDD");
   unsigned safe_to_break_positions[] = {2, 3, 9, 10};
   HarfBuzzShaper shaper(test_word);
-  const ShapeResult* result = shaper.Shape(&testFont, TextDirection::kLtr);
+  const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
   unsigned compare_safe_to_break_position = 0;
   for (unsigned i = 1; i < test_word.length() - 1; ++i) {
@@ -1756,7 +1751,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinDiscretionaryLigatures) {
   String inserted_zero_width_spaces(u"RA\u200BD\u200BDAYoVa\u200BD\u200BD");
   HarfBuzzShaper refShaper(inserted_zero_width_spaces);
   const ShapeResult* referenceResult =
-      refShaper.Shape(&testFont, TextDirection::kLtr);
+      refShaper.Shape(&font, TextDirection::kLtr);
 
   // Results should be identical if it truly is safe to break at the designated
   // safe-to-break offsets because otherwise, the zero-width spaces would have
@@ -1930,11 +1925,9 @@ TEST_P(ShapeParameterTest, CopyRangeMissingRun) {
 }
 
 TEST_P(ShapeParameterTest, CopyRangeNoRuns) {
-  Font font(font_description);
-
   TextDirection direction = GetParam();
   const ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 2, direction);
+      MakeGarbageCollected<ShapeResult>(0, 2, direction);
 
   const ShapeResult* sub0 = result->SubRange(0, 1);
   EXPECT_EQ(sub0->StartIndex(), 0u);
