@@ -1550,6 +1550,7 @@ class InterestGroupAuction::BuyerHelper
       auction_->auction_metrics_recorder_->ReportBidderWorkletKey(worklet_key);
       auction_->auction_worklet_manager_->RequestWorkletByKey(
           worklet_key, auction_->devtools_auction_id_,
+          /*process_assigned_callback=*/base::OnceClosure(),
           base::BindOnce(&BuyerHelper::OnBidderWorkletReceived,
                          base::Unretained(this), bid_state.get()),
           base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
@@ -4997,6 +4998,7 @@ void InterestGroupAuction::RequestSellerWorklet() {
       devtools_auction_id_, *config_->decision_logic_url,
       config_->trusted_scoring_signals_url, config_->seller_experiment_group_id,
       config_->non_shared_params.trusted_scoring_signals_coordinator,
+      /*process_assigned_callback=*/base::OnceClosure(),
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
                      base::Unretained(this)),
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletFatalError,

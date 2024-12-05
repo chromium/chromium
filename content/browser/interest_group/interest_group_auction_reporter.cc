@@ -500,6 +500,7 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
       seller_info->auction_config->seller_experiment_group_id,
       seller_info->auction_config->non_shared_params
           .trusted_scoring_signals_coordinator,
+      /*process_assigned_callback=*/base::OnceClosure(),
       base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
                      base::Unretained(this), base::Unretained(seller_info),
                      top_seller_signals),
