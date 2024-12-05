@@ -791,6 +791,11 @@ bool GetFileContents(IDataObject* data_object,
     if (TYMED_HGLOBAL == content.tymed) {
       base::win::ScopedHGlobal<char*> data(content.hGlobal);
       file_contents->assign(data.data(), data.size());
+    } else if (TYMED_ISTREAM == content.tymed) {
+      // For example, files dragged out of a ZIP Folder.
+      HGLOBAL hdata = CopyFileContentsToHGlobal(data_object, 0);
+      base::win::ScopedHGlobal<char*> data(hdata);
+      file_contents->assign(data.data(), data.size());
     }
     ReleaseStgMedium(&content);
   }
