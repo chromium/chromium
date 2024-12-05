@@ -22,7 +22,7 @@ class WorkerNode;
 
 namespace resource_attribution {
 
-// A set of nodes to include or exclude from a resource split.
+// A set of nodes to exclude from a resource split.
 using NodeSplitSet =
     std::set<absl::variant<const performance_manager::FrameNode*,
                            const performance_manager::WorkerNode*>>;
@@ -31,9 +31,7 @@ using NodeSplitSet =
 // `process_node`. `frame_setter` or `worker_setter` will be called for each
 // node with that node's fraction of `resource_value`.
 //
-// Any node in `extra_nodes` will be included in the split as if it were hosted
-// in `process_node`, and any node in `nodes_to_skip` will be excluded from the
-// split.
+// Any node in `nodes_to_skip` will be excluded from the split.
 template <typename T,
           // Template parameters are used to alias FrameNode and WorkerNode
           // without introducing them into the resource_attribution namespace.
@@ -44,7 +42,6 @@ template <typename T,
 void SplitResourceAmongFramesAndWorkers(
     T resource_value,
     const performance_manager::ProcessNode* process_node,
-    const NodeSplitSet& extra_nodes,
     const NodeSplitSet& nodes_to_skip,
     FrameSetter frame_setter,
     WorkerSetter worker_setter);
@@ -65,7 +62,6 @@ void SplitResourceAmongFramesAndWorkers(
     FrameSetter frame_setter,
     WorkerSetter worker_setter) {
   SplitResourceAmongFramesAndWorkers(resource_value, process_node,
-                                     /*extra_nodes=*/{},
                                      /*nodes_to_skip=*/{}, frame_setter,
                                      worker_setter);
 }
@@ -80,7 +76,6 @@ template <typename T,
 void SplitResourceAmongFramesAndWorkers(
     T resource_value,
     const performance_manager::ProcessNode* process_node,
-    const NodeSplitSet& extra_nodes,
     const NodeSplitSet& nodes_to_skip,
     FrameSetter frame_setter,
     WorkerSetter worker_setter) {
@@ -103,16 +98,6 @@ void SplitResourceAmongFramesAndWorkers(
     if (!base::Contains(nodes_to_skip, w)) {
       worker_nodes.insert(w);
     }
-  }
-
-  for (const auto& frame_or_worker : extra_nodes) {
-    CHECK(!base::Contains(nodes_to_skip, frame_or_worker));
-    absl::visit(
-        base::Overloaded{
-            [&frame_nodes](const FrameNode* f) { frame_nodes.insert(f); },
-            [&worker_nodes](const WorkerNode* w) { worker_nodes.insert(w); },
-        },
-        frame_or_worker);
   }
 
   const size_t frame_and_worker_node_count =

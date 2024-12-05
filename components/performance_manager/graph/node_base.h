@@ -110,10 +110,14 @@ class NodeBase {
   // state.
 
   // Step 5:
-  // Called just before leaving |graph_|, a good opportunity to uninitialize
-  // node state. The node will be in the kActiveInGraph state during this call.
-  // The node may make property changes, and these changes may cause
-  // notifications to be dispatched.
+  // Called just before leaving |graph_|. The node will be in the kActiveInGraph
+  // state during this call. The node may make property changes, and these
+  // changes may cause notifications to be dispatched. This must leave the node
+  // and the graph in a consistent state since the node is still in the graph.
+  // For example if this is used to sever the "opener" relationship between a
+  // PageNode and a FrameNode, it must send the OnOpenerFrameNodeChanged
+  // notification, and leave the PageNode and FrameNode in the valid state they
+  // would have when the page has no opener.
   virtual void OnBeforeLeavingGraph();
 
   // Step 6:
@@ -121,14 +125,23 @@ class NodeBase {
   // during any of these notifications. The node is in the kLeavingGraph state.
 
   // Step 7:
-  // Called as this node is leaving |graph_|. Any private node-attached data
-  // should be destroyed at this point. The node is in the kLeavingGraph state.
-  virtual void RemoveNodeAttachedData() = 0;
+  // Called while leaving |graph_|, a good opportunity to uninitialize node
+  // state. The node will be in the kUninitializing state during this call.
+  // Nodes may modify their properties but *not* cause notifications that have
+  // this node as a parameter to be emitted, because from the public viewpoint
+  // the node is already gone.
+  virtual void OnUninitializing();
 
   // Step 8:
+  // Called as this node is leaving |graph_|. Any private node-attached data
+  // should be destroyed at this point. The node is in the kUninitializing
+  // state.
+  virtual void RemoveNodeAttachedData() = 0;
+
+  // Step 9:
   // Leaves the graph that this node is a part of. The node is in the
-  // kLeavingGraph state during this call, and will be in the kNotInGraph state
-  // immediately afterwards.
+  // kUninitializing state during this call, and will be in the kNotInGraph
+  // state immediately afterwards.
   void LeaveGraph();
 
   // Assigned when JoinGraph() is called, up until LeaveGraph() is called, where

@@ -37,7 +37,8 @@ NodeBase* NodeBase::FromNode(Node* node) {
 
 bool NodeBase::CanSetProperty() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetNodeState() == NodeState::kInitializing;
+  return GetNodeState() == NodeState::kInitializing ||
+         GetNodeState() == NodeState::kUninitializing;
 }
 
 bool NodeBase::CanSetAndNotifyProperty() const {
@@ -65,11 +66,17 @@ void NodeBase::OnBeforeLeavingGraph() {
   // This is overridden by node impls.
 }
 
+void NodeBase::OnUninitializing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(NodeState::kUninitializing, GetNodeState());
+  // This is overridden by node impls.
+}
+
 void NodeBase::LeaveGraph() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(graph_);
   DCHECK(graph_->NodeInGraph(this));
-  DCHECK_EQ(NodeState::kLeavingGraph, GetNodeState());
+  DCHECK_EQ(NodeState::kUninitializing, GetNodeState());
   graph_ = nullptr;
 }
 

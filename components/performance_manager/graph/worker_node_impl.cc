@@ -235,7 +235,7 @@ void WorkerNodeImpl::OnJoiningGraph() {
   process_node_->AddWorker(this);
 }
 
-void WorkerNodeImpl::OnBeforeLeavingGraph() {
+void WorkerNodeImpl::OnUninitializing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   process_node_->RemoveWorker(this);

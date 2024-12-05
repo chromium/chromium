@@ -30,7 +30,12 @@ enum class NodeState {
 
   // The node is being removed from the graph. No property changes or
   // notifications are permitted.
-  kLeavingGraph
+  kLeavingGraph,
+
+  // The node is uninitializing. Making property changes is fine, but no
+  // notifications should be dispatched. This state is only seen by node
+  // implementations and will never be visible via the public API.
+  kUninitializing,
 };
 
 }  // namespace performance_manager
