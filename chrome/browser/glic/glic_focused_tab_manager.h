@@ -42,6 +42,8 @@ class GlicFocusedTabManager : public BrowserListObserver,
  private:
   bool IsValidFocusable(content::WebContents* web_contents);
   void HandleWebContentsActivated(content::WebContents* web_contents);
+  std::vector<base::WeakPtr<content::WebContents>>::iterator
+  FindActivatedWebContents(content::WebContents* web_contents);
 
   raw_ptr<Profile> profile_;
   base::WeakPtr<content::WebContents> focused_web_contents_;

@@ -54,11 +54,7 @@ void GlicFocusedTabManager::HandleWebContentsActivated(
   if (!web_contents) {
     return;
   }
-  auto it = base::ranges::find_if(
-      activated_web_contents_,
-      [web_contents](const base::WeakPtr<content::WebContents>& weak_ptr) {
-        return weak_ptr.get() == web_contents;
-      });
+  auto it = FindActivatedWebContents(web_contents);
   if (it == activated_web_contents_.end()) {
     // Not found, add to front
     activated_web_contents_.insert(activated_web_contents_.begin(),
@@ -84,7 +80,6 @@ void GlicFocusedTabManager::OnTabStripModelChanged(
     HandleWebContentsActivated(selection.new_contents);
   }
 
-  // TODO(markeh): Also handle "kReplaced" changes.
   if (change.type() == TabStripModelChange::kRemoved) {
     for (const auto& removed_tab : change.GetRemove()->contents) {
       content::WebContents* removed_contents = removed_tab.contents;
@@ -98,6 +93,27 @@ void GlicFocusedTabManager::OnTabStripModelChanged(
       activated_web_contents_.erase(it, activated_web_contents_.end());
     }
   }
+
+  if (change.type() == TabStripModelChange::kReplaced) {
+    auto it = FindActivatedWebContents(change.GetReplace()->old_contents);
+    if (it != activated_web_contents_.end()) {
+      *it = change.GetReplace()->new_contents->GetWeakPtr();
+    }
+  }
+}
+
+std::vector<base::WeakPtr<content::WebContents>>::iterator
+GlicFocusedTabManager::FindActivatedWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return activated_web_contents_.end();
+  }
+
+  return base::ranges::find_if(
+      activated_web_contents_,
+      [web_contents](const base::WeakPtr<content::WebContents>& weak_ptr) {
+        return weak_ptr.get() == web_contents;
+      });
 }
 
 content::WebContents* GlicFocusedTabManager::GetWebContentsForFocusedTab() {
