@@ -657,16 +657,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.CloudUserAffiliationStatus"
-    enum="EnterpriseCloudUserAffiliationStatus" expires_after="2025-05-01">
-  <owner>igorruvinov@chromium.org</owner>
-  <owner>zmin@chromium.org</owner>
-  <summary>
-    The cloud user affiliation status. Recorded once at the end of each policy
-    fetch process where a cloud-managed user is involved.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.DataProtection.NavigationFinished.URLVerdictSource"
     enum="DataProtectionURLVerdictSource" expires_after="2025-03-18">
   <owner>alshawwa@chromium.org</owner>

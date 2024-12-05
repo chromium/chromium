@@ -430,7 +430,6 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // Swap first, so that observers that call GetPolicies() see the current
   // values.
   std::swap(policy_bundle_, bundle);
-  RecordUserAffiliationStatus();
   NotifyPoliciesUpdated(bundle);
 }
 
@@ -606,27 +605,6 @@ void PolicyServiceImpl::CheckRefreshComplete() {
     for (auto& callback : callbacks)
       std::move(callback).Run();
   }
-}
-
-void PolicyServiceImpl::RecordUserAffiliationStatus() {
-  auto& policies =
-      policy_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  // All policy fetches seem to include a policy service with an unmanaged user,
-  // even if the only open profile is managed. As a result, only log policy
-  // fetches where a managed user is involved.
-  if (policies.GetUserAffiliationIds().empty()) {
-    return;
-  }
-
-  CloudUserAffiliationStatus status = CloudUserAffiliationStatus::kUserOnly;
-  if (policies.IsUserAffiliated()) {
-    status = CloudUserAffiliationStatus::kDeviceAndUserAffiliated;
-  } else if (!policies.GetDeviceAffiliationIds().empty()) {
-    status = CloudUserAffiliationStatus::kDeviceAndUserUnaffiliated;
-  }
-
-  base::UmaHistogramEnumeration("Enterprise.CloudUserAffiliationStatus",
-                                status);
 }
 
 // static
