@@ -70,9 +70,10 @@ try_.builder(
             ],
         },
     },
-    # TODO: crbug.com/370566043 - Increase to 100% once confirming load is ok.
+    # TODO: crbug.com/40190002 - make this required once confirming there are
+    # no false rejections.
     tryjob = try_.job(
-        experiment_percentage = 50,
+        experiment_percentage = 100,
     ),
 )
 

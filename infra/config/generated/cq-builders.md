@@ -783,7 +783,7 @@ as required builders.
   * [`//.*\.(js|ts)`](https://cs.chromium.org/search?q=+file:.*\.(js|ts))
 
 * [compile-size](https://ci.chromium.org/p/chromium/builders/try/compile-size) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""compile-size""))
-  * Experiment percentage: 50.0
+  * Experiment percentage: 100.0
 
 * [dawn-android-arm64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-android-arm64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-android-arm64-deps-rel""))
   * Experiment percentage: 100.0
