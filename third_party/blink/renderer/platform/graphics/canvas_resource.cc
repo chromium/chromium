@@ -918,7 +918,7 @@ bool ExternalCanvasResource::
   GenOrFlushSyncToken();
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      transferable_resource_.mailbox(), transferable_resource_.texture_target(),
+      client_si_, transferable_resource_.texture_target(),
       transferable_resource_.sync_token(), transferable_resource_.size,
       transferable_resource_.format,
       transferable_resource_.is_overlay_candidate,
