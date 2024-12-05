@@ -53,7 +53,7 @@ declare_args() {
 # files from //third_party/ in //build/.
 # Note, `current_cpu` should always exist in the //build/ tree, so the
 # `target_cpu` fallback has been removed.
-fuchsia_target_api_level = 24
+fuchsia_target_api_level = 25
 fuchsia_arch_root =
     "${fuchsia_sdk}/obj/${target_cpu}-api-${fuchsia_target_api_level}"
 
