@@ -689,20 +689,20 @@ base::FilePath GetUpdatePathFromDict(const base::Value::Dict& dict) {
     return path;
   }
 
-  // For remote paths (e.g. "https://fwupd.org/..."), replace with the
-  // mirror URL.
-  //
-  // TODO(crbug.com/379748897): for now this is needed with fwupd-2.0
-  // due to fwupd not performing this modification itself. When the
-  // service has been fixed this workaround can be removed.
-  if (url.SchemeIsHTTPOrHTTPS()) {
-    GURL modified_url(kLVFSMirrorBaseURL + url.ExtractFileName());
-    return base::FilePath(modified_url.spec());
+  // Reject other URL schemes.
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    FIRMWARE_LOG(ERROR) << "Invalid location scheme: " << path;
+    return base::FilePath();
   }
 
-  // Reject other URL schemes.
-  FIRMWARE_LOG(ERROR) << "Invalid location scheme: " << path;
-  return base::FilePath();
+  // For remote paths, ensure that the URL is on the LVFS mirror. This
+  // ensures that the default server "https://fwupd.org/..." is not used.
+  if (url.GetWithoutFilename() != kLVFSMirrorBaseURL) {
+    FIRMWARE_LOG(ERROR) << "Location URL is not on the LVFS mirror: " << path;
+    return base::FilePath();
+  }
+
+  return path;
 }
 
 void FwupdClient::AddObserver(FwupdClient::Observer* observer) {
