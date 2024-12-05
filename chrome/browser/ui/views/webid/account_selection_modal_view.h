@@ -50,12 +50,11 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       bool show_back_button,
       bool is_choose_an_account) override;
 
-  void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
+  void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override;
 
-  void ShowSingleAccountConfirmDialog(
-      const content::IdentityRequestAccount& account,
-      bool show_back_button) override;
+  void ShowSingleAccountConfirmDialog(const IdentityRequestAccountPtr& account,
+                                      bool show_back_button) override;
 
   void ShowFailureDialog(
       const std::u16string& idp_for_display,
@@ -68,8 +67,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       override;
 
   void ShowRequestPermissionDialog(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data) override;
+      const IdentityRequestAccountPtr& account) override;
 
   void ShowSingleReturningAccountDialog(
       const std::vector<IdentityRequestAccountPtr>& accounts,
@@ -151,8 +149,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // Notifies the observer of the account selection and updates the continue
   // button into a spinner button.
-  void OnContinueButtonClicked(const content::IdentityRequestAccount& account,
-                               const content::IdentityProviderData& idp_data,
+  void OnContinueButtonClicked(const IdentityRequestAccountPtr& account,
                                const ui::Event& event);
 
   // Notifies the observer of the use other account button being clicked.

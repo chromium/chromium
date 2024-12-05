@@ -365,7 +365,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateAccountRows(
   int num_rows = 0;
   for (const auto& account : accounts) {
     content->AddChildView(CreateAccountRow(
-        *account,
+        account,
         /*clickable_position=*/
         should_hover ? std::make_optional<int>(num_rows++) : std::nullopt,
         /*should_include_idp=*/false,
@@ -445,7 +445,7 @@ void AccountSelectionModalView::ShowAccounts(
 }
 
 void AccountSelectionModalView::ShowVerifyingSheet(
-    const content::IdentityRequestAccount& account,
+    const IdentityRequestAccountPtr& account,
     const std::u16string& title) {
   // A different type of sheet must have been shown prior to ShowVerifyingSheet.
   // This might change if we choose to integrate auto re-authn with button mode.
@@ -525,11 +525,9 @@ void AccountSelectionModalView::ShowVerifyingSheet(
 }
 
 void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
-    const content::IdentityRequestAccount& account,
+    const IdentityRequestAccountPtr& account,
     bool show_back_button) {
-  IdentityRequestAccountPtr ptr(
-      &const_cast<content::IdentityRequestAccount&>(account));
-  std::vector<IdentityRequestAccountPtr> accounts = {ptr};
+  std::vector<IdentityRequestAccountPtr> accounts = {account};
   ShowAccounts(accounts, /*is_single_account_chooser=*/true);
 }
 
@@ -601,10 +599,10 @@ void AccountSelectionModalView::OnCombinedIconsFetched() {
 }
 
 void AccountSelectionModalView::ShowRequestPermissionDialog(
-    const content::IdentityRequestAccount& account,
-    const content::IdentityProviderData& idp_data) {
+    const IdentityRequestAccountPtr& account) {
   RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
+  const content::IdentityProviderData& idp_data = *account->identity_provider;
   GURL idp_brand_icon_url = idp_data.idp_metadata.brand_icon_url;
   GURL rp_brand_icon_url = idp_data.client_metadata.brand_icon_url;
   // Show RP icon if and only if both IDP and RP icons are available. The
@@ -625,19 +623,17 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
   CHECK(body_label_);
   body_label_->SetVisible(/*visible=*/false);
 
-  IdentityRequestAccountPtr ptr(
-      &const_cast<content::IdentityRequestAccount&>(account));
-  std::vector<IdentityRequestAccountPtr> accounts = {ptr};
+  std::vector<IdentityRequestAccountPtr> accounts = {account};
   account_chooser_ =
       AddChildView(CreateAccountRows(accounts,
                                      /*should_hover=*/false,
                                      /*show_separator=*/false,
                                      /*is_single_account_chooser=*/true,
                                      /*additional_row_vertical_padding=*/0));
-  if (account.login_state == Account::LoginState::kSignUp) {
+  if (account->login_state == Account::LoginState::kSignUp) {
     // Add disclosure label.
     std::unique_ptr<views::StyledLabel> disclosure_label =
-        CreateDisclosureLabel(*account.identity_provider);
+        CreateDisclosureLabel(*account->identity_provider);
     disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
     disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         /*top=*/fedcm::kVerticalSpacing, /*left=*/0, /*bottom=*/0,
@@ -647,16 +643,14 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
   }
   AddChildView(CreateButtonRow(
       base::BindRepeating(&AccountSelectionModalView::OnContinueButtonClicked,
-                          base::Unretained(this), std::cref(account),
-                          std::cref(idp_data)),
+                          base::Unretained(this), account),
       /*use_other_account_callback=*/std::nullopt,
       base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
                           base::Unretained(owner_))));
 }
 
 void AccountSelectionModalView::OnContinueButtonClicked(
-    const content::IdentityRequestAccount& account,
-    const content::IdentityProviderData& idp_data,
+    const IdentityRequestAccountPtr& account,
     const ui::Event& event) {
   // In the verifying sheet, we do not disable the continue button if it has a
   // spinner because otherwise the focus will land on the cancel button.
@@ -666,7 +660,7 @@ void AccountSelectionModalView::OnContinueButtonClicked(
     return;
   }
 
-  owner_->OnAccountSelected(account, idp_data, event);
+  owner_->OnAccountSelected(account, event);
   has_spinner_ = true;
 
   ReplaceButtonWithSpinner(continue_button_,

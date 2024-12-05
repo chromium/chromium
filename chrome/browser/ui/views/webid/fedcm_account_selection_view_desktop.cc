@@ -230,7 +230,7 @@ bool FedCmAccountSelectionView::Show(
       modal_loading_dialog_state_ = LoadingDialogResult::kProceed;
       return false;
     }
-    ShowVerifyingSheet(*accounts[0]);
+    ShowVerifyingSheet(accounts[0]);
   } else if (!new_accounts.empty()) {
     // When we just logged in to an account that is not a single returning
     // account: on the modal, we'd show all the accounts and on the bubble, we'd
@@ -262,11 +262,10 @@ bool FedCmAccountSelectionView::Show(
           // `this` has been deleted.
           return false;
         }
-        ShowVerifyingSheet(*new_accounts_[0]);
+        ShowVerifyingSheet(new_accounts_[0]);
       } else if (should_show_request_permission_dialog) {
         state_ = State::REQUEST_PERMISSION;
-        account_selection_view_->ShowRequestPermissionDialog(*new_accounts_[0],
-                                                             new_idp_data);
+        account_selection_view_->ShowRequestPermissionDialog(new_accounts_[0]);
         // This is a placeholder assuming the tab containing the disclosure
         // dialog will be closed. This will be updated upon clicking on
         // continue, back or cancel button. If none of these buttons are clicked
@@ -288,7 +287,7 @@ bool FedCmAccountSelectionView::Show(
       if (new_accounts_.size() == 1u) {
         state_ = State::SINGLE_ACCOUNT_PICKER;
         account_selection_view_->ShowSingleAccountConfirmDialog(
-            *new_accounts_[0],
+            new_accounts_[0],
             /*show_back_button=*/accounts_or_mismatches_size > 1u ||
                 supports_add_account);
       } else {
@@ -312,7 +311,7 @@ bool FedCmAccountSelectionView::Show(
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
-          *accounts_[0],
+          accounts_[0],
           /*show_back_button=*/false);
     }
   } else if (idp_list_.size() > 1u && returning_accounts_size == 1u) {
@@ -600,8 +599,7 @@ void FedCmAccountSelectionView::OnAccountsDisplayed() {
 }
 
 void FedCmAccountSelectionView::OnAccountSelected(
-    const Account& account,
-    const content::IdentityProviderData& idp_data,
+    const IdentityRequestAccountPtr& account,
     const ui::Event& event) {
   DCHECK(state_ != State::IDP_SIGNIN_STATUS_MISMATCH);
   DCHECK(state_ != State::AUTO_REAUTHN);
@@ -619,17 +617,18 @@ void FedCmAccountSelectionView::OnAccountSelected(
     modal_disclosure_dialog_state_ = DisclosureDialogResult::kContinue;
   }
 
+  const content::IdentityProviderData& idp_data = *account->identity_provider;
   // If the account is a returning user or if the account is selected from UI
   // which shows the disclosure text or if the dialog doesn't need to ask for
   // the user's permission to share their id/email/name/picture, show the
   // verifying sheet.
-  if (account.login_state != Account::LoginState::kSignUp ||
+  if (account->login_state != Account::LoginState::kSignUp ||
       state_ == State::REQUEST_PERMISSION ||
       (state_ == State::SINGLE_ACCOUNT_PICKER &&
        dialog_type_ == DialogType::BUBBLE) ||
       idp_data.disclosure_fields.empty()) {
     state_ = State::VERIFYING;
-    if (!NotifyDelegateOfAccountSelection(account, idp_data)) {
+    if (!NotifyDelegateOfAccountSelection(*account, idp_data)) {
       // `this` was deleted.
       return;
     }
@@ -642,7 +641,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   // we'd request permission through the request permission dialog.
   if (dialog_type_ == DialogType::MODAL) {
     state_ = State::REQUEST_PERMISSION;
-    account_selection_view_->ShowRequestPermissionDialog(account, idp_data);
+    account_selection_view_->ShowRequestPermissionDialog(account);
     // This is a placeholder assuming the tab containing the disclosure dialog
     // will be closed. This will be updated upon proceeding to the verifying
     // sheet, clicking the back button or clicking the cancel button. If none of
@@ -684,7 +683,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
       accounts_.size() == 1u) {
     state_ = State::SINGLE_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleAccountConfirmDialog(
-        *accounts_[0], /*show_back_button=*/false);
+        accounts_[0], /*show_back_button=*/false);
     UpdateDialogPositionIfModal();
     return;
   }
@@ -990,7 +989,8 @@ bool FedCmAccountSelectionView::NotifyDelegateOfAccountSelection(
   return static_cast<bool>(weak_ptr);
 }
 
-void FedCmAccountSelectionView::ShowVerifyingSheet(const Account& account) {
+void FedCmAccountSelectionView::ShowVerifyingSheet(
+    const IdentityRequestAccountPtr& account) {
   const std::u16string title =
       state_ == State::AUTO_REAUTHN
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN)

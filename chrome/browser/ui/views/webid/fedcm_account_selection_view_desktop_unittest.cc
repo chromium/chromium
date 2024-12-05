@@ -85,21 +85,20 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     }
   }
 
-  void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
+  void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override {
     sheet_type_ = SheetType::kVerifying;
-    account_ids_ = {account.id};
+    account_ids_ = {account->id};
     show_back_button_ = false;
     is_choose_an_account_ = false;
   }
 
-  void ShowSingleAccountConfirmDialog(
-      const content::IdentityRequestAccount& account,
-      bool show_back_button) override {
+  void ShowSingleAccountConfirmDialog(const IdentityRequestAccountPtr& account,
+                                      bool show_back_button) override {
     show_back_button_ = show_back_button;
     is_choose_an_account_ = false;
     sheet_type_ = SheetType::kConfirmAccount;
-    account_ids_ = {account.id};
+    account_ids_ = {account->id};
   }
 
   void ShowFailureDialog(
@@ -121,12 +120,11 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
   }
 
   void ShowRequestPermissionDialog(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data) override {
+      const IdentityRequestAccountPtr& account) override {
     show_back_button_ = true;
     is_choose_an_account_ = false;
     sheet_type_ = SheetType::kRequestPermission;
-    account_ids_ = {account.id};
+    account_ids_ = {account->id};
   }
 
   void ShowSingleReturningAccountDialog(
@@ -568,7 +566,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -588,7 +586,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -608,7 +606,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_TRUE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
@@ -622,14 +620,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[1], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[1], CreateMouseEvent());
   EXPECT_TRUE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[1], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[1], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -651,8 +649,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
-  controller->OnAccountSelected(*new_accounts_[0], *idp_data_,
-                                CreateMouseEvent());
+  controller->OnAccountSelected(new_accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
 
@@ -683,7 +680,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
 
@@ -752,7 +749,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountSelectedDeletesView) {
   }
 
   // Destroys FedCmAccountSelectionView. Should not cause crash.
-  view->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  view->OnAccountSelected(accounts_[0], CreateMouseEvent());
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
@@ -769,7 +766,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
   controller->SetInputEventActivationProtectorForTesting(
       std::move(input_protector));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   // Nothing should change after first account selected.
   EXPECT_FALSE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
@@ -777,7 +774,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   // Should show verifying sheet after first account selected.
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
@@ -1264,13 +1261,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // There are no other accounts, so back button should not be present.
   EXPECT_FALSE(controller->GetTestView()->show_back_button_);
 
-  controller->OnAccountSelected(*new_accounts_[0], *idp_data_,
-                                CreateMouseEvent());
+  controller->OnAccountSelected(new_accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
   EXPECT_TRUE(controller->GetTestView()->show_back_button_);
-  controller->OnAccountSelected(*new_accounts_[0], *idp_data_,
-                                CreateMouseEvent());
+  controller->OnAccountSelected(new_accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1598,7 +1593,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts[0], *idp_list[0], CreateMouseEvent());
+  controller->OnAccountSelected(accounts[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1638,7 +1633,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
   // Simulate second account picked.
-  controller->OnAccountSelected(*accounts[1], *idp_list[1], CreateMouseEvent());
+  controller->OnAccountSelected(accounts[1], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1664,7 +1659,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
               testing::ElementsAre(kAccountId1));
 
   // Simulate account picked
-  controller->OnAccountSelected(*accounts[0], *idp_list[0], CreateMouseEvent());
+  controller->OnAccountSelected(accounts[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1773,13 +1768,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowModal) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1802,13 +1797,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowModal) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1829,7 +1824,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowReturningModal) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1852,7 +1847,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1872,7 +1867,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowBackModal) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_TRUE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
             controller->GetTestView()->sheet_type_);
@@ -1886,14 +1881,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowBackModal) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_TRUE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1916,7 +1911,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBackModal) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_TRUE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
             controller->GetTestView()->sheet_type_);
@@ -1930,14 +1925,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBackModal) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[1], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[1], CreateMouseEvent());
   EXPECT_TRUE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId2));
 
-  controller->OnAccountSelected(*accounts_[1], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[1], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -2015,7 +2010,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
 
@@ -2037,7 +2032,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
 
@@ -2060,7 +2055,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -2128,10 +2123,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
             controller->GetTestView()->sheet_type_);
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             controller->GetTestView()->sheet_type_);
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
 
@@ -2155,8 +2150,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
     // User clicks on account row.
     std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
-    controller->OnAccountSelected(*accounts_[0], *idp_data_,
-                                  CreateMouseEvent());
+    controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   }
   CheckForSampleAndReset(
       FedCmAccountSelectionView::AccountChooserResult::kAccountRow);
@@ -2199,8 +2193,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
     // User is shown the account chooser.
     EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
               controller->GetTestView()->sheet_type_);
-    controller->OnAccountSelected(*new_accounts[0], *idp_data_,
-                                  CreateMouseEvent());
+    controller->OnAccountSelected(new_accounts[0], CreateMouseEvent());
   }
   CheckForSampleAndReset(
       FedCmAccountSelectionView::AccountChooserResult::kAccountRow);
@@ -2490,7 +2483,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtectionNoModalSpinner) {
   controller->SetInputEventActivationProtectorForTesting(
       std::move(input_protector));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   // Nothing should change after first account selected.
   EXPECT_FALSE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
@@ -2498,14 +2491,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtectionNoModalSpinner) {
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   // Should show verifying sheet after first account selected.
   EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  controller->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -2585,10 +2578,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
     // User proceeds with an account.
     std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
-    controller->OnAccountSelected(*accounts_[0], *idp_data_,
-                                  CreateMouseEvent());
-    controller->OnAccountSelected(*accounts_[0], *idp_data_,
-                                  CreateMouseEvent());
+    controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
+    controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   }
   CheckForSampleAndReset(
       FedCmAccountSelectionView::DisclosureDialogResult::kContinue);
@@ -2597,8 +2588,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
     // User clicks on cancel button.
     std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
-    controller->OnAccountSelected(*accounts_[0], *idp_data_,
-                                  CreateMouseEvent());
+    controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
     controller->OnCloseButtonClicked(CreateMouseEvent());
   }
   CheckForSampleAndReset(
@@ -2608,8 +2598,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
     // User clicks on back button.
     std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
-    controller->OnAccountSelected(*accounts_[0], *idp_data_,
-                                  CreateMouseEvent());
+    controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
     controller->OnBackButtonClicked();
   }
   CheckForSampleAndReset(
@@ -2619,8 +2608,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
     // Tab or window is destroyed.
     std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
-    controller->OnAccountSelected(*accounts_[0], *idp_data_,
-                                  CreateMouseEvent());
+    controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   }
   CheckForSampleAndReset(
       FedCmAccountSelectionView::DisclosureDialogResult::kDestroy);

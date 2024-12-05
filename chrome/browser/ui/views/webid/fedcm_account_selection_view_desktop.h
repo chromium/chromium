@@ -152,8 +152,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // chooser or clicks the "continue" button.
   // Takes `account` as well as `idp_data` since passing `account_id`
   // is insufficient in the multiple IDP case.
-  void OnAccountSelected(const content::IdentityRequestAccount& account,
-                         const content::IdentityProviderData& idp_data,
+  void OnAccountSelected(const IdentityRequestAccountPtr& account,
                          const ui::Event& event);
 
   // Called when the user clicks "privacy policy" or "terms of service" link.
@@ -406,7 +405,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const content::IdentityProviderData& idp_data);
 
   // Shows the verifying sheet.
-  void ShowVerifyingSheet(const Account& account);
+  void ShowVerifyingSheet(const IdentityRequestAccountPtr& account);
 
   // Shows the dialog widget.
   void ShowDialogWidget();

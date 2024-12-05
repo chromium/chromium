@@ -103,7 +103,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       bool show_back_button,
       content::IdentityRequestAccount& account) {
     CreateAccountSelectionModal();
-    dialog_->ShowSingleAccountConfirmDialog(account, show_back_button);
+    dialog_->ShowSingleAccountConfirmDialog(&account, show_back_button);
     account_selection_view_->UpdateDialogPosition();
   }
 
@@ -125,7 +125,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       content::IdentityRequestAccount& account) {
     CreateAccountSelectionModal();
     account.identity_provider = idp_data_;
-    dialog_->ShowRequestPermissionDialog(account, *idp_data_);
+    dialog_->ShowRequestPermissionDialog(&account);
     account_selection_view_->UpdateDialogPosition();
   }
 
@@ -135,7 +135,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     IdentityRequestAccountPtr account(CreateTestIdentityRequestAccount(
         kAccountSuffix, idp_data_,
         content::IdentityRequestAccount::LoginState::kSignUp));
-    dialog_->ShowVerifyingSheet(*account, kTitleSignIn);
+    dialog_->ShowVerifyingSheet(account, kTitleSignIn);
     account_selection_view_->UpdateDialogPosition();
   }
 

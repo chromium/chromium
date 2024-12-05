@@ -158,7 +158,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
     CreateAccountSelectionBubble();
     account->identity_provider = idp_data_;
-    dialog_->ShowSingleAccountConfirmDialog(*account,
+    dialog_->ShowSingleAccountConfirmDialog(account,
                                             /*show_back_button=*/false);
   }
 
@@ -706,7 +706,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
       kAccountSuffix, idp_data_, LoginState::kSignIn);
 
-  dialog()->ShowSingleAccountConfirmDialog(*account,
+  dialog()->ShowSingleAccountConfirmDialog(account,
                                            /*show_back_button=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
@@ -742,7 +742,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
       kAccountSuffix, idp_data_, LoginState::kSignIn);
 
-  dialog()->ShowSingleAccountConfirmDialog(*account,
+  dialog()->ShowSingleAccountConfirmDialog(account,
                                            /*show_back_button=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
@@ -767,7 +767,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
 
   CreateAccountSelectionBubble();
   dialog_->ShowVerifyingSheet(
-      *account, l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
+      account, l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 
   const std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
@@ -787,7 +787,7 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
   CreateAccountSelectionBubble();
   const auto title =
       l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN);
-  dialog_->ShowVerifyingSheet(*account, title);
+  dialog_->ShowVerifyingSheet(account, title);
 
   const std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
