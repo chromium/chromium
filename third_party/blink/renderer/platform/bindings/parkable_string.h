@@ -45,7 +45,12 @@ struct BackgroundTaskParams;
 class PLATFORM_EXPORT ParkableStringImpl
     : public WTF::ThreadSafeRefCounted<ParkableStringImpl> {
  public:
-  enum class ParkingMode { kSynchronousOnly, kCompress, kToDisk };
+  enum class ParkingMode {
+    kSynchronousOnly,
+    kCompress,
+    kToDisk,
+    kCompressThenToDisk
+  };
   enum class AgeOrParkResult {
     kSuccessOrTransientFailure,
     kNonTransientFailure
@@ -237,7 +242,7 @@ class PLATFORM_EXPORT ParkableStringImpl
   // reference on the string before the posted task is executed.
   void ReleaseAndRemoveIfNeeded() const;
 
-  void PostBackgroundCompressionTask();
+  void PostBackgroundCompressionTask(ParkingMode mode);
   static void CompressInBackground(std::unique_ptr<BackgroundTaskParams>);
   // Called on the main thread after compression is done.
   // |params| is the same as the one passed to

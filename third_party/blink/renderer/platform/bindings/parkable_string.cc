@@ -193,11 +193,13 @@ struct BackgroundTaskParams final {
       scoped_refptr<ParkableStringImpl> string,
       base::span<const uint8_t> data,
       std::unique_ptr<ReservedChunk> reserved_chunk,
+      ParkableStringImpl::ParkingMode parking_mode,
       scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner)
       : callback_task_runner(callback_task_runner),
         string(std::move(string)),
         data(data),
-        reserved_chunk(std::move(reserved_chunk)) {}
+        reserved_chunk(std::move(reserved_chunk)),
+        parking_mode(parking_mode) {}
 
   BackgroundTaskParams(const BackgroundTaskParams&) = delete;
   BackgroundTaskParams& operator=(const BackgroundTaskParams&) = delete;
@@ -207,6 +209,7 @@ struct BackgroundTaskParams final {
   const scoped_refptr<ParkableStringImpl> string;
   base::raw_span<const uint8_t> data;
   std::unique_ptr<ReservedChunk> reserved_chunk;
+  ParkableStringImpl::ParkingMode parking_mode;
 };
 
 // Valid transitions are:
@@ -516,13 +519,13 @@ bool ParkableStringImpl::ParkInternal(ParkingMode mode) {
       if (has_compressed_data())
         DiscardUncompressedData();
       else
-        PostBackgroundCompressionTask();
+        PostBackgroundCompressionTask(mode);
       break;
     case ParkingMode::kToDisk:
-      auto& manager = ParkableStringManager::Instance();
       if (has_on_disk_data()) {
         DiscardCompressedData();
       } else {
+        auto& manager = ParkableStringManager::Instance();
         // If the disk allocator doesn't accept writes, then the failure is not
         // transient, notify the caller. This is important so that
         // ParkableStringManager doesn't endlessly schedule aging tasks when
@@ -536,6 +539,18 @@ bool ParkableStringImpl::ParkInternal(ParkingMode mode) {
           return false;
         }
         PostBackgroundWritingTask(std::move(reserved_chunk));
+      }
+      break;
+    case ParkingMode::kCompressThenToDisk:
+      if (has_on_disk_data()) {
+        DiscardUncompressedData();
+        DiscardCompressedData();
+        DCHECK(is_on_disk_no_lock());
+      } else if (has_compressed_data()) {
+        DiscardUncompressedData();
+        return ParkInternal(ParkingMode::kToDisk);
+      } else {
+        PostBackgroundCompressionTask(mode);
       }
       break;
   }
@@ -737,7 +752,7 @@ void ParkableStringImpl::ReleaseAndRemoveIfNeeded() const {
       const_cast<ParkableStringImpl*>(this));
 }
 
-void ParkableStringImpl::PostBackgroundCompressionTask() {
+void ParkableStringImpl::PostBackgroundCompressionTask(ParkingMode mode) {
   DCHECK(!metadata_->background_task_in_progress_);
   // |string_|'s data should not be touched except in the compression task.
   AsanPoisonString(string_);
@@ -746,7 +761,7 @@ void ParkableStringImpl::PostBackgroundCompressionTask() {
   DCHECK(manager.task_runner()->BelongsToCurrentThread());
   // |params| keeps |this| alive until |OnParkingCompleteOnMainThread()|.
   auto params = std::make_unique<BackgroundTaskParams>(
-      this, string_.RawByteSpan(), /* reserved_chunk */ nullptr,
+      this, string_.RawByteSpan(), /* reserved_chunk */ nullptr, mode,
       manager.task_runner());
   worker_pool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
@@ -917,6 +932,11 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
   // parking cost was paid.
   ParkableStringManager::Instance().RecordParkingThreadTime(
       parking_thread_time);
+
+  if (params->parking_mode == ParkingMode::kCompressThenToDisk &&
+      is_parked_no_lock()) {
+    ParkInternal(ParkingMode::kToDisk);
+  }
 }
 
 void ParkableStringImpl::PostBackgroundWritingTask(
@@ -930,7 +950,7 @@ void ParkableStringImpl::PostBackgroundWritingTask(
     metadata_->background_task_in_progress_ = true;
     auto params = std::make_unique<BackgroundTaskParams>(
         this, *metadata_->compressed_, std::move(reserved_chunk),
-        manager.task_runner());
+        ParkingMode::kToDisk, manager.task_runner());
     worker_pool::PostTask(
         FROM_HERE, {base::MayBlock()},
         CrossThreadBindOnce(&ParkableStringImpl::WriteToDiskInBackground,
