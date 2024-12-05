@@ -134,11 +134,18 @@
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
 
-  _navigationController.modalPresentationStyle = UIModalPresentationPopover;
-  _navigationController.popoverPresentationController.sourceView =
-      self.anchorView;
-  _navigationController.popoverPresentationController.permittedArrowDirections =
-      UIPopoverArrowDirectionUp;
+  if (self.anchorView) {
+    _navigationController.modalPresentationStyle = UIModalPresentationPopover;
+    _navigationController.popoverPresentationController.sourceView =
+        self.anchorView;
+    _navigationController.popoverPresentationController
+        .permittedArrowDirections = UIPopoverArrowDirectionUp;
+  } else {
+    // If no anchor view was provided, fall back to a form sheet. For narrow
+    // width devices (i.e. iPhone) it's the same thing as a popover anyway, and
+    // for regular width (i.e. iPad) it's a dialog centered in the window.
+    _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  }
   _navigationController.presentationController.delegate = self;
 
   PrefService* prefs = profile->GetPrefs();

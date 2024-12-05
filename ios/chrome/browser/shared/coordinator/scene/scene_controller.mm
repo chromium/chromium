@@ -1897,7 +1897,11 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showAccountMenuWithAnchorView:(UIView*)anchorView
+                 skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
                            completion:(void (^)())completion {
+  if (skipIfUINotAvailable && ![self isTabAvailableToPresentViewController]) {
+    return;
+  }
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
