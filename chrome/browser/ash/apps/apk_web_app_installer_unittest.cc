@@ -89,7 +89,7 @@ class FakeApkWebAppInstaller : public ApkWebAppInstaller {
 class ApkWebAppInstallerTest : public ChromeRenderViewHostTestHarness,
                                public ApkWebAppInstaller::Owner {
  public:
-  ApkWebAppInstallerTest() {}
+  ApkWebAppInstallerTest() = default;
   ~ApkWebAppInstallerTest() override = default;
 
  protected:

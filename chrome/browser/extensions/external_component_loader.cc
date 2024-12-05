@@ -30,7 +30,7 @@ namespace extensions {
 ExternalComponentLoader::ExternalComponentLoader(Profile* profile)
     : profile_(profile) {}
 
-ExternalComponentLoader::~ExternalComponentLoader() {}
+ExternalComponentLoader::~ExternalComponentLoader() = default;
 
 void ExternalComponentLoader::StartLoading() {
   auto prefs = base::Value::Dict();

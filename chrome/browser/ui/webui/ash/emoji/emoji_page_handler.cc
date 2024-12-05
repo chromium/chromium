@@ -293,7 +293,7 @@ EmojiPageHandler::EmojiPageHandler(
                             ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-EmojiPageHandler::~EmojiPageHandler() {}
+EmojiPageHandler::~EmojiPageHandler() = default;
 
 void EmojiPageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();

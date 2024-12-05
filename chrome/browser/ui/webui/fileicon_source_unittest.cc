@@ -21,7 +21,7 @@ namespace {
 
 class TestFileIconSource : public FileIconSource {
  public:
-  TestFileIconSource() {}
+  TestFileIconSource() = default;
 
   void FetchFileIcon(
       const base::FilePath& path,
@@ -37,7 +37,7 @@ class TestFileIconSource : public FileIconSource {
                IconLoader::IconSize icon_size,
                content::URLDataSource::GotDataCallback& callback));
 
-  ~TestFileIconSource() override {}
+  ~TestFileIconSource() override = default;
 };
 
 class FileIconSourceTest : public testing::Test {

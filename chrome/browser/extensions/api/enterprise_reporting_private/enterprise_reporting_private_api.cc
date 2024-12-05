@@ -217,7 +217,7 @@ const char kDeviceIdNotFound[] = "Failed to retrieve the device id.";
 // GetDeviceId
 
 EnterpriseReportingPrivateGetDeviceIdFunction::
-    EnterpriseReportingPrivateGetDeviceIdFunction() {}
+    EnterpriseReportingPrivateGetDeviceIdFunction() = default;
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceIdFunction::Run() {

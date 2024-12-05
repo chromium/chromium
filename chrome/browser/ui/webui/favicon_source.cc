@@ -70,7 +70,7 @@ FaviconSource::FaviconSource(Profile* profile,
                              chrome::FaviconUrlFormat url_format)
     : profile_(profile->GetOriginalProfile()), url_format_(url_format) {}
 
-FaviconSource::~FaviconSource() {}
+FaviconSource::~FaviconSource() = default;
 
 std::string FaviconSource::GetSource() {
   switch (url_format_) {

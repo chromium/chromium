@@ -32,8 +32,8 @@ namespace {
 
 class AppUpdateWaiter {
  public:
-  AppUpdateWaiter() {}
-  ~AppUpdateWaiter() {}
+  AppUpdateWaiter() = default;
+  ~AppUpdateWaiter() = default;
 
   void SetUp(const std::string& app_id) {
     condition_met_ = false;
@@ -69,8 +69,8 @@ class AppUpdateWaiter {
 class AppPermissionHandlerTestObserver
     : public app_permission::mojom::AppPermissionsObserver {
  public:
-  AppPermissionHandlerTestObserver() {}
-  ~AppPermissionHandlerTestObserver() override {}
+  AppPermissionHandlerTestObserver() = default;
+  ~AppPermissionHandlerTestObserver() override = default;
 
   // app_permission::mojom::AppPermissionsObserver
   void OnAppUpdated(app_permission::mojom::AppPtr app) override {

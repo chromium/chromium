@@ -33,13 +33,13 @@ namespace {
 // Tests for the manifest verifier.
 class ManifestVerifierBrowserTest : public InProcessBrowserTest {
  public:
-  ManifestVerifierBrowserTest() {}
+  ManifestVerifierBrowserTest() = default;
 
   ManifestVerifierBrowserTest(const ManifestVerifierBrowserTest&) = delete;
   ManifestVerifierBrowserTest& operator=(const ManifestVerifierBrowserTest&) =
       delete;
 
-  ~ManifestVerifierBrowserTest() override {}
+  ~ManifestVerifierBrowserTest() override = default;
 
   // Starts the HTTPS test server on localhost.
   void SetUpOnMainThread() override {

@@ -106,7 +106,7 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
   }
 
  private:
-  ~CrashNotificationDelegate() override {}
+  ~CrashNotificationDelegate() override = default;
 
   // Static to prevent accidental use of members as *this might get destroyed.
   static void HandleClick(bool is_hosted_app,

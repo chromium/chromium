@@ -54,7 +54,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
         fake_update_engine_client_(nullptr),
         user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
-  ~VersionUpdaterCrosTest() override {}
+  ~VersionUpdaterCrosTest() override = default;
 
   void SetUp() override {
     fake_update_engine_client_ =

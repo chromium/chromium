@@ -49,7 +49,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxUI)
 
-OmniboxUI::~OmniboxUI() {}
+OmniboxUI::~OmniboxUI() = default;
 
 void OmniboxUI::BindInterface(
     mojo::PendingReceiver<mojom::OmniboxPageHandler> receiver) {

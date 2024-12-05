@@ -60,7 +60,7 @@ MATCHER_P(MatchValue, expected, "matches base::Value") {
 class MockArcAppInstallEventLogUploaderDelegate
     : public ArcAppInstallEventLogUploader::Delegate {
  public:
-  MockArcAppInstallEventLogUploaderDelegate() {}
+  MockArcAppInstallEventLogUploaderDelegate() = default;
 
   MockArcAppInstallEventLogUploaderDelegate(
       const MockArcAppInstallEventLogUploaderDelegate&) = delete;

@@ -68,7 +68,7 @@ namespace extensions {
 ExternalRegistryLoader::ExternalRegistryLoader()
     : attempted_watching_registry_(false) {}
 
-ExternalRegistryLoader::~ExternalRegistryLoader() {}
+ExternalRegistryLoader::~ExternalRegistryLoader() = default;
 
 void ExternalRegistryLoader::StartLoading() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -573,14 +573,14 @@ TEST_F(OwnerSettingsServiceAshTest, TwoAppendAndRemoveList) {
 
 class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
  public:
-  OwnerSettingsServiceAshNoOwnerTest() {}
+  OwnerSettingsServiceAshNoOwnerTest() = default;
 
   OwnerSettingsServiceAshNoOwnerTest(
       const OwnerSettingsServiceAshNoOwnerTest&) = delete;
   OwnerSettingsServiceAshNoOwnerTest& operator=(
       const OwnerSettingsServiceAshNoOwnerTest&) = delete;
 
-  ~OwnerSettingsServiceAshNoOwnerTest() override {}
+  ~OwnerSettingsServiceAshNoOwnerTest() override = default;
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();

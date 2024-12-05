@@ -25,7 +25,7 @@ WriteFromFileOperation::WriteFromFileOperation(
   image_path_ = user_file_path;
 }
 
-WriteFromFileOperation::~WriteFromFileOperation() {}
+WriteFromFileOperation::~WriteFromFileOperation() = default;
 
 void WriteFromFileOperation::StartImpl() {
   DCHECK(IsRunningInCorrectSequence());

@@ -293,7 +293,7 @@ std::string RefCountedMemoryToString(
 // Fake PwgRasterConverter used in the tests.
 class FakePwgRasterConverter : public PwgRasterConverter {
  public:
-  FakePwgRasterConverter() {}
+  FakePwgRasterConverter() = default;
 
   FakePwgRasterConverter(const FakePwgRasterConverter&) = delete;
   FakePwgRasterConverter& operator=(const FakePwgRasterConverter&) = delete;

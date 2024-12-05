@@ -56,7 +56,7 @@ class RulesRegistryServiceTest : public testing::Test {
  public:
   RulesRegistryServiceTest() = default;
 
-  ~RulesRegistryServiceTest() override {}
+  ~RulesRegistryServiceTest() override = default;
 
   void TearDown() override {
     // Make sure that deletion traits of all registries are executed.

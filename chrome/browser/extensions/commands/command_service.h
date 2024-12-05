@@ -84,7 +84,7 @@ class CommandService : public BrowserContextKeyedAPI,
     virtual void OnCommandServiceDestroying() {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   // Register prefs for keybinding.

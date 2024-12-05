@@ -17,9 +17,9 @@ const char kChromeWebStoreId[] = "ahfgeienlihckogmohjhadlkjgocpleb";
 const int kOneHour = 3600;
 } // namespace
 
-IdentityInternalsUIBrowserTest::IdentityInternalsUIBrowserTest() {}
+IdentityInternalsUIBrowserTest::IdentityInternalsUIBrowserTest() = default;
 
-IdentityInternalsUIBrowserTest::~IdentityInternalsUIBrowserTest() {}
+IdentityInternalsUIBrowserTest::~IdentityInternalsUIBrowserTest() = default;
 
 void IdentityInternalsUIBrowserTest::SetupTokenCache(int number_of_tokens) {
   for (int number = 0; number < number_of_tokens; ++number) {

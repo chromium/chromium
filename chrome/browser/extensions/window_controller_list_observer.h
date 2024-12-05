@@ -23,7 +23,7 @@ class WindowControllerListObserver {
   virtual void OnWindowBoundsChanged(WindowController* window_controller) {}
 
  protected:
-  virtual ~WindowControllerListObserver() {}
+  virtual ~WindowControllerListObserver() = default;
 };
 
 }  // namespace extensions

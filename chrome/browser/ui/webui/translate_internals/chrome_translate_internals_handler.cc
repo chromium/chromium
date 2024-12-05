@@ -37,7 +37,7 @@ ChromeTranslateInternalsHandler::ChromeTranslateInternalsHandler() {
               base::Unretained(this)));
 }
 
-ChromeTranslateInternalsHandler::~ChromeTranslateInternalsHandler() {}
+ChromeTranslateInternalsHandler::~ChromeTranslateInternalsHandler() = default;
 
 translate::TranslateClient*
 ChromeTranslateInternalsHandler::GetTranslateClient() {

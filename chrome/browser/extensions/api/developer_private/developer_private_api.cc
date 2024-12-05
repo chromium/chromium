@@ -876,7 +876,7 @@ DeveloperPrivateAPI::GetOrCreateWebContentsData(
   return &web_contents_data_[web_contents];
 }
 
-DeveloperPrivateAPI::~DeveloperPrivateAPI() {}
+DeveloperPrivateAPI::~DeveloperPrivateAPI() = default;
 
 void DeveloperPrivateAPI::Shutdown() {}
 
@@ -919,7 +919,8 @@ const Extension* DeveloperPrivateAPIFunction::GetEnabledExtensionById(
       GetByID(id);
 }
 
-DeveloperPrivateAutoUpdateFunction::~DeveloperPrivateAutoUpdateFunction() {}
+DeveloperPrivateAutoUpdateFunction::~DeveloperPrivateAutoUpdateFunction() =
+    default;
 
 ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
   ExtensionUpdater* updater =
@@ -1007,10 +1008,10 @@ void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
 }
 
 DeveloperPrivateGetExtensionSizeFunction::
-    DeveloperPrivateGetExtensionSizeFunction() {}
+    DeveloperPrivateGetExtensionSizeFunction() = default;
 
 DeveloperPrivateGetExtensionSizeFunction::
-    ~DeveloperPrivateGetExtensionSizeFunction() {}
+    ~DeveloperPrivateGetExtensionSizeFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetExtensionSizeFunction::Run() {
@@ -1086,7 +1087,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
 }
 
 DeveloperPrivateUpdateExtensionConfigurationFunction::
-~DeveloperPrivateUpdateExtensionConfigurationFunction() {}
+    ~DeveloperPrivateUpdateExtensionConfigurationFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
@@ -1279,7 +1280,8 @@ void DeveloperPrivateReloadFunction::ClearObservers() {
   Release();  // Balanced in Run().
 }
 
-DeveloperPrivateLoadUnpackedFunction::DeveloperPrivateLoadUnpackedFunction() {}
+DeveloperPrivateLoadUnpackedFunction::DeveloperPrivateLoadUnpackedFunction() =
+    default;
 
 DeveloperPrivateLoadUnpackedFunction::~DeveloperPrivateLoadUnpackedFunction() {
   // There may be pending file dialogs, we need to tell them that we've gone
@@ -1614,7 +1616,7 @@ DeveloperPrivatePackDirectoryFunction::DeveloperPrivatePackDirectoryFunction() {
 }
 
 DeveloperPrivatePackDirectoryFunction::
-~DeveloperPrivatePackDirectoryFunction() {}
+    ~DeveloperPrivatePackDirectoryFunction() = default;
 
 ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
   // In theory `extension()` can be null when an ExtensionFunction is invoked
@@ -1848,7 +1850,8 @@ DeveloperPrivateLoadDirectoryFunction::DeveloperPrivateLoadDirectoryFunction()
 DeveloperPrivateLoadDirectoryFunction::~DeveloperPrivateLoadDirectoryFunction()
     {}
 
-DeveloperPrivateChoosePathFunction::DeveloperPrivateChoosePathFunction() {}
+DeveloperPrivateChoosePathFunction::DeveloperPrivateChoosePathFunction() =
+    default;
 
 DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {
   // There may be pending file dialogs, we need to tell them that we've gone
@@ -1947,10 +1950,10 @@ DeveloperPrivateIsProfileManagedFunction::
 }
 
 DeveloperPrivateRequestFileSourceFunction::
-    DeveloperPrivateRequestFileSourceFunction() {}
+    DeveloperPrivateRequestFileSourceFunction() = default;
 
 DeveloperPrivateRequestFileSourceFunction::
-    ~DeveloperPrivateRequestFileSourceFunction() {}
+    ~DeveloperPrivateRequestFileSourceFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateRequestFileSourceFunction::Run() {
@@ -2018,8 +2021,10 @@ void DeveloperPrivateRequestFileSourceFunction::Finish(
   Respond(WithArguments(response.ToValue()));
 }
 
-DeveloperPrivateOpenDevToolsFunction::DeveloperPrivateOpenDevToolsFunction() {}
-DeveloperPrivateOpenDevToolsFunction::~DeveloperPrivateOpenDevToolsFunction() {}
+DeveloperPrivateOpenDevToolsFunction::DeveloperPrivateOpenDevToolsFunction() =
+    default;
+DeveloperPrivateOpenDevToolsFunction::~DeveloperPrivateOpenDevToolsFunction() =
+    default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateOpenDevToolsFunction::Run() {
@@ -2116,7 +2121,7 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
 }
 
 DeveloperPrivateDeleteExtensionErrorsFunction::
-~DeveloperPrivateDeleteExtensionErrorsFunction() {}
+    ~DeveloperPrivateDeleteExtensionErrorsFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
@@ -2145,7 +2150,7 @@ DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
 }
 
 DeveloperPrivateRepairExtensionFunction::
-~DeveloperPrivateRepairExtensionFunction() {}
+    ~DeveloperPrivateRepairExtensionFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateRepairExtensionFunction::Run() {
@@ -2198,7 +2203,8 @@ void DeveloperPrivateRepairExtensionFunction::OnReinstallComplete(
   Respond(success ? NoArguments() : Error(error));
 }
 
-DeveloperPrivateShowOptionsFunction::~DeveloperPrivateShowOptionsFunction() {}
+DeveloperPrivateShowOptionsFunction::~DeveloperPrivateShowOptionsFunction() =
+    default;
 
 ExtensionFunction::ResponseAction DeveloperPrivateShowOptionsFunction::Run() {
   std::optional<developer::ShowOptions::Params> params =
@@ -2220,7 +2226,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateShowOptionsFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-DeveloperPrivateShowPathFunction::~DeveloperPrivateShowPathFunction() {}
+DeveloperPrivateShowPathFunction::~DeveloperPrivateShowPathFunction() = default;
 
 ExtensionFunction::ResponseAction DeveloperPrivateShowPathFunction::Run() {
   std::optional<developer::ShowPath::Params> params =
@@ -2239,7 +2245,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateShowPathFunction::Run() {
 }
 
 DeveloperPrivateSetShortcutHandlingSuspendedFunction::
-~DeveloperPrivateSetShortcutHandlingSuspendedFunction() {}
+    ~DeveloperPrivateSetShortcutHandlingSuspendedFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateSetShortcutHandlingSuspendedFunction::Run() {
@@ -2252,7 +2258,7 @@ DeveloperPrivateSetShortcutHandlingSuspendedFunction::Run() {
 }
 
 DeveloperPrivateUpdateExtensionCommandFunction::
-~DeveloperPrivateUpdateExtensionCommandFunction() {}
+    ~DeveloperPrivateUpdateExtensionCommandFunction() = default;
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUpdateExtensionCommandFunction::Run() {

@@ -57,7 +57,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
     virtual void OnBackgroundContentsClosed(BackgroundContents* contents) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   BackgroundContents(

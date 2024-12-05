@@ -12,9 +12,9 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
-BookmarksMessageHandler::BookmarksMessageHandler() {}
+BookmarksMessageHandler::BookmarksMessageHandler() = default;
 
-BookmarksMessageHandler::~BookmarksMessageHandler() {}
+BookmarksMessageHandler::~BookmarksMessageHandler() = default;
 
 void BookmarksMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

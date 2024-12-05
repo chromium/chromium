@@ -112,7 +112,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
     }
 
    protected:
-    ~State() override {}
+    ~State() override = default;
 
    private:
     const raw_ptr<MyMockInputMethodManager> manager_;
@@ -126,7 +126,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
     state_ = new State(this);
   }
 
-  ~MyMockInputMethodManager() override {}
+  ~MyMockInputMethodManager() override = default;
 
   std::string last_input_method_id_;
 
@@ -140,12 +140,12 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
 
 class PreferencesTest : public testing::Test {
  public:
-  PreferencesTest() {}
+  PreferencesTest() = default;
 
   PreferencesTest(const PreferencesTest&) = delete;
   PreferencesTest& operator=(const PreferencesTest&) = delete;
 
-  ~PreferencesTest() override {}
+  ~PreferencesTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(

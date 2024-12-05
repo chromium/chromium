@@ -406,4 +406,4 @@ MemoryInternalsUI::MemoryInternalsUI(content::WebUI* web_ui)
   CreateAndAddMemoryInternalsUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
-MemoryInternalsUI::~MemoryInternalsUI() {}
+MemoryInternalsUI::~MemoryInternalsUI() = default;

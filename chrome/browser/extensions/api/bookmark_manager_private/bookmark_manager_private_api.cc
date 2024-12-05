@@ -729,7 +729,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
   return NoArguments();
 }
 
-BookmarkManagerPrivateIOFunction::BookmarkManagerPrivateIOFunction() {}
+BookmarkManagerPrivateIOFunction::BookmarkManagerPrivateIOFunction() = default;
 
 BookmarkManagerPrivateIOFunction::~BookmarkManagerPrivateIOFunction() {
   // There may be pending file dialogs, we need to tell them that we've gone

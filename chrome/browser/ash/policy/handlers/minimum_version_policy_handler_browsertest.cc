@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionNoUsersLoginTest,
 
 class MinimumVersionPolicyPresentTest : public MinimumVersionPolicyTestBase {
  public:
-  MinimumVersionPolicyPresentTest() {}
+  MinimumVersionPolicyPresentTest() = default;
   ~MinimumVersionPolicyPresentTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionExistingUserTest, DeadlineReached) {
 
 class MinimumVersionBeforeLoginHost : public MinimumVersionExistingUserTest {
  public:
-  MinimumVersionBeforeLoginHost() {}
+  MinimumVersionBeforeLoginHost() = default;
   ~MinimumVersionBeforeLoginHost() override = default;
 
   bool SetUpUserDataDirectory() override {
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionBeforeLoginHost, DeadlineReached) {
 class MinimumVersionPublicSessionAutoLoginTest
     : public MinimumVersionExistingUserTest {
  public:
-  MinimumVersionPublicSessionAutoLoginTest() {}
+  MinimumVersionPublicSessionAutoLoginTest() = default;
   ~MinimumVersionPublicSessionAutoLoginTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {

@@ -37,4 +37,4 @@ WebApksUI::WebApksUI(content::WebUI* web_ui)
   CreateAndAddWebApksUIDataSource(Profile::FromWebUI(web_ui));
 }
 
-WebApksUI::~WebApksUI() {}
+WebApksUI::~WebApksUI() = default;

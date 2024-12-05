@@ -44,7 +44,7 @@ const char* const kPolicyName = key::kDevicePrinters;
 class MockDeviceCloudExternalDataPolicyObserverDelegate
     : public DeviceCloudExternalDataPolicyObserver::Delegate {
  public:
-  MockDeviceCloudExternalDataPolicyObserverDelegate() {}
+  MockDeviceCloudExternalDataPolicyObserverDelegate() = default;
 
   void OnDeviceExternalDataFetched(const std::string& policy,
                                    std::unique_ptr<std::string> data,
@@ -63,7 +63,7 @@ class MockDeviceCloudExternalDataPolicyObserverDelegate
 class DeviceCloudExternalDataPolicyObserverTest
     : public DevicePolicyCrosBrowserTest {
  public:
-  DeviceCloudExternalDataPolicyObserverTest() {}
+  DeviceCloudExternalDataPolicyObserverTest() = default;
 
  protected:
   void SetUpOnMainThread() override {

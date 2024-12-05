@@ -20,7 +20,7 @@ class SmartPrivacyProtectionView {
   inline constexpr static StaticOobeScreenId kScreenId{
       "smart-privacy-protection", "SmartPrivacyProtectionScreen"};
 
-  virtual ~SmartPrivacyProtectionView() {}
+  virtual ~SmartPrivacyProtectionView() = default;
 
   virtual void Show() = 0;
   virtual base::WeakPtr<SmartPrivacyProtectionView> AsWeakPtr() = 0;

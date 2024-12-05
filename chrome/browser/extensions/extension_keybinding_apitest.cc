@@ -233,8 +233,8 @@ const char* GetCommandKeyForActionType(ActionInfo::Type action_type) {
 
 class CommandsApiTest : public ExtensionApiTest {
  public:
-  CommandsApiTest() {}
-  ~CommandsApiTest() override {}
+  CommandsApiTest() = default;
+  ~CommandsApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();

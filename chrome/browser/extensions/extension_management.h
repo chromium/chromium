@@ -53,7 +53,7 @@ class ExtensionManagement : public KeyedService {
   // Observer class for extension management settings changes.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when the extension management settings change.
     virtual void OnExtensionManagementSettingsChanged() = 0;

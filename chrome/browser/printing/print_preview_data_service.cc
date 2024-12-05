@@ -35,12 +35,12 @@
 //
 class PrintPreviewDataStore {
  public:
-  PrintPreviewDataStore() {}
+  PrintPreviewDataStore() = default;
 
   PrintPreviewDataStore(const PrintPreviewDataStore&) = delete;
   PrintPreviewDataStore& operator=(const PrintPreviewDataStore&) = delete;
 
-  ~PrintPreviewDataStore() {}
+  ~PrintPreviewDataStore() = default;
 
   // Get the preview page for the specified `index`.
   void GetPreviewDataForIndex(

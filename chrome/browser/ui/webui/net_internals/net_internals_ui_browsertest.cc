@@ -99,7 +99,7 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
         /*resolved_addresses=*/std::nullopt,
         /*endpoint_results_with_metadata=*/std::nullopt));
   }
-  ~DnsLookupClient() override {}
+  ~DnsLookupClient() override = default;
 
   // network::mojom::ResolveHostClient:
   void OnComplete(int32_t error,

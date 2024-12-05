@@ -33,12 +33,12 @@ scoped_refptr<const Extension> CreateExtension(
 
 class ExtensionMigratorTest : public ExtensionServiceTestBase {
  public:
-  ExtensionMigratorTest() {}
+  ExtensionMigratorTest() = default;
 
   ExtensionMigratorTest(const ExtensionMigratorTest&) = delete;
   ExtensionMigratorTest& operator=(const ExtensionMigratorTest&) = delete;
 
-  ~ExtensionMigratorTest() override {}
+  ~ExtensionMigratorTest() override = default;
 
  protected:
   void InitWithExistingProfile() {

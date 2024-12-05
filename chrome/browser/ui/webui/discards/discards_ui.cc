@@ -112,7 +112,7 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   DiscardsDetailsProviderImpl& operator=(const DiscardsDetailsProviderImpl&) =
       delete;
 
-  ~DiscardsDetailsProviderImpl() override {}
+  ~DiscardsDetailsProviderImpl() override = default;
 
   // discards::mojom::DetailsProvider overrides:
   void GetTabDiscardsInfo(GetTabDiscardsInfoCallback callback) override {
@@ -312,7 +312,7 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DiscardsUI)
 
-DiscardsUI::~DiscardsUI() {}
+DiscardsUI::~DiscardsUI() = default;
 
 void DiscardsUI::BindInterface(
     mojo::PendingReceiver<discards::mojom::DetailsProvider> receiver) {

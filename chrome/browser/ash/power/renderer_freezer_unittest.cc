@@ -38,12 +38,12 @@ namespace {
 // are made by the code being tested.
 class ActionRecorder {
  public:
-  ActionRecorder() {}
+  ActionRecorder() = default;
 
   ActionRecorder(const ActionRecorder&) = delete;
   ActionRecorder& operator=(const ActionRecorder&) = delete;
 
-  virtual ~ActionRecorder() {}
+  virtual ~ActionRecorder() = default;
 
   // Returns a comma-separated string describing the actions that were
   // requested since the previous call to GetActions() (i.e. results are
@@ -86,7 +86,7 @@ class TestDelegate : public RendererFreezer::Delegate, public ActionRecorder {
   TestDelegate(const TestDelegate&) = delete;
   TestDelegate& operator=(const TestDelegate&) = delete;
 
-  ~TestDelegate() override {}
+  ~TestDelegate() override = default;
 
   // RendererFreezer::Delegate overrides.
   void SetShouldFreezeRenderer(base::ProcessHandle handle,
@@ -213,14 +213,14 @@ TEST_F(RendererFreezerTest, ErrorThawingRenderers) {
 
 class RendererFreezerTestWithExtensions : public RendererFreezerTest {
  public:
-  RendererFreezerTestWithExtensions() {}
+  RendererFreezerTestWithExtensions() = default;
 
   RendererFreezerTestWithExtensions(const RendererFreezerTestWithExtensions&) =
       delete;
   RendererFreezerTestWithExtensions& operator=(
       const RendererFreezerTestWithExtensions&) = delete;
 
-  ~RendererFreezerTestWithExtensions() override {}
+  ~RendererFreezerTestWithExtensions() override = default;
 
   // testing::Test overrides.
   void SetUp() override {

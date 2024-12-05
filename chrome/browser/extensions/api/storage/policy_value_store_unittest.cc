@@ -123,7 +123,7 @@ INSTANTIATE_TEST_SUITE_P(PolicyValueStoreTest,
 class PolicyValueStoreTest : public testing::Test {
  public:
   PolicyValueStoreTest() = default;
-  ~PolicyValueStoreTest() override {}
+  ~PolicyValueStoreTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());

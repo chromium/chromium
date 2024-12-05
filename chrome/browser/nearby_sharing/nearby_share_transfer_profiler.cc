@@ -16,8 +16,8 @@ base::TimeDelta ComputeDelta(const base::TimeTicks& start,
   return end - start;
 }
 
-NearbyShareTransferProfiler::NearbyShareTransferProfiler() {}
-NearbyShareTransferProfiler::~NearbyShareTransferProfiler() {}
+NearbyShareTransferProfiler::NearbyShareTransferProfiler() = default;
+NearbyShareTransferProfiler::~NearbyShareTransferProfiler() = default;
 
 void NearbyShareTransferProfiler::OnEndpointDiscovered(
     const std::string& endpoint_id) {

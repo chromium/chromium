@@ -68,12 +68,12 @@ void RecordContentActionCreated(
 // Action that instructs to show an extension's page action.
 class ShowExtensionAction : public ContentAction {
  public:
-  ShowExtensionAction() {}
+  ShowExtensionAction() = default;
 
   ShowExtensionAction(const ShowExtensionAction&) = delete;
   ShowExtensionAction& operator=(const ShowExtensionAction&) = delete;
 
-  ~ShowExtensionAction() override {}
+  ~ShowExtensionAction() override = default;
 
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
@@ -128,7 +128,7 @@ class SetIcon : public ContentAction {
   SetIcon(const SetIcon&) = delete;
   SetIcon& operator=(const SetIcon&) = delete;
 
-  ~SetIcon() override {}
+  ~SetIcon() override = default;
 
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
@@ -233,7 +233,7 @@ struct RequestContentScript::ScriptData {
 RequestContentScript::ScriptData::ScriptData()
     : all_frames(false),
       match_about_blank(false) {}
-RequestContentScript::ScriptData::~ScriptData() {}
+RequestContentScript::ScriptData::~ScriptData() = default;
 
 // static
 std::unique_ptr<ContentAction> RequestContentScript::Create(
@@ -430,7 +430,7 @@ std::unique_ptr<ContentAction> SetIcon::Create(
 // ContentAction
 //
 
-ContentAction::~ContentAction() {}
+ContentAction::~ContentAction() = default;
 
 // static
 std::unique_ptr<ContentAction> ContentAction::Create(
@@ -462,6 +462,6 @@ void ContentAction::SetAllowInvisibleIconsForTest(bool value) {
   g_allow_invisible_icons_content_action = value;
 }
 
-ContentAction::ContentAction() {}
+ContentAction::ContentAction() = default;
 
 }  // namespace extensions

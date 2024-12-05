@@ -167,7 +167,7 @@ class MobileSetupUIHTMLSource : public content::URLDataSource {
   MobileSetupUIHTMLSource(const MobileSetupUIHTMLSource&) = delete;
   MobileSetupUIHTMLSource& operator=(const MobileSetupUIHTMLSource&) = delete;
 
-  ~MobileSetupUIHTMLSource() override {}
+  ~MobileSetupUIHTMLSource() override = default;
 
   // content::URLDataSource implementation.
   std::string GetSource() override;
@@ -258,7 +258,7 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-MobileSetupUIHTMLSource::MobileSetupUIHTMLSource() {}
+MobileSetupUIHTMLSource::MobileSetupUIHTMLSource() = default;
 
 std::string MobileSetupUIHTMLSource::GetSource() {
   return chrome::kChromeUIMobileSetupHost;

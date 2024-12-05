@@ -68,7 +68,7 @@ class TurnSyncOnHelper {
   // Delegate implementing the UI prompts.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Shows a login error to the user.
     virtual void ShowLoginError(const SigninUIError& error) = 0;

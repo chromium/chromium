@@ -30,7 +30,7 @@ WebstoreInstallerTest::WebstoreInstallerTest(
       unverified_domain_(unverified_domain) {
 }
 
-WebstoreInstallerTest::~WebstoreInstallerTest() {}
+WebstoreInstallerTest::~WebstoreInstallerTest() = default;
 
 void WebstoreInstallerTest::SetUpCommandLine(base::CommandLine* command_line) {
   extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);

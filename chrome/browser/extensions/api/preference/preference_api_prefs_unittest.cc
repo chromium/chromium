@@ -400,7 +400,7 @@ class ControlledPrefsDisableExtensions : public ExtensionControlledPrefsTest {
  public:
   ControlledPrefsDisableExtensions()
       : iteration_(0) {}
-  ~ControlledPrefsDisableExtensions() override {}
+  ~ControlledPrefsDisableExtensions() override = default;
   void Initialize() override {
     InstallExtensionControlledPref(internal_extension(), kPref1,
                                    base::Value("internal extension value"));

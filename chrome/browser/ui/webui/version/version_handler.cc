@@ -54,9 +54,9 @@ void GetFilePaths(const base::FilePath& profile_path,
 
 }  // namespace
 
-VersionHandler::VersionHandler() {}
+VersionHandler::VersionHandler() = default;
 
-VersionHandler::~VersionHandler() {}
+VersionHandler::~VersionHandler() = default;
 
 void VersionHandler::OnJavascriptDisallowed() {
   weak_ptr_factory_.InvalidateWeakPtrs();

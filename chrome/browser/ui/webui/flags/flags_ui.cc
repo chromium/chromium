@@ -201,7 +201,7 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
   AddStrings(source);
 }
 
-FlagsUI::~FlagsUI() {}
+FlagsUI::~FlagsUI() = default;
 
 // static
 base::RefCountedMemory* FlagsUI::GetFaviconResourceBytes(

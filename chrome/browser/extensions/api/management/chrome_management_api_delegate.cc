@@ -108,7 +108,7 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
   ManagementSetEnabledFunctionInstallPromptDelegate& operator=(
       const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
 
-  ~ManagementSetEnabledFunctionInstallPromptDelegate() override {}
+  ~ManagementSetEnabledFunctionInstallPromptDelegate() override = default;
 
  private:
   void OnInstallPromptDone(
@@ -177,7 +177,7 @@ class ManagementUninstallFunctionUninstallDialogDelegate
   ManagementUninstallFunctionUninstallDialogDelegate& operator=(
       const ManagementUninstallFunctionUninstallDialogDelegate&) = delete;
 
-  ~ManagementUninstallFunctionUninstallDialogDelegate() override {}
+  ~ManagementUninstallFunctionUninstallDialogDelegate() override = default;
 
   // ExtensionUninstallDialog::Delegate implementation.
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
@@ -202,12 +202,12 @@ void OnGenerateAppForLinkCompleted(
 
 class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
  public:
-  ChromeAppForLinkDelegate() {}
+  ChromeAppForLinkDelegate() = default;
 
   ChromeAppForLinkDelegate(const ChromeAppForLinkDelegate&) = delete;
   ChromeAppForLinkDelegate& operator=(const ChromeAppForLinkDelegate&) = delete;
 
-  ~ChromeAppForLinkDelegate() override {}
+  ~ChromeAppForLinkDelegate() override = default;
 
   void OnFaviconForApp(
       extensions::ManagementGenerateAppForLinkFunction* function,

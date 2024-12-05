@@ -61,7 +61,7 @@ namespace webui {
 
 class LogWebUIUrlTest : public InProcessBrowserTest {
  public:
-  LogWebUIUrlTest() {}
+  LogWebUIUrlTest() = default;
 
   LogWebUIUrlTest(const LogWebUIUrlTest&) = delete;
   LogWebUIUrlTest& operator=(const LogWebUIUrlTest&) = delete;

@@ -10,7 +10,7 @@ namespace ash {
 
 class DeviceNameValidatorTest : public testing::Test {
  public:
-  DeviceNameValidatorTest() {}
+  DeviceNameValidatorTest() = default;
 };
 
 TEST_F(DeviceNameValidatorTest, ValidName) {

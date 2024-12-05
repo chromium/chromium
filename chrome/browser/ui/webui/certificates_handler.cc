@@ -195,7 +195,7 @@ class FileAccessProvider
 
  private:
   friend class base::RefCountedThreadSafe<FileAccessProvider>;
-  virtual ~FileAccessProvider() {}
+  virtual ~FileAccessProvider() = default;
 
   // Reads file at |path|. |saved_errno| is 0 on success or errno on failure.
   // When success, |data| has file content.

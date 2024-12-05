@@ -39,8 +39,8 @@ const char kAccessibleDirResource[] = "accessible_dir/foo.html";
 
 class MockBrowserClient : public content::ContentBrowserClient {
  public:
-  MockBrowserClient() {}
-  ~MockBrowserClient() override {}
+  MockBrowserClient() = default;
+  ~MockBrowserClient() override = default;
 
   // Only construct an ExtensionNavigationThrottle so that we can test it in
   // isolation.
@@ -57,7 +57,7 @@ class MockBrowserClient : public content::ContentBrowserClient {
 class ExtensionNavigationThrottleUnitTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  ExtensionNavigationThrottleUnitTest() {}
+  ExtensionNavigationThrottleUnitTest() = default;
 
   ExtensionNavigationThrottleUnitTest(
       const ExtensionNavigationThrottleUnitTest&) = delete;

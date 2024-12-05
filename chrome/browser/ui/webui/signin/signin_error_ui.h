@@ -33,7 +33,7 @@ class SigninErrorUI : public SigninWebDialogUI {
   SigninErrorUI(const SigninErrorUI&) = delete;
   SigninErrorUI& operator=(const SigninErrorUI&) = delete;
 
-  ~SigninErrorUI() override {}
+  ~SigninErrorUI() override = default;
 
   // SigninWebDialogUI:
   void InitializeMessageHandlerWithBrowser(Browser* browser) override;

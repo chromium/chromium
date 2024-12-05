@@ -58,7 +58,7 @@ class RepeatingMimeBoundaryGenerator
   RepeatingMimeBoundaryGenerator& operator=(
       const RepeatingMimeBoundaryGenerator&) = delete;
 
-  ~RepeatingMimeBoundaryGenerator() override {}
+  ~RepeatingMimeBoundaryGenerator() override = default;
 
   // MimeBoundaryGenerator:
   std::string GenerateBoundary() const override {
@@ -270,7 +270,7 @@ class UploadJobTestBase : public testing::Test, public UploadJob::Delegate {
 
 class UploadFlowTest : public UploadJobTestBase {
  public:
-  UploadFlowTest() {}
+  UploadFlowTest() = default;
 
   // UploadJobTestBase:
   void SetUp() override {
@@ -391,7 +391,7 @@ TEST_F(UploadFlowTest, InternalServerError) {
 
 class UploadRequestTest : public UploadJobTestBase {
  public:
-  UploadRequestTest() {}
+  UploadRequestTest() = default;
 
   // UploadJobTestBase:
   void SetUp() override {

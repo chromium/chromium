@@ -67,7 +67,7 @@ class MediaEngagementScoreDetailsProviderImpl
   MediaEngagementScoreDetailsProviderImpl& operator=(
       const MediaEngagementScoreDetailsProviderImpl&) = delete;
 
-  ~MediaEngagementScoreDetailsProviderImpl() override {}
+  ~MediaEngagementScoreDetailsProviderImpl() override = default;
 
   // media::mojom::MediaEngagementScoreDetailsProvider overrides:
   void GetMediaEngagementScoreDetails(

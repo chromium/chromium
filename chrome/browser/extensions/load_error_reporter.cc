@@ -42,7 +42,7 @@ LoadErrorReporter::LoadErrorReporter(bool enable_noisy_errors)
     ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
-LoadErrorReporter::~LoadErrorReporter() {}
+LoadErrorReporter::~LoadErrorReporter() = default;
 
 void LoadErrorReporter::ReportLoadError(
     const base::FilePath& extension_path,

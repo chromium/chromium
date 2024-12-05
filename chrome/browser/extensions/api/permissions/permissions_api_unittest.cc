@@ -104,12 +104,12 @@ bool RunRequestFunction(
 
 class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
  public:
-  PermissionsAPIUnitTest() {}
+  PermissionsAPIUnitTest() = default;
 
   PermissionsAPIUnitTest(const PermissionsAPIUnitTest&) = delete;
   PermissionsAPIUnitTest& operator=(const PermissionsAPIUnitTest&) = delete;
 
-  ~PermissionsAPIUnitTest() override {}
+  ~PermissionsAPIUnitTest() override = default;
   Browser* browser() { return browser_.get(); }
 
   // Runs chrome.permissions.contains(|json_query|).

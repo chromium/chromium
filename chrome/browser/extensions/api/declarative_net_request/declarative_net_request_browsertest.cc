@@ -5622,7 +5622,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 class DeclarativeNetRequestHostPermissionsBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
-  DeclarativeNetRequestHostPermissionsBrowserTest() {}
+  DeclarativeNetRequestHostPermissionsBrowserTest() = default;
 
   DeclarativeNetRequestHostPermissionsBrowserTest(
       const DeclarativeNetRequestHostPermissionsBrowserTest&) = delete;
@@ -5714,7 +5714,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestHostPermissionsBrowserTest,
 class DeclarativeNetRequestResourceTypeBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
-  DeclarativeNetRequestResourceTypeBrowserTest() {}
+  DeclarativeNetRequestResourceTypeBrowserTest() = default;
 
   DeclarativeNetRequestResourceTypeBrowserTest(
       const DeclarativeNetRequestResourceTypeBrowserTest&) = delete;

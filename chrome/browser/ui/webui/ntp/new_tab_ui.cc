@@ -108,7 +108,7 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
-NewTabUI::~NewTabUI() {}
+NewTabUI::~NewTabUI() = default;
 
 // static
 bool NewTabUI::IsNewTab(const GURL& url) {
@@ -236,4 +236,4 @@ std::string NewTabUI::NewTabHTMLSource::GetContentSecurityPolicy(
   return content::URLDataSource::GetContentSecurityPolicy(directive);
 }
 
-NewTabUI::NewTabHTMLSource::~NewTabHTMLSource() {}
+NewTabUI::NewTabHTMLSource::~NewTabHTMLSource() = default;

@@ -121,7 +121,7 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
   PolicyDetailsMap policy_details_;
 };
 
-CloudExternalDataManagerBaseTest::CloudExternalDataManagerBaseTest() {}
+CloudExternalDataManagerBaseTest::CloudExternalDataManagerBaseTest() = default;
 
 void CloudExternalDataManagerBaseTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

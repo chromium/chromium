@@ -28,14 +28,14 @@ namespace extensions {
 // multiple messages).
 class ChromePermissionMessageFormatter {
  public:
-  ChromePermissionMessageFormatter() {}
+  ChromePermissionMessageFormatter() = default;
 
   ChromePermissionMessageFormatter(const ChromePermissionMessageFormatter&) =
       delete;
   ChromePermissionMessageFormatter& operator=(
       const ChromePermissionMessageFormatter&) = delete;
 
-  virtual ~ChromePermissionMessageFormatter() {}
+  virtual ~ChromePermissionMessageFormatter() = default;
 
   // Returns the permission message for the given set of |permissions|.
   // |permissions| is guaranteed to have the IDs specified by the

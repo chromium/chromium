@@ -37,8 +37,8 @@ bool IsContentInDocument(content::RenderFrameHost* rfh, std::string content) {
 
 class HeavyAdHelperBrowserTest : public InProcessBrowserTest {
  public:
-  HeavyAdHelperBrowserTest() {}
-  ~HeavyAdHelperBrowserTest() override {}
+  HeavyAdHelperBrowserTest() = default;
+  ~HeavyAdHelperBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");

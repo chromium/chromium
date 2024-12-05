@@ -323,7 +323,7 @@ TestingUpdateManifestProvider::Update::Update(const std::string& version,
                                               const GURL& crx_url)
     : version(version), crx_url(crx_url) {}
 
-TestingUpdateManifestProvider::Update::Update() {}
+TestingUpdateManifestProvider::Update::Update() = default;
 
 TestingUpdateManifestProvider::TestingUpdateManifestProvider(
     const std::string& relative_update_url)
@@ -374,7 +374,7 @@ TestingUpdateManifestProvider::HandleRequest(
   return std::move(http_response);
 }
 
-TestingUpdateManifestProvider::~TestingUpdateManifestProvider() {}
+TestingUpdateManifestProvider::~TestingUpdateManifestProvider() = default;
 
 bool IsSessionStarted() {
   return session_manager::SessionManager::Get()->IsSessionStarted();
@@ -449,7 +449,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     set_exit_when_last_browser_closes(false);
   }
 
-  ~DeviceLocalAccountTest() override {}
+  ~DeviceLocalAccountTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
@@ -874,7 +874,7 @@ class FakeDelegateImpl : public ash::SessionLengthLimiter::Delegate {
   FakeDelegateImpl(const FakeDelegateImpl&) = delete;
   FakeDelegateImpl& operator=(const FakeDelegateImpl&) = delete;
 
-  ~FakeDelegateImpl() override {}
+  ~FakeDelegateImpl() override = default;
 
   const base::Clock* GetClock() const override { return &clock_; }
   void StopSession() override {

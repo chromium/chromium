@@ -61,7 +61,7 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
   ResetPasswordHandlerImpl(const ResetPasswordHandlerImpl&) = delete;
   ResetPasswordHandlerImpl& operator=(const ResetPasswordHandlerImpl&) = delete;
 
-  ~ResetPasswordHandlerImpl() override {}
+  ~ResetPasswordHandlerImpl() override = default;
 
   // mojom::ResetPasswordHandler overrides:
   void HandlePasswordReset() override {
@@ -132,7 +132,7 @@ ResetPasswordUI::ResetPasswordUI(content::WebUI* web_ui)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ResetPasswordUI)
 
-ResetPasswordUI::~ResetPasswordUI() {}
+ResetPasswordUI::~ResetPasswordUI() = default;
 
 void ResetPasswordUI::BindInterface(
     mojo::PendingReceiver<mojom::ResetPasswordHandler> receiver) {

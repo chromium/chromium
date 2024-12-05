@@ -20,7 +20,7 @@ class DeviceOAuth2TokenStore {
   // related to the state of the token storage.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when the refresh token becomes available, at which point it'll be
     // returned by a call to |GetRefreshToken()|.
@@ -46,7 +46,7 @@ class DeviceOAuth2TokenStore {
   using TrustedAccountIdCallback =
       base::RepeatingCallback<void(bool /* trusted_account_present */)>;
 
-  virtual ~DeviceOAuth2TokenStore() {}
+  virtual ~DeviceOAuth2TokenStore() = default;
 
   // Initialize this storage object and perform necessary setup to be able to
   // store/load and encrypt/decrypt the relevant data. Calls

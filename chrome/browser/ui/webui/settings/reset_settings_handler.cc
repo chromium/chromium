@@ -97,7 +97,7 @@ ResetSettingsHandler::ResetSettingsHandler(Profile* profile)
     : profile_(profile),
       resetter_(std::make_unique<ProfileResetter>(profile_)) {}
 
-ResetSettingsHandler::~ResetSettingsHandler() {}
+ResetSettingsHandler::~ResetSettingsHandler() = default;
 
 void ResetSettingsHandler::OnJavascriptDisallowed() {
   callback_weak_ptr_factory_.InvalidateWeakPtrs();

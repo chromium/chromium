@@ -296,7 +296,7 @@ class TestSelectDelegate
   explicit TestSelectDelegate(net::CertificateList certs_to_select)
       : certs_to_select_(certs_to_select) {}
 
-  ~TestSelectDelegate() override {}
+  ~TestSelectDelegate() override = default;
 
   void Select(const std::string& extension_id,
               const net::CertificateList& certs,

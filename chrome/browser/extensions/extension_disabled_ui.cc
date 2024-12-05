@@ -118,7 +118,7 @@ ExtensionDisabledGlobalError::ExtensionDisabledGlobalError(
   registry_observation_.Observe(ExtensionRegistry::Get(service->profile()));
 }
 
-ExtensionDisabledGlobalError::~ExtensionDisabledGlobalError() {}
+ExtensionDisabledGlobalError::~ExtensionDisabledGlobalError() = default;
 
 GlobalError::Severity ExtensionDisabledGlobalError::GetSeverity() {
   return SEVERITY_LOW;

@@ -63,7 +63,7 @@ DesktopAndroidExtensionsBrowserClient::DesktopAndroidExtensionsBrowserClient()
 }
 
 DesktopAndroidExtensionsBrowserClient::
-    ~DesktopAndroidExtensionsBrowserClient() {}
+    ~DesktopAndroidExtensionsBrowserClient() = default;
 
 bool DesktopAndroidExtensionsBrowserClient::IsShuttingDown() {
   return false;

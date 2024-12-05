@@ -57,9 +57,9 @@ GenerateAuthFactorExtendedInfoRequest(int depth) {
 
 }  // namespace
 
-CryptohomeWebUIHandler::CryptohomeWebUIHandler() {}
+CryptohomeWebUIHandler::CryptohomeWebUIHandler() = default;
 
-CryptohomeWebUIHandler::~CryptohomeWebUIHandler() {}
+CryptohomeWebUIHandler::~CryptohomeWebUIHandler() = default;
 
 void CryptohomeWebUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

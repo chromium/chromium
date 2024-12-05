@@ -12,7 +12,7 @@ UsbInternalsPageHandler::UsbInternalsPageHandler(
     mojo::PendingReceiver<mojom::UsbInternalsPageHandler> receiver)
     : receiver_(this, std::move(receiver)) {}
 
-UsbInternalsPageHandler::~UsbInternalsPageHandler() {}
+UsbInternalsPageHandler::~UsbInternalsPageHandler() = default;
 
 void UsbInternalsPageHandler::BindTestInterface(
     mojo::PendingReceiver<device::mojom::UsbDeviceManagerTest> receiver) {

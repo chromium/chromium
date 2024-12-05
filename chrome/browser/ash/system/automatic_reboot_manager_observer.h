@@ -23,7 +23,7 @@ class AutomaticRebootManagerObserver {
   virtual void WillDestroyAutomaticRebootManager() = 0;
 
  protected:
-  virtual ~AutomaticRebootManagerObserver() {}
+  virtual ~AutomaticRebootManagerObserver() = default;
 };
 
 }  // namespace system

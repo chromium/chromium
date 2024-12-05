@@ -38,7 +38,7 @@ constexpr base::TimeDelta kCookieDelay = base::Seconds(20);
 
 }  // namespace
 
-GaiaContext::GaiaContext() {}
+GaiaContext::GaiaContext() = default;
 GaiaContext::GaiaContext(GaiaContext const&) = default;
 
 GaiaCookiesData::GaiaCookiesData() = default;

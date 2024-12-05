@@ -40,7 +40,7 @@ namespace extensions {
 // the unit tests.
 class ActivityDatabaseTestPolicy : public ActivityDatabase::Delegate {
  public:
-  ActivityDatabaseTestPolicy() {}
+  ActivityDatabaseTestPolicy() = default;
 
   static const char* const kTableContentFields[];
   static const char* const kTableFieldTypes[];

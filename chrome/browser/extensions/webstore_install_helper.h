@@ -52,7 +52,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
         const std::string& error_message) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // It is legal for |icon_url| to be empty.

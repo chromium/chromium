@@ -24,7 +24,7 @@
 HistoryLoginHandler::HistoryLoginHandler(base::RepeatingClosure signin_callback)
     : signin_callback_(std::move(signin_callback)) {}
 
-HistoryLoginHandler::~HistoryLoginHandler() {}
+HistoryLoginHandler::~HistoryLoginHandler() = default;
 
 void HistoryLoginHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

@@ -788,7 +788,7 @@ class MockIconExtractorImpl : public DownloadFileIconExtractor {
         expected_icon_size_(icon_size),
         response_(response) {
   }
-  ~MockIconExtractorImpl() override {}
+  ~MockIconExtractorImpl() override = default;
 
   bool ExtractIconURLForPath(const base::FilePath& path,
                              float scale,
@@ -940,7 +940,7 @@ class JustInProgressDownloadObserver
   JustInProgressDownloadObserver& operator=(
       const JustInProgressDownloadObserver&) = delete;
 
-  ~JustInProgressDownloadObserver() override {}
+  ~JustInProgressDownloadObserver() override = default;
 
  private:
   bool IsDownloadInFinalState(DownloadItem* item) override {
@@ -1921,7 +1921,7 @@ class CustomResponse : public net::test_server::HttpResponse {
   CustomResponse(const CustomResponse&) = delete;
   CustomResponse& operator=(const CustomResponse&) = delete;
 
-  ~CustomResponse() override {}
+  ~CustomResponse() override = default;
 
   void SendResponse(
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
@@ -4707,12 +4707,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest,
 
 class DownloadsApiTest : public ExtensionApiTest {
  public:
-  DownloadsApiTest() {}
+  DownloadsApiTest() = default;
 
   DownloadsApiTest(const DownloadsApiTest&) = delete;
   DownloadsApiTest& operator=(const DownloadsApiTest&) = delete;
 
-  ~DownloadsApiTest() override {}
+  ~DownloadsApiTest() override = default;
 };
 
 

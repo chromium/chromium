@@ -16,7 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 
-LacrosAppsPublisher::LacrosAppsPublisher() {}
+LacrosAppsPublisher::LacrosAppsPublisher() = default;
 
 LacrosAppsPublisher::~LacrosAppsPublisher() = default;
 

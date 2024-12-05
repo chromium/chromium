@@ -22,7 +22,7 @@ void DeviceCloudExternalDataPolicyObserver::Delegate::
                                 std::unique_ptr<std::string> data,
                                 const base::FilePath& file_path) {}
 
-DeviceCloudExternalDataPolicyObserver::Delegate::~Delegate() {}
+DeviceCloudExternalDataPolicyObserver::Delegate::~Delegate() = default;
 
 DeviceCloudExternalDataPolicyObserver::DeviceCloudExternalDataPolicyObserver(
     PolicyService* policy_service,

@@ -13,7 +13,7 @@
 namespace nearby::share::metrics {
 
 AttachmentMetricLogger::AttachmentMetricLogger() = default;
-AttachmentMetricLogger::~AttachmentMetricLogger() {}
+AttachmentMetricLogger::~AttachmentMetricLogger() = default;
 
 // TODO(b/266739400): Test this once there is Structured Metrics unittesting
 // infrastructure available.

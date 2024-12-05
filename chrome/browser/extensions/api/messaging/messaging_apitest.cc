@@ -1216,14 +1216,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
 class ExternallyConnectableMessagingTestNoChannelID
     : public ExternallyConnectableMessagingTest {
  public:
-  ExternallyConnectableMessagingTestNoChannelID() {}
+  ExternallyConnectableMessagingTestNoChannelID() = default;
 
   ExternallyConnectableMessagingTestNoChannelID(
       const ExternallyConnectableMessagingTestNoChannelID&) = delete;
   ExternallyConnectableMessagingTestNoChannelID& operator=(
       const ExternallyConnectableMessagingTestNoChannelID&) = delete;
 
-  ~ExternallyConnectableMessagingTestNoChannelID() override {}
+  ~ExternallyConnectableMessagingTestNoChannelID() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExternallyConnectableMessagingTest::SetUpCommandLine(command_line);

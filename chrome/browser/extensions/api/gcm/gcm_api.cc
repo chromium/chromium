@@ -101,9 +101,9 @@ gcm::GCMDriver* GcmApiFunction::GetGCMDriver() const {
       Profile::FromBrowserContext(browser_context()))->driver();
 }
 
-GcmRegisterFunction::GcmRegisterFunction() {}
+GcmRegisterFunction::GcmRegisterFunction() = default;
 
-GcmRegisterFunction::~GcmRegisterFunction() {}
+GcmRegisterFunction::~GcmRegisterFunction() = default;
 
 ExtensionFunction::ResponseAction GcmRegisterFunction::Run() {
   std::optional<api::gcm::Register::Params> params =
@@ -132,9 +132,9 @@ void GcmRegisterFunction::CompleteFunctionWithResult(
                                    GcmResultToError(gcm_result)));
 }
 
-GcmUnregisterFunction::GcmUnregisterFunction() {}
+GcmUnregisterFunction::GcmUnregisterFunction() = default;
 
-GcmUnregisterFunction::~GcmUnregisterFunction() {}
+GcmUnregisterFunction::~GcmUnregisterFunction() = default;
 
 ExtensionFunction::ResponseAction GcmUnregisterFunction::Run() {
   GetGCMDriver()->Unregister(
@@ -151,9 +151,9 @@ void GcmUnregisterFunction::CompleteFunctionWithResult(
   Respond(succeeded ? NoArguments() : Error(GcmResultToError(result)));
 }
 
-GcmSendFunction::GcmSendFunction() {}
+GcmSendFunction::GcmSendFunction() = default;
 
-GcmSendFunction::~GcmSendFunction() {}
+GcmSendFunction::~GcmSendFunction() = default;
 
 ExtensionFunction::ResponseAction GcmSendFunction::Run() {
   std::optional<api::gcm::Send::Params> params =

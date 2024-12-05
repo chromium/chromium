@@ -221,10 +221,10 @@ bool DesktopCaptureRequestsRegistry::RequestId::operator<(
 }
 
 DesktopCaptureCancelChooseDesktopMediaFunctionBase::
-    DesktopCaptureCancelChooseDesktopMediaFunctionBase() {}
+    DesktopCaptureCancelChooseDesktopMediaFunctionBase() = default;
 
 DesktopCaptureCancelChooseDesktopMediaFunctionBase::
-    ~DesktopCaptureCancelChooseDesktopMediaFunctionBase() {}
+    ~DesktopCaptureCancelChooseDesktopMediaFunctionBase() = default;
 
 ExtensionFunction::ResponseAction
 DesktopCaptureCancelChooseDesktopMediaFunctionBase::Run() {
@@ -237,8 +237,8 @@ DesktopCaptureCancelChooseDesktopMediaFunctionBase::Run() {
   return RespondNow(NoArguments());
 }
 
-DesktopCaptureRequestsRegistry::DesktopCaptureRequestsRegistry() {}
-DesktopCaptureRequestsRegistry::~DesktopCaptureRequestsRegistry() {}
+DesktopCaptureRequestsRegistry::DesktopCaptureRequestsRegistry() = default;
+DesktopCaptureRequestsRegistry::~DesktopCaptureRequestsRegistry() = default;
 
 // static
 DesktopCaptureRequestsRegistry* DesktopCaptureRequestsRegistry::GetInstance() {

@@ -77,7 +77,7 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
  protected:
   class Delegate : public ContentPredicateEvaluator::Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;

@@ -397,9 +397,9 @@ base::Value::Dict DownloadItemToJSON(DownloadItem* download_item,
 
 class DownloadFileIconExtractorImpl : public DownloadFileIconExtractor {
  public:
-  DownloadFileIconExtractorImpl() {}
+  DownloadFileIconExtractorImpl() = default;
 
-  ~DownloadFileIconExtractorImpl() override {}
+  ~DownloadFileIconExtractorImpl() override = default;
 
   bool ExtractIconURLForPath(const base::FilePath& path,
                              float scale,
@@ -1010,7 +1010,7 @@ ExtensionDownloadsEventRouterData::DeterminerInfo::DeterminerInfo(
 ExtensionDownloadsEventRouterData::DeterminerInfo::DeterminerInfo()
     : reported(false) {}
 
-ExtensionDownloadsEventRouterData::DeterminerInfo::~DeterminerInfo() {}
+ExtensionDownloadsEventRouterData::DeterminerInfo::~DeterminerInfo() = default;
 
 const char ExtensionDownloadsEventRouterData::kKey[] =
     "DownloadItem ExtensionDownloadsEventRouterData";
@@ -1070,9 +1070,9 @@ DownloadedByExtension::DownloadedByExtension(download::DownloadItem* item,
   item->SetUserData(kKey, base::WrapUnique(this));
 }
 
-DownloadsDownloadFunction::DownloadsDownloadFunction() {}
+DownloadsDownloadFunction::DownloadsDownloadFunction() = default;
 
-DownloadsDownloadFunction::~DownloadsDownloadFunction() {}
+DownloadsDownloadFunction::~DownloadsDownloadFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
   std::optional<downloads::Download::Params> params =
@@ -1201,9 +1201,9 @@ void DownloadsDownloadFunction::OnStarted(
   }
 }
 
-DownloadsSearchFunction::DownloadsSearchFunction() {}
+DownloadsSearchFunction::DownloadsSearchFunction() = default;
 
-DownloadsSearchFunction::~DownloadsSearchFunction() {}
+DownloadsSearchFunction::~DownloadsSearchFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
   std::optional<downloads::Search::Params> params =
@@ -1250,9 +1250,9 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
   return RespondNow(WithArguments(std::move(json_results)));
 }
 
-DownloadsPauseFunction::DownloadsPauseFunction() {}
+DownloadsPauseFunction::DownloadsPauseFunction() = default;
 
-DownloadsPauseFunction::~DownloadsPauseFunction() {}
+DownloadsPauseFunction::~DownloadsPauseFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsPauseFunction::Run() {
   std::optional<downloads::Pause::Params> params =
@@ -1273,9 +1273,9 @@ ExtensionFunction::ResponseAction DownloadsPauseFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-DownloadsResumeFunction::DownloadsResumeFunction() {}
+DownloadsResumeFunction::DownloadsResumeFunction() = default;
 
-DownloadsResumeFunction::~DownloadsResumeFunction() {}
+DownloadsResumeFunction::~DownloadsResumeFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsResumeFunction::Run() {
   std::optional<downloads::Resume::Params> params =
@@ -1296,9 +1296,9 @@ ExtensionFunction::ResponseAction DownloadsResumeFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-DownloadsCancelFunction::DownloadsCancelFunction() {}
+DownloadsCancelFunction::DownloadsCancelFunction() = default;
 
-DownloadsCancelFunction::~DownloadsCancelFunction() {}
+DownloadsCancelFunction::~DownloadsCancelFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsCancelFunction::Run() {
   std::optional<downloads::Resume::Params> params =
@@ -1314,9 +1314,9 @@ ExtensionFunction::ResponseAction DownloadsCancelFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-DownloadsEraseFunction::DownloadsEraseFunction() {}
+DownloadsEraseFunction::DownloadsEraseFunction() = default;
 
-DownloadsEraseFunction::~DownloadsEraseFunction() {}
+DownloadsEraseFunction::~DownloadsEraseFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
   std::optional<downloads::Erase::Params> params =
@@ -1340,9 +1340,9 @@ ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
   return RespondNow(WithArguments(std::move(json_results)));
 }
 
-DownloadsRemoveFileFunction::DownloadsRemoveFileFunction() {}
+DownloadsRemoveFileFunction::DownloadsRemoveFileFunction() = default;
 
-DownloadsRemoveFileFunction::~DownloadsRemoveFileFunction() {}
+DownloadsRemoveFileFunction::~DownloadsRemoveFileFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsRemoveFileFunction::Run() {
   std::optional<downloads::RemoveFile::Params> params =
@@ -1372,9 +1372,9 @@ void DownloadsRemoveFileFunction::Done(bool success) {
   }
 }
 
-DownloadsAcceptDangerFunction::DownloadsAcceptDangerFunction() {}
+DownloadsAcceptDangerFunction::DownloadsAcceptDangerFunction() = default;
 
-DownloadsAcceptDangerFunction::~DownloadsAcceptDangerFunction() {}
+DownloadsAcceptDangerFunction::~DownloadsAcceptDangerFunction() = default;
 
 DownloadsAcceptDangerFunction::OnPromptCreatedCallback*
     DownloadsAcceptDangerFunction::on_prompt_created_ = nullptr;
@@ -1454,9 +1454,9 @@ void DownloadsAcceptDangerFunction::DangerPromptCallback(
   Respond(NoArguments());
 }
 
-DownloadsShowFunction::DownloadsShowFunction() {}
+DownloadsShowFunction::DownloadsShowFunction() = default;
 
-DownloadsShowFunction::~DownloadsShowFunction() {}
+DownloadsShowFunction::~DownloadsShowFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsShowFunction::Run() {
   std::optional<downloads::Show::Params> params =
@@ -1472,9 +1472,11 @@ ExtensionFunction::ResponseAction DownloadsShowFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-DownloadsShowDefaultFolderFunction::DownloadsShowDefaultFolderFunction() {}
+DownloadsShowDefaultFolderFunction::DownloadsShowDefaultFolderFunction() =
+    default;
 
-DownloadsShowDefaultFolderFunction::~DownloadsShowDefaultFolderFunction() {}
+DownloadsShowDefaultFolderFunction::~DownloadsShowDefaultFolderFunction() =
+    default;
 
 ExtensionFunction::ResponseAction DownloadsShowDefaultFolderFunction::Run() {
   DownloadManager* manager = nullptr;
@@ -1492,9 +1494,9 @@ ExtensionFunction::ResponseAction DownloadsShowDefaultFolderFunction::Run() {
 DownloadsOpenFunction::OnPromptCreatedCallback*
     DownloadsOpenFunction::on_prompt_created_cb_ = nullptr;
 
-DownloadsOpenFunction::DownloadsOpenFunction() {}
+DownloadsOpenFunction::DownloadsOpenFunction() = default;
 
-DownloadsOpenFunction::~DownloadsOpenFunction() {}
+DownloadsOpenFunction::~DownloadsOpenFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   std::optional<downloads::Open::Params> params =
@@ -1567,9 +1569,9 @@ void DownloadsOpenFunction::OpenPromptDone(int download_id, bool accept) {
   Respond(NoArguments());
 }
 
-DownloadsSetShelfEnabledFunction::DownloadsSetShelfEnabledFunction() {}
+DownloadsSetShelfEnabledFunction::DownloadsSetShelfEnabledFunction() = default;
 
-DownloadsSetShelfEnabledFunction::~DownloadsSetShelfEnabledFunction() {}
+DownloadsSetShelfEnabledFunction::~DownloadsSetShelfEnabledFunction() = default;
 
 ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
   std::optional<downloads::SetShelfEnabled::Params> params =
@@ -1675,7 +1677,7 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
 DownloadsGetFileIconFunction::DownloadsGetFileIconFunction()
     : icon_extractor_(new DownloadFileIconExtractorImpl()) {}
 
-DownloadsGetFileIconFunction::~DownloadsGetFileIconFunction() {}
+DownloadsGetFileIconFunction::~DownloadsGetFileIconFunction() = default;
 
 void DownloadsGetFileIconFunction::SetIconExtractorForTesting(
     DownloadFileIconExtractor* extractor) {

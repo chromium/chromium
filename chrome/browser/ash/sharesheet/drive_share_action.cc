@@ -20,7 +20,7 @@
 namespace ash {
 namespace sharesheet {
 
-DriveShareAction::DriveShareAction() {}
+DriveShareAction::DriveShareAction() = default;
 
 DriveShareAction::~DriveShareAction() = default;
 

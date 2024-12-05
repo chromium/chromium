@@ -138,7 +138,7 @@ ExtensionIndicatorIcon::ExtensionIndicatorIcon(
     status_icon_->AddObserver(this);
 }
 
-SystemIndicatorManager::SystemIndicator::SystemIndicator() {}
+SystemIndicatorManager::SystemIndicator::SystemIndicator() = default;
 SystemIndicatorManager::SystemIndicator::~SystemIndicator() = default;
 
 SystemIndicatorManager::SystemIndicatorManager(Profile* profile,

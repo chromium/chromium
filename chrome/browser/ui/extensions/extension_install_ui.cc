@@ -144,7 +144,7 @@ ExtensionInstallUI::ExtensionInstallUI(content::BrowserContext* context)
       skip_post_install_ui_(false),
       use_app_installed_bubble_(false) {}
 
-ExtensionInstallUI::~ExtensionInstallUI() {}
+ExtensionInstallUI::~ExtensionInstallUI() = default;
 
 void ExtensionInstallUI::OnInstallSuccess(
     scoped_refptr<const extensions::Extension> extension,

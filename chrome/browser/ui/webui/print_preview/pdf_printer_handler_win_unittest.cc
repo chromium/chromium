@@ -93,12 +93,12 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
 
 class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
  public:
-  PdfPrinterHandlerWinTest() {}
+  PdfPrinterHandlerWinTest() = default;
 
   PdfPrinterHandlerWinTest(const PdfPrinterHandlerWinTest&) = delete;
   PdfPrinterHandlerWinTest& operator=(const PdfPrinterHandlerWinTest&) = delete;
 
-  ~PdfPrinterHandlerWinTest() override {}
+  ~PdfPrinterHandlerWinTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

@@ -122,7 +122,7 @@ void UserScriptListener::TriggerUserScriptsReadyForTesting(
   UserScriptsReady(context);
 }
 
-UserScriptListener::~UserScriptListener() {}
+UserScriptListener::~UserScriptListener() = default;
 
 bool UserScriptListener::ShouldDelayRequest(const GURL& url) {
   // Note: we could delay only requests made by the profile who is causing the

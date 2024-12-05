@@ -36,7 +36,7 @@ DataSharingPageHandler::DataSharingPageHandler(
   RequestAccessToken();
 }
 
-DataSharingPageHandler::~DataSharingPageHandler() {}
+DataSharingPageHandler::~DataSharingPageHandler() = default;
 
 void DataSharingPageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();

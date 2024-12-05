@@ -35,7 +35,7 @@ PendingExtensionInfo::PendingExtensionInfo(PendingExtensionInfo&& other) =
 PendingExtensionInfo& PendingExtensionInfo::operator=(
     PendingExtensionInfo&& other) = default;
 
-PendingExtensionInfo::~PendingExtensionInfo() {}
+PendingExtensionInfo::~PendingExtensionInfo() = default;
 
 bool PendingExtensionInfo::operator==(const PendingExtensionInfo& rhs) const {
   return id_ == rhs.id_;

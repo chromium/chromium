@@ -16,7 +16,7 @@ class SystemIndicatorSetIconFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  protected:
-  ~SystemIndicatorSetIconFunction() override {}
+  ~SystemIndicatorSetIconFunction() override = default;
 };
 
 class SystemIndicatorEnableFunction : public ExtensionFunction {
@@ -26,7 +26,7 @@ class SystemIndicatorEnableFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  protected:
-  ~SystemIndicatorEnableFunction() override {}
+  ~SystemIndicatorEnableFunction() override = default;
 };
 
 class SystemIndicatorDisableFunction : public ExtensionFunction {
@@ -36,7 +36,7 @@ class SystemIndicatorDisableFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  protected:
-  ~SystemIndicatorDisableFunction() override {}
+  ~SystemIndicatorDisableFunction() override = default;
 };
 
 }  // namespace extensions

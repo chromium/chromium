@@ -109,12 +109,12 @@ void RequestProxyResolvingSocketFactory(
 // Helper class for asynchronous waiting.
 class Waiter {
  public:
-  Waiter() {}
+  Waiter() = default;
 
   Waiter(const Waiter&) = delete;
   Waiter& operator=(const Waiter&) = delete;
 
-  ~Waiter() {}
+  ~Waiter() = default;
 
   // Waits until the asynchronous operation finishes.
   void WaitUntilCompleted() {
@@ -180,7 +180,7 @@ class FakeExtensionGCMAppHandler : public ExtensionGCMAppHandler {
   FakeExtensionGCMAppHandler& operator=(const FakeExtensionGCMAppHandler&) =
       delete;
 
-  ~FakeExtensionGCMAppHandler() override {}
+  ~FakeExtensionGCMAppHandler() override = default;
 
   void OnMessage(const std::string& app_id,
                  const gcm::IncomingMessage& message) override {}
@@ -262,7 +262,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   ExtensionGCMAppHandlerTest& operator=(const ExtensionGCMAppHandlerTest&) =
       delete;
 
-  ~ExtensionGCMAppHandlerTest() override {}
+  ~ExtensionGCMAppHandlerTest() override = default;
 
   // Overridden from test::Test:
   void SetUp() override {

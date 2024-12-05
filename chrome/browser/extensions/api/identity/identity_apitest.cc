@@ -545,7 +545,7 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
   }
 
  private:
-  ~FakeGetAuthTokenFunction() override {}
+  ~FakeGetAuthTokenFunction() override = default;
   bool login_access_token_result_;
   bool auto_login_access_token_;
   bool login_ui_result_;

@@ -500,7 +500,7 @@ class ParameterizedShowActionDeclarativeContentApiTest
   ParameterizedShowActionDeclarativeContentApiTest& operator=(
       const ParameterizedShowActionDeclarativeContentApiTest&) = delete;
 
-  ~ParameterizedShowActionDeclarativeContentApiTest() override {}
+  ~ParameterizedShowActionDeclarativeContentApiTest() override = default;
 
   void TestShowAction(std::optional<ActionInfo::Type> action_type);
 };

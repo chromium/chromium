@@ -239,9 +239,9 @@ Profile* HistoryFunction::GetProfile() const {
   return Profile::FromBrowserContext(browser_context());
 }
 
-HistoryFunctionWithCallback::HistoryFunctionWithCallback() {}
+HistoryFunctionWithCallback::HistoryFunctionWithCallback() = default;
 
-HistoryFunctionWithCallback::~HistoryFunctionWithCallback() {}
+HistoryFunctionWithCallback::~HistoryFunctionWithCallback() = default;
 
 ExtensionFunction::ResponseAction HistoryGetVisitsFunction::Run() {
   std::optional<GetVisits::Params> params = GetVisits::Params::Create(args());

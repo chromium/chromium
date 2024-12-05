@@ -9,15 +9,15 @@
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 
-WebUIBrowserAsyncGenTest::WebUIBrowserAsyncGenTest() {}
+WebUIBrowserAsyncGenTest::WebUIBrowserAsyncGenTest() = default;
 
-WebUIBrowserAsyncGenTest::~WebUIBrowserAsyncGenTest() {}
+WebUIBrowserAsyncGenTest::~WebUIBrowserAsyncGenTest() = default;
+
+WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::AsyncWebUIMessageHandler() =
+    default;
 
 WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::
-    AsyncWebUIMessageHandler() {}
-
-WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::
-    ~AsyncWebUIMessageHandler() {}
+    ~AsyncWebUIMessageHandler() = default;
 
 void WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::HandleCallJS(
     const base::Value::List& list_value) {

@@ -111,8 +111,8 @@ class PrefChangeObserver : public DistilledPagePrefs::Observer {
 
 class DomDistillerViewerSourceBrowserTest : public InProcessBrowserTest {
  public:
-  DomDistillerViewerSourceBrowserTest() {}
-  ~DomDistillerViewerSourceBrowserTest() override {}
+  DomDistillerViewerSourceBrowserTest() = default;
+  ~DomDistillerViewerSourceBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     if (!DistillerJavaScriptWorldIdIsSet()) {

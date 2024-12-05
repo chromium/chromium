@@ -68,7 +68,7 @@ class ActivityDatabase {
 
     // A Delegate is never directly deleted; it should instead delete itself
     // after any final cleanup when OnDatabaseClose() is invoked.
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Initializes the database schema; this gives a policy a chance to create
     // or update database tables as needed.  Should return true on success.

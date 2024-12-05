@@ -166,7 +166,7 @@ bool IsSupportedAppTypePolicyId(std::string_view policy_id) {
 ExternalDataPolicyHandler::ExternalDataPolicyHandler(const char* policy_name)
     : TypeCheckingPolicyHandler(policy_name, base::Value::Type::DICT) {}
 
-ExternalDataPolicyHandler::~ExternalDataPolicyHandler() {}
+ExternalDataPolicyHandler::~ExternalDataPolicyHandler() = default;
 
 bool ExternalDataPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
@@ -235,7 +235,8 @@ NetworkConfigurationPolicyHandler::CreateForDevicePolicy() {
       onc::prefs::kDeviceOpenNetworkConfiguration);
 }
 
-NetworkConfigurationPolicyHandler::~NetworkConfigurationPolicyHandler() {}
+NetworkConfigurationPolicyHandler::~NetworkConfigurationPolicyHandler() =
+    default;
 
 bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -492,7 +493,7 @@ ScreenMagnifierPolicyHandler::ScreenMagnifierPolicyHandler()
                                 static_cast<int>(MagnifierType::kDocked),
                                 false) {}
 
-ScreenMagnifierPolicyHandler::~ScreenMagnifierPolicyHandler() {}
+ScreenMagnifierPolicyHandler::~ScreenMagnifierPolicyHandler() = default;
 
 void ScreenMagnifierPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
@@ -518,7 +519,7 @@ LoginScreenPowerManagementPolicyHandler::
                                     SCHEMA_ALLOW_UNKNOWN) {}
 
 LoginScreenPowerManagementPolicyHandler::
-    ~LoginScreenPowerManagementPolicyHandler() {}
+    ~LoginScreenPowerManagementPolicyHandler() = default;
 
 void LoginScreenPowerManagementPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
@@ -531,7 +532,7 @@ DeprecatedIdleActionHandler::DeprecatedIdleActionHandler()
           chromeos::PowerPolicyController::ACTION_DO_NOTHING,
           false) {}
 
-DeprecatedIdleActionHandler::~DeprecatedIdleActionHandler() {}
+DeprecatedIdleActionHandler::~DeprecatedIdleActionHandler() = default;
 
 void DeprecatedIdleActionHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                       PrefValueMap* prefs) {
@@ -556,7 +557,7 @@ PowerManagementIdleSettingsPolicyHandler::
           SCHEMA_ALLOW_UNKNOWN) {}
 
 PowerManagementIdleSettingsPolicyHandler::
-    ~PowerManagementIdleSettingsPolicyHandler() {}
+    ~PowerManagementIdleSettingsPolicyHandler() = default;
 
 void PowerManagementIdleSettingsPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
@@ -618,7 +619,7 @@ ScreenLockDelayPolicyHandler::ScreenLockDelayPolicyHandler(
           chrome_schema.GetKnownProperty(key::kScreenLockDelays),
           SCHEMA_ALLOW_UNKNOWN) {}
 
-ScreenLockDelayPolicyHandler::~ScreenLockDelayPolicyHandler() {}
+ScreenLockDelayPolicyHandler::~ScreenLockDelayPolicyHandler() = default;
 
 void ScreenLockDelayPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,

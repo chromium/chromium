@@ -58,7 +58,7 @@ class TestExtensionNotificationHandler : public ExtensionNotificationHandler {
 
 class ExtensionNotificationHandlerTest : public testing::Test {
  public:
-  ExtensionNotificationHandlerTest() {}
+  ExtensionNotificationHandlerTest() = default;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

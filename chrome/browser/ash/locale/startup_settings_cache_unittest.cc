@@ -18,7 +18,7 @@ class StartupSettingsCacheTest : public testing::Test {
 
  protected:
   StartupSettingsCacheTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
-  ~StartupSettingsCacheTest() override {}
+  ~StartupSettingsCacheTest() override = default;
 
  private:
   // Map DIR_USER_DATA to a temp dir.

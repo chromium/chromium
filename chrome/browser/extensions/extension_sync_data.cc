@@ -118,7 +118,7 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
 
 ExtensionSyncData::ExtensionSyncData(const ExtensionSyncData& other) = default;
 
-ExtensionSyncData::~ExtensionSyncData() {}
+ExtensionSyncData::~ExtensionSyncData() = default;
 
 // static
 std::unique_ptr<ExtensionSyncData> ExtensionSyncData::CreateFromSyncData(

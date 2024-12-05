@@ -20,9 +20,9 @@
 
 namespace policy {
 
-DeviceCommandFetchStatusJob::DeviceCommandFetchStatusJob() {}
+DeviceCommandFetchStatusJob::DeviceCommandFetchStatusJob() = default;
 
-DeviceCommandFetchStatusJob::~DeviceCommandFetchStatusJob() {}
+DeviceCommandFetchStatusJob::~DeviceCommandFetchStatusJob() = default;
 
 enterprise_management::RemoteCommand_Type DeviceCommandFetchStatusJob::GetType()
     const {

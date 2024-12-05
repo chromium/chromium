@@ -40,7 +40,7 @@ HeavyAdServiceFactory::HeavyAdServiceFactory()
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-HeavyAdServiceFactory::~HeavyAdServiceFactory() {}
+HeavyAdServiceFactory::~HeavyAdServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 HeavyAdServiceFactory::BuildServiceInstanceForBrowserContext(

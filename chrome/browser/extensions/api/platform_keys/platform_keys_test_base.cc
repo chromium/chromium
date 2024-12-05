@@ -62,7 +62,7 @@ PlatformKeysTestBase::PlatformKeysTestBase(
       ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
 }
 
-PlatformKeysTestBase::~PlatformKeysTestBase() {}
+PlatformKeysTestBase::~PlatformKeysTestBase() = default;
 
 void PlatformKeysTestBase::SetUp() {
   base::FilePath test_data_dir;

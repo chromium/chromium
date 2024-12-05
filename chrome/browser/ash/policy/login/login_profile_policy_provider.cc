@@ -182,7 +182,7 @@ LoginProfilePolicyProvider::LoginProfilePolicyProvider(
     : device_policy_service_(device_policy_service),
       waiting_for_device_policy_refresh_(false) {}
 
-LoginProfilePolicyProvider::~LoginProfilePolicyProvider() {}
+LoginProfilePolicyProvider::~LoginProfilePolicyProvider() = default;
 
 void LoginProfilePolicyProvider::Init(SchemaRegistry* registry) {
   ConfigurationPolicyProvider::Init(registry);

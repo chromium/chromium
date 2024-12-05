@@ -65,11 +65,11 @@ IN_PROC_BROWSER_TEST_F(NewTabUIBrowserTest, ShowIncognito) {
 
 class NewTabUIProcessPerTabTest : public NewTabUIBrowserTest {
  public:
-   NewTabUIProcessPerTabTest() {}
+  NewTabUIProcessPerTabTest() = default;
 
-   void SetUpCommandLine(base::CommandLine* command_line) override {
-     command_line->AppendSwitch(switches::kProcessPerTab);
-   }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kProcessPerTab);
+  }
 };
 
 // Navigates away from NTP before it commits, in process-per-tab mode.

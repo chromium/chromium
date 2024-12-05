@@ -44,7 +44,7 @@ constexpr char kGetHostname[] = "getHostname";
 
 }  // namespace
 
-NetworkConfigMessageHandler::NetworkConfigMessageHandler() {}
+NetworkConfigMessageHandler::NetworkConfigMessageHandler() = default;
 
 NetworkConfigMessageHandler::~NetworkConfigMessageHandler() = default;
 

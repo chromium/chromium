@@ -165,7 +165,7 @@ namespace settings_api = api::settings_private;
 
 PrefsUtil::PrefsUtil(Profile* profile) : profile_(profile) {}
 
-PrefsUtil::~PrefsUtil() {}
+PrefsUtil::~PrefsUtil() = default;
 
 const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   static PrefsUtil::TypedPrefMap* s_allowlist = nullptr;

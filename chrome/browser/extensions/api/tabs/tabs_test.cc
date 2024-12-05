@@ -159,7 +159,7 @@ class TestFunctionDispatcherDelegate
 
 class ExtensionTabsTest : public PlatformAppBrowserTest {
  public:
-  ExtensionTabsTest() {}
+  ExtensionTabsTest() = default;
 
   ExtensionTabsTest(const ExtensionTabsTest&) = delete;
   ExtensionTabsTest& operator=(const ExtensionTabsTest&) = delete;

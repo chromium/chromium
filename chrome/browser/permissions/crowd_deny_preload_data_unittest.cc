@@ -47,7 +47,7 @@ class CrowdDenyPreloadDataTest : public testing::Test {
  public:
   using SiteReputation = chrome_browser_crowd_deny::SiteReputation;
 
-  CrowdDenyPreloadDataTest() {}
+  CrowdDenyPreloadDataTest() = default;
 
   CrowdDenyPreloadDataTest(const CrowdDenyPreloadDataTest&) = delete;
   CrowdDenyPreloadDataTest& operator=(const CrowdDenyPreloadDataTest&) = delete;

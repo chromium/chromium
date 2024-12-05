@@ -2538,7 +2538,7 @@ ExecuteCodeInTabFunction::ExecuteCodeInTabFunction()
     : chrome_details_(this), execute_tab_id_(-1) {
 }
 
-ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() {}
+ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
 
 ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
   if (init_result_)
@@ -2862,8 +2862,8 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
           contents, extension(), source_context_type(), nullptr, -1))));
 }
 
-TabsDiscardFunction::TabsDiscardFunction() {}
-TabsDiscardFunction::~TabsDiscardFunction() {}
+TabsDiscardFunction::TabsDiscardFunction() = default;
+TabsDiscardFunction::~TabsDiscardFunction() = default;
 
 ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
   std::optional<tabs::GoForward::Params> params =

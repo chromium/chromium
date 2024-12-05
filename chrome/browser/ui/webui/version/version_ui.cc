@@ -152,7 +152,7 @@ VersionUI::VersionUI(content::WebUI* web_ui)
   CreateAndAddVersionUIDataSource(profile);
 }
 
-VersionUI::~VersionUI() {}
+VersionUI::~VersionUI() = default;
 
 // static
 int VersionUI::VersionProcessorVariation() {

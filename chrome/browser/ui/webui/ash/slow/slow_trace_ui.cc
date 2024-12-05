@@ -57,7 +57,7 @@ std::string SlowTraceSource::GetMimeType(const GURL& url) {
   return "application/zip";
 }
 
-SlowTraceSource::~SlowTraceSource() {}
+SlowTraceSource::~SlowTraceSource() = default;
 
 void SlowTraceSource::OnGetTraceData(
     content::URLDataSource::GotDataCallback callback,

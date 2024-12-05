@@ -56,7 +56,7 @@ class SigninEmailConfirmationDialog::DialogWebContentsObserver
   DialogWebContentsObserver& operator=(const DialogWebContentsObserver&) =
       delete;
 
-  ~DialogWebContentsObserver() override {}
+  ~DialogWebContentsObserver() override = default;
 
  private:
   void WebContentsDestroyed() override {
@@ -94,7 +94,7 @@ SigninEmailConfirmationDialog::SigninEmailConfirmationDialog(
   set_show_dialog_title(false);
 }
 
-SigninEmailConfirmationDialog::~SigninEmailConfirmationDialog() {}
+SigninEmailConfirmationDialog::~SigninEmailConfirmationDialog() = default;
 
 // static
 SigninEmailConfirmationDialog*

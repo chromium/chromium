@@ -35,7 +35,8 @@ ChromeExtensionWebContentsObserver::ChromeExtensionWebContentsObserver(
       content::WebContentsUserData<ChromeExtensionWebContentsObserver>(
           *web_contents) {}
 
-ChromeExtensionWebContentsObserver::~ChromeExtensionWebContentsObserver() {}
+ChromeExtensionWebContentsObserver::~ChromeExtensionWebContentsObserver() =
+    default;
 
 // static
 void ChromeExtensionWebContentsObserver::CreateForWebContents(

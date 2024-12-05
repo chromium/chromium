@@ -93,7 +93,7 @@ ComponentsUI::ComponentsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   CreateAndAddComponentsUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
-ComponentsUI::~ComponentsUI() {}
+ComponentsUI::~ComponentsUI() = default;
 
 // static
 base::RefCountedMemory* ComponentsUI::GetFaviconResourceBytes(

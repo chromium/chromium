@@ -46,7 +46,7 @@ class SigninPrepareUserListTest : public testing::Test {
   SigninPrepareUserListTest& operator=(const SigninPrepareUserListTest&) =
       delete;
 
-  ~SigninPrepareUserListTest() override {}
+  ~SigninPrepareUserListTest() override = default;
 
   // testing::Test:
   void SetUp() override {

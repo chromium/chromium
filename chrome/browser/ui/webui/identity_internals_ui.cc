@@ -138,9 +138,11 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
   raw_ptr<IdentityInternalsUIMessageHandler> consumer_;  // weak.
 };
 
-IdentityInternalsUIMessageHandler::IdentityInternalsUIMessageHandler() {}
+IdentityInternalsUIMessageHandler::IdentityInternalsUIMessageHandler() =
+    default;
 
-IdentityInternalsUIMessageHandler::~IdentityInternalsUIMessageHandler() {}
+IdentityInternalsUIMessageHandler::~IdentityInternalsUIMessageHandler() =
+    default;
 
 void IdentityInternalsUIMessageHandler::OnTokenRevokerDone(
     IdentityInternalsTokenRevoker* token_revoker,
@@ -296,7 +298,7 @@ IdentityInternalsTokenRevoker::IdentityInternalsTokenRevoker(
   fetcher_.StartRevokeOAuth2Token(access_token);
 }
 
-IdentityInternalsTokenRevoker::~IdentityInternalsTokenRevoker() {}
+IdentityInternalsTokenRevoker::~IdentityInternalsTokenRevoker() = default;
 
 void IdentityInternalsTokenRevoker::OnOAuth2RevokeTokenCompleted(
     GaiaAuthConsumer::TokenRevocationStatus status) {
@@ -328,4 +330,4 @@ IdentityInternalsUI::IdentityInternalsUI(content::WebUI* web_ui)
       std::make_unique<IdentityInternalsUIMessageHandler>());
 }
 
-IdentityInternalsUI::~IdentityInternalsUI() {}
+IdentityInternalsUI::~IdentityInternalsUI() = default;

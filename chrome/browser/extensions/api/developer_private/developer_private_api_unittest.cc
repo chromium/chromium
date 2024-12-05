@@ -280,8 +280,8 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
       delete;
 
  protected:
-  DeveloperPrivateApiUnitTest() {}
-  ~DeveloperPrivateApiUnitTest() override {}
+  DeveloperPrivateApiUnitTest() = default;
+  ~DeveloperPrivateApiUnitTest() override = default;
 
   // ExtensionServiceTestBase:
   void SetUp() override;

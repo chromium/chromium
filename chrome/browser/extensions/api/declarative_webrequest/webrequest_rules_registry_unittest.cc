@@ -89,7 +89,7 @@ class TestWebRequestRulesRegistry : public WebRequestRulesRegistry {
   }
 
  protected:
-  ~TestWebRequestRulesRegistry() override {}
+  ~TestWebRequestRulesRegistry() override = default;
 
   void ClearCacheOnNavigation() override { ++num_clear_cache_calls_; }
 

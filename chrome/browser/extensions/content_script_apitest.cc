@@ -135,7 +135,7 @@ class ContentScriptApiTest : public ExtensionApiTest {
   ContentScriptApiTest(const ContentScriptApiTest&) = delete;
   ContentScriptApiTest& operator=(const ContentScriptApiTest&) = delete;
 
-  ~ContentScriptApiTest() override {}
+  ~ContentScriptApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();

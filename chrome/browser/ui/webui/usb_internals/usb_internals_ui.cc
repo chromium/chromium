@@ -25,7 +25,7 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UsbInternalsUI)
 
-UsbInternalsUI::~UsbInternalsUI() {}
+UsbInternalsUI::~UsbInternalsUI() = default;
 
 void UsbInternalsUI::BindInterface(
     mojo::PendingReceiver<mojom::UsbInternalsPageHandler> receiver) {

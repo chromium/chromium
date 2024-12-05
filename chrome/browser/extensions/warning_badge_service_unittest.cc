@@ -23,7 +23,7 @@ class TestExtensionWarningSet : public WarningService {
  public:
   explicit TestExtensionWarningSet(Profile* profile)
       : WarningService(profile) {}
-  ~TestExtensionWarningSet() override {}
+  ~TestExtensionWarningSet() override = default;
 
   void AddWarning(const Warning& warning) {
     WarningSet warnings;
@@ -36,7 +36,7 @@ class TestWarningBadgeService : public WarningBadgeService {
  public:
   TestWarningBadgeService(Profile* profile, WarningService* warning_service)
       : WarningBadgeService(profile), warning_service_(warning_service) {}
-  ~TestWarningBadgeService() override {}
+  ~TestWarningBadgeService() override = default;
 
   const std::set<Warning>& GetCurrentWarnings() const override {
     return warning_service_->warnings();

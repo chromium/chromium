@@ -72,7 +72,7 @@ InstallEventLogManagerBase::InstallEventLogManagerBase(
     Profile* profile)
     : log_task_runner_(log_task_runner_wrapper->GetTaskRunner()) {}
 
-InstallEventLogManagerBase::~InstallEventLogManagerBase() {}
+InstallEventLogManagerBase::~InstallEventLogManagerBase() = default;
 
 InstallEventLogManagerBase::LogUpload::LogUpload() = default;
 InstallEventLogManagerBase::LogUpload::~LogUpload() = default;

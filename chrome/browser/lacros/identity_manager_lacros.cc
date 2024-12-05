@@ -29,7 +29,7 @@ chromeos::LacrosService* GetLacrosService(int min_version,
 
 }  // namespace
 
-IdentityManagerLacros::IdentityManagerLacros() {}
+IdentityManagerLacros::IdentityManagerLacros() = default;
 
 IdentityManagerLacros::~IdentityManagerLacros() = default;
 

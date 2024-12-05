@@ -54,7 +54,7 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   LiveRequest(const LiveRequest&) = delete;
   LiveRequest& operator=(const LiveRequest&) = delete;
 
-  ~LiveRequest() override {}
+  ~LiveRequest() override = default;
 
   // Accessors.
   const ExtensionId& extension_id() const { return extension_id_; }

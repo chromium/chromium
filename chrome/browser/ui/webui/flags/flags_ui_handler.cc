@@ -41,7 +41,7 @@ FlagsUIHandler::FlagsUIHandler()
       experimental_features_callback_id_(""),
       deprecated_features_callback_id_("") {}
 
-FlagsUIHandler::~FlagsUIHandler() {}
+FlagsUIHandler::~FlagsUIHandler() = default;
 
 void FlagsUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

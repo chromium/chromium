@@ -662,9 +662,9 @@ NotificationsClearFunction::RunNotificationsApi() {
   return RespondNow(WithArguments(cancel_result));
 }
 
-NotificationsGetAllFunction::NotificationsGetAllFunction() {}
+NotificationsGetAllFunction::NotificationsGetAllFunction() = default;
 
-NotificationsGetAllFunction::~NotificationsGetAllFunction() {}
+NotificationsGetAllFunction::~NotificationsGetAllFunction() = default;
 
 ExtensionFunction::ResponseAction
 NotificationsGetAllFunction::RunNotificationsApi() {
@@ -681,10 +681,10 @@ NotificationsGetAllFunction::RunNotificationsApi() {
 }
 
 NotificationsGetPermissionLevelFunction::
-NotificationsGetPermissionLevelFunction() {}
+    NotificationsGetPermissionLevelFunction() = default;
 
 NotificationsGetPermissionLevelFunction::
-~NotificationsGetPermissionLevelFunction() {}
+    ~NotificationsGetPermissionLevelFunction() = default;
 
 bool NotificationsGetPermissionLevelFunction::CanRunWhileDisabled() const {
   return true;

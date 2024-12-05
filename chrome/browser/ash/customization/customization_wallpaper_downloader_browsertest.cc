@@ -157,14 +157,14 @@ class TestWallpaperObserver : public WallpaperControllerObserver {
 class CustomizationWallpaperDownloaderBrowserTest
     : public InProcessBrowserTest {
  public:
-  CustomizationWallpaperDownloaderBrowserTest() {}
+  CustomizationWallpaperDownloaderBrowserTest() = default;
 
   CustomizationWallpaperDownloaderBrowserTest(
       const CustomizationWallpaperDownloaderBrowserTest&) = delete;
   CustomizationWallpaperDownloaderBrowserTest& operator=(
       const CustomizationWallpaperDownloaderBrowserTest&) = delete;
 
-  ~CustomizationWallpaperDownloaderBrowserTest() override {}
+  ~CustomizationWallpaperDownloaderBrowserTest() override = default;
 
   // InProcessBrowserTest overrides:
   void SetUpOnMainThread() override {

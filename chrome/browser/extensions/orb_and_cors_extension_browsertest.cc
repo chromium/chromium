@@ -2111,7 +2111,7 @@ class ReadyToCommitWaiter : public content::WebContentsObserver {
   ReadyToCommitWaiter(const ReadyToCommitWaiter&) = delete;
   ReadyToCommitWaiter& operator=(const ReadyToCommitWaiter&) = delete;
 
-  ~ReadyToCommitWaiter() override {}
+  ~ReadyToCommitWaiter() override = default;
 
   void Wait() { run_loop_.Run(); }
 

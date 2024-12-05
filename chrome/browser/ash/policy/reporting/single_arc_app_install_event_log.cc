@@ -15,7 +15,7 @@ SingleArcAppInstallEventLog::SingleArcAppInstallEventLog(
     const std::string& package)
     : SingleInstallEventLog(package) {}
 
-SingleArcAppInstallEventLog::~SingleArcAppInstallEventLog() {}
+SingleArcAppInstallEventLog::~SingleArcAppInstallEventLog() = default;
 
 bool SingleArcAppInstallEventLog::Load(
     base::File* file,

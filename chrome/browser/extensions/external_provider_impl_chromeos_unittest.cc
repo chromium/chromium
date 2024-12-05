@@ -58,7 +58,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
   ExternalProviderImplChromeOSTest& operator=(
       const ExternalProviderImplChromeOSTest&) = delete;
 
-  ~ExternalProviderImplChromeOSTest() override {}
+  ~ExternalProviderImplChromeOSTest() override = default;
 
   void InitServiceWithExternalProviders(bool standalone) {
     InitServiceWithExternalProvidersAndUserType(standalone,

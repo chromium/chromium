@@ -206,7 +206,7 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
   ash::EnableTrustedTypesCSP(source);
 }
 
-InternetConfigDialogUI::~InternetConfigDialogUI() {}
+InternetConfigDialogUI::~InternetConfigDialogUI() = default;
 
 void InternetConfigDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>

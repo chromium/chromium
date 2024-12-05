@@ -101,9 +101,9 @@ class SystemInfoUIHandler : public WebUIMessageHandler {
 // SystemInfoUIHandler
 //
 ////////////////////////////////////////////////////////////////////////////////
-SystemInfoUIHandler::SystemInfoUIHandler() {}
+SystemInfoUIHandler::SystemInfoUIHandler() = default;
 
-SystemInfoUIHandler::~SystemInfoUIHandler() {}
+SystemInfoUIHandler::~SystemInfoUIHandler() = default;
 
 void SystemInfoUIHandler::OnJavascriptDisallowed() {
   weak_ptr_factory_.InvalidateWeakPtrs();

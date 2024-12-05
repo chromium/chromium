@@ -137,9 +137,9 @@ std::string DesktopCaptureChooseDesktopMediaFunction::GetExtensionTargetName()
 }
 
 DesktopCaptureCancelChooseDesktopMediaFunction::
-    DesktopCaptureCancelChooseDesktopMediaFunction() {}
+    DesktopCaptureCancelChooseDesktopMediaFunction() = default;
 
 DesktopCaptureCancelChooseDesktopMediaFunction::
-    ~DesktopCaptureCancelChooseDesktopMediaFunction() {}
+    ~DesktopCaptureCancelChooseDesktopMediaFunction() = default;
 
 }  // namespace extensions

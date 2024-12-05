@@ -84,7 +84,7 @@ class ChromeOSTermsTest : public testing::Test {
   ChromeOSTermsTest& operator=(const ChromeOSTermsTest&) = delete;
 
  protected:
-  ChromeOSTermsTest() {}
+  ChromeOSTermsTest() = default;
   ~ChromeOSTermsTest() override = default;
 
   void SetUp() override {
@@ -177,7 +177,7 @@ class ChromeOSCreditsTest : public testing::Test {
   ChromeOSCreditsTest& operator=(const ChromeOSCreditsTest&) = delete;
 
  protected:
-  ChromeOSCreditsTest() {}
+  ChromeOSCreditsTest() = default;
   ~ChromeOSCreditsTest() override = default;
 
   void SetUp() override {

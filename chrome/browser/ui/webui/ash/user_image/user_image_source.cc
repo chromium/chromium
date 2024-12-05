@@ -169,9 +169,9 @@ scoped_refptr<base::RefCountedMemory> UserImageSource::GetUserImage(
   return GetUserImageInternal(account_id, -1);
 }
 
-UserImageSource::UserImageSource() {}
+UserImageSource::UserImageSource() = default;
 
-UserImageSource::~UserImageSource() {}
+UserImageSource::~UserImageSource() = default;
 
 std::string UserImageSource::GetSource() {
   return chrome::kChromeUIUserImageHost;

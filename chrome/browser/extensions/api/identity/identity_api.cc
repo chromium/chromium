@@ -61,7 +61,7 @@ IdentityAPI::IdentityAPI(content::BrowserContext* context)
                   ExtensionPrefs::Get(context),
                   EventRouter::Get(context)) {}
 
-IdentityAPI::~IdentityAPI() {}
+IdentityAPI::~IdentityAPI() = default;
 
 IdentityMintRequestQueue* IdentityAPI::mint_queue() { return &mint_queue_; }
 
