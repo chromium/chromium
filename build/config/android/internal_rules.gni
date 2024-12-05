@@ -3548,6 +3548,9 @@ if (enable_java_templates) {
     not_needed(invoker, [ "no_build_hooks" ])
 
     forward_variables_from(invoker, [ "testonly" ])
+
+    _target_dir = get_label_info(":any_name_here", "dir")
+
     _is_prebuilt = defined(invoker.jar_path)
     _type = invoker.type
     _is_annotation_processor = _type == "java_annotation_processor"
@@ -3566,24 +3569,11 @@ if (enable_java_templates) {
                               invoker.bypass_platform_checks
     _is_robolectric = defined(invoker.is_robolectric) && invoker.is_robolectric
 
-    _invoker_deps = []
-    if (defined(invoker.deps)) {
-      _invoker_deps += invoker.deps
-    }
-    if (defined(invoker.public_deps)) {
-      _invoker_deps += invoker.public_deps
-    }
-
-    _main_target_name = target_name
-    if (defined(invoker.main_target_name)) {
-      _main_target_name = invoker.main_target_name
-    }
-
-    _source_files = []
     if (defined(invoker.sources)) {
       _source_files = invoker.sources
+    } else {
+      _source_files = []
     }
-
     _srcjar_deps = []
     if (defined(invoker.srcjar_deps)) {
       _srcjar_deps = invoker.srcjar_deps
@@ -3593,6 +3583,33 @@ if (enable_java_templates) {
       _srcjars = invoker.srcjars
     }
     _has_sources = _source_files != [] || _srcjar_deps != [] || _srcjars != []
+
+    if (defined(invoker.chromium_code)) {
+      _chromium_code = invoker.chromium_code
+    } else {
+      # Default based on whether target is in third_party.
+      _chromium_code =
+          filter_exclude([ _target_dir ], [ "*\bthird_party\b*" ]) != []
+      if (!_chromium_code && !_is_prebuilt && _source_files != []) {
+        # Unless third_party code has an org.chromium file in it.
+        _chromium_code =
+            filter_exclude(_source_files, [ "*\bchromium\b*" ]) != _source_files
+      }
+    }
+
+    if (_chromium_code && _has_sources && _target_dir != "//build/android") {
+      _default_deps = [ "//build/android:build_java" ]
+    } else {
+      _default_deps = []
+    }
+    _invoker_deps = _default_deps
+    if (defined(invoker.deps)) {
+      _invoker_deps += invoker.deps
+    }
+    if (defined(invoker.public_deps)) {
+      _invoker_deps += invoker.public_deps
+    }
+
     if (_is_prebuilt || _has_sources) {
       # This allows us to use jar_excluded_patterns and prevent even the
       # interface jars from having these classes. This means that, with this
@@ -3623,18 +3640,10 @@ if (enable_java_templates) {
              "main_class cannot be used for target of type ${_type}")
     }
 
-    if (defined(invoker.chromium_code)) {
-      _chromium_code = invoker.chromium_code
+    if (defined(invoker.main_target_name)) {
+      _main_target_name = invoker.main_target_name
     } else {
-      # Default based on whether target is in third_party.
-      _chromium_code =
-          filter_exclude([ get_label_info(":$_main_target_name", "dir") ],
-                         [ "*\bthird_party\b*" ]) != []
-      if (!_chromium_code && !_is_prebuilt && _source_files != []) {
-        # Unless third_party code has an org.chromium file in it.
-        _chromium_code =
-            filter_exclude(_source_files, [ "*\bchromium\b*" ]) != _source_files
-      }
+      _main_target_name = target_name
     }
 
     # Define build_config_deps which will be a list of targets required to
@@ -3673,9 +3682,8 @@ if (enable_java_templates) {
         # so do not put them under obj/.
         # TODO(agrieve): I suspect it would be better to use dist_jar for java_binary
         #     rather than archiving unnecessary .jar files within lib.java.
-        _target_dir_name = get_label_info(":$_main_target_name", "dir")
         _host_processed_jar_path =
-            "$root_out_dir/lib.java$_target_dir_name/$_output_name.jar"
+            "$root_out_dir/lib.java$_target_dir/$_output_name.jar"
       }
       if (_build_device_jar) {
         _dex_path = "$target_out_dir/$_main_target_name.dex.jar"
@@ -3875,9 +3883,9 @@ if (enable_java_templates) {
 
       # Specifically avoid passing in invoker.base_module_target as one of the
       # possible_config_deps.
-      possible_config_deps = []
+      possible_config_deps = _default_deps
       if (defined(invoker.deps)) {
-        possible_config_deps = invoker.deps
+        possible_config_deps += invoker.deps
       }
       if (defined(invoker.public_deps)) {
         possible_config_public_deps = invoker.public_deps

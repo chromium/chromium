@@ -267,6 +267,7 @@ sizes_test("cronet_sizes") {
 cronet_shared_java_deps_to_package = [
   ":cronet_stats_log_java",
   "//base:metrics_ScopedSysTraceEvent_java",
+  "//build/android:build_java",
 ]
 
 # Common Cronet code that is used in Cronet API *and* implementations.
@@ -520,7 +521,6 @@ cronet_impl_native_java_deps_to_package = [
   ":request_context_config_java_proto",
   "//base:base_java",
   "//third_party/jni_zero:jni_zero_java",
-  "//build/android:build_java",
   "//net/android:net_java",
   "//url:url_java",
 ]
@@ -1000,7 +1000,10 @@ template("repackage_jars") {
 
     # This is to prevent clashing with the real jni_zero in apps that include
     # cronet (eg: google3). See https://crbug.com/353534209
-    renaming_rules = [ "org.jni_zero.**->internal.org.jni_zero" ]
+    renaming_rules = [
+      "org.jni_zero.**->internal.org.jni_zero",
+      "org.chromium.build.**->internal.org.chromium.build",
+    ]
     forward_variables_from(invoker, "*", [ "jar_excluded_patterns" ])
   }
 }
@@ -1205,7 +1208,6 @@ android_library("cronet_test_apk_java") {
     ":cronet_all_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/google-truth:google_truth_java",
@@ -1257,7 +1259,6 @@ android_library("cronet_common_javatests") {
            ":flags_java_proto",
            "//base:base_java",
            "//base:base_java_test_support",
-           "//build/android:build_java",
            "//third_party/androidx:androidx_core_core_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/jni_zero:jni_zero_java",
@@ -1439,7 +1440,6 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
            ":cronet_test_apk_resources",
            "//base:base_java",
            "//base:base_java_test_support",
-           "//build/android:build_java",
            "//net/android:net_java",
            "//net/android:net_java_test_support",
            "//third_party/android_sdk:android_test_mock_java",
@@ -1525,7 +1525,6 @@ instrumentation_test_apk(
            ":cronet_test_apk_resources",
            "//base:base_java",
            "//base:base_java_test_support",
-           "//build/android:build_java",
            "//third_party/android_sdk:android_test_mock_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/jni_zero:jni_zero_java",
@@ -1576,7 +1575,6 @@ cronet_instrumentation_test_apk("cronet_smoketests_apk") {
            ":cronet_test_apk_resources",
            "//base:base_java",
            "//base:base_java_test_support",
-           "//build/android:build_java",
            "//third_party/android_sdk:android_test_mock_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
@@ -1610,7 +1608,6 @@ android_apk("cronet_perf_test_apk") {
     ":cronet_javatests",
     ":cronet_test_apk_java",
     "//base:base_java",
-    "//build/android:build_java",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
@@ -2019,9 +2016,7 @@ script_test("generate_build_script_test") {
 
 action("cronet_gn2bp_aosp_feedback_loop") {
   script = "//components/cronet/gn2bp/run_gn2bp.py"
-  sources = GN2BP_SOURCES + LICENSE_SOURCES + [
-    "$_gclient_path",
-  ]
+  sources = GN2BP_SOURCES + LICENSE_SOURCES + [ "$_gclient_path" ]
   _stamp_path = "$target_gen_dir/$target_name.stamp"
   args = [
     "--stamp",
