@@ -471,7 +471,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       matcherWithMatchesBlock:^BOOL(id element) {
         OmniboxTextFieldIOS* omnibox =
             base::apple::ObjCCast<OmniboxTextFieldIOS>(element);
-        return [omnibox.text isEqualToString:text];
+        return [omnibox.displayedText isEqualToString:text];
       }
       descriptionBlock:^void(id<GREYDescription> description) {
         [description

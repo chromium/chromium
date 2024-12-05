@@ -55,9 +55,6 @@ std::string GetURLWithoutScheme(const GURL& url) {
   config.features_enabled.push_back(omnibox::kDefaultTypedNavigationsToHttps);
   config.features_disabled.push_back(
       security_interstitials::features::kHttpsUpgrades);
-  // TODO(crbug.com/335821156): Investigate why rich inline triggers with
-  // test_HTTPWithSlowHTTPS_ShouldFallBack and remove this.
-  config.features_disabled.push_back(omnibox::kRichAutocompletion);
   return config;
 }
 
@@ -397,13 +394,11 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [ChromeEarlGrey loadURL:GURL("data:text/html,Blank Page")];
   [ChromeEarlGrey waitForWebStateContainingText:"Blank Page"];
 
-  // Try again. This time the omnibox will find a history match for the http
-  // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/40165447): We should try the https URL after a certain
-  // time has passed.
+  // Try again. Omnibox loads a shortcut match which retries the HTTPS URL but
+  // eventually load the HTTP URL due to slow HTTPS.
   [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  [self assertTimedOutUpgrade:1];
+  [self assertTimedOutUpgrade:2];
 }
 
 // Regression test for crbug.com/1379605: This test checks that the fallback
