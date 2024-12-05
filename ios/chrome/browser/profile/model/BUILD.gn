@@ -235,6 +235,10 @@ source_set("keyed_service_factories") {
   if (ios_enable_credential_provider_extension) {
     deps += [ "//ios/chrome/browser/credential_provider/model" ]
   }
+
+  if (ios_enable_screen_time) {
+    deps += [ "//ios/chrome/browser/screen_time/model" ]
+  }
 }
 
 source_set("test_support") {
