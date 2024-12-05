@@ -548,8 +548,6 @@ bool ui::IsNSRange(id value) {
       // NSAccessibilityServesAsTitleForUIElementsAttribute
       {NSAccessibilityStartTextMarkerAttribute, @"startTextMarker"},
       {NSAccessibilitySelectedChildrenAttribute, @"selectedChildren"},
-      {NSAccessibilitySelectedTextAttribute, @"selectedText"},
-      {NSAccessibilitySelectedTextRangeAttribute, @"selectedTextRange"},
       {NSAccessibilitySelectedTextMarkerRangeAttribute,
        @"selectedTextMarkerRange"},
       {NSAccessibilitySortDirectionAttribute, @"sortDirection"},
@@ -1264,11 +1262,26 @@ bool ui::IsNSRange(id value) {
   return ret;
 }
 
-- (NSString*)AXSelectedText {
-  return [self selectedText];
-}
+// LINT.IfChange
+- (NSString*)accessibilitySelectedText {
+  if (![self instanceActive]) {
+    return nil;
+  }
 
-- (NSString*)selectedText {
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return nil;
+  }
+
+  const AXRange range = GetSelectedRange(*_owner);
+  if (range.IsNull()) {
+    return nil;
+  }
+  return base::SysUTF16ToNSString(range.GetText());
+}
+// LINT.ThenChange(AXSelectedText)
+
+// LINT.IfChange
+- (NSString*)AXSelectedText {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -1279,16 +1292,43 @@ bool ui::IsNSRange(id value) {
     return nil;
   return base::SysUTF16ToNSString(range.GetText());
 }
+// LINT.ThenChange(accessibilitySelectedText)
 
-- (NSValue*)AXSelectedTextRange {
-  return [self selectedTextRange];
+// LINT.IfChange
+- (NSRange)accessibilitySelectedTextRange {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
+
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return NSMakeRange(0, 0);
+  }
+
+  const AXRange range = GetSelectedRange(*_owner).AsForwardRange();
+  if (range.IsNull()) {
+    return NSMakeRange(0, 0);
+  }
+
+  // "ax::mojom::MoveDirection" is only relevant on platforms that use object
+  // replacement characters in the accessibility tree. Mac is not one of them.
+  const AXPosition startPosition = range.anchor()->LowestCommonAncestorPosition(
+      *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
+  DCHECK(!startPosition->IsNullPosition())
+      << "Calling HasVisibleCaretOrSelection() should have ensured that there "
+         "is a valid selection anchor inside the current object.";
+  int selectionStart = startPosition->AsTextPosition()->text_offset();
+  DCHECK_GE(selectionStart, 0);
+  int selectionLength = range.GetText().length();
+  return NSMakeRange(selectionStart, selectionLength);
 }
+// LINT.ThenChange(AXSelectedTextRange)
 
 // Returns range of text under the current object that is selected.
 //
 // Example, caret at offset 5:
 // NSRange:  “pos=5 len=0”
-- (NSValue*)selectedTextRange {
+// LINT.IfChange
+- (NSValue*)AXSelectedTextRange {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -1310,6 +1350,7 @@ bool ui::IsNSRange(id value) {
   int selLength = range.GetText().length();
   return [NSValue valueWithRange:NSMakeRange(selStart, selLength)];
 }
+// LINT.ThenChange(accessibilitySelectedTextRange)
 
 - (void)setAccessibilitySelectedTextRange:(NSRange)range {
   if (![self instanceActive])

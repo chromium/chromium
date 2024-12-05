@@ -552,6 +552,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilitySelectedTextAndRange) {
+  RunTypedTest<kMacMethods>("accessibility-selected-text-and-range.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityPlaceholderValue) {
   RunTypedTest<kMacMethods>("accessibility-placeholder-value.html");
 }

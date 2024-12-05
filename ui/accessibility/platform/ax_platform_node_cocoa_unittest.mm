@@ -912,4 +912,21 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityNumberOfCharactersOnTextField) {
   EXPECT_EQ([node accessibilityNumberOfCharacters], 11);
 }
 
+// `accessibilitySelectedText` and `accessibilitySelectedTextRange` on a text
+// field.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilitySelectedTextAndRangeOnTextField) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue, "hello world");
+  root.AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart, 0);
+  root.AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, 5);
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  EXPECT_TRUE([[node accessibilitySelectedText] isEqualToString:@"hello"]);
+  NSRange selectedRange = [node accessibilitySelectedTextRange];
+  EXPECT_EQ(selectedRange.location, 0U);
+  EXPECT_EQ(selectedRange.length, 5U);
+}
+
 }  // namespace ui

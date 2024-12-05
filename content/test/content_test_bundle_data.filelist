@@ -5603,6 +5603,8 @@ data/accessibility/mac/methods/accessibility-rows.html
 data/accessibility/mac/methods/accessibility-selected-expected.txt
 data/accessibility/mac/methods/accessibility-selected-rows-expected.txt
 data/accessibility/mac/methods/accessibility-selected-rows.html
+data/accessibility/mac/methods/accessibility-selected-text-and-range-expected.txt
+data/accessibility/mac/methods/accessibility-selected-text-and-range.html
 data/accessibility/mac/methods/accessibility-selected.html
 data/accessibility/mac/methods/accessibility-sort-direction-expected.txt
 data/accessibility/mac/methods/accessibility-sort-direction.html

@@ -2149,12 +2149,15 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 // Text-specific attributes.
 
+// LINT.IfChange
 - (NSString*)AXSelectedText {
   NSRange selectedTextRange;
   [[self AXSelectedTextRange] getValue:&selectedTextRange];
   return [[self getAXValueAsString] substringWithRange:selectedTextRange];
 }
+// LINT.ThenChange(accessibilitySelectedText)
 
+// LINT.IfChange
 - (NSValue*)AXSelectedTextRange {
   int start = 0, end = 0;
   if (_node->IsAtomicTextField() &&
@@ -2168,6 +2171,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   return [NSValue valueWithRange:NSMakeRange(0, 0)];
 }
+// LINT.ThenChange(accessibilitySelectedTextRange)
 
 // LINT.IfChange
 - (NSNumber*)AXNumberOfCharacters {
@@ -2890,12 +2894,16 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return [self getStringAttribute:ax::mojom::StringAttribute::kPlaceholder];
 }
 
+// LINT.IfChange
 - (NSString*)accessibilitySelectedText {
-  if (!_node)
+  if (![self instanceActive]) {
     return nil;
+  }
 
-  return [self AXSelectedText];
+  NSRange selectedTextRange = [self accessibilitySelectedTextRange];
+  return [[self getAXValueAsString] substringWithRange:selectedTextRange];
 }
+// LINT.ThenChange(AXSelectedText)
 
 - (void)setAccessibilitySelectedText:(NSString*)text {
   if (!_node) {
@@ -2909,14 +2917,24 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   _node->GetDelegate()->AccessibilityPerformAction(data);
 }
 
+// LINT.IfChange
 - (NSRange)accessibilitySelectedTextRange {
-  if (!_node)
+  if (![self instanceActive]) {
     return NSMakeRange(0, 0);
+  }
 
-  NSRange r;
-  [[self AXSelectedTextRange] getValue:&r];
-  return r;
+  int start = 0, end = 0;
+  if (_node->IsAtomicTextField() &&
+      _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &start) &&
+      _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, &end)) {
+    // NSRange cannot represent the direction the text was selected in.
+    return NSMakeRange(static_cast<NSUInteger>(std::min(start, end)),
+                       static_cast<NSUInteger>(abs(end - start)));
+  }
+
+  return NSMakeRange(0, 0);
 }
+// LINT.ThenChange(AXSelectedTextRange)
 
 - (void)setAccessibilitySelectedTextRange:(NSRange)range {
   if (!_node) {

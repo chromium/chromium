@@ -115,8 +115,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 @property(nonatomic, readonly) NSArray* rowHeaders;
 @property(nonatomic, readonly) NSValue* rowIndexRange;
 @property(nonatomic, readonly) NSArray* selectedChildren;
-@property(nonatomic, readonly) NSString* selectedText;
-@property(nonatomic, readonly) NSValue* selectedTextRange;
 @property(nonatomic, readonly) id selectedTextMarkerRange;
 @property(nonatomic, readonly) NSString* sortDirection;
 // Returns a text marker that points to the first character in the document that
