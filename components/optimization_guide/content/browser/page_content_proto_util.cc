@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 namespace optimization_guide {
@@ -84,6 +85,10 @@ void ConvertImageInfo(
     bounding_box->set_y(mojom_image->image_bounding_box.y());
     bounding_box->set_width(mojom_image->image_bounding_box.width());
     bounding_box->set_height(mojom_image->image_bounding_box.height());
+
+    if (mojom_image->source_origin) {
+      proto_image->set_source_url(mojom_image->source_origin->GetURL().spec());
+    }
   }
 }
 
@@ -113,25 +118,114 @@ void ConvertAttributes(
                    proto_attributes->mutable_image_info());
 }
 
-void ConvertNode(const blink::mojom::AIPageContentNode& mojom_node,
-                 optimization_guide::proto::ContentNode* proto_node) {
-  ConvertAttributes(*mojom_node.content_attributes,
-                    proto_node->mutable_content_attributes());
+void ConvertIframeData(
+    const content::RenderFrameHost& render_frame_host,
+    const blink::mojom::AIPageContentIframeData& iframe_data,
+    optimization_guide::proto::IframeData* proto_iframe_data) {
+  // We use the origin instead of last committed URL here to ensure the security
+  // origin for the iframe's content is accurately tracked.
+  // For example, for data URLs we need the source origin for the URL instead of
+  // the raw URL itself.
+  proto_iframe_data->set_url(render_frame_host.GetLastCommittedOrigin()
+                                 .GetTupleOrPrecursorTupleIfOpaque()
+                                 .Serialize());
+  proto_iframe_data->set_likely_ad_frame(iframe_data.likely_ad_frame);
+}
 
+bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
+                 const blink::mojom::AIPageContentNode& mojom_node,
+                 const AIPageContentMap& page_content_map,
+                 optimization_guide::proto::ContentNode* proto_node) {
+  const auto& mojom_attributes = *mojom_node.content_attributes;
+  ConvertAttributes(mojom_attributes, proto_node->mutable_content_attributes());
+
+  content::RenderFrameHost* render_frame_host = nullptr;
+  if (mojom_attributes.attribute_type ==
+      blink::mojom::AIPageContentAttributeType::kIframe) {
+    if (!mojom_attributes.iframe_data) {
+      return false;
+    }
+
+    const auto& iframe_data = *mojom_attributes.iframe_data;
+    const auto frame_token = iframe_data.frame_token;
+    if (frame_token.Is<blink::RemoteFrameToken>()) {
+      // RemoteFrame should have no child nodes since the content is out of
+      // process.
+      if (!mojom_node.children_nodes.empty()) {
+        return false;
+      }
+
+      render_frame_host = content::RenderFrameHost::FromPlaceholderToken(
+          source_frame_token.child_id,
+          frame_token.GetAs<blink::RemoteFrameToken>());
+
+      // The OOPIF may have been torn down or crashed before we got a response.
+      if (!render_frame_host) {
+        return true;
+      }
+
+      auto it = page_content_map.find(render_frame_host->GetGlobalFrameToken());
+      if (it == page_content_map.end()) {
+        return true;
+      }
+
+      const auto& frame_page_content = *it->second;
+      auto* proto_child_frame_node = proto_node->add_children_nodes();
+      if (!ConvertNode(render_frame_host->GetGlobalFrameToken(),
+                       *frame_page_content.root_node, page_content_map,
+                       proto_child_frame_node)) {
+        return false;
+      }
+    } else {
+      render_frame_host = content::RenderFrameHost::FromFrameToken(
+          content::GlobalRenderFrameHostToken(
+              source_frame_token.child_id,
+              frame_token.GetAs<blink::LocalFrameToken>()));
+
+      if (!render_frame_host) {
+        return true;
+      }
+    }
+
+    auto* proto_iframe_data =
+        proto_node->mutable_content_attributes()->mutable_iframe_data();
+    ConvertIframeData(*render_frame_host, iframe_data, proto_iframe_data);
+  }
+
+  const auto source_frame_for_children =
+      render_frame_host ? render_frame_host->GetGlobalFrameToken()
+                        : source_frame_token;
   for (const auto& mojom_child : mojom_node.children_nodes) {
     auto* proto_child = proto_node->add_children_nodes();
-    ConvertNode(*mojom_child, proto_child);
+    if (!ConvertNode(source_frame_for_children, *mojom_child, page_content_map,
+                     proto_child)) {
+      return false;
+    }
   }
+
+  return true;
 }
 
 }  // namespace
 
-void ConvertAIPageContentToProto(
-    const blink::mojom::AIPageContent& mojo,
+bool ConvertAIPageContentToProto(
+    content::GlobalRenderFrameHostToken main_frame_token,
+    const AIPageContentMap& page_content_map,
     optimization_guide::proto::AnnotatedPageContent* proto) {
-  ConvertNode(*mojo.root_node, proto->mutable_root_node());
+  auto it = page_content_map.find(main_frame_token);
+  if (it == page_content_map.end()) {
+    return false;
+  }
+
+  const auto& main_frame_page_content = *it->second;
+  if (!ConvertNode(main_frame_token, *main_frame_page_content.root_node,
+                   page_content_map, proto->mutable_root_node())) {
+    return false;
+  }
+
   proto->set_version(
       optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  return true;
 }
 
 }  // namespace optimization_guide

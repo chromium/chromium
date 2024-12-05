@@ -322,12 +322,15 @@ TEST_F(AIPageContentAgentTest, IFrameWithContent) {
 
   const auto& iframe = *root.children_nodes[0];
   const auto& iframe_attributes = *iframe.content_attributes;
-  EXPECT_TRUE(iframe.children_nodes.empty());
 
   EXPECT_EQ(iframe_attributes.attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
-  ASSERT_EQ(iframe_attributes.text_info.size(), 1u);
-  EXPECT_EQ(iframe_attributes.text_info[0]->text_content, "inside iframe");
+
+  const auto& iframe_root = iframe.children_nodes[0];
+  const auto& iframe_root_attributes = *iframe_root->content_attributes;
+
+  ASSERT_EQ(iframe_root_attributes.text_info.size(), 1u);
+  EXPECT_EQ(iframe_root_attributes.text_info[0]->text_content, "inside iframe");
 }
 
 TEST_F(AIPageContentAgentTest, NoLayoutElement) {

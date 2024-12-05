@@ -5,6 +5,8 @@
 module blink.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/origin.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // This is a mojom representation of the corresponding AnnotatedPageContent
 // proto.
@@ -59,6 +61,21 @@ struct AIPageContentTextInfo {
 struct AIPageContentImageInfo {
   gfx.mojom.Rect image_bounding_box;
   string? image_caption;
+
+  // Provides the origin for this image if there is a resource currently being
+  // rendered. For example, an image element whose resource is not available
+  // will be empty.
+  url.mojom.Origin? source_origin;
+};
+
+// Provides metadata for frames (local and remote) accessible from the
+// LocalFrameRoot of the corresponding AIPageContentAgent.
+struct AIPageContentIframeData {
+  blink.mojom.FrameToken frame_token;
+
+  // Indicates whether the iframe is likely to be an ad frame. This is set for
+  // both the root ad frame and its descendants.
+  bool likely_ad_frame;
 };
 
 struct AIPageContentAttributes {
@@ -79,6 +96,9 @@ struct AIPageContentAttributes {
 
   // Images in this node.
   array<AIPageContentImageInfo> image_info;
+
+  // This should only be set if AIPageContentAttributeType is kIframe.
+  AIPageContentIframeData? iframe_data;
 
   // TODO(crbug.com/380493777): Add FormData if attribute_type is FORM.
 };
@@ -102,7 +122,6 @@ struct AIPageContent {
 // The interface is only available for the outermost main frame.
 interface AIPageContentAgent {
   // Provides the AIPageContent representation for this LocalFrame and all
-  // LocalFrames accessible from the LocalFrameRoot that are same-origin with
-  // the LocalFrame.
+  // LocalFrames accessible from the LocalFrameRoot.
   GetAIPageContent() => (AIPageContent page_content);
 };
