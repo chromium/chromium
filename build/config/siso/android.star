@@ -9,6 +9,18 @@ load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
 
+# TODO: crbug.com/323091468 - Propagate target android ABI and
+# android SDK version from GN, and remove the hardcoded filegroups.
+__archs = [
+    "aarch64-linux-android",
+    "arm-linux-androideabi",
+    "i686-linux-android",
+    "riscv64-linux-android",
+    "x86_64-linux-android",
+]
+
+__versions = list(range(21, 34))
+
 def __enabled(ctx):
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
@@ -17,7 +29,15 @@ def __enabled(ctx):
     return False
 
 def __filegroups(ctx):
-    return {}
+    fg = {}
+    for arch in __archs:
+        for ver in __versions:
+            group = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%d:link" % (arch, ver)
+            fg[group] = {
+                "type": "glob",
+                "includes": ["*"],
+            }
+    return fg
 
 def __step_config(ctx, step_config):
     remote_run = True  # Turn this to False when you do file access trace.
@@ -429,6 +449,7 @@ __handlers = {
 android = module(
     "android",
     enabled = __enabled,
+    archs = __archs,
     step_config = __step_config,
     filegroups = __filegroups,
     handlers = __handlers,
