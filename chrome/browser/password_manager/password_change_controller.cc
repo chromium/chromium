@@ -5,6 +5,8 @@
 #include "chrome/browser/password_manager/password_change_controller.h"
 
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/web_contents.h"
@@ -14,8 +16,11 @@
 
 namespace {
 
-password_manager::PasswordFormCache& GetFormCache(
-    content::WebContents* web_contents) {
+using password_manager::PasswordForm;
+using password_manager::PasswordFormCache;
+using password_manager::PasswordFormManager;
+
+PasswordFormCache& GetFormCache(content::WebContents* web_contents) {
   auto* client = static_cast<password_manager::PasswordManagerClient*>(
       ChromePasswordManagerClient::FromWebContents(web_contents));
   CHECK(client);
@@ -24,6 +29,37 @@ password_manager::PasswordFormCache& GetFormCache(
   auto* cache = client->GetPasswordManager()->GetPasswordFormCache();
   CHECK(cache);
   return *cache;
+}
+
+const PasswordForm* GetChangePasswordForm(PasswordFormManager* form_manager) {
+  CHECK(form_manager);
+
+  const PasswordForm* parsed_form = form_manager->GetParsedObservedForm();
+  CHECK(parsed_form);
+
+  // New password field and password confirmation fields are indicators of
+  // a change password form.
+  return (parsed_form->new_password_element_renderer_id &&
+          parsed_form->confirmation_password_element_renderer_id)
+             ? parsed_form
+             : nullptr;
+}
+
+std::u16string GeneratePassword(
+    const PasswordForm* form,
+    password_manager::PasswordGenerationFrameHelper* generation_helper) {
+  CHECK(form);
+
+  auto iter = base::ranges::find(form->form_data.fields(),
+                                 form->new_password_element_renderer_id,
+                                 &autofill::FormFieldData::renderer_id);
+  CHECK(iter != form->form_data.fields().end());
+
+  return generation_helper->GeneratePassword(
+      form->url,
+      autofill::password_generation::PasswordGenerationType::kAutomatic,
+      autofill::CalculateFormSignature(form->form_data),
+      autofill::CalculateFieldSignatureForField(*iter), iter->max_length());
 }
 
 }  // namespace
@@ -58,4 +94,29 @@ bool PasswordChangeController::IsPasswordChangeOngoing(
 }
 
 void PasswordChangeController::OnPasswordFormParsed(
-    password_manager::PasswordFormManager* form_manager) {}
+    PasswordFormManager* form_manager) {
+  if (!form_manager->GetDriver() ||
+      !form_manager->GetDriver()->GetPasswordGenerationHelper()) {
+    return;
+  }
+
+  const PasswordForm* form = GetChangePasswordForm(form_manager);
+  if (!form) {
+    return;
+  }
+
+  CHECK(executor_);
+  // Change password form is detected - no need to continue observing.
+  GetFormCache(executor_.get()).ResetObserver();
+
+  generated_password_ = GeneratePassword(
+      form, form_manager->GetDriver()->GetPasswordGenerationHelper());
+
+  form_manager->GetDriver()->SubmitChangePasswordForm(
+      form->password_element_renderer_id,
+      form->new_password_element_renderer_id,
+      form->confirmation_password_element_renderer_id, original_password_,
+      generated_password_,
+      // TODO(crbug.com/375565171): Add handling for completion.
+      base::DoNothing());
+}

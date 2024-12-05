@@ -8,6 +8,7 @@
 #include "chrome/browser/password_manager/password_change_controller.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -53,6 +54,10 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     return PasswordChangeServiceFactory::GetForProfile(browser()->profile());
   }
 
+  content::WebContents* WebContents() const override {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
  private:
   base::CallbackListSubscription create_services_subscription_;
   base::WeakPtrFactory<PasswordChangeBrowserTest> weak_ptr_factory_{this};
@@ -75,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
   // Verify a new tab is added, although the focus remained on the initial tab.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   // Verify a new tab is opened with a change pwd url.
   EXPECT_EQ(change_pwd_url,
@@ -86,4 +91,30 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       browser()->tab_strip_model()->GetWebContentsAt(0)));
   EXPECT_TRUE(password_change_service()->IsPasswordChangeOngoing(
       browser()->tab_strip_model()->GetWebContentsAt(1)));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       ChangePasswordFormIsFilledAutomatically) {
+  GURL main_url("https://example.com/");
+
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+  // Activate tab with password change to simplify testing.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  PasswordsNavigationObserver observer(WebContents());
+  EXPECT_TRUE(observer.Wait());
+
+  // Wait and verify the old password is filled correctly.
+  WaitForElementValue("password", "pa$$word");
+
+  // Verify there is a new password generated and it's filled into both fields.
+  std::string new_password =
+      GetElementValue(/*iframe_id=*/"null", "new_password_1");
+  EXPECT_FALSE(new_password.empty());
+  CheckElementValue("new_password_2", new_password);
 }

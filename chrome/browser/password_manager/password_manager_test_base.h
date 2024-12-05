@@ -184,6 +184,10 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void CheckElementValue(const std::string& iframe_id,
                          const std::string& element_id,
                          const std::string& expected_value);
+  // Returns the current "value" attribute of the HTML element with
+  // `element_id`.
+  std::string GetElementValue(const std::string& iframe_id,
+                              const std::string& element_id);
 
   // Synchronoulsy adds the given host to the list of valid HSTS hosts.
   void AddHSTSHost(const std::string& host);
@@ -195,7 +199,7 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
 
   // Accessors
   // Return the first created tab with a custom ManagePasswordsUIController.
-  content::WebContents* WebContents() const;
+  virtual content::WebContents* WebContents() const;
   content::RenderFrameHost* RenderFrameHost() const;
   net::EmbeddedTestServer& https_test_server() { return https_test_server_; }
 

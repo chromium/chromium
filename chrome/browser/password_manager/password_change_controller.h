@@ -42,6 +42,8 @@ class PasswordChangeController
   const std::u16string username_;
   const std::u16string original_password_;
 
+  std::u16string generated_password_;
+
   base::WeakPtr<content::WebContents> originator_;
   base::WeakPtr<content::WebContents> executor_;
 
