@@ -507,65 +507,71 @@ class StrictNumeric;
 
 // Used to treat CheckedNumeric and arithmetic underlying types the same.
 template <typename T>
-struct UnderlyingType {
+inline constexpr bool kIsCheckedNumeric = false;
+template <typename T>
+inline constexpr bool kIsCheckedNumeric<CheckedNumeric<T>> = true;
+template <typename T>
+concept IsCheckedNumeric = kIsCheckedNumeric<T>;
+
+template <typename T>
+inline constexpr bool kIsClampedNumeric = false;
+template <typename T>
+inline constexpr bool kIsClampedNumeric<ClampedNumeric<T>> = true;
+template <typename T>
+concept IsClampedNumeric = kIsClampedNumeric<T>;
+
+template <typename T>
+inline constexpr bool kIsStrictNumeric = false;
+template <typename T>
+inline constexpr bool kIsStrictNumeric<StrictNumeric<T>> = true;
+template <typename T>
+concept IsStrictNumeric = kIsStrictNumeric<T>;
+
+template <typename T>
+struct UnderlyingTypeImpl {
   using type = ArithmeticOrUnderlyingEnum<T>;
-  static constexpr bool is_numeric = std::is_arithmetic_v<type>;
-  static constexpr bool is_checked = false;
-  static constexpr bool is_clamped = false;
-  static constexpr bool is_strict = false;
 };
+template <typename T>
+struct UnderlyingTypeImpl<CheckedNumeric<T>> {
+  using type = T;
+};
+template <typename T>
+struct UnderlyingTypeImpl<ClampedNumeric<T>> {
+  using type = T;
+};
+template <typename T>
+struct UnderlyingTypeImpl<StrictNumeric<T>> {
+  using type = T;
+};
+template <typename T>
+using UnderlyingType = UnderlyingTypeImpl<T>::type;
 
 template <typename T>
-struct UnderlyingType<CheckedNumeric<T>> {
-  using type = T;
-  static constexpr bool is_numeric = true;
-  static constexpr bool is_checked = true;
-  static constexpr bool is_clamped = false;
-  static constexpr bool is_strict = false;
-};
-
+inline constexpr bool kIsNumeric = std::is_arithmetic_v<UnderlyingType<T>>;
 template <typename T>
-struct UnderlyingType<ClampedNumeric<T>> {
-  using type = T;
-  static constexpr bool is_numeric = true;
-  static constexpr bool is_checked = false;
-  static constexpr bool is_clamped = true;
-  static constexpr bool is_strict = false;
-};
-
+  requires(IsCheckedNumeric<T> || IsClampedNumeric<T> || IsStrictNumeric<T>)
+inline constexpr bool kIsNumeric<T> = true;
 template <typename T>
-struct UnderlyingType<StrictNumeric<T>> {
-  using type = T;
-  static constexpr bool is_numeric = true;
-  static constexpr bool is_checked = false;
-  static constexpr bool is_clamped = false;
-  static constexpr bool is_strict = true;
-};
+concept IsNumeric = kIsNumeric<T>;
 
 template <typename L, typename R>
-inline constexpr bool kIsCheckedOp =
-    UnderlyingType<L>::is_numeric && UnderlyingType<R>::is_numeric &&
-    (UnderlyingType<L>::is_checked || UnderlyingType<R>::is_checked);
+concept IsCheckedOp = (IsCheckedNumeric<L> && IsNumeric<R>) ||
+                      (IsCheckedNumeric<R> && IsNumeric<L>);
 
 template <typename L, typename R>
-inline constexpr bool kIsClampedOp =
-    UnderlyingType<L>::is_numeric && UnderlyingType<R>::is_numeric &&
-    (UnderlyingType<L>::is_clamped || UnderlyingType<R>::is_clamped) &&
-    !(UnderlyingType<L>::is_checked || UnderlyingType<R>::is_checked);
+concept IsClampedOp =
+    !IsCheckedOp<L, R> && ((IsClampedNumeric<L> && IsNumeric<R>) ||
+                           (IsClampedNumeric<R> && IsNumeric<L>));
 
 template <typename L, typename R>
-inline constexpr bool kIsStrictOp =
-    UnderlyingType<L>::is_numeric && UnderlyingType<R>::is_numeric &&
-    (UnderlyingType<L>::is_strict || UnderlyingType<R>::is_strict) &&
-    !(UnderlyingType<L>::is_checked || UnderlyingType<R>::is_checked) &&
-    !(UnderlyingType<L>::is_clamped || UnderlyingType<R>::is_clamped);
+concept IsStrictOp = !IsCheckedOp<L, R> && !IsClampedOp<L, R> &&
+                     ((IsStrictNumeric<L> && IsNumeric<R>) ||
+                      (IsStrictNumeric<R> && IsNumeric<L>));
 
 // as_signed<> returns the supplied integral value (or integral castable
 // Numeric template) cast as a signed integral of equivalent precision.
 // I.e. it's mostly an alias for: static_cast<std::make_signed<T>::type>(t)
-template <typename Src,
-          typename Dst = std::make_signed_t<
-              typename base::internal::UnderlyingType<Src>::type>>
+template <typename Src, typename Dst = std::make_signed_t<UnderlyingType<Src>>>
   requires std::integral<Dst>
 constexpr auto as_signed(Src value) {
   return static_cast<Dst>(value);
@@ -575,8 +581,7 @@ constexpr auto as_signed(Src value) {
 // Numeric template) cast as an unsigned integral of equivalent precision.
 // I.e. it's mostly an alias for: static_cast<std::make_unsigned<T>::type>(t)
 template <typename Src,
-          typename Dst = std::make_unsigned_t<
-              typename base::internal::UnderlyingType<Src>::type>>
+          typename Dst = std::make_unsigned_t<UnderlyingType<Src>>>
   requires std::integral<Dst>
 constexpr auto as_unsigned(Src value) {
   return static_cast<Dst>(value);

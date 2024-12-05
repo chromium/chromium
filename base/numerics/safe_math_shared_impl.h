@@ -164,8 +164,7 @@ constexpr T AbsWrapper(T value) {
 template <template <typename, typename> class M,
           typename L,
           typename R,
-          typename Math = M<typename UnderlyingType<L>::type,
-                            typename UnderlyingType<R>::type>>
+          typename Math = M<UnderlyingType<L>, UnderlyingType<R>>>
   requires requires { typename Math::result_type; }
 struct MathWrapper {
   using math = Math;
@@ -185,7 +184,7 @@ struct MathWrapper {
 #define BASE_NUMERIC_ARITHMETIC_OPERATORS(CLASS, CL_ABBR, OP_NAME, OP, CMP_OP) \
   /* Binary arithmetic operator for all CLASS##Numeric operations. */          \
   template <typename L, typename R>                                            \
-    requires(kIs##CLASS##Op<L, R>)                                             \
+    requires(Is##CLASS##Op<L, R>)                                              \
   constexpr CLASS##Numeric<                                                    \
       typename MathWrapper<CLASS##OP_NAME##Op, L, R>::type>                    \
   operator OP(L lhs, R rhs) {                                                  \
