@@ -182,6 +182,13 @@ class CORE_EXPORT InspectorCSSAgent final
       int node_id,
       std::unique_ptr<
           protocol::Array<protocol::CSS::CSSComputedStyleProperty>>*) override;
+  protocol::Response resolveValues(
+      std::unique_ptr<protocol::Array<String>> values,
+      int node_id,
+      std::optional<String> property_name_optional,
+      std::optional<protocol::DOM::PseudoType> pseudo_type,
+      std::optional<String> pseudo_identifier,
+      std::unique_ptr<protocol::Array<String>>* results) override;
   protocol::Response getPlatformFontsForNode(
       int node_id,
       std::unique_ptr<protocol::Array<protocol::CSS::PlatformFontUsage>>* fonts)

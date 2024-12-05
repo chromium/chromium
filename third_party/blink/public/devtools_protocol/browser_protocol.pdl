@@ -2264,6 +2264,27 @@ experimental domain CSS
       # Computed style for the specified DOM node.
       array of CSSComputedStyleProperty computedStyle
 
+  # Resolve the specified values in the context of the provided element.
+  # For example, a value of '1em' is evaluated according to the computed
+  # 'font-size' of the element and a value 'calc(1px + 2px)' will be
+  # resolved to '3px'.
+  command resolveValues
+    parameters
+      # Substitution functions (var()/env()/attr()) and cascade-dependent
+      # keywords (revert/revert-layer) do not work.
+      array of string values
+      # Id of the node in whose context the expression is evaluated
+      DOM.NodeId nodeId
+      # Only longhands and custom property names are accepted.
+      optional string propertyName
+      # Pseudo element type, only works for pseudo elements that generate
+      # elements in the tree, such as ::before and ::after.
+      experimental optional DOM.PseudoType pseudoType
+      # Pseudo element custom ident.
+      experimental optional string pseudoIdentifier
+    returns
+      array of string results
+
   # Returns the styles defined inline (explicitly in the "style" attribute and implicitly, using DOM
   # attributes) for a DOM node identified by `nodeId`.
   command getInlineStylesForNode
