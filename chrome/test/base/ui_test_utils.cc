@@ -265,18 +265,12 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     int number_of_navigations,
     WindowOpenDisposition disposition,
     int browser_test_flags) {
-  TRACE_EVENT1("test",
-               "ui_test_utils::"
-               "NavigateToURLWithDispositionBlockUntilNavigationsComplete",
-               "params", [&](perfetto::TracedValue context) {
-                 // TODO(crbug.com/40751990): Replace this with passing more
-                 // parameters to TRACE_EVENT directly when available.
-                 auto dict = std::move(context).WriteDictionary();
-                 dict.Add("url", url);
-                 dict.Add("number_of_navigations", number_of_navigations);
-                 dict.Add("disposition", disposition);
-                 dict.Add("browser_test_flags", browser_test_flags);
-               });
+  TRACE_EVENT("test",
+              "ui_test_utils::"
+              "NavigateToURLWithDispositionBlockUntilNavigationsComplete",
+              "url", url, "number_of_navigations", number_of_navigations,
+              "disposition", disposition, "browser_test_flags",
+              browser_test_flags);
   TabStripModel* tab_strip = browser->tab_strip_model();
   if (disposition == WindowOpenDisposition::CURRENT_TAB &&
       tab_strip->GetActiveWebContents())
