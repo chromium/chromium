@@ -161,6 +161,7 @@ public class InstantMessageDelegateImplUnitTest {
         attribution.tabGroupMetadata = new TabGroupMessageMetadata();
         attribution.tabGroupMetadata.lastKnownTitle = TAB_GROUP_TITLE;
         attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+        attribution.tabGroupMetadata.syncTabGroupId = SYNC_GROUP_ID1;
         attribution.triggeringUser = GROUP_MEMBER1;
         InstantMessage instantMessage = new InstantMessage();
         instantMessage.attribution = attribution;

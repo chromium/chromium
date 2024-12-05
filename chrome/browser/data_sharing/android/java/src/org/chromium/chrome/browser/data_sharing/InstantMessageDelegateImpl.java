@@ -41,7 +41,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
-import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
@@ -260,7 +259,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private Runnable prepareOpenTabAction(
             InstantMessage message, TabGroupModelFilter tabGroupModelFilter) {
-        Token tabGroupId = MessageUtils.extractTabGroupId(message);
+        // Okay to use extractTabGroupId here, as these actions require the tab to be in the current
+        // model already.
+        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
         String url = MessageUtils.extractTabUrl(message);
         return () -> doOpenTab(tabGroupId, url, tabGroupModelFilter);
     }
@@ -377,9 +378,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         givenName,
                         tabGroupTitle);
 
-        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
-        if (tabGroupId == null) return;
-        SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+        String syncId = MessageUtils.extractSyncTabGroupId(message);
+        @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
         if (syncGroup == null) return;
         dataSharingNotificationManager.showOtherJoinedNotification(contentTitle, syncGroup.syncId);
     }
@@ -420,7 +420,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         String messageTitle = MessageUtils.extractTabGroupTitle(message);
         if (TextUtils.isEmpty(messageTitle)) {
             // Shouldn't need to check for any failure cases, should claim 1 tab if not found.
-            Token token = MessageUtils.extractTabGroupId(message);
+            String syncId = MessageUtils.extractSyncTabGroupId(message);
+            SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
+            Token token = syncGroup.localId == null ? null : syncGroup.localId.tabGroupId;
             int rootId = tabGroupModelFilter.getRootIdFromStableId(token);
             int tabCount = tabGroupModelFilter.getRelatedTabCountForRootId(rootId);
             return TabGroupTitleUtils.getDefaultTitle(context, tabCount);
