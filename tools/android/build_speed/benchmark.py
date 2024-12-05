@@ -77,6 +77,7 @@ _GN_ARGS = [
     'target_os="android"',
     'incremental_install=true',
     'use_remoteexec=true',
+    'use_siso=true',
 ]
 
 _TARGETS = {
@@ -134,9 +135,9 @@ _BENCHMARKS = [
     ),
     Benchmark(
         name='chrome_java_sig',
-        from_string='private static final Object sLock = new Object();',
+        from_string='public ChromeApplicationImpl() {}',
         to_string=
-        'private static final Object sLock = new Object();public void NewInterfaceMethod(){}',  # pylint: disable=line-too-long
+        'public ChromeApplicationImpl() {};public void NewInterfaceMethod(){}',  # pylint: disable=line-too-long
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
     ),
@@ -262,14 +263,7 @@ def _emulator(emulator_avd_name):
                         expected='no running emulators')
     avd_config = _AVD_CONFIG_DIR / emulator_avd_name
     is_verbose = logging.getLogger().isEnabledFor(logging.INFO)
-    # Always start with --wipe-data to get consistent results. It adds around
-    # 20 seconds to startup timing but is essential to avoid Timeout errors.
-    # Set disk size to 16GB since the default 8GB is insufficient. Turns out
-    # 32GB takes too long to startup (370 seconds).
-    cmd = [
-        _AVD_SCRIPT, 'start', '--wipe-data', '--avd-config', avd_config,
-        '--disk-size', '16000'
-    ]
+    cmd = [_AVD_SCRIPT, 'start', '--avd-config', avd_config]
     if not is_verbose:
         cmd.append('-q')
     logging.debug('Running AVD cmd: %s', cmd)
