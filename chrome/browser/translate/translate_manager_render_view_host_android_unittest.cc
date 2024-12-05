@@ -41,7 +41,7 @@ namespace {
 class TranslateManagerRenderViewHostAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  TranslateManagerRenderViewHostAndroidTest() {}
+  TranslateManagerRenderViewHostAndroidTest() = default;
 
   TranslateManagerRenderViewHostAndroidTest(
       const TranslateManagerRenderViewHostAndroidTest&) = delete;
