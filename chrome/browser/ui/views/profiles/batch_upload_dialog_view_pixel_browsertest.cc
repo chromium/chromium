@@ -15,6 +15,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/local_data_description.h"
 #include "content/public/test/browser_test.h"
@@ -22,6 +23,8 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/widget/any_widget_observer.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 

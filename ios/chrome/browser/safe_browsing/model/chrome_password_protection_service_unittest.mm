@@ -23,6 +23,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/signin/public/identity_manager/signin_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/protocol/gaia_password_reuse.pb.h"
 #import "components/sync_user_events/fake_user_event_service.h"
@@ -54,6 +55,7 @@ using ::testing::_;
 using PasswordReuseDialogInteraction =
     sync_pb::GaiaPasswordReuse::PasswordReuseDialogInteraction;
 using PasswordReuseLookup = sync_pb::GaiaPasswordReuse::PasswordReuseLookup;
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 

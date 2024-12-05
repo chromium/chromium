@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -56,6 +57,7 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
+using signin::constants::kNoHostedDomainFound;
 
 namespace chrome {
 

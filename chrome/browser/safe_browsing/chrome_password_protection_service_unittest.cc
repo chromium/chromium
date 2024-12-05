@@ -50,6 +50,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -87,6 +88,7 @@ using PasswordReuseDialogInteraction =
 using PasswordReuseEvent =
     safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 using PasswordReuseLookup = GaiaPasswordReuse::PasswordReuseLookup;
+using signin::constants::kNoHostedDomainFound;
 using ::testing::_;
 using ::testing::Return;
 using ::testing::WithArg;

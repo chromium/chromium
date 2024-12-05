@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -18,6 +19,8 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #endif
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -74,9 +77,6 @@ bool UpdateField(signin::Tribool* field, signin::Tribool new_value) {
 }
 
 }  // namespace
-
-// This must be a string which can never be a valid domain.
-const char kNoHostedDomainFound[] = "NO_HOSTED_DOMAIN";
 
 // This must be a string which can never be a valid picture URL.
 const char kNoPictureURLFound[] = "NO_PICTURE_URL";

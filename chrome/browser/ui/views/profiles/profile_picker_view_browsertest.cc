@@ -103,6 +103,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -137,6 +138,8 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #endif
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 const SkColor kProfileColor = SK_ColorRED;

@@ -32,6 +32,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -40,6 +41,8 @@
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 bool IsFirstRunEligibleProfile(Profile* profile) {

@@ -19,9 +19,6 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
-// Value representing no hosted domain associated with an account.
-extern const char kNoHostedDomainFound[];
-
 // Value representing no picture URL associated with an account.
 extern const char kNoPictureURLFound[];
 

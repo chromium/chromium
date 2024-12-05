@@ -199,10 +199,10 @@ class ProfileAttributesEntry {
   // reserved for the guest profile.
   size_t GetMetricsBucketIndex();
   // Returns the hosted domain for the current signed-in account. Returns empty
-  // string if there is no signed-in account and returns |kNoHostedDomainFound|
-  // if the signed-in account has no hosted domain (such as when it is a
-  // standard gmail.com account). Unlike for other string getters, the returned
-  // value is UTF8 encoded.
+  // string if there is no signed-in account and returns
+  // |signin::constants::kNoHostedDomainFound| if the signed-in account has no
+  // hosted domain (such as when it is a standard gmail.com account). Unlike
+  // for other string getters, the returned value is UTF8 encoded.
   std::string GetHostedDomain() const;
 
   // Returns the enrollment token to get policies for a profile.

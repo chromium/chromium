@@ -36,6 +36,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -50,6 +51,8 @@
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #endif
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 const int kAvatarSize = 100;
