@@ -330,9 +330,15 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kToolbarPinning,
              "ToolbarPinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kToolbarPinning,
+             "ToolbarPinning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 bool IsToolbarPinningEnabled() {
   return base::FeatureList::IsEnabled(kToolbarPinning);

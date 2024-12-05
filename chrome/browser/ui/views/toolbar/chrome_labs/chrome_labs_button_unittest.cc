@@ -71,6 +71,13 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
     TestWithBrowserView::SetUp();
     profile()->GetPrefs()->SetBoolean(
         chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
+
+    if (features::IsToolbarPinningEnabled()) {
+      browser_view()
+          ->toolbar()
+          ->pinned_toolbar_actions_container()
+          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
+    }
   }
 
  private:
@@ -126,6 +133,12 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
 }
 
 TEST_F(ChromeLabsButtonTest, DotIndicatorTest) {
+  // TODO(crbug.com/354207075): enable this test when the dot indicator is added
+  // back.
+  if (features::IsToolbarPinningEnabled()) {
+    GTEST_SKIP()
+        << "The dot indicator doesn't exist when toolbar pinning is enabled";
+  }
   ChromeLabsButton* chrome_labs_button =
       browser_view()->toolbar()->chrome_labs_button();
   EXPECT_TRUE(chrome_labs_button->GetDotIndicatorVisibilityForTesting());

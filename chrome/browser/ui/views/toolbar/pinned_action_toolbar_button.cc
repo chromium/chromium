@@ -421,9 +421,13 @@ void PinnedActionToolbarButtonActionViewInterface::InvokeActionImpl(
   CHECK(action_id.has_value());
   const std::optional<std::string> metrics_name =
       actions::ActionIdMap::ActionIdToString(action_id.value());
-  CHECK(metrics_name.has_value());
-  base::RecordComputedAction(base::StrCat(
-      {"Actions.PinnedToolbarButtonActivation.", metrics_name.value()}));
+  // ActionIdToStringMappings are not initialized in unit tests, therefore will
+  // not have a value. In the normal case, `metrics_name` should always have a
+  // value.
+  if (metrics_name.has_value()) {
+    base::RecordComputedAction(base::StrCat(
+        {"Actions.PinnedToolbarButtonActivation.", metrics_name.value()}));
+  }
 
   base::AutoReset<bool> needs_delayed_destruction =
       action_view_->SetNeedsDelayedDestruction(true);
