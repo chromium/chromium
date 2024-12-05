@@ -942,6 +942,7 @@
       // and can be used in all properties.
       // https://drafts.csswg.org/css-values-4/#attr-notation
       name: "CSSAdvancedAttrFunction",
+      status: "test",
     },
     {
       // Let the visual position of the default anchor affect IMCB for
