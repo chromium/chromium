@@ -11,7 +11,7 @@
 
 namespace autofill {
 
-// LINT.IfChange
+// LINT.IfChange(FillingProductToString)
 std::string FillingProductToString(FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kNone:
@@ -39,10 +39,7 @@ std::string FillingProductToString(FillingProduct filling_product) {
   };
   NOTREACHED();
 }
-// LINT.ThenChange(
-//   //tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct,
-//   //tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct.Condensed
-// )
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct)
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
   switch (type) {
