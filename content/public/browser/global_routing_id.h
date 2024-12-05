@@ -94,7 +94,7 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
 //
 // These tokens can be considered to be unique for the lifetime of the browser
 // process.
-struct GlobalRenderFrameHostToken {
+struct CONTENT_EXPORT GlobalRenderFrameHostToken {
   GlobalRenderFrameHostToken() = default;
 
   // GlobalRenderFrameHostToken is copyable.
@@ -105,6 +105,11 @@ struct GlobalRenderFrameHostToken {
   GlobalRenderFrameHostToken(int child_id,
                              const blink::LocalFrameToken& frame_token)
       : child_id(child_id), frame_token(frame_token) {}
+
+  // Helpers to convert to and from `base::Pickle` objects.
+  base::Pickle ToPickle();
+  static std::optional<GlobalRenderFrameHostToken> FromPickle(
+      const base::Pickle& pickle);
 
   // The unique ID of the child process (this is different from OS's PID / this
   // should come from RenderProcessHost::GetID()).
