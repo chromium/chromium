@@ -24,7 +24,6 @@ import org.chromium.net.X509Util;
 import org.chromium.net.test.util.CertTestUtil;
 
 import java.io.File;
-import java.util.Map;
 
 /**
  * A simple file server for java tests.
@@ -471,12 +470,12 @@ public class EmbeddedTestServer {
         }
     }
 
-    /**
-     * Get the full URLs for the given relative URLs.
+    /** Get the full URLs for the given relative URLs.
      *
-     * @see #getURL(String)
-     * @param relativeUrls The relative URLs for which full URLs will be obtained.
-     * @return The URLs as a String array.
+     *  @see #getURL(String)
+     *
+     *  @param relativeUrls The relative URLs for which full URLs will be obtained.
+     *  @return The URLs as a String array.
      */
     public String[] getURLs(String... relativeUrls) {
         String[] absoluteUrls = new String[relativeUrls.length];
@@ -484,24 +483,6 @@ public class EmbeddedTestServer {
         for (int i = 0; i < relativeUrls.length; ++i) absoluteUrls[i] = getURL(relativeUrls[i]);
 
         return absoluteUrls;
-    }
-
-    /**
-     * Get the request headers observed on the server for the given relative URL.
-     *
-     * @param relativeUrl The relative URL for which request headers should be returned.
-     * @return The map of the header key and value pairs.
-     */
-    public Map<String, String> getRequestHeadersForUrl(final String relativeUrl) {
-        try {
-            synchronized (mImplMonitor) {
-                checkServiceLocked();
-                return mImpl.getRequestHeadersForUrl(relativeUrl);
-            }
-        } catch (RemoteException e) {
-            throw new EmbeddedTestServerFailure(
-                    "Failed to get request headers for " + relativeUrl, e);
-        }
     }
 
     /**

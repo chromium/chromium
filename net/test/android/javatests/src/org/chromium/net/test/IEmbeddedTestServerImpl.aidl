@@ -60,15 +60,6 @@ interface IEmbeddedTestServerImpl {
      */
     String getURLWithHostName(String hostName, String relativeUrl);
 
-    /** Get the request headers observed on the server for the given relative URL.
-     *
-     *  @param relativeUrl The relative URL for which request headers should be returned.
-     *  @return The map of the header name and value pairs. Note that the HTTP spec allows to have
-     *  multiple headers for the same name, but the returned map only contains
-     *  one of them. See https://crbug.com/382316472 for details.
-     */
-    Map<String, String> getRequestHeadersForUrl(String relativeUrl);
-
     /** Shut down the server.
      *
      *  @return Whether the server was successfully shut down.
