@@ -13,7 +13,7 @@
 #include "chrome/browser/chrome_browser_main_posix.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-namespace chromeos::tast_support {
+namespace metrics {
 class StackSamplingRecorder;
 }
 #endif
@@ -48,8 +48,7 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   // is why it's in ChromeBrowserMainPartsLinux, even though it's not used in
   // Linux. ChromeBrowserMainPartsLinux is the base class of both
   // ChromeBrowserMainPartsAsh and ChromeBrowserMainPartsLacros.
-  scoped_refptr<chromeos::tast_support::StackSamplingRecorder>
-      stack_sampling_recorder_;
+  scoped_refptr<metrics::StackSamplingRecorder> stack_sampling_recorder_;
 #endif
 };
 

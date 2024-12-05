@@ -30,8 +30,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/tast_support/stack_sampling_recorder.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/metrics/call_stacks/stack_sampling_recorder.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -61,10 +61,9 @@ ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
 void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 #if BUILDFLAG(IS_CHROMEOS)
-  if (command_line->HasSwitch(
-          chromeos::tast_support::kRecordStackSamplingDataSwitch)) {
+  if (command_line->HasSwitch(metrics::kRecordStackSamplingDataSwitch)) {
     stack_sampling_recorder_ =
-        base::MakeRefCounted<chromeos::tast_support::StackSamplingRecorder>();
+        base::MakeRefCounted<metrics::StackSamplingRecorder>();
     stack_sampling_recorder_->Start();
   }
   // Don't initialize DBus here. Ash and Lacros Bluetooth DBusManager

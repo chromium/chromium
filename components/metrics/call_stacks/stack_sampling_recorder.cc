@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/tast_support/stack_sampling_recorder.h"
+#include "components/metrics/call_stacks/stack_sampling_recorder.h"
 
 #include <sys/file.h>
 
@@ -21,7 +21,7 @@
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "third_party/cros_system_api/proto/stack_sampled_metrics_status/stack_sampled_metrics_status.pb.h"
 
-namespace chromeos::tast_support {
+namespace metrics {
 
 namespace {
 // The path to write to. Deliberately not using base::GetTempDir() here;
@@ -114,4 +114,4 @@ void StackSamplingRecorder::WriteFileHelper() {
   }
 }
 
-}  // namespace chromeos::tast_support
+}  // namespace metrics

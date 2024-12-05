@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/chromeos/tast_support/stack_sampling_recorder.h"
+#include "components/metrics/call_stacks/stack_sampling_recorder.h"
 
 #include <sys/file.h>
 
@@ -29,7 +29,7 @@
 #include "third_party/cros_system_api/proto/stack_sampled_metrics_status/stack_sampled_metrics_status.pb.h"
 #include "third_party/metrics_proto/execution_context.pb.h"
 
-namespace chromeos::tast_support {
+namespace metrics {
 
 using ::stack_sampled_metrics_status::StackSampledMetricsStatus;
 
@@ -339,4 +339,4 @@ TEST_F(StackSamplingRecorderTest, DoesNotWriteToLockedFile) {
             17);
 }
 
-}  // namespace chromeos::tast_support
+}  // namespace metrics
