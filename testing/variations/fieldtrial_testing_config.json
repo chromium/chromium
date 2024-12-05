@@ -18476,6 +18476,25 @@
             ]
         }
     ],
+    "ProtectedAudiencesEnableBandAKAnonEnforcement": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableBandAKAnonEnforcement"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudiencesHeaderDirectFromSellerSignalsStudy": [
         {
             "platforms": [
