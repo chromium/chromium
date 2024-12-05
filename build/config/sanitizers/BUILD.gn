@@ -258,7 +258,9 @@ config("default_sanitizer_ldflags") {
       }
     }
 
-    if (is_cfi && current_toolchain == default_toolchain) {
+    if (is_cfi && current_toolchain == default_toolchain &&
+        toolchain_supports_rust_thin_lto) {
+      rustflags += [ "-Zsanitizer=cfi" ]
       ldflags += [ "-fsanitize=cfi-vcall" ]
       if (use_cfi_cast) {
         ldflags += [
@@ -268,6 +270,10 @@ config("default_sanitizer_ldflags") {
       }
       if (use_cfi_icall) {
         ldflags += [ "-fsanitize=cfi-icall" ]
+
+        # Normalize integers across languages.
+        rustflags += [ "-Zsanitizer-cfi-normalize-integers" ]
+        ldflags += [ "-fsanitize-cfi-icall-experimental-normalize-integers" ]
       }
       if (use_cfi_diag) {
         ldflags += [ "-fno-sanitize-trap=cfi" ]
@@ -355,7 +361,8 @@ config("asan_flags") {
 config("cfi_flags") {
   cflags = []
   rustflags = []
-  if (is_cfi && current_toolchain == default_toolchain) {
+  if (is_cfi && current_toolchain == default_toolchain &&
+      toolchain_supports_rust_thin_lto) {
     if (!defined(cfi_ignorelist_path)) {
       cfi_ignorelist_path =
           rebase_path("//tools/cfi/ignores.txt", root_build_dir)
@@ -364,20 +371,7 @@ config("cfi_flags") {
       "-fsanitize=cfi-vcall",
       "-fsanitize-ignorelist=$cfi_ignorelist_path",
     ]
-
-    if (toolchain_supports_rust_thin_lto) {
-      # sanitize=cfi implies -fsplit-lto-unit, and Rust needs to match
-      # behaviour.  Rust needs to know the linker will be doing LTO in this case
-      # or it rejects the Zsplit-lto-unit flag.
-      # TODO(crbug.com/40266913): Add -Zsanitize=cfi instead.
-      rustflags += [
-        "-Zsplit-lto-unit",
-        "-Clinker-plugin-lto=yes",
-      ]
-    } else {
-      # Don't include bitcode if it won't be used.
-      rustflags += [ "-Cembed-bitcode=no" ]
-    }
+    rustflags += [ "-Zsanitizer=cfi" ]
 
     if (use_cfi_cast) {
       cflags += [
@@ -388,10 +382,10 @@ config("cfi_flags") {
 
     if (use_cfi_icall) {
       cflags += [ "-fsanitize=cfi-icall" ]
-      # TODO(crbug.com/40266913): Add cflags += [
-      # "-fsanitize-cfi-icall-experimental-normalize-integers" ]
-      # TODO(crbug.com/40266913): Add rustflags += [
-      # "-Zsanitizer-cfi-normalize-integers" ].
+
+      # Normalize integers across languages.
+      rustflags += [ "-Zsanitizer-cfi-normalize-integers" ]
+      cflags += [ "-fsanitize-cfi-icall-experimental-normalize-integers" ]
     }
 
     if (use_cfi_diag) {
