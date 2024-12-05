@@ -4,8 +4,6 @@
 
 #include "components/javascript_dialogs/views/app_modal_dialog_view_views.h"
 
-#include <memory>
-
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,11 +15,6 @@
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/javascript_dialogs/views/layer_dimmer.h"
-#include "ui/aura/window.h"
-#endif  // IS_CHROMEOS_LACROS
 
 namespace javascript_dialogs {
 
@@ -85,18 +78,7 @@ AppModalDialogViewViews::~AppModalDialogViewViews() = default;
 // AppModalDialogViewViews, AppModalDialogView implementation:
 
 void AppModalDialogViewViews::ShowAppModalDialog() {
-  auto* widget = GetWidget();
-  widget->Show();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* dialogWindow = widget->GetNativeWindow();
-  auto* parentWindow = dialogWindow->parent();
-
-  if (!layerDimmer_) {
-    layerDimmer_ = std::make_unique<LayerDimmer>(parentWindow, dialogWindow);
-  }
-  layerDimmer_->Show();
-#endif  // IS_CHROMEOS_LACROS
+  GetWidget()->Show();
 }
 
 void AppModalDialogViewViews::ActivateAppModalDialog() {
@@ -106,12 +88,6 @@ void AppModalDialogViewViews::ActivateAppModalDialog() {
 
 void AppModalDialogViewViews::CloseAppModalDialog() {
   GetWidget()->Close();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (layerDimmer_) {
-    layerDimmer_->Hide();
-  }
-#endif  // IS_CHROMEOS_LACROS
 }
 
 void AppModalDialogViewViews::AcceptAppModalDialog() {
@@ -134,7 +110,7 @@ std::u16string AppModalDialogViewViews::GetWindowTitle() const {
 }
 
 ui::mojom::ModalType AppModalDialogViewViews::GetModalType() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40148438): Remove this hack. This works around the
   // linked bug. This dialog should be window-modal on ChromeOS as well.
   return ui::mojom::ModalType::kSystem;
