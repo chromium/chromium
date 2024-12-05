@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -316,6 +317,9 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
     } else if (h == pending_payment_instruments_query_) {
       CHECK(ArePaymentInstrumentsSupported());
       pending_payment_instruments_query_ = 0;
+    } else if (h == pending_payment_instrument_creation_options_query_) {
+      CHECK(ArePaymentInstrumentCreationOptionsSupported());
+      pending_payment_instrument_creation_options_query_ = 0;
     }
   } else {
     switch (result->GetType()) {
@@ -406,6 +410,21 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
         OnPaymentInstrumentsRefreshed(payment_instruments);
         break;
       }
+      case PAYMENT_INSTRUMENT_CREATION_OPTION_RESULT: {
+        CHECK(ArePaymentInstrumentCreationOptionsSupported());
+        DCHECK_EQ(h, pending_payment_instrument_creation_options_query_)
+            << "received payment instrument creation options from invalid "
+               "request.";
+        std::vector<sync_pb::PaymentInstrumentCreationOption>
+            payment_instrument_creation_options;
+        ReceiveLoadedDbValues(
+            h, result.get(),
+            &pending_payment_instrument_creation_options_query_,
+            &payment_instrument_creation_options);
+        OnPaymentInstrumentCreationOptionsRefreshed(
+            payment_instrument_creation_options);
+        break;
+      }
       default:
         NOTREACHED();
     }
@@ -477,6 +496,9 @@ void PaymentsDataManager::Refresh() {
   LoadVirtualCardUsageData();
   if (IsCardBenefitsSyncEnabled() && IsCardBenefitsPrefEnabled()) {
     LoadCreditCardBenefits();
+  }
+  if (ArePaymentInstrumentCreationOptionsSupported()) {
+    LoadPaymentInstrumentCreationOptions();
   }
 }
 
@@ -865,6 +887,11 @@ gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
 
   // The cache does not contain the image, return nullptr.
   return nullptr;
+}
+
+const std::vector<BnplIssuer>& PaymentsDataManager::GetUnlinkedBnplIssuers()
+    const {
+  return unlinked_bnpl_issuers_;
 }
 
 void PaymentsDataManager::SetPrefService(PrefService* pref_service) {
@@ -1706,6 +1733,7 @@ void PaymentsDataManager::CancelPendingServerQueries() {
   if (ArePaymentInstrumentsSupported()) {
     CancelPendingServerQuery(&pending_payment_instruments_query_);
   }
+  CancelPendingServerQuery(&pending_payment_instrument_creation_options_query_);
 }
 
 bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
@@ -1835,6 +1863,18 @@ void PaymentsDataManager::LoadCreditCardBenefits() {
 
   pending_credit_card_benefit_query_ =
       database_helper_->GetServerDatabase()->GetCreditCardBenefits(this);
+}
+
+void PaymentsDataManager::LoadPaymentInstrumentCreationOptions() {
+  if (!database_helper_->GetServerDatabase()) {
+    return;
+  }
+
+  CancelPendingServerQuery(&pending_payment_instrument_creation_options_query_);
+
+  pending_payment_instrument_creation_options_query_ =
+      database_helper_->GetServerDatabase()
+          ->GetPaymentInstrumentCreationOptions(this);
 }
 
 void PaymentsDataManager::CancelPendingLocalQuery(
@@ -1969,7 +2009,8 @@ bool PaymentsDataManager::HasPendingPaymentQueries() const {
          (AreBankAccountsSupported() &&
           pending_masked_bank_accounts_query_ != 0) ||
          (ArePaymentInstrumentsSupported() &&
-          pending_payment_instruments_query_ != 0);
+          pending_payment_instruments_query_ != 0) ||
+         pending_payment_instrument_creation_options_query_ != 0;
 }
 
 bool PaymentsDataManager::AreBankAccountsSupported() const {
@@ -1989,10 +2030,27 @@ bool PaymentsDataManager::AreEwalletAccountsSupported() const {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+bool PaymentsDataManager::AreBnplIssuersSupported() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+}
+
 bool PaymentsDataManager::ArePaymentInstrumentsSupported() const {
   // Currently only eWallet accounts are using generic payment instrument proto
   // for read from table.
   return AreEwalletAccountsSupported();
+}
+
+bool PaymentsDataManager::ArePaymentInstrumentCreationOptionsSupported() const {
+  // Currently only BNPL issuers are using the payment instrument creation
+  // option proto for read from table.
+  return AreBnplIssuersSupported();
 }
 
 void PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange() {
@@ -2134,6 +2192,43 @@ void PaymentsDataManager::CacheIfEwalletPaymentInstrument(
           payment_instrument.ewallet_details().account_display_name()),
       supported_payment_link_uris,
       payment_instrument.device_details().is_fido_enrolled());
+}
+
+void PaymentsDataManager::OnPaymentInstrumentCreationOptionsRefreshed(
+    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        payment_instrument_creation_options) {
+  // Clear all payment instrument creation options.
+  unlinked_bnpl_issuers_.clear();
+
+  for (const sync_pb::PaymentInstrumentCreationOption&
+           payment_instrument_creation_option :
+       payment_instrument_creation_options) {
+    CacheIfBnplPaymentInstrumentCreationOption(
+        payment_instrument_creation_option);
+  }
+}
+
+void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option) {
+  if (!payment_instrument_creation_option.has_buy_now_pay_later_option()) {
+    return;
+  }
+
+  const sync_pb::BnplIssuerDetails& bnpl_issuer =
+      payment_instrument_creation_option.buy_now_pay_later_option();
+  std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+  eligible_price_ranges.reserve(bnpl_issuer.eligible_price_range_size());
+  for (const sync_pb::EligiblePriceRange& eligible_price_range :
+       bnpl_issuer.eligible_price_range()) {
+    eligible_price_ranges.emplace_back(
+        eligible_price_range.currency(),
+        eligible_price_range.min_price_in_micros(),
+        eligible_price_range.max_price_in_micros());
+  }
+
+  unlinked_bnpl_issuers_.emplace_back(std::nullopt, bnpl_issuer.issuer_id(),
+                                      std::move(eligible_price_ranges));
 }
 
 }  // namespace autofill

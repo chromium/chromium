@@ -48,6 +48,8 @@ typedef enum {
   MASKED_BANK_ACCOUNTS_RESULT,       // WDResult<std::vector<BankAccount>>
   PAYMENT_INSTRUMENT_RESULT,         // WDResult<std::vector<
                                      //     sync_pb::PaymentInstrument>>
+  PAYMENT_INSTRUMENT_CREATION_OPTION_RESULT,  // WDResult<std::vector<
+                                              //     sync_pb::PaymentInstrumentCreationOption>>
 #if BUILDFLAG(USE_BLINK)         //
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>

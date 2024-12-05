@@ -219,6 +219,11 @@ class AutofillWebDataBackendImpl
   // Returns a vector of payment instruments from the web database.
   std::unique_ptr<WDTypedResult> GetPaymentInstruments(WebDatabase* db);
 
+  // Returns a vector of payment instrument creation options from the web
+  // database.
+  std::unique_ptr<WDTypedResult> GetPaymentInstrumentCreationOptions(
+      WebDatabase* db);
+
   WebDatabase::State ClearAllServerData(WebDatabase* db);
 
   // Clears all the credit card benefits from the database.

@@ -262,12 +262,22 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
 };
 class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
                                 public testing::Test {
+ public:
+  PaymentsDataManagerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
+        /*disabled_features=*/{});
+  }
+
  protected:
   void SetUp() override {
     SetUpTest();
     ResetPaymentsDataManager();
   }
   void TearDown() override { TearDownTest(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class PaymentsDataManagerSyncTransportModeTest
@@ -3407,6 +3417,95 @@ TEST_F(PaymentsDataManagerTest, RecordLocalCardAdded) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.PaymentsDataManager.LocalCardAdded", true, 1);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+TEST_F(
+    PaymentsDataManagerTest,
+    GetUnlinkedBnplIssuersWhenBnplSyncFeatureDisabled_UnlinkedBnplIssuersNotCached) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234")}));
+
+  // Since the PaymentsDataManager was initialized before adding the unlinked
+  // BNPL issuer payment instrument creation options to the WebDatabase, we
+  // expect GetUnlinkedBnplIssuers to return an empty list.
+  EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 0u);
+
+  // Refresh the PaymentsDataManager. Under normal circumstances with the
+  // feature enabled, this step would load the unlinked BNPL issuer payment
+  // instrument creation options from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Verify that no unlinked BNPL issuers are loaded into PaymentsDataManager
+  // because the feature is disabled.
+  EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 0u);
+}
+
+TEST_F(PaymentsDataManagerTest,
+       GetUnlinkedBnplIssuers_UnlinkedBnplIssuersCacheUpdated) {
+  // Create a BNPL payment creation option.
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+
+  sync_pb::BnplIssuerDetails* bnpl_option =
+      creation_option.mutable_buy_now_pay_later_option();
+  bnpl_option->set_issuer_id("issuer_id");
+
+  sync_pb::EligiblePriceRange eligible_price_range;
+  eligible_price_range.set_currency("USD");
+  eligible_price_range.set_min_price_in_micros(50);
+  eligible_price_range.set_max_price_in_micros(200);
+  *bnpl_option->add_eligible_price_range() = eligible_price_range;
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option}));
+
+  // Since the PaymentsDataManager was initialized before adding the unlinked
+  // BNPL issuer payment instrument creation options to the WebDatabase, we
+  // expect GetUnlinkedBnplIssuers to return an empty list.
+  EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 0u);
+
+  // We need to call `Refresh()` to ensure that the BNPL issuer payment
+  // instrument creation options are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Must match the BnplIssuerDetails in the payment instrument creation option.
+  std::vector<BnplIssuer> want_bnpl_issuers = {
+      BnplIssuer(/*instrument_id=*/std::nullopt, "issuer_id",
+                 {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
+                                                 /*price_lower_bound=*/50,
+                                                 /*price_upper_bound=*/200)})};
+
+  EXPECT_THAT(payments_data_manager().GetUnlinkedBnplIssuers(),
+              testing::UnorderedElementsAreArray(want_bnpl_issuers));
+}
+
+TEST_F(
+    PaymentsDataManagerTest,
+    GetUnlinkedBnplIssuers_PaymentsDataManagerRefreshedTwice_NoDuplicatedUnlinkedBnplIssuers) {
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234")}));
+
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 1u);
+
+  // Invoke `Refresh()` again.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // The number of unlinked BNPL issuers should remain the same.
+  EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 1u);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace autofill
