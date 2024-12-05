@@ -50,11 +50,10 @@ class BookmarkContextMenuController
   // Creates the bookmark context menu.
   // `browser` is used to open the bookmark manager and is null in tests.
   // `profile` is used for opening urls as well as enabling 'open incognito'.
-  // Uses a callback since this can be asynchronous. See crbug.com/1161144
-  // The parent for newly created nodes is `selection[0]` if
-  // `selection` has one element and it is a folder, otherwise it is
-  // `selection[0]->parent`.
-  // `selection` is the nodes the context menu operates on and may be empty.
+  // Uses a callback since this can be asynchronous. See crbug.com/1161144.
+  // `selection` is the nodes the context menu operates on and must be not
+  // empty. The parent for newly created nodes is `selection[0]` if `selection`
+  // has one element and it is a folder, otherwise it is `selection[0]->parent`.
   BookmarkContextMenuController(
       gfx::NativeWindow parent_window,
       BookmarkContextMenuControllerDelegate* delegate,

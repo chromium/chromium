@@ -134,6 +134,20 @@ bool IsSelectionPermanentBookmarkFolder(
   return false;
 }
 
+// Check selection is not empty, nodes are not null nor repeated.
+void CheckSelectionIsValid(
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection) {
+  CHECK(!selection.empty());
+  // Nodes must be not null.
+  CHECK(base::ranges::all_of(selection,
+                             [](const BookmarkNode* node) { return node; }));
+
+  // Check not repeated nodes.
+  std::set<const BookmarkNode*> nodes_set(selection.begin(), selection.end());
+  CHECK_EQ(selection.size(), nodes_set.size());
+}
+
 }  // namespace
 
 BookmarkContextMenuController::BookmarkContextMenuController(
@@ -155,6 +169,8 @@ BookmarkContextMenuController::BookmarkContextMenuController(
       new_nodes_parent_(GetParentForNewNodes(selection)) {
   DCHECK(profile_);
   DCHECK(bookmark_service_->loaded());
+  CheckSelectionIsValid(selection);
+  CHECK(new_nodes_parent_);
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   bookmark_service_->bookmark_model()->AddObserver(this);
 
@@ -173,10 +189,6 @@ BookmarkContextMenuController::GetParentForNewNodes(
   if (selection.empty()) {
     return nullptr;
   }
-
-  // Check valid node selection.
-  CHECK(base::ranges::all_of(selection,
-                             [](const BookmarkNode* node) { return node; }));
 
   const BookmarkNode* parent = nullptr;
   if (IsSelectionPermanentBookmarkFolder(selection)) {
@@ -404,7 +416,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
               &title)) {
         break;
       }
-      CHECK(new_nodes_parent_);
       BookmarkEditor::Show(parent_window_, profile_,
                            BookmarkEditor::EditDetails::AddNodeInFolder(
                                BookmarkUIOperationsHelperMergedSurfaces(
@@ -419,7 +430,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       base::RecordAction(
           UserMetricsAction("BookmarkBar_ContextMenu_NewFolder"));
 
-      CHECK(new_nodes_parent_);
       BookmarkEditor::Show(parent_window_, profile_,
                            BookmarkEditor::EditDetails::AddFolder(
                                BookmarkUIOperationsHelperMergedSurfaces(
@@ -464,7 +474,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     case IDC_BOOKMARK_MANAGER: {
       if (selection_.size() == 1 ||
           IsSelectionPermanentBookmarkFolder(selection_)) {
-        CHECK(new_nodes_parent_);
         chrome::ShowBookmarkManagerForNode(
             browser_, BookmarkUIOperationsHelperMergedSurfaces(
                           bookmark_service_, new_nodes_parent_.get())
@@ -491,10 +500,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_PASTE: {
-      if (!new_nodes_parent_) {
-        return;
-      }
-
       BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
                                                new_nodes_parent_.get())
           .PasteFromClipboard(GetIndexForNewNodes());
@@ -628,7 +633,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
 
     case IDC_BOOKMARK_BAR_NEW_FOLDER:
     case IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK:
-      return can_edit && new_nodes_parent_;
+      return can_edit;
 
     case IDC_BOOKMARK_BAR_ALWAYS_SHOW:
       return !prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar);
