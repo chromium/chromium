@@ -39,6 +39,9 @@ export interface ChromeSigninInterceptionParameters {
   email: string;
   pictureUrl: string;
   managedUserBadge: string;
+  // Empty for non-managed users. Used to convey information about the shown
+  // badge.
+  userBadgeAltText: string;
 }
 
 export interface DiceWebSigninInterceptBrowserProxy {

@@ -714,9 +714,14 @@
       Your parent's choices will now keep you safer online
     </message>
 
+    <!-- Supervised user profile avatar badge -->
+    <message name="IDS_MANAGED_BY_PARENT_A11Y" desc="Accessibility label that describes the information conveyed by the Google Family Link 'Kite' icon. When shown account profile photo or elsewhere in settings it indicates that the account is supervised.">
+      Managed by your parent
+    </message>
+
     <!-- Signout from a supervised user profile -->
     <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY" desc="This confirmation message is intended to help supervised users understand what will happen when they sign out of Chrome. It appears on a dialog after users click to sign out of Chrome. It motivates kids to get their parents' help to stay safer online.">
-    Your parent's choices won't apply after you sign out
+      Your parent's choices won't apply after you sign out
     </message>
 
     <!-- Profile Picker -->

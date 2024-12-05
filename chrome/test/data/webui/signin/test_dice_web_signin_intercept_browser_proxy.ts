@@ -44,6 +44,7 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       email: '',
       pictureUrl: '',
       managedUserBadge: '',
+      userBadgeAltText: '',
     };
   }
 

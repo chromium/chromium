@@ -259,13 +259,17 @@ DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   parameters.Set("pictureUrl",
                  signin::GetAccountPictureUrl(intercepted_account()));
 
-  std::string_view managed_user_badge = "";
+  std::string managed_user_badge;
+  std::string managed_user_badge_alt_text;
   if (IsSupervisedUser(intercepted_account().capabilities) &&
       base::FeatureList::IsEnabled(
           supervised_user::kShowKiteForSupervisedUsers)) {
     managed_user_badge = kSupervisedBadgeSource;
+    managed_user_badge_alt_text =
+        l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
   }
   parameters.Set("managedUserBadge", managed_user_badge);
+  parameters.Set("userBadgeAltText", managed_user_badge_alt_text);
   return parameters;
 }
 
