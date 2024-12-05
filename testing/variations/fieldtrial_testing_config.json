@@ -7939,24 +7939,6 @@
             ]
         }
     ],
-    "DesktopWebAppUniversalInstallExperiment": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "WebAppUniversalInstallExperiment",
-                    "enable_features": [
-                        "WebAppUniversalInstall"
-                    ]
-                }
-            ]
-        }
-    ],
     "DestroySystemProfiles": [
         {
             "platforms": [

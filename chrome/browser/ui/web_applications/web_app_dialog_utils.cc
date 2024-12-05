@@ -81,9 +81,7 @@ void OnWebAppInstallShowInstallDialog(
             std::move(install_tracker), std::move(web_app_acceptance_callback),
             std::move(screenshots), iph_state);
         return;
-      } else if (base::FeatureList::IsEnabled(
-                     features::kWebAppUniversalInstall) &&
-                 web_app_info->is_diy_app) {
+      } else if (web_app_info->is_diy_app) {
         ShowDiyAppInstallDialog(initiator_web_contents, std::move(web_app_info),
                                 std::move(install_tracker),
                                 std::move(web_app_acceptance_callback),

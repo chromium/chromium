@@ -1067,12 +1067,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MenuOptionsOutsideInstalledPwaScope) {
       https_server()->GetURL("/banners/no_manifest_test_page.html"));
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);
-  AppMenuCommandState install_pwa_state =
-      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
-          ? kEnabled
-          : kNotPresent;
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser),
-            install_pwa_state);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kEnabled);
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, new_browser),
             kNotPresent);
 }
@@ -1280,12 +1275,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoOpenInAppForBrowserTabPwa) {
   // Even though the app doesn't meet promotability criteria (manifest has
   // display:browser), the installation option should still show up as `Install
   // Page as App`.
-  AppMenuCommandState install_pwa_state =
-      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
-          ? kEnabled
-          : kNotPresent;
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()),
-            install_pwa_state);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kEnabled);
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kNotPresent);
 }
@@ -2077,25 +2067,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppInternalsPage) {
   NavigateViaLinkClickToURLAndWait(
       browser(), https_server()->GetURL("/banners/no_manifest_test_page.html"));
 
-  if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-    // Install as DIY App.
-    SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/true);
-    WebAppTestInstallObserver observer(profile());
-    observer.BeginListening();
-    CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
-    observer.Wait();
-    SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/false);
-  } else {
-    // Install using Create Shortcut flow until universal install is globally
-    // enabled by default.
-    SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                        /*auto_open_in_window=*/false);
-    WebAppTestInstallObserver observer(profile());
-    observer.BeginListening();
-    CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-    observer.Wait();
-    SetAutoAcceptWebAppDialogForTesting(false, false);
-  }
+  // Install as DIY App.
+  SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/true);
+  WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
+  CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
+  observer.Wait();
+  SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/false);
 
   // Loads with two apps.
   NavigateViaLinkClickToURLAndWait(browser(),
@@ -2108,34 +2086,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
       "manifest_test_page.html?manifest=manifest_display_browser.json");
   NavigateAndAwaitInstallabilityCheck(browser(), url);
 
-  bool universal_install_enabled =
-      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kEnabled);
 
-  AppMenuCommandState install_state =
-      universal_install_enabled ? kEnabled : kNotPresent;
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), install_state);
+  // Install as DIY App.
+  SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/true);
+  WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
+  CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
+  observer.Wait();
+  SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/false);
 
-  if (universal_install_enabled) {
-    // Install as DIY App.
-    SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/true);
-    WebAppTestInstallObserver observer(profile());
-    observer.BeginListening();
-    CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
-    observer.Wait();
-    SetAutoAcceptDiyAppsInstallDialogForTesting(/*auto_accept=*/false);
-  } else {
-    // Install using Create Shortcut flow until universal install is globally
-    // enabled by default.
-    SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                        /*auto_open_in_window=*/false);
-    WebAppTestInstallObserver observer(profile());
-    observer.BeginListening();
-    CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-    observer.Wait();
-    SetAutoAcceptWebAppDialogForTesting(false, false);
-  }
-
-  // Navigate to this site again and install should not show up if universal
+  // Navigate to this site again and install should not show up since universal
   // install is enabled.
   Browser* new_browser = NavigateInNewWindowAndAwaitInstallabilityCheck(url);
   EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kNotPresent);

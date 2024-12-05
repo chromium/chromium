@@ -5430,10 +5430,6 @@ const char kWebAppSyncGeneratedIconUpdateFixDescription[] =
     "during a manifest update if the icons were generated, indictative of"
     "network errors during the sync install.";
 
-const char kWebAppUniversalInstallName[] = "Web App Universal Install";
-const char kWebAppUniversalInstallDescription[] =
-    "Allows any site to be installable on Windows, Mac, and Linux.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kTranslateOpenSettingsName[] = "Translate Open Settings";
 const char kTranslateOpenSettingsDescription[] =

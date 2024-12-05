@@ -442,14 +442,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 class FetchManifestAndInstallCommandUniversalInstallTest
     : public FetchManifestAndInstallCommandTest {
  public:
-  FetchManifestAndInstallCommandUniversalInstallTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppUniversalInstall);
-  }
   ~FetchManifestAndInstallCommandUniversalInstallTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
