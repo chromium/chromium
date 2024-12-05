@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 
 #include <algorithm>
@@ -28,8 +23,7 @@ std::vector<int> GetMessageIds(const SearchConcept* search_concept) {
   std::vector<int> alt_tag_message_ids{search_concept->canonical_message_id};
 
   // Add alternate IDs, if they exist.
-  for (size_t i = 0; i < SearchConcept::kMaxAltTagsPerConcept; ++i) {
-    int curr_alt_tag_message_id = search_concept->alt_tag_ids[i];
+  for (int curr_alt_tag_message_id : search_concept->alt_tag_ids) {
     if (curr_alt_tag_message_id == SearchConcept::kAltTagEnd) {
       break;
     }

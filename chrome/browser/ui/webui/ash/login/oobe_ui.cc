@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 
 #include <stddef.h>
@@ -50,6 +44,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
+#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
