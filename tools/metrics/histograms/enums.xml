@@ -10915,6 +10915,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5208" label="Canvas2DGetImageData"/>
   <int value="5209" label="V8ExtendingNonExtensibleWithPrivate"/>
   <int value="5210" label="SharedStorageAPI_BatchUpdate_Method"/>
+  <int value="5211" label="PreservesPitch"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -34156,6 +34157,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="246" label="DRAFT_ReferenceTarget"/>
   <int value="247" label="Fedcm"/>
   <int value="248" label="WebOtp"/>
+  <int value="249" label="PreservesPitch"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

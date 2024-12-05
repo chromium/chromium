@@ -274,6 +274,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kPageVisibilityState},
           {WebFeature::kFedCm, WebDXFeature::kFedcm},
           {WebFeature::kWebOTP, WebDXFeature::kWebOtp},
+          {WebFeature::kPreservesPitch, WebDXFeature::kPreservesPitch},
       }};
 
   return *kMap;
