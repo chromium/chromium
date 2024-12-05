@@ -379,7 +379,7 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting
     public void destroy() {
         if (mAppSearchSession != null) {
-            Futures.transformAsync(
+            Futures.transform(
                     mAppSearchSession,
                     session -> {
                         session.close();

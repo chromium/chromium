@@ -232,10 +232,10 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
     @VisibleForTesting
     public void onTaskFinished(TaskFinishedCallback taskFinishedCallback) {
-        taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
         if (mAuxiliarySearchController != null) {
             mAuxiliarySearchController.destroy();
             mAuxiliarySearchController = null;
         }
+        taskFinishedCallback.taskFinished(/* needsReschedule= */ false);
     }
 }
