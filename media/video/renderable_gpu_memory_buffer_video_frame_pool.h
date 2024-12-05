@@ -52,8 +52,6 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
         gfx::GpuMemoryBuffer* gpu_memory_buffer,
         const viz::SharedImageFormat& si_format,
         const gfx::ColorSpace& color_space,
-        GrSurfaceOrigin surface_origin,
-        SkAlphaType alpha_type,
         gpu::SharedImageUsageSet usage,
         gpu::SyncToken& sync_token) = 0;
 
@@ -63,8 +61,6 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
         gfx::BufferUsage buffer_usage,
         const viz::SharedImageFormat& si_format,
         const gfx::ColorSpace& color_space,
-        GrSurfaceOrigin surface_origin,
-        SkAlphaType alpha_type,
         gpu::SharedImageUsageSet usage,
         gpu::SyncToken& sync_token) = 0;
 
