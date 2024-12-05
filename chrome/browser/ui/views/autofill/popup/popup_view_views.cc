@@ -699,8 +699,7 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
   CHECK(controller(), base::NotFatalUntil::M134);
   if (controller() &&
       base::Contains(controller()->GetSuggestions(),
-                     SuggestionType::kPredictionImprovementsFeedback,
-                     &Suggestion::type)) {
+                     SuggestionType::kAutofillAiFeedback, &Suggestion::type)) {
     a11y_announcer_.Run(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
@@ -1032,7 +1031,7 @@ void PopupViewViews::CreateSuggestionViews() {
                   suggestions[current_line_number])));
           break;
 
-        case SuggestionType::kPredictionImprovementsLoadingState:
+        case SuggestionType::kAutofillAiLoadingState:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<autofill_ai::AutofillAiLoadingStateView>(
                   suggestions[current_line_number])));
@@ -1056,16 +1055,16 @@ void PopupViewViews::CreateSuggestionViews() {
 
           // Set element identifiers for tests.
           if (suggestions[current_line_number].type ==
-              SuggestionType::kRetrievePredictionImprovements) {
+              SuggestionType::kRetrieveAutofillAi) {
             row_view->SetProperty(
                 views::kElementIdentifierKey,
                 kAutofillPredictionImprovementsTriggerElementId);
           } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kFillPredictionImprovements) {
+                     SuggestionType::kFillAutofillAi) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillPredictionImprovementsFillElementId);
           } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kPredictionImprovementsError) {
+                     SuggestionType::kAutofillAiError) {
             row_view->SetProperty(
                 views::kElementIdentifierKey,
                 kAutofillPredictionImprovementsErrorElementId);

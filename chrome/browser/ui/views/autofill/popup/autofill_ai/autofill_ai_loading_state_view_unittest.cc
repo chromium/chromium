@@ -17,7 +17,7 @@ using ::autofill::SuggestionType;
 using AutofillAiLoadingStateViewTest = ChromeViewsTestBase;
 
 TEST_F(AutofillAiLoadingStateViewTest, CanInitialize) {
-  Suggestion suggestion{SuggestionType::kPredictionImprovementsLoadingState};
+  Suggestion suggestion{SuggestionType::kAutofillAiLoadingState};
   AutofillAiLoadingStateView v{suggestion};
 }
 }  // namespace

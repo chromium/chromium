@@ -97,7 +97,7 @@ constexpr auto kPopupItemTypesUsingLeadingIcons =
          SuggestionType::kPasswordAccountStorageReSignin,
          SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
          SuggestionType::kViewPasswordDetails,
-         SuggestionType::kRetrievePredictionImprovements});
+         SuggestionType::kRetrieveAutofillAi});
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -595,7 +595,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
         controller, a11y_selection_delegate, selection_delegate, line_number);
   }
 
-  if (type == SuggestionType::kPredictionImprovementsFeedback) {
+  if (type == SuggestionType::kAutofillAiFeedback) {
     return CreatePredictionImprovementsFeedbackRow(
         controller, a11y_selection_delegate, selection_delegate, line_number);
   }

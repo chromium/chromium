@@ -96,7 +96,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kPlusAddressError:
       return FillingProduct::kPlusAddresses;
-    case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kAutofillAiFeedback:
       return FillingProduct::kPredictionImprovements;
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
@@ -106,11 +106,11 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
       return FillingProduct::kNone;
-    case SuggestionType::kRetrievePredictionImprovements:
-    case SuggestionType::kPredictionImprovementsLoadingState:
-    case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsError:
-    case SuggestionType::kEditPredictionImprovementsInformation:
+    case SuggestionType::kRetrieveAutofillAi:
+    case SuggestionType::kAutofillAiLoadingState:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kAutofillAiError:
+    case SuggestionType::kEditAutofillAiData:
       return FillingProduct::kPredictionImprovements;
   }
   NOTREACHED();

@@ -268,12 +268,12 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
-    case SuggestionType::kRetrievePredictionImprovements:
-    case SuggestionType::kPredictionImprovementsLoadingState:
-    case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsFeedback:
-    case SuggestionType::kPredictionImprovementsError:
-    case SuggestionType::kEditPredictionImprovementsInformation:
+    case SuggestionType::kRetrieveAutofillAi:
+    case SuggestionType::kAutofillAiLoadingState:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kAutofillAiFeedback:
+    case SuggestionType::kAutofillAiError:
+    case SuggestionType::kEditAutofillAiData:
       NOTREACHED();
   }
   NOTREACHED();

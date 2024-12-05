@@ -5092,14 +5092,14 @@ Called by update_autofill_enums.py.-->
   <int value="50" label="Devtools test address entry"/>
   <int value="51" label="Devtools test address by country entry"/>
   <int value="52" label="Create new plus address inline"/>
-  <int value="53" label="Retrieve prediction improvements"/>
-  <int value="54" label="Prediction improvements loading state"/>
-  <int value="55" label="Fill prediction improvements"/>
-  <int value="56" label="Prediction improvements feedback"/>
+  <int value="53" label="Retrieve Autofill AI suggestions"/>
+  <int value="54" label="Autofill AI loading state"/>
+  <int value="55" label="Autofill AI filling suggestion"/>
+  <int value="56" label="Autofill AI feedback"/>
   <int value="57" label="Plus address error"/>
-  <int value="58" label="Prediction improvements details"/>
-  <int value="59" label="Prediction improvements error"/>
-  <int value="60" label="Edit prediction improvements information"/>
+  <int value="58" label="Autofill AI details"/>
+  <int value="59" label="Autofill AI error"/>
+  <int value="60" label="Edit Autofill AI information"/>
   <int value="61" label="Bnpl entry"/>
   <int value="62" label="Save and fill credit card entry"/>
   <int value="63" label="Adress suggestion displayed when typing"/>

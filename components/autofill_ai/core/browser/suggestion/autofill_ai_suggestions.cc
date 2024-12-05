@@ -86,7 +86,7 @@ autofill::Suggestion CreateFillAllSuggestion(
   autofill::Suggestion fill_all_suggestion(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT),
-      autofill::SuggestionType::kFillPredictionImprovements);
+      autofill::SuggestionType::kFillAutofillAi);
   fill_all_suggestion.payload = payload;
   return fill_all_suggestion;
 }
@@ -101,7 +101,7 @@ void AddChildFillingSuggestion(
                                             ? *prediction.select_option_text
                                             : prediction.value;
   autofill::Suggestion child_suggestion(
-      value_to_fill, autofill::SuggestionType::kFillPredictionImprovements);
+      value_to_fill, autofill::SuggestionType::kFillAutofillAi);
   child_suggestion.payload = autofill::Suggestion::ValueToFill(value_to_fill);
   child_suggestion.labels = {{autofill::Suggestion::Text(prediction.label)}};
 
@@ -127,8 +127,7 @@ void AddLabelToFillingSuggestion(autofill::Suggestion& suggestion) {
       u" ";
   size_t num_valid_labels = 0;
   for (const autofill::Suggestion& child_suggestion : suggestion.children) {
-    if (child_suggestion.type ==
-            autofill::SuggestionType::kFillPredictionImprovements &&
+    if (child_suggestion.type == autofill::SuggestionType::kFillAutofillAi &&
         !child_suggestion.labels.empty() &&
         !child_suggestion.labels.front().empty()) {
       if (num_valid_labels > 0 &&
@@ -161,8 +160,7 @@ void AddLabelToFillingSuggestion(autofill::Suggestion& suggestion) {
 
 autofill::Suggestion CreateEditPredictionImprovementsInformation() {
   autofill::Suggestion edit_suggestion;
-  edit_suggestion.type =
-      autofill::SuggestionType::kEditPredictionImprovementsInformation;
+  edit_suggestion.type = autofill::SuggestionType::kEditAutofillAiData;
   edit_suggestion.icon = autofill::Suggestion::Icon::kEdit;
   edit_suggestion.main_text = autofill::Suggestion::Text(
       l10n_util::GetStringUTF16(
@@ -173,7 +171,7 @@ autofill::Suggestion CreateEditPredictionImprovementsInformation() {
 
 autofill::Suggestion CreateFeedbackSuggestion() {
   autofill::Suggestion feedback_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsFeedback);
+      autofill::SuggestionType::kAutofillAiFeedback);
   feedback_suggestion.acceptability =
       autofill::Suggestion::Acceptability::kUnacceptable;
   feedback_suggestion.voice_over = base::JoinString(
@@ -197,7 +195,7 @@ autofill::Suggestion CreateFeedbackSuggestion() {
 std::vector<autofill::Suggestion> CreateErrorOrNoInfoSuggestions(
     int message_id) {
   autofill::Suggestion error_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsError);
+      autofill::SuggestionType::kAutofillAiError);
   error_suggestion.main_text = autofill::Suggestion::Text(
       l10n_util::GetStringUTF16(message_id),
       autofill::Suggestion::Text::IsPrimary(true),
@@ -245,7 +243,7 @@ std::vector<autofill::Suggestion> CreateTriggerSuggestions() {
   autofill::Suggestion retrieve_suggestion(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
-      autofill::SuggestionType::kRetrievePredictionImprovements);
+      autofill::SuggestionType::kRetrieveAutofillAi);
   retrieve_suggestion.icon =
       autofill::Suggestion::Icon::kAutofillPredictionImprovements;
   return {retrieve_suggestion};
@@ -253,7 +251,7 @@ std::vector<autofill::Suggestion> CreateTriggerSuggestions() {
 
 std::vector<autofill::Suggestion> CreateLoadingSuggestions() {
   autofill::Suggestion loading_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsLoadingState);
+      autofill::SuggestionType::kAutofillAiLoadingState);
   loading_suggestion.trailing_icon =
       autofill::Suggestion::Icon::kAutofillPredictionImprovements;
   loading_suggestion.acceptability =
@@ -270,8 +268,8 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
   CHECK(cache.contains(field.global_id()));
   const AutofillAiModelExecutor::Prediction& prediction =
       cache.at(field.global_id());
-  autofill::Suggestion suggestion(
-      prediction.value, autofill::SuggestionType::kFillPredictionImprovements);
+  autofill::Suggestion suggestion(prediction.value,
+                                  autofill::SuggestionType::kFillAutofillAi);
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
       GetValuesToFill(cache), kIgnorableSkipReasons);
   suggestion.payload = payload;

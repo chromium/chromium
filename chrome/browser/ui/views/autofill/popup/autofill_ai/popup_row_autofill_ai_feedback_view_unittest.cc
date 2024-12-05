@@ -71,7 +71,7 @@ class PopupRowAutofillAiFeedbackViewTest : public ChromeViewsTestBase {
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
     autofill::Suggestion suggestion(
-        autofill::SuggestionType::kPredictionImprovementsFeedback);
+        autofill::SuggestionType::kAutofillAiFeedback);
     suggestion.voice_over = u"Required a11y text";
     controller_.set_suggestions({std::move(suggestion)});
   }

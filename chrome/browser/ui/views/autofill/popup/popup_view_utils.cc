@@ -454,8 +454,8 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kPasswordEntry:
-    case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsError:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kAutofillAiError:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntryOnTyping:
@@ -490,7 +490,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
-    case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kAutofillAiFeedback:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
@@ -501,9 +501,9 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
-    case SuggestionType::kRetrievePredictionImprovements:
-    case SuggestionType::kEditPredictionImprovementsInformation:
-    case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kRetrieveAutofillAi:
+    case SuggestionType::kEditAutofillAiData:
+    case SuggestionType::kAutofillAiLoadingState:
       return false;
   }
 }

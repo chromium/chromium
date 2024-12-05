@@ -353,21 +353,20 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
 
   if (user_saw_suggestions()) {
     manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kRetrievePredictionImprovements},
-        form->ToFormData(), autofill::FormFieldData(),
+        {autofill::SuggestionType::kRetrieveAutofillAi}, form->ToFormData(),
+        autofill::FormFieldData(),
         /*update_suggestions_callback=*/{});
   }
   if (user_triggered_loading()) {
     manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kPredictionImprovementsLoadingState},
-        form->ToFormData(), autofill::FormFieldData(),
+        {autofill::SuggestionType::kAutofillAiLoadingState}, form->ToFormData(),
+        autofill::FormFieldData(),
         /*update_suggestions_callback=*/{});
   }
   if (user_saw_filling_suggestions()) {
-    manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kFillPredictionImprovements},
-        form->ToFormData(), autofill::FormFieldData(),
-        /*update_suggestions_callback=*/{});
+    manager().OnSuggestionsShown({autofill::SuggestionType::kFillAutofillAi},
+                                 form->ToFormData(), autofill::FormFieldData(),
+                                 /*update_suggestions_callback=*/{});
   }
   if (user_filled_suggestion()) {
     manager().OnDidFillSuggestion(form->global_id());

@@ -55,6 +55,7 @@ namespace {
 using autofill::LogBuffer;
 using autofill::LoggingScope;
 using autofill::LogMessage;
+using autofill::SuggestionType;
 
 bool IsFormAndFieldEligible(const autofill::FormStructure& form,
                             const autofill::AutofillField& field) {
@@ -456,21 +457,19 @@ void AutofillAiManager::OnErrorOrNoInfoSuggestionShown() {
 }
 
 void AutofillAiManager::OnSuggestionsShown(
-    const autofill::DenseSet<autofill::SuggestionType>& shown_suggestion_types,
+    const autofill::DenseSet<SuggestionType>& shown_suggestion_types,
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
   logger_.OnSuggestionsShown(form.global_id());
   if (shown_suggestion_types.contains(
-          autofill::SuggestionType::kPredictionImprovementsLoadingState)) {
+          SuggestionType::kAutofillAiLoadingState)) {
     OnLoadingSuggestionShown(form, trigger_field, update_suggestions_callback);
   }
-  if (shown_suggestion_types.contains(
-          autofill::SuggestionType::kPredictionImprovementsError)) {
+  if (shown_suggestion_types.contains(SuggestionType::kAutofillAiError)) {
     OnErrorOrNoInfoSuggestionShown();
   }
-  if (shown_suggestion_types.contains(
-          autofill::SuggestionType::kFillPredictionImprovements)) {
+  if (shown_suggestion_types.contains(SuggestionType::kFillAutofillAi)) {
     logger_.OnFillingSuggestionsShown(form.global_id());
   }
 }

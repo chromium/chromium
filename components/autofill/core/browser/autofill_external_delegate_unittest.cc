@@ -1032,8 +1032,8 @@ TEST_F(AutofillExternalDelegateTest,
        AutofillSuggestionAvailability_RetrievePredictionImprovements) {
   IssueOnQuery();
 
-  std::vector<Suggestion> suggestions = {Suggestion(
-      u"Autofill with AI", SuggestionType::kRetrievePredictionImprovements)};
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"Autofill with AI", SuggestionType::kRetrieveAutofillAi)};
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
   EXPECT_CALL(driver(),
@@ -1264,9 +1264,7 @@ TEST_F(AutofillExternalDelegateTest,
        DidAcceptRetrievePredictionImprovementsSuggestionCallsEventHandler) {
   EXPECT_CALL(*client().GetAutofillAiDelegate(), OnClickedTriggerSuggestion);
   external_delegate().DidAcceptSuggestion(
-      Suggestion(u"Autocomplete",
-                 SuggestionType::kRetrievePredictionImprovements),
-      {});
+      Suggestion(u"Autocomplete", SuggestionType::kRetrieveAutofillAi), {});
 }
 
 // Tests that on acceptance of a `kFillPredictionImprovements` suggestion with
@@ -1288,7 +1286,7 @@ TEST_F(AutofillExternalDelegateTest,
       AutofillSuggestionTriggerSource::kPredictionImprovements,
       /*update_datalist=*/false);
   Suggestion fill_suggestion =
-      Suggestion(u"Autocomplete", SuggestionType::kFillPredictionImprovements);
+      Suggestion(u"Autocomplete", SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::PredictionImprovementsPayload(
       {{field_to_fill->global_id(), value_to_fill}}, {});
 
@@ -1314,7 +1312,7 @@ TEST_F(AutofillExternalDelegateTest,
   const std::u16string value_to_fill = u"John";
 
   Suggestion fill_suggestion =
-      Suggestion(u"Autocomplete", SuggestionType::kFillPredictionImprovements);
+      Suggestion(u"Autocomplete", SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::ValueToFill(value_to_fill);
 
   EXPECT_CALL(
@@ -1322,7 +1320,7 @@ TEST_F(AutofillExternalDelegateTest,
       FillOrPreviewField(mojom::ActionPersistence::kFill,
                          mojom::FieldActionType::kReplaceAll,
                          HasQueriedFormId(), HasQueriedFieldId(), value_to_fill,
-                         SuggestionType::kFillPredictionImprovements, _));
+                         SuggestionType::kFillAutofillAi, _));
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
@@ -1345,7 +1343,7 @@ TEST_F(AutofillExternalDelegateTest,
       /*update_datalist=*/false);
   EXPECT_CALL(*client().GetAutofillAiDelegate(), OnSuggestionsShown);
   external_delegate().OnSuggestionsShown(std::vector<Suggestion>{
-      Suggestion(SuggestionType::kPredictionImprovementsLoadingState)});
+      Suggestion(SuggestionType::kAutofillAiLoadingState)});
 }
 
 class AutofillExternalDelegatePlusAddressTest
@@ -2068,7 +2066,7 @@ TEST_F(
       UserFeedbackReceived(AutofillAiDelegate::UserFeedback::kThumbsUp));
 
   external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kPredictionImprovementsFeedback),
+      Suggestion(SuggestionType::kAutofillAiFeedback),
       PredictionImprovementsButtonActions::kThumbsUpClicked);
 }
 
@@ -2084,7 +2082,7 @@ TEST_F(
       UserFeedbackReceived(AutofillAiDelegate::UserFeedback::kThumbsDown));
 
   external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kPredictionImprovementsFeedback),
+      Suggestion(SuggestionType::kAutofillAiFeedback),
       PredictionImprovementsButtonActions::kThumbsDownClicked);
 }
 
@@ -2097,7 +2095,7 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(*client().GetAutofillAiDelegate(), UserClickedLearnMore());
 
   external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kPredictionImprovementsFeedback),
+      Suggestion(SuggestionType::kAutofillAiFeedback),
       PredictionImprovementsButtonActions::kLearnMoreClicked);
 }
 

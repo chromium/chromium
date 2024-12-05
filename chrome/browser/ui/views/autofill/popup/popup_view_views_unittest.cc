@@ -1996,7 +1996,7 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
 
 TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
@@ -2010,8 +2010,8 @@ TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
 TEST_F(PopupViewViewsTest,
        PredictionImprovementsLoadingOnSuggestionsChangedA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kFillPredictionImprovements});
-  UpdateSuggestions({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kFillAutofillAi});
+  UpdateSuggestions({SuggestionType::kAutofillAiLoadingState});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
@@ -2024,7 +2024,7 @@ TEST_F(PopupViewViewsTest,
 
 TEST_F(PopupViewViewsTest, PredictionImprovementsSuggestionsLoadedAnnounced) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
   MockFunction<PopupViewViewsTestApi::A11yAnnouncer::RunType> a11y_announcer;
   test_api(view()).SetA11yAnnouncer(
       base::BindLambdaForTesting(a11y_announcer.AsStdFunction()));
@@ -2036,8 +2036,7 @@ TEST_F(PopupViewViewsTest, PredictionImprovementsSuggestionsLoadedAnnounced) {
               IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
           /*polite=*/true));
 
-  Suggestion feedback_suggestion(
-      SuggestionType::kPredictionImprovementsFeedback);
+  Suggestion feedback_suggestion(SuggestionType::kAutofillAiFeedback);
   feedback_suggestion.voice_over = u"Required a11y message";
   controller().set_suggestions({std::move(feedback_suggestion)});
   static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(
