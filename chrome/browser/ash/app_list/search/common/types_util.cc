@@ -21,8 +21,6 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "Play store app";
     case ash::AppListSearchResultType::kInstantApp:
       return "Instant app";
-    case ash::AppListSearchResultType::kInternalApp:
-      return "Internal app";
     case ash::AppListSearchResultType::kOmnibox:
       return "Omnibox";
     case ash::AppListSearchResultType::kLauncher:
@@ -111,8 +109,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "PLAY_STORE_APP";
     case ash::SearchResultType::PLAY_STORE_REINSTALL_APP:
       return "PLAY_STORE_REINSTALL_APP";
-    case ash::SearchResultType::INTERNAL_APP:
-      return "INTERNAL_APP";
+    case ash::SearchResultType::INTERNAL_APP_DEPRECATED:
+      return "INTERNAL_APP_DEPRECATED";
     case ash::SearchResultType::EXTENSION_APP:
       return "EXTENSION_APP";
     case ash::SearchResultType::CROSTINI_APP:

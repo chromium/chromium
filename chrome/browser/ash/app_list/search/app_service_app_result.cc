@@ -62,12 +62,6 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
   SetCategory(Category::kApps);
 
   switch (app_type_) {
-    case apps::AppType::kBuiltIn:
-      set_id(app_id);
-      // TODO(crbug.com/40569217): Is this SetResultType call necessary?? Does
-      // anyone care about the kInternalApp vs kInstalledApp distinction?
-      SetResultType(ResultType::kInternalApp);
-      break;
     case apps::AppType::kChromeApp:
       // TODO(crbug.com/40569217): why do we pass the URL and not the app_id??
       // Can we replace this by the simpler "set_id(app_id)", and therefore
@@ -92,8 +86,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
   switch (app_type_) {
     case apps::AppType::kArc:
       return ash::PLAY_STORE_APP;
-    case apps::AppType::kBuiltIn:
-      return ash::INTERNAL_APP;
     case apps::AppType::kPluginVm:
       return ash::PLUGIN_VM_APP;
     case apps::AppType::kCrostini:

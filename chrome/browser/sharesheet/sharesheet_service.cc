@@ -484,7 +484,6 @@ void SharesheetService::RecordUserActionMetrics(
         SharesheetMetrics::RecordSharesheetActionMetrics(
             SharesheetMetrics::UserAction::kWeb);
         return;
-      case apps::AppType::kBuiltIn:
       case apps::AppType::kCrostini:
       case apps::AppType::kChromeApp:
       case apps::AppType::kPluginVm:

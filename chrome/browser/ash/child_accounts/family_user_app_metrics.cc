@@ -39,8 +39,6 @@ constexpr char kEnabledExtensionsCountHistogramName[] =
 constexpr char kUnknownAppsCountHistogramName[] =
     "FamilyUser.UnknownAppsCount2";
 constexpr char kArcAppsCountHistogramName[] = "FamilyUser.ArcAppsCount2";
-constexpr char kBuiltInAppsCountHistogramName[] =
-    "FamilyUser.BuiltInAppsCount2";
 constexpr char kCrostiniAppsCountHistogramName[] =
     "FamilyUser.CrostiniAppsCount2";
 // The InstalledExtensionsCount only includes regular browser extensions and
@@ -72,8 +70,6 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
       return kUnknownAppsCountHistogramName;
     case apps::AppType::kArc:
       return kArcAppsCountHistogramName;
-    case apps::AppType::kBuiltIn:
-      return kBuiltInAppsCountHistogramName;
     case apps::AppType::kCrostini:
       return kCrostiniAppsCountHistogramName;
     case apps::AppType::kChromeApp:

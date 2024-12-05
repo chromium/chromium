@@ -14,12 +14,17 @@
 
 TEST(AppManagementMojomTraitsTest, RoundTripAppType) {
   static constexpr apps::AppType kTestAppType[] = {
-      apps::AppType::kUnknown,   apps::AppType::kArc,
-      apps::AppType::kBuiltIn,   apps::AppType::kCrostini,
-      apps::AppType::kChromeApp, apps::AppType::kWeb,
-      apps::AppType::kPluginVm,  apps::AppType::kStandaloneBrowser,
-      apps::AppType::kRemote,    apps::AppType::kBorealis,
-      apps::AppType::kSystemWeb, apps::AppType::kExtension};
+      apps::AppType::kUnknown,
+      apps::AppType::kArc,
+      apps::AppType::kCrostini,
+      apps::AppType::kChromeApp,
+      apps::AppType::kWeb,
+      apps::AppType::kPluginVm,
+      apps::AppType::kStandaloneBrowser,
+      apps::AppType::kRemote,
+      apps::AppType::kBorealis,
+      apps::AppType::kSystemWeb,
+      apps::AppType::kExtension};
 
   for (auto app_type_in : kTestAppType) {
     apps::AppType app_type_out;

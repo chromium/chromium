@@ -25,7 +25,7 @@ namespace apps {
 enum class AppTypeName {
   kUnknown = 0,
   kArc = 1,
-  kBuiltIn = 2,
+  // kBuiltIn = 2,  removed
   kCrostini = 3,
   kChromeApp = 4,
   kWeb = 5,
@@ -56,7 +56,7 @@ enum class AppTypeName {
 enum class AppTypeNameV2 {
   kUnknown = 0,
   kArc = 1,
-  kBuiltIn = 2,
+  // kBuiltIn = 2,  removed.
   kCrostini = 3,
   kChromeAppWindow = 4,
   kChromeAppTab = 5,
@@ -89,7 +89,6 @@ extern const int kDurationBuckets;
 extern const int kUsageTimeBuckets;
 
 constexpr char kArcHistogramName[] = "Arc";
-constexpr char kBuiltInHistogramName[] = "BuiltIn";
 constexpr char kCrostiniHistogramName[] = "Crostini";
 constexpr char kChromeAppHistogramName[] = "ChromeApp";
 constexpr char kWebAppHistogramName[] = "WebApp";

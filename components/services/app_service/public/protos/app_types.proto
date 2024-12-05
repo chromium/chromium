@@ -13,7 +13,6 @@ package apps;
 enum ApplicationType {
   APPLICATION_TYPE_UNKNOWN = 0;
   APPLICATION_TYPE_ARC = 1;
-  APPLICATION_TYPE_BUILT_IN = 2;
   APPLICATION_TYPE_CROSTINI = 3;
   APPLICATION_TYPE_CHROME_APP = 4;
   APPLICATION_TYPE_WEB = 5;
@@ -25,7 +24,7 @@ enum ApplicationType {
   APPLICATION_TYPE_EXTENSION = 13;
   APPLICATION_TYPE_BRUSCHETTA = 15;
 
-  reserved 6, 12, 14;
+  reserved 2, 6, 12, 14;
 }
 
 // Describes the app installation source. Should be kept in sync with the one

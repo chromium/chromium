@@ -153,8 +153,7 @@ bool IsAppPinEditable(apps::AppType app_type,
       }
       return false;
     }
-    case apps::AppType::kPluginVm:
-    case apps::AppType::kBuiltIn: {
+    case apps::AppType::kPluginVm: {
       bool show_in_launcher = false;
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->AppRegistryCache()

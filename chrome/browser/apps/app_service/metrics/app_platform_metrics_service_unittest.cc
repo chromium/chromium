@@ -355,14 +355,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kArc, apps::InstallReason::kUser),
         /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kBuiltIn),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kBuiltIn, apps::InstallReason::kSystem),
-        /*count=*/1);
 
     // Should be 4 Borealis apps: The installer + launcher created by the
     // BorealisApps class, plus the two created in this test.

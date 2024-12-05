@@ -123,7 +123,6 @@ constexpr char kPluginVmAppId[] = "pluginVmApp";
 constexpr char kWebAppId[] = "webApp";
 constexpr char kSystemWebAppId[] = "systemWebApp";
 constexpr char kUnknownAppId[] = "unknownApp";
-constexpr char kBuiltInAppId[] = "builtInApp";
 constexpr char kStandaloneBrowserAppId[] = "standaloneBrowserApp";
 constexpr char kRemoteAppId[] = "remoteApp";
 constexpr char kBorealisAppId[] = "borealisApp";
@@ -2391,7 +2390,6 @@ class DlpFilesAppLaunchTest_Unsupported
     DlpFilesAppLaunchTest::SetUp();
 
     CreateAndStoreFakeApp(kUnknownAppId, apps::AppType::kUnknown, kExampleUrl1);
-    CreateAndStoreFakeApp(kBuiltInAppId, apps::AppType::kBuiltIn, kExampleUrl2);
     CreateAndStoreFakeApp(kStandaloneBrowserAppId,
                           apps::AppType::kStandaloneBrowser, kExampleUrl3);
     CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl4);
@@ -2406,7 +2404,6 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
     DlpFilesAppLaunchTest_Unsupported,
     ::testing::Values(std::make_tuple(apps::AppType::kUnknown, kUnknownAppId),
-                      std::make_tuple(apps::AppType::kBuiltIn, kBuiltInAppId),
                       std::make_tuple(apps::AppType::kStandaloneBrowser,
                                       kStandaloneBrowserAppId),
                       std::make_tuple(apps::AppType::kRemote, kRemoteAppId),

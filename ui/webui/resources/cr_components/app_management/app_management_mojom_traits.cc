@@ -14,8 +14,6 @@ AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
       return AppType::kUnknown;
     case apps::AppType::kArc:
       return AppType::kArc;
-    case apps::AppType::kBuiltIn:
-      return AppType::kBuiltIn;
     case apps::AppType::kCrostini:
       return AppType::kCrostini;
     case apps::AppType::kChromeApp:
@@ -47,9 +45,6 @@ bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
       return true;
     case AppType::kArc:
       *output = apps::AppType::kArc;
-      return true;
-    case AppType::kBuiltIn:
-      *output = apps::AppType::kBuiltIn;
       return true;
     case AppType::kCrostini:
       *output = apps::AppType::kCrostini;

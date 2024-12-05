@@ -51,7 +51,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Arc" summary="Android apps"/>
   <variant name="Borealis" summary="Borealis apps"/>
   <variant name="Bruschetta" summary="Bruschetta apps"/>
-  <variant name="BuiltIn" summary="BuiltIn apps"/>
   <variant name="ChromeApp" summary="Chrome apps"/>
   <variant name="ChromeBrowser" summary="Chrome browsers"/>
   <variant name="Crostini" summary="Crostini apps"/>
@@ -67,7 +66,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Arc" summary="Android apps"/>
   <variant name="Borealis" summary="Borealis apps"/>
   <variant name="Bruschetta" summary="Bruschetta apps"/>
-  <variant name="BuiltIn" summary="BuiltIn apps"/>
   <variant name="ChromeAppTab" summary="Chrome apps opened in tabs"/>
   <variant name="ChromeAppWindow"
       summary="Chrome apps opened in standalone windows"/>

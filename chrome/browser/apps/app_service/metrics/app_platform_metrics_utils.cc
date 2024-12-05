@@ -50,7 +50,6 @@ namespace {
 constexpr auto kAppTypeNameMap =
     base::MakeFixedFlatMap<std::string_view, apps::AppTypeName>({
         {apps::kArcHistogramName, apps::AppTypeName::kArc},
-        {apps::kBuiltInHistogramName, apps::AppTypeName::kBuiltIn},
         {apps::kCrostiniHistogramName, apps::AppTypeName::kCrostini},
         {apps::kChromeAppHistogramName, apps::AppTypeName::kChromeApp},
         {apps::kWebAppHistogramName, apps::AppTypeName::kWeb},
@@ -245,8 +244,6 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
       return apps::AppTypeName::kUnknown;
     case AppType::kArc:
       return apps::AppTypeName::kArc;
-    case AppType::kBuiltIn:
-      return apps::AppTypeName::kBuiltIn;
     case AppType::kCrostini:
       return apps::AppTypeName::kCrostini;
     case AppType::kChromeApp:
@@ -277,8 +274,6 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return std::string();
     case apps::AppTypeName::kArc:
       return kArcHistogramName;
-    case apps::AppTypeName::kBuiltIn:
-      return kBuiltInHistogramName;
     case apps::AppTypeName::kCrostini:
       return kCrostiniHistogramName;
     case apps::AppTypeName::kChromeApp:
@@ -374,7 +369,6 @@ bool ShouldRecordAppKMForAppId(Profile* profile,
 bool ShouldRecordAppKMForAppTypeName(AppType app_type) {
   switch (app_type) {
     case AppType::kArc:
-    case AppType::kBuiltIn:
     case AppType::kChromeApp:
     case AppType::kWeb:
     case AppType::kSystemWeb:
@@ -425,8 +419,6 @@ AppTypeName GetAppTypeName(Profile* profile,
       return apps::AppTypeName::kUnknown;
     case AppType::kArc:
       return apps::AppTypeName::kArc;
-    case AppType::kBuiltIn:
-      return apps::AppTypeName::kBuiltIn;
     case AppType::kCrostini:
       return apps::AppTypeName::kCrostini;
     case AppType::kChromeApp:

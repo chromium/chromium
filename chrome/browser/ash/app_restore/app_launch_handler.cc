@@ -35,7 +35,6 @@ apps::AppTypeName GetHistogrameAppType(apps::AppType app_type) {
       return apps::AppTypeName::kUnknown;
     case apps::AppType::kArc:
       return apps::AppTypeName::kArc;
-    case apps::AppType::kBuiltIn:
     case apps::AppType::kCrostini:
       return apps::AppTypeName::kUnknown;
     case apps::AppType::kChromeApp:
@@ -173,7 +172,6 @@ void AppLaunchHandler::LaunchApp(apps::AppType app_type,
       // For Lacros, we can't use the AppService launch interface to restore,
       // but call Lacros interface to restore with session restore.
       return;
-    case apps::AppType::kBuiltIn:
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
     case apps::AppType::kUnknown:

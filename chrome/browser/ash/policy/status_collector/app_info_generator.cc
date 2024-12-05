@@ -56,8 +56,6 @@ em::AppInfo::AppType ExtractAppType(const apps::AppType app_type) {
   switch (app_type) {
     case apps::AppType::kArc:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_ARC;
-    case apps::AppType::kBuiltIn:
-      return em::AppInfo::AppType::AppInfo_AppType_TYPE_BUILTIN;
     case apps::AppType::kCrostini:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_CROSTINI;
     case apps::AppType::kPluginVm:

@@ -1920,13 +1920,15 @@ message AppInfo {
   enum AppType {
     TYPE_UNKNOWN = 0;
     TYPE_ARC = 1;         // Android app.
-    TYPE_BUILTIN = 2;     // Built-in app.
+    // TYPE_BUILTIN = 2;  // Built-in app, removed.
     TYPE_CROSTINI = 3;    // Linux (via Crostini) app.
     TYPE_EXTENSION = 4;   // Extension-backed app.
     TYPE_WEB = 5;         // Web app.
     TYPE_PLUGINVM = 6;    // Plugin VM app.
     TYPE_BOREALIS = 7;    // Borealis app.
     TYPE_BRUSCHETTA = 8;  // Bruschetta app.
+
+    reserved 2;
   }
 
   enum Status {

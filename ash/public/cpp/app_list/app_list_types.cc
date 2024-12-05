@@ -41,7 +41,6 @@ const char kBruschettaFolderId[] = "olojmkekngdacpmgcffeipkflkgohcja";
 bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
   switch (result_type) {
     case AppListSearchResultType::kInstalledApp:
-    case AppListSearchResultType::kInternalApp:
     case AppListSearchResultType::kPlayStoreApp:
     case AppListSearchResultType::kPlayStoreReinstallApp:
     case AppListSearchResultType::kArcAppShortcut:
@@ -85,7 +84,6 @@ bool IsZeroStateResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kInstalledApp:
     case AppListSearchResultType::kPlayStoreApp:
     case AppListSearchResultType::kInstantApp:
-    case AppListSearchResultType::kInternalApp:
     case AppListSearchResultType::kOmnibox:
     case AppListSearchResultType::kLauncher:
     case AppListSearchResultType::kAnswerCard:

@@ -7455,9 +7455,6 @@ New install
       <message name="IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is an installed app.">
         <ph name="APP_NAME">$1<ex>Files</ex></ph>, Installed App
       </message>
-      <message name="IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is an internal app.">
-        <ph name="APP_NAME">$1<ex>Camera</ex></ph>, App
-      </message>
       <message name="IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC" desc="Accessibility text to specify a search result is an app recommendation.">
         <ph name="APP_NAME">$1<ex>Instagram</ex></ph>, App recommendation
       </message>

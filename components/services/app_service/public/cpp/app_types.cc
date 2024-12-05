@@ -12,8 +12,6 @@ std::ostream& operator<<(std::ostream& os, AppType v) {
       return os << "AppType::kUnknown";
     case AppType::kArc:
       return os << "AppType::kArc";
-    case AppType::kBuiltIn:
-      return os << "AppType::kBuiltIn";
     case AppType::kCrostini:
       return os << "AppType::kCrostini";
     case AppType::kChromeApp:
@@ -168,8 +166,6 @@ ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type) {
       return ApplicationType::APPLICATION_TYPE_UNKNOWN;
     case AppType::kArc:
       return ApplicationType::APPLICATION_TYPE_ARC;
-    case AppType::kBuiltIn:
-      return ApplicationType::APPLICATION_TYPE_BUILT_IN;
     case AppType::kCrostini:
       return ApplicationType::APPLICATION_TYPE_CROSTINI;
     case AppType::kChromeApp:
@@ -227,7 +223,6 @@ std::optional<PackageType> ConvertAppTypeToPackageType(AppType app_type) {
     case AppType::kBorealis:
       return PackageType::kBorealis;
     case AppType::kBruschetta:
-    case AppType::kBuiltIn:
     case AppType::kCrostini:
     case AppType::kPluginVm:
     case AppType::kStandaloneBrowser:

@@ -506,9 +506,6 @@ TEST_F(
   search_controller_->SetResults(Result::kPlayStoreApp,
                                  std::move(play_store_app_results));
   ExpectIdOrder({"a", "b", "c", "d", "e"});
-  search_controller_->SetResults(Result::kInternalApp,
-                                 std::move(internal_app_results));
-  ExpectIdOrder({"a", "b", "c", "d", "e", "f"});
 }
 
 TEST_F(SearchControllerTest, FirstSearchResultsNotShownInSecondSearch) {

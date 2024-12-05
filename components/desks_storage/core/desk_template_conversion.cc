@@ -841,7 +841,6 @@ std::string GetAppTypeForJson(apps::AppRegistryCache* apps_cache,
     case apps::AppType::kUnknown:
       return kAppTypeUnknown;
 
-    case apps::AppType::kBuiltIn:
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
     case apps::AppType::kRemote:
@@ -1746,7 +1745,6 @@ bool FillApp(const std::string& app_id,
       break;
     }
 
-    case apps::AppType::kBuiltIn:
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
     case apps::AppType::kUnknown:

@@ -58,7 +58,6 @@ constexpr base::TimeDelta kMaxDuration = base::Days(1);
 
 constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
     apps::AppTypeName::kArc,
-    apps::AppTypeName::kBuiltIn,
     apps::AppTypeName::kCrostini,
     apps::AppTypeName::kChromeApp,
     apps::AppTypeName::kWeb,
@@ -82,8 +81,6 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kUnknown;
     case apps::AppType::kArc:
       return apps::AppTypeNameV2::kArc;
-    case apps::AppType::kBuiltIn:
-      return apps::AppTypeNameV2::kBuiltIn;
     case apps::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
     case apps::AppType::kChromeApp:
@@ -130,8 +127,6 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kUnknown;
     case apps::AppType::kArc:
       return apps::AppTypeNameV2::kArc;
-    case apps::AppType::kBuiltIn:
-      return apps::AppTypeNameV2::kBuiltIn;
     case apps::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
     case apps::AppType::kChromeApp:
@@ -231,8 +226,6 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
       return std::string();
     case apps::AppTypeNameV2::kArc:
       return kArcHistogramName;
-    case apps::AppTypeNameV2::kBuiltIn:
-      return kBuiltInHistogramName;
     case apps::AppTypeNameV2::kCrostini:
       return kCrostiniHistogramName;
     case apps::AppTypeNameV2::kChromeAppWindow:
@@ -436,7 +429,6 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
   }
 
   switch (app_type) {
-    case AppType::kBuiltIn:
     case AppType::kChromeApp:
     case AppType::kExtension:
     case AppType::kStandaloneBrowser:
@@ -481,7 +473,6 @@ GURL AppPlatformMetrics::GetURLForApp(Profile* profile,
   switch (app_type) {
     // |app_id| is already hashed for these apps and are of the format
     // app://{app_id}.
-    case AppType::kBuiltIn:
     case AppType::kChromeApp:
     case AppType::kExtension:
     case AppType::kStandaloneBrowser:

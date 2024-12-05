@@ -10,7 +10,6 @@ import "url/mojom/url.mojom";
 enum AppType {
   kUnknown = 0,
   kArc,                   // Android app.
-  kBuiltIn,               // Built-in app.
   kCrostini,              // Linux (via Crostini) app.
   kChromeApp,             // Chrome app.
   kWeb,                   // Web app.

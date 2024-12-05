@@ -39,7 +39,6 @@ std::optional<std::string> GetAppReportingCategoryForType(
   switch (app_type) {
     case ::apps::AppType::kArc:
       return kAppCategoryAndroidApps;
-    case ::apps::AppType::kBuiltIn:
     case ::apps::AppType::kSystemWeb:
       return kAppCategorySystemApps;
     case ::apps::AppType::kCrostini:
