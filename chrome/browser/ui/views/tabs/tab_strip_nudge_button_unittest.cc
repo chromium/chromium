@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_organization_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -14,33 +14,31 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-class TabOrganizationButtonTest : public ChromeViewsTestBase {
+class TabStripNudgeButtonTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
-    button_ = std::make_unique<TabOrganizationButton>(
+    button_ = std::make_unique<TabStripNudgeButton>(
         tab_strip_controller_.get(),
-        base::BindRepeating(&TabOrganizationButtonTest::MockButtonCallback,
+        base::BindRepeating(&TabStripNudgeButtonTest::MockButtonCallback,
                             base::Unretained(this)),
-        base::BindRepeating(&TabOrganizationButtonTest::MockButtonCallback,
+        base::BindRepeating(&TabStripNudgeButtonTest::MockButtonCallback,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
-        l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE),
-        l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE),
         kAutoTabGroupButtonElementId, Edge::kRight);
   }
 
   void MockButtonCallback() { button_callback_count_++; }
 
  protected:
-  std::unique_ptr<TabOrganizationButton> button_;
+  std::unique_ptr<TabStripNudgeButton> button_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
   int button_callback_count_ = 0;
 };
 
-TEST_F(TabOrganizationButtonTest, AppliesWidthFactor) {
+TEST_F(TabStripNudgeButtonTest, AppliesWidthFactor) {
   ASSERT_EQ(0, button_->width_factor_for_testing());
   ASSERT_EQ(0, button_->CalculatePreferredSize({}).width());
 

@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_organization_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -21,20 +21,18 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-constexpr int kTabOrganizeCornerRadius = 10;
-constexpr int kTabOrganizeFlatCornerRadius = 4;
-constexpr int kTabOrganizeLabelMargin = 10;
-constexpr int kTabOrganizeCloseButtonMargin = 8;
-constexpr int kTabOrganizeCloseButtonSize = 16;
+constexpr int kTabStripNudgeCornerRadius = 10;
+constexpr int kTabStripNudgeFlatCornerRadius = 4;
+constexpr int kTabStripNudgeLabelMargin = 10;
+constexpr int kTabStripNudgeCloseButtonMargin = 8;
+constexpr int kTabStripNudgeCloseButtonSize = 16;
 }  // namespace
 
-TabOrganizationButton::TabOrganizationButton(
+TabStripNudgeButton::TabStripNudgeButton(
     TabStripController* tab_strip_controller,
     PressedCallback pressed_callback,
     PressedCallback close_pressed_callback,
     const std::u16string& label_text,
-    const std::u16string& tooltip_text,
-    const std::u16string& accessibility_name,
     const ui::ElementIdentifier& element_identifier,
     Edge flat_edge)
     : TabStripControlButton(tab_strip_controller,
@@ -49,13 +47,11 @@ TabOrganizationButton::TabOrganizationButton(
 
   SetProperty(views::kElementIdentifierKey, element_identifier);
 
-  SetTooltipText(tooltip_text);
-  GetViewAccessibility().SetName(accessibility_name);
   SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
   label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
 
   const gfx::Insets label_margin =
-      gfx::Insets().set_left(kTabOrganizeLabelMargin);
+      gfx::Insets().set_left(kTabStripNudgeLabelMargin);
   label()->SetProperty(views::kMarginsKey, label_margin);
 
   SetForegroundFrameActiveColorId(kColorTabSearchButtonCRForegroundFrameActive);
@@ -72,19 +68,19 @@ TabOrganizationButton::TabOrganizationButton(
   UpdateColors();
 }
 
-TabOrganizationButton::~TabOrganizationButton() = default;
+TabStripNudgeButton::~TabStripNudgeButton() = default;
 
-void TabOrganizationButton::SetOpacity(float factor) {
+void TabStripNudgeButton::SetOpacity(float factor) {
   label()->layer()->SetOpacity(factor);
   close_button_->layer()->SetOpacity(factor);
 }
 
-void TabOrganizationButton::SetWidthFactor(float factor) {
+void TabStripNudgeButton::SetWidthFactor(float factor) {
   width_factor_ = factor;
   PreferredSizeChanged();
 }
 
-gfx::Size TabOrganizationButton::CalculatePreferredSize(
+gfx::Size TabStripNudgeButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int full_width =
       GetLayoutManager()->GetPreferredSize(this, available_size).width();
@@ -95,15 +91,15 @@ gfx::Size TabOrganizationButton::CalculatePreferredSize(
   return gfx::Size(width, height);
 }
 
-int TabOrganizationButton::GetCornerRadius() const {
-  return kTabOrganizeCornerRadius;
+int TabStripNudgeButton::GetCornerRadius() const {
+  return kTabStripNudgeCornerRadius;
 }
 
-int TabOrganizationButton::GetFlatCornerRadius() const {
-  return kTabOrganizeFlatCornerRadius;
+int TabStripNudgeButton::GetFlatCornerRadius() const {
+  return kTabStripNudgeFlatCornerRadius;
 }
 
-void TabOrganizationButton::SetCloseButton(PressedCallback pressed_callback) {
+void TabStripNudgeButton::SetCloseButton(PressedCallback pressed_callback) {
   auto close_button =
       std::make_unique<views::LabelButton>(std::move(pressed_callback));
   close_button->SetTooltipText(
@@ -112,7 +108,7 @@ void TabOrganizationButton::SetCloseButton(PressedCallback pressed_callback) {
   const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
       vector_icons::kCloseChromeRefreshIcon,
       kColorTabSearchButtonCRForegroundFrameActive,
-      kTabOrganizeCloseButtonSize);
+      kTabStripNudgeCloseButtonSize);
 
   close_button->SetImageModel(views::Button::STATE_NORMAL, icon_image_model);
   close_button->SetImageModel(views::Button::STATE_HOVERED, icon_image_model);
@@ -134,15 +130,15 @@ void TabOrganizationButton::SetCloseButton(PressedCallback pressed_callback) {
                                          std::move(ink_drop_highlight_path));
 
   close_button->SetPreferredSize(
-      gfx::Size(kTabOrganizeCloseButtonSize, kTabOrganizeCloseButtonSize));
+      gfx::Size(kTabStripNudgeCloseButtonSize, kTabStripNudgeCloseButtonSize));
   close_button->SetBorder(nullptr);
 
   const gfx::Insets margin = gfx::Insets().set_left_right(
-      kTabOrganizeCloseButtonMargin, kTabOrganizeCloseButtonMargin);
+      kTabStripNudgeCloseButtonMargin, kTabStripNudgeCloseButtonMargin);
   close_button->SetProperty(views::kMarginsKey, margin);
 
   close_button_ = AddChildView(std::move(close_button));
 }
 
-BEGIN_METADATA(TabOrganizationButton)
+BEGIN_METADATA(TabStripNudgeButton)
 END_METADATA
