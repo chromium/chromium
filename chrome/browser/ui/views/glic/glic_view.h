@@ -45,7 +45,7 @@ class GlicView : public views::View {
   // views::View
   void AddedToWidget() override;
 
-  void DragFromPoint(gfx::Vector2d mousePoint);
+  void DragFromPoint(gfx::Vector2d mouse_location);
 
   views::WebView* web_view() { return web_view_; }
 
@@ -60,6 +60,10 @@ class GlicView : public views::View {
   // it is visible, and nor is the browser process.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+
+  // If the mouse is in snapping distance of a browser's glic button, it snaps
+  // glic to the top right of the browser's glic button.
+  void SnapToBrowserIfInBounds(gfx::Vector2d mouse_location);
 };
 
 }  // namespace glic
