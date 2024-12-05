@@ -597,8 +597,95 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
     const AddressDataManager& address_data_manager,
     const std::u16string& field_contents) {
-  // TODO(crbug.com/381994105): Implement.
-  return {Suggestion(SuggestionType::kAddressEntryOnTyping)};
+  // Get the profiles to suggest, which are already sorted by relevance.
+  std::vector<const AutofillProfile*> profiles =
+      address_data_manager.GetProfilesToSuggest();
+  if (profiles.empty()) {
+    return {};
+  }
+  const AutofillProfile& profile = *profiles[0];
+
+  // The minimum number of characters a user needs to type to maybe see a
+  // suggestion.
+  static constexpr size_t kMinNumberCharactersToMatch = 3;
+  // Field types that are made of numbers will use
+  // `kMinNumberCharactersToMatchForNumberTypes`. The hypothesis is that when
+  // two digts of a number are matching, it is likely that the user wants to use
+  // profile data. For example, a user whose name is Bruno Mars, where 2
+  // matching characters is used, could be matched with: Brazil, Brief, Break
+  // etc. On the other hand, assuming their phone number is 563 245 123, there
+  // are fewer scenarios where they would type 56 and finish with something
+  // different than their phone number.
+  static constexpr size_t kMinNumberCharactersToMatchForNumberTypes = 2;
+  // This defines the maximum number of characters typed until suggestions are
+  // no longer displayed.
+  static constexpr size_t kMaxNumberCharactersToMatch = 10;
+  // Field types we are interested in showing suggestions for.
+  // TODO(crbug.com/381994105): Add a finch parameter to easily experiment with
+  // adding and removing field types.
+  static constexpr FieldTypeSet kTypes = {NAME_FIRST,
+                                          NAME_FULL,
+                                          NAME_LAST,
+                                          COMPANY_NAME,
+                                          ADDRESS_HOME_LINE1,
+                                          ADDRESS_HOME_STREET_ADDRESS,
+                                          ADDRESS_HOME_CITY,
+                                          ADDRESS_HOME_STATE,
+                                          ADDRESS_HOME_COUNTRY,
+                                          ADDRESS_HOME_STREET_NAME,
+                                          EMAIL_ADDRESS,
+                                          PHONE_HOME_WHOLE_NUMBER,
+                                          PHONE_HOME_CITY_AND_NUMBER,
+                                          ADDRESS_HOME_ZIP};
+  static constexpr FieldTypeSet kNumberTypes = {
+      PHONE_HOME_CITY_AND_NUMBER, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_ZIP};
+
+  std::vector<Suggestion> suggestions;
+  std::set<std::u16string> suggestions_text;
+  for (FieldType type : kTypes) {
+    const size_t effective_num_characters_to_match =
+        kNumberTypes.contains(type) ? kMinNumberCharactersToMatchForNumberTypes
+                                    : kMinNumberCharactersToMatch;
+
+    const std::u16string normalized_field_contents =
+        NormalizeForComparisonForType(field_contents, type);
+    if (normalized_field_contents.size() < effective_num_characters_to_match) {
+      // Sometimes normalizing the string makes it shorter because of trimming
+      // spaces.
+      continue;
+    }
+
+    if (normalized_field_contents.size() > kMaxNumberCharactersToMatch) {
+      continue;
+    }
+
+    std::u16string suggestion_text =
+        profile.GetInfo(type, address_data_manager.app_locale());
+    const std::u16string profile_data =
+        NormalizeForComparisonForType(suggestion_text, type);
+
+    if (profile_data.empty()) {
+      continue;
+    }
+
+    if (!IsValidAddressSuggestionForFieldContents(
+            profile_data, normalized_field_contents, type)) {
+      continue;
+    }
+
+    // Do not allow duplicated suggestions, for example if
+    // `ADDRESS_HOME_LINE1` and
+    // `ADDRESS_HOME_STREET_ADDRESS` hold the same data.
+    if (!suggestions_text.contains(suggestion_text)) {
+      suggestions.emplace_back(SuggestionType::kAddressEntryOnTyping);
+      suggestions.back().main_text = Suggestion::Text(suggestion_text);
+      suggestions.back().field_by_field_filling_type_used = type;
+      suggestions.back().payload =
+          Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));
+      suggestions_text.insert(suggestion_text);
+    }
+  }
+  return suggestions;
 }
 
 std::vector<Suggestion> GetSuggestionsForProfiles(

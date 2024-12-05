@@ -7408,9 +7408,16 @@ TEST_F(BrowserAutofillManagerTest,
        AddressSuggestionOnTyping_ShownWhenNoOtherSuggestionExists) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillAddressSuggestionsOnTyping};
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  const std::u16string address_home_line1 = u"sherman wallaby 42 sidney";
+  profile.SetInfo(ADDRESS_HOME_LINE1, address_home_line1, "en-US");
+  personal_data().test_address_data_manager().ClearProfiles();
+  personal_data().test_address_data_manager().AddProfile(profile);
+
   FormData form;
   form.set_name(u"NothingSpecial");
-  form.set_fields({CreateTestFormField("Something", "something", "",
+  // Note the value is the first 3 characters of the `ADDRESS_HOME_LINE1` value.
+  form.set_fields({CreateTestFormField("Something", "something", "she",
                                        FormControlType::kInputText)});
   // Autocomplete suggestions (and all others for that matter) should be empty
   // in order to `SuggestionType::kAddressEntryOnTyping` to exist.
@@ -7422,7 +7429,8 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   EXPECT_THAT(
       external_delegate()->suggestions(),
-      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping)));
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                   address_home_line1, /*is_primary=*/false)));
 }
 
 class BrowserAutofillManagerPlusAddressTest
