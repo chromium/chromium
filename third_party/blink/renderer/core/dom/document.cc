@@ -9093,6 +9093,13 @@ void Document::ClearUseCounterForTesting(mojom::WebFeature feature) {
     loader->GetUseCounter().ClearMeasurementForTesting(feature);
 }
 
+void Document::ClearWebDXFeatureCounterForTesting(
+    mojom::blink::WebDXFeature feature) {
+  if (DocumentLoader* loader = Loader()) {
+    loader->GetUseCounter().ClearMeasurementForTesting(feature);
+  }
+}
+
 void Document::RenderBlockingResourceUnblocked() {
   // Only HTML documents can ever be render-blocked by external resources.
   // https://html.spec.whatwg.org/#allows-adding-render-blocking-elements

@@ -1925,6 +1925,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // NOTE: only for use in testing.
   bool IsAnimatedPropertyCounted(CSSPropertyID property) const;
   void ClearUseCounterForTesting(mojom::WebFeature);
+  void ClearWebDXFeatureCounterForTesting(mojom::blink::WebDXFeature);
 
   void UpdateForcedColors();
   bool InForcedColorsMode() const;

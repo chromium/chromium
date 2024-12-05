@@ -407,11 +407,17 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   if (flags & static_cast<Flags>(Flag::kGlyphRelative)) {
     builder.SetHasGlyphRelativeUnits();
   }
-  if (flags & static_cast<Flags>(Flag::kStaticViewport)) {
+  if (flags & (static_cast<Flags>(Flag::kViewport) |
+               static_cast<Flags>(Flag::kSmallLargeViewport))) {
     builder.SetHasStaticViewportUnits();
   }
   if (flags & static_cast<Flags>(Flag::kDynamicViewport)) {
     builder.SetHasDynamicViewportUnits();
+  }
+  if (flags & (static_cast<Flags>(Flag::kDynamicViewport) |
+               static_cast<Flags>(Flag::kSmallLargeViewport))) {
+    UseCounter::CountWebDXFeature(state.GetDocument(),
+                                  WebDXFeature::kViewportUnitVariants);
   }
   if (flags & static_cast<Flags>(Flag::kContainerRelative)) {
     builder.SetDependsOnSizeContainerQueries(true);

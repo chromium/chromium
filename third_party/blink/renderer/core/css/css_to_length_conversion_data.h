@@ -283,39 +283,41 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     // ex, ch, ic, lh, cap, rcap
     kGlyphRelative = 1u << 2,
     // rex, rch, ric have both kRootFontRelative and kGlyphRelative
-    // sv*, lv*, v*
-    kStaticViewport = 1u << 3,
+    // v*
+    kViewport = 1u << 3,
+    // sv*, lv*
+    kSmallLargeViewport = 1u << 4,
     // dv*
-    kDynamicViewport = 1u << 4,
+    kDynamicViewport = 1u << 5,
     // cq*
-    kContainerRelative = 1u << 5,
+    kContainerRelative = 1u << 6,
     // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
-    kTreeScopedReference = 1u << 6,
+    kTreeScopedReference = 1u << 7,
     // vi, vb, cqi, cqb, etc
-    kLogicalDirectionRelative = 1u << 7,
+    kLogicalDirectionRelative = 1u << 8,
     // anchor(), anchor-size()
     // https://drafts.csswg.org/css-anchor-position-1
-    kAnchorRelative = 1u << 8,
+    kAnchorRelative = 1u << 9,
     // cap
-    kCapRelative = 1u << 9,
+    kCapRelative = 1u << 10,
     // rcap
-    kRcapRelative = 1u << 10,
+    kRcapRelative = 1u << 11,
     // ic
-    kIcRelative = 1u << 11,
+    kIcRelative = 1u << 12,
     // ric
-    kRicRelative = 1u << 12,
+    kRicRelative = 1u << 13,
     // lh
-    kLhRelative = 1u << 13,
+    kLhRelative = 1u << 14,
     // rlh
-    kRlhRelative = 1u << 14,
+    kRlhRelative = 1u << 15,
     // ch
-    kChRelative = 1u << 15,
+    kChRelative = 1u << 16,
     // rch
-    kRchRelative = 1u << 16,
+    kRchRelative = 1u << 17,
     // rex
-    kRexRelative = 1u << 17,
+    kRexRelative = 1u << 18,
     // sibling-index(), sibling-count()
-    kSiblingRelative = 1u << 18,
+    kSiblingRelative = 1u << 19,
     // Adjust the Flags type above if adding more bits below.
   };
 

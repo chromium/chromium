@@ -122,9 +122,18 @@ class StyleEngineTest : public PageTestBase {
     return GetDocument().IsUseCounted(feature);
   }
 
+  bool IsWebDXFeatureCounted(mojom::blink::WebDXFeature feature) {
+    return GetDocument().IsWebDXFeatureCounted(feature);
+  }
+
   void ClearUseCounter(mojom::WebFeature feature) {
     GetDocument().ClearUseCounterForTesting(feature);
     DCHECK(!IsUseCounted(feature));
+  }
+
+  void ClearWebDXFeatureCounter(mojom::blink::WebDXFeature feature) {
+    GetDocument().ClearWebDXFeatureCounterForTesting(feature);
+    DCHECK(!IsWebDXFeatureCounted(feature));
   }
 
   String GetListMarkerText(LayoutObject* list_item) {
@@ -171,6 +180,17 @@ void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
   GetStyleEngine().ApplyRuleSetInvalidationForTreeScope(
       tree_scope, tree_scope.RootNode(), selector_filter, style_scope_frame,
       rule_sets, /*changed_rule_flags=*/0);
+}
+
+TEST_F(StyleEngineTest, ClearWebDXFeatureCounter) {
+  // Chosen arbitrarily.
+  WebDXFeature feature = WebDXFeature::kViewportUnitVariants;
+
+  EXPECT_FALSE(IsWebDXFeatureCounted(feature));
+  GetDocument().CountWebDXFeature(feature);
+  EXPECT_TRUE(IsWebDXFeatureCounted(feature));
+  ClearWebDXFeatureCounter(feature);
+  EXPECT_FALSE(IsWebDXFeatureCounted(feature));
 }
 
 TEST_F(StyleEngineTest, DocumentDirtyAfterInject) {
@@ -3977,6 +3997,37 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQuery) {
     document.DynamicViewportUnitsChanged();
     EXPECT_TRUE(document.GetStyleEngine().NeedsActiveStyleUpdate());
   }
+}
+
+TEST_F(StyleEngineTest, ViewportUnitVariantsUseCounter) {
+  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10vh; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10vi; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10vmax; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10svh; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10lvi; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10dvmax; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
 }
 
 TEST_F(StyleEngineTest, MediaQueriesChangeDisplayState) {
