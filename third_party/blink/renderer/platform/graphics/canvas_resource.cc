@@ -925,7 +925,7 @@ bool ExternalCanvasResource::
       transferable_resource_.resource_source);
   out_resource->color_space = transferable_resource_.color_space;
   out_resource->hdr_metadata = transferable_resource_.hdr_metadata;
-  out_resource->origin = transferable_resource_.origin;
+  out_resource->origin = client_si_->surface_origin();
 
   return true;
 }
