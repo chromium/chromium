@@ -11,7 +11,6 @@
 #include <utility>
 #include <variant>
 
-#include "ash/constants/ash_pref_names.h"
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
@@ -55,6 +54,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -194,16 +194,23 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
-  key_distribution_info_observation_.Observe(
-      IwaKeyDistributionInfoProvider::GetInstance());
-
   CHECK(on_started_callback_.is_null());
   if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
-    if (!on_started_callback.is_null()) {
-      std::move(on_started_callback).Run();
-    }
+    std::move(on_started_callback).Run();
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::IsManagedGuestSession() &&
+      !base::FeatureList::IsEnabled(
+          features::kIsolatedWebAppManagedGuestSessionInstall)) {
+    std::move(on_started_callback).Run();
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  key_distribution_info_observation_.Observe(
+      IwaKeyDistributionInfoProvider::GetInstance());
 
   on_started_callback_ = std::move(on_started_callback);
 
@@ -268,26 +275,6 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
 
   policy_is_being_processed_ = true;
   current_process_log_ = std::move(process_log);
-
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
-    current_process_log_.Set(
-        "error",
-        "policy is ignored because isolated web apps are not enabled.");
-    OnPolicyProcessed();
-    std::move(finished_closure).Run();
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::IsManagedGuestSession() &&
-      !base::FeatureList::IsEnabled(
-          features::kIsolatedWebAppManagedGuestSessionInstall)) {
-    current_process_log_.Set(
-        "error", "IWA installation in managed guest sessions is disabled.");
-    OnPolicyProcessed();
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   provider_->scheduler().ScheduleCallback<AllAppsLock>(
       "IsolatedWebAppPolicyManager::ProcessPolicy", AllAppsLockDescription(),
