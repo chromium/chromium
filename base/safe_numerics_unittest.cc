@@ -1434,12 +1434,6 @@ TEST(SafeNumerics, CastTests) {
   EXPECT_FALSE(IsValueNegative(numeric_limits<unsigned>::max()));
   EXPECT_FALSE(IsValueNegative(numeric_limits<double>::max()));
 
-  // These casts and coercions will fail to compile:
-  // EXPECT_EQ(0, strict_cast<int>(static_cast<size_t>(0)));
-  // EXPECT_EQ(0, strict_cast<size_t>(static_cast<int>(0)));
-  // EXPECT_EQ(1ULL, StrictNumeric<size_t>(1));
-  // EXPECT_EQ(1, StrictNumeric<size_t>(1U));
-
   // Test various saturation corner cases.
   EXPECT_EQ(saturated_cast<int>(small_negative),
             static_cast<int>(small_negative));

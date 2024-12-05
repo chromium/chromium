@@ -4243,6 +4243,7 @@ if (enable_nocompile_tests) {
       "no_destructor_nocompile.nc",
       "observer_list_nocompile.nc",
       "run_loop_nocompile.nc",
+      "safe_numerics_nocompile.nc",
       "sequence_checker_nocompile.nc",
       "strings/cstring_view_nocompile.nc",
       "strings/stringprintf_nocompile.nc",
