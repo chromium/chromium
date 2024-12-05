@@ -136,7 +136,7 @@ void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
   const std::string app_id =
       web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, install_url);
   apps_.push_back(std::make_unique<WebKioskAppData>(
-      this, app_id, account_id, install_url, /*title*/ std::string(),
+      *this, app_id, account_id, install_url, /*title*/ std::string(),
       /*icon_url*/ GURL()));
   NotifyKioskAppsChanged();
 }
@@ -189,7 +189,7 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
       old_apps.erase(old_it);
     } else {
       apps_.push_back(std::make_unique<WebKioskAppData>(
-          this, app_id, account_id, std::move(url), title,
+          *this, app_id, account_id, std::move(url), title,
           std::move(icon_url)));
       apps_.back()->LoadFromCache();
     }

@@ -165,7 +165,7 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 };
 
-WebKioskAppData::WebKioskAppData(KioskAppDataDelegate* delegate,
+WebKioskAppData::WebKioskAppData(KioskAppDataDelegate& delegate,
                                  const std::string& app_id,
                                  const AccountId& account_id,
                                  const GURL url,
@@ -250,17 +250,12 @@ void WebKioskAppData::UpdateAppInfo(const std::string& title,
                                     const web_app::IconBitmaps& icon_bitmaps) {
   name_ = title;
 
-  base::FilePath cache_dir;
-  if (delegate_) {
-    cache_dir = delegate_->GetKioskAppIconCacheDir();
-  }
-
   auto it = icon_bitmaps.any.find(kIconSize);
   if (it != icon_bitmaps.any.end()) {
     const SkBitmap& bitmap = it->second;
     icon_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     icon_.MakeThreadSafe();
-    SaveIcon(bitmap, cache_dir);
+    SaveIcon(bitmap, delegate_->GetKioskAppIconCacheDir());
   }
 
   PrefService* local_state = g_browser_process->local_state();
@@ -287,7 +282,7 @@ void WebKioskAppData::SetStatus(Status status, bool notify) {
     std::move(on_loaded_closure_for_testing_).Run();
   }
 
-  if (delegate_ && notify) {
+  if (notify) {
     delegate_->OnKioskAppDataChanged(app_id());
   }
 }
@@ -328,12 +323,7 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
     return;
   }
 
-  base::FilePath cache_dir;
-  if (delegate_) {
-    cache_dir = delegate_->GetKioskAppIconCacheDir();
-  }
-
-  SaveIcon(icon, cache_dir);
+  SaveIcon(icon, delegate_->GetKioskAppIconCacheDir());
 
   PrefService* local_state = g_browser_process->local_state();
   ScopedDictPrefUpdate dict_update(local_state, dictionary_name());

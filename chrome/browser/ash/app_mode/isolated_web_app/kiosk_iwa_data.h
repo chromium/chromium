@@ -67,7 +67,7 @@ class KioskIwaData : public KioskAppDataBase {
  private:
   const web_app::IsolatedWebAppUrlInfo iwa_info_;
   const GURL update_manifest_url_;
-  base::raw_ref<KioskAppDataDelegate> delegate_;  // not owned.
+  const raw_ref<KioskAppDataDelegate> delegate_;
 
   base::WeakPtrFactory<KioskIwaData> weak_ptr_factory_{this};
 };

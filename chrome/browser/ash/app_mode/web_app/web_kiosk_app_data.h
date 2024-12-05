@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
@@ -40,7 +40,7 @@ class WebKioskAppData : public KioskAppDataBase {
                  // without them.
   };
 
-  WebKioskAppData(KioskAppDataDelegate* delegate,
+  WebKioskAppData(KioskAppDataDelegate& delegate,
                   const std::string& app_id,
                   const AccountId& account_id,
                   const GURL url,
@@ -86,7 +86,7 @@ class WebKioskAppData : public KioskAppDataBase {
   // session.
   GURL GetLastIconUrl(const base::Value::Dict& dict) const;
 
-  raw_ptr<KioskAppDataDelegate> delegate_;  // not owned.
+  const raw_ref<KioskAppDataDelegate> delegate_;
   Status status_;
   const GURL install_url_;  // installation url.
   GURL launch_url_;         // app launch url.
