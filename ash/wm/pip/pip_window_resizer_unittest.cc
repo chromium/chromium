@@ -707,6 +707,22 @@ TEST_P(PipWindowResizerTest, DragDetailsAreDestroyed) {
   EXPECT_EQ(nullptr, window_state->drag_details());
 }
 
+TEST_P(PipWindowResizerTest, PipPinchResizeWithNoMaximumSizeRestrinction) {
+  PreparePipWindow(gfx::Rect(200, 200, 100, 100));
+
+  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+      NonClientFrameViewAsh::Get(window()));
+  // This means there is no maximum size limit.
+  custom_frame->SetMaximumSize(gfx::Size(0, 0));
+  window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
+
+  auto resizer =
+      std::unique_ptr<PipWindowResizer>(CreateResizerForTest(HTCAPTION));
+  ASSERT_TRUE(resizer.get());
+
+  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/0.5f);
+}
+
 // TODO: UpdateDisplay() doesn't support different layouts of multiple displays.
 // We should add some way to try multiple layouts.
 INSTANTIATE_TEST_SUITE_P(All,
