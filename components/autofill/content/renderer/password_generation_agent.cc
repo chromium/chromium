@@ -205,6 +205,12 @@ struct PasswordGenerationAgent::GenerationItemInfo {
   // stats.
   bool password_edited_ = false;
 
+  // True if the user was editing a generated password, left that state by
+  // removing below `kMinimumLengthForEditedPassword` characters, but did not
+  // change focus or delete the password fully (in that case the field should
+  // remain revealed).
+  bool password_revealed_after_editing_ = false;
+
   // True if the generation popup was shown during this navigation. Used to
   // track UMA stats per page visit rather than per display, since the former
   // is more interesting.
@@ -558,6 +564,7 @@ void PasswordGenerationAgent::DidEndTextFieldEditing(
   if (element && current_generation_item_ &&
       element == current_generation_item_->generation_element_) {
     GetPasswordGenerationDriver().GenerationElementLostFocus();
+    current_generation_item_->password_revealed_after_editing_ = false;
     current_generation_item_->generation_element_.SetShouldRevealPassword(
         false);
   }
@@ -570,6 +577,7 @@ void PasswordGenerationAgent::TextFieldCleared(
     if (current_generation_item_->password_is_generated_) {
       PasswordNoLongerGenerated();
     }
+    current_generation_item_->password_revealed_after_editing_ = false;
     current_generation_item_->generation_element_.SetShouldRevealPassword(
         false);
   }
@@ -602,10 +610,17 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     return false;
   }
 
-  if (!current_generation_item_->password_is_generated_ &&
-      element.Value().length() > kMaximumCharsForGenerationOffer) {
-    // User has rejected the feature and has started typing a password.
-    GenerationRejectedByTyping();
+  if (!current_generation_item_->password_is_generated_) {
+    if (element.Value().length() == 0) {
+      MaybeOfferAutomaticGeneration();
+    } else {
+      // User has rejected the feature and has started typing a password.
+      GenerationRejectedByTyping();
+      // If the user is still modifying the field after leaving the editing
+      // state without fully clearing, it should remain revealed.
+      current_generation_item_->generation_element_.SetShouldRevealPassword(
+          current_generation_item_->password_revealed_after_editing_);
+    }
   } else {
     const bool leave_editing_state =
         current_generation_item_->password_is_generated_ &&
@@ -619,6 +634,7 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     if (leave_editing_state) {
       // Tell the browser that the state isn't "editing" anymore. The browser
       // should hide the editing prompt if it wasn't replaced above.
+      current_generation_item_->password_revealed_after_editing_ = true;
       PasswordNoLongerGenerated();
     } else if (current_generation_item_->password_is_generated_) {
       current_generation_item_->password_edited_ = true;
