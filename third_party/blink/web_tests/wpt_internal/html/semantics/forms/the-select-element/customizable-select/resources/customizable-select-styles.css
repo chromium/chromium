@@ -9,15 +9,24 @@
 .customizable-select-popover {
   overflow: auto;
   border: 1px solid;
+  padding: 0;
   color: CanvasText;
   background-color: Canvas;
   margin: 0;
   inset: auto;
   min-inline-size: anchor-size(self-inline);
   min-block-size: 1lh;
-  inset-block-start: anchor(self-end);
-  inset-inline-start: anchor(self-start);
-  padding: 0;
+  position-area: block-end span-inline-end;
+  position-try-fallbacks: block-start span-inline-end,
+    block-end span-inline-start,block-start span-inline-start,
+    --below-right-scrollable;
+}
+
+@position-try --below-right-scrollable {
+  position-area: block-end span-inline-end;
+  height: 100%;
+  overflow: auto;
+  align-self: stretch;
 }
 
 .customizable-select-option {

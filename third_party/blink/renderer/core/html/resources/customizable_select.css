@@ -78,9 +78,16 @@ select:not(:-internal-list-box)::picker(select) {
     /* Then below but span-left. */
     block-end span-inline-start,
     /* Then above and span-left. */
-    block-start span-inline-start;
-  /* TODO(crbug.com/363205525) Add a fallback block that adds scrollbars, for
-     the case that none of the four options above fits in the viewport. */
+    block-start span-inline-start,
+    /* Then just go back to below/right, and add a scrollbar. */
+    --internal-select-below-right-scrollable;
+}
+
+@position-try --internal-select-below-right-scrollable {
+    position-area: block-end span-inline-end;
+    height: 100%;
+    overflow: auto;
+    align-self: stretch;
 }
 
 /* This rule is here to ensure that we can get a ComputedStyle for
