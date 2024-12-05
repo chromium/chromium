@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -121,7 +123,8 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
     cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host()};
+        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host(),
+    };
     model_execution_server_->SetSSLConfig(cert_config);
     model_execution_server_->RegisterRequestHandler(base::BindRepeating(
         &ModelExecutionBrowserTestBase::HandleGetModelExecutionRequest,
@@ -131,10 +134,14 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     // receiving it from model execution.
     model_quality_logs_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    cert_config.dns_names = {
+        GURL(kOptimizationGuideServiceModelQualtiyDefaultURL).host(),
+    };
     model_quality_logs_server_->SetSSLConfig(cert_config);
     model_quality_logs_server_->RegisterRequestHandler(base::BindRepeating(
         &ModelExecutionBrowserTestBase::HandleGetModelQualityLogsUploadRequest,
         base::Unretained(this)));
+    num_logs_requests_ = 0;
 
     ASSERT_TRUE(model_execution_server_->Start());
     ASSERT_TRUE(model_quality_logs_server_->Start());
@@ -246,6 +253,16 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     scoped_metrics_consent_.emplace(consent);
   }
 
+  void WaitForModelQualityLogsUpload(int expected_num_logs_requests) {
+    while (num_logs_requests_ < expected_num_logs_requests) {
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+      run_loop.Run();
+    }
+    EXPECT_EQ(num_logs_requests_, expected_num_logs_requests);
+  }
+
  protected:
   void OnModelExecutionResponse(
       base::OnceClosure on_model_execution_closure,
@@ -334,16 +351,15 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
 
-    // Access token should be set.
-    EXPECT_TRUE(base::Contains(request.headers,
+    // Access token should not be set.
+    EXPECT_FALSE(base::Contains(request.headers,
                                net::HttpRequestHeaders::kAuthorization));
-    EXPECT_EQ(expected_bearer_access_token_,
-              request.headers.at(net::HttpRequestHeaders::kAuthorization));
 
     std::string serialized_response;
     response->set_code(net::HTTP_OK);
     response->set_content(serialized_response);
 
+    num_logs_requests_++;
     return std::move(response);
   }
 
@@ -375,6 +391,9 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
   // The expected authorization header holding the bearer access token.
   std::string expected_bearer_access_token_;
+
+  // The number of requests received by the model quality logs server.
+  std::atomic<int> num_logs_requests_ = 0;
 };
 
 class ModelExecutionDisabledBrowserTest : public ModelExecutionBrowserTestBase {
@@ -515,10 +534,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       ModelExecutionSuccess) {
+                       ModelExecutionSuccess_WithoutMetricsConsent) {
   EnableSignin();
-  // TODO(335033244): Verify if this addresses flakes. If it does, we should
-  // try to understand why the metrics consent is sometimes on for flakes.
   SetMetricsConsent(false);
   SetExpectedBearerAccessToken("Bearer access_token");
 
@@ -535,6 +552,27 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       ModelQualityLogsUploadStatus::kMetricsReportingDisabled, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
+                       ModelExecutionSuccess_WithMetricsConsent) {
+  EnableSignin();
+  SetMetricsConsent(true);
+  SetExpectedBearerAccessToken("Bearer access_token");
+
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("a user typed this");
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
+  EXPECT_TRUE(model_execution_result_.has_value());
+  EXPECT_TRUE(model_execution_result_->response.has_value());
+  auto response = ParsedAnyMetadata<proto::ComposeResponse>(
+      model_execution_result_->response.value());
+  EXPECT_EQ("foo response", response->output());
+
+  WaitForModelQualityLogsUpload(1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
+      ModelQualityLogsUploadStatus::kUploadSuccessful, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
