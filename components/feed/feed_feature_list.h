@@ -135,6 +135,10 @@ BASE_DECLARE_FEATURE(kWebFeedKillSwitch);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedLowMemoryImprovement);
 
+// Feature that unmount RecyclerBinder on view detach to fix a memory leak.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedRecyclerBinderUnmountOnDetach);
+
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsWebFeedEnabledForLocale(const std::string& country);
 
