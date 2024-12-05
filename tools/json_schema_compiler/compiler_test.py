@@ -3,11 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import compiler
 import json_schema
 import unittest
 
 
-class JsonSchemaUnittest(unittest.TestCase):
+class CompilerUnittest(unittest.TestCase):
 
   def testNocompile(self):
     compiled = [{
@@ -64,8 +65,8 @@ class JsonSchemaUnittest(unittest.TestCase):
         }
     }]
 
-    schema = json_schema.CachedLoad('test/json_schema_test.json')
-    self.assertEqual(compiled, json_schema.DeleteNodes(schema, 'nocompile'))
+    schema = json_schema.CachedLoad('test/compiler_test.json')
+    self.assertEqual(compiled, compiler.DeleteNodes(schema, 'nocompile'))
 
     def should_delete(value):
       return isinstance(value, dict) and not value.get('valid', True)
@@ -83,8 +84,8 @@ class JsonSchemaUnittest(unittest.TestCase):
     }, {}, {
         'valid': False
     }]
-    self.assertEqual(expected,
-                     json_schema.DeleteNodes(given, matcher=should_delete))
+    self.assertEqual(expected, compiler.DeleteNodes(given,
+                                                    matcher=should_delete))
 
 
 if __name__ == '__main__':
