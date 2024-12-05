@@ -60,6 +60,9 @@ BASE_DECLARE_FEATURE(kShowKiteForSupervisedUsers);
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Uses supervised user strings on the signout dialog.
+BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
+
 // This hides the following guest mode entry points for supervised users:
 //
 // * In the Profile menu for supervised profiles

@@ -33,6 +33,9 @@ enum class ChromeSignoutConfirmationPromptVariant {
   // proceeding anyway. Dismissing the dialog closes it without any action.
   // Available choices: `kReauth`, `kSignout` and `kDismissed`.
   kUnsyncedDataWithReauthButton,
+  // The user is supervised and parental controls apply to their profile.
+  // Available choices: `kSignout` and `kDismissed`.
+  kProfileWithParentalControls,
 };
 
 // Factory function to create and show the Chrome signout confirmation prompt.
