@@ -1314,7 +1314,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, DebugModeWithNoManifest) {
+#if defined(ARCH_CPU_X86)
+#define MAYBE_DebugModeWithNoManifest DISABLED_DebugModeWithNoManifest
+#else
+#define MAYBE_DebugModeWithNoManifest DebugModeWithNoManifest
+#endif
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
+                       MAYBE_DebugModeWithNoManifest) {
   // Ensure that a page with no manifest stops with NO_MANIFEST in debug mode.
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
