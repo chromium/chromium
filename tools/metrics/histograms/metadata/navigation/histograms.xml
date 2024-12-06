@@ -27,6 +27,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Subframe"/>
 </variants>
 
+<variants name="Initiator">
+  <variant name=".BrowserInitiated" summary="browser initiated"/>
+  <variant name=".RendererInitiated" summary="renderer initiated"/>
+</variants>
+
 <variants name="InitiatorType">
   <variant name="All" summary="any"/>
   <variant name="FromAd" summary="ad-initiated"/>
@@ -1200,17 +1205,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.IsDuplicate" enum="Boolean"
-    expires_after="2025-05-18">
-  <owner>rakina@chromium.org</owner>
-  <owner>chrome-navigation@google.com</owner>
-  <summary>
-    Whether a new navigation is a duplicate of a currently ongoing navigation,
-    where the destination and params are the same. Logged when the new
-    navigation is triggered and about to take the place of the old navigation.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
     expires_after="2025-04-13">
   <owner>alexmos@chromium.org</owner>
@@ -1933,17 +1927,6 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
-<histogram name="Navigation.RendererInitiated.IsDuplicate" enum="Boolean"
-    expires_after="2025-05-18">
-  <owner>rakina@chromium.org</owner>
-  <owner>chrome-navigation@google.com</owner>
-  <summary>
-    Whether a new renderer-initiated navigation is a duplicate of a currently
-    ongoing navigation, where the destination and params are the same. Logged
-    when the new navigation is triggered on the renderer side.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.RendererRunLoopStartToFirstCommitNavigation2.{FrameType}"
     units="ms" expires_after="2025-03-23">
@@ -2603,6 +2586,55 @@ chromium-metrics-reviews@google.com.
     engaged sites data. Recorded whenever a navigation is deferred waiting for
     engaged sites.
   </summary>
+</histogram>
+
+<histogram name="Navigation{Initiator}.DuplicateNavIsUnderThreshold"
+    enum="Boolean" expires_after="2025-05-18">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    When a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same, records whether the
+    difference between the new navigation's start time and the previous
+    navigation's start time is under the threshold defined by
+    kDuplicateNavThreshold (defaults to 2s).
+
+    Logged when the new navigation is triggered and about to take the place of
+    the old navigation.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
+</histogram>
+
+<histogram name="Navigation{Initiator}.DuplicateNavStartTimeDiff" units="ms"
+    expires_after="2025-05-18">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    When a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same, records the difference
+    between the new navigation's start time and the previous navigation's start
+    time.
+
+    Logged when the new navigation is triggered and about to take the place of
+    the old navigation.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
+</histogram>
+
+<histogram name="Navigation{Initiator}.IsDuplicateWithoutThresholdCheck"
+    enum="Boolean" expires_after="2025-05-18">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Whether a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same. This does not do a navigation
+    start threshold check, so this will be true even if the new navigation
+    started a long time after the previous navigation.
+
+    Logged when the new navigation is triggered and about to take the place of
+    the old navigation.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
 </histogram>
 
 <histogram
