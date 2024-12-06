@@ -690,13 +690,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 }
 
 void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
-    SkColor profile_background_color,
-    const ui::ImageModel& profile_image,
-    const std::u16string& title,
-    const std::u16string& subtitle,
-    const std::u16string& button_text,
-    const ui::ImageModel& button_image,
-    const base::RepeatingClosure& action) {
+    IdentitySectionParams params) {
   identity_info_container_->RemoveAllChildViews();
   title_label_ = nullptr;
   subtitle_label_ = nullptr;
@@ -762,22 +756,22 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
 
   // Avatar.
   identity_info_container_->AddChildView(
-      views::Builder<views::View>(
-          std::make_unique<AvatarImageView>(profile_image, ui::ImageModel(),
-                                            this, kIdentityInfoImageSize, 0))
+      views::Builder<views::View>(std::make_unique<AvatarImageView>(
+                                      params.profile_image, ui::ImageModel(),
+                                      this, kIdentityInfoImageSize, 0))
           .SetProperty(views::kMarginsKey,
                        gfx::Insets().set_top(kAvatarTopMargin -
                                              kIdentityContainerBorder))
           .Build());
   // Title.
-  const bool has_subtitle = !subtitle.empty();
-  const bool has_button = !button_text.empty();
+  const bool has_subtitle = !params.subtitle.empty();
+  const bool has_button = !params.button_text.empty();
   const int title_bottom_margin =
       has_subtitle ? kTitleBottomMargin
                    : kBottomMarginWhenNoButton - kIdentityContainerBorder;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
-          .SetText(title)
+          .SetText(params.title)
           .CopyAddressTo(&title_label_)
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
@@ -797,7 +791,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                  : kBottomMarginWhenNoButton - kIdentityContainerBorder;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
-          .SetText(subtitle)
+          .SetText(params.subtitle)
           .CopyAddressTo(&subtitle_label_)
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetTextStyle(views::style::STYLE_BODY_4)
@@ -814,15 +808,15 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // Button.
   identity_info_container_->AddChildView(
       views::Builder<views::MdTextButton>()
-          .SetText(button_text)
+          .SetText(params.button_text)
           .SetCallback(base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                                            base::Unretained(this),
-                                           std::move(action)))
+                                           std::move(params.button_action)))
           .SetStyle(ui::ButtonStyle::kProminent)
           .SetProperty(views::kMarginsKey,
                        gfx::Insets().set_bottom(kButtonBottomMargin -
                                                 kIdentityContainerBorder))
-          .SetImageModel(views::Button::STATE_NORMAL, button_image)
+          .SetImageModel(views::Button::STATE_NORMAL, params.button_image)
           .Build());
 }
 
