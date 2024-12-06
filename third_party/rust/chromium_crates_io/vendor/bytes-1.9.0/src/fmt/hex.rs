@@ -21,17 +21,7 @@ impl UpperHex for BytesRef<'_> {
     }
 }
 
-macro_rules! hex_impl {
-    ($tr:ident, $ty:ty) => {
-        impl $tr for $ty {
-            fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-                $tr::fmt(&BytesRef(self.as_ref()), f)
-            }
-        }
-    };
-}
-
-hex_impl!(LowerHex, Bytes);
-hex_impl!(LowerHex, BytesMut);
-hex_impl!(UpperHex, Bytes);
-hex_impl!(UpperHex, BytesMut);
+fmt_impl!(LowerHex, Bytes);
+fmt_impl!(LowerHex, BytesMut);
+fmt_impl!(UpperHex, Bytes);
+fmt_impl!(UpperHex, BytesMut);

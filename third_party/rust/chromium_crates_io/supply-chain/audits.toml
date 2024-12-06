@@ -492,6 +492,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.7.2 -> 1.8.0"
 notes = "smol change, does not add unsafe code, majority of change is new tests"
 
+[[audits.bytes]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.8.0 -> 1.9.0"
+notes = "Reviewed in https://crrev.com/c/6072366."
+
 [[audits.cfg-if]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

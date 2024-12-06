@@ -36,14 +36,5 @@ impl Debug for BytesRef<'_> {
     }
 }
 
-impl Debug for Bytes {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        Debug::fmt(&BytesRef(self.as_ref()), f)
-    }
-}
-
-impl Debug for BytesMut {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        Debug::fmt(&BytesRef(self.as_ref()), f)
-    }
-}
+fmt_impl!(Debug, Bytes);
+fmt_impl!(Debug, BytesMut);

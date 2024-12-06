@@ -1,3 +1,18 @@
+# 1.9.0 (November 27, 2024)
+
+### Added
+
+- Add `Bytes::from_owner` to enable externally-allocated memory (#742)
+
+### Documented
+
+- Fix typo in Buf::chunk() comment (#744)
+
+### Internal changes
+
+- Replace BufMut::put with BufMut::put_slice in Writer impl (#745)
+- Rename hex_impl! to fmt_impl! and reuse it for fmt::Debug (#743)
+
 # 1.8.0 (October 21, 2024)
 
 - Guarantee address in `split_off`/`split_to` for empty slices (#740)
@@ -14,7 +29,7 @@
 
 ### Internal changes
 
-- Ensure BytesMut::advance reduces capacity (#728) 
+- Ensure BytesMut::advance reduces capacity (#728)
 
 # 1.7.1 (August 1, 2024)
 
