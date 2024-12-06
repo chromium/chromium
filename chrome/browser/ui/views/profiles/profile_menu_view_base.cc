@@ -115,9 +115,6 @@ constexpr int kMenuEdgeMargin = 16;
 
 constexpr int kSyncInfoRefreshInsidePadding = 16;
 
-// Thickness of the border of the identity container, used for rounded corners.
-constexpr int kIdentityContainerBorder = 16;
-
 // The bottom background edge should match the center of the identity image.
 constexpr auto kBackgroundInsets =
     gfx::Insets::TLBR(0, 0, kHalfOfAvatarImageViewSize, 0);
@@ -691,40 +688,9 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
 void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
     IdentitySectionParams params) {
-  identity_info_container_->RemoveAllChildViews();
-  title_label_ = nullptr;
-  subtitle_label_ = nullptr;
-
-  // View structure (with button):
-  // Vertical box layout, with elements centered horizontally.
-  //
-  //  M: Empty space between container and menu edge, kIdentityContainerMargin
-  //  B: Border including the rounded corners, kIdentityContainerBorder
-  //  H: Horizontal padding
-  //
-  //  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-  //  MBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBM
-  //  MBH    kAvatarTopMargin - kIdentityContainerBorder     HBM
-  //  MBH        /---------------------------------\         HBM
-  //  MBH        | Avatar (kIdentityInfoImageSize) |         HBM
-  //  MBH        \---------------------------------/         HBM
-  //  MBH                  kTitleTopMargin                   HBM
-  //  MBH                     /-------\                      HBM
-  //  MBH                     | Title |                      HBM
-  //  MBH                     \-------/                      HBM
-  //  MBH                 kTitleBottomMargin                 HBM
-  //  MBH         /--------------------------------\         HBM
-  //  MBH         | Subtitle (multiline, optional) |         HBM
-  //  MBH         \--------------------------------/         HBM
-  //  MBH          kSubtitleBottomMarginWithButton           HBM
-  //  MBH               /-------------------\                HBM
-  //  MBH               | Button (optional) |                HBM
-  //  MBH               \-------------------/                HBM
-  //  MBH   kButtonBottomMargin - kIdentityContainerBorder   HBM
-  //  MBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBM
-  //  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-
+  // Empty space between the rounded rectangle (outside) and menu edge.
   constexpr int kIdentityContainerMargin = 12;
+
   constexpr int kIdentityContainerHorizontalPadding = 24;
   constexpr int kAvatarTopMargin = 24;
   constexpr int kTitleTopMargin = 8;
@@ -733,17 +699,32 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   constexpr int kSubtitleBottomMarginWithButton = 12;
   constexpr int kButtonBottomMargin = 28;
 
-  static_assert(kIdentityContainerBorder < kAvatarTopMargin);
-  static_assert(kIdentityContainerBorder < kBottomMarginWhenNoButton);
-  static_assert(kIdentityContainerBorder < kButtonBottomMargin);
-  static_assert(kIdentityContainerBorder < kIdentityContainerHorizontalPadding);
+  // Vertical view structure when all elements are present. Square brackets []
+  // represent empty space:
+  //
+  // [kAvatarTopMargin]
+  // Image: Avatar (size: kIdentityInfoImageSize)
+  // [kTitleTopMargin]
+  // Label: Title
+  // [kTitleBottomMargin] (or [kBottomMarginWhenNoButton] if there is no button)
+  // Optional:
+  //     Label: Subtitle (optional)
+  //     [kSubtitleBottomMarginWithButton] (or [kBottomMarginWhenNoButton])
+  // Optional:
+  //     Button: maybe with an image inside
+  //     [kButtonBottomMargin]
+  //
+  // Note: If a button is present, a subtitle must also be present. The layout
+  // does not support a button without subtitle.
+
+  identity_info_container_->RemoveAllChildViews();
+  title_label_ = nullptr;
+  subtitle_label_ = nullptr;
 
   // Vertical BoxLayout.
   auto box_layout =
       CreateBoxLayout(views::BoxLayout::Orientation::kVertical,
-                      views::BoxLayout::CrossAxisAlignment::kCenter,
-                      gfx::Insets::VH(0, kIdentityContainerHorizontalPadding -
-                                             kIdentityContainerBorder));
+                      views::BoxLayout::CrossAxisAlignment::kCenter);
   box_layout->SetCollapseMarginsSpacing(true);
   identity_info_container_->SetLayoutManager(std::move(box_layout));
   identity_info_color_callback_ =
@@ -760,15 +741,14 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                                       params.profile_image, ui::ImageModel(),
                                       this, kIdentityInfoImageSize, 0))
           .SetProperty(views::kMarginsKey,
-                       gfx::Insets().set_top(kAvatarTopMargin -
-                                             kIdentityContainerBorder))
+                       gfx::Insets().set_top(kAvatarTopMargin))
           .Build());
+
   // Title.
   const bool has_subtitle = !params.subtitle.empty();
   const bool has_button = !params.button_text.empty();
   const int title_bottom_margin =
-      has_subtitle ? kTitleBottomMargin
-                   : kBottomMarginWhenNoButton - kIdentityContainerBorder;
+      has_subtitle ? kTitleBottomMargin : kBottomMarginWhenNoButton;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(params.title)
@@ -777,8 +757,10 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
           .SetElideBehavior(gfx::ELIDE_TAIL)
           .SetProperty(views::kMarginsKey,
-                       gfx::Insets().set_top_bottom(kTitleTopMargin,
-                                                    title_bottom_margin))
+                       gfx::Insets::TLBR(kTitleTopMargin,
+                                         kIdentityContainerHorizontalPadding,
+                                         title_bottom_margin,
+                                         kIdentityContainerHorizontalPadding))
           .Build());
   if (!has_subtitle) {
     CHECK(!has_button);
@@ -787,8 +769,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
 
   // Subtitle.
   const int subtitle_bottom_margin =
-      has_button ? kSubtitleBottomMarginWithButton
-                 : kBottomMarginWhenNoButton - kIdentityContainerBorder;
+      has_button ? kSubtitleBottomMarginWithButton : kBottomMarginWhenNoButton;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(params.subtitle)
@@ -798,7 +779,9 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .SetMultiLine(true)
           .SetHandlesTooltips(false)
           .SetProperty(views::kMarginsKey,
-                       gfx::Insets().set_bottom(subtitle_bottom_margin))
+                       gfx::Insets::TLBR(0, kIdentityContainerHorizontalPadding,
+                                         subtitle_bottom_margin,
+                                         kIdentityContainerHorizontalPadding))
           .Build());
 
   if (!has_button) {
@@ -814,8 +797,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                                            std::move(params.button_action)))
           .SetStyle(ui::ButtonStyle::kProminent)
           .SetProperty(views::kMarginsKey,
-                       gfx::Insets().set_bottom(kButtonBottomMargin -
-                                                kIdentityContainerBorder))
+                       gfx::Insets().set_bottom(kButtonBottomMargin))
           .SetImageModel(views::Button::STATE_NORMAL, params.button_image)
           .Build());
 }
@@ -1268,9 +1250,6 @@ void ProfileMenuViewBase::BuildIdentityInfoColorCallback(
         color_provider->GetColor(kColorProfileMenuIdentityInfoBackground);
     identity_info_container_->SetBackground(
         views::CreateRoundedRectBackground(background_color, radius));
-    identity_info_container_->SetBorder(views::CreatePaddedBorder(
-        views::CreateRoundedRectBorder(0, radius, background_color),
-        gfx::Insets(kIdentityContainerBorder)));
     title_label_->SetEnabledColor(
         color_provider->GetColor(kColorProfileMenuIdentityInfoTitle));
     if (subtitle_label_) {
