@@ -202,12 +202,6 @@ extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMax(
     "TimeoutTcpConnectAttemptMax",
     base::Seconds(30));
 
-#if BUILDFLAG(ENABLE_REPORTING)
-BASE_FEATURE(kDocumentReporting,
-             "DocumentReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-
 BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
              "CookieSameSiteConsidersRedirectChain",
              base::FEATURE_DISABLED_BY_DEFAULT);

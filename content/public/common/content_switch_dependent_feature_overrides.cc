@@ -36,11 +36,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {switches::kEnableExperimentalWebPlatformFeatures,
        std::cref(features::kDocumentPolicyNegotiation),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-#if BUILDFLAG(ENABLE_REPORTING)
-      {switches::kEnableExperimentalWebPlatformFeatures,
-       std::cref(net::features::kDocumentReporting),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-#endif  // BUILDFLAG(ENABLE_REPORTING)
       {switches::kEnableExperimentalWebPlatformFeatures,
        std::cref(features::kExperimentalContentSecurityPolicyFeatures),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},

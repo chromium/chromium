@@ -265,13 +265,6 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTimeoutTcpConnectAttemptMax;
 
-#if BUILDFLAG(ENABLE_REPORTING)
-// When enabled this feature will allow a new Reporting-Endpoints header to
-// configure reporting endpoints for report delivery. This is used to support
-// the new Document Reporting spec.
-NET_EXPORT BASE_DECLARE_FEATURE(kDocumentReporting);
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-
 // When this feature is enabled, redirected requests will be considered
 // cross-site for the purpose of SameSite cookies if any redirect hop was
 // cross-site to the target URL, even if the original initiator of the
