@@ -437,6 +437,78 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void onOmniboxSessionStateChange_mobileMode_emptyOmnibox() {
+        // In Mobile mode, if LocationBar clears the Page URL on focus, Autocomplete requests
+        // Zero-Prefix suggestions.
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
+
+        GURL url = new GURL("https://www.google.com");
+        String title = "title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+        when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("");
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        mMediator.onNativeInitialized();
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onOmniboxSessionStateChange(true);
+        ShadowLooper.runUiThreadTasks();
+        verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
+    }
+
+    @Test
+    public void onOmniboxSessionStateChange_mobileMode_populatedOmnibox() {
+        // In Mobile mode, if LocationBar does not clear the Page URL on focus, Autocomplete
+        // requests Prefixed suggestions.
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
+
+        GURL url = new GURL("https://www.google.com");
+        String title = "title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
+        when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        mMediator.onNativeInitialized();
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onOmniboxSessionStateChange(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mAutocompleteController)
+                .start(eq(url), eq(pageClassification), eq("test"), eq(0), anyBoolean());
+    }
+
+    @Test
+    public void onOmniboxSessionStateChange_desktopMode() {
+        // In Desktop mode, Omnibox always retains the Page URL on focus.
+        // Autocomplete should continue to request the Zero-Prefix suggestions.
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
+
+        GURL url = new GURL("https://www.google.com");
+        String title = "title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("Text");
+        when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("Text");
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        mMediator.onNativeInitialized();
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onOmniboxSessionStateChange(true);
+        ShadowLooper.runUiThreadTasks();
+        // Strictly expect the call to `startZeroSuggest()` here, as Desktop mode retains the
+        // Omnibox content on focus.
+        verify(mAutocompleteController).startZeroSuggest("Text", url, pageClassification, title);
+    }
+
+    @Test
     @SmallTest
     public void onTextChanged_emptyTextTriggersZeroSuggest() {
         mMediator.setAutocompleteProfile(mProfile);
@@ -453,7 +525,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         mMediator.onNativeInitialized();
-        mMediator.onTextChanged("");
+        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
     }
 
@@ -472,7 +544,7 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
 
         mMediator.onNativeInitialized();
-        mMediator.onTextChanged("test");
+        mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mAutocompleteController).start(url, pageClassification, "test", 4, false);
     }
@@ -492,8 +564,8 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
 
         mMediator.onNativeInitialized();
-        mMediator.onTextChanged("test");
-        mMediator.onTextChanged("nottest");
+        mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
+        mMediator.onTextChanged("nottest", /* isOnFocusContext= */ false);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mAutocompleteController, times(1))
                 .start(url, pageClassification, "nottest", 4, false);
@@ -574,9 +646,9 @@ public class AutocompleteMediatorUnitTest {
 
         // Simulate URL being focus changes, and that user typed text and deleted it.
         mMediator.onOmniboxSessionStateChange(true);
-        mMediator.onTextChanged("A");
-        mMediator.onTextChanged("");
-        mMediator.onTextChanged("A");
+        mMediator.onTextChanged("A", /* isOnFocusContext= */ false);
+        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
+        mMediator.onTextChanged("A", /* isOnFocusContext= */ false);
 
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never())
@@ -608,8 +680,8 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         // Simulate URL being focus changes, and that user typed text and deleted it.
-        mMediator.onTextChanged("A");
-        mMediator.onTextChanged("");
+        mMediator.onTextChanged("A", /* isOnFocusContext= */ false);
+        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
 
         ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never())
@@ -876,7 +948,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onOmniboxSessionStateChange(true);
         Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
-        mMediator.onTextChanged("n");
+        mMediator.onTextChanged("n", /* isOnFocusContext= */ false);
         Assert.assertEquals(
                 mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_USER_INPUT);
 
@@ -1161,7 +1233,7 @@ public class AutocompleteMediatorUnitTest {
 
         // No change on key press. No unexpected recordings.
         // Need to run looper here to flush the pending operation.
-        mMediator.onTextChanged("a");
+        mMediator.onTextChanged("a", /* isOnFocusContext= */ false);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifySuggestionRequestToUiModelHistograms(1, 150, 0, null);
 
@@ -1375,7 +1447,7 @@ public class AutocompleteMediatorUnitTest {
 
         for (var pageClass : PageClassification.values()) {
             mMediator.getAutocompleteInputForTesting().setPageClassification(pageClass.getNumber());
-            mMediator.onTextChanged("");
+            mMediator.onTextChanged("", /* isOnFocusContext= */ false);
 
             // Should only be invoked if page class is eligible.
             int numTimesInvoked = eligibleClasses.contains(pageClass.getNumber()) ? 1 : 0;
@@ -1396,7 +1468,7 @@ public class AutocompleteMediatorUnitTest {
         for (var pageClass : PageClassification.values()) {
             setUpLocationBarDataProvider(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
 
-            mMediator.onTextChanged("text");
+            mMediator.onTextChanged("text", /* isOnFocusContext= */ false);
 
             // Should only be invoked if page class is eligible.
             verify(ShadowCachedSuggestionsManager.mock, never()).readFromCache(anyInt());
@@ -1416,7 +1488,7 @@ public class AutocompleteMediatorUnitTest {
         for (var pageClass : PageClassification.values()) {
             setUpLocationBarDataProvider(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
 
-            mMediator.onTextChanged("");
+            mMediator.onTextChanged("", /* isOnFocusContext= */ false);
 
             // Should only be invoked if page class is eligible.
             verify(ShadowCachedSuggestionsManager.mock, never()).readFromCache(anyInt());
@@ -1442,7 +1514,7 @@ public class AutocompleteMediatorUnitTest {
         for (var pageClass : PageClassification.values()) {
             mMediator.getAutocompleteInputForTesting().setPageClassification(pageClass.getNumber());
 
-            mMediator.onTextChanged("");
+            mMediator.onTextChanged("", /* isOnFocusContext= */ false);
 
             // Should only be invoked if page class is eligible.
             int numTimesInvoked = eligibleClasses.contains(pageClass.getNumber()) ? 1 : 0;
@@ -1462,7 +1534,7 @@ public class AutocompleteMediatorUnitTest {
 
         for (var pageClass : PageClassification.values()) {
             setUpLocationBarDataProvider(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
-            mMediator.onTextChanged("x");
+            mMediator.onTextChanged("x", /* isOnFocusContext= */ false);
             verify(ShadowCachedSuggestionsManager.mock, never()).saveToCache(anyInt(), any());
             clearInvocations(ShadowCachedSuggestionsManager.mock);
         }
@@ -1477,7 +1549,7 @@ public class AutocompleteMediatorUnitTest {
 
         for (var pageClass : PageClassification.values()) {
             setUpLocationBarDataProvider(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
-            mMediator.onTextChanged("");
+            mMediator.onTextChanged("", /* isOnFocusContext= */ false);
             verify(ShadowCachedSuggestionsManager.mock, never()).saveToCache(anyInt(), any());
             clearInvocations(ShadowCachedSuggestionsManager.mock);
         }
@@ -1577,11 +1649,11 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
         mMediator.onNativeInitialized();
-        mMediator.onTextChanged("");
+        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
         verify(mAutocompleteController, never())
                 .startZeroSuggest("", url, pageClassification, title);
 
-        mMediator.onTextChanged("t");
+        mMediator.onTextChanged("t", /* isOnFocusContext= */ false);
         verify(mAutocompleteController, never())
                 .start(any(), anyInt(), any(), anyInt(), anyBoolean());
     }
