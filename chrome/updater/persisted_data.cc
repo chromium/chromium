@@ -386,6 +386,17 @@ void PersistedData::SetInstallDate(const std::string& id, int install_date) {
   delegate_->SetInstallDate(id, install_date);
 }
 
+std::string PersistedData::GetInstallId(const std::string& app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return delegate_->GetInstallId(app_id);
+}
+
+void PersistedData::SetInstallId(const std::string& app_id,
+                                 const std::string& install_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->SetInstallId(app_id, install_id);
+}
+
 void PersistedData::GetActiveBits(
     const std::vector<std::string>& ids,
     base::OnceCallback<void(const std::set<std::string>&)> callback) const {
@@ -460,6 +471,9 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   }
   if (!rq.cohort_hint.empty()) {
     SetCohortHint(rq.app_id, rq.cohort_hint);
+  }
+  if (!rq.install_id.empty()) {
+    SetInstallId(rq.app_id, rq.install_id);
   }
 }
 

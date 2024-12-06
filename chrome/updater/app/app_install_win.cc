@@ -523,6 +523,7 @@ void AppInstallControllerImpl::InstallApp(
   }
   if (tag_args) {
     request.brand_code = tag_args->brand_code;
+    request.install_id = tag_args->installation_id;
   }
 
   base::ThreadPool::PostTaskAndReply(
@@ -648,6 +649,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   }
   if (tag_args) {
     request.brand_code = tag_args->brand_code;
+    request.install_id = tag_args->installation_id;
   }
 
   VLOG(1) << __func__ << ": " << installer_path << ": " << install_args << ": "

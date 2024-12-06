@@ -50,6 +50,7 @@ protocol_request::App MakeProtocolApp(
     const base::Version& version,
     const std::string& ap,
     const std::string& brand_code,
+    const std::string& install_id,
     const std::string& lang,
     int install_date,
     const std::string& install_source,

@@ -199,7 +199,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
 
     apps.push_back(MakeProtocolApp(
         app_id, crx_component->version, crx_component->ap, crx_component->brand,
-        config_->GetLang(), metadata->GetInstallDate(app_id), install_source,
+        metadata->GetInstallId(app_id), config_->GetLang(),
+        metadata->GetInstallDate(app_id), install_source,
         crx_component->install_location, crx_component->fingerprint,
         crx_component->installer_attributes, metadata->GetCohort(app_id),
         metadata->GetCohortHint(app_id), metadata->GetCohortName(app_id),

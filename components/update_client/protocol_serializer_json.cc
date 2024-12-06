@@ -119,6 +119,9 @@ std::string ProtocolSerializerJSON::Serialize(
     if (app.install_date != kDateUnknown) {
       app_node.Set("installdate", app.install_date);
     }
+    if (!app.install_id.empty()) {
+      app_node.Set("iid", app.install_id);
+    }
     if (!app.install_source.empty()) {
       app_node.Set("installsource", app.install_source);
     }

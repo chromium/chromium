@@ -47,9 +47,9 @@ TEST(SerializeRequestJSON, Serialize) {
 
     std::vector<protocol_request::App> apps;
     apps.push_back(MakeProtocolApp(
-        "id1", base::Version("1.0"), "ap1", "BRND", "lang", -1, "source1",
-        "location1", "fp1", {{"attr1", "1"}, {"attr2", "2"}}, "c1", "ch1",
-        "cn1", "test", {0, 1},
+        "id1", base::Version("1.0"), "ap1", "BRND", "ins_id", "lang", -1,
+        "source1", "location1", "fp1", {{"attr1", "1"}, {"attr2", "2"}}, "c1",
+        "ch1", "cn1", "test", {0, 1},
         MakeProtocolUpdateCheck(true, "33.12", true, false),
         {{"install", "foobar_install_data_index", ""}},
         MakeProtocolPing("id1", metadata.get(), {}), std::move(events)));
@@ -67,6 +67,7 @@ TEST(SerializeRequestJSON, Serialize) {
         R"("data":\[{"index":"foobar_install_data_index","name":"install"}],)"
         R"("disabled":\[{"reason":0},{"reason":1}],"enabled":false,)"
         R"("event":\[{"a":1,"b":"2"},{"error":0}],)"
+        R"("iid":"ins_id",)"
         R"("installdate":-1,)"
         R"("installedby":"location1","installsource":"source1",)"
         R"("lang":"lang",)"
@@ -93,8 +94,8 @@ TEST(SerializeRequestJSON, Serialize) {
     // Tests `sameversionupdate` presence with a minimal request for one app.
     std::vector<protocol_request::App> apps;
     apps.push_back(MakeProtocolApp(
-        "id1", base::Version("1.0"), "", "", "", -2, "", "", "", {}, "", "", "",
-        "", {}, MakeProtocolUpdateCheck(false, "", false, true), {},
+        "id1", base::Version("1.0"), "", "", "", "", -2, "", "", "", {}, "", "",
+        "", "", {}, MakeProtocolUpdateCheck(false, "", false, true), {},
         std::nullopt, std::nullopt));
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(
