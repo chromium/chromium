@@ -243,6 +243,16 @@ const AXBlockFlowData::Position AXBlockFlowData::GetPosition(
          fragment_index < container_fragment_count; fragment_index++) {
       const PhysicalBoxFragment* fragment =
           block_flow_container_->GetPhysicalFragment(fragment_index);
+      if (!fragment || !fragment->HasItems()) {
+        // A BlockFlow may have a physical box but no fragments when the
+        // BlockFlow has no text content, but is still rendered. For example:
+        //  <div style="margin-top:30px;">
+        //    <div style="float:left;"></div>
+        //    <div>PASS</div>
+        //  </div>
+        continue;
+      }
+
       wtf_size_t size = fragment->Items()->Size();
       if (index < size) {
         return {.fragmentainer_index = fragment_index, .item_index = index};
