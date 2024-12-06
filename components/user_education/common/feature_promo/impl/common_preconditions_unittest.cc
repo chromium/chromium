@@ -7,18 +7,22 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/test/bind.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/test/mock_anchor_element_provider.h"
 #include "components/user_education/test/test_user_education_storage_service.h"
+#include "components/user_education/test/user_education_session_mocks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 namespace user_education {
 
@@ -203,6 +207,55 @@ TEST(CommonPreconditionsTest, LifecyclePreconditionForDemo) {
   storage_service.SavePromoData(kTestFeature, data);
 
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
+}
+
+TEST(CommonPreconditionsTest, SessionPolicyPreconditionSucceeds) {
+  UNCALLED_MOCK_CALLBACK(SessionPolicyPrecondition::GetCurrentPromoInfoCallback,
+                         get_current);
+
+  test::TestUserEducationStorageService storage_service;
+  test::MockFeaturePromoSessionPolicy session_policy;
+  session_policy.Init(nullptr, &storage_service);
+  FeaturePromoPriorityProvider::PromoPriorityInfo priority_info{
+      FeaturePromoPriorityProvider::PromoWeight::kLight,
+      FeaturePromoPriorityProvider::PromoPriority::kMedium};
+  std::optional<FeaturePromoPriorityProvider::PromoPriorityInfo> last_info(
+      FeaturePromoPriorityProvider::PromoPriorityInfo{
+          FeaturePromoPriorityProvider::PromoWeight::kHeavy,
+          FeaturePromoPriorityProvider::PromoPriority::kHigh});
+  EXPECT_CALL(session_policy, CanShowPromo(priority_info, last_info))
+      .WillOnce(
+          testing::Return(FeaturePromoResult(FeaturePromoResult::Success())));
+  EXPECT_CALL(get_current, Run).WillOnce(testing::Return(last_info));
+
+  SessionPolicyPrecondition precond(&session_policy, priority_info,
+                                    get_current.Get());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
+}
+
+TEST(CommonPreconditionsTest, SessionPolicyPreconditionFails) {
+  UNCALLED_MOCK_CALLBACK(SessionPolicyPrecondition::GetCurrentPromoInfoCallback,
+                         get_current);
+
+  test::TestUserEducationStorageService storage_service;
+  test::MockFeaturePromoSessionPolicy session_policy;
+  session_policy.Init(nullptr, &storage_service);
+  FeaturePromoPriorityProvider::PromoPriorityInfo priority_info{
+      FeaturePromoPriorityProvider::PromoWeight::kLight,
+      FeaturePromoPriorityProvider::PromoPriority::kMedium};
+  std::optional<FeaturePromoPriorityProvider::PromoPriorityInfo> last_info(
+      FeaturePromoPriorityProvider::PromoPriorityInfo{
+          FeaturePromoPriorityProvider::PromoWeight::kHeavy,
+          FeaturePromoPriorityProvider::PromoPriority::kHigh});
+  EXPECT_CALL(session_policy, CanShowPromo(priority_info, last_info))
+      .WillOnce(testing::Return(
+          FeaturePromoResult(FeaturePromoResult::kBlockedByCooldown)));
+  EXPECT_CALL(get_current, Run).WillOnce(testing::Return(last_info));
+
+  SessionPolicyPrecondition precond(&session_policy, priority_info,
+                                    get_current.Get());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByCooldown,
+            precond.CheckPrecondition());
 }
 
 }  // namespace user_education

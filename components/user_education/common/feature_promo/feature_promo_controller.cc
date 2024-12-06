@@ -27,13 +27,13 @@
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
-#include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial/tutorial.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -68,15 +68,13 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
     HelpBubbleFactoryRegistry* help_bubble_registry,
     UserEducationStorageService* storage_service,
     FeaturePromoSessionPolicy* session_policy,
-    TutorialService* tutorial_service,
-    ProductMessagingController* messaging_controller)
+    TutorialService* tutorial_service)
     : registry_(registry),
       feature_engagement_tracker_(feature_engagement_tracker),
       bubble_factory_registry_(help_bubble_registry),
       storage_service_(storage_service),
       session_policy_(session_policy),
-      tutorial_service_(tutorial_service),
-      messaging_controller_(messaging_controller) {
+      tutorial_service_(tutorial_service) {
   DCHECK(feature_engagement_tracker_);
   DCHECK(bubble_factory_registry_);
   DCHECK(storage_service_);
@@ -170,6 +168,14 @@ bool FeaturePromoControllerCommon::EndPromo(
   return was_open;
 }
 
+void FeaturePromoControllerCommon::CloseHelpBubbleIfPresent(
+    ui::ElementContext context) {
+  if (auto* const help_bubble =
+          bubble_factory_registry()->GetHelpBubble(context)) {
+    help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  }
+}
+
 void FeaturePromoControllerCommon::RecordPromoEnded(
     FeaturePromoClosedReason close_reason,
     bool continue_after_close) {
@@ -254,6 +260,19 @@ bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable(
   feature_engagement_tracker_->Dismissed(*prompt_feature);
 
   return true;
+}
+
+std::unique_ptr<FeaturePromoLifecycle>
+FeaturePromoControllerCommon::CreateLifecycleFor(
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& params) const {
+  auto lifecycle = std::make_unique<FeaturePromoLifecycle>(
+      storage_service(), params.key, &*params.feature, spec.promo_type(),
+      spec.promo_subtype(), spec.rotating_promos().size());
+  if (spec.reshow_delay()) {
+    lifecycle->SetReshowPolicy(*spec.reshow_delay(), spec.max_show_count());
+  }
+  return lifecycle;
 }
 
 std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(

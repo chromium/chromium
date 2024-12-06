@@ -22,6 +22,7 @@ DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kMeetsFeatureEngagementCriteriaPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kSessionPolicyPrecondition);
 
 FeatureEngagementTrackerInitializedPrecondition::
     FeatureEngagementTrackerInitializedPrecondition(
@@ -121,6 +122,25 @@ LifecyclePrecondition::~LifecyclePrecondition() = default;
 FeaturePromoResult LifecyclePrecondition::CheckPrecondition() const {
   return for_demo_ ? FeaturePromoResult::Success()
                    : GetCachedData(kLifecycle)->CanShow();
+}
+
+SessionPolicyPrecondition::SessionPolicyPrecondition(
+    FeaturePromoSessionPolicy* session_policy,
+    FeaturePromoPriorityProvider::PromoPriorityInfo priority_info,
+    GetCurrentPromoInfoCallback get_current_promo_info_callback)
+    : FeaturePromoPreconditionBase(kSessionPolicyPrecondition,
+                                   "Session Policy Check"),
+      session_policy_(*session_policy),
+      priority_info_(priority_info),
+      get_current_promo_info_callback_(
+          std::move(get_current_promo_info_callback)) {}
+
+SessionPolicyPrecondition::~SessionPolicyPrecondition() = default;
+
+// FeaturePromoPrecondition:
+FeaturePromoResult SessionPolicyPrecondition::CheckPrecondition() const {
+  return session_policy_->CanShowPromo(priority_info_,
+                                       get_current_promo_info_callback_.Run());
 }
 
 }  // namespace user_education
