@@ -5080,7 +5080,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
     // Must not include gpu::SHARED_IMAGE_USAGE_DISPLAY_READ here because
     // DISPLAY_READ means gpu composition.
-    shared_image_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
+    shared_image_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
     auto sii = layer_tree_frame_sink_->shared_image_interface();
     CHECK(sii);
 

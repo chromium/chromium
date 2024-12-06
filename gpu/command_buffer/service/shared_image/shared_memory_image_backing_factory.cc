@@ -17,7 +17,7 @@
 namespace gpu {
 
 SharedMemoryImageBackingFactory::SharedMemoryImageBackingFactory()
-    : SharedImageBackingFactory(SHARED_IMAGE_USAGE_CPU_WRITE) {}
+    : SharedImageBackingFactory(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY) {}
 
 SharedMemoryImageBackingFactory::~SharedMemoryImageBackingFactory() = default;
 
@@ -111,7 +111,7 @@ bool SharedMemoryImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (usage != SharedImageUsageSet(SHARED_IMAGE_USAGE_CPU_WRITE)) {
+  if (usage != SharedImageUsageSet(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY)) {
     return false;
   }
 

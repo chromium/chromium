@@ -61,8 +61,8 @@ bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
   }
 
   // Setting some default usage in order to get a mappable shared image.
-  const auto si_usage =
-      gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   const auto si_format = viz::GetSharedImageFormat(*gfx_format);
   shared_image_ = sii->CreateSharedImage(
       {si_format, dimensions, gfx::ColorSpace(),

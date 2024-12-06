@@ -93,7 +93,7 @@ class VideoEncodeAcceleratorAdapterTest
   scoped_refptr<VideoFrame> CreateGreenGpuFrame(gfx::Size size,
                                                 base::TimeDelta timestamp) {
     // Define shared image usage for a mappable shared image.
-    constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE |
+    constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     auto shared_image = sii_->CreateSharedImage(
         {viz::MultiPlaneFormat::kNV12, size, kYUVColorSpace,

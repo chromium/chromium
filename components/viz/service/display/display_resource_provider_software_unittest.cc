@@ -87,7 +87,7 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
         child_context_provider_->SharedImageInterface();
     auto shared_image_mapping = shared_image_interface->CreateSharedImage(
         {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
          "DisplayResourceProviderSoftwareTest"});
 
     base::span<uint32_t> span =

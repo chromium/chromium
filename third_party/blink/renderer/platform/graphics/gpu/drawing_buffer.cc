@@ -406,7 +406,7 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap() {
     return RegisteredBitmap();
   }
   auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-      {format, size_, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+      {format, size_, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
        "DrawingBufferBitmap"});
   auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
       viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),

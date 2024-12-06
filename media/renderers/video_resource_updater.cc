@@ -452,7 +452,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
         video_resource_updater_(video_resource_updater) {
     auto shared_image_mapping = shared_image_interface->CreateSharedImage(
         {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "VideoResourceUpdater"});
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "VideoResourceUpdater"});
     shared_image_ = std::move(shared_image_mapping.shared_image);
     shared_mapping_ = std::move(shared_image_mapping.mapping);
     CHECK(shared_image_);

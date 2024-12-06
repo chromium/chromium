@@ -445,9 +445,9 @@ class ReadbackPixelTest : public VizPixelTest {
     CHECK(sii);
 
     if (is_software_renderer()) {
-      auto result = sii->CreateSharedImage({format, size, color_space,
-                                            gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
-                                            "TestLabels"});
+      auto result = sii->CreateSharedImage(
+          {format, size, color_space, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+           "TestLabels"});
       memcpy(result.mapping.memory(), pixels.data(), pixels.size());
       return result.shared_image;
     } else {

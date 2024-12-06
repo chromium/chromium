@@ -47,10 +47,12 @@ enum SharedImageUsage : uint32_t {
   // CVPixelBuffer's IOSurface. Because of this backing, IOSurfaceIsInUse will
   // always return true.
   SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 10,
-  // Image will be used with mipmap enabled
+  // Image will be used with mipmap enabled.
   SHARED_IMAGE_USAGE_MIPMAP = 1 << 11,
-  // Image will be used for CPU Writes by client
-  SHARED_IMAGE_USAGE_CPU_WRITE = 1 << 12,
+  // Image will be used for CPU Writes by client. Normally write usage also
+  // implies read. Hence adding ONLY tag to clarify that its write only in this
+  // case.
+  SHARED_IMAGE_USAGE_CPU_WRITE_ONLY = 1 << 12,
   // Image will be used in RasterInterface with RawDraw.
   SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 13,
   // Image will be created on the high performance GPU if supported.
@@ -102,7 +104,8 @@ enum SharedImageUsage : uint32_t {
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
-  // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
+  // SHARED_IMAGE_USAGE_CPU_WRITE_ONLY if they need to write pixels to the
+  // image.
   SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 25,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD

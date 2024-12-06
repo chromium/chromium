@@ -93,7 +93,7 @@ void AllocateCrossThreadSharedBitmap(
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
 
   auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-      {format, size, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+      {format, size, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
        "TextureLayerSharedBitmap"});
   bitmap = base::MakeRefCounted<CrossThreadSharedBitmap>(
       viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),

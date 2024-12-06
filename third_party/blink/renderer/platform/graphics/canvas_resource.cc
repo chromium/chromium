@@ -285,7 +285,7 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
 
   auto shared_image_mapping = shared_image_interface->CreateSharedImage(
       {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "CanvasResourceSharedBitmap"});
+       gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "CanvasResourceSharedBitmap"});
   shared_image_ = std::move(shared_image_mapping.shared_image);
   shared_mapping_ = std::move(shared_image_mapping.mapping);
   sync_token_ = shared_image_interface->GenVerifiedSyncToken();
@@ -419,10 +419,10 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   if (!is_accelerated_) {
-    // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE to the shared image
-    // usage flag here since mailbox will be used for CPU writes
-    // by the client. But doing that stops us from using CompoundImagebacking as
-    // many backings do not support SHARED_IMAGE_USAGE_CPU_WRITE.
+    // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
+    // image usage flag here since mailbox will be used for CPU writes by the
+    // client. But doing that stops us from using CompoundImagebacking as many
+    // backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY.
     // TODO(crbug.com/1478238): Add that usage flag back here once the issue is
     // resolved.
 

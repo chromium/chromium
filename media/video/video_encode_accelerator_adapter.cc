@@ -199,7 +199,7 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
     // Setting some default usage in order to get a mappable shared image.
-    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE |
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
     scoped_refptr<VideoFrame> video_frame;

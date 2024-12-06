@@ -188,7 +188,7 @@ SharedImageUsageSet SupportedUsage() {
       SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_VIDEO_DECODE |
       SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
-      SHARED_IMAGE_USAGE_CPU_WRITE;
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
 
   if (RestrictScanoutSupportToFuchsia()) {
 #if BUILDFLAG(IS_FUCHSIA)
@@ -328,7 +328,7 @@ bool ExternalVkImageBackingFactory::IsSupported(
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE)) {
+    if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY)) {
       // Only CPU writable when the client provides a NativePixmap.
       return false;
     }
