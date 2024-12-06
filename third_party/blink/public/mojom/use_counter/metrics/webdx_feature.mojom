@@ -314,6 +314,7 @@ enum WebDXFeature {
   kVerticalFormControls = 256,
   kPdfViewer = 257,
   kFileSystemAccess = 258,
+  kClosewatcher = 259,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
