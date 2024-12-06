@@ -1459,6 +1459,7 @@ crbug.com/374035637 [ Debug Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-g
 crbug.com/374035637 [ Debug Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-grid-018.html [ Slow ]
 crbug.com/374035637 [ Debug Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-grid-019.html [ Slow ]
 crbug.com/374045525 [ Debug Mac14 ] webaudio/AudioParam/audioparam-rate-change-357391257.html [ Slow ]
+crbug.com/382615965 [ Mac13 ] virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/rtcaudiojitterbuffermaxpackets-origin-trial-enabled.html [ Slow ]
 
 # Gardener 2024-10-24
 crbug.com/375337253 external/wpt/shadow-dom/reference-target/tentative/property-reflection.html [ Slow ]
