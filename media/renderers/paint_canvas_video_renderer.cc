@@ -1402,7 +1402,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // Correct Y-flip. flip_y should take precedent when
     // texture_origin_is_top_left is true, and invert the setting when
     // texture_origin_is_top_left is false.
-    if (!video_frame->IsTextureOriginTopLeft()) {
+    if (shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin) {
       flip_y = !flip_y;
     }
 
@@ -1452,7 +1452,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     return true;
   }
 
-  DCHECK(video_frame->IsTextureOriginTopLeft());
+  DCHECK_EQ(shared_image->surface_origin(), kTopLeft_GrSurfaceOrigin);
   if (!raster_context_provider) {
     return false;
   }
@@ -1526,7 +1526,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
 
   CHECK(!video_frame->HasSharedImage());
-  DCHECK(video_frame->IsTextureOriginTopLeft());
 
   auto* sii = raster_context_provider->SharedImageInterface();
   gpu::raster::RasterInterface* source_ri =
@@ -1608,7 +1607,6 @@ bool PaintCanvasVideoRenderer::TexImage2D(
     bool premultiply_alpha) {
   DCHECK(frame);
   DCHECK(!frame->HasSharedImage());
-  DCHECK(frame->IsTextureOriginTopLeft());
 
   GLint precision = 0;
   GLint range[2] = {0, 0};
@@ -1660,7 +1658,6 @@ bool PaintCanvasVideoRenderer::TexSubImage2D(unsigned target,
                                              bool premultiply_alpha) {
   DCHECK(frame);
   DCHECK(!frame->HasSharedImage());
-  DCHECK(frame->IsTextureOriginTopLeft());
 
   scoped_refptr<DataBuffer> temp_buffer;
   if (!TexImageHelper(frame, format, type, flip_y, &temp_buffer))

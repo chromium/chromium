@@ -619,9 +619,11 @@ void VideoResourceUpdater::ObtainFrameResource(
       CreateExternalResourceFromVideoFrame(video_frame);
   frame_resource_type_ = external_resource.type;
 
-  external_resource.resource.origin = video_frame->IsTextureOriginTopLeft()
-                                          ? kTopLeft_GrSurfaceOrigin
-                                          : kBottomLeft_GrSurfaceOrigin;
+  // TODO(crbug.com/378688985): Move this close to TransferableResource::Make
+  external_resource.resource.origin =
+      video_frame->HasSharedImage()
+          ? video_frame->shared_image()->surface_origin()
+          : kTopLeft_GrSurfaceOrigin;
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));
