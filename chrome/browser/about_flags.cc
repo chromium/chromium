@@ -95,6 +95,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/download/public/common/download_features.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/error_page/common/error_page_switches.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -5619,6 +5620,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReengagementNotificationName,
      flag_descriptions::kReengagementNotificationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReengagementNotification)},
+
+    // Enterprise Data Controls
+    {"enable-clipboard-data-controls-android",
+     flag_descriptions::kEnableClipboardDataControlsAndroidName,
+     flag_descriptions::kEnableClipboardDataControlsAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(data_controls::kEnableClipboardDataControlsAndroid)},
 
     // Android Edge to edge
     {"draw-cutout-edge-to-edge", flag_descriptions::kDrawCutoutEdgeToEdgeName,

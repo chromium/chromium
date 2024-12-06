@@ -326,6 +326,8 @@ public abstract class ChromeFeatureList {
     public static final String EDUCATIONAL_TIP_MODULE = "EducationalTipModule";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
     public static final String ENABLE_X_AXIS_ACTIVITY_TRANSITION = "EnableXAxisActivityTransition";
+    public static final String ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID =
+            "EnableClipboardDataControlsAndroid";
     public static final String ESB_AI_STRING_UPDATE = "EsbAiStringUpdate";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";

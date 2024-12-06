@@ -4524,6 +4524,12 @@ const char kEnablePixDetectionOnDomContentLoadedDescription[] =
     "websites when `WebContentsObserver::DOMContentLoaded` is fired instead of "
     "`WebContentsObserver::DidFinishLoad`.";
 
+const char kEnableClipboardDataControlsAndroidName[] =
+    "Enable enterprise data controls.";
+const char kEnableClipboardDataControlsAndroidDescription[] =
+    "Enables the enterprise data controls on Android for restricting copy and "
+    "paste actions for the clipboard.";
+
 const char kEwalletPaymentsName[] = "Enable eWallet payments";
 const char kEwalletPaymentsDescription[] =
     "When enabled, Chrome will offer to pay with eWallet accounts if a payment "

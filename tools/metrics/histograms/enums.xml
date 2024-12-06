@@ -17318,6 +17318,7 @@ from previous Chrome versions.
   <int value="-1225198073" label="ReaderModeInCCT:disabled"/>
   <int value="-1224962996" label="PwaImprovedSplashScreen:disabled"/>
   <int value="-1224843921" label="DevToolsTabTarget:enabled"/>
+  <int value="-1224643496" label="EnableClipboardDataControlsAndroid:disabled"/>
   <int value="-1222805155" label="PdfIsolation:enabled"/>
   <int value="-1222757260" label="DefaultMeetWebApp:enabled"/>
   <int value="-1222556118" label="VirtualDesks:disabled"/>
@@ -25044,6 +25045,7 @@ from previous Chrome versions.
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858523835" label="VerifyDidCommitParams:enabled"/>
   <int value="1859016750" label="Conch:disabled"/>
+  <int value="1859378256" label="EnableClipboardDataControlsAndroid:enabled"/>
   <int value="1859864175" label="AppDeduplicationServiceFondue:enabled"/>
   <int value="1860349258" label="EnableFastInkForSoftwareCursor:enabled"/>
   <int value="1860597983" label="AndroidSpellChecker:disabled"/>

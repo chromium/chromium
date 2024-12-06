@@ -2620,6 +2620,9 @@ extern const char kEnablePixDetectionDescription[];
 extern const char kEnablePixDetectionOnDomContentLoadedName[];
 extern const char kEnablePixDetectionOnDomContentLoadedDescription[];
 
+extern const char kEnableClipboardDataControlsAndroidName[];
+extern const char kEnableClipboardDataControlsAndroidDescription[];
+
 extern const char kEwalletPaymentsName[];
 extern const char kEwalletPaymentsDescription[];
 

@@ -2157,12 +2157,12 @@
   },
   {
     "name": "draw-cutout-edge-to-edge",
-    "owners": ["wenyufu@chromium.org", "clhager@google.com", "edge-to-edge@chromium.org" ],
+    "owners": ["wenyufu@chromium.org", "clhager@google.com", "edge-to-edge@chromium.org"],
     "expiry_milestone": 135
   },
   {
     "name": "draw-immediately-when-interactive",
-    "owners": [ "vollick@chromium.org", "jonross@chromium.org" ],
+    "owners": [ "vollick@chromium.org", "jonross@chromium.org"],
     "expiry_milestone": 135
   },
   {
@@ -2551,6 +2551,11 @@
   {"name": "enable-chromeos-soda-languages",
    "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
    "expiry_milestone": 140
+  },
+  {
+    "name": "enable-clipboard-data-controls-android",
+    "owners": ["clhager@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "enable-cloud-identifiers",
