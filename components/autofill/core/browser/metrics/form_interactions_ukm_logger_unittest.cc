@@ -770,10 +770,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
   SubmitForm(form);
 
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-  LOG(ERROR) << __func__;
   test_api(autofill_client().GetAutofillDriverFactory())
       .Reset(autofill_driver());
-  LOG(ERROR) << __func__;
 
   // Verify FieldInfo UKM event for every field.
   auto entries =
