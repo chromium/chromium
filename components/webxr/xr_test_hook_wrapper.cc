@@ -7,14 +7,16 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "content/services/isolated_xr_device/xr_test_hook_wrapper.h"
-#include "base/task/single_thread_task_runner.h"
+#include "components/webxr/xr_test_hook_wrapper.h"
 
-namespace device {
+#include "base/task/single_thread_task_runner.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+
+namespace webxr {
 
 // TODO(crbug.com/41418750): Remove these as conversion functions as part
 // of the switch to only mojom types.
-ControllerRole MojoToDeviceControllerRole(
+device::ControllerRole MojoToDeviceControllerRole(
     device_test::mojom::ControllerRole role) {
   switch (role) {
     case device_test::mojom::ControllerRole::kControllerRoleInvalid:
@@ -29,23 +31,24 @@ ControllerRole MojoToDeviceControllerRole(
   return device::kControllerRoleInvalid;
 }
 
-PoseFrameData MojoToDevicePoseFrameData(
+device::PoseFrameData MojoToDevicePoseFrameData(
     device_test::mojom::PoseFrameDataPtr& pose) {
-  PoseFrameData ret = {};
+  device::PoseFrameData ret = {};
   ret.is_valid = !!pose->device_to_origin;
-  if (ret.is_valid)
+  if (ret.is_valid) {
     pose->device_to_origin->GetColMajorF(ret.device_to_origin);
+  }
 
   return ret;
 }
 
-device_test::mojom::Eye XrEyeToMojoEye(XrEye eye) {
+device_test::mojom::Eye XrEyeToMojoEye(device::XrEye eye) {
   switch (eye) {
-    case XrEye::kLeft:
+    case device::XrEye::kLeft:
       return device_test::mojom::Eye::LEFT;
-    case XrEye::kRight:
+    case device::XrEye::kRight:
       return device_test::mojom::Eye::RIGHT;
-    case XrEye::kNone:
+    case device::XrEye::kNone:
       return device_test::mojom::Eye::NONE;
   }
 }
@@ -54,10 +57,11 @@ XRTestHookWrapper::XRTestHookWrapper(
     mojo::PendingRemote<device_test::mojom::XRTestHook> pending_hook)
     : pending_hook_(std::move(pending_hook)) {}
 
-void XRTestHookWrapper::OnFrameSubmitted(const std::vector<ViewData>& views) {
+void XRTestHookWrapper::OnFrameSubmitted(
+    const std::vector<device::ViewData>& views) {
   if (hook_) {
     std::vector<device_test::mojom::ViewDataPtr> submitted_views;
-    for (const ViewData& view : views) {
+    for (const device::ViewData& view : views) {
       device_test::mojom::ViewDataPtr view_data =
           device_test::mojom::ViewData::New();
       view_data->color = device_test::mojom::Color::New(
@@ -66,16 +70,18 @@ void XRTestHookWrapper::OnFrameSubmitted(const std::vector<ViewData>& views) {
       view_data->eye = XrEyeToMojoEye(view.eye);
       submitted_views.push_back(std::move(view_data));
     }
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     hook_->OnFrameSubmitted(std::move(submitted_views));
   }
 }
 
-DeviceConfig XRTestHookWrapper::WaitGetDeviceConfig() {
+device::DeviceConfig XRTestHookWrapper::WaitGetDeviceConfig() {
   if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::DeviceConfigPtr config;
     hook_->WaitGetDeviceConfig(&config);
     if (config) {
-      DeviceConfig ret = {};
+      device::DeviceConfig ret = {};
       ret.interpupillary_distance = config->interpupillary_distance;
       ret.viewport_left[0] = config->projection_left->left;
       ret.viewport_left[1] = config->projection_left->right;
@@ -93,8 +99,9 @@ DeviceConfig XRTestHookWrapper::WaitGetDeviceConfig() {
   return {};
 }
 
-PoseFrameData XRTestHookWrapper::WaitGetPresentingPose() {
+device::PoseFrameData XRTestHookWrapper::WaitGetPresentingPose() {
   if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::PoseFrameDataPtr pose;
     hook_->WaitGetPresentingPose(&pose);
     if (pose) {
@@ -105,8 +112,9 @@ PoseFrameData XRTestHookWrapper::WaitGetPresentingPose() {
   return {};
 }
 
-PoseFrameData XRTestHookWrapper::WaitGetMagicWindowPose() {
+device::PoseFrameData XRTestHookWrapper::WaitGetMagicWindowPose() {
   if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::PoseFrameDataPtr pose;
     hook_->WaitGetMagicWindowPose(&pose);
     if (pose) {
@@ -117,9 +125,11 @@ PoseFrameData XRTestHookWrapper::WaitGetMagicWindowPose() {
   return {};
 }
 
-ControllerRole XRTestHookWrapper::WaitGetControllerRoleForTrackedDeviceIndex(
+device::ControllerRole
+XRTestHookWrapper::WaitGetControllerRoleForTrackedDeviceIndex(
     unsigned int index) {
   if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::ControllerRole role;
     hook_->WaitGetControllerRoleForTrackedDeviceIndex(index, &role);
     return MojoToDeviceControllerRole(role);
@@ -128,9 +138,10 @@ ControllerRole XRTestHookWrapper::WaitGetControllerRoleForTrackedDeviceIndex(
   return device::kControllerRoleInvalid;
 }
 
-TrackedDeviceClass XRTestHookWrapper::WaitGetTrackedDeviceClass(
+device::TrackedDeviceClass XRTestHookWrapper::WaitGetTrackedDeviceClass(
     unsigned int index) {
   if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::TrackedDeviceClass device_class;
     hook_->WaitGetTrackedDeviceClass(index, &device_class);
     switch (device_class) {
@@ -154,13 +165,14 @@ TrackedDeviceClass XRTestHookWrapper::WaitGetTrackedDeviceClass(
   return device::kTrackedDeviceInvalid;
 }
 
-ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
+device::ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
     unsigned int index) {
   if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::ControllerFrameDataPtr data;
     hook_->WaitGetControllerData(index, &data);
     if (data) {
-      ControllerFrameData ret = {};
+      device::ControllerFrameData ret = {};
       ret.packet_number = data->packet_number;
       ret.buttons_pressed = data->buttons_pressed;
       ret.buttons_touched = data->buttons_touched;
@@ -197,6 +209,7 @@ ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
 device_test::mojom::EventData XRTestHookWrapper::WaitGetEventData() {
   device_test::mojom::EventData ret = {};
   if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     device_test::mojom::EventDataPtr data;
     hook_->WaitGetEventData(&data);
     if (data) {
@@ -208,6 +221,7 @@ device_test::mojom::EventData XRTestHookWrapper::WaitGetEventData() {
 
 bool XRTestHookWrapper::WaitGetCanCreateSession() {
   if (hook_) {
+    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
     bool can_create_session;
     hook_->WaitGetCanCreateSession(&can_create_session);
     return can_create_session;
@@ -220,15 +234,17 @@ bool XRTestHookWrapper::WaitGetCanCreateSession() {
 }
 
 void XRTestHookWrapper::AttachCurrentThread() {
-  if (pending_hook_)
+  if (pending_hook_) {
     hook_.Bind(std::move(pending_hook_));
+  }
 
   current_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 void XRTestHookWrapper::DetachCurrentThread() {
-  if (hook_)
+  if (hook_) {
     pending_hook_ = hook_.Unbind();
+  }
 
   current_task_runner_ = nullptr;
 }
@@ -240,4 +256,4 @@ XRTestHookWrapper::GetBoundTaskRunner() {
 
 XRTestHookWrapper::~XRTestHookWrapper() = default;
 
-}  // namespace device
+}  // namespace webxr
