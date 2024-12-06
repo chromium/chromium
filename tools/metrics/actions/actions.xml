@@ -27382,7 +27382,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MultiWindowResizerClick">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the multi window resize widget is clicked on.
@@ -27390,7 +27390,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MultiWindowResizerClick_TwoWindowsSnapped">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the multi window resize widget is clicked on when two windows
@@ -27399,7 +27399,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MultiWindowResizerShow">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the resize widget shows on mouse hover on the ResizeWindows.
@@ -27407,7 +27407,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MultiWindowResizerShow_TwoWindowsSnapped">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the resize widget shows on mouse hover on the ResizeWindows
@@ -40003,7 +40003,6 @@ should be able to be added at any place in this file.
 
 <action name="SnapGroups_ActivateViaKeyboard">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the divider is activated via the keyboard.
@@ -40017,7 +40016,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SnapGroups_DoubleTapWindowSwapAttempts">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
   <description>
     Tracks the number of times users attempt to swap windows within a Snap Group
@@ -40026,7 +40025,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SnapGroups_DoubleTapWindowSwapSuccess">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
   <description>
     Recorded when two windows in a Snap Group are successfully swapped via
@@ -40082,7 +40081,6 @@ should be able to be added at any place in this file.
 
 <action name="SnapGroups_ResizeViaKeyboard">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the divider is resized via the keyboard.
@@ -40239,7 +40237,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SplitView_SwapWindowsButtonSwapWindows">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the user clicks on the swap windows button in the expanded

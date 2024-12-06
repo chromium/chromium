@@ -2189,7 +2189,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.CameraDisconnectionsDuringRecordings.{TabletOrClamshell}"
     units="camera disconnections" expires_after="2025-07-03">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2202,7 +2202,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.CameraReconnectDuration.{TabletOrClamshell}"
     units="seconds" expires_after="2025-11-11">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2256,7 +2256,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart.{TabletOrClamshell}"
     enum="BooleanEnabled" expires_after="2025-04-13">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2295,7 +2295,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.GameDashboard.SaveLocation.{TabletOrClamshell}"
     enum="CaptureModeSaveToLocation" expires_after="2025-04-13">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2309,7 +2309,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.GameDashboard.ScreenRecordingFileSize.{TabletOrClamshell}"
     units="KB" expires_after="2025-05-15">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2387,7 +2387,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.Projector.CaptureRegionAdjusted.{TabletOrClamshell}"
     units="adjustments" expires_after="2025-03-23">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2414,7 +2414,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.RecordingCameraPositionOnStart.{TabletOrClamshell}"
     enum="CameraPreviewSnapPosition" expires_after="2025-06-21">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2427,7 +2427,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.RecordingCameraSizeOnStart.{TabletOrClamshell}"
     enum="CaptureModeCameraSize" expires_after="2025-02-10">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2440,7 +2440,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.RecordingStartsWithCamera.{TabletOrClamshell}"
     enum="BooleanEnabled" expires_after="2025-04-13">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2452,7 +2452,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.CaptureModeController.SaveLocation.{TabletOrClamshell}"
     enum="CaptureModeSaveToLocation" expires_after="2025-04-13">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2593,7 +2593,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.SwitchToDefaultReason.{TabletOrClamshell}"
     enum="CaptureModeSwitchToDefaultReason" expires_after="2025-10-30">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2623,7 +2623,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.{Client}.CaptureConfiguration.{TabletOrClamshell}"
     enum="CaptureModeConfiguration" expires_after="2025-04-13">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2639,7 +2639,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.{Client}.DemoToolsEnabledOnRecordingStart.{TabletOrClamshell}"
     enum="BooleanEnabled" expires_after="2025-04-13">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2653,7 +2653,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.{Client}.RecordingStartsWithCamera.{TabletOrClamshell}"
     enum="BooleanEnabled" expires_after="2025-04-13">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2667,7 +2667,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.CaptureModeController.{Client}.ScreenRecordingLength.{TabletOrClamshell}"
     units="seconds" expires_after="2025-04-13">
-  <owner>michelefan@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -8977,7 +8977,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Snap.CloseTwoWindowsDuration" units="seconds"
     expires_after="2025-01-26">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     The elapsed time between a first snapped window getting closed and a second
     snapped window getting closed. Starts recording when a snapped window is
@@ -8990,7 +8990,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Snap.MinimizeTwoWindowsDuration" units="seconds"
     expires_after="2025-01-26">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     The elapsed time between a first snapped window getting minimized and a
     second snapped window getting minimized. Starts recording when a window
@@ -9004,7 +9004,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Snap.SnapTwoWindowsDuration" units="seconds"
     expires_after="2025-03-30">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     The elapsed time between a first window getting snapped and a second window
     getting snapped on the other side. Starts recording when one window gets
@@ -9016,9 +9016,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SnapGroups.SnapGroupActualDuration" units="seconds"
     expires_after="2025-05-08">
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     Records the duration of a Snap Group where the two snapped windows remain
     unchanged throughout its existence.
@@ -9027,17 +9027,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SnapGroups.SnapGroupExitPoint" enum="SnapGroupExitPoint"
     expires_after="2025-05-08">
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>Records the exit point of a Snap Group.</summary>
 </histogram>
 
 <histogram name="Ash.SnapGroups.SnapGroupPersistenceDuration" units="seconds"
     expires_after="2025-05-08">
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     Records the duration of a Snap Group where one of the windows remains in the
     Snap Group even after the other window is replaced using 'Snap to Replace'.
@@ -9047,8 +9047,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.SnapGroups.SnapGroupsCount" units="int"
     expires_after="2025-05-08">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     Emitted when there's a change in the number of snap groups, i.e. a group is
     added or removed. Specifies the number of available snap groups.
@@ -9058,8 +9058,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.SnapWindowSuggestions.{SnapSource}" enum="Boolean"
     expires_after="2025-04-13">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     Recorded at the time a window is snapped via a snap action source that can
     start faster split view. Emits true if faster split view is enabled, false
@@ -9150,7 +9150,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.SplitView.SwapWindowCount" units="count"
     expires_after="2025-08-19">
   <owner>xdai@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -9206,7 +9205,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.SplitViewOverviewSession.SelectedWindowIndex" units="int"
     expires_after="2025-05-04">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     Records the index of the selected window in partial overview. Starts
@@ -9217,9 +9215,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit.{TabletOrClamshell}"
     enum="Boolean" expires_after="2025-05-04">
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     Recorded at the exit point of the split view overview session in
     {TabletOrClamshell}. Emits true if the window layout setup is complete,
@@ -9231,7 +9229,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.SplitViewOverviewSession.WindowListSize" units="int"
     expires_after="2025-05-04">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     Records the total number of windows in partial overview when a window is
@@ -9242,9 +9239,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Ash.SplitViewOverviewSession.{SnapSource}.ExitPoint.{TabletOrClamshell}"
     enum="SplitViewOverviewSessionExitPoint" expires_after="2025-05-04">
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
   <summary>
     Recorded at the exit point of the split view overview session in
     {TabletOrClamshell}. The recorded enum indicates the reason that triggers
@@ -9269,7 +9266,6 @@ chromium-metrics-reviews@google.com.
     name="Ash.SplitViewResize.PresentationTime.MaxLatency{SplitViewResizeModes}"
     units="ms" expires_after="2025-08-19">
   <owner>xdai@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -9282,7 +9278,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.SplitViewResize.PresentationTime{SplitViewResizeModes}"
     units="ms" expires_after="2025-08-19">
   <owner>xdai@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -9505,7 +9500,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.TouchView.LidAngle" units="degrees"
     expires_after="2025-10-28">
   <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Chrome OS only. The computed angle between the lid and the keyboard panel.
     These values are imprecise and may be tens of degrees off from reality.
@@ -10260,7 +10255,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Window.Snap.DeviceOrientation" enum="DeviceOrientation"
     expires_after="2025-08-12">
-  <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>afakhry@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -10445,8 +10439,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Wm.MultiWindowResizerClick" enum="Boolean"
     expires_after="2025-05-21">
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true if the resize widget is clicked to start the resizing while in
     mulit-window resizing mode.
@@ -10455,8 +10449,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Wm.MultiWindowResizerClickTwoWindowsSnapped"
     enum="Boolean" expires_after="2025-05-21">
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true if the resize widget is clicked to start the resizing while in
     mulit-window resizing mode.
@@ -10465,8 +10459,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Wm.MultiWindowResizerShow" enum="Boolean"
     expires_after="2025-05-21">
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true if the resize widget shows on mouse hover on the ResizeWindows.
   </summary>
@@ -10474,8 +10468,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Wm.MultiWindowResizerShowTwoWindowsSnapped" enum="Boolean"
     expires_after="2025-05-21">
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true if the resize widget shows on mouse hover on the ResizeWindows
     and the two windows of the ResizeWindows are snapped.
