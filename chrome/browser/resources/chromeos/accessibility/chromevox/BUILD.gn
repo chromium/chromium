@@ -121,6 +121,7 @@ ts_modules = [
   "common/bridge_constants.ts",
   "common/command.ts",
   "common/command_store.ts",
+  "common/custom_automation_event.ts",
   "common/earcon_id.ts",
   "common/event_source_type.ts",
   "common/gesture.ts",
@@ -169,7 +170,6 @@ js_modules = [
   "background/output/output_rules.js",
   "background/phonetic_data.js",
   "background/primary_tts.js",
-  "common/custom_automation_event.js",
   "common/role_type.js",
 ]
 

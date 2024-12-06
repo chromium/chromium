@@ -15,7 +15,7 @@ import {LocalStorage} from '/common/local_storage.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from '../../common/command.js';
-import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
+import {CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {Msgs} from '../../common/msgs.js';
 import {Personality, QueueMode, TtsCategory} from '../../common/tts_types.js';

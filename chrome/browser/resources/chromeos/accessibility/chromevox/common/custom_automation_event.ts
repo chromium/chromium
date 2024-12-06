@@ -10,37 +10,46 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-/**
- * @typedef{chrome.automation.AutomationEvent|CustomAutomationEvent}
- */
-export let ChromeVoxEvent;
+type ActionType = chrome.automation.ActionType;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type AutomationIntent = chrome.automation.AutomationIntent;
+type AutomationNode = chrome.automation.AutomationNode;
+type EventType = chrome.automation.EventType;
+
+export interface CustomEventProperties {
+  eventFrom?: string;
+  eventFromAction?: ActionType;
+  intents?: AutomationIntent[];
+}
 
 /**
  * An object we can use instead of a chrome.automation.AutomationEvent.
  */
 export class CustomAutomationEvent {
-  /**
-   * @param {chrome.automation.EventType} type The event type.
-   * @param {!chrome.automation.AutomationNode} target The event target.
-   * @param {!{eventFrom: (string|undefined),
-   *           eventFromAction: (chrome.automation.ActionType|undefined),
-   *           intents: (!Array<chrome.automation.AutomationIntent>|undefined)
-   *        }} params
-   */
-  constructor(type, target, params = {}) {
+  type: EventType;
+  target: AutomationNode;
+  eventFrom: string;
+  eventFromAction: ActionType|undefined;
+  intents: AutomationIntent[];
+
+  constructor(
+      type: EventType, target: AutomationNode,
+      params: CustomEventProperties = {}) {
     this.type = type;
     this.target = target;
     this.eventFrom = params.eventFrom || '';
-    this.eventFromAction = params.eventFromAction || '';
+    this.eventFromAction = params.eventFromAction;
     this.intents = params.intents || [];
   }
 
   /**
    * Stops the propagation of this event.
    */
-  stopPropagation() {
+  stopPropagation(): void {
     throw Error('Can\'t call stopPropagation on a CustomAutomationEvent');
   }
 }
+
+export type ChromeVoxEvent = AutomationEvent|CustomAutomationEvent;
 
 TestImportManager.exportForTesting(CustomAutomationEvent);
