@@ -546,9 +546,8 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
       secondary_action_pause_->GetVisible()
           ? HoldingSpaceCommandId::kPauseItem
           : HoldingSpaceCommandId::kResumeItem;
-  const bool success = holding_space_util::ExecuteInProgressCommand(
-      item(), command_id,
-      holding_space_metrics::EventSource::kHoldingSpaceItem);
+  const bool success =
+      holding_space_util::ExecuteInProgressCommand(item(), command_id);
   CHECK(success);
 }
 

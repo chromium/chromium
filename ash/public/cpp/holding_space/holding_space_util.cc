@@ -187,12 +187,11 @@ bool SupportsInProgressCommand(const HoldingSpaceItem* item,
 }
 
 bool ExecuteInProgressCommand(const HoldingSpaceItem* item,
-                              HoldingSpaceCommandId command_id,
-                              holding_space_metrics::EventSource event_source) {
+                              HoldingSpaceCommandId command_id) {
   DCHECK(IsInProgressCommand(command_id));
   for (const auto& in_progress_command : item->in_progress_commands()) {
     if (in_progress_command.command_id == command_id) {
-      in_progress_command.handler.Run(item, command_id, event_source);
+      in_progress_command.handler.Run(item, command_id);
       return true;
     }
   }

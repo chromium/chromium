@@ -195,8 +195,7 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
   if (action_data.action == ax::mojom::Action::kDoDefault) {
     if (!view->selected())
       SetSelection(view);
-    OpenItemsAndScheduleClose(
-        GetSelection(), holding_space_metrics::EventSource::kHoldingSpaceItem);
+    OpenItemsAndScheduleClose(GetSelection());
     return true;
   }
   // When showing the context menu via accessible action (e.g. Search + M),
@@ -248,8 +247,7 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewGestureEvent(
   // the child bubble which clears selection state.
   if (GetSelection().empty()) {
     SetSelection(view);
-    OpenItemsAndScheduleClose(
-        GetSelection(), holding_space_metrics::EventSource::kHoldingSpaceItem);
+    OpenItemsAndScheduleClose(GetSelection());
     return true;
   }
 
@@ -269,8 +267,7 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewKeyPressed(
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
     if (!view->selected())
       SetSelection(view);
-    OpenItemsAndScheduleClose(
-        GetSelection(), holding_space_metrics::EventSource::kHoldingSpaceItem);
+    OpenItemsAndScheduleClose(GetSelection());
     return true;
   }
   return false;
@@ -359,8 +356,7 @@ void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewMouseReleased(
   // `view` being clicked is already part of the selection.
   if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
     DCHECK(view->selected());
-    OpenItemsAndScheduleClose(
-        GetSelection(), holding_space_metrics::EventSource::kHoldingSpaceItem);
+    OpenItemsAndScheduleClose(GetSelection());
     return;
   }
 
@@ -400,9 +396,7 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
   // The ENTER key should open all selected holding space items.
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
     if (!GetSelection().empty()) {
-      OpenItemsAndScheduleClose(
-          GetSelection(),
-          holding_space_metrics::EventSource::kHoldingSpaceBubble);
+      OpenItemsAndScheduleClose(GetSelection());
       return true;
     }
   }
@@ -486,8 +480,7 @@ void HoldingSpaceViewDelegate::WriteDragDataForView(views::View* sender,
   DCHECK_GE(selection.size(), 1u);
 
   holding_space_metrics::RecordItemAction(
-      GetItems(selection), holding_space_metrics::ItemAction::kDrag,
-      holding_space_metrics::EventSource::kHoldingSpaceItem);
+      GetItems(selection), holding_space_metrics::ItemAction::kDrag);
 
   // Drag image.
   gfx::ImageSkia drag_image;
@@ -515,15 +508,10 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
   switch (command_id) {
     case HoldingSpaceCommandId::kCopyImageToClipboard:
       DCHECK_EQ(items.size(), 1u);
-      client->CopyImageToClipboard(
-          *items.front(),
-          holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu,
-          base::DoNothing());
+      client->CopyImageToClipboard(*items.front(), base::DoNothing());
       break;
     case HoldingSpaceCommandId::kPinItem:
-      client->PinItems(
-          items,
-          holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
+      client->PinItems(items);
       break;
     case HoldingSpaceCommandId::kRemoveItem: {
       std::vector<base::FilePath> suggested_file_paths;
@@ -537,9 +525,7 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
                 suggested_file_paths.push_back(item->file().file_path);
               }
               holding_space_metrics::RecordItemAction(
-                  {item}, holding_space_metrics::ItemAction::kRemove,
-                  holding_space_metrics::EventSource::
-                      kHoldingSpaceItemContextMenu);
+                  {item}, holding_space_metrics::ItemAction::kRemove);
             }
             return remove;
           },
@@ -552,20 +538,16 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
       DCHECK_EQ(items.size(), 1u);
       client->ShowItemInFolder(
           *items.front(),
-          holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu,
           base::DoNothing());
       break;
     case HoldingSpaceCommandId::kUnpinItem:
-      client->UnpinItems(
-          items,
-          holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
+      client->UnpinItems(items);
       break;
     default:
       CHECK(holding_space_util::IsInProgressCommand(command_id));
       for (const HoldingSpaceItem* item : items) {
-        const bool success = holding_space_util::ExecuteInProgressCommand(
-            item, command_id,
-            holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
+        const bool success =
+            holding_space_util::ExecuteInProgressCommand(item, command_id);
         CHECK(success);
       }
       break;
@@ -818,8 +800,7 @@ void HoldingSpaceViewDelegate::UpdateSelectionUi() {
 }
 
 void HoldingSpaceViewDelegate::OpenItemsAndScheduleClose(
-    const std::vector<const HoldingSpaceItemView*>& views,
-    holding_space_metrics::EventSource event_source) {
+    const std::vector<const HoldingSpaceItemView*>& views) {
   DCHECK_GE(views.size(), 1u);
 
   // This `PostTask()` will result in the destruction of the view delegate if it
@@ -831,10 +812,10 @@ void HoldingSpaceViewDelegate::OpenItemsAndScheduleClose(
             if (weak_ptr)
               weak_ptr->bubble_->tray()->CloseBubble();
           },
-          weak_factory_.GetMutableWeakPtr()));
+          weak_factory_.GetWeakPtr()));
 
-  HoldingSpaceController::Get()->client()->OpenItems(
-      GetItems(views), event_source, base::DoNothing());
+  HoldingSpaceController::Get()->client()->OpenItems(GetItems(views),
+                                                     base::DoNothing());
 }
 
 }  // namespace ash
