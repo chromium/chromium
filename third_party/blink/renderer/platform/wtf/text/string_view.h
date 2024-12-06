@@ -147,8 +147,6 @@ class WTF_EXPORT StringView {
       : impl_(StringImpl::empty_),
         bytes_(chars.data()),
         length_(base::checked_cast<wtf_size_t>(chars.size())) {}
-  StringView(const char* chars, unsigned length)
-      : StringView(reinterpret_cast<const LChar*>(chars), length) {}
   StringView(const LChar* chars)
       : StringView(chars,
                    chars ? base::checked_cast<unsigned>(

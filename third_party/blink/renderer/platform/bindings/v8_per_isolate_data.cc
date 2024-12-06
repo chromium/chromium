@@ -366,9 +366,7 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
         names, new_vector.begin(), [isolate](std::string_view name) {
           return v8::Eternal<v8::Name>(
               isolate,
-              V8AtomicString(
-                  isolate,
-                  StringView(name.data(), static_cast<unsigned>(name.size()))));
+              V8AtomicString(isolate, StringView(base::as_byte_span(name))));
         });
     vector = &eternal_name_cache_.Set(lookup_key, std::move(new_vector))
                   .stored_value->value;

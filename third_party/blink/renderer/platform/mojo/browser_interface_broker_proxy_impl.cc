@@ -25,8 +25,7 @@ struct InterfaceNameHashTranslator {
   }
 
   static bool Equal(const String& a, std::string_view b) {
-    unsigned b_size = base::checked_cast<unsigned>(b.size());
-    StringView wtf_b(b.data(), b_size);
+    StringView wtf_b(base::as_byte_span(b));
     return EqualStringView(a, wtf_b);
   }
 };

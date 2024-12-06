@@ -353,12 +353,13 @@ TEST(StringViewTest, ConstructionLiteral8) {
   EXPECT_EQ(StringView("12"), StringView(kChars8, 2u));
   EXPECT_EQ("12", StringView(kChars8, 2u));
 
-  // StringView(const char* chars, unsigned length);
-  ASSERT_TRUE(StringView(kChars, 2u).Is8Bit());
-  EXPECT_FALSE(StringView(kChars, 2u).IsNull());
-  EXPECT_EQ(2u, StringView(kChars, 2u).length());
-  EXPECT_EQ(StringView("12"), StringView(kChars, 2u));
-  EXPECT_EQ("12", StringView(kChars, 2u));
+  // StringView(base::span<const LChar> chars);
+  StringView view2(base::as_byte_span(kChars).first(2u));
+  ASSERT_TRUE(view2.Is8Bit());
+  EXPECT_FALSE(view2.IsNull());
+  EXPECT_EQ(2u, view2.length());
+  EXPECT_EQ(StringView("12"), view2);
+  EXPECT_EQ("12", view2);
 }
 
 TEST(StringViewTest, ConstructionLiteral16) {
@@ -412,7 +413,7 @@ TEST(StringViewTest, OverflowInSet) {
 
 TEST(StringViewTest, IsEmpty) {
   EXPECT_FALSE(StringView(kChars).empty());
-  EXPECT_TRUE(StringView(kChars, 0).empty());
+  EXPECT_TRUE(StringView(base::as_byte_span(kChars).first(0u)).empty());
   EXPECT_FALSE(StringView(String(kChars)).empty());
   EXPECT_TRUE(StringView(String(kChars), 5).empty());
   EXPECT_TRUE(StringView(String(kChars), 4, 0).empty());

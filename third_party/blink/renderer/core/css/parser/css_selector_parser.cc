@@ -2451,7 +2451,10 @@ WebFeature FeatureForWebKitCustomPseudoElement(const AtomicString& name) {
   // TODO(fs): Could use binary search once there's a less finicky way to
   // compare (order) String and StringView/non-String.
   for (const auto& entry : feature_table) {
-    if (name == StringView(entry.key, entry.key_length)) {
+    // SAFETY: The PseudoElementFeatureMapEntry constructor guarantees `key` and
+    // `key_length` are safe.
+    if (name == StringView(base::as_bytes(
+                    UNSAFE_BUFFERS(base::span(entry.key, entry.key_length))))) {
       return static_cast<WebFeature>(entry.feature);
     }
   }
