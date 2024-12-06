@@ -4350,6 +4350,12 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_unit_test_apk.filter",
                 ],
             ),
+            "components_browsertests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/366037904): Fix the test failure
+                    "--gtest_filter=-All/AndroidInputBrowserTest.*/InputOnViz_Enabled",
+                ],
+            ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
@@ -4406,6 +4412,11 @@ ci.builder(
                 swarming = targets.swarming(
                     shards = 12,
                 ),
+            ),
+            "viz_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.viz_unittests.filter",
+                ],
             ),
         },
     ),
