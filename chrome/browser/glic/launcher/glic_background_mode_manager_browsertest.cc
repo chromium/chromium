@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace glic {
 namespace {
 
 class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
@@ -46,3 +47,4 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, KeepAlive) {
 }
 
 }  // namespace
+}  // namespace glic

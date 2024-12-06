@@ -15,6 +15,8 @@ class GlicStatusIcon;
 class ScopedKeepAlive;
 class StatusTray;
 
+namespace glic {
+
 // This is a global feature in the browser process that manages the
 // enabling/disabling of glic background mode. When background mode is enabled,
 // chrome is set to keep alive the browser process, so that this class can
@@ -49,5 +51,6 @@ class GlicBackgroundModeManager : public GlicConfiguration::Observer {
   // mode is enabled.
   std::unique_ptr<GlicStatusIcon> status_icon_;
 };
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_

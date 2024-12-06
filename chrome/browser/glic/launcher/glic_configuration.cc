@@ -9,6 +9,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
+namespace glic {
+
 GlicConfiguration::GlicConfiguration(Observer* manager) : manager_(manager) {
   if (PrefService* local_state = g_browser_process->local_state()) {
     pref_registrar_.Init(local_state);
@@ -34,3 +36,5 @@ bool GlicConfiguration::IsEnabled() {
 void GlicConfiguration::OnEnabledPrefChanged() {
   manager_->OnEnabledChanged(IsEnabled());
 }
+
+}  // namespace glic

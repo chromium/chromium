@@ -1983,7 +1983,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  GlicConfiguration::RegisterPrefs(registry);
+  glic::GlicConfiguration::RegisterPrefs(registry);
 #endif
 
   // This is intentionally last.
