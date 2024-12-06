@@ -152,8 +152,13 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
     return OK;
   }
 
-  // TODO(crbug.com/381742472): Have this preconnect paused if the
-  // existing attempts are failing.
+  // When failing, just returns the current error.
+  // TODO(crbug.com/381742472): Consider resuming this preconnect after the
+  // current failing attempt manager completes.
+  if (IsFailing()) {
+    return attempt_manager_->error_to_notify();
+  }
+
   EnsureAttemptManager();
   return attempt_manager_->Preconnect(num_streams, quic_version,
                                       std::move(callback));
@@ -351,8 +356,8 @@ void HttpStreamPool::Group::CancelJobs(int error) {
   if (!paused_jobs_.empty()) {
     CancelPausedJob(error);
   }
-  // TODO(crbug.com/381742472): Cancel paused preconnects when we support paused
-  // preconnects.
+  // TODO(crbug.com/381742472): Need to cancel paused preconnects when we
+  // support paused preconnects.
   if (attempt_manager_) {
     attempt_manager_->CancelJobs(error);
   }
@@ -371,7 +376,8 @@ void HttpStreamPool::Group::OnRequiredHttp11() {
 void HttpStreamPool::Group::OnAttemptManagerComplete() {
   CHECK(attempt_manager_);
 
-  // TODO(crbug.com/381742472): Handle paused preconnects if exist.
+  // TODO(crbug.com/381742472): Need to handle paused preconnects when we
+  // support paused preconnects.
   const bool should_start_new_attempt_manager =
       attempt_manager_->is_failing() && !paused_jobs_.empty();
 

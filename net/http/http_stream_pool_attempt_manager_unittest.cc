@@ -3570,8 +3570,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(), 1u);
 
   // Preconnect during the failing mode fails.
-  // TODO(crbug.com/381742472): Preconnect should be paused instead of failing.
-  // Fix the behavior.
+  // TODO(crbug.com/381742472): Consider pausing the preconnect and resuming
+  // later.
   Preconnector preconnector1(kDestination);
   EXPECT_THAT(preconnector1.Preconnect(pool()), IsError(ERR_CONNECTION_RESET));
 

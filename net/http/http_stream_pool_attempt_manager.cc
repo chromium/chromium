@@ -292,6 +292,8 @@ int HttpStreamPool::AttemptManager::Preconnect(
     size_t num_streams,
     quic::ParsedQuicVersion quic_version,
     CompletionOnceCallback callback) {
+  CHECK(!is_failing_);
+
   MaybeUpdateQuicVersionWhenForced(quic_version);
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT, [&] {
@@ -308,10 +310,6 @@ int HttpStreamPool::AttemptManager::Preconnect(
   CHECK(!spdy_session_pool()->HasAvailableSession(spdy_session_key(),
                                                   /*is_websocket=*/false));
   CHECK(group_->ActiveStreamSocketCount() < num_streams);
-
-  if (is_failing_) {
-    return error_to_notify_;
-  }
 
   auto entry =
       std::make_unique<PreconnectEntry>(num_streams, std::move(callback));
