@@ -55,6 +55,12 @@ bool IsDataURLReadyForDecode(std::string_view body) {
          });
 }
 
+bool IsFurtherOptimizeParsingDataUrlsEnabled() {
+  static const bool further_optimize_parsing_enabled =
+      base::FeatureList::IsEnabled(features::kFurtherOptimizeParsingDataUrls);
+  return further_optimize_parsing_enabled;
+}
+
 }  // namespace
 
 bool DataURL::Parse(const GURL& url,
@@ -144,7 +150,26 @@ bool DataURL::Parse(const GURL& url,
     // could be part of the payload, so don't strip it.
     if (base64_encoded) {
       if (IsSimdutfBase64SupportEnabled()) {
-        if (base::FeatureList::IsEnabled(features::kOptimizeParsingDataUrls)) {
+        if (IsFurtherOptimizeParsingDataUrlsEnabled()) {
+          // Based on https://fetch.spec.whatwg.org/#data-url-processor, we can
+          // always use forgiving-base64 decode.
+          // Forgiving-base64 decode consists of 2 passes: removing all ASCII
+          // whitespace, then base64 decoding. For data URLs, it consists of 3
+          // passes: percent-decoding, removing all ASCII whitespace, then
+          // base64 decoding. To do this with as few passes as possible, we try
+          // base64 decoding without any modifications in the "happy path". If
+          // that fails, we percent-decode, then try the base64 decode again.
+          if (!SimdutfBase64Decode(raw_body, data,
+                                   base::Base64DecodePolicy::kForgiving)) {
+            std::string unescaped_body =
+                base::UnescapeBinaryURLComponent(raw_body);
+            if (!SimdutfBase64Decode(unescaped_body, data,
+                                     base::Base64DecodePolicy::kForgiving)) {
+              return false;
+            }
+          }
+        } else if (base::FeatureList::IsEnabled(
+                       features::kOptimizeParsingDataUrls)) {
           // Since whitespace and invalid characters in input will always cause
           // `Base64Decode` to fail, just handle unescaping the URL on failure.
           // This is not much slower than scanning the URL for being well formed
