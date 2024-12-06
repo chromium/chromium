@@ -73,7 +73,7 @@ class SubgriddedItemData {
   WritingMode parent_writing_mode_{WritingMode::kHorizontalTb};
 };
 
-constexpr SubgriddedItemData kNoSubgriddedItemData;
+inline constexpr SubgriddedItemData kNoSubgriddedItemData;
 
 // This class represents a grid tree (see `grid_subtree.h`) and contains the
 // necessary data to perform the track sizing algorithm of its nested subgrids.
@@ -210,7 +210,7 @@ class GridSizingSubtree
   }
 };
 
-constexpr GridSizingSubtree kNoGridSizingSubtree;
+inline constexpr GridSizingSubtree kNoGridSizingSubtree;
 
 }  // namespace blink
 
