@@ -271,9 +271,6 @@ void Range::collapse(bool to_start) {
 }
 
 void Range::CollapseIfNeeded(bool did_move_document, bool collapse_to_start) {
-  RangeBoundaryPoint original_start(start_);
-  RangeBoundaryPoint original_end(end_);
-
   bool different_tree_scopes =
       HasDifferentRootContainer(&start_.Container(), &end_.Container());
   // If document moved, we are in different tree scopes, or start boundary point
