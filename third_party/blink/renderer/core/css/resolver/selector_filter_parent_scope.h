@@ -46,6 +46,7 @@ class CORE_EXPORT SelectorFilterParentScope {
   ScopeType scope_type_;
   SelectorFilterParentScope* previous_;
   StyleResolver* resolver_;
+  SelectorFilter::Mark mark_;
 
   static SelectorFilterParentScope* current_scope_;
 };
@@ -87,14 +88,8 @@ inline SelectorFilterParentScope::SelectorFilterParentScope(
 
 inline SelectorFilterParentScope::~SelectorFilterParentScope() {
   current_scope_ = previous_;
-  if (!pushed_) {
-    return;
-  }
-  DCHECK(resolver_);
-  DCHECK(parent_);
-  resolver_->GetSelectorFilter().PopParent(*parent_);
-  if (scope_type_ == ScopeType::kRoot) {
-    PopAncestors(*parent_);
+  if (pushed_) {
+    resolver_->GetSelectorFilter().PopTo(mark_);
   }
 }
 
@@ -113,10 +108,12 @@ inline void SelectorFilterParentScope::PushParentIfNeeded() {
     return;
   }
   if (scope_type_ == ScopeType::kRoot) {
+    mark_ = resolver_->GetSelectorFilter().SetMark();
     PushAncestors(*parent_);
   } else {
     DCHECK(previous_);
     previous_->PushParentIfNeeded();
+    mark_ = resolver_->GetSelectorFilter().SetMark();
   }
   resolver_->GetSelectorFilter().PushParent(*parent_);
   pushed_ = true;

@@ -141,7 +141,7 @@ RuleData::RuleData(StyleRule* rule,
                    unsigned position,
                    const StyleScope* style_scope,
                    AddRuleFlags add_rule_flags,
-                   Vector<unsigned>& bloom_hash_backing)
+                   Vector<uint16_t>& bloom_hash_backing)
     : rule_(rule),
       selector_index_(selector_index),
       position_(position),
@@ -184,7 +184,7 @@ void RuleData::ResetEntirelyCoveredByBucketing() {
 }
 
 void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
-                                        Vector<unsigned>& bloom_hash_backing) {
+                                        Vector<uint16_t>& bloom_hash_backing) {
   if (bloom_hash_backing.size() >= 16777216) {
     // This won't fit into bloom_hash_pos_, so don't collect any hashes.
     return;
@@ -214,8 +214,8 @@ void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
   }
 }
 
-void RuleData::MovedToDifferentRuleSet(const Vector<unsigned>& old_backing,
-                                       Vector<unsigned>& new_backing,
+void RuleData::MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
+                                       Vector<uint16_t>& new_backing,
                                        unsigned new_position) {
   unsigned new_pos = new_backing.size();
   new_backing.insert(new_backing.size(), old_backing.data() + bloom_hash_pos_,

@@ -63,7 +63,7 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
 
       for (const CSSSelector* selector = selectors->First(); selector;
            selector = CSSSelectorList::Next(*selector)) {
-        Vector<unsigned> selector_hashes;
+        Vector<uint16_t> selector_hashes;
         filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
                                        selector_hashes);
         EXPECT_NE(selector_hashes.size(), 0u);
@@ -97,7 +97,7 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
 
   for (const CSSSelector* selector = selectors->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    Vector<unsigned> selector_hashes;
+    Vector<uint16_t> selector_hashes;
     filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
                                    selector_hashes);
     EXPECT_NE(selector_hashes.size(), 0u);
@@ -171,7 +171,7 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
 
   for (const CSSSelector* selector = selectors->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    Vector<unsigned> selector_hashes;
+    Vector<uint16_t> selector_hashes;
     filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
                                    selector_hashes);
     EXPECT_NE(selector_hashes.size(), 0u);

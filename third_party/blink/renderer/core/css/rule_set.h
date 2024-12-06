@@ -132,7 +132,7 @@ class CORE_EXPORT RuleData {
            unsigned position,
            const StyleScope*,
            AddRuleFlags,
-           Vector<unsigned>& bloom_hash_backing);
+           Vector<uint16_t>& bloom_hash_backing);
 
   unsigned GetPosition() const { return position_; }
   StyleRule* Rule() const { return rule_.Get(); }
@@ -164,14 +164,14 @@ class CORE_EXPORT RuleData {
   }
 
   // Member functions related to the descendant Bloom filter.
-  const base::span<const unsigned> DescendantSelectorIdentifierHashes(
-      const Vector<unsigned>& backing) const {
+  const base::span<const uint16_t> DescendantSelectorIdentifierHashes(
+      const Vector<uint16_t>& backing) const {
     return {backing.data() + bloom_hash_pos_, bloom_hash_size_};
   }
   void ComputeBloomFilterHashes(const StyleScope* style_scope,
-                                Vector<unsigned>& backing);
-  void MovedToDifferentRuleSet(const Vector<unsigned>& old_backing,
-                               Vector<unsigned>& new_backing,
+                                Vector<uint16_t>& backing);
+  void MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
+                               Vector<uint16_t>& new_backing,
                                unsigned new_position);
 
   void Trace(Visitor*) const;
@@ -583,7 +583,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Interval<StyleScope>>& ScopeIntervals() const {
     return scope_intervals_;
   }
-  const Vector<unsigned>& BloomHashBacking() const {
+  const Vector<uint16_t>& BloomHashBacking() const {
     return bloom_hash_backing_;
   }
 
@@ -774,14 +774,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // Backing store for the Bloom filter hashes for each RuleData.
   // It is stored here so that we can have a variable number of them
   // (without the overhead of a Vector in each RuleData).
-  //
-  // Note that we only really use the bottom 24 bits of each hash,
-  // so we could in theory save some more bytes here by storing 3-byte
-  // instead of 4-byte ints. However, even for sites using a fair bit
-  // of descendant selectors, we typically see <50 kB potential savings
-  // here, so we haven't gone down that route yet. (Perhaps it could
-  // in theory help with cache efficiency.)
-  Vector<unsigned> bloom_hash_backing_;
+  Vector<uint16_t> bloom_hash_backing_;
 
 #if DCHECK_IS_ON()
   HeapVector<RuleData> all_rules_;

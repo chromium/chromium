@@ -2382,6 +2382,10 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
     // The SelectorFilter stack is set up for invalidating the tree
     // under the host, which includes the host. When invalidating the
     // host itself, we need to take it out so that the stack is consistent.
+    //
+    // Note that since we don't have a mark for PopTo(), the actual bits
+    // in the filter for the host will stay, giving a potential false
+    // positive. It would be nice to handle this somehow.
     selector_filter.PopParent(host);
     ApplyRuleSetInvalidationForElement(tree_scope, host, selector_filter,
                                        style_scope_frame, rule_sets,
@@ -2465,11 +2469,12 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
 
   if (invalidation_scope == kInvalidateAllScopes) {
     if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
+      SelectorFilter::Mark mark = selector_filter.SetMark();
       selector_filter.PushParent(element);
       ApplyRuleSetInvalidationForTreeScope(tree_scope, shadow_root->RootNode(),
                                            selector_filter, style_scope_frame,
                                            rule_sets, kInvalidateAllScopes);
-      selector_filter.PopParent(element);
+      selector_filter.PopTo(mark);
     }
   }
 
@@ -2480,6 +2485,7 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
        element.GetComputedStyle());
 
   if (traverse_children) {
+    SelectorFilter::Mark mark = selector_filter.SetMark();
     selector_filter.PushParent(element);
 
     for (Element& child : ElementTraversal::ChildrenOf(element)) {
@@ -2490,7 +2496,7 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
           invalidate_part);
     }
 
-    selector_filter.PopParent(element);
+    selector_filter.PopTo(mark);
   }
 }
 

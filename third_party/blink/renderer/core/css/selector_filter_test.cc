@@ -17,9 +17,9 @@ class SelectorFilterTest : public PageTestBase {};
 
 namespace {
 
-Vector<unsigned> CollectIdentifierHashesFromInnerRule(Document& document,
+Vector<uint16_t> CollectIdentifierHashesFromInnerRule(Document& document,
                                                       String rule_text) {
-  Vector<unsigned> result;
+  Vector<uint16_t> result;
   const auto* outer_rule = DynamicTo<StyleRuleGroup>(
       css_test_helpers::ParseRule(document, rule_text));
   CHECK(outer_rule);
@@ -42,7 +42,7 @@ Vector<unsigned> CollectIdentifierHashesFromInnerRule(Document& document,
 }  // namespace
 
 TEST_F(SelectorFilterTest, CollectHashesScopeSubject) {
-  Vector<unsigned> hashes = CollectIdentifierHashesFromInnerRule(GetDocument(),
+  Vector<uint16_t> hashes = CollectIdentifierHashesFromInnerRule(GetDocument(),
                                                                  R"CSS(
     @scope (.a) {
       .b.c .d:scope {
@@ -57,7 +57,7 @@ TEST_F(SelectorFilterTest, CollectHashesScopeSubject) {
 }
 
 TEST_F(SelectorFilterTest, CollectHashesScopeNonSubject) {
-  Vector<unsigned> hashes = CollectIdentifierHashesFromInnerRule(GetDocument(),
+  Vector<uint16_t> hashes = CollectIdentifierHashesFromInnerRule(GetDocument(),
                                                                  R"CSS(
     @scope (.a) {
       .b.c:scope .d {
@@ -73,7 +73,7 @@ TEST_F(SelectorFilterTest, CollectHashesScopeNonSubject) {
 }
 
 TEST_F(SelectorFilterTest, CollectHashesScopeImplied) {
-  Vector<unsigned> hashes = CollectIdentifierHashesFromInnerRule(GetDocument(),
+  Vector<uint16_t> hashes = CollectIdentifierHashesFromInnerRule(GetDocument(),
                                                                  R"CSS(
     @scope (.a) {
       .b.c .d {
