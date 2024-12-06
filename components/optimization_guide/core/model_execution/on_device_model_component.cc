@@ -132,15 +132,10 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
   return OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
 }
 
-OnDeviceModelComponentStateManager::RegistrationCriteria
+const OnDeviceModelComponentStateManager::RegistrationCriteria*
 OnDeviceModelComponentStateManager::GetRegistrationCriteria() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (registration_criteria_) {
-    return *registration_criteria_;
-  } else {
-    RegistrationCriteria empty_criteria;
-    return empty_criteria;
-  }
+  return registration_criteria_.get();
 }
 
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(

@@ -175,8 +175,9 @@ class OnDeviceModelComponentStateManager
   // Returns the current OnDeviceModelStatus.
   OnDeviceModelStatus GetOnDeviceModelStatus();
 
-  // Returns the most recently computed registration criteria.
-  RegistrationCriteria GetRegistrationCriteria();
+  // Returns the most recently computed registration criteria, or nullopt if no
+  // registration has been computed yet.
+  const RegistrationCriteria* GetRegistrationCriteria();
 
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
