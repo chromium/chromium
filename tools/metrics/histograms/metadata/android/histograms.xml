@@ -202,6 +202,8 @@ chromium-metrics-reviews@google.com.
                a versa."/>
 </variants>
 
+<!-- LINT.IfChange(IntentOriginVariants) -->
+
 <variants name="SearchActivityIntentOriginVariants">
   <variant name="" summary="overall"/>
   <variant name=".CustomTab" summary="Chrome Custom Tab"/>
@@ -209,7 +211,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".Launcher" summary="Launcher / Jump-start Omnibox"/>
   <variant name=".SearchWidget" summary="(old) Search widget"/>
   <variant name=".ShortcutsWidget" summary="(new) Shortcuts widget"/>
+  <variant name=".WebSearch" summary="External Web Search request"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/searchactivityutils/java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityExtras.java:IntentOrigin) -->
 
 <variants name="TaskType">
   <variant name="AuxiliarySearchDonate" summary="AuxiliarySearchDonate"/>

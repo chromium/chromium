@@ -40,6 +40,10 @@ public class SearchActivityUtils {
      * @return the origin of an intent
      */
     /* package */ static @IntentOrigin int getIntentOrigin(@NonNull Intent intent) {
+        if (Intent.ACTION_WEB_SEARCH.equals(intent.getAction())) {
+            return IntentOrigin.WEB_SEARCH;
+        }
+
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
             return IntentUtils.safeGetIntExtra(
                     intent, SearchActivityExtras.EXTRA_ORIGIN, IntentOrigin.UNKNOWN);
@@ -100,6 +104,10 @@ public class SearchActivityUtils {
 
     /** Returns the caller-supplied initial search query. */
     /* package */ static @Nullable String getIntentQuery(@NonNull Intent intent) {
+        if (getIntentOrigin(intent) == IntentOrigin.WEB_SEARCH) {
+            return IntentUtils.safeGetStringExtra(intent, SearchManager.QUERY);
+        }
+
         // Unlike most other intents, this does not require trusted extras.
         return IntentUtils.safeGetStringExtra(intent, SearchManager.QUERY);
     }

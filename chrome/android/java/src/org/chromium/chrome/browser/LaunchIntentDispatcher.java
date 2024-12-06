@@ -217,6 +217,7 @@ public class LaunchIntentDispatcher {
         return dispatchToTabbedActivity();
     }
 
+    @SuppressWarnings(value = "UnsafeImplicitIntentLaunch")
     private boolean processWebSearchIntent(Intent intent) {
         if (intent == null) return false;
 

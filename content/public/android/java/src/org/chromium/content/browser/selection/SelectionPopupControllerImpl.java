@@ -1358,6 +1358,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     /** Perform a search action. */
     @VisibleForTesting
+    @SuppressWarnings(value = "UnsafeImplicitIntentLaunch")
     public void search() {
         RecordUserAction.record("MobileActionMode.WebSearch");
         String query = sanitizeQuery(getSelectedText(), MAX_SEARCH_QUERY_LENGTH);

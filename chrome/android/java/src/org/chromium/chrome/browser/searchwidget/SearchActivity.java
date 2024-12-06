@@ -613,11 +613,7 @@ public class SearchActivity extends AsyncInitializationActivity
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_LAUNCHED_WITH_QUERY, !TextUtils.isEmpty(query));
 
-        mSearchBox.beginQuery(
-                mIntentOrigin,
-                mSearchType,
-                SearchActivityUtils.getIntentQuery(getIntent()),
-                getWindowAndroid());
+        mSearchBox.beginQuery(mIntentOrigin, mSearchType, query, getWindowAndroid());
     }
 
     @Override
@@ -848,6 +844,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
                         case IntentOrigin.LAUNCHER -> ".Launcher";
                         case IntentOrigin.HUB -> ".Hub";
+                        case IntentOrigin.WEB_SEARCH -> ".WebSearch";
                         default -> ".SearchWidget";
                     };
             RecordHistogram.recordEnumeratedHistogram(histogramName + suffix, sample, max);

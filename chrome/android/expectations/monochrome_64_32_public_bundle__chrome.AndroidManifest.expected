@@ -347,6 +347,10 @@
         android:taskAffinity=""
         android:theme="@style/Theme.Chromium.SearchActivity"
         android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: 8fea14cf
+        <action android:name="android.intent.action.WEB_SEARCH"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 8fea14cf
     </activity>  # DIFF-ANCHOR: 7468a722
     <activity  # DIFF-ANCHOR: d32b85df
         android:name="org.chromium.chrome.browser.settings.SettingsActivity"
