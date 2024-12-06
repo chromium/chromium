@@ -1148,7 +1148,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"addresses", IDS_AUTOFILL_ADDRESSES},
       {"addressesTableAriaLabel", IDS_AUTOFILL_ADDRESSES_TABLE_ARIA_LABEL},
       {"addressesTitle", IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE},
-      {"addressesSublabel", IDS_AUTOFILL_ADDRESSES_SETTINGS_SUBLABEL},
       {"addAddressTitle", IDS_SETTINGS_AUTOFILL_ADDRESSES_ADD_TITLE},
       {"editAddressTitle", IDS_SETTINGS_AUTOFILL_ADDRESSES_EDIT_TITLE},
       {"localAddressIconA11yLabel", IDS_AUTOFILL_LOCAL_ADDRESS_ICON_A11Y_LABEL},
@@ -1400,6 +1399,14 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                   .spec())));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString(
+      "addressesSublabel",
+      l10n_util::GetStringUTF8(
+          base::FeatureList::IsEnabled(
+              plus_addresses::features::kPlusAddressesEnabled)
+              ? IDS_AUTOFILL_ADDRESSES_SETTINGS_WITH_PLUS_ADDRESS_SUBLABEL
+              : IDS_AUTOFILL_ADDRESSES_SETTINGS_SUBLABEL));
 
   html_source->AddBoolean(
       "syncEnableContactInfoDataTypeInTransportMode",
