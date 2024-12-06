@@ -677,8 +677,8 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
     // `ADDRESS_HOME_LINE1` and
     // `ADDRESS_HOME_STREET_ADDRESS` hold the same data.
     if (!suggestions_text.contains(suggestion_text)) {
-      suggestions.emplace_back(SuggestionType::kAddressEntryOnTyping);
-      suggestions.back().main_text = Suggestion::Text(suggestion_text);
+      suggestions.emplace_back(suggestion_text,
+                               SuggestionType::kAddressEntryOnTyping);
       suggestions.back().field_by_field_filling_type_used = type;
       suggestions.back().payload =
           Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));

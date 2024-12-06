@@ -15,12 +15,11 @@ Matcher<Suggestion> EqualsSuggestion(SuggestionType id) {
 }
 
 Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
-                                     const std::u16string& main_text,
-                                     bool is_primary) {
-  return AllOf(Field(&Suggestion::type, id),
-               Field(&Suggestion::main_text,
-                     Suggestion::Text(
-                         main_text, Suggestion::Text::IsPrimary(is_primary))));
+                                     const std::u16string& main_text) {
+  return AllOf(
+      Field(&Suggestion::type, id),
+      Field(&Suggestion::main_text,
+            Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true))));
 }
 
 Matcher<Suggestion> EqualsSuggestion(SuggestionType id,

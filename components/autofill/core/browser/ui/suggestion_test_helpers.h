@@ -13,9 +13,9 @@ namespace autofill {
 
 ::testing::Matcher<Suggestion> EqualsSuggestion(SuggestionType id);
 
-::testing::Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
-                                                const std::u16string& main_text,
-                                                bool is_primary = true);
+::testing::Matcher<Suggestion> EqualsSuggestion(
+    SuggestionType id,
+    const std::u16string& main_text);
 
 ::testing::Matcher<Suggestion> EqualsSuggestion(
     SuggestionType id,

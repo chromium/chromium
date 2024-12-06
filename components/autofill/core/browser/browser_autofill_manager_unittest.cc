@@ -7427,10 +7427,9 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[0]);
 
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
-                                   address_home_line1, /*is_primary=*/false)));
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAddressEntryOnTyping, address_home_line1)));
 }
 
 class BrowserAutofillManagerPlusAddressTest
