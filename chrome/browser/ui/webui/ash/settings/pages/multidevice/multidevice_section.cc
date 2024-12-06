@@ -495,8 +495,7 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_HIDDEN},
       {"nearbyShareDescriptionOff",
        IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_OFF},
-      {"multideviceSuiteToggleLabel",
-       IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_TOGGLE_LABEL},
+      {"multideviceSuiteToggleLabel", IDS_OS_SETTINGS_MULTIDEVICE_TOGGLE_LABEL},
       {"multideviceSuiteToggleA11yLabel",
        IDS_SETTINGS_MULTIDEVICE_SUITE_TOGGLE_A11Y_LABEL},
       {"multideviceSmartLockItemTitle", IDS_SETTINGS_EASY_UNLOCK_SECTION_TITLE},
@@ -684,18 +683,11 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_SETUP_SUMMARY,
                                  ui::GetChromeOSDeviceName(),
                                  kBetterTogetherLearnMoreUrl));
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    html_source->AddString(
-        "multideviceNoHostText",
-        l10n_util::GetStringFUTF16(
-            IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
-            ui::GetChromeOSDeviceName(), kBetterTogetherLearnMoreUrl));
-  } else {
-    html_source->AddString(
-        "multideviceNoHostText",
-        l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
-                                   kBetterTogetherLearnMoreUrl));
-  }
+  html_source->AddString(
+      "multideviceNoHostText",
+      l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
+                                 ui::GetChromeOSDeviceName(),
+                                 kBetterTogetherLearnMoreUrl));
   html_source->AddString(
       "multideviceSmartLockItemSummary",
       l10n_util::GetStringFUTF16(
