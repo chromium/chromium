@@ -358,9 +358,10 @@ def read_all_messages(websocket):
             'params': {}
         })
         message = await read_JSON_message(websocket)
-        if message != AnyExtending({'id': command_id}):
+        while message != AnyExtending({'id': command_id}):
             # Unexpected message. Add to the result list.
             messages.append(message)
+            message = await read_JSON_message(websocket)
         else:
             assert message == AnyExtending({
                 'type': 'success',
@@ -379,9 +380,10 @@ def read_all_messages(websocket):
                         }
                     })
                 message = await read_JSON_message(websocket)
-                if message != AnyExtending({'id': command_id}):
+                while message != AnyExtending({'id': command_id}):
                     # Ignore both success and failure command result.
                     messages.append(message)
+                    message = await read_JSON_message(websocket)
         return messages
 
     return read_all_messages

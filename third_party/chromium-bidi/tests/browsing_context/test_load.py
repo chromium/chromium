@@ -81,7 +81,7 @@ async def test_browsingContext_noInitialLoadEvents(websocket, html,
             'url': url
         }
     } == resp
-    assert_no_more_messages()
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
@@ -108,7 +108,7 @@ async def test_browsingContext_load_properNavigation(websocket, context_id,
         {
             'id': command_id,
             'result': {
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'url': url_example,
             },
             'type': 'success',
@@ -117,7 +117,7 @@ async def test_browsingContext_load_properNavigation(websocket, context_id,
             'method': 'browsingContext.load',
             'params': {
                 'context': context_id,
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': url_example,
             },

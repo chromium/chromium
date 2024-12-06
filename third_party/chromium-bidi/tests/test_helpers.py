@@ -442,7 +442,7 @@ def test_merge_dicts_nested_with_arrays():
 
 def stabilize_key_values(obj,
                          keys_to_stabilize: list[str],
-                         known_values: dict[str, list[str]] | None = None):
+                         known_values: dict[str, str] | None = None):
     """
     Recursively traverses the provided object and replaces the values associated
     with specified keys with stable, predictable placeholders. This ensures
@@ -469,80 +469,94 @@ def stabilize_key_values(obj,
 
     # empty fields to hash
     >>> x={'KEY_1': 1}; stabilize_key_values(x, ['KEY_1']); x;
-    {'KEY_1': [1]}
-    {'KEY_1': 'KEY_1_0'}
+    {'1': 'stable_0'}
+    {'KEY_1': 'stable_0'}
 
     # simple replace
     >>> x={'KEY_1': 1}; stabilize_key_values(x, ['KEY_1']); x;
-    {'KEY_1': [1]}
-    {'KEY_1': 'KEY_1_0'}
+    {'1': 'stable_0'}
+    {'KEY_1': 'stable_0'}
 
     # nested replace
     >>> x={'KEY_1': {'KEY_2': 1}}; stabilize_key_values(x, ['KEY_2']); x;
-    {'KEY_2': [1]}
-    {'KEY_1': {'KEY_2': 'KEY_2_0'}}
+    {'1': 'stable_0'}
+    {'KEY_1': {'KEY_2': 'stable_0'}}
 
     # list replace
     >>> x={'KEY_1': [1, 2]}; stabilize_key_values(x, ['KEY_1']); x;
-    {'KEY_1': [[1, 2]]}
-    {'KEY_1': 'KEY_1_0'}
+    {'[1, 2]': 'stable_0'}
+    {'KEY_1': 'stable_0'}
 
     # nested list replace
     >>> x={'KEY_1': [{'KEY_2': 1}, {'KEY_2': 2}]}; stabilize_key_values(x, ['KEY_2']); x;
-    {'KEY_2': [1, 2]}
-    {'KEY_1': [{'KEY_2': 'KEY_2_0'}, {'KEY_2': 'KEY_2_1'}]}
+    {'1': 'stable_0', '2': 'stable_1'}
+    {'KEY_1': [{'KEY_2': 'stable_0'}, {'KEY_2': 'stable_1'}]}
 
     # different keys same values
     >>> x={'KEY_1': 1, 'KEY_2': 1}; stabilize_key_values(x, ['KEY_1', 'KEY_2']); x;
-    {'KEY_1': [1], 'KEY_2': [1]}
-    {'KEY_1': 'KEY_1_0', 'KEY_2': 'KEY_2_0'}
+    {'1': 'stable_0'}
+    {'KEY_1': 'stable_0', 'KEY_2': 'stable_0'}
 
     # same key different values
     >>> x={'KEY_1': 1, 'KEY_2': 2}; stabilize_key_values(x, ['KEY_1', 'KEY_2']); x;
-    {'KEY_1': [1], 'KEY_2': [2]}
-    {'KEY_1': 'KEY_1_0', 'KEY_2': 'KEY_2_0'}
+    {'1': 'stable_0', '2': 'stable_1'}
+    {'KEY_1': 'stable_0', 'KEY_2': 'stable_1'}
 
     # value of list
     >>> x={'KEY_1': [1, 2, 1], 'KEY_2': {'KEY_1': [1, 2, 1],}}; stabilize_key_values(x, ['KEY_1']); x;
-    {'KEY_1': [[1, 2, 1]]}
-    {'KEY_1': 'KEY_1_0', 'KEY_2': {'KEY_1': 'KEY_1_0'}}
+    {'[1, 2, 1]': 'stable_0'}
+    {'KEY_1': 'stable_0', 'KEY_2': {'KEY_1': 'stable_0'}}
 
     # nested values of list
     >>> x={'KEY_1': [1, 2, {'KEY_2': 1}, {'KEY_2': 2}, {'KEY_2': 1}]}; stabilize_key_values(x, ['KEY_2']); x;
-    {'KEY_2': [1, 2]}
-    {'KEY_1': [1, 2, {'KEY_2': 'KEY_2_0'}, {'KEY_2': 'KEY_2_1'}, {'KEY_2': 'KEY_2_0'}]}
+    {'1': 'stable_0', '2': 'stable_1'}
+    {'KEY_1': [1, 2, {'KEY_2': 'stable_0'}, {'KEY_2': 'stable_1'}, {'KEY_2': 'stable_0'}]}
 
+    # nested stable values
+    >>> x = {'a': {'b': 1, 'c': 2}, 'b': {'b': 1, 'd': 3}}; stabilize_key_values(x, ['b','c','d']); x;
+    {'1': 'stable_0', '2': 'stable_1', '3': 'stable_2', '{"b": "stable_0", "d": "stable_2"}': 'stable_3'}
+    {'a': {'b': 'stable_0', 'c': 'stable_1'}, 'b': 'stable_3'}
+
+     # nested stable values with lists
+    >>> x = {'a': [{'b': 1, 'c': [2]}, {'b': 3, 'c': 4}], 'b': [{'b': 1}]}; stabilize_key_values(x, ['a', 'b','c']); x;
+    {'1': 'stable_0', '[2]': 'stable_1', '3': 'stable_2', '4': 'stable_3', '[{"b": "stable_0", "c": "stable_1"}, {"b": "stable_2", "c": "stable_3"}]': 'stable_4', '[{"b": "stable_0"}]': 'stable_5'}
+    {'a': 'stable_4', 'b': 'stable_5'}
+
+    # dict in dict
+    >>> x = {'a': {'b': 1}, 'c': {'b': 1}}; stabilize_key_values(x, ['a', 'b', 'c']); x
+    {'1': 'stable_0', '{"b": "stable_0"}': 'stable_1'}
+    {'a': 'stable_1', 'c': 'stable_1'}
+
+    # dict property order does not metter
+    >>> x = {'a': 1, 'c': {'b': 1}}; y = {'c': {'b': 1}, 'a': 1}; stabilize_key_values(x, ['a', 'b', 'c']); stabilize_key_values(y, ['a', 'b', 'c']);
+    {'1': 'stable_0', '{"b": "stable_0"}': 'stable_1'}
+    {'1': 'stable_0', '{"b": "stable_0"}': 'stable_1'}
     """
 
     if known_values is None:
         known_values = {}
 
     if len(keys_to_stabilize) == 0:
-        # Nothing to stabilize.
         return known_values
 
     if type(obj) is list:
-        for _, value in enumerate(obj):
+        for index, value in enumerate(obj):
             stabilize_key_values(value, keys_to_stabilize, known_values)
-
-    def _get_stable_value(key, index):
-        return f"{key}_{index}"
 
     if type(obj) is dict:
         for key in obj.keys():
+            # First stabilize content to produce a stable JSON
+            stabilize_key_values(obj[key], keys_to_stabilize, known_values)
+
             if key in keys_to_stabilize:
-                if key not in known_values:
-                    known_values[key] = []
                 old_value = obj[key]
-                if old_value in known_values[key]:
-                    # The value was already met. Use the same value.
-                    new_value = _get_stable_value(
-                        key, known_values[key].index(old_value))
+                value_key = json.dumps(old_value, sort_keys=True)
+
+                if value_key in known_values:
+                    new_value = known_values[value_key]
                 else:
-                    new_value = _get_stable_value(key, len(known_values[key]))
-                    known_values[key].append(old_value)
+                    new_value = f"stable_{len(known_values)}"
+                    known_values[value_key] = new_value
                 obj[key] = new_value
-            else:
-                stabilize_key_values(obj[key], keys_to_stabilize, known_values)
 
     return known_values

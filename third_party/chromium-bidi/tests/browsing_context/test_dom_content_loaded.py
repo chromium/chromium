@@ -65,7 +65,7 @@ async def test_browsingContext_domContentLoaded_navigate_received(
         {
             'id': command_id,
             'result': {
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'url': url_example,
             },
             'type': 'success',
@@ -74,7 +74,7 @@ async def test_browsingContext_domContentLoaded_navigate_received(
             'method': 'browsingContext.domContentLoaded',
             'params': {
                 'context': context_id,
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': url_example,
             },

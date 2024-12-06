@@ -44,7 +44,7 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
         {
             'id': command_id,
             'result': {
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'url': initial_url,
             },
             'type': 'success',
@@ -53,7 +53,7 @@ async def test_browsingContext_navigateWaitInteractive_redirect(
             'method': 'browsingContext.navigationAborted',
             'params': {
                 'context': context_id,
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': initial_url,
             },
@@ -434,7 +434,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
         {
             'id': command_id,
             'result': {
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'url': page_url,
             },
             'type': 'success',
@@ -443,7 +443,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
             'method': 'browsingContext.navigationStarted',
             'params': {
                 'context': context_id,
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': page_url,
             },
@@ -453,7 +453,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
             'method': 'browsingContext.navigationStarted',
             'params': {
                 'context': ANY_STR,
-                'navigation': 'navigation_1',
+                'navigation': 'stable_1',
                 'timestamp': ANY_TIMESTAMP,
                 'url': iframe_url,
             },
@@ -500,7 +500,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
             'method': 'browsingContext.navigationStarted',
             'params': {
                 'context': context_id,
-                'navigation': 'navigation_0',
+                'navigation': 'stable_0',
                 'timestamp': ANY_TIMESTAMP,
                 'url': page_url,
             },
@@ -510,7 +510,7 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
             'method': 'browsingContext.navigationStarted',
             'params': {
                 'context': ANY_STR,
-                'navigation': 'navigation_1',
+                'navigation': 'stable_1',
                 'timestamp': ANY_TIMESTAMP,
                 'url': iframe_url,
             },
@@ -543,7 +543,7 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
     assert messages == [{
         'id': command_id,
         'result': {
-            'navigation': 'navigation_0',
+            'navigation': 'stable_0',
             'url': url,
         },
         'type': 'success',
@@ -551,7 +551,7 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
         'method': 'browsingContext.navigationStarted',
         'params': {
             'context': context_id,
-            'navigation': 'navigation_0',
+            'navigation': 'stable_0',
             'timestamp': ANY_TIMESTAMP,
             'url': url,
         },

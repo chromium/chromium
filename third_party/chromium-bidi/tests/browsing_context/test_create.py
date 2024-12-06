@@ -38,13 +38,13 @@ async def test_browsingContext_create_eventsEmitted(websocket,
         "type": "success",
         "id": command_id,
         "result": {
-            'context': 'context_0'
+            'context': 'stable_0'
         }
     }, {
         "type": "event",
         "method": "browsingContext.contextCreated",
         "params": {
-            "context": 'context_0',
+            "context": 'stable_0',
             "url": "about:blank",
             "children": None,
             "parent": None,
@@ -124,7 +124,7 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
             "result": {
                 "result": {
                     "value": {
-                        "context": "context_0",
+                        "context": "stable_0",
                     }
                 }
             }
@@ -133,7 +133,7 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
             "type": "event",
             "method": "browsingContext.contextCreated",
             "params": {
-                'context': 'context_0',
+                'context': 'stable_0',
                 "url": "about:blank",
                 "children": None,
                 "parent": None,
@@ -145,8 +145,8 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
         {
             'method': 'browsingContext.domContentLoaded',
             'params': {
-                'context': 'context_0',
-                'navigation': 'navigation_0',
+                'context': 'stable_0',
+                'navigation': 'stable_1',
                 'timestamp': ANY_TIMESTAMP,
                 'url': url_example,
             },
@@ -155,8 +155,8 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
         {
             'method': 'browsingContext.load',
             'params': {
-                'context': 'context_0',
-                'navigation': 'navigation_0',
+                'context': 'stable_0',
+                'navigation': 'stable_1',
                 'timestamp': ANY_TIMESTAMP,
                 'url': url_example,
             },
@@ -165,8 +165,8 @@ async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
         {
             'method': 'browsingContext.navigationStarted',
             'params': {
-                'context': 'context_0',
-                'navigation': 'navigation_0',
+                'context': 'stable_0',
+                'navigation': 'stable_1',
                 'timestamp': ANY_TIMESTAMP,
                 'url': url_example,
             },
@@ -337,14 +337,14 @@ async def test_browsingContext_create_withUserContext(websocket, type,
     assert messages == [{
         'id': command_id,
         'result': {
-            'context': 'context_0',
+            'context': 'stable_0',
         },
         'type': 'success',
     }, {
         "type": "event",
         "method": "browsingContext.contextCreated",
         "params": {
-            'context': 'context_0',
+            'context': 'stable_0',
             "url": "about:blank",
             "children": None,
             "parent": None,
