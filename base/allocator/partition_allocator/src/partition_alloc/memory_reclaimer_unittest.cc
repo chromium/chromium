@@ -45,7 +45,6 @@ class MemoryReclaimerTest : public ::testing::Test {
     MemoryReclaimer::Instance()->ResetForTesting();
 
     PartitionOptions opts;
-    opts.star_scan_quarantine = PartitionOptions::kAllowed;
     allocator_ = std::make_unique<PartitionAllocatorForTesting>(opts);
     allocator_->root()->UncapEmptySlotSpanMemoryForTesting();
     PartitionAllocGlobalInit(HandleOOM);

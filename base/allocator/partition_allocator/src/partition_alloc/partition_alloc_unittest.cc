@@ -3817,7 +3817,6 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantineDisabled) {
   PartitionOptions opts = GetCommonPartitionOptions();
   opts.scheduler_loop_quarantine = PartitionOptions::kDisabled;
   opts.thread_cache = PartitionOptions::kDisabled;
-  opts.star_scan_quarantine = PartitionOptions::kDisallowed;
   std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(opts, {});
 
   // This allocation is required to prevent slot span from being empty and

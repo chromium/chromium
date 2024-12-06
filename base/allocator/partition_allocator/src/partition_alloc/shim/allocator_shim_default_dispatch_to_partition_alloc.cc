@@ -148,7 +148,6 @@ class MainPartitionConstructor {
     // the decision to turn the thread cache on until then.
     // Also tests, such as the ThreadCache tests create a thread cache.
     opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
-    opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
     opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
     auto* new_root = new (buffer) partition_alloc::PartitionRoot(opts);
 
@@ -640,7 +639,6 @@ void ConfigurePartitions(
         // another partition will have the thread cache enabled, by calling
         // EnableThreadCacheIfSupported().
         opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
-        opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
         opts.backup_ref_ptr =
             enable_brp ? partition_alloc::PartitionOptions::kEnabled
                        : partition_alloc::PartitionOptions::kDisabled;

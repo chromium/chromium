@@ -89,7 +89,6 @@ std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator(
 #if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   opts.thread_cache = PartitionOptions::kEnabled;
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  opts.star_scan_quarantine = PartitionOptions::kAllowed;
   opts.use_pool_offset_freelists =
       (encoding == internal::PartitionFreelistEncoding::kPoolOffsetFreeList)
           ? PartitionOptions::kEnabled
@@ -301,7 +300,6 @@ TEST_P(PartitionAllocThreadCacheTest, Purge) {
 
 TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
   PartitionOptions opts;
-  opts.star_scan_quarantine = PartitionOptions::kAllowed;
   PartitionAllocatorForTesting allocator(opts);
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
