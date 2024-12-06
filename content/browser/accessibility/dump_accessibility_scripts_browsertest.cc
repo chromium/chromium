@@ -566,6 +566,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityInsertionPointLineNumber) {
+  RunTypedTest<kMacMethods>("accessibility-insertion-point-line-number.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityPlaceholderValue) {
   RunTypedTest<kMacMethods>("accessibility-placeholder-value.html");
 }

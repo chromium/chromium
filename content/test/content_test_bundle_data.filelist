@@ -5586,6 +5586,8 @@ data/accessibility/mac/methods/accessibility-index-table-expected.txt
 data/accessibility/mac/methods/accessibility-index-table.html
 data/accessibility/mac/methods/accessibility-index-tree-expected.txt
 data/accessibility/mac/methods/accessibility-index-tree.html
+data/accessibility/mac/methods/accessibility-insertion-point-line-number-expected.txt
+data/accessibility/mac/methods/accessibility-insertion-point-line-number.html
 data/accessibility/mac/methods/accessibility-is-ignored-expected.txt
 data/accessibility/mac/methods/accessibility-is-ignored.html
 data/accessibility/mac/methods/accessibility-label-expected.txt

@@ -2189,10 +2189,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 // LINT.ThenChange(accessibilityVisibleCharacterRange)
 
+// LINT.IfChange
 - (NSNumber*)AXInsertionPointLineNumber {
   // TODO: multiline is not supported on views.
   return @0;
 }
+// LINT.ThenChange(accessibilityInsertionPointLineNumber)
 
 // Parameterized text-specific attributes.
 
@@ -2964,9 +2966,19 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 // NOTIMPLEMENTED() seem to not be called anywhere (and were NOTIMPLEMENTED in
 // the old API as well).
 
+// LINT.IfChange
 - (NSInteger)accessibilityInsertionPointLineNumber {
-  return [[self AXInsertionPointLineNumber] integerValue];
+  if (![self instanceActive]) {
+    return NSNotFound;
+  }
+
+  // TODO(crbug.com/363275809): According to the comment in the old API code,
+  // "multiline is not supported on views." If that is no longer the case, we
+  // need an implementation here. Also the old API code in `AXPlatformNodeCocoa`
+  // doesn't do any of the work done in by `BrowserAccessibilityCocoa`.
+  return 0;
 }
+// LINT.ThenChange(AXInsertionPointLineNumber)
 
 // LINT.IfChange
 - (NSInteger)accessibilityNumberOfCharacters {

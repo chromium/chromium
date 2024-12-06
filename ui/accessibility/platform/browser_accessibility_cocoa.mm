@@ -531,8 +531,6 @@ bool ui::IsNSRange(id value) {
       {NSAccessibilityExpandedAttribute, @"expanded"},
       {NSAccessibilityHeaderAttribute, @"header"},
       {NSAccessibilityIndexAttribute, @"index"},
-      {NSAccessibilityInsertionPointLineNumberAttribute,
-       @"insertionPointLineNumber"},
       {NSAccessibilityLanguageAttribute, @"language"},
       {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
       {NSAccessibilityMaxValueAttribute, @"maxValue"},
@@ -839,11 +837,51 @@ bool ui::IsNSRange(id value) {
   return false;
 }
 
-- (NSNumber*)AXInsertionPointLineNumber {
-  return [self insertionPointLineNumber];
-}
+// LINT.IfChange
+- (NSInteger)accessibilityInsertionPointLineNumber {
+  if (![self instanceActive]) {
+    return NSNotFound;
+  }
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return NSNotFound;
+  }
 
-- (NSNumber*)insertionPointLineNumber {
+  const AXRange range = GetSelectedRange(*_owner);
+
+  // If the selection is not collapsed, then there is no visible caret.
+  if (!range.IsCollapsed()) {
+    return NSNotFound;
+  }
+
+  // "ax::mojom::MoveDirection" is only relevant on platforms that use object
+  // replacement characters in the accessibility tree. Mac is not one of them.
+  const AXPosition caretPosition = range.focus()->LowestCommonAncestorPosition(
+      *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
+  DCHECK(!caretPosition->IsNullPosition())
+      << "Calling HasVisibleCaretOrSelection() should have ensured that there "
+         "is a valid selection focus inside the current object.";
+  const std::vector<int> lineStarts =
+      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
+
+  // Find the text offset that starts the next line after the current caret
+  // position, then subtract 1 to get the current line number.
+  auto iterator =
+      std::upper_bound(lineStarts.begin(), lineStarts.end(),
+                       caretPosition->AsTextPosition()->text_offset());
+
+  // If the caret is on a single line and the line is empty, then
+  // the iterator will be equal to lineStarts.begin() because the lineStarts
+  // vector will be empty. The line number should be 0 in this case.
+  if (iterator == lineStarts.begin()) {
+    return 0;
+  }
+
+  return std::distance(lineStarts.begin(), std::prev(iterator));
+}
+// LINT.ThenChange(AXInsertionPointLineNumber)
+
+// LINT.IfChange
+- (NSNumber*)AXInsertionPointLineNumber {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -879,6 +917,7 @@ bool ui::IsNSRange(id value) {
 
   return @(std::distance(lineStarts.begin(), std::prev(iterator)));
 }
+// LINT.ThenChange(accessibilityInsertionPointLineNumber)
 
 - (NSString*)language {
   if (![self instanceActive])

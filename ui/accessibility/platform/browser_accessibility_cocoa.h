@@ -103,7 +103,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // Index of a row, column, or tree item.
 @property(nonatomic, readonly) NSNumber* index;
 @property(nonatomic, readonly) NSNumber* treeItemRowIndex;
-@property(nonatomic, readonly) NSNumber* insertionPointLineNumber;
 @property(nonatomic, readonly) NSNumber* maxValue;
 @property(nonatomic, readonly) NSNumber* minValue;
 @property(nonatomic, readonly) NSString* orientation;

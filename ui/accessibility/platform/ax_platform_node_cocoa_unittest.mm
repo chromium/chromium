@@ -1079,4 +1079,16 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleCharacterRangeOnTextField) {
   EXPECT_EQ(visibleRange.length, 11U);
 }
 
+// `accessibilityInsertionPointLineNumber` on a text field.
+TEST_P(AXPlatformNodeCocoaTest,
+       AccessibilityInsertionPointLineNumberOnTextField) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue, "hello world");
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  EXPECT_EQ([node accessibilityInsertionPointLineNumber], 0);
+}
+
 }  // namespace ui
