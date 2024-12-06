@@ -43,6 +43,7 @@ MotionEventAndroidNative::MotionEventAndroidNative(
     float tick_multiplier,
     base::TimeTicks oldest_event_time,
     base::TimeTicks latest_event_time,
+    base::TimeTicks cached_down_time_ms,
     int android_action,
     int pointer_count,
     int history_size,
@@ -64,6 +65,7 @@ MotionEventAndroidNative::MotionEventAndroidNative(
                          tick_multiplier,
                          oldest_event_time,
                          latest_event_time,
+                         cached_down_time_ms,
                          android_action,
                          pointer_count,
                          history_size,
@@ -98,6 +100,9 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
   // the time with nanoseconds precision.
   const base::TimeTicks latest_event_time =
       base::TimeTicks::FromJavaNanoTime(AMotionEvent_getEventTime(event));
+  const jlong down_time_ms =
+      base::TimeTicks::FromJavaNanoTime(AMotionEvent_getDownTime(event))
+          .ToUptimeMillis();
   // Native side doesn't have MotionEvent.getActionMasked() or
   // MotionEvent.getActionIndex counterparts.
   const int action = AMotionEvent_getAction(event);
@@ -151,7 +156,8 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
       /* ticks_x= */ 0.f,
       /* ticks_y= */ 0.f,
       /* tick_multiplier= */ 0.f, oldest_event_time, latest_event_time,
-      masked_action, pointer_count, history_size, action_index,
+      base::TimeTicks::FromUptimeMillis(down_time_ms), masked_action,
+      pointer_count, history_size, action_index,
       /* android_action_button= */ 0, gesture_classification,
       AMotionEvent_getButtonState(event), AMotionEvent_getMetaState(event),
       AInputEvent_getSource(event), raw_offset_x_pixels, raw_offset_y_pixels,

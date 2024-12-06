@@ -50,6 +50,7 @@ class UI_ANDROID_EXPORT EventForwarder {
       const base::android::JavaParamRef<jobject>& motion_event,
       jlong oldest_event_time_ns,
       jlong latest_event_time_ns,
+      jlong down_time_ms,
       jint android_action,
       jint pointer_count,
       jint history_size,
@@ -116,7 +117,8 @@ class UI_ANDROID_EXPORT EventForwarder {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& motion_event,
-      jlong time_ns);
+      jlong event_time_ns,
+      jlong down_time_ms);
 
   void OnMouseWheelEvent(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
