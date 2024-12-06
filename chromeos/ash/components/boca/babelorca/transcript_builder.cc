@@ -45,14 +45,6 @@ std::vector<TranscriptBuilder::Result> TranscriptBuilder::GetTranscripts(
   }
 
   order_ = message->order;
-  // If transcript length decreased and it is final, it is possible that the
-  // removed part belongs to the next transcript, so discard the message and
-  // rely on the upcoming message's `previous_transcript` for update.
-  if (message->current_transcript->is_final &&
-      message->current_transcript->transcript_id == transcript_id_ &&
-      message->current_transcript->text.length() < text_.length()) {
-    return {};
-  }
   std::vector<Result> results;
   // Discard previously received transcripts if the sender is a newer
   // sender instance.

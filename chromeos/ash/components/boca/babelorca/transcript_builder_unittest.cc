@@ -451,52 +451,5 @@ TEST(TranscriptBuilderTest, Merge) {
                   kResultText3, /*is_final_param=*/false, kLanguageEn)));
 }
 
-TEST(TranscriptBuilderTest, TranscriptSplit) {
-  const std::string kInputText1 = "Hello, this is";
-  const std::string kInputText2 = "Hello.";
-  const std::string kInputText3 = "This is a test.";
-  TranscriptBuilder builder(kSessionId, kSenderEmail);
-  mojom::BabelOrcaMessagePtr message1 = CreateMessage(
-      {.order = 5},
-      /*previous_transcript=*/nullptr,
-      /*current_transcript=*/
-      CreateTranscriptPart(
-          {.id = 1, .index = 0, .text = kInputText1, .is_final = false}));
-  mojom::BabelOrcaMessagePtr message2 = CreateMessage(
-      {.order = 6},
-      /*previous_transcript=*/nullptr,
-      /*current_transcript=*/
-      CreateTranscriptPart(
-          {.id = 1, .index = 0, .text = kInputText2, .is_final = true}));
-  mojom::BabelOrcaMessagePtr message3 = CreateMessage(
-      {.order = 7},
-      /*previous_transcript=*/
-      CreateTranscriptPart(
-          {.id = 1, .index = 0, .text = kInputText2, .is_final = true}),
-      /*current_transcript=*/
-      CreateTranscriptPart(
-          {.id = 2, .index = 0, .text = kInputText3, .is_final = false}));
-
-  std::vector<TranscriptBuilder::Result> results1 =
-      builder.GetTranscripts(std::move(message1));
-  std::vector<TranscriptBuilder::Result> results2 =
-      builder.GetTranscripts(std::move(message2));
-  std::vector<TranscriptBuilder::Result> results3 =
-      builder.GetTranscripts(std::move(message3));
-
-  ASSERT_THAT(results1, testing::SizeIs(1));
-  EXPECT_THAT(results1[0],
-              BuilderResultEq(TranscriptBuilder::Result(
-                  kInputText1, /*is_final_param=*/false, kLanguageEn)));
-  EXPECT_THAT(results2, testing::IsEmpty());
-  ASSERT_THAT(results3, testing::SizeIs(2));
-  EXPECT_THAT(results3[0],
-              BuilderResultEq(TranscriptBuilder::Result(
-                  kInputText2, /*is_final_param=*/true, kLanguageEn)));
-  EXPECT_THAT(results3[1],
-              BuilderResultEq(TranscriptBuilder::Result(
-                  kInputText3, /*is_final_param=*/false, kLanguageEn)));
-}
-
 }  // namespace
 }  // namespace ash::babelorca
