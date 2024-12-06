@@ -308,8 +308,8 @@ unsigned ElementInnerTextCollector::ProcessFirstLineAndGetOffset(
   LayoutBlockFlow* const block_flow = layout_text.FragmentItemsContainer();
   DCHECK(block_flow) << layout_text;
   unsigned first_line_length = 0;
-  for (InlineCursor cursor(*block_flow); cursor.Current().UsesFirstLineStyle();
-       cursor.MoveToNext()) {
+  for (InlineCursor cursor(*block_flow);
+       cursor && cursor.Current().UsesFirstLineStyle(); cursor.MoveToNext()) {
     if (!cursor.CurrentItem()->IsText()) {
       continue;
     }
