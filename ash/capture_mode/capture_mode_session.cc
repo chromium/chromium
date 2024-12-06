@@ -153,9 +153,15 @@ constexpr int kFocusRingSpacingDp = 2;
 // When updating the capture region, request a repaint on the region and inset
 // such that the border, affordance circles and affordance circle shadows are
 // all repainted as well.
-constexpr int kDamageInsetDp = capture_mode::kCaptureRegionBorderStrokePx +
-                               kAffordanceCircleRadiusDp +
-                               kRegionAffordanceCircleShadow2Blur;
+constexpr int kDamageOutsetDp = capture_mode::kCaptureRegionBorderStrokePx +
+                                kAffordanceCircleRadiusDp +
+                                kRegionAffordanceCircleShadow2Blur;
+
+// The damage outset from the edge of the capture region to repaint when there
+// is a glow animation.
+constexpr int kDamageWithGlowOutsetDp =
+    capture_mode::kRegionGlowMaxOutsetDp +
+    2 * static_cast<int>(capture_mode::kRegionGlowAnimationMaxBlurDp);
 
 // The minimum padding on each side of the capture region. If the capture button
 // cannot be placed in the center of the capture region and maintain this
@@ -2726,22 +2732,26 @@ void CaptureModeSession::UpdateCaptureRegion(
     return;
 
   // Calculate the region that has been damaged and repaint the layer. Add some
-  // extra padding to make sure the border and affordance circles are also
-  // repainted.
+  // extra padding to make sure the border and affordance circles are repainted
+  // and the glow animation is removed if needed.
   gfx::Rect damage_region = old_capture_region;
   damage_region.Union(new_capture_region);
-  damage_region.Inset(gfx::Insets(-kDamageInsetDp));
+  if (capture_region_overlay_controller_ &&
+      capture_region_overlay_controller_->HasGlowAnimation()) {
+    capture_region_overlay_controller_->RemoveGlowAnimation();
+    // `kDamageWithGlowOutsetDp` is greater than `kDamageOutsetDp` so it is
+    // enough to also cover the border and affordance circles.
+    damage_region.Outset(kDamageWithGlowOutsetDp);
+  } else {
+    damage_region.Outset(kDamageOutsetDp);
+  }
   layer()->SchedulePaint(damage_region);
-
-  // Invalidate any ongoing image search before the new capture region is
-  // applied, so that loading animations can be removed by scheduling a repaint
-  // around the old capture bounds if needed.
-  InvalidateImageSearch();
 
   controller_->SetUserCaptureRegion(new_capture_region, by_user);
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
+  InvalidateImageSearch();
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -3108,7 +3118,7 @@ void CaptureModeSession::EndSelection(
 
 void CaptureModeSession::RepaintRegion() {
   gfx::Rect damage_region = controller_->user_capture_region();
-  damage_region.Inset(gfx::Insets(-kDamageInsetDp));
+  damage_region.Outset(kDamageOutsetDp);
   layer()->SchedulePaint(damage_region);
 }
 
@@ -3467,8 +3477,9 @@ void CaptureModeSession::MaybeRemoveGlowAnimation() {
 }
 
 void CaptureModeSession::RefreshGlowRegion() {
-  CaptureRegionOverlayController::SchedulePaintForGlow(
-      layer(), controller_->user_capture_region());
+  gfx::Rect glow_bounds(controller_->user_capture_region());
+  glow_bounds.Outset(kDamageWithGlowOutsetDp);
+  layer()->SchedulePaint(glow_bounds);
 }
 
 void CaptureModeSession::InvalidateImageSearch() {
