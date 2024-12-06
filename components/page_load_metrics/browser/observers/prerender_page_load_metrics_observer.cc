@@ -5,6 +5,9 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
@@ -64,6 +67,11 @@ const char kDomContentLoadedToActivation[] =
 
 PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
 PrerenderPageLoadMetricsObserver::~PrerenderPageLoadMetricsObserver() = default;
+
+enum PrerenderPageLoadMetricsObserver::PaintingTimeType : uint8_t {
+  kFirstContentfulPaint,
+  kLargestContentfulPaint,
+};
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::OnStart(
@@ -175,6 +183,9 @@ void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       .SetTiming_ActivationToFirstContentfulPaint(
           activation_to_fcp.InMilliseconds())
       .Record(ukm::UkmRecorder::Get());
+  EmitPaintingMetricsTraceEvent(
+      PrerenderPageLoadMetricsObserver::PaintingTimeType::kFirstContentfulPaint,
+      timing.paint_timing->first_contentful_paint.value());
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
@@ -289,6 +300,9 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
         .SetTiming_ActivationToLargestContentfulPaint(
             activation_to_lcp.InMilliseconds())
         .Record(ukm::UkmRecorder::Get());
+    EmitPaintingMetricsTraceEvent(PrerenderPageLoadMetricsObserver::
+                                      PaintingTimeType::kLargestContentfulPaint,
+                                  largest_contentful_paint.Time().value());
   }
 
   // Record metrics only when a prerendered page is successfully activated.
@@ -380,6 +394,49 @@ void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
           responsiveness_metrics_normalization.num_user_interactions()));
 
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void PrerenderPageLoadMetricsObserver::EmitPaintingMetricsTraceEvent(
+    PaintingTimeType type,
+    base::TimeDelta paint_timing) const {
+  CHECK(navigation_to_activation_time_.has_value());
+  const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+  const base::TimeTicks activation_start =
+      navigation_start + navigation_to_activation_time_.value();
+  const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
+                              perfetto::ProcessTrack::Current());
+  switch (type) {
+    case PaintingTimeType::kFirstContentfulPaint:
+      TRACE_EVENT_BEGIN(
+          "loading,interactions",
+          "PageLoadMetrics.NavigationToFirstContentfulPaint", track,
+          activation_start, [&](perfetto::EventContext& ctx) {
+            auto* page_load_proto =
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                    ->set_page_load();
+            page_load_proto->set_url(
+                GetDelegate().GetUrl().possibly_invalid_spec());
+            page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+          });
+
+      TRACE_EVENT_END("loading,interactions", track,
+                      navigation_start + paint_timing);
+      break;
+    case PaintingTimeType::kLargestContentfulPaint:
+      TRACE_EVENT_BEGIN(
+          "loading,interactions",
+          "PageLoadMetrics.NavigationToLargestContentfulPaint", track,
+          activation_start, [&](perfetto::EventContext& ctx) {
+            auto* page_load_proto =
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                    ->set_page_load();
+            page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+          });
+
+      TRACE_EVENT_END("loading,interactions", track,
+                      navigation_start + paint_timing);
+      break;
+  }
 }
 
 std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
