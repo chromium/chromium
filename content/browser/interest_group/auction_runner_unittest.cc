@@ -1843,6 +1843,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
         const url::Origin& main_frame_origin,
+        base::UnguessableToken /*network_partition_nonce*/,
         const url::Origin& script_origin,
         const GURL& trusted_bidding_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
@@ -1876,6 +1877,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
         const url::Origin& main_frame_origin,
+        base::UnguessableToken /*network_partition_nonce*/,
         const url::Origin& script_origin,
         const GURL& trusted_scoring_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,

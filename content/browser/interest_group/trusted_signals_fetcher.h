@@ -19,6 +19,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
@@ -148,6 +149,10 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   TrustedSignalsFetcher(const TrustedSignalsFetcher&) = delete;
   TrustedSignalsFetcher& operator=(const TrustedSignalsFetcher&) = delete;
 
+  // `main_frame_origin` and `network_partition_nonce` are used to create an
+  // IsolationInfo identifying the network partition to use.
+  // `main_frame_origin`'s host is also sent as part of the encrypted request.
+  //
   // `script_origin` is the owner of the interest group the request is for. Used
   // as the initiator for CORS.
   //
@@ -156,12 +161,17 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   virtual void FetchBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const url::Origin& main_frame_origin,
+      base::UnguessableToken network_partition_nonce,
       const url::Origin& script_origin,
       const GURL& trusted_bidding_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
 
+  // `main_frame_origin` and `network_partition_nonce` are used to create an
+  // IsolationInfo identifying the network partition to use.
+  // `main_frame_origin`'s host is also sent as part of the encrypted request.
+  //
   // `script_origin` is the seller for the auction. Used as the initiator for
   // CORS.
   //
@@ -170,6 +180,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   virtual void FetchScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const url::Origin& main_frame_origin,
+      base::UnguessableToken network_partition_nonce,
       const url::Origin& script_origin,
       const GURL& trusted_scoring_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
@@ -185,6 +196,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // this class.
   void EncryptRequestBodyAndStart(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      const url::Origin& main_frame_origin,
+      base::UnguessableToken network_partition_nonce,
       const url::Origin& script_origin,
       const GURL& trusted_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,

@@ -978,8 +978,9 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
   }
   fetch->fetcher->FetchBiddingSignals(
       url_loader_factory_.get(), fetch_it->first.main_frame_origin,
-      fetch_it->first.script_origin, fetch_it->first.trusted_signals_url,
-      bidding_and_auction_key, bidding_partition_map,
+      constant_token, fetch_it->first.script_origin,
+      fetch_it->first.trusted_signals_url, bidding_and_auction_key,
+      bidding_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
 }
@@ -1018,8 +1019,9 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
   }
   fetch->fetcher->FetchScoringSignals(
       url_loader_factory_.get(), fetch_it->first.main_frame_origin,
-      fetch_it->first.script_origin, fetch_it->first.trusted_signals_url,
-      bidding_and_auction_key, scoring_partition_map,
+      constant_token, fetch_it->first.script_origin,
+      fetch_it->first.trusted_signals_url, bidding_and_auction_key,
+      scoring_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
 }

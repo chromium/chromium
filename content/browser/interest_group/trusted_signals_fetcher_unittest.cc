@@ -28,6 +28,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
@@ -35,7 +36,9 @@
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -47,6 +50,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -260,8 +264,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), kDefaultMainFrameOrigin, GetScriptOrigin(),
-        url,
+        url_loader_factory_.get(), kDefaultMainFrameOrigin,
+        network_partition_nonce, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -290,8 +294,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
-        url_loader_factory_.get(), kDefaultMainFrameOrigin, GetScriptOrigin(),
-        url,
+        url_loader_factory_.get(), kDefaultMainFrameOrigin,
+        network_partition_nonce, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -546,6 +550,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
   // `kTrustedBiddingSignalsPath`.
   std::string response_mime_type_{TrustedSignalsFetcher::kResponseMediaType};
   net::HttpStatusCode response_status_code_{net::HTTP_OK};
+
+  base::UnguessableToken network_partition_nonce =
+      base::UnguessableToken::Create();
 
   base::Lock lock_;
 
@@ -2284,6 +2291,78 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsCrossOrigin) {
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
   ValidateRequestBodyHex(kBasicScoringSignalsRequestBody);
+}
+
+// Tests that the correct IsolationInfo is used.
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
+  // Unlike other tests, use a TestURLLoaderFactory, which intercepts requests
+  // and lets their fields be examined directly, rather than a
+  // TestSharedURLLoaderFactory, which makes real requests. This allows directly
+  // inspecting the created IsolationInfo. Validating the of the IsolationInfo
+  // value on actual results is, unfortunately, just too difficult to be
+  // practical.
+  network::TestURLLoaderFactory url_loader_factory;
+  TrustedSignalsFetcher trusted_signals_fetcher;
+  trusted_signals_fetcher.FetchBiddingSignals(
+      &url_loader_factory, kDefaultMainFrameOrigin, network_partition_nonce,
+      GetScriptOrigin(), TrustedBiddingSignalsUrl(),
+      BiddingAndAuctionServerKey{
+          std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                      sizeof(kTestPublicKey)),
+          kKeyId},
+      CreateBasicBiddingSignalsRequest(),
+      base::BindLambdaForTesting(
+          [](TrustedSignalsFetcher::SignalsFetchResult result) {
+            ADD_FAILURE() << "This callback should not be invoked";
+          }));
+
+  url_loader_factory.WaitForRequest(TrustedBiddingSignalsUrl());
+  ASSERT_EQ(url_loader_factory.NumPending(), 1);
+  const auto* request = url_loader_factory.GetPendingRequest(0);
+  EXPECT_EQ(request->request.url, TrustedBiddingSignalsUrl());
+  ASSERT_TRUE(request->request.trusted_params);
+  const net::IsolationInfo& isolation_info =
+      request->request.trusted_params->isolation_info;
+  EXPECT_TRUE(isolation_info.IsEqualForTesting(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, kDefaultMainFrameOrigin,
+      kDefaultMainFrameOrigin, net::SiteForCookies(),
+      network_partition_nonce)));
+}
+
+// Tests that the correct IsolationInfo is used.
+TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
+  // Unlike other tests, use a TestURLLoaderFactory, which intercepts requests
+  // and lets their fields be examined directly, rather than a
+  // TestSharedURLLoaderFactory, which makes real requests. This allows directly
+  // inspecting the created IsolationInfo. Validating the of the IsolationInfo
+  // value on actual results is, unfortunately, just too difficult to be
+  // practical.
+  network::TestURLLoaderFactory url_loader_factory;
+  TrustedSignalsFetcher trusted_signals_fetcher;
+  trusted_signals_fetcher.FetchScoringSignals(
+      &url_loader_factory, kDefaultMainFrameOrigin, network_partition_nonce,
+      GetScriptOrigin(), TrustedScoringSignalsUrl(),
+      BiddingAndAuctionServerKey{
+          std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                      sizeof(kTestPublicKey)),
+          kKeyId},
+      CreateBasicScoringSignalsRequest(),
+      base::BindLambdaForTesting(
+          [](TrustedSignalsFetcher::SignalsFetchResult result) {
+            ADD_FAILURE() << "This callback should not be invoked";
+          }));
+
+  url_loader_factory.WaitForRequest(TrustedScoringSignalsUrl());
+  ASSERT_EQ(url_loader_factory.NumPending(), 1);
+  const auto* request = url_loader_factory.GetPendingRequest(0);
+  EXPECT_EQ(request->request.url, TrustedScoringSignalsUrl());
+  ASSERT_TRUE(request->request.trusted_params);
+  const net::IsolationInfo& isolation_info =
+      request->request.trusted_params->isolation_info;
+  EXPECT_TRUE(isolation_info.IsEqualForTesting(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, kDefaultMainFrameOrigin,
+      kDefaultMainFrameOrigin, net::SiteForCookies(),
+      network_partition_nonce)));
 }
 
 }  // namespace
