@@ -115,18 +115,22 @@ public final class TabGroupSyncLocalObserver {
                 mRemoteTabGroupMutationHelper.handleMultipleTabClosure(tabs);
             }
 
-            // This method is for metrics only!
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                if (!mTabGroupModelFilter.isTabInTabGroup(tab)) return;
+                LocalTabGroupId localTabGroupId =
+                        mTabGroupModelFilter.isTabInTabGroup(tab)
+                                ? TabGroupSyncUtils.getLocalTabGroupId(tab)
+                                : null;
 
-                if (tab.getTabGroupId() == null) return;
+                // We notify TabGroupSyncService of the currently selected tab regardless of
+                // whether it's part of a tab group or not. The accurate tracking of currently
+                // selected tab is required for the MessagingBackendService.
+                mTabGroupSyncService.onTabSelected(localTabGroupId, tab.getId());
 
-                LocalTabGroupId localId = TabGroupSyncUtils.getLocalTabGroupId(tab);
-                SavedTabGroup savedGroup = mTabGroupSyncService.getGroup(localId);
+                // The rest of the method is required for metrics only.
+                if (localTabGroupId == null) return;
+                SavedTabGroup savedGroup = mTabGroupSyncService.getGroup(localTabGroupId);
                 if (savedGroup == null) return;
-
-                mTabGroupSyncService.onTabSelected(localId, tab.getId());
 
                 if (mTabGroupSyncService.isRemoteDevice(savedGroup.creatorCacheGuid)) {
                     RecordUserAction.record("TabGroups.Sync.SelectedTabInRemotelyCreatedGroup");

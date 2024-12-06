@@ -176,13 +176,13 @@ public interface TabGroupSyncService {
 
     /**
      * Called to notify the backend that a tab was selected in the UI. Used by the messaging backend
-     * to keep track of currently selected tab. TODO(crbug.com/362092886): Invoke this for
-     * non-grouped tabs as well.
+     * to keep track of currently selected tab.
      *
-     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param tabGroupId The local group ID of the corresponding tab group. Null if the tab is not
+     *     part of a group.
      * @param tabId The local ID of the corresponding tab.
      */
-    void onTabSelected(LocalTabGroupId tabGroupId, int tabId);
+    void onTabSelected(@Nullable LocalTabGroupId tabGroupId, int tabId);
 
     /**
      * Called to return all the remote tab group IDs currently existing in the system.
