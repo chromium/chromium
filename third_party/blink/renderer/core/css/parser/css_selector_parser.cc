@@ -904,19 +904,7 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
       Deprecation::CountDeprecation(
           context, WebFeature::kCSSCustomStateDeprecatedSyntax);
     }
-    if (RuntimeEnabledFeatures::CSSCustomStateDeprecatedSyntaxEnabled()) {
-      if (document) {
-        // TODO(crbug.com/1514397): Add DevTools deprecations here as well
-        document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kDeprecation,
-            mojom::ConsoleMessageLevel::kError,
-            "Custom state pseudo classes are changing from \":--" +
-                custom_name + "\" to \":state(" + custom_name +
-                ")\" soon. See more"
-                " here: https://github.com/w3c/csswg-drafts/issues/4805"));
-      }
-      return CSSSelector::PseudoType::kPseudoStateDeprecatedSyntax;
-    } else if (document) {
+    if (document) {
       document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kDeprecation,
           mojom::ConsoleMessageLevel::kError,
@@ -1749,8 +1737,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       [[fallthrough]];
     case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoState: {
-      CHECK(selector.GetPseudoType() != CSSSelector::kPseudoState ||
-            RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled());
       const CSSParserToken& ident = stream.Peek();
       if (ident.GetType() != kIdentToken) {
         return false;

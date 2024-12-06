@@ -223,7 +223,6 @@ source_set("policy_specific_browser_tests") {
     "site_isolation_policy_browsertest.cc",
     "test/back_forward_cache_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
-    "test/css_custom_state_deprecated_syntax_policy_browsertest.cc",
     "test/force_permission_policy_unload_default_enabled_policy_browsertest.cc",
     "test/hsts_policy_browsertest.cc",
     "test/keyboard_focusable_scollers_policy_browsertest.cc",

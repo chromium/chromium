@@ -3430,30 +3430,6 @@
     "expires": "Feb 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
-  "css-custom-state-deprecated-syntax-enabled is the configuration that is",
-  "currently shipping to stable.",
-  {
-    "prefix": "css-custom-state-only-deprecated-syntax",
-    "platforms": ["Linux", "Mac", "Win"],
-    "args": ["--enable-features=CSSCustomStateDeprecatedSyntax",
-             "--disable-features=CSSCustomStateNewSyntax"],
-    "expires": "Dec 1, 2024",
-    "owners": ["jarhar@chromium.org", "dom-dev@google.com"],
-    "bases": [
-      "external/wpt/custom-elements/state"
-    ]
-  },
-  {
-    "prefix": "css-custom-state-only-new-syntax",
-    "platforms": ["Linux", "Mac", "Win"],
-    "args": ["--disable-features=CSSCustomStateDeprecatedSyntax",
-             "--enable-features=CSSCustomStateNewSyntax"],
-    "expires": "Dec 1, 2024",
-    "owners": ["jarhar@chromium.org", "dom-dev@google.com"],
-    "bases": [
-      "external/wpt/custom-elements/state"
-    ]
-  },
   {
     "prefix": "prefers-default-scrollbar-styles",
     "platforms": ["Linux"],

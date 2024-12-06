@@ -478,8 +478,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        blink::switches::kKeyboardFocusableScrollersOptOut, false},
       {wrf::EnableStandardizedBrowserZoom,
        blink::switches::kDisableStandardizedBrowserZoom, false},
-      {wrf::EnableCSSCustomStateDeprecatedSyntax,
-       blink::switches::kCSSCustomStateDeprecatedSyntaxEnabled, true},
       {wrf::EnableSelectParserRelaxation,
        blink::switches::kDisableSelectParserRelaxation, false},
       {wrf::EnableTextFragmentIdentifiers,

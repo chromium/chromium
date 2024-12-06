@@ -490,7 +490,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoSpatialNavigationFocus:
     case kPseudoStart:
     case kPseudoState:
-    case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
     case kPseudoTargetCurrent:
     case kPseudoUnknown:
@@ -730,11 +729,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoState &&
-      !RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoDetailsContent &&
       !RuntimeEnabledFeatures::DetailsStylingEnabled()) {
     return CSSSelector::kPseudoUnknown;
@@ -860,7 +854,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
   PseudoType pseudo_type = CSSSelectorParser::ParsePseudoType(
       lower_value, has_arguments, context.GetDocument());
   SetPseudoType(pseudo_type);
-  SetValue(pseudo_type == kPseudoStateDeprecatedSyntax ? value : lower_value);
+  SetValue(lower_value);
 
   switch (GetPseudoType()) {
     case kPseudoAfter:
@@ -1013,7 +1007,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoSingleButton:
     case kPseudoStart:
     case kPseudoState:
-    case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
     case kPseudoTargetCurrent:
     case kPseudoUnknown:
@@ -1124,8 +1117,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
   } else if (Match() == kPseudoClass || Match() == kPagePseudoClass) {
     if (GetPseudoType() == kPseudoUnparsed) {
       builder.Append(Value());
-    } else if (GetPseudoType() != kPseudoStateDeprecatedSyntax &&
-               GetPseudoType() != kPseudoParent) {
+    } else if (GetPseudoType() != kPseudoParent) {
       builder.Append(':');
       builder.Append(SerializingValue());
     }
@@ -1179,10 +1171,6 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       case kPseudoHas:
       case kPseudoNot:
         DCHECK(SelectorList());
-        break;
-      case kPseudoStateDeprecatedSyntax:
-        builder.Append(':');
-        SerializeIdentifier(SerializingValue(), builder);
         break;
       case kPseudoHost:
       case kPseudoHostContext:
@@ -1708,7 +1696,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoRequired:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoState:
-    case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
     case kPseudoUserInvalid:
     case kPseudoUserValid:
