@@ -482,4 +482,118 @@ public class RuntimePermissionTest {
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
                 /* missingPermissionPromptTextId= */ 0);
     }
+
+    @Test
+    @MediumTest
+    @Feature({"RuntimePermissions", "MediaPermissions"})
+    @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
+    public void testRuntimeMediaPromptHistogram() throws Exception {
+        String[] requestablePermission =
+                new String[] {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        requestablePermission, RuntimePromptResponse.GRANT);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Permissions.AndroidSystemLevel.Camera.Prompt.Shown", true)
+                        .expectBooleanRecord(
+                                "Permissions.AndroidSystemLevel.Mic.Prompt.Shown", true)
+                        .build();
+        RuntimePermissionTestUtils.runTest(
+                mPermissionTestRule,
+                mTestAndroidPermissionDelegate,
+                MEDIA_TEST,
+                /* expectPermissionAllowed= */ true,
+                /* promptDecision= */ PermissionTestRule.PromptDecision.ALLOW,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                "getUserMediaAndStopLegacy({video: true, audio: true});",
+                /* missingPermissionPromptTextId= */ 0);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RuntimePermissions", "Location"})
+    public void testRuntimeLocationPromptHistogram() throws Exception {
+        RuntimePermissionTestUtils.setupGeolocationSystemMock();
+        String[] requestablePermission =
+                new String[] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                };
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        requestablePermission, RuntimePromptResponse.GRANT);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Permissions.AndroidSystemLevel.Location.Prompt.Shown", true)
+                        .build();
+        RuntimePermissionTestUtils.runTest(
+                mPermissionTestRule,
+                mTestAndroidPermissionDelegate,
+                GEOLOCATION_TEST,
+                /* expectPermissionAllowed= */ true,
+                /* promptDecision= */ PermissionTestRule.PromptDecision.ALLOW,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                /* javascriptToExecute= */ null,
+                /* missingPermissionPromptTextId= */ 0);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RuntimePermissions", "MediaPermissions"})
+    @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
+    public void testRuntimeMediaPromptHistogramSystemDeny() throws Exception {
+        String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        requestablePermission, RuntimePromptResponse.DENY);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Permissions.AndroidSystemLevel.Camera.Prompt.Shown", false)
+                        .build();
+        RuntimePermissionTestUtils.runTest(
+                mPermissionTestRule,
+                mTestAndroidPermissionDelegate,
+                MEDIA_TEST,
+                /* expectPermissionAllowed= */ false,
+                /* promptDecision= */ PermissionTestRule.PromptDecision.ALLOW,
+                /* waitForMissingPermissionPrompt= */ true,
+                /* waitForUpdater= */ true,
+                "getUserMediaAndStopLegacy({video: true, audio: false});",
+                R.string.infobar_missing_camera_permission_text);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RuntimePermissions", "MediaPermissions"})
+    @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
+    public void testRuntimeMediaPromptHistogramChromeDeny() throws Exception {
+        String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        requestablePermission, RuntimePromptResponse.DENY);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Permissions.AndroidSystemLevel.Camera.Prompt.Shown")
+                        .build();
+        RuntimePermissionTestUtils.runTest(
+                mPermissionTestRule,
+                mTestAndroidPermissionDelegate,
+                MEDIA_TEST,
+                /* expectPermissionAllowed= */ false,
+                /* promptDecision= */ PermissionTestRule.PromptDecision.DENY,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                "getUserMediaAndStopLegacy({video: true, audio: false});",
+                R.string.infobar_missing_camera_permission_text);
+        histogramWatcher.assertExpected();
+    }
 }

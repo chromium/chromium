@@ -285,6 +285,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Permissions.AndroidSystemLevel.{SystemPermissionType}.Prompt.Shown"
+    enum="Boolean" expires_after="2025-10-31">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    This histogram is logged whenever the Android systen level permission prompt
+    for {SystemPermissionType} is shown. Records whether the system level
+    permission was granted or denied. Permissions.Prompt.Shown is the baseline
+    metric for this histogram. Android only.
+  </summary>
+  <token key="SystemPermissionType">
+    <variant name="Camera"/>
+    <variant name="Location"/>
+    <variant name="Mic"/>
+    <variant name="Notification"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.API.CreatedPermissionStatusObjects" units="units"
     expires_after="2025-12-01">
   <owner>andypaicu@chromium.org</owner>

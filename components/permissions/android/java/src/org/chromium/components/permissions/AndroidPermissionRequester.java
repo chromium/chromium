@@ -14,6 +14,7 @@ import android.widget.TextView;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -147,6 +148,33 @@ public class AndroidPermissionRequester {
                         Set<Integer> deniedContentSettings = new HashSet<Integer>();
 
                         for (int i = 0; i < grantResults.length; i++) {
+                            String histogramName = null;
+                            switch (permissions[i]) {
+                                    // Even in the case of Fine location, Coarse
+                                    // location permission is also granted. We don't
+                                    // need to record histogram for both of them
+                                    // separately.
+                                case "android.permission.ACCESS_COARSE_LOCATION":
+                                    histogramName =
+                                            "Permissions.AndroidSystemLevel.Location.Prompt.Shown";
+                                    break;
+                                case "android.permission.CAMERA":
+                                    histogramName =
+                                            "Permissions.AndroidSystemLevel.Camera.Prompt.Shown";
+                                    break;
+                                case "android.permission.RECORD_AUDIO":
+                                    histogramName =
+                                            "Permissions.AndroidSystemLevel.Mic.Prompt.Shown";
+                                    break;
+                                case "android.permission.POST_NOTIFICATIONS":
+                                    histogramName =
+                                            "Permissions.AndroidSystemLevel.Notification.Prompt.Shown";
+                            }
+                            if (histogramName != null) {
+                                RecordHistogram.recordBooleanHistogram(
+                                        histogramName,
+                                        grantResults[i] == PackageManager.PERMISSION_GRANTED);
+                            }
                             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                                 final int deniedContentSetting =
                                         getContentSettingType(
@@ -232,6 +260,8 @@ public class AndroidPermissionRequester {
         windowAndroid.requestPermissions(
                 allPermissionsToRequest.toArray(new String[allPermissionsToRequest.size()]),
                 callback);
+        RecordHistogram.recordBooleanHistogram(
+                "Permissions.Prompt.Android.SystemLevelPrompt.Shown", true);
         return true;
     }
 
