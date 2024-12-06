@@ -22,7 +22,6 @@
       "name": "HorizontalScrollbar",
       "position": [0, 185],
       "bounds": [200, 15],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 185, 15]
       ],
