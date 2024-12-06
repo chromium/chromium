@@ -41,19 +41,26 @@ public interface BrowserControlsStateProvider {
          *     min-height is changing with an animation, this will be a value between the old and
          *     the new min-heights, which is the current visible min-height. Otherwise, this will be
          *     equal to {@link #getTopControlsMinHeight()}.
+         * @param topControlsMinHeightChanged If current top controls min-height is different from
+         *     the value in the previous frame.
          * @param bottomOffset The new value of the offset from the top of the bottom control in px.
          * @param bottomControlsMinHeightOffset The current bottom controls min-height in px. If the
          *     min-height is changing with an animation, this will be a value between the old and
          *     the new min-heights, which is the current visible min-height. Otherwise, this will be
          *     equal to {@link #getBottomControlsMinHeight()}.
-         * @param needsAnimate Whether the caller is driving an animation with further updates.
+         * @param bottomControlsMinHeightChanged If current bottom controls min-height is different
+         *     from the value in the previous frame.
+         * @param requestNewFrame Whether we will explicitly request to submit a new frame.
+         * @param isVisibilityForced Whether the browser is forcing the controls to be shown/hidden.
          */
         default void onControlsOffsetChanged(
                 int topOffset,
                 int topControlsMinHeightOffset,
+                boolean topControlsMinHeightChanged,
                 int bottomOffset,
                 int bottomControlsMinHeightOffset,
-                boolean needsAnimate,
+                boolean bottomControlsMinHeightChanged,
+                boolean requestNewFrame,
                 boolean isVisibilityForced) {}
 
         /** Called when the height of the bottom controls are changed. */

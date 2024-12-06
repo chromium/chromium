@@ -52,9 +52,11 @@ public class MiniPlayerMediator implements BottomControlsLayer {
                 public void onControlsOffsetChanged(
                         int topOffset,
                         int topControlsMinHeightOffset,
+                        boolean topControlsMinHeightChanged,
                         int bottomOffset,
                         int bottomControlsMinHeightOffset,
-                        boolean needsAnimate,
+                        boolean bottomControlsMinHeightChanged,
+                        boolean requestNewFrame,
                         boolean isVisibilityForced) {
                     // Direct the call to BottomControlsLayer#onBrowserControlsOffsetUpdate.
                     if (BottomControlsStacker.isDispatchingYOffset()) return;

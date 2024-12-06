@@ -241,7 +241,7 @@ public class StaticLayoutUnitTest {
         doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(offset, offset, 0, 0, true, false);
+                .onControlsOffsetChanged(offset, offset, false, 0, 0, false, true, false);
         assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
     }
 

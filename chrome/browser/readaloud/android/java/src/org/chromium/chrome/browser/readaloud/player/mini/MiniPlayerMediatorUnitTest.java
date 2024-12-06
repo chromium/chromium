@@ -566,7 +566,7 @@ public class MiniPlayerMediatorUnitTest {
     private void onControlsOffsetChanged(
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate,
+            boolean requestNewFrame,
             int layerYOffset) {
         doReturn(bottomOffset).when(mBrowserControlsStateProvider).getBottomControlOffset();
         doReturn(bottomControlsMinHeightOffset)
@@ -581,9 +581,11 @@ public class MiniPlayerMediatorUnitTest {
                     .onControlsOffsetChanged(
                             /* topOffset= */ 0,
                             /* topControlsMinHeightOffset= */ 0,
+                            /* topControlsMinHeightChanged= */ false,
                             bottomOffset,
                             bottomControlsMinHeightOffset,
-                            needsAnimate,
+                            /* bottomControlsMinHeightChanged= */ false,
+                            requestNewFrame,
                             false);
         }
     }

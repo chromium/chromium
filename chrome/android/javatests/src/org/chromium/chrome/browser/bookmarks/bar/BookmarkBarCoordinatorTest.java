@@ -202,9 +202,11 @@ public class BookmarkBarCoordinatorTest {
                 .onControlsOffsetChanged(
                         mBrowserControlsManager.getTopControlOffset(),
                         mBrowserControlsManager.getTopControlsMinHeightOffset(),
+                        /* topControlsMinHeightChanged= */ false,
                         mBrowserControlsManager.getBottomControlOffset(),
                         mBrowserControlsManager.getBottomControlsMinHeightOffset(),
-                        /* needsAnimate= */ false,
+                        /* bottomControlsMinHeightChanged= */ false,
+                        /* requestNewFrame= */ false,
                         /* isVisibilityForced= */ false);
 
         assertEquals(
@@ -218,9 +220,11 @@ public class BookmarkBarCoordinatorTest {
                 .onControlsOffsetChanged(
                         mBrowserControlsManager.getTopControlOffset(),
                         mBrowserControlsManager.getTopControlsMinHeightOffset(),
+                        /* topControlsMinHeightChanged= */ false,
                         mBrowserControlsManager.getBottomControlOffset(),
                         mBrowserControlsManager.getBottomControlsMinHeightOffset(),
-                        /* needsAnimate= */ false,
+                        /* bottomControlsMinHeightChanged= */ false,
+                        /* requestNewFrame= */ false,
                         /* isVisibilityForced= */ false);
 
         assertEquals(

@@ -323,12 +323,14 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     public void onControlsOffsetChanged(
             int topOffset,
             int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
             boolean isVisibilityForced) {
         if (mLayers.size() == 0 || !isDispatchingYOffset()) return;
-        repositionLayers(bottomOffset, bottomControlsMinHeightOffset, needsAnimate);
+        repositionLayers(bottomOffset, bottomControlsMinHeightOffset, requestNewFrame);
     }
 
     /** Reposition the layers given that the height and minHeight is known. */

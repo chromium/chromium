@@ -218,7 +218,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Assume the top control is hidden and content is at the top.
         doReturn(0).when(mBrowserControlsVisibilityManager).getContentOffset();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
@@ -377,7 +378,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Assume the top control is hidden and content is at the top.
         doReturn(0).when(mBrowserControlsVisibilityManager).getContentOffset();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
@@ -637,7 +639,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         int midOffset = TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT / 2;
         mTopControlsContentOffset = midOffset;
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -663,7 +666,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Push a browser control height update to kick off the height transition.
         doReturn(TEST_TOOLBAR_HEIGHT).when(mBrowserControlsVisibilityManager).getContentOffset();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertTabStripHeightForMargins(newHeight);
         assertObservedHeight(newHeight);
@@ -687,7 +691,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Push a browser control height update to kick off the height transition.
         doReturn(TEST_TOOLBAR_HEIGHT).when(mBrowserControlsVisibilityManager).getContentOffset();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertTabStripHeightForMargins(expectedHeight);
         assertObservedHeight(expectedHeight);
@@ -973,7 +978,8 @@ public class TabStripTransitionCoordinatorUnitTest {
         for (int turns = 0; turns <= 10; turns++) {
             // Simulate top controls size change from browser. Input values doesn't matter in this
             // call.
-            getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+            getBrowserControlsObserver()
+                    .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
             if (mTopControlsContentOffset == endOffset) break;
 
             assertObservedTransitionFinished(false);
@@ -1059,8 +1065,10 @@ public class TabStripTransitionCoordinatorUnitTest {
         doReturn(TEST_TOOLBAR_HEIGHT)
                 .when(mBrowserControlsVisibilityManager)
                 .getTopControlsHeight();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
         mObserver = new TestObserver();
         mCoordinator.addObserver(mObserver);
         mDelegate.reset();
