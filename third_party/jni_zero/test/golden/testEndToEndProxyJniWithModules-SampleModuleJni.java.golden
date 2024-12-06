@@ -6,11 +6,14 @@ package org.jni_zero;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
+import org.jni_zero.internal.NullUnmarked;
+import org.jni_zero.internal.Nullable;
 import org.jni_zero.module_GEN_JNI;
 
 @CheckDiscard("crbug.com/993421")
+@NullUnmarked
 class SampleModuleJni implements SampleModule.Natives {
-  private static JniTestInstanceHolder sOverride;
+  private static @Nullable JniTestInstanceHolder sOverride;
 
   public static SampleModule.Natives get() {
     JniTestInstanceHolder holder = sOverride;

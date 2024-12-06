@@ -7,10 +7,13 @@ import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
+import org.jni_zero.internal.NullUnmarked;
+import org.jni_zero.internal.Nullable;
 
 @CheckDiscard("crbug.com/993421")
+@NullUnmarked
 class TinySampleJni implements TinySample.Natives {
-  private static JniTestInstanceHolder sOverride;
+  private static @Nullable JniTestInstanceHolder sOverride;
 
   public static TinySample.Natives get() {
     JniTestInstanceHolder holder = sOverride;

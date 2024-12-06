@@ -6,6 +6,8 @@ package org.jni_zero;
 
 import android.graphics.Rect;
 
+import org.jni_zero.internal.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +32,7 @@ import java.util.Set;
  * namespace, including the native class that this object binds to.
  */
 @JNINamespace("jni_zero::tests")
+@NullMarked
 class SampleForTests {
     // Classes can store their C++ pointer counterpart as an int that is normally initialized by
     // calling out a SampleForTestsJni.get().init() function. Replace "CPPClass" with your
@@ -161,7 +164,7 @@ class SampleForTests {
     }
 
     @CalledByNative
-    static @JniType("std::map<std::string, std::string>") Map<String, String> mapTest1(
+    static @JniType("std::map<std::string, std::string>") @Nullable Map<String, String> mapTest1(
             @JniType("std::map<std::string, std::string>") Map<String, String> arg0) {
         return arg0;
     }
@@ -194,9 +197,11 @@ class SampleForTests {
     private List<InnerStructA> mListInnerStructA = new ArrayList<InnerStructA>();
 
     @CalledByNative
-    private void addStructA(InnerStructA a) {
+    private SampleForTests.@Nullable InnerStructA addStructA(
+            SampleForTests.@Nullable InnerStructA a) {
         // Called by the native side to append another element.
         mListInnerStructA.add(a);
+        return null;
     }
 
     @CalledByNative
