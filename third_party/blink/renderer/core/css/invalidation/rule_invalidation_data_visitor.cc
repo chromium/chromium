@@ -148,7 +148,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoMultiSelectFocus:
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
     case CSSSelector::kPseudoOpen:
-    case CSSSelector::kPseudoClosed:
     case CSSSelector::kPseudoDialogInTopLayer:
     case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoPopoverInTopLayer:
@@ -1646,7 +1645,6 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoOutOfRange:
       case CSSSelector::kPseudoDefined:
       case CSSSelector::kPseudoOpen:
-      case CSSSelector::kPseudoClosed:
       case CSSSelector::kPseudoPopoverOpen:
       case CSSSelector::kPseudoVideoPersistent:
       case CSSSelector::kPseudoVideoPersistentAncestor:

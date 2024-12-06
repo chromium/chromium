@@ -406,7 +406,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoAutofillSelected:
     case kPseudoBlinkInternalElement:
     case kPseudoChecked:
-    case kPseudoClosed:
     case kPseudoCornerPresent:
     case kPseudoCue:
     case kPseudoCurrent:
@@ -573,7 +572,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"before", CSSSelector::kPseudoBefore},
     {"checked", CSSSelector::kPseudoChecked},
     {"checkmark", CSSSelector::kPseudoCheckMark},
-    {"closed", CSSSelector::kPseudoClosed},
     {"column", CSSSelector::kPseudoColumn},
     {"corner-present", CSSSelector::kPseudoCornerPresent},
     {"cue", CSSSelector::kPseudoWebKitCustomElement},
@@ -773,9 +771,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoOpen ||
-       match->type == CSSSelector::kPseudoClosed) &&
-      !RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
+  if (match->type == CSSSelector::kPseudoOpen &&
+      !RuntimeEnabledFeatures::CSSPseudoOpenEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -935,7 +932,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoAutofillPreviewed:
     case kPseudoAutofillSelected:
     case kPseudoChecked:
-    case kPseudoClosed:
     case kPseudoCornerPresent:
     case kPseudoCurrent:
     case kPseudoDecrement:
@@ -1712,7 +1708,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoPictureInPicture:
     case kPseudoPlaying:
     case kPseudoXrOverlay:
-    case kPseudoClosed:
     case kPseudoDefined:
     case kPseudoDir:
     case kPseudoFutureCue:

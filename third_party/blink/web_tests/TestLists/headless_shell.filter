@@ -547,7 +547,7 @@
 -external/wpt/css/selectors/selectors-4/lang-024.html
 -external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has-multiple-document-elements.html
 -external/wpt/css/selectors/media/media-loading-state.html
--external/wpt/css/selectors/open-closed-pseudo.html
+-external/wpt/css/selectors/open-pseudo.html
 -external/wpt/css/selectors/remove-hovered-element.html
 -external/wpt/css/selectors/user-invalid-form-submission-invalidation.html
 -external/wpt/density-size-correction/*

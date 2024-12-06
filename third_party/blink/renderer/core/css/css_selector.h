@@ -340,7 +340,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoWebKitCustomElement,
     // Pseudo elements in UA ShadowRoots. Available only in UA stylesheets.
     kPseudoBlinkInternalElement,
-    kPseudoClosed,
     // Pseudo element for fragment styling
     kPseudoColumn,
     kPseudoCue,

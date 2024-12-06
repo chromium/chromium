@@ -738,7 +738,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   // an expensive call to popup_->UpdateFromElement in DidRecalcStyle.
   if (RuntimeEnabledFeatures::SelectPopupLessUpdatesEnabled()) {
     SetNativePopupIsVisible(true);
-    if (RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
+    if (RuntimeEnabledFeatures::CSSPseudoOpenEnabled()) {
       select_->GetDocument().UpdateStyleAndLayoutForNode(
           select_, DocumentUpdateReason::kPagePopup);
     }
@@ -757,7 +757,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 
   if (!RuntimeEnabledFeatures::SelectPopupLessUpdatesEnabled()) {
     SetNativePopupIsVisible(true);
-    if (RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
+    if (RuntimeEnabledFeatures::CSSPseudoOpenEnabled()) {
       select_->GetDocument().UpdateStyleAndLayoutForNode(
           select_, DocumentUpdateReason::kPagePopup);
     }
@@ -800,9 +800,8 @@ bool MenuListSelectType::PopupIsVisible() const {
 
 void MenuListSelectType::SetNativePopupIsVisible(bool popup_is_visible) {
   native_popup_is_visible_ = popup_is_visible;
-  if (RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
+  if (RuntimeEnabledFeatures::CSSPseudoOpenEnabled()) {
     select_->PseudoStateChanged(CSSSelector::kPseudoOpen);
-    select_->PseudoStateChanged(CSSSelector::kPseudoClosed);
   }
   if (auto* layout_object = select_->GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is updated.

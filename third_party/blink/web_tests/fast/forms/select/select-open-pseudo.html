@@ -24,8 +24,6 @@ test(() => {
   const select = document.getElementById('single');
   assert_false(internals.isSelectPopupVisible(select),
     'internals.isSelectPopupVisibile should be false while popup is closed.');
-  assert_true(select.matches(':closed'),
-    ':closed should match while popup is closed.');
   assert_false(select.matches(':open'),
     ':open should not match while popup is closed.');
 
@@ -33,17 +31,13 @@ test(() => {
   eventSender.keyDown(' ');
   assert_true(internals.isSelectPopupVisible(select),
     'internals.isSelectPopupVisible should be true while the popup is open.');
-  assert_false(select.matches(':closed'),
-    ':closed should not match while popup is open.');
   assert_true(select.matches(':open'),
     ':open should match while popup is open.');
-}, 'Single-select with popup should support :open and :closed.');
+}, 'Single-select with popup should support :open.');
 
 test(() => {
   const select = document.getElementById('multiple');
-  assert_false(select.matches(':closed'),
-    ':closed should not match on <select mulitple>.');
   assert_false(select.matches(':open'),
     ':open should not match on <select multiple>.');
-}, 'Multi-select without popup should not support :open or :closed.');
+}, 'Multi-select without popup should not support :open.');
 </script>
