@@ -47,8 +47,21 @@ class StatusTray {
   // Removes |icon| from this status tray.
   void RemoveStatusIcon(StatusIcon* icon);
 
+  // Checks if a status icon of a specific type exists in the status tray.
+  bool HasStatusIconOfTypeForTesting(StatusIconType type) const;
+
  protected:
-  using StatusIcons = std::vector<std::unique_ptr<StatusIcon>>;
+  struct StatusIconWithType {
+    StatusIconWithType(std::unique_ptr<StatusIcon> status_icon,
+                       StatusIconType status_icon_type);
+    StatusIconWithType(StatusIconWithType&& other) noexcept;
+    StatusIconWithType& operator=(StatusIconWithType&& other) noexcept;
+    ~StatusIconWithType();
+
+    std::unique_ptr<StatusIcon> icon;
+    StatusIconType type;
+  };
+  using StatusIcons = std::vector<StatusIconWithType>;
 
   StatusTray();
 
@@ -62,8 +75,8 @@ class StatusTray {
   const StatusIcons& status_icons() const { return status_icons_; }
 
  private:
-  // List containing all active StatusIcons. The icons are owned by this
-  // StatusTray.
+  // List containing all active StatusIcons, paired with their type. The icons
+  // are owned by this StatusTray.
   StatusIcons status_icons_;
 };
 

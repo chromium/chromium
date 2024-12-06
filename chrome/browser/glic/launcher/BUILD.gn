@@ -46,6 +46,7 @@ source_set("browser_tests") {
   deps = [
     ":launcher",
     "//base/test:test_support",
+    "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

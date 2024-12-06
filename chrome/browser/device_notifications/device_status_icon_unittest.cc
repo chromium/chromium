@@ -111,7 +111,7 @@ void DeviceStatusIconTestBase::CheckIcon(
   ASSERT_TRUE(status_tray);
   ASSERT_EQ(status_tray->GetStatusIconsForTest().size(), 1u);
   const auto* status_icon = static_cast<MockStatusIcon*>(
-      status_tray->GetStatusIconsForTest().back().get());
+      status_tray->GetStatusIconsForTest().back().icon.get());
 
   // Sort the |profile_connection_counts| by the address of the profile
   // pointer. This is necessary because the menu items are created by
@@ -255,7 +255,7 @@ void DeviceStatusIconTestBase::TestProfileUserNameExtensionOrigin() {
   ASSERT_TRUE(status_tray);
   ASSERT_EQ(status_tray->GetStatusIconsForTest().size(), 1u);
   const auto* status_icon = static_cast<MockStatusIcon*>(
-      status_tray->GetStatusIconsForTest().back().get());
+      status_tray->GetStatusIconsForTest().back().icon.get());
 
   // Sort the |profiles| by the address of the profile
   // pointer. This is necessary because the menu items are created by

@@ -164,9 +164,8 @@ LRESULT CALLBACK StatusTrayWin::WndProc(HWND hwnd,
                                         LPARAM lparam) {
   if (message == taskbar_created_message_) {
     // We need to reset all of our icons because the taskbar went away.
-    for (StatusIcons::const_iterator i(status_icons().begin());
-         i != status_icons().end(); ++i) {
-      StatusIconWin* win_icon = static_cast<StatusIconWin*>(i->get());
+    for (const auto& i : status_icons()) {
+      auto* win_icon = static_cast<StatusIconWin*>(i.icon.get());
       win_icon->ResetIcon();
     }
     return TRUE;
@@ -174,10 +173,8 @@ LRESULT CALLBACK StatusTrayWin::WndProc(HWND hwnd,
     StatusIconWin* win_icon = nullptr;
 
     // Find the selected status icon.
-    for (StatusIcons::const_iterator i(status_icons().begin());
-         i != status_icons().end();
-         ++i) {
-      StatusIconWin* current_win_icon = static_cast<StatusIconWin*>(i->get());
+    for (const auto& i : status_icons()) {
+      auto* current_win_icon = static_cast<StatusIconWin*>(i.icon.get());
       if (current_win_icon->icon_id() == wparam) {
         win_icon = current_win_icon;
         break;
