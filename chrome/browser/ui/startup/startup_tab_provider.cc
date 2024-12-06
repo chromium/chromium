@@ -79,10 +79,7 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
 
 // Validates the URL whether it is allowed to be opened at launching. Dangerous
 // schemes are excluded to prevent untrusted external applications from opening
-// them except on Lacros where URLs coming from untrusted applications are
-// checked in a different layer (such as the dbus UrlHandlerService and the
-// ArcIntentHelperBridge). Thus, chrome:// URLs are allowed on Lacros so that
-// trusted calls in Ash can open them.
+// them.
 // Headless mode also allows chrome:// URLs if the user explicitly allowed it.
 bool ValidateUrl(const GURL& url) {
   if (!url.is_valid())
