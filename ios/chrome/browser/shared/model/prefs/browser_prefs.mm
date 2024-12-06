@@ -1183,9 +1183,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
-  // Added 08/2023.
-  invalidation::FCMInvalidationService::ClearDeprecatedPrefs(prefs);
-
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   // Added 09/2023.
   // TODO(crbug.com/40933843) To be removed after a few milestones.
