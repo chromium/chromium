@@ -152,6 +152,12 @@ std::unique_ptr<LayerImpl> SurfaceLayer::CreateLayerImpl(
   return layer_impl;
 }
 
+bool SurfaceLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
+  // TODO(crbug.com/40065199): Only return true if the contents of the
+  // surface (the canvas, video, or ImageBitmap) are HDR.
+  return override_child_paint_flags_.Read(*this);
+}
+
 bool SurfaceLayer::HasDrawableContent() const {
   return surface_range_.Read(*this).IsValid() && Layer::HasDrawableContent();
 }
