@@ -919,11 +919,11 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5499648645977734083">Gerenciar formas de pagamento…</translation>
 <translation id="5501346139932663133">Apps do Google</translation>
 <translation id="5506763544823940561">Salvar imagem no…</translation>
-<translation id="5511959326926949696">Proteção extrema e opcional para o navegador. Use esse modo somente se acreditar que você pode ser alvo de um ataque cibernético altamente sofisticado.</translation>
+<translation id="5511959326926949696">Proteção extrema e opcional para o navegador. Só use esse modo se você achar que pode ser alvo de ataques cibernéticos altamente sofisticados.</translation>
 <translation id="5513681519188741830"><ph name="TIME" />h atrás</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} senha fraca}one{{COUNT} senha fraca}other{{COUNT} senhas fracas}}</translation>
 <translation id="5532545557415295622">Caixa de diálogo de tempo limite de inatividade</translation>
-<translation id="5548760955356983418">A "Transição" permite que você comece a navegar por um website neste dispositivo e, em seguida, continue facilmente no seu Mac. O website aberto aparecerá no Dock do Mac.
+<translation id="5548760955356983418">A "Transição" permite que você comece a navegar em um site neste dispositivo e, em seguida, continue facilmente no seu Mac. O site aberto aparecerá no Dock do Mac.
 
 A "Transição" também deve ser ativada na seção "Geral" das configurações. Seus dispositivos devem usar a mesma conta do iCloud.</translation>
 <translation id="5551825465462320939">Acompanhe notícias, esportes e muito mais com base nos seus interesses.</translation>
@@ -1506,7 +1506,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8079602123447022758">Esta configuração é gerenciada. Toque duas vezes para ver mais informações</translation>
 <translation id="8084285576995584326">Controlar os dados da sua Conta do Google</translation>
 <translation id="809543534949702122">Histórico de pesquisa</translation>
-<translation id="8101409298456377967">Crie, salve e gerencie suas senhas para fazer login em sites e apps com facilidade. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">Crie, salve e gerencie suas senhas para facilitar o login em sites e apps. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114502941341617322">Nova guia</translation>
 <translation id="8114753159095730575">O download de arquivo está disponível. Opções disponíveis perto da parte inferior da tela.</translation>
