@@ -47,9 +47,6 @@
     <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS settings, which gives information about the current ChromeOS version.">
       ChromiumOS version
     </message>
-    <message name="IDS_SETTINGS_GET_HELP_USING_CHROME_OS" desc="Text of the button which takes the user to the Chrome help page.">
-      Get help with ChromiumOS
-    </message>
   </if>
 
   <!-- Autofill Page -->

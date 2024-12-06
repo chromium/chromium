@@ -213,12 +213,7 @@ AboutSection::AboutSection(Profile* profile,
                            PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
       pref_service_(pref_service),
-      crostini_subsection_(
-          ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? std::make_optional<CrostiniSection>(profile,
-                                                    search_tag_registry,
-                                                    pref_service)
-              : std::nullopt) {
+      crostini_subsection_(profile, search_tag_registry, pref_service) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAboutSearchConcepts());
 
@@ -248,9 +243,6 @@ AboutSection::AboutSection(Profile* profile,
 AboutSection::~AboutSection() = default;
 
 void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   // Top level About page strings.
   webui::LocalizedString kLocalizedStrings[] = {
       {"aboutProductLogoAlt", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
@@ -258,16 +250,15 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"aboutReportAnIssue", IDS_SETTINGS_ABOUT_PAGE_REPORT_AN_ISSUE},
       {"aboutSendFeedback", IDS_SETTINGS_ABOUT_PAGE_SEND_FEEDBACK},
       {"aboutSendFeedbackDescription",
-       IDS_OS_SETTINGS_REVAMP_SEND_FEEDBACK_DESCRIPTION},
+       IDS_OS_SETTINGS_SEND_FEEDBACK_DESCRIPTION},
 #endif
       {"aboutDiagnostics", IDS_SETTINGS_ABOUT_PAGE_DIAGNOSTICS},
-      {"aboutDiagnosticseDescription",
-       IDS_OS_SETTINGS_REVAMP_DIAGNOSTICS_DESCRIPTION},
+      {"aboutDiagnosticseDescription", IDS_OS_SETTINGS_DIAGNOSTICS_DESCRIPTION},
       {"aboutFirmwareUpdates", IDS_SETTINGS_ABOUT_PAGE_FIRMWARE_UPDATES},
       {"aboutFirmwareUpToDateDescription",
-       IDS_OS_SETTINGS_REVAMP_FIRMWARE_UP_TO_DATE_DESCRIPTION},
+       IDS_OS_SETTINGS_FIRMWARE_UP_TO_DATE_DESCRIPTION},
       {"aboutFirmwareUpdateAvailableDescription",
-       IDS_OS_SETTINGS_REVAMP_FIRMWARE_UPDATE_AVAILABLE_DESCRIPTION},
+       IDS_OS_SETTINGS_FIRMWARE_UPDATE_AVAILABLE_DESCRIPTION},
       {"aboutRelaunch", IDS_SETTINGS_ABOUT_PAGE_RELAUNCH},
       {"aboutUpgradeCheckStarted", IDS_SETTINGS_ABOUT_UPGRADE_CHECK_STARTED},
       {"aboutUpgradeNotUpToDate", IDS_SETTINGS_UPGRADE_NOT_UP_TO_DATE},
@@ -373,16 +364,14 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"aboutOsPageTitle", IDS_SETTINGS_ABOUT_OS},
       {"aboutChromeOsMenuItemDescription",
        IDS_OS_SETTINGS_ABOUT_CHROMEOS_MENU_ITEM_DESCRIPTION},
-      {"aboutGetHelpUsingChromeOs",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_GET_HELP_USING_CHROME_OS
-                        : IDS_SETTINGS_GET_HELP_USING_CHROME_OS},
+      {"aboutGetHelpUsingChromeOs", IDS_OS_SETTINGS_GET_HELP_USING_CHROME_OS},
       {"aboutGetHelpDescription",
-       IDS_OS_SETTINGS_REVAMP_GET_HELP_USING_CHROME_OS_DESCRIPTION},
+       IDS_OS_SETTINGS_GET_HELP_USING_CHROME_OS_DESCRIPTION},
       {"aboutOsProductTitle", IDS_PRODUCT_OS_NAME},
       {"aboutReleaseNotesOffline", IDS_SETTINGS_ABOUT_PAGE_RELEASE_NOTES},
       {"aboutShowReleaseNotes", IDS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES},
       {"aboutShowReleaseNotesDescription",
-       IDS_OS_SETTINGS_REVAMP_ABOUT_PAGE_SHOW_RELEASE_NOTES_DESCRIPTION},
+       IDS_OS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES_DESCRIPTION},
       {"aboutManagedEndOfLifeSubtitle",
        IDS_SETTINGS_ABOUT_PAGE_MANAGED_END_OF_LIFE_SUBTITLE},
       {"aboutUpgradeTryAgain", IDS_SETTINGS_UPGRADE_TRY_AGAIN},
@@ -517,10 +506,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          base::UTF8ToUTF16(safetyInfoLink));
 #endif
 
-  // Crostini subsection exists only when OsSettingsRevampWayfinding is enabled.
-  if (crostini_subsection_) {
-    crostini_subsection_->AddLoadTimeData(html_source);
-  }
+  crostini_subsection_.AddLoadTimeData(html_source);
 }
 
 void AboutSection::AddHandlers(content::WebUI* web_ui) {
@@ -530,10 +516,7 @@ void AboutSection::AddHandlers(content::WebUI* web_ui) {
     web_ui->AddMessageHandler(std::make_unique<DeviceNameHandler>());
   }
 
-  // Crostini subsection exists only when OsSettingsRevampWayfinding is enabled.
-  if (crostini_subsection_) {
-    crostini_subsection_->AddHandlers(web_ui);
-  }
+  crostini_subsection_.AddHandlers(web_ui);
 }
 
 int AboutSection::GetSectionNameMessageId() const {
@@ -579,9 +562,7 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(mojom::Subpage::kDetailedBuildInfo,
                             kDetailedBuildInfoSettings, generator);
 
-  if (crostini_subsection_) {
-    crostini_subsection_->RegisterHierarchy(generator);
-  }
+  crostini_subsection_.RegisterHierarchy(generator);
 }
 
 bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {

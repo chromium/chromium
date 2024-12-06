@@ -199,7 +199,7 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES" desc="Text of the button which shows user the release notes.">
     See what's new
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_ABOUT_PAGE_SHOW_RELEASE_NOTES_DESCRIPTION" desc="Sublabel description shown for See What's New button.">
+  <message name="IDS_OS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES_DESCRIPTION" desc="Sublabel description shown for See What's New button.">
     Automatic updates provide you with the latest features. Explore highlights from recent updates.
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_EDIT_DEVICE_NAME" desc="The title of the dialog that allows the user to edit the device hostname.">
@@ -262,25 +262,25 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_DIAGNOSTICS" desc="Text of the button which allows the user to diagnose their device.">
     Diagnostics
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_DIAGNOSTICS_DESCRIPTION" desc="Sublabel description shown for Diagnostics button.">
+  <message name="IDS_OS_SETTINGS_DIAGNOSTICS_DESCRIPTION" desc="Sublabel description shown for Diagnostics button.">
     Test your battery, CPU, memory, connectivity, and more
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_FIRMWARE_UPDATES" desc="Text of the button for the surface which allows users to update all their peripheral firmwares in one place.">
     Firmware updates
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_FIRMWARE_UP_TO_DATE_DESCRIPTION" desc="Sublabel shown when no firmware updates are available.">
+  <message name="IDS_OS_SETTINGS_FIRMWARE_UP_TO_DATE_DESCRIPTION" desc="Sublabel shown when no firmware updates are available.">
     Firmware is up to date
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_FIRMWARE_UPDATE_AVAILABLE_DESCRIPTION" desc="Sublabel shown when firmware updates are available.">
+  <message name="IDS_OS_SETTINGS_FIRMWARE_UPDATE_AVAILABLE_DESCRIPTION" desc="Sublabel shown when firmware updates are available.">
     Update available
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_SEND_FEEDBACK_DESCRIPTION" desc="Sublabel description shown for Send Feedback button.">
+  <message name="IDS_OS_SETTINGS_SEND_FEEDBACK_DESCRIPTION" desc="Sublabel description shown for Send Feedback button.">
     Share feedback or report an issue
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_GET_HELP_USING_CHROME_OS" desc="Text of the button which takes the user to the Chrome help page.">
+  <message name="IDS_OS_SETTINGS_GET_HELP_USING_CHROME_OS" desc="Text of the button which takes the user to the Chrome help page.">
     Get help
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_GET_HELP_USING_CHROME_OS_DESCRIPTION" desc="Sublabel description shown for Get Help button.">
+  <message name="IDS_OS_SETTINGS_GET_HELP_USING_CHROME_OS_DESCRIPTION" desc="Sublabel description shown for Get Help button.">
     View help articles or find device support
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_TITLE" desc="Text of the auto update toggle feature.">

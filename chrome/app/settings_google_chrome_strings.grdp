@@ -36,9 +36,6 @@
       <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS Flex settings, which gives information about the current ChromeOS Flex version.">
         ChromeOS Flex version
       </message>
-      <message name="IDS_SETTINGS_GET_HELP_USING_CHROME_OS" desc="Text of the button which takes the user to the Chrome help page.">
-        Get help with ChromeOS Flex
-      </message>
     </if>
     <if expr="not reven">
       <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About ChromeOS page.">
@@ -46,9 +43,6 @@
       </message>
       <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS settings, which gives information about the current ChromeOS version.">
         ChromeOS version
-      </message>
-      <message name="IDS_SETTINGS_GET_HELP_USING_CHROME_OS" desc="Text of the button which takes the user to the Chrome help page.">
-        Get help with ChromeOS
       </message>
     </if>
   </if>
