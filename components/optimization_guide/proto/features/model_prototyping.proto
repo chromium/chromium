@@ -241,6 +241,7 @@ message ModelPrototypingMetadata {
   string logging_description = 2;
 
   // The email address of the user who uploaded the data. This will only be
-  // populated for the TVC data upload.
+  // populated for the TVC data upload, this field will not be scrubbed and will
+  // be used to identify the user if there are issues with this feature.
   string user_email = 3;
 }

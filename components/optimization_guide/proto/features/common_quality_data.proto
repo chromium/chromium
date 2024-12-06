@@ -1271,7 +1271,7 @@ enum AnnotatedPageContentVersion {
 }
 
 // In the future, this will be expanded to include more types of content.
-// Next ID: 10;
+// Next ID: 11;
 enum ContentAttributeType {
   CONTENT_ATTRIBUTE_UNKNOWN = 0;
 
@@ -1287,13 +1287,15 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_HEADING = 5;
 
   // Structured chunks.
-  CONTENT_ATTRIBUTE_LIST = 6;
+  CONTENT_ATTRIBUTE_ORDERED_LIST = 6;
 
-  CONTENT_ATTRIBUTE_FORM = 7;
+  CONTENT_ATTRIBUTE_UNORDERED_LIST = 7;
 
-  CONTENT_ATTRIBUTE_IMAGE = 8;
+  CONTENT_ATTRIBUTE_FORM = 8;
 
-  CONTENT_ATTRIBUTE_TABLE = 9;
+  CONTENT_ATTRIBUTE_IMAGE = 9;
+
+  CONTENT_ATTRIBUTE_TABLE = 10;
 }
 
 // Next ID: 5
