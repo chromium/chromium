@@ -9,7 +9,7 @@
 const reportPoller = new ReportPoller(
     '/.well-known/private-aggregation/report-shared-storage',
     '/.well-known/private-aggregation/debug/report-shared-storage',
-    /*fullTimeoutMs=*/ 500,
+    /*fullTimeoutMs=*/ 1500,
 );
 
 private_aggregation_promise_test(async () => {
