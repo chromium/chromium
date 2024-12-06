@@ -1895,20 +1895,16 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> image;
-  std::unique_ptr<Canvas2DLayerBridge> old_layer_bridge;
-  // TODO(crbug.com/40280152): Port this check away from checking
-  // `canvas2d_bridge_` directly as part of eliminating
-  // Canvas2DLayerBridge.
-  if (canvas2d_bridge_) {
-    image = context_->GetImage(FlushReason::kReplaceLayerBridge);
-    // image can be null if allocation failed in which case we should just
-    // abort the surface switch to retain the old surface which is still
-    // functional.
-    if (!image)
-      return;
-    old_layer_bridge = std::move(canvas2d_bridge_);
+  scoped_refptr<StaticBitmapImage> image =
+      context_->GetImage(FlushReason::kReplaceLayerBridge);
+  // image can be null if allocation failed in which case we should just
+  // abort the surface switch to retain the old surface which is still
+  // functional.
+  if (!image) {
+    return;
   }
+  std::unique_ptr<Canvas2DLayerBridge> old_layer_bridge =
+      std::move(canvas2d_bridge_);
   std::unique_ptr<MemoryManagedPaintRecorder> recorder =
       old_provider->ReleaseRecorder();
   ResetLayer();
@@ -1925,9 +1921,7 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
       GetOrCreateCanvasResourceProviderFor2DContext(
           canvas2d_bridge_->GetHibernationHandler());
   if (!new_provider) {
-    if (old_layer_bridge) {
-      canvas2d_bridge_ = std::move(old_layer_bridge);
-    }
+    canvas2d_bridge_ = std::move(old_layer_bridge);
     return;
   }
 
