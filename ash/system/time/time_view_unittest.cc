@@ -140,7 +140,7 @@ TEST_F(TimeViewTest, Basics) {
 }
 
 // TODO(crbug.com/355355015): flaky test.
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_TimeViewFiresAccessibilityEvents \
   DISABLED_TimeViewFiresAccessibilityEvents
 #else
