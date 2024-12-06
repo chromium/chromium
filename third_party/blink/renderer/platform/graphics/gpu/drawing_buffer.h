@@ -417,7 +417,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 const gfx::ColorSpace& color_space,
                 viz::SharedImageFormat,
                 SkAlphaType alpha_type,
-                bool is_overlay_candidate,
                 scoped_refptr<gpu::ClientSharedImage> shared_image,
                 std::unique_ptr<gpu::SharedImageTexture> shared_image_texture);
     ColorBuffer(const ColorBuffer&) = delete;
@@ -440,7 +439,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const gfx::ColorSpace color_space;
     const viz::SharedImageFormat format;
     const SkAlphaType alpha_type;
-    const bool is_overlay_candidate;
 
     // The shared image used to send this buffer to the compositor.
     scoped_refptr<gpu::ClientSharedImage> shared_image;

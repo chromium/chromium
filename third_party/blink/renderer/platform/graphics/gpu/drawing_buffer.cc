@@ -650,7 +650,8 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
         color_buffer_for_mailbox->produce_sync_token,
         color_buffer_for_mailbox->shared_image->size(),
         color_buffer_for_mailbox->shared_image->format(),
-        color_buffer_for_mailbox->is_overlay_candidate,
+        color_buffer_for_mailbox->shared_image->usage().Has(
+            gpu::SHARED_IMAGE_USAGE_SCANOUT),
         viz::TransferableResource::ResourceSource::kDrawingBuffer);
     out_resource->color_space =
         color_buffer_for_mailbox->shared_image->color_space();
@@ -712,7 +713,8 @@ void DrawingBuffer::MailboxReleasedGpu(scoped_refptr<ColorBuffer> color_buffer,
   // Creation of image backed mailboxes is very expensive, so be less
   // aggressive about pruning them. Pruning is done in FIFO order.
   size_t cache_limit = kDefaultColorBufferCacheLimit;
-  if (color_buffer->is_overlay_candidate) {
+  if (color_buffer->shared_image->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
     cache_limit = 4;
   }
   while (recycled_color_buffer_queue_.size() >= cache_limit)
@@ -819,7 +821,8 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   resource.set_texture_target(color_buffer->shared_image->GetTextureTarget());
   resource.size = color_buffer->shared_image->size();
   resource.format = color_buffer->shared_image->format();
-  resource.is_overlay_candidate = color_buffer->is_overlay_candidate;
+  resource.is_overlay_candidate =
+      color_buffer->shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   resource.color_space = color_buffer->shared_image->color_space();
   resource.origin = color_buffer->shared_image->surface_origin();
   resource.hdr_metadata = hdr_metadata_;
@@ -871,7 +874,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
     const gfx::ColorSpace& color_space,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    bool is_overlay_candidate,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     std::unique_ptr<gpu::SharedImageTexture> shared_image_texture)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
@@ -880,7 +882,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
       color_space(color_space),
       format(format),
       alpha_type(alpha_type),
-      is_overlay_candidate(is_overlay_candidate),
       shared_image(std::move(shared_image)),
       shared_image_texture_(std::move(shared_image_texture)) {
   CHECK(this->shared_image);
@@ -2097,20 +2098,18 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         front_buffer_shared_image->CreateGLTexture(gl_);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
         weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
-        back_buffer_alpha_type,
-        /*is_overlay_candidate=*/true, std::move(front_buffer_shared_image),
+        back_buffer_alpha_type, std::move(front_buffer_shared_image),
         std::move(si_texture));
   }
 
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
   std::unique_ptr<gpu::SharedImageTexture> si_texture =
       back_buffer_shared_image->CreateGLTexture(gl_);
-  const bool is_overlay_candidate = created_mappable_si || using_swap_chain_;
   scoped_refptr<DrawingBuffer::ColorBuffer> color_buffer =
       base::MakeRefCounted<ColorBuffer>(
           weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
-          back_buffer_alpha_type, is_overlay_candidate,
-          std::move(back_buffer_shared_image), std::move(si_texture));
+          back_buffer_alpha_type, std::move(back_buffer_shared_image),
+          std::move(si_texture));
   color_buffer->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   gl_->BindTexture(texture_target, color_buffer->texture_id());
 
