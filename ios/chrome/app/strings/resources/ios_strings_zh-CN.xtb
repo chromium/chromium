@@ -580,7 +580,7 @@
 <translation id="3782614601387961027">忽略警告</translation>
 <translation id="3789841737615482174">安装</translation>
 <translation id="3795478177331815672">打开标签页和标签页分组</translation>
-<translation id="380329542618494757">名称</translation>
+<translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="3808311849069021992">显示搜索引擎详细信息</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -946,7 +946,7 @@
 <translation id="5532545557415295622">空闲超时对话框</translation>
 <translation id="5548760955356983418">借助 Handoff，您可以先在此设备上浏览网站，然后轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
 
-另外，您必须在“设置”的“常规”部分启用 Handoff，并且您的设备必须使用同一个 iCloud 账号。</translation>
+您还必须在“设置”的“常规”部分启用 Handoff，并且您的设备必须使用同一个 iCloud 账号。</translation>
 <translation id="5551825465462320939">随时掌握您感兴趣的新闻、体育赛事等资讯。</translation>
 <translation id="5555008247722361784">目前登录的账号是 <ph name="USER_EMAIL" />，Google 账号错误，打开账号菜单。</translation>
 <translation id="5556459405103347317">重新加载</translation>

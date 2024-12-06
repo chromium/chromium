@@ -68,7 +68,7 @@
 <translation id="2228071138934252756">Per consentire all'app <ph name="APP_NAME" /> di accedere alla fotocamera, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
 <translation id="2238944249568001759">Ricerche suggerite in base all'ultima scheda</translation>
-<translation id="2241587408274973373">Schede pagina Nuova scheda</translation>
+<translation id="2241587408274973373">Contenuti nuove schede</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2253414712144136228">Rimuovi <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="228293613124499805">La maggior parte dei siti che visiti probabilmente salva dati sul dispositivo, spesso per migliorare la tua esperienza salvando le tue preferenze o le informazioni che condividi con i siti stessi. Ti consigliamo di mantenere questa impostazione attiva.</translation>
@@ -206,7 +206,7 @@
 <translation id="4200726100658658164">Apri Impostazioni di geolocalizzazione</translation>
 <translation id="4226663524361240545">Le notifiche possono far vibrare il dispositivo</translation>
 <translation id="4259722352634471385">Navigazione bloccata: <ph name="URL" /></translation>
-<translation id="4278390842282768270">Autorizzazione consentita</translation>
+<translation id="4278390842282768270">Autorizzazione concessa</translation>
 <translation id="429312253194641664">Un sito sta riproducendo contenuti multimediali</translation>
 <translation id="42981349822642051">Espandi</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Scade domani}other{Scade tra # giorni}}</translation>
@@ -298,8 +298,8 @@
 <translation id="560980142378233747">Ciò significa che le funzionalità del sito dovrebbero funzionare come previsto, ma potresti avere meno protezione durante la navigazione. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Mostrami come fare</translation>
 <translation id="5649053991847567735">Download automatici</translation>
-<translation id="5668404140385795438">Ignora la richiesta di un sito per evitare l'aumento dello zoom</translation>
-<translation id="5677928146339483299">Autorizzazione bloccata</translation>
+<translation id="5668404140385795438">Ignora la richiesta di un sito di evitare l'aumento dello zoom</translation>
+<translation id="5677928146339483299">Autorizzazione negata</translation>
 <translation id="5689516760719285838">Posizione</translation>
 <translation id="5690795753582697420">La fotocamera è disattivata nelle impostazioni di Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> può usare le tue informazioni durante la tua navigazione</translation>
@@ -447,7 +447,7 @@
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7804248752222191302">Un sito sta utilizzando la fotocamera</translation>
 <translation id="7807060072011926525">Fornito da Google</translation>
-<translation id="7835852323729233924">Riproduzione media</translation>
+<translation id="7835852323729233924">Contenuti in riproduzione</translation>
 <translation id="783819812427904514">Riattiva audio video</translation>
 <translation id="7846076177841592234">Annulla selezione</translation>
 <translation id="7881140103901777395">Chrome limita l'utilizzo dei cookie di terze parti per la maggior parte dei siti. Tuttavia, i cookie di terze parti sono consentiti su questo sito perché si basa su di questi cookie per fornire servizi di base.\n\nVai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" />.</translation>

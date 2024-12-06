@@ -958,7 +958,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1654580009054503925">Nie zezwolono na wyświetlanie żądań</translation>
 <translation id="1654713139320245449">Nie znaleziono miejsc docelowych przesyłania. Potrzebujesz pomocy?</translation>
 <translation id="1656528038316521561">Przezroczystość tła</translation>
-<translation id="1657406563541664238">Pomóż ulepszyć <ph name="PRODUCT_NAME" />, przesyłając do Google statystyki użytkowania i raporty o awariach</translation>
+<translation id="1657406563541664238">Pomagaj ulepszać <ph name="PRODUCT_NAME" />, przesyłając do Google statystyki użytkowania i raporty o awariach</translation>
 <translation id="1657937299377480641">Aby zalogować się ponownie na konto umożliwiające dostęp do zasobów edukacyjnych, poproś o zgodę rodziców</translation>
 <translation id="1658424621194652532">Ta strona ma dostęp do mikrofonu.</translation>
 <translation id="1660763353352708040">Problem z zasilaczem</translation>
@@ -1246,7 +1246,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1865769994591826607">Tylko połączenia z tą samą witryną</translation>
 <translation id="186594096341696655">Zmniejsz szybkość</translation>
 <translation id="186612162884103683">„<ph name="EXTENSION" />” może odczytywać oraz zapisywać pliki graficzne, wideo i dźwiękowe z wybranych lokalizacji.</translation>
-<translation id="1867780286110144690">Przeglądarka <ph name="PRODUCT_NAME" /> jest gotowa do ukończenia instalacji.</translation>
+<translation id="1867780286110144690">Przeglądarka <ph name="PRODUCT_NAME" /> jest gotowa do ukończenia instalacji</translation>
 <translation id="1868553836791672080">W Chromium sprawdzanie haseł nie jest dostępne</translation>
 <translation id="1868617395637139709">Używaj lokalizacji na potrzeby aplikacji na Androida i jego usług.</translation>
 <translation id="1869433484041798909">Przycisk zakładki</translation>
@@ -6919,7 +6919,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5972559880616357748">Więcej działań dotyczących: <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Usługa w środowisku bezobsługowym</translation>
 <translation id="5972708806901999743">Przenieś na początek</translation>
-<translation id="5972826969634861500">Uruchom przeglądarkę <ph name="PRODUCT_NAME" /></translation>
+<translation id="5972826969634861500">Uruchom <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">Klient „<ph name="CLIENT_NAME" />” rozpoczął debugowanie tej przeglądarki</translation>
 <translation id="5973605538625120605">Zmienianie kodu PIN</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{Otwórz wszystkie w oknie &amp;incognito}=1{Otwórz w oknie &amp;incognito}few{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}many{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}other{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}}</translation>

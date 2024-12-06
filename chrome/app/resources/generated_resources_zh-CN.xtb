@@ -2255,7 +2255,7 @@
 <translation id="2559889124253841528">保存到设备</translation>
 <translation id="2561211427862644160">在此处查看您的所有书签</translation>
 <translation id="2564520396658920462">通过 AppleScript 执行 JavaScript 的功能已关闭。要开启此功能，请在菜单栏中依次转到“查看”&gt;“开发者”&gt;“允许 Apple 事件中的 JavaScript”。如需更多信息，请访问 https://support.google.com/chrome/?p=applescript</translation>
-<translation id="2564653188463346023">增强的“拼写检查”功能</translation>
+<translation id="2564653188463346023">增强型拼写检查</translation>
 <translation id="256481480019204378">Google 账号 ID</translation>
 <translation id="256517381556987641">“文件同步”功能目前已找到 <ph name="ITEMS_FOUND" /> 个文件，仍在检查存储空间。请过几分钟再尝试重新开启该功能。</translation>
 <translation id="2565214867520763227">开启屏幕阅读器</translation>
@@ -3396,7 +3396,7 @@
 <translation id="3412265149091626468">跳到所选部分</translation>
 <translation id="3413122095806433232">CA 证书颁发者：<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">大小：</translation>
-<translation id="3414966631182382431">您的浏览器由 <ph name="MANAGER" /> <ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
+<translation id="3414966631182382431">您的<ph name="BEGIN_LINK" />浏览器由 <ph name="MANAGER" /> 管理<ph name="END_LINK" /></translation>
 <translation id="3414974735818878791">点击鼠标中键</translation>
 <translation id="3415580428903497523">使用从操作系统导入的本地证书</translation>
 <translation id="341589277604221596">实时字幕 - <ph name="LANGUAGE" /></translation>
@@ -3972,7 +3972,7 @@
 <translation id="3800898876950197674">要允许使用此扩展程序，请输入密码。</translation>
 <translation id="3801449494961771207">系统默认文字转语音声音</translation>
 <translation id="3802486193901166966">此扩展程序无需任何特殊权限，并且无权访问其他网站</translation>
-<translation id="380329542618494757">名称</translation>
+<translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">视频画质</translation>
 <translation id="3803367742635802571">您访问的网站可能会停止按预期运行</translation>
 <translation id="380408572480438692">启用性能数据收集功能有助于 Google 逐步改进系统。除非您提交反馈报告 (Alt-Shift-I) 并在其中包含性能数据，否则，系统不会发送任何数据。您随时可以返回此页停用性能数据收集功能。</translation>
@@ -6207,7 +6207,7 @@
 <translation id="544083962418256601">创建快捷方式...</translation>
 <translation id="5441133529460183413">从 Chrome 浏览器安装的 Web 应用</translation>
 <translation id="5441292787273562014">重新加载网页</translation>
-<translation id="5441466871879044658">翻译成该语言</translation>
+<translation id="5441466871879044658">翻译成所选语言</translation>
 <translation id="5442228125690314719">创建磁盘映像时出错。请重试。</translation>
 <translation id="5442550868130618860">开启自动更新</translation>
 <translation id="5444281205834970653">删除并继续</translation>
@@ -6972,7 +6972,7 @@
 <translation id="6006484371116297560">经典</translation>
 <translation id="6007053304250788613">在镜像模式下只能排除一个显示屏</translation>
 <translation id="6007240208646052708">不支持使用您所用的语言执行语音搜索。</translation>
-<translation id="6010651352520077187">当此功能处于开启状态时，“Google 翻译”会询问您是否要将网站翻译成您的首选语言。它还可以自动翻译网站。</translation>
+<translation id="6010651352520077187">开启此功能后，Google 翻译会询问您是否要将网站翻译成您的首选语言。这项服务还能自动翻译网站。</translation>
 <translation id="6011193465932186973">指纹</translation>
 <translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6011908034087870826">正在将链接发送到“<ph name="DEVICE_NAME" />”</translation>
@@ -7666,7 +7666,7 @@
 <translation id="6532206849875187177">安全性与登录</translation>
 <translation id="6532527800157340614">登录失败，因为检索不到您的访问令牌。请检查您的网络连接，然后重试。</translation>
 <translation id="6532663472409656417">已向企业注册</translation>
-<translation id="6533315466883598769">使用“Google 翻译”</translation>
+<translation id="6533315466883598769">使用 Google 翻译</translation>
 <translation id="65334502113648172">按箭头键可收起或展开显示区域。若要将显示区域四处移动，请按 Shift 和 +，然后使用箭头键。</translation>
 <translation id="6535331821390304775">始终允许 <ph name="ORIGIN" /> 在关联的应用中打开此类链接</translation>
 <translation id="653659894138286600">扫描文件和图片</translation>
@@ -7918,7 +7918,7 @@
 <translation id="6712943853047024245">您已经保存过此用户名在 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="6713233729292711163">添加工作资料</translation>
 <translation id="6713441551032149301">按住启动器键可在功能键和系统顶行按键之间切换</translation>
-<translation id="6713668088933662563">一律不询问是否翻译这些语言</translation>
+<translation id="6713668088933662563">一律不询问是否翻译以下语言</translation>
 <translation id="6715735940363172819">不允许网站使用您的麦克风</translation>
 <translation id="6715803357256707211">安装 Linux 应用时出错。请点击通知以了解详情。</translation>
 <translation id="6716049856796700977">所有应用、网站和系统服务均无法使用您的位置信息。不过，应用和网站或许仍可通过您的 IP 地址获取您的位置信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -9592,7 +9592,7 @@
 <translation id="7915457674565721553">请连接到互联网以设置家长控制</translation>
 <translation id="7916364730877325865">贵组织不允许您使用此账号开启同步功能</translation>
 <translation id="7918257978052780342">注册</translation>
-<translation id="7919123827536834358">自动翻译这些语言</translation>
+<translation id="7919123827536834358">自动翻译以下语言</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以查看“<ph name="FILENAME" />”的内容</translation>
 <translation id="7920482456679570420">添加您想让“拼写检查”功能跳过的字词</translation>

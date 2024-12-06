@@ -943,7 +943,7 @@
 <translation id="5438292632479953702">再次下载</translation>
 <translation id="5439191312780166229">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="5441137934526263133">网站无法正常运行？这是因为第三方 Cookie 已被屏蔽</translation>
-<translation id="5441466871879044658">翻译成该语言</translation>
+<translation id="5441466871879044658">翻译成所选语言</translation>
 <translation id="5441522332038954058">跳转到地址栏</translation>
 <translation id="5444999712122199445">返回网站</translation>
 <translation id="544776284582297024">若要打开多个标签页并同时访问不同网页，请点按“打开的标签页”按钮</translation>
@@ -1526,7 +1526,7 @@
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 个下载项已被贵组织屏蔽}other{# 个下载项已被贵组织屏蔽}}</translation>
 <translation id="7914399737746719723">已安装应用</translation>
-<translation id="7919123827536834358">自动翻译这些语言</translation>
+<translation id="7919123827536834358">自动翻译以下语言</translation>
 <translation id="7926975587469166629">卡的别名</translation>
 <translation id="7929962904089429003">打开菜单</translation>
 <translation id="7934668619883965330">无法下载此文件。文件格式不受支持。</translation>

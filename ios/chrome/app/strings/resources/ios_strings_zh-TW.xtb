@@ -565,7 +565,7 @@
 <translation id="3679163990085797665">刪除已讀取的項目</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3695446226812920698">操作說明</translation>
-<translation id="3700134753671613714">不論您使用任何裝置，只要登入帳戶即可取得自己的書籤。</translation>
+<translation id="3700134753671613714">不論使用任何裝置，只要登入帳戶即可取得自己的書籤。</translation>
 <translation id="3706112388989951153">編輯書籤</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{這 {COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({EMAIL})。}other{這 {COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({EMAIL})。}}</translation>
 <translation id="371230970611282515">可預測不安全事件，並在這類事件發生前顯示警告訊息。</translation>
@@ -944,9 +944,9 @@
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 組低強度密碼}other{有 {COUNT} 組低強度密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話方塊</translation>
-<translation id="5548760955356983418">有了 Handoff，您使用這個裝置開始瀏覽網站後，可輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
+<translation id="5548760955356983418">有了 Handoff，你就能在裝置上瀏覽網站後，輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
 
-此外，您必須在 [設定] 的「一般設定」部分中啟用 Handoff，且您的裝置必須使用同一個 iCloud 帳戶。</translation>
+前提是，你必須在 [設定] 的「一般設定」中啟用 Handoff，且你的裝置必須使用同一個 iCloud 帳戶。</translation>
 <translation id="5551825465462320939">即時掌握你感興趣的新聞、體育賽事等資訊。</translation>
 <translation id="5555008247722361784">目前登入的帳戶是<ph name="USER_EMAIL" />。Google 帳戶錯誤。開啟帳戶選單。</translation>
 <translation id="5556459405103347317">重新載入</translation>
@@ -1528,7 +1528,7 @@
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8059533439631660104">收合這個專區。</translation>
 <translation id="8061584726507121204">歷史記錄</translation>
-<translation id="8069394452933076548">針對最近沒有使用的分頁，選擇過多久要移至閒置分頁區塊。</translation>
+<translation id="8069394452933076548">選擇多久後，可以將最近沒有使用的分頁移至閒置分頁區塊。</translation>
 <translation id="8073670137947914548">下載完成</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8079530767338315840">重複播放</translation>

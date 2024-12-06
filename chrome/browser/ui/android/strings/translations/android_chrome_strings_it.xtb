@@ -108,7 +108,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1419753403124156396">Vuoi riavviare Chrome?</translation>
 <translation id="1428770807407000502">Vuoi disattivare la sincronizzazione?</translation>
 <translation id="1430915738399379752">Stampa</translation>
-<translation id="1435593198351412143">Aprire automaticamente i PDF</translation>
+<translation id="1435593198351412143">Apri automaticamente i PDF</translation>
 <translation id="1436784010935106834">Rimosso</translation>
 <translation id="1437543266176261764">Esecuzione in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizza i tuoi prodotti monitorati in Segnalibri</translation>
@@ -194,7 +194,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
 <translation id="1922362554271624559">Lingue consigliate</translation>
 <translation id="1924255092154549435">La scheda è espansa</translation>
-<translation id="1925021887439448749">Inserisci l'indirizzo web personalizzato</translation>
+<translation id="1925021887439448749">Inserisci un indirizzo web personalizzato</translation>
 <translation id="1928618076168182477">Visualizzazione grafica selezionata</translation>
 <translation id="1928696683969751773">Aggiornamenti</translation>
 <translation id="1933845786846280168">Scheda selezionata</translation>
@@ -1283,7 +1283,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6883204995689174413">Condividi</translation>
 <translation id="6883606786470492001">Gestisci gli argomenti degli annunci e altre impostazioni per limitare le informazioni che i siti possono apprendere su di te per mostrarti annunci personalizzati</translation>
 <translation id="6883906387682976294">Annulla l'iscrizione alle notifiche di questo sito</translation>
-<translation id="688398477366397178">Fai conoscere ai siti web le lingue che parli. Se possibile, verranno mostrati contenuti in queste lingue.</translation>
+<translation id="688398477366397178">Dai informazioni sulle lingue che conosci ai siti web. Se possibile, ti mostreranno contenuti in queste lingue.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Iscrizione a 1 sito annullata}other{Iscrizione a # siti annullata}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 password}other{# password}}</translation>
 <translation id="688730033107341407">Quando esci, i preferiti, le password e altri dati nel tuo Account Google verranno rimossi da questo dispositivo.</translation>

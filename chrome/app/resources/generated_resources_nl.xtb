@@ -1121,7 +1121,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1780572199786401845">Melden als aanstootgevend/onveilig</translation>
 <translation id="178092663238929451">Stel Dichtbij delen in om bestanden te krijgen van en te sturen naar mensen bij jou in de buurt</translation>
 <translation id="1781291988450150470">Huidige pincode</translation>
-<translation id="1781502536226964113">De pagina 'Nieuw tabblad' openen</translation>
+<translation id="1781502536226964113">De pagina Nieuw tabblad openen</translation>
 <translation id="1781553166608855614">Gesproken taal</translation>
 <translation id="1781771911845953849">Accounts en synchronisatie</translation>
 <translation id="1782101999402987960">Je beheerder heeft updates geblokkeerd</translation>
@@ -1435,7 +1435,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="199191324030140441">Niet storen uitzetten</translation>
 <translation id="1992397118740194946">Niet ingesteld</translation>
 <translation id="1994173015038366702">Site-URL</translation>
-<translation id="1995916364271252349">Beheert welke informatie sites mogen gebruiken en bekijken (locatie, camera, pop-ups en meer)</translation>
+<translation id="1995916364271252349">Beheert welke informatie sites mogen gebruiken en tonen (locatie, camera, pop-ups en meer)</translation>
 <translation id="199610894463449797">{0,plural, =1{Dit profiel sluiten}other{Dit profiel sluiten (# vensters)}}</translation>
 <translation id="1997433994358798851">Je moet Chrome rechten geven via bluetooth verbinding te maken met je apparaat</translation>
 <translation id="1997616988432401742">Je certificaten</translation>
@@ -1738,7 +1738,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2210462644007531147">Kan de installatie niet afronden</translation>
 <translation id="2211043920024403606">Profielgegevens</translation>
 <translation id="2211245494465528624">Synchronisatieopties beheren</translation>
-<translation id="221297410904507041">Geschiedenis, cookies, cachegeheugen en andere items verwijderen</translation>
+<translation id="221297410904507041">Verwijder de geschiedenis, cookies, het cachegeheugen en andere items</translation>
 <translation id="2213410656650624348">Gemiddeld</translation>
 <translation id="2214018885812055163">Gedeelde mappen</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 regel niet getoond&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> regels niet getoond&gt;}}</translation>
@@ -1788,7 +1788,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="224835741840550119">Je apparaat opschonen</translation>
 <translation id="2249111429176737533">Openen als venster met tabbladen</translation>
 <translation id="2249605167705922988">bijv. 1-5, 8, 11-13</translation>
-<translation id="2249635629516220541">Pas de informatie aan die sites gebruiken om advertenties te laten zien</translation>
+<translation id="2249635629516220541">Pas de informatie aan die sites gebruiken om advertenties te tonen</translation>
 <translation id="2250624716625396929">Dit tabblad gebruikt je camera of microfoon</translation>
 <translation id="2251218783371366160">Openen met systeemviewer</translation>
 <translation id="225163402930830576">Netwerken vernieuwen</translation>
@@ -2545,7 +2545,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="276582196519778359">Voer je pincode voor ouderlijk toezicht in</translation>
 <translation id="2766006623206032690">Pla&amp;kken en gaan</translation>
 <translation id="2766161002040448006">Aan een ouder vragen</translation>
-<translation id="2766629385177215776">Nieuwe tabbladgroepen die op een apparaat worden gemaakt, automatisch vastzetten op de bookmarkbalk</translation>
+<translation id="2766629385177215776">Nieuwe tabbladgroepen die je maakt automatisch vastzetten op de bookmarkbalk</translation>
 <translation id="2767077837043621282">Kan je Chromebook niet updaten. Probeer het later opnieuw.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bewerken totdat je alle tabbladen voor deze site sluit</translation>
 <translation id="2769174155451290427">Geüploade afbeelding</translation>
@@ -2755,7 +2755,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2912247081180973411">Vensters sluiten</translation>
 <translation id="2915102088417824677">Activiteitenlogboek bekijken</translation>
 <translation id="2915873080513663243">Automatisch scannen</translation>
-<translation id="2916073183900451334">Als je op een webpagina op Tab drukt, worden links en velden in formulieren gemarkeerd</translation>
+<translation id="2916073183900451334">Links en velden in formulieren markeren als je op een webpagina op Tab drukt</translation>
 <translation id="2916745397441987255">Extensies zoeken</translation>
 <translation id="2918484639460781603">Ga naar instellingen</translation>
 <translation id="2918484644467055090">Dit apparaat kan niet worden ingeschreven bij de organisatie waarbij je account hoort, omdat het apparaat is aangewezen voor beheer door een andere organisatie.</translation>
@@ -3990,7 +3990,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3808202562160426447">Achtergrondcontent dimmen</translation>
 <translation id="3808443763115411087">Android-app-ontwikkeling voor Crostini</translation>
 <translation id="3808617121485025547">Meer informatie over hoe je cookies van derden blokkeert</translation>
-<translation id="38089336910894858">Waarschuwing bekijken voordat je afsluit met ⌘Q</translation>
+<translation id="38089336910894858">Waarschuwing tonen voordat je afsluit met ⌘Q</translation>
 <translation id="3809272675881623365">Konijn</translation>
 <translation id="3809280248639369696">Marsmannetje</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan bestanden bekijken in de volgende mappen</translation>
@@ -4754,7 +4754,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4364830672918311045">Meldingen weergeven</translation>
 <translation id="4367513928820380646">Verwijderde rechten bekijken</translation>
 <translation id="4367971618859387374">Weergavenaam</translation>
-<translation id="4368960422722232719">Geheugengebruik tonen op voorbeelden voor pop-upkaarten voor tabbladen</translation>
+<translation id="4368960422722232719">Geheugengebruik tonen op pop-upkaarten voor tabbladen</translation>
 <translation id="4369215744064167350">Websiteverzoek goedgekeurd</translation>
 <translation id="4369233657762989723">Dicteren aan/uit</translation>
 <translation id="436926121798828366">Je kunt dit altijd wijzigen via <ph name="SETTINGS_LINK" /></translation>
@@ -6346,7 +6346,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5532223876348815659">Algemeen</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wil het volgende</translation>
 <translation id="5533343601674003130">Pdf-service</translation>
-<translation id="5537725057119320332">Cast</translation>
+<translation id="5537725057119320332">Casten</translation>
 <translation id="5539070192556911367">Kan Google niet bereiken</translation>
 <translation id="5541694225089836610">Actie is door de beheerder uitgezet</translation>
 <translation id="5542132724887566711">Profiel</translation>
@@ -10116,7 +10116,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="826905130698769948">Ongeldig clientcertificaat</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="82706708334564640">Recente downloadgeschiedenis</translation>
-<translation id="827097179112817503">Homepage-knop tonen</translation>
+<translation id="827097179112817503">Knop Homepage tonen</translation>
 <translation id="8271268254812352141">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen. Pas de talen voor vertaling aan in <ph name="LINK_BEGIN" />Websitetalen<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">De volgende stappen zijn bedoeld voor ouders. Als het account is ingesteld, kun je de <ph name="DEVICE_TYPE" /> teruggeven aan je kind.</translation>
 <translation id="8272194309885535896">Afbeelding downloaden</translation>
