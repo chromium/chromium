@@ -560,7 +560,7 @@ class CORE_EXPORT HTMLMediaElement
 
   int GetElementId() override { return GetDomNodeId(); }
 
-  void SetCcLayer(cc::Layer*) final;
+  void SetCcLayer(cc::Layer*) override;
 
   void AddMediaTrack(const media::MediaTrack&) final;
   void RemoveMediaTrack(const media::MediaTrack&) final;
