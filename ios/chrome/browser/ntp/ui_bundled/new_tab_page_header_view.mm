@@ -70,9 +70,8 @@ const CGFloat kHintLabelOmniboxLeadingSpace = 20.0;
 // Large Fakebox is enabled.
 const CGFloat kLargeFakeboxHorizontalMargin = 8.0;
 
-// The constants for the constraints affecting the separation between the Lens
-// and Voice Search buttons.
-const CGFloat kEndButtonSeparation = 19.0;
+// The spacing between the items in the button stack.
+const CGFloat kButtonSpacing = 9.0;
 
 // The height of the divider between the mic and lens icons.
 const CGFloat kIconDividerHeight = 13.0;
@@ -186,9 +185,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     NSLayoutConstraint* fakeLocationBarHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
-// Constraint for positioning the end button away from the fake box rounded
-// rectangle.
-@property(nonatomic, strong) NSLayoutConstraint* endButtonTrailingConstraint;
 // View used to add on-touch highlight to the fake omnibox.
 @property(nonatomic, strong) UIView* fakeLocationBarHighlightView;
 // View used to simulate the top toolbar when the header is stuck to the top of
@@ -212,6 +208,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   UIImageView* _accountDiscParticleBadgeImageView;
   // The New Feature badge on the customization menu's entrypoint.
   UIView* _customizationNewFeatureBadge;
+  // A view to contain all the buttons on the trailing side of the fakebox.
+  UIStackView* _buttonStack;
 
   // Constraints to update the `toolbarView`'s postion according to the
   // `tabGroupIndicatorView`'s visibility.
@@ -357,21 +355,35 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
+  _buttonStack = [[UIStackView alloc] init];
+  _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
+  _buttonStack.alignment = UIStackViewAlignmentCenter;
+  _buttonStack.spacing = kButtonSpacing;
+  _buttonStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+      0, 0, 0, [self endButtonFakeboxTrailingSpace]);
+  _buttonStack.layoutMarginsRelativeArrangement = true;
+  [searchField addSubview:_buttonStack];
+  [NSLayoutConstraint activateConstraints:@[
+    [_buttonStack.trailingAnchor
+        constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor],
+    [_buttonStack.centerYAnchor
+        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+  ]];
+
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  [searchField addSubview:self.voiceSearchButton];
-  UIButton* endButton = self.voiceSearchButton;
+  [_buttonStack addArrangedSubview:self.voiceSearchButton];
 
   // Lens.
   const BOOL useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::NewTabPage, self.isGoogleDefaultSearchEngine);
   if (useLens) {
+    [self addVoiceAndLensDivider];
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    [searchField addSubview:self.lensButton];
-    endButton = self.lensButton;
+    [_buttonStack addArrangedSubview:self.lensButton];
     if (_useNewBadgeForLensButton) {
       [self.lensButton addTarget:self
                           action:@selector(lensButtonWithNewBadgeTapped:)
@@ -402,24 +414,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.fakeLocationBarHeightConstraint,
   ]];
 
-  // If the Lens button was created, layout the header with the Lens button on
-  // the end.
-  if (self.lensButton) {
-    [self addVoiceAndLensDivider];
-    [NSLayoutConstraint activateConstraints:@[
-      // Lens button constraints.
-      [self.lensButton.leadingAnchor
-          constraintEqualToAnchor:self.voiceSearchButton.trailingAnchor
-                         constant:kEndButtonSeparation],
-      [self.lensButton.centerYAnchor
-          constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
-    ]];
-  }
-
-  self.endButtonTrailingConstraint = [endButton.trailingAnchor
-      constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor
-                     constant:-[self endButtonFakeboxTrailingSpace]];
-
   // The voice search button is always on the leading side, even if the Lens
   // button is visible.
   self.hintLabelTrailingConstraint = [self.searchHintLabel.trailingAnchor
@@ -429,7 +423,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self.voiceSearchButton.centerYAnchor
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     self.hintLabelTrailingConstraint,
-    self.endButtonTrailingConstraint,
   ]];
 }
 
@@ -590,11 +583,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.fakeLocationBar.layer.cornerRadius =
       self.fakeLocationBarHeightConstraint.constant / 2;
 
-  // Adjust the position of the search field's subviews by adjusting their
-  // constraint constant value.
-  self.endButtonTrailingConstraint.constant =
-      -Interpolate([self endButtonFakeboxTrailingSpace],
-                   kEndButtonOmniboxTrailingSpace, percent);
+  // Adjust the position of the search field's subviews.
+  CGFloat endButtonInset = Interpolate([self endButtonFakeboxTrailingSpace],
+                                       kEndButtonOmniboxTrailingSpace, percent);
+  _buttonStack.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(0, 0, 0, endButtonInset);
   self.hintLabelLeadingConstraint.constant =
       hintLabelScalingExtraOffset + Interpolate(kHintLabelFakeboxLeadingSpace,
                                                 kHintLabelOmniboxLeadingSpace,
@@ -625,15 +618,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)hideFakeboxButtons {
-  self.separator.alpha = 0;
-  self.voiceSearchButton.alpha = 0;
-  self.lensButton.alpha = 0;
+  _buttonStack.alpha = 0;
 }
 
 - (void)showFakeboxButtons {
-  self.separator.alpha = 1;
-  self.voiceSearchButton.alpha = 1;
-  self.lensButton.alpha = 1;
+  _buttonStack.alpha = 1;
 }
 
 - (void)setIdentityDiscErrorBadge {
@@ -903,18 +892,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
   divider.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dividerWidth = 1.0 / [[UIScreen mainScreen] scale];
-  [self.lensButton.superview addSubview:divider];
 
   [NSLayoutConstraint activateConstraints:@[
-    [divider.leadingAnchor
-        constraintEqualToAnchor:self.voiceSearchButton.trailingAnchor
-                       constant:kEndButtonSeparation / 2],
-    [divider.centerYAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     [divider.heightAnchor constraintEqualToConstant:kIconDividerHeight],
     [divider.widthAnchor constraintEqualToConstant:dividerWidth],
   ]];
   self.voiceAndLensDivider = divider;
+  [_buttonStack addArrangedSubview:divider];
 }
 
 // Handles a lens button with new badge tap. Registers that the tap has occurred
