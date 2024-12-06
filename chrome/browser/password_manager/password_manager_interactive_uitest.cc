@@ -472,13 +472,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 // Tests that submission is detected when all password fields in a change
 // password form are cleared and not detected when only some fields are cleared.
 // TODO(crbug.com/382342234): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ChangePwdFormFieldsCleared DISABLED_ChangePwdFormFieldsCleared
-#else
-#define MAYBE_ChangePwdFormFieldsCleared ChangePwdFormFieldsCleared
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       MAYBE_ChangePwdFormFieldsCleared) {
+                       DISABLED_ChangePwdFormFieldsCleared) {
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
