@@ -120,7 +120,7 @@ std::string AXElementWrapper::DOMId() const {
 
 NSArray* AXElementWrapper::Children() const {
   if (IsNSAccessibilityElement())
-    return [node_ children];
+    return [node_ accessibilityChildren];
 
   if (IsAXUIElement()) {
     base::apple::ScopedCFTypeRef<CFTypeRef> children_ref;

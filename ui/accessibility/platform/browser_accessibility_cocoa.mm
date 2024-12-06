@@ -519,7 +519,6 @@ bool ui::IsNSRange(id value) {
     NSString* attribute;
     NSString* methodName;
   } attributeToMethodNameContainer[] = {
-      {NSAccessibilityChildrenAttribute, @"children"},
       {NSAccessibilityColumnsAttribute, @"columns"},
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
       {NSAccessibilityContentsAttribute, @"contents"},
@@ -594,13 +593,9 @@ bool ui::IsNSRange(id value) {
   [super detach];
 }
 
-- (NSArray*)AXChildren {
-  return [self children];
-}
-
 // Returns an array of BrowserAccessibilityCocoa objects, representing the
 // accessibility children of this object.
-- (NSArray*)children {
+- (NSArray*)AXChildren {
   if (![self instanceActive])
     return nil;
   if (_needsToUpdateChildren) {
@@ -635,9 +630,9 @@ bool ui::IsNSRange(id value) {
 }
 
 - (void)childrenChanged {
-  // This function may be called in the middle of children() if this node adds
-  // extra mac nodes while its children are being requested. If _gettingChildren
-  // is true, we don't need to do anything here.
+  // This function may be called in the middle of -accessibilityChildren if
+  // this node adds extra mac nodes while its children are being requested. If
+  // _gettingChildren is true, we don't need to do anything here.
   if (![self instanceActive] || _gettingChildren)
     return;
   _needsToUpdateChildren = true;
@@ -1445,15 +1440,18 @@ bool ui::IsNSRange(id value) {
 // Returns all tabs in this subtree.
 // LINT.IfChange(accessibilityTabs)
 - (NSArray*)tabs {
-  if (![self instanceActive])
+  if (![self instanceActive]) {
     return nil;
+  }
+
   NSMutableArray* tabSubtree = [[NSMutableArray alloc] init];
 
   if ([self internalRole] == ax::mojom::Role::kTab)
     [tabSubtree addObject:self];
 
-  for (uint i = 0; i < [[self children] count]; ++i) {
-    NSArray* tabChildren = [[[self children] objectAtIndex:i] tabs];
+  for (uint i = 0; i < [[self accessibilityChildren] count]; ++i) {
+    NSArray* tabChildren =
+        [[[self accessibilityChildren] objectAtIndex:i] tabs];
     if ([tabChildren count] > 0)
       [tabSubtree addObjectsFromArray:tabChildren];
   }
@@ -1616,7 +1614,7 @@ bool ui::IsNSRange(id value) {
 - (NSArray*)visibleChildren {
   if (![self instanceActive])
     return nil;
-  return [self children];
+  return [self accessibilityChildren];
 }
 
 // LINT.IfChange(accessibilityVisibleColumns)

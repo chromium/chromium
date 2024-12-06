@@ -88,7 +88,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // on the characteristics of this accessibility node.
 - (ui::BrowserAccessibility*)actionTarget;
 
-@property(nonatomic, readonly) NSArray* children;
 @property(nonatomic, readonly) NSArray* columns;
 @property(nonatomic, readonly) NSValue* columnIndexRange;
 @property(nonatomic, readonly) NSNumber* disclosing;
