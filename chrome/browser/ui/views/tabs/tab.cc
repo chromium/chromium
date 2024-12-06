@@ -861,6 +861,7 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
       break;
     case TabAlertState::TAB_CAPTURING:
     case TabAlertState::PIP_PLAYING:
+    case TabAlertState::GLIC_ACCESSING:
       group = 1;
       break;
     case TabAlertState::AUDIO_PLAYING:

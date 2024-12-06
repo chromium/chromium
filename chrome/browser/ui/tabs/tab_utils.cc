@@ -147,6 +147,9 @@ std::u16string GetTabAlertStateText(const TabAlertState alert_state) {
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
+    case TabAlertState::GLIC_ACCESSING:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING);
   }
   NOTREACHED();
 }
