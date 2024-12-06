@@ -111,17 +111,6 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
-    name = "gpu-fyi-try-android-moto-g-power-5g-64",
-    description_html = "Runs GPU tests on Motorola Moto G Power 5G phones",
-    mirrors = [
-        "ci/GPU FYI Android arm64 Builder",
-        "ci/Android FYI Release (Motorola Moto G Power 5G)",
-    ],
-    gn_args = "ci/GPU FYI Android arm64 Builder",
-    pool = "luci.chromium.gpu.android.moto-g-power-5g.try",
-)
-
-gpu_android_builder(
     name = "gpu-fyi-try-android-s23-64",
     description_html = "Runs GPU tests on Samsung S23 phones",
     mirrors = [

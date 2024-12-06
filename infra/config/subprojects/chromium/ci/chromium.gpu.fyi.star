@@ -473,50 +473,6 @@ ci.thin_tester(
     list_view = "chromium.gpu.experimental",
 )
 
-ci.thin_tester(
-    name = "Android FYI Release (Motorola Moto G Power 5G)",
-    description_html = "Runs GPU tests on Motorola Moto G Power 5G phones",
-    triggered_by = ["GPU FYI Android arm64 Builder"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "arm64_builder_rel_mb",
-        ),
-        run_tests_serially = True,
-    ),
-    targets = targets.bundle(
-        targets = [
-            "gpu_noop_sleep_telemetry_test",
-        ],
-        mixins = [
-            "has_native_resultdb_integration",
-            "motorola_moto_g_power_5g",
-            "limited_capacity_bot",
-        ],
-    ),
-    targets_settings = targets.settings(
-        browser_config = targets.browser_config.ANDROID_CHROMIUM,
-        os_type = targets.os_type.ANDROID,
-        use_android_merge_script_by_default = False,
-    ),
-    # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Android|T64|IMG",
-    #     short_name = "MGP",
-    # ),
-    list_view = "chromium.gpu.experimental",
-)
-
 # TODO(crbug.com/40282670): Add a trybot for this builder when there's capacity.
 ci.thin_tester(
     name = "Android FYI Release (Samsung A13)",

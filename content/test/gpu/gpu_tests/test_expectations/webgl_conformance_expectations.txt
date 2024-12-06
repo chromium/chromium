@@ -10,7 +10,7 @@
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
-#             android-sm-a235m android-sm-s911u1 android-moto-g-power-5g---2023
+#             android-sm-a235m android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -294,16 +294,6 @@ crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_half_f
 crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_half_float_linear [ Skip ]
 crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_WEBGL_color_buffer_float [ Skip ]
 crbug.com/1372155 [ android android-sm-a135m arm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
-
-# Extensions not available on Motorola Moto G Power 5Gs
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_EXT_sRGB [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_OES_texture_float_linear [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_OES_texture_half_float_linear [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] conformance/extensions/oes-texture-float.html [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/extensions/webgl-compressed-texture-pvrtc.html [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
