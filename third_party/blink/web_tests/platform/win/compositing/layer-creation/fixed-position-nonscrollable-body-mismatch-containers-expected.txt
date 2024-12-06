@@ -19,6 +19,7 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "name": "HorizontalScrollbar",
       "position": [1, 286],
       "bounds": [300, 15],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {

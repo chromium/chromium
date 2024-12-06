@@ -117,6 +117,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/native_theme/native_theme_features.h"
 #include "url/gurl.h"
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
@@ -1406,7 +1407,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
 #if BUILDFLAG(IS_WIN)
-  constexpr int kFirstPosition = 915;
+  const int kFirstPosition = ui::IsFluentScrollbarEnabled() ? 917 : 915;
 #elif BUILDFLAG(IS_CHROMEOS)
   constexpr int kFirstPosition = 937;
 #else
@@ -1425,7 +1426,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
 #if BUILDFLAG(IS_WIN)
-  constexpr int kSecondPosition = 1831;
+  const int kSecondPosition = ui::IsFluentScrollbarEnabled() ? 1834 : 1831;
 #elif BUILDFLAG(IS_CHROMEOS)
   constexpr int kSecondPosition = 1875;
 #else
