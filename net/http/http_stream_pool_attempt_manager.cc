@@ -230,6 +230,8 @@ void HttpStreamPool::AttemptManager::StartJob(
         dict.Set("enable_alternative_services",
                  job->enable_alternative_services());
         dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
+        dict.Set("create_to_resume_ms",
+                 static_cast<int>(job->CreateToResumeTime().InMilliseconds()));
         net_log.source().AddToEventParameters(dict);
         return dict;
       });
@@ -676,6 +678,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   dict.Set("job_count_pending", static_cast<int>(PendingJobCount()));
   dict.Set("job_count_limit_ignoring",
            static_cast<int>(limit_ignoring_jobs_.size()));
+  dict.Set("job_count_notified", static_cast<int>(notified_jobs_.size()));
   dict.Set("preconnect_count_all", static_cast<int>(preconnects_.size()));
   dict.Set("preconnect_count_pending",
            static_cast<int>(PendingPreconnectCount()));

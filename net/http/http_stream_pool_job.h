@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -92,6 +93,10 @@ class HttpStreamPool::Job {
   // Starts this job.
   void Start();
 
+  // Resumes this job. Must be called only when Group::CanStartJob() returns
+  // false.
+  void Resume();
+
   // Returns the LoadState of this job.
   LoadState GetLoadState() const;
 
@@ -138,14 +143,22 @@ class HttpStreamPool::Job {
     return connection_attempts_;
   }
 
+  base::TimeTicks create_time() const { return create_time_; }
+
+  base::TimeDelta CreateToResumeTime() const;
+
  private:
   AttemptManager* attempt_manager() const;
+
+  void StartInternal();
 
   const raw_ptr<Delegate> delegate_;
   raw_ptr<Group> group_;
   const quic::ParsedQuicVersion quic_version_;
   const NextProtoSet allowed_alpns_;
   const NetLogWithSource net_log_;
+  const base::TimeTicks create_time_;
+  base::TimeTicks resume_time_;
 
   ConnectionAttempts connection_attempts_;
 

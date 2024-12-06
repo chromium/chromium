@@ -2379,15 +2379,24 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequireHttp11AfterSpdySessionCreated) {
   h2_ssl->next_proto = NextProto::kProtoHTTP2;
   socket_factory()->AddSSLSocketDataProvider(h2_ssl.get());
 
-  resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
-      .CompleteStartSynchronously(OK);
+  auto h1_data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(h1_data.get());
+  auto h1_ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(h1_ssl.get());
+
+  // Add two fake DNS resolutions (one for failing case, another is for
+  // successful HTTP/1.1 case).
+  for (size_t i = 0; i < 2; ++i) {
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+  }
 
   StreamRequester requester1;
   requester1.set_destination(kDefaultDestination).RequestStream(pool());
   HttpStreamKey stream_key = requester1.GetStreamKey();
-  RunUntilIdle();
+  requester1.WaitForResult();
   EXPECT_THAT(requester1.result(), Optional(IsOk()));
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
       stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
@@ -2400,15 +2409,21 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequireHttp11AfterSpdySessionCreated) {
   ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
       stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
 
-  // Request a stream again. The second request fails because the first request
-  // is still alive and the corresponding attempt manager is still alive. The
-  // existing SPDY session should become unavailable.
+  // Request a stream again. The second request is paused because the first
+  // request is still alive and the corresponding attempt manager is still
+  // alive.
   StreamRequester requester2;
   requester2.set_destination(kDefaultDestination).RequestStream(pool());
-  RunUntilIdle();
-  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_HTTP_1_1_REQUIRED)));
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(requester2.result().has_value());
+  // The SPDY session should become unavailable.
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
       stream_key.CalculateSpdySessionKey(), /*is_websocket=*/false));
+
+  // Destroy the first request. It should resume the paused request.
+  requester1.ResetRequest();
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
@@ -3547,34 +3562,177 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(requester1.result(), Optional(IsError(ERR_CONNECTION_RESET)));
 
   // The first request isn't destroyed yet so the failing attempt manager is
-  // still alive. A request that comes during a failure also fails.
+  // still alive. A request that comes during a failure should be paused.
   StreamRequester requester2(stream_key);
-  requester2.RequestStream(pool());
-  requester2.WaitForResult();
-  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_CONNECTION_RESET)));
+  HttpStreamRequest* request2 = requester2.RequestStream(pool());
+  ASSERT_FALSE(requester2.result().has_value());
+  EXPECT_EQ(request2->GetLoadState(), LOAD_STATE_IDLE);
   EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(), 1u);
 
-  // Preconnect fails too.
+  // Preconnect during the failing mode fails.
+  // TODO(crbug.com/381742472): Preconnect should be paused instead of failing.
+  // Fix the behavior.
   Preconnector preconnector1(kDestination);
   EXPECT_THAT(preconnector1.Preconnect(pool()), IsError(ERR_CONNECTION_RESET));
 
-  // Destroy failed requests. This should destroy the failing attempt manager
-  // and the group.
+  // Destroy the failed request. This should destroy the failing attempt manager
+  // and should create a new one.
   requester1.ResetRequest();
-  requester2.ResetRequest();
-  FastForwardUntilNoTasksRemain();
-  ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
+  ASSERT_FALSE(pool()
+                   .GetGroupForTesting(stream_key)
+                   ->GetAttemptManagerForTesting()
+                   ->is_failing());
 
-  // Request a stream again. This time server is happy to accept the connection.
-  StreamRequester requester3(stream_key);
-  requester3.RequestStream(pool());
-
-  requester3.WaitForResult();
-  EXPECT_THAT(requester3.result(), Optional(IsOk()));
+  // The paused request should succeed now.
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
 
   // Preconnect should also succeed.
   Preconnector preconnector2(kDestination);
   EXPECT_THAT(preconnector2.Preconnect(pool()), IsOk());
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, ResumeMultiplePausedJobs) {
+  constexpr size_t kNumSuccessStreams = 3;
+
+  // Add two fake DNS resolutions (one for failing case, another is for success
+  // case).
+  for (size_t i = 0; i < 2; ++i) {
+    FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+    endpoint_request
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+  }
+
+  auto failed_data = std::make_unique<SequencedSocketData>();
+  failed_data->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(failed_data.get());
+
+  HttpStreamKey stream_key = StreamKeyBuilder().Build();
+
+  StreamRequester failing_requester(stream_key);
+  failing_requester.RequestStream(pool());
+
+  failing_requester.WaitForResult();
+  EXPECT_THAT(failing_requester.result(),
+              Optional(IsError(ERR_CONNECTION_RESET)));
+
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  for (size_t i = 0; i < kNumSuccessStreams; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    StreamRequester* raw_requester = requester.get();
+    requesters.emplace_back(std::move(requester));
+    raw_requester->RequestStream(pool());
+    ASSERT_FALSE(raw_requester->result().has_value());
+  }
+
+  // Destroy the failed request. This should resume paused requests.
+  failing_requester.ResetRequest();
+
+  for (auto& requester : requesters) {
+    requester->WaitForResult();
+    EXPECT_THAT(requester->result(), Optional(IsOk()));
+  }
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, ResumeMultiplePausedJobsAndFailAgain) {
+  constexpr size_t kNumPausedJobs = 3;
+  // Delay between requests. Used to ensure that paused jobs are sorted by
+  // time.
+  constexpr base::TimeDelta kDelayBetweenRequests = base::Milliseconds(10);
+
+  // Add fake DNS resolutions since we will create at least three attempt
+  // managers. +2 is for the first two failed attempts.
+  for (size_t i = 0; i < kNumPausedJobs + 2; ++i) {
+    FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+    endpoint_request
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+  }
+
+  auto failed_data1 = std::make_unique<SequencedSocketData>();
+  failed_data1->set_connect_data(
+      MockConnect(SYNCHRONOUS, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(failed_data1.get());
+
+  auto failed_data2 = std::make_unique<SequencedSocketData>();
+  failed_data2->set_connect_data(
+      MockConnect(SYNCHRONOUS, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(failed_data1.get());
+
+  HttpStreamKey stream_key = StreamKeyBuilder().Build();
+
+  // The first request fails.
+  StreamRequester failing_requester1(stream_key);
+  failing_requester1.RequestStream(pool());
+  failing_requester1.WaitForResult();
+  EXPECT_THAT(failing_requester1.result(),
+              Optional(IsError(ERR_CONNECTION_RESET)));
+
+  // The second request (that also fails) should be paused.
+  StreamRequester failing_requester2(stream_key);
+  failing_requester2.RequestStream(pool());
+  ASSERT_FALSE(failing_requester2.result().has_value());
+  EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(), 1u);
+  FastForwardBy(kDelayBetweenRequests);
+
+  // Subsequent requests (that also fails) should be paused too.
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  for (size_t i = 0; i < kNumPausedJobs; ++i) {
+    FastForwardBy(kDelayBetweenRequests);
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    StreamRequester* raw_requester = requester.get();
+    requesters.emplace_back(std::move(requester));
+    raw_requester->RequestStream(pool());
+    ASSERT_FALSE(raw_requester->result().has_value());
+  }
+  EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(),
+            kNumPausedJobs + 1u);
+
+  // Destroy the first request. This should resume paused requests.
+  failing_requester1.ResetRequest();
+  ASSERT_FALSE(pool()
+                   .GetGroupForTesting(stream_key)
+                   ->GetAttemptManagerForTesting()
+                   ->is_failing());
+
+  // Complete and destroy the second request. The group should enter failing
+  // mode again.
+  failing_requester2.WaitForResult();
+  EXPECT_THAT(failing_requester2.result(),
+              Optional(IsError(ERR_CONNECTION_RESET)));
+  ASSERT_TRUE(pool()
+                  .GetGroupForTesting(stream_key)
+                  ->GetAttemptManagerForTesting()
+                  ->is_failing());
+  failing_requester2.ResetRequest();
+
+  // Complete subsequent requests. These requests could be associated with
+  // either the second failing attempt manager or other attempt managers that
+  // will also fail, depending on when resume tasks are invoked. We couldn't
+  // have concrete expectations for these requests because we use many PostTasks
+  // in attempt manager and group so the task ordering is hard to predict. Also
+  // we may modify the task ordering in the future for fixing bugs and improving
+  // task scheduling. Anyway, all attempt managers fail with the same error.
+  for (size_t i = 0; i < kNumPausedJobs; ++i) {
+    SCOPED_TRACE(i);
+    requesters[i]->WaitForResult();
+    EXPECT_THAT(requesters[i]->result(),
+                Optional(IsError(ERR_CONNECTION_RESET)));
+    requesters[i]->ResetRequest();
+  }
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, ReleaseStreamWhileFailing) {

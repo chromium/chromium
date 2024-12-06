@@ -210,10 +210,20 @@ class HttpStreamPool::Group {
     kForce,
   };
 
+  // Compares jobs based on their creation time. Used for `paused_jobs_`.
+  struct PausedJobComparator {
+    bool operator()(Job* a, Job* b) const;
+  };
+
+  using PausedJobSet = std::set<raw_ptr<Job>, PausedJobComparator>;
+
   static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
       const IdleStreamSocket& idle);
 
   bool IsFailing() const;
+
+  // Resumes a paused job. Schedules another task if more paused jobs exist.
+  void ResumePausedJob();
 
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
@@ -244,7 +254,7 @@ class HttpStreamPool::Group {
   // We call these jobs "paused". Note that there are another type of jobs that
   // are called "pending". Pending jobs are associated with an AttemptManager
   // but haven't attempted connections yet.
-  std::set<raw_ptr<Job>> paused_jobs_;
+  PausedJobSet paused_jobs_;
 
   base::WeakPtrFactory<Group> weak_ptr_factory_{this};
 };
