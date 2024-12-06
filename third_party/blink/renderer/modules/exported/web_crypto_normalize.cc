@@ -47,7 +47,7 @@ WebCryptoAlgorithm NormalizeCryptoAlgorithm(
     v8::Isolate* isolate) {
   V8AlgorithmIdentifier* algorithm_identifier =
       MakeGarbageCollected<V8AlgorithmIdentifier>(
-          ScriptValue(isolate, algorithm_object));
+          ScriptObject(isolate, algorithm_object));
 
   WebCryptoAlgorithm algorithm;
   v8::TryCatch try_catch(isolate);

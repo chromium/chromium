@@ -3401,15 +3401,15 @@ bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
               .IsWorkaroundEnabled(gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS));
 }
 
-ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
-                                                    const String& name) {
+ScriptObject WebGLRenderingContextBase::getExtension(ScriptState* script_state,
+                                                     const String& name) {
   if (name == WebGLDebugRendererInfo::ExtensionName()) {
     ExecutionContext* context = ExecutionContext::From(script_state);
     UseCounter::Count(context, WebFeature::kWebGLDebugRendererInfo);
   }
 
   WebGLExtension* extension = EnableExtensionIfSupported(name);
-  return ScriptValue(
+  return ScriptObject(
       script_state->GetIsolate(),
       ToV8Traits<IDLNullable<WebGLExtension>>::ToV8(script_state, extension));
 }

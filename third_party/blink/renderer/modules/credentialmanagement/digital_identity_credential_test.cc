@@ -88,13 +88,11 @@ CredentialRequestOptions* CreateValidGetOptions() {
 CredentialCreationOptions* CreateValidCreateOptions() {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
-  v8::Local<v8::Value> request_data = v8::Object::New(isolate);
-
   DigitalCredentialCreationOptions* digital_credential_creation_options =
       DigitalCredentialCreationOptions::Create();
   digital_credential_creation_options->setProtocol("openid4vci");
   digital_credential_creation_options->setData(
-      ScriptValue(isolate, request_data));
+      ScriptObject(isolate, v8::Object::New(isolate)));
 
   CredentialCreationOptions* options = CredentialCreationOptions::Create();
   options->setDigital(digital_credential_creation_options);

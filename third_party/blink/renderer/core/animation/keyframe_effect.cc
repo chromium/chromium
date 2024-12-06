@@ -299,7 +299,7 @@ void KeyframeEffect::setComposite(const V8CompositeOperation& composite) {
 // normal keyframe data combined with the computed offset for the given
 // keyframe.
 // https://w3.org/TR/web-animations-1/#dom-keyframeeffect-getkeyframes
-HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
+HeapVector<ScriptObject> KeyframeEffect::getKeyframes(
     ScriptState* script_state) {
   if (Animation* animation = GetAnimation()) {
     animation->FlushPendingUpdates();
@@ -308,7 +308,7 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     }
   }
 
-  HeapVector<ScriptValue> computed_keyframes;
+  HeapVector<ScriptObject> computed_keyframes;
   if (!model_->HasFrames() || !script_state->ContextIsValid())
     return computed_keyframes;
 

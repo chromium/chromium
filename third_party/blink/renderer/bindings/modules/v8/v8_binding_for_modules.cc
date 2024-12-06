@@ -339,7 +339,7 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
       }
       if (element == "lastModifiedDate") {
         ScriptState* script_state = ScriptState::From(isolate, context);
-        v8_value = file->lastModifiedDate(script_state).V8Value();
+        v8_value = file->lastModifiedDate(script_state).V8Object();
         ExecutionContext* execution_context = ToExecutionContext(script_state);
         UseCounter::Count(execution_context,
                           WebFeature::kIndexedDBFileLastModifiedDate);

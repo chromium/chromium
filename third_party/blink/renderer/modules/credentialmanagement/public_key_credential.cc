@@ -230,7 +230,7 @@ ScriptPromise<IDLBoolean> PublicKeyCredential::isConditionalMediationAvailable(
   return promise;
 }
 
-v8::Local<v8::Value> PublicKeyCredential::toJSON(
+v8::Local<v8::Object> PublicKeyCredential::toJSON(
     ScriptState* script_state) const {
   // PublicKeyCredential.response holds an AuthenticatorAttestationResponse, if
   // it was returned from a create call, or an AuthenticatorAssertionResponse
@@ -242,8 +242,6 @@ v8::Local<v8::Value> PublicKeyCredential::toJSON(
                 AuthenticatorAttestationResponseJSON*>
       response_json = response_->toJSON();
 
-  // The return type of `toJSON()` is `PublicKeyCredentialJSON` which just
-  // aliases `object`, and thus this method just returns a `Value`.
   v8::Local<v8::Value> result;
   absl::visit(
       base::Overloaded{
@@ -279,7 +277,8 @@ v8::Local<v8::Value> PublicKeyCredential::toJSON(
             result = authentication_response->ToV8(script_state);
           }},
       response_json);
-  return result;
+  CHECK(result->IsObject());
+  return result.As<v8::Object>();
 }
 
 // static
