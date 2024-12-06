@@ -52,6 +52,7 @@ export class DescriptionCitationElement extends CrLitElement {
   protected openCitation_() {
     this.$.tooltip.hide();
     OpenWindowProxyImpl.getInstance().openUrl(this.url);
+    chrome.metricsPrivate.recordUserAction('Commerce.Compare.CitationClicked');
   }
 
   protected getAriaLabel_(): string {

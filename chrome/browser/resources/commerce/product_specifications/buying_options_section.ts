@@ -47,6 +47,8 @@ export class BuyingOptionsSectionElement extends CrLitElement {
 
   protected openJackpotUrl_() {
     OpenWindowProxyImpl.getInstance().openUrl(this.jackpotUrl);
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.Compare.BuyingOptionsClicked');
   }
 }
 

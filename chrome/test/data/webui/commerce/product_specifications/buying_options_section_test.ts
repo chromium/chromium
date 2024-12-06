@@ -7,16 +7,20 @@ import 'chrome://compare/buying_options_section.js';
 import type {BuyingOptionsSectionElement} from 'chrome://compare/buying_options_section.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('BuyingOptionsSectionTest', () => {
   let buyingOptionsElement: BuyingOptionsSectionElement;
   let mockOpenWindowProxy: TestOpenWindowProxy;
+  let metrics: MetricsTracker;
 
   setup(() => {
     mockOpenWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(mockOpenWindowProxy);
+    metrics = fakeMetricsPrivate();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     buyingOptionsElement = document.createElement('buying-options-section');
@@ -37,6 +41,7 @@ suite('BuyingOptionsSectionTest', () => {
 
     const arg = await mockOpenWindowProxy.whenCalled('openUrl');
     assertEquals('http://example.com/jackpot', arg);
+    assertEquals(1, metrics.count('Commerce.Compare.BuyingOptionsClicked'));
   });
 
   test(
