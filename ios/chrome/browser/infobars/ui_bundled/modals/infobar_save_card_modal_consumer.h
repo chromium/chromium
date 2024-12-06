@@ -10,6 +10,7 @@
 // Pref keys passed through setupModalViewControllerWithPrefs:.
 extern NSString* const kCardholderNamePrefKey;
 extern NSString* const kCardIssuerIconNamePrefKey;
+extern NSString* const kCardNetworkPrefKey;
 extern NSString* const kCardNumberPrefKey;
 extern NSString* const kExpirationMonthPrefKey;
 extern NSString* const kExpirationYearPrefKey;

@@ -133,6 +133,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     kCardholderNamePrefKey :
         base::SysUTF16ToNSString(delegate->cardholder_name()),
     kCardIssuerIconNamePrefKey : NativeImage(delegate->issuer_icon_id()),
+    kCardNetworkPrefKey : base::SysUTF16ToNSString(delegate->card_network()),
     kCardNumberPrefKey : cardNumber,
     kExpirationMonthPrefKey :
         base::SysUTF16ToNSString(delegate->expiration_date_month()),
