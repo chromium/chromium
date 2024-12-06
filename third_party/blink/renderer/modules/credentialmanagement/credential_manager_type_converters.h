@@ -22,10 +22,11 @@ namespace blink {
 class AllAcceptedCredentialsOptions;
 class AuthenticationExtensionsClientInputs;
 class AuthenticationExtensionsClientOutputs;
-class AuthenticationExtensionsSupplementalPubKeysInputs;
-class AuthenticationExtensionsSupplementalPubKeysOutputs;
 class AuthenticationExtensionsPRFInputs;
 class AuthenticationExtensionsPRFValues;
+class AuthenticationExtensionsPaymentOutputs;
+class AuthenticationExtensionsSupplementalPubKeysInputs;
+class AuthenticationExtensionsSupplementalPubKeysOutputs;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
@@ -81,6 +82,14 @@ struct TypeConverter<blink::AuthenticationExtensionsSupplementalPubKeysOutputs*,
                      blink::mojom::blink::SupplementalPubKeysResponsePtr> {
   static blink::AuthenticationExtensionsSupplementalPubKeysOutputs* Convert(
       const blink::mojom::blink::SupplementalPubKeysResponsePtr&);
+};
+
+template <>
+struct TypeConverter<
+    blink::AuthenticationExtensionsPaymentOutputs*,
+    blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr> {
+  static blink::AuthenticationExtensionsPaymentOutputs* Convert(
+      const blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr&);
 };
 
 // blink::mojom::blink::Authenticator ---------------------------------------

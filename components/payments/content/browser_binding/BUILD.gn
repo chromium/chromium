@@ -1,0 +1,32 @@
+source_set("browser_binding") {
+  visibility = [ "//components/payments/content/*" ]
+  public_deps = [ ":interface" ]
+  if (is_android) {
+    deps = [ ":android" ]
+  }
+}
+
+source_set("interface") {
+  sources = [
+    "browser_bound_key.h",
+    "browser_bound_key_store.h",
+  ]
+}
+
+if (is_android) {
+  source_set("android") {
+    visibility = [ "//components/payments/content/browser_binding" ]
+    sources = [
+      "browser_bound_key_android.cc",
+      "browser_bound_key_android.h",
+      "browser_bound_key_store_android.cc",
+      "browser_bound_key_store_android.h",
+    ]
+    deps = [
+      ":interface",
+      "//base",
+      "//components/payments/content/android:browser_binding_jni",
+      "//third_party/jni_zero",
+    ]
+  }
+}
