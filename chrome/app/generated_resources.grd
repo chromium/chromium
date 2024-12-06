@@ -18666,9 +18666,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Glic status tray icon strings -->
     <if expr="is_win or is_macosx">
+      <!-- TODO(https://crbug.com/382287104): Replace with finalized strings -->
       <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
-        <!-- TODO(378139555): Find the correct string for this. -->
         Open
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
+        Open glic
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
+        Customize keyboard shortcut
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings.">
+        Settings...
       </message>
     </if>
   </messages>

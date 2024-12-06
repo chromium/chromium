@@ -8422,6 +8422,7 @@ static_library("browser") {
       "//chrome/browser/glic:enabling",
       "//chrome/browser/glic:impl",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
   }
 
   if (is_chromeos || is_win || is_linux || is_mac) {

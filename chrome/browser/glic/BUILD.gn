@@ -8,6 +8,7 @@ source_set("glic") {
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
     "glic_page_context_fetcher.h",
+    "glic_profile.h",
     "glic_window_controller.h",
     "glic_window_manager.h",
     "guest_util.h",
@@ -30,11 +31,15 @@ source_set("impl") {
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_page_context_fetcher.cc",
+    "glic_profile.cc",
     "glic_window_controller.cc",
     "glic_window_manager.cc",
     "guest_util.cc",
   ]
-  public_deps = [ "//chrome/browser/ui:ui" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:ui",
+  ]
   deps = [
     ":glic",
     "//chrome/browser/ui:browser_list",

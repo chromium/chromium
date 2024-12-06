@@ -8,9 +8,9 @@ GlicController::GlicController() = default;
 GlicController::~GlicController() = default;
 
 void GlicController::Show() {
-  // TODO(379165768): Show the UI.
+  // TODO(https://crbug.com/379165768): Show the UI.
 }
 
 void GlicController::Hide() {
-  // TODO(379165768): Hide the UI.
+  // TODO(https://crbug.com/379165768): Hide the UI.
 }
