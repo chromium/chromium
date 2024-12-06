@@ -839,8 +839,9 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   }
 
   return ExternalCanvasResource::Create(
-      color_buffer->shared_image, resource, viz::ReleaseCallback(),
-      context_provider_->GetWeakPtr(), resource_provider);
+      color_buffer->shared_image, resource, resource.resource_source,
+      viz::ReleaseCallback(), context_provider_->GetWeakPtr(),
+      resource_provider);
 }
 
 scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
@@ -864,8 +865,9 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   //   returns true
   CHECK(client_si);
   return ExternalCanvasResource::Create(
-      client_si, out_resource, std::move(out_release_callback),
-      context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr);
+      client_si, out_resource, out_resource.resource_source,
+      std::move(out_release_callback), context_provider_->GetWeakPtr(),
+      /*resource_provider=*/nullptr);
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(

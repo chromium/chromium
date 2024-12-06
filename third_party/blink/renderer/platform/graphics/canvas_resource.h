@@ -447,6 +447,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   static scoped_refptr<ExternalCanvasResource> Create(
       scoped_refptr<gpu::ClientSharedImage> client_si,
       const viz::TransferableResource& transferable_resource,
+      viz::TransferableResource::ResourceSource resource_source,
       viz::ReleaseCallback release_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>);
@@ -478,16 +479,19 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       viz::TransferableResource* out_resource) override;
   void GenOrFlushSyncToken();
 
-  ExternalCanvasResource(scoped_refptr<gpu::ClientSharedImage> client_si,
-                         const viz::TransferableResource& transferable_resource,
-                         viz::ReleaseCallback out_callback,
-                         base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                         base::WeakPtr<CanvasResourceProvider>);
+  ExternalCanvasResource(
+      scoped_refptr<gpu::ClientSharedImage> client_si,
+      const viz::TransferableResource& transferable_resource,
+      viz::TransferableResource::ResourceSource resource_source,
+      viz::ReleaseCallback out_callback,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      base::WeakPtr<CanvasResourceProvider>);
 
   scoped_refptr<gpu::ClientSharedImage> client_si_;
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;
   viz::TransferableResource transferable_resource_;
+  viz::TransferableResource::ResourceSource resource_source_;
   bool is_overlay_candidate_ = false;
   viz::ReleaseCallback release_callback_;
   bool is_origin_clean_ = true;

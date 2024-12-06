@@ -246,7 +246,8 @@ bool GPUCanvasContext::PushFrame() {
   transferable_resource.origin = client_si->surface_origin();
 
   auto canvas_resource = ExternalCanvasResource::Create(
-      std::move(client_si), transferable_resource, std::move(release_callback),
+      std::move(client_si), transferable_resource,
+      transferable_resource.resource_source, std::move(release_callback),
       GetContextProviderWeakPtr(), /*resource_provider=*/nullptr);
   if (!canvas_resource)
     return false;
