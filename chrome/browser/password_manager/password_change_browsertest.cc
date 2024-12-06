@@ -10,6 +10,7 @@
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -241,4 +242,78 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StopPasswordChange) {
 
   EXPECT_FALSE(password_change_service()->GetPasswordChangeDelegate(
       password_change_tab));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
+  GURL main_url("https://example.com/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+  // Activate tab with password change to simplify testing.
+  SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  PasswordsNavigationObserver password_change_page_observer(WebContents());
+  EXPECT_TRUE(password_change_page_observer.Wait());
+
+  WaitForElementValue("password", "pa$$word");
+  std::string new_password =
+      GetElementValue(/*iframe_id=*/"null", "new_password_1");
+
+  // Emulate a navigation as an indication of successful submission.
+  PasswordsNavigationObserver new_page_observer(WebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/password/done.html")));
+  EXPECT_TRUE(new_page_observer.Wait());
+
+  // Verify generated password is saved.
+  WaitForPasswordStore();
+  CheckThatCredentialsStored("test", new_password);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
+  password_manager::PasswordStoreInterface* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  GURL origin = embedded_test_server()->GetURL("example.com", "/");
+  password_manager::PasswordForm form;
+  form.signon_realm = origin.spec();
+  form.url = origin;
+  form.username_value = u"test";
+  form.password_value = u"pa$$word";
+  password_store->AddLogin(form);
+  WaitForPasswordStore();
+
+  GURL main_url("https://example.com/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "example.com", "/password/update_form_empty_fields.html")));
+
+  password_change_service()->StartPasswordChange(
+      main_url, form.username_value, form.password_value, WebContents());
+  // Activate tab with password change to simplify testing.
+  SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  PasswordsNavigationObserver password_change_page_observer(WebContents());
+  EXPECT_TRUE(password_change_page_observer.Wait());
+  WaitForElementValue("password", "pa$$word");
+
+  std::string new_password =
+      GetElementValue(/*iframe_id=*/"null", "new_password_1");
+
+  // Emulate a navigation as an indication of successful submission.
+  PasswordsNavigationObserver new_page_observer(WebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/password/done.html")));
+  EXPECT_TRUE(new_page_observer.Wait());
+
+  // Verify saved password is updated.
+  WaitForPasswordStore();
+  CheckThatCredentialsStored(base::UTF16ToUTF8(form.username_value),
+                             new_password);
 }

@@ -55,6 +55,10 @@ class PasswordChangeDelegate {
   // invoked after this function is called as the object will soon be destroyed.
   virtual void Stop() = 0;
 
+  // Informs delegate about successful form submission.
+  virtual void SuccessfulSubmissionDetected(
+      content::WebContents* web_contents) = 0;
+
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

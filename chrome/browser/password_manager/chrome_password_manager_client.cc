@@ -742,15 +742,10 @@ void ChromePasswordManagerClient::NotifyStorePasswordCalled() {
   was_store_ever_called_ = true;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void ChromePasswordManagerClient::StartSubmissionTrackingAfterTouchToFill(
-    const std::u16string& filled_username) {
-  username_filled_by_touch_to_fill_ =
-      std::make_pair(filled_username, base::Time::Now());
-}
 
 void ChromePasswordManagerClient::NotifyOnSuccessfulLogin(
     const std::u16string& submitted_username) {
+#if BUILDFLAG(IS_ANDROID)
   if (!username_filled_by_touch_to_fill_) {
     return;
   }
@@ -773,6 +768,19 @@ void ChromePasswordManagerClient::NotifyOnSuccessfulLogin(
   } else {
     ResetSubmissionTrackingAfterTouchToFill();
   }
+#else
+  if (auto* delegate = PasswordChangeServiceFactory::GetForProfile(profile_)
+                           ->GetPasswordChangeDelegate(web_contents())) {
+    delegate->SuccessfulSubmissionDetected(web_contents());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::StartSubmissionTrackingAfterTouchToFill(
+    const std::u16string& filled_username) {
+  username_filled_by_touch_to_fill_ =
+      std::make_pair(filled_username, base::Time::Now());
 }
 
 void ChromePasswordManagerClient::ResetSubmissionTrackingAfterTouchToFill() {

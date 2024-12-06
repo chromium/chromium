@@ -46,19 +46,17 @@ const PasswordForm* GetChangePasswordForm(PasswordFormManager* form_manager) {
 }
 
 std::u16string GeneratePassword(
-    const PasswordForm* form,
+    const PasswordForm& form,
     password_manager::PasswordGenerationFrameHelper* generation_helper) {
-  CHECK(form);
-
-  auto iter = base::ranges::find(form->form_data.fields(),
-                                 form->new_password_element_renderer_id,
+  auto iter = base::ranges::find(form.form_data.fields(),
+                                 form.new_password_element_renderer_id,
                                  &autofill::FormFieldData::renderer_id);
-  CHECK(iter != form->form_data.fields().end());
+  CHECK(iter != form.form_data.fields().end());
 
   return generation_helper->GeneratePassword(
-      form->url,
+      form.url,
       autofill::password_generation::PasswordGenerationType::kAutomatic,
-      autofill::CalculateFormSignature(form->form_data),
+      autofill::CalculateFormSignature(form.form_data),
       autofill::CalculateFieldSignatureForField(*iter), iter->max_length());
 }
 
@@ -89,11 +87,6 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() = default;
 
 void PasswordChangeDelegateImpl::OnPasswordFormParsed(
     PasswordFormManager* form_manager) {
-  if (!form_manager->GetDriver() ||
-      !form_manager->GetDriver()->GetPasswordGenerationHelper()) {
-    return;
-  }
-
   const PasswordForm* form = GetChangePasswordForm(form_manager);
   if (!form) {
     return;
@@ -102,22 +95,16 @@ void PasswordChangeDelegateImpl::OnPasswordFormParsed(
   CHECK(executor_);
   // Change password form is detected - no need to continue observing.
   GetFormCache(executor_.get()).ResetObserver();
-
-  generated_password_ = GeneratePassword(
-      form, form_manager->GetDriver()->GetPasswordGenerationHelper());
-
-  form_manager->GetDriver()->SubmitChangePasswordForm(
-      form->password_element_renderer_id,
-      form->new_password_element_renderer_id,
-      form->confirmation_password_element_renderer_id, original_password_,
-      generated_password_,
-      base::BindOnce(&PasswordChangeDelegateImpl::ChangePasswordFormFilled,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   form_manager_ = form_manager->Clone();
-  form_manager_->PresaveGeneratedPassword(form->form_data, generated_password_);
 
-  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+  // Post task is required because when PasswordFormManager parses a form
+  // SendFillInformationToRenderer is invoked after OnPasswordFormParsed,
+  // potentially clearing agent state and preventing successful login detection.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordChangeDelegateImpl::FillChangePasswordForm,
+                     weak_ptr_factory_.GetWeakPtr(), *form,
+                     form_manager->GetDriver()));
 }
 
 void PasswordChangeDelegateImpl::WebContentsDestroyed() {
@@ -140,6 +127,18 @@ PasswordChangeDelegate::State PasswordChangeDelegateImpl::GetCurrentState()
 void PasswordChangeDelegateImpl::Stop() {
   observers_.Notify(&PasswordChangeDelegate::Observer::OnPasswordChangeStopped,
                     this);
+}
+
+void PasswordChangeDelegateImpl::SuccessfulSubmissionDetected(
+    content::WebContents* web_contents) {
+  if (executor_ && executor_.get() == web_contents && form_manager_) {
+    // TODO(crbug.com/377878716): Do it only after verification of successful
+    // update.
+    form_manager_->OnUpdateUsernameFromPrompt(username_);
+    form_manager_->Save();
+    // TODO(crbug.com/375565171): Transition to a password successfully updated
+    // state.
+  }
 }
 
 void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {
@@ -166,4 +165,27 @@ void PasswordChangeDelegateImpl::ChangePasswordFormFilled(
       base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
                      password_manager::PossibleUsernameData>(
           password_manager::kMaxSingleUsernameFieldsToStore));
+}
+
+void PasswordChangeDelegateImpl::FillChangePasswordForm(
+    password_manager::PasswordForm form,
+    base::WeakPtr<password_manager::PasswordManagerDriver> driver) {
+  CHECK(form_manager_);
+
+  if (!driver || !driver->GetPasswordGenerationHelper()) {
+    return;
+  }
+
+  generated_password_ =
+      GeneratePassword(form, driver->GetPasswordGenerationHelper());
+
+  driver->SubmitChangePasswordForm(
+      form.password_element_renderer_id, form.new_password_element_renderer_id,
+      form.confirmation_password_element_renderer_id, original_password_,
+      generated_password_,
+      base::BindOnce(&PasswordChangeDelegateImpl::ChangePasswordFormFilled,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  form_manager_->PresaveGeneratedPassword(form.form_data, generated_password_);
+  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
 }

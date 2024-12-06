@@ -49,6 +49,8 @@ class PasswordChangeDelegateImpl
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   State GetCurrentState() const override;
   void Stop() override;
+  void SuccessfulSubmissionDetected(
+      content::WebContents* web_contents) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -58,6 +60,9 @@ class PasswordChangeDelegateImpl
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);
 
+  void FillChangePasswordForm(
+      password_manager::PasswordForm form,
+      base::WeakPtr<password_manager::PasswordManagerDriver> driver);
   void ChangePasswordFormFilled(const autofill::FormData& submitted_form);
 
   const GURL change_password_url_;
