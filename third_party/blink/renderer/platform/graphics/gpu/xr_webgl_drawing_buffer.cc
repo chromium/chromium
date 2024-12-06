@@ -85,7 +85,8 @@ XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
 }
 
 void XRWebGLDrawingBuffer::ColorBuffer::BeginAccess() {
-  scoped_access_ = texture_->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
+  scoped_access_ =
+      texture_->BeginAccess(receive_sync_token, /*readonly=*/false);
 }
 
 void XRWebGLDrawingBuffer::ColorBuffer::EndAccess() {
@@ -543,10 +544,6 @@ XRWebGLDrawingBuffer::CreateOrRecycleColorBuffer() {
   if (!recycled_color_buffer_queue_.empty()) {
     scoped_refptr<ColorBuffer> recycled =
         recycled_color_buffer_queue_.TakeLast();
-    if (recycled->receive_sync_token.HasData()) {
-      gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
-      gl->WaitSyncTokenCHROMIUM(recycled->receive_sync_token.GetData());
-    }
     DCHECK(recycled->size == size_);
     return recycled;
   }
