@@ -4288,6 +4288,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/379254069
+      name: "TextTransformAndSecurityFix",
+      status: "stable",
+    },
+    {
       // Support for the timeline-scope property.
       //
       // https://drafts.csswg.org/scroll-animations-1/#timeline-scope
