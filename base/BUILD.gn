@@ -3552,6 +3552,7 @@ test("base_unittests") {
     "types/expected_unittest.cc",
     "types/fixed_array_unittest.cc",
     "types/id_type_unittest.cc",
+    "types/integral_constant_like_unittest.cc",
     "types/is_complete_unittest.cc",
     "types/is_instantiation_unittest.cc",
     "types/optional_ref_unittest.cc",

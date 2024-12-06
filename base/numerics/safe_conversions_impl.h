@@ -14,6 +14,8 @@
 #include <limits>
 #include <type_traits>
 
+#include "base/numerics/integral_constant_like.h"
+
 namespace base::internal {
 
 // The std library doesn't provide a binary max_exponent for integers, however
@@ -485,12 +487,23 @@ template <typename Lhs, typename Rhs>
 inline constexpr bool kIsFastIntegerArithmeticPromotionContained =
     FastIntegerArithmeticPromotionImpl<Lhs, Rhs>::kContained;
 
+template <typename T>
+struct ArithmeticOrIntegralConstant {
+  using type = T;
+};
+
+template <typename T>
+  requires IntegralConstantLike<T>
+struct ArithmeticOrIntegralConstant<T> {
+  using type = T::value_type;
+};
+
 // Extracts the underlying type from an enum.
 template <typename T>
 using ArithmeticOrUnderlyingEnum =
     typename std::conditional_t<std::is_enum_v<T>,
                                 std::underlying_type<T>,
-                                std::type_identity<T>>::type;
+                                ArithmeticOrIntegralConstant<T>>::type;
 
 // The following are helper templates used in the CheckedNumeric class.
 template <typename T>

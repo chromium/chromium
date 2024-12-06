@@ -27,6 +27,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
+#include "base/numerics/integral_constant_like.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
 #include "base/types/to_address.h"
@@ -103,14 +104,15 @@
 // -------------------------------------
 // By default spans have dynamic extent, which means that the size is available
 // at runtime via `size()`, a la other containers and views. By using a second
-// template parameter, a span's extent can be fixed at compile time; this can
-// move some constraint checks to compile time and slightly improve codegen, at
-// the cost of verbosity and more template instantiations. Methods like
-// `first()` or `subspan()` also provide templated overloads that produce
-// fixed-extent spans; these are preferred when the size is known at compile
-// time, in part because e.g. `first(1)` is a compile-error (the `int` arg is
-// not compatible with the `StrictNumeric<size_t>` param; use `first(1u)`
-// instead), but `first<1>()` is not.
+// template parameter or passing a `std::integral_constant` to the second (size)
+// constructor arg, a span's extent can be fixed at compile time; this can move
+// some constraint checks to compile time and slightly improve codegen, at the
+// cost of verbosity and more template instantiations. Methods like `first()` or
+// `subspan()` also provide templated overloads that produce fixed-extent spans;
+// these are preferred when the size is known at compile time, in part because
+// e.g. `first(1)` is a compile-error (the `int` arg is not compatible with the
+// `StrictNumeric<size_t>` param; use `first(1u)` instead), but `first<1>()` is
+// not.
 //
 // A fixed-extent span implicitly converts to a dynamic-extent span (e.g.
 // `span<int, 6>` is implicitly convertible to `span<int>`), so most code that
@@ -267,16 +269,6 @@ inline constexpr bool std::ranges::enable_borrowed_range<
 namespace base {
 
 namespace internal {
-
-// Exposition-only concept from [span.syn]
-template <typename T>
-concept IntegralConstantLike =
-    std::is_integral_v<decltype(T::value)> &&
-    !std::is_same_v<bool, std::remove_const_t<decltype(T::value)>> &&
-    std::convertible_to<T, decltype(T::value)> &&
-    std::equality_comparable_with<T, decltype(T::value)> &&
-    std::bool_constant<T() == T::value>::value &&
-    std::bool_constant<static_cast<decltype(T::value)>(T()) == T::value>::value;
 
 // Exposition-only concept from [span.syn]
 template <typename T>
