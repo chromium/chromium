@@ -478,6 +478,8 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
+crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Failure ]
+crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # flaky and worth retrying.
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/functions/functions_073_to_080.html [ RetryOnFailure ]
