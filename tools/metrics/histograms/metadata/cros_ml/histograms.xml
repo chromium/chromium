@@ -45,6 +45,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SmartDimModel.CreateGraphExecutorResult"/>
   <variant name="SmartDimModel.ExecuteResult"/>
   <variant name="SmartDimModel.LoadModelResult"/>
+  <variant name="Soda.LoadModelResult"/>
   <variant name="TestModel.CreateGraphExecutorResult"/>
   <variant name="TestModel.ExecuteResult"/>
   <variant name="TestModel.LoadModelResult"/>
@@ -440,6 +441,7 @@ chromium-metrics-reviews@google.com.
     </variant>
     <variant name="ImageAnnotator"/>
     <variant name="SmartDimModel"/>
+    <variant name="Soda"/>
     <variant name="TestModel"/>
     <variant name="TextClassifier"/>
     <variant name="TextSuggester"/>
