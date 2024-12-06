@@ -480,7 +480,8 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                   NavigateWebContents(kWebContentsElementId, GetURL()));
 
   std::map<ui::ElementIdentifier, const std::u16string> expected_ask_labels = {
-      {EmbeddedPermissionPromptAskView::kAllowId, u"Allow on every visit"},
+      {EmbeddedPermissionPromptAskView::kAllowId,
+       u"Allow while visiting the site"},
       {EmbeddedPermissionPromptAskView::kAllowThisTimeId, u"Allow this time"}};
 
   TestPromptElementText(CONTENT_SETTING_ASK, CONTENT_SETTING_ASK,

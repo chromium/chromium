@@ -125,7 +125,7 @@ public class IncognitoPermissionLeakageTest {
     }
 
     private void blockPermission() {
-        Espresso.onView(withText(anyOf(containsString("Block"), containsString("Don't allow"))))
+        Espresso.onView(withText(anyOf(containsString("Block"), containsString("Never allow"))))
                 .perform(click());
     }
 
