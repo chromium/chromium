@@ -427,7 +427,8 @@ void CloudApProviderWin::FetchOrigins(FetchOriginsCallback on_fetch_complete) {
 void CloudApProviderWin::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
-  get_data_subscription_ = on_get_data_callback_list_.Add(std::move(callback));
+  get_data_subscriptions_.push_back(
+      on_get_data_callback_list_.Add(std::move(callback)));
   if (!base::ThreadPool::CreateCOMSTATaskRunner(
            {base::TaskPriority::USER_BLOCKING,
             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
