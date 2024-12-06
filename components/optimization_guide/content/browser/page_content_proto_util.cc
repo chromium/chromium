@@ -25,7 +25,9 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH;
     case blink::mojom::AIPageContentAttributeType::kHeading:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_HEADING;
-    case blink::mojom::AIPageContentAttributeType::kList:
+    // TODO(abigailbklein): Add these types to the proto.
+    case blink::mojom::AIPageContentAttributeType::kOrderedList:
+    case blink::mojom::AIPageContentAttributeType::kUnorderedList:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_LIST;
     case blink::mojom::AIPageContentAttributeType::kForm:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM;

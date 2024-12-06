@@ -26,7 +26,8 @@ enum AIPageContentAttributeType {
   kHeading,
 
   // Structured chunks.
-  kList,
+  kOrderedList,
+  kUnorderedList,
   kForm,
   kFigure,
 };

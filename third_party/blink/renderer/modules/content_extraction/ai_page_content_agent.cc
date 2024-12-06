@@ -111,10 +111,13 @@ std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
     return mojom::blink::AIPageContentAttributeType::kHeading;
   }
 
-  if (element->HasTagName(html_names::kOlTag) ||
-      element->HasTagName(html_names::kUlTag) ||
+  if (element->HasTagName(html_names::kOlTag)) {
+    return mojom::blink::AIPageContentAttributeType::kOrderedList;
+  }
+
+  if (element->HasTagName(html_names::kUlTag) ||
       element->HasTagName(html_names::kDlTag)) {
-    return mojom::blink::AIPageContentAttributeType::kList;
+    return mojom::blink::AIPageContentAttributeType::kUnorderedList;
   }
 
   if (element->HasTagName(html_names::kFigureTag)) {
@@ -239,6 +242,10 @@ void AIPageContentAgent::ProcessNode(
   for (auto* child = object.SlowFirstChild(); child;
        child = child->NextSibling()) {
     if (ShouldSkipEmbeddedContent(*child)) {
+      continue;
+    }
+
+    if (child->IsListMarker()) {
       continue;
     }
 
