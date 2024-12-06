@@ -199,7 +199,7 @@ BASE_EXPORT std::wstring JoinString(
 
 BASE_EXPORT std::wstring ReplaceStringPlaceholders(
     std::wstring_view format_string,
-    const std::vector<std::wstring>& subst,
+    base::span<const std::wstring> subst,
     std::vector<size_t>* offsets);
 
 }  // namespace base

@@ -131,7 +131,7 @@ std::wstring JoinString(std::initializer_list<std::wstring_view> parts,
 }
 
 std::wstring ReplaceStringPlaceholders(std::wstring_view format_string,
-                                       const std::vector<std::wstring>& subst,
+                                       base::span<const std::wstring> subst,
                                        std::vector<size_t>* offsets) {
   std::optional<std::wstring> replacement =
       internal::DoReplaceStringPlaceholders(

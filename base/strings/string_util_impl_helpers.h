@@ -14,6 +14,7 @@
 #include <numeric>
 #include <optional>
 #include <string_view>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -495,6 +496,14 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
   return result;
 }
 
+// StringViewLike will match both std::basic_string_view<Char> and
+// std::basic_string<Char>. It ensures that the type satisfies the requirements
+// to be passed to std::basic_string::append().
+template <typename T, typename CharT, typename TBaseT = std::remove_cvref_t<T>>
+concept StringOrStringView =
+    std::same_as<TBaseT, std::basic_string<CharT>> ||
+    std::same_as<TBaseT, std::basic_string_view<CharT>>;
+
 // Replaces placeholders in `format_string` with values from `subst`.
 // * `placeholder_prefix`: Allows using a specific character as the placeholder
 // prefix. `base::ReplaceStringPlaceholders` uses '$'.
@@ -510,26 +519,34 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
 //   returns `std::nullopt` if:
 //     * a placeholder %N is encountered where N > substitutions.size().
 //     * a literal `%` is not escaped with a `%`.
-template <typename T, typename CharT = typename T::value_type>
+template <typename T, typename Range, typename CharT = typename T::value_type>
+  requires(std::ranges::random_access_range<Range> &&
+           std::ranges::sized_range<Range> &&
+           requires(Range&& range, size_t index) {
+             { range.at(index) } -> StringOrStringView<CharT>;
+           })
 std::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
     T format_string,
-    const std::vector<std::basic_string<CharT>>& subst,
+    Range&& subst,
     const CharT placeholder_prefix,
     const bool should_escape_multiple_placeholder_prefixes,
     const bool is_strict_mode,
     std::vector<size_t>* offsets) {
-  size_t substitutions = subst.size();
+  const size_t substitutions = subst.size();
   DCHECK_LT(substitutions, 10U);
 
   size_t sub_length = 0;
   for (const auto& cur : subst) {
-    sub_length += cur.length();
+    sub_length += cur.size();
   }
 
   std::basic_string<CharT> formatted;
   formatted.reserve(format_string.length() + sub_length);
 
   std::vector<ReplacementOffset> r_offsets;
+  if (offsets) {
+    r_offsets.reserve(substitutions);
+  }
   for (auto i = format_string.begin(); i != format_string.end(); ++i) {
     if (placeholder_prefix == *i) {
       if (i + 1 != format_string.end()) {

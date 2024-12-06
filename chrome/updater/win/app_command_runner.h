@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/process/process.h"
@@ -43,7 +44,7 @@ class AppCommandRunner {
 
   // Runs the AppCommand with the provided `substitutions` and populates
   // `process` if successful.
-  HRESULT Run(const std::vector<std::wstring>& substitutions,
+  HRESULT Run(base::span<const std::wstring> substitutions,
               base::Process& process) const;
 
  private:
@@ -73,7 +74,7 @@ class AppCommandRunner {
   // * a literal `%` is not escaped with a `%`.
   static std::optional<std::wstring> FormatParameter(
       const std::wstring& parameter,
-      const std::vector<std::wstring>& substitutions);
+      base::span<const std::wstring> substitutions);
 
   // Formats a vector of `parameters` using the provided `substitutions` and
   // returns a resultant command line. Any placeholder `%N` in `parameters` is
@@ -89,14 +90,13 @@ class AppCommandRunner {
   // * a literal `%` is not escaped with a `%`.
   static std::optional<std::wstring> FormatAppCommandLine(
       const std::vector<std::wstring>& parameters,
-      const std::vector<std::wstring>& substitutions);
+      base::span<const std::wstring> substitutions);
 
   // Helper method that calls `FormatAppCommandLine` and then `StartProcess`.
-  static HRESULT ExecuteAppCommand(
-      const base::FilePath& executable,
-      const std::vector<std::wstring>& parameters,
-      const std::vector<std::wstring>& substitutions,
-      base::Process& process);
+  static HRESULT ExecuteAppCommand(const base::FilePath& executable,
+                                   const std::vector<std::wstring>& parameters,
+                                   base::span<const std::wstring> substitutions,
+                                   base::Process& process);
 
   base::FilePath executable_;
   std::vector<std::wstring> parameters_;

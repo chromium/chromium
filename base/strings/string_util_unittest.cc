@@ -15,6 +15,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -1169,6 +1171,95 @@ TEST(StringUtilTest, ReplaceStringPlaceholdersInvalidPlaceholder) {
   EXPECT_EQ(u"+++1a+", formatted);
 }
 
+TEST(StringUtilTest, ReplaceStringPlaceholdersArray) {
+  const auto subst = std::to_array<std::u16string>({u"world", u"hello"});
+
+  std::u16string formatted =
+      ReplaceStringPlaceholders(u"$2, $1!", subst, nullptr);
+  EXPECT_EQ(u"hello, world!", formatted);
+}
+
+std::u16string ReturnU16String() {
+  return u"U16String";
+}
+
+TEST(StringUtilTest, ReplaceStringPlaceholdersCastToSpan) {
+  std::u16string formatted = ReplaceStringPlaceholders(
+      u"$1", base::span<const std::u16string>({ReturnU16String()}), nullptr);
+  EXPECT_EQ(u"U16String", formatted);
+}
+
+// Return a string of type T long enough to defeat the short string
+// optimization.
+template <typename T>
+constexpr T LongString() {
+  constexpr char kLongString[] =
+      "This string is long enough to prevent the short string optimization";
+  // std::u16string can't be constructed from a char string, but it can be
+  // constructed from a char iterator pair.
+  return T(std::ranges::begin(kLongString), std::ranges::end(kLongString));
+}
+
+// Checks that a string implementation leaves the string empty when a
+// sufficiently long string is moved from. The "MovesFromString" tests will not
+// work correctly for implementations where this is not the case.
+template <typename T>
+constexpr bool MovedFromStringIsEmpty() {
+  T original = LongString<T>();
+  T destination = std::move(original);
+  // We are verifying behavior of the string implementation that is not required
+  // by the C++ standard.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  return original.empty();
+}
+
+TEST(StringUtilTest, ReplaceStringPlaceholdersMovesFromString) {
+  ASSERT_TRUE(MovedFromStringIsEmpty<std::u16string>());
+  std::u16string long_string = LongString<std::u16string>();
+  std::vector<size_t> offsets;
+  // `offsets` is passed just to force the base::span overload.
+  std::u16string formatted =
+      ReplaceStringPlaceholders(u"=$1", {std::move(long_string)}, &offsets);
+  EXPECT_EQ(u"=" + LongString<std::u16string>(), formatted);
+  // This test relies on behavior that is not required by the C++ standard.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(long_string.empty());
+}
+
+// The single-argument form of ReplaceStringPlaceholders() should not require
+// `$1` to be present in the string unless `offset` is set.
+TEST(StringUtilTest, ReplaceStringPlaceholdersNoPlaceholder) {
+  const std::u16string replacement = u"unused";
+
+  std::u16string formatted =
+      ReplaceStringPlaceholders(u"no dollar", replacement, nullptr);
+  EXPECT_EQ(u"no dollar", formatted);
+}
+
+TEST(StringUtilTest, ReplaceStringPlaceholdersSingleOffset) {
+  size_t offset = 0;
+
+  std::u16string formatted =
+      ReplaceStringPlaceholders(u"a $1", u"car", &offset);
+
+  EXPECT_EQ(u"a car", formatted);
+  EXPECT_EQ(2u, offset);
+}
+
+TEST(StringUtilTest, ReplaceStringPlaceholdersInitializerList) {
+  // Combine lots of different types to make sure they all work.
+  const std::u16string be = u"be";
+  constexpr std::u16string_view kNot = u"not";
+  char16_t mutable_be[] = u"be";
+  constexpr const char16_t* const kIs = u"is";
+  std::u16string question = u"question";
+
+  std::u16string formatted = ReplaceStringPlaceholders(
+      u"to $1 or $2 to $3 that $4 the $5",
+      {be, std::u16string(kNot), mutable_be, kIs, question}, nullptr);
+  EXPECT_EQ(u"to be or not to be that is the question", formatted);
+}
+
 TEST(StringUtilTest, StdStringReplaceStringPlaceholders) {
   std::vector<std::string> subst;
   subst.push_back("9a");
@@ -1202,6 +1293,40 @@ TEST(StringUtilTest, StdStringReplaceStringPlaceholdersMultipleMatches) {
   EXPECT_EQ(expected, ReplaceStringPlaceholders(original, subst, &offsets));
   std::vector<size_t> expected_offsets = {0, 4, 9};
   EXPECT_EQ(expected_offsets, offsets);
+}
+
+TEST(StringUtilTest, StdStringReplaceStringPlaceholdersArray) {
+  const auto subst = std::to_array<std::string>({"world", "hello"});
+
+  std::string formatted = ReplaceStringPlaceholders("$2, $1!", subst, nullptr);
+  EXPECT_EQ("hello, world!", formatted);
+}
+
+TEST(StringUtilTest, StdStringReplaceStringPlaceholdersInitializerList) {
+  // Combine lots of different types to make sure they all work.
+  const std::string be = "be";
+  constexpr std::string_view kNot = "not";
+  char mutable_be[] = "be";
+  constexpr const char* const kIs = "is";
+  std::string question = "question";
+
+  std::string formatted = ReplaceStringPlaceholders(
+      "to $1 or $2 to $3 that $4 the $5",
+      {be, std::string(kNot), mutable_be, kIs, question}, nullptr);
+  EXPECT_EQ("to be or not to be that is the question", formatted);
+}
+
+TEST(StringUtilTest, StdStringReplaceStringPlaceholdersMovesFromString) {
+  ASSERT_TRUE(MovedFromStringIsEmpty<std::string>());
+  std::string long_string = LongString<std::string>();
+  std::vector<size_t> offsets;
+  // `offsets` is passed just to force the base::span overload.
+  std::string formatted =
+      ReplaceStringPlaceholders("=$1", {std::move(long_string)}, &offsets);
+  EXPECT_EQ("=" + LongString<std::string>(), formatted);
+  // This test relies  on behavior that is not required by the C++ standard.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(long_string.empty());
 }
 
 TEST(StringUtilTest, ReplaceStringPlaceholdersConsecutiveDollarSigns) {
