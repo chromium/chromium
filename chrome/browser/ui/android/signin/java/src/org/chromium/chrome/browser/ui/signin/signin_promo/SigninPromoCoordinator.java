@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -21,6 +24,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the signin promo card. */
 public final class SigninPromoCoordinator {
+    private final Context mContext;
+    private final SigninPromoDelegate mDelegate;
     private final SigninPromoMediator mMediator;
     private ImpressionTracker mImpressionTracker;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -33,10 +38,12 @@ public final class SigninPromoCoordinator {
      * @param delegate A {@link SigninPromoDelegate} to customize the view.
      */
     public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
+        mContext = context;
+        mDelegate = delegate;
         // TODO(crbug.com/327387704): Observe the AccountManagerFacade so that the promo gets
         // properly updated when the list of accounts changes.
         ProfileDataCache profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
@@ -64,8 +71,18 @@ public final class SigninPromoCoordinator {
         return mMediator.canShowPromo();
     }
 
+    /** Builds a promo view object for the corresponding access point. */
+    public View buildPromoView(ViewGroup parent) {
+        return LayoutInflater.from(mContext)
+                .inflate(getLayoutResId(mDelegate.getAccessPoint()), parent, false);
+    }
+
     /** Sets the view that is controlled by this coordinator. */
-    public void setView(PersonalizedSigninPromoView view) {
+    public void setView(View view) {
+        PersonalizedSigninPromoView promoView = view.findViewById(R.id.signin_promo_view_container);
+        if (promoView == null) {
+            throw new IllegalArgumentException("Promo view doesn't exist in container");
+        }
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
             mPropertyModelChangeProcessor = null;
@@ -74,7 +91,7 @@ public final class SigninPromoCoordinator {
         }
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mMediator.getModel(), view, SigninPromoViewBinder::bind);
+                        mMediator.getModel(), promoView, SigninPromoViewBinder::bind);
         mImpressionTracker = new ImpressionTracker(view);
         mImpressionTracker.setListener(mMediator::recordImpression);
     }

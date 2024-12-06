@@ -29,9 +29,12 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
+import org.chromium.chrome.browser.ui.signin.signin_promo.BookmarkSigninPromoDelegate;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -109,6 +112,7 @@ public class BookmarkManagerCoordinator
     private final BookmarkManagerMediator mMediator;
     private final ImageFetcher mImageFetcher;
     private final SnackbarManager mSnackbarManager;
+    private final SigninPromoCoordinator mSigninPromoCoordinator;
     private final BookmarkPromoHeader mPromoHeaderManager;
     private final BookmarkModel mBookmarkModel;
     private final Profile mProfile;
@@ -234,6 +238,7 @@ public class BookmarkManagerCoordinator
                         bookmarkImageFetcher,
                         ShoppingServiceFactory.getForProfile(mProfile),
                         mSnackbarManager,
+                        this::canShowSigninPromo,
                         onScrollListenerConsumer,
                         moveSnackbarManager);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
@@ -242,23 +247,41 @@ public class BookmarkManagerCoordinator
 
         mMainView.addOnAttachStateChangeListener(this);
 
-        dragReorderableRecyclerViewAdapter.registerType(
-                ViewType.PERSONALIZED_SIGNIN_PROMO,
-                this::buildPersonalizedPromoView,
-                BookmarkManagerViewBinder::bindPersonalizedPromoView);
-        dragReorderableRecyclerViewAdapter.registerType(
-                ViewType.PERSONALIZED_SYNC_PROMO,
-                this::buildPersonalizedPromoView,
-                BookmarkManagerViewBinder::bindPersonalizedPromoView);
-        dragReorderableRecyclerViewAdapter.registerType(
-                ViewType.SYNC_PROMO,
-                this::buildLegacyPromoView,
-                BookmarkManagerViewBinder::bindLegacyPromoView);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            mSigninPromoCoordinator =
+                    new SigninPromoCoordinator(
+                            context,
+                            mProfile,
+                            new BookmarkSigninPromoDelegate(
+                                    context,
+                                    mProfile,
+                                    SigninAndHistorySyncActivityLauncherImpl.get(),
+                                    mMediator::onPromoVisibilityChange));
+            dragReorderableRecyclerViewAdapter.registerType(
+                    ViewType.PERSONALIZED_SIGNIN_PROMO,
+                    mSigninPromoCoordinator::buildPromoView,
+                    // SigninPromoCoordinator owns the model and keys for the promo inside it.
+                    // The PropertyModel and BookmarkManagerProperties key passed to this binder
+                    // method are thus not needed.
+                    (model, view, key) -> mSigninPromoCoordinator.setView(view));
             dragReorderableRecyclerViewAdapter.registerType(
                     ViewType.BATCH_UPLOAD_CARD,
                     this::buildBatchUploadCardView,
                     BookmarkManagerViewBinder::bindBatchUploadCardView);
+        } else {
+            mSigninPromoCoordinator = null;
+            dragReorderableRecyclerViewAdapter.registerType(
+                    ViewType.PERSONALIZED_SIGNIN_PROMO,
+                    this::buildPersonalizedPromoView,
+                    BookmarkManagerViewBinder::bindPersonalizedPromoView);
+            dragReorderableRecyclerViewAdapter.registerType(
+                    ViewType.PERSONALIZED_SYNC_PROMO,
+                    this::buildPersonalizedPromoView,
+                    BookmarkManagerViewBinder::bindPersonalizedPromoView);
+            dragReorderableRecyclerViewAdapter.registerType(
+                    ViewType.SYNC_PROMO,
+                    this::buildLegacyPromoView,
+                    BookmarkManagerViewBinder::bindLegacyPromoView);
         }
         dragReorderableRecyclerViewAdapter.registerType(
                 ViewType.SECTION_HEADER,
@@ -303,6 +326,10 @@ public class BookmarkManagerCoordinator
         mMainView.removeOnAttachStateChangeListener(this);
         mSelectableListLayout.onDestroyed();
         mMediator.onDestroy();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            assert mSigninPromoCoordinator != null;
+            mSigninPromoCoordinator.destroy();
+        }
     }
 
     /** Returns the view that shows the main bookmarks UI. */
@@ -425,6 +452,11 @@ public class BookmarkManagerCoordinator
 
     View buildEmptyStateView(ViewGroup parent) {
         return inflate(parent, R.layout.empty_state_view);
+    }
+
+    boolean canShowSigninPromo() {
+        assert mSigninPromoCoordinator != null;
+        return mSigninPromoCoordinator.canShowPromo();
     }
 
     private static View inflate(ViewGroup parent, @LayoutRes int layoutId) {

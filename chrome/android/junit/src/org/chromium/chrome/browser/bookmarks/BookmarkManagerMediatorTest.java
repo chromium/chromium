@@ -134,6 +134,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /** Unit tests for {@link BookmarkManagerMediator}. */
@@ -180,6 +181,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BooleanSupplier mCanShowPromo;
     @Mock private PriceTrackingUtils.Natives mPriceTrackingUtilsJniMock;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
     @Mock private Consumer<OnScrollListener> mOnScrollListenerConsumer;
@@ -503,6 +505,7 @@ public class BookmarkManagerMediatorTest {
                         mBookmarkImageFetcher,
                         mShoppingService,
                         mSnackbarManager,
+                        mCanShowPromo,
                         mOnScrollListenerConsumer,
                         mBookmarkMoveSnackbarManager);
         mMediator.addUiObserver(mBookmarkUiObserver);
