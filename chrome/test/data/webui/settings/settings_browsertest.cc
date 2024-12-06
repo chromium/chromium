@@ -903,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MAYBE_Integration) {
 
 // Privacy guide fragment tests.
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, WelcomeFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_welcome_fragment_test.js",
           "runMochaSuite('WelcomeFragment')");
 }
 
