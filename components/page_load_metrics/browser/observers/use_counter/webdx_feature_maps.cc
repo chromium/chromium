@@ -279,6 +279,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kRemotePlayback},
           {WebFeature::kVerticalFormControls,
            WebDXFeature::kVerticalFormControls},
+          {WebFeature::kNavigatorPdfViewerEnabled, WebDXFeature::kPdfViewer},
       }};
 
   return *kMap;
