@@ -345,7 +345,8 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
       ui::ElementIdentifier anchor_element_id,
       int body_text_string_id,
       PromoType type = PromoType::kToast,
-      PromoSubtype subtype = PromoSubtype::kNormal);
+      PromoSubtype subtype = PromoSubtype::kNormal,
+      CustomActionCallback custom_action_callback = CustomActionCallback());
 
   // Set the optional bubble title. This text appears above the body text in a
   // slightly larger font.
