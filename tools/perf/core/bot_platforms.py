@@ -363,6 +363,13 @@ def _views_perftests(estimated_runtime=7):
                           estimated_runtime=estimated_runtime)
 
 
+def _crossbench_speedometer2_1(estimated_runtime=60, arguments=None):
+  return CrossbenchConfig('speedometer2.1.crossbench',
+                          'speedometer_2.1',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 def _crossbench_speedometer3_0(estimated_runtime=60, arguments=None):
   return CrossbenchConfig('speedometer3.crossbench',
                           'speedometer_3.0',
@@ -407,6 +414,7 @@ _CROSSBENCH_MOTIONMARK_SPEEDOMETER = frozenset([
 ])
 
 _CROSSBENCH_BENCHMARKS_ALL = frozenset([
+    _crossbench_speedometer2_1(arguments=['--fileserver']),
     _crossbench_speedometer3_0(),
     _crossbench_motionmark1_3(),
     _crossbench_jetstream2_1(),
