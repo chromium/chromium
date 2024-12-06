@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/password_change_controller.h"
+#include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -64,7 +64,7 @@ std::u16string GeneratePassword(
 
 }  // namespace
 
-PasswordChangeController::PasswordChangeController(
+PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     GURL change_password_url,
     std::u16string username,
     std::u16string password,
@@ -83,15 +83,9 @@ PasswordChangeController::PasswordChangeController(
   }
 }
 
-PasswordChangeController::~PasswordChangeController() = default;
+PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() = default;
 
-bool PasswordChangeController::IsPasswordChangeOngoing(
-    content::WebContents* web_contents) {
-  return (originator_ && originator_.get() == web_contents) ||
-         (executor_ && executor_.get() == web_contents);
-}
-
-void PasswordChangeController::OnPasswordFormParsed(
+void PasswordChangeDelegateImpl::OnPasswordFormParsed(
     PasswordFormManager* form_manager) {
   if (!form_manager->GetDriver() ||
       !form_manager->GetDriver()->GetPasswordGenerationHelper()) {
@@ -117,4 +111,36 @@ void PasswordChangeController::OnPasswordFormParsed(
       generated_password_,
       // TODO(crbug.com/375565171): Add handling for completion.
       base::DoNothing());
+
+  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+}
+
+bool PasswordChangeDelegateImpl::IsPasswordChangeOngoing(
+    content::WebContents* web_contents) {
+  return (originator_ && originator_.get() == web_contents) ||
+         (executor_ && executor_.get() == web_contents);
+}
+
+PasswordChangeDelegate::State PasswordChangeDelegateImpl::GetCurrentState()
+    const {
+  return State::kWaitingForChangePasswordForm;
+}
+
+void PasswordChangeDelegateImpl::Cancel() {}
+
+void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PasswordChangeDelegateImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void PasswordChangeDelegateImpl::UpdateState(
+    PasswordChangeDelegate::State new_state) {
+  if (new_state != current_state_) {
+    current_state_ = new_state;
+    observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
+                      current_state_);
+  }
 }

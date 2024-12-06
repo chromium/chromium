@@ -14,7 +14,7 @@
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 
 class GURL;
-class PasswordChangeController;
+class PasswordChangeDelegate;
 
 namespace affiliations {
 class AffiliationService;
@@ -38,17 +38,19 @@ class ChromePasswordChangeService
       affiliations::AffiliationService* affiliation_service);
   ~ChromePasswordChangeService() override;
 
-  // Starts password change for a given |url|, |username| and |password|.
-  // |originator| belongs to a tab which initiated the process.
+  // Starts password change for a given `url`, `username` and `password`.
+  // `originator` belongs to a tab which initiated the process.
   void StartPasswordChange(const GURL& url,
                            const std::u16string& username,
                            const std::u16string& password,
                            content::WebContents* originator);
 
-  // Responds whether password change is ongoing for a given |web_contents|.
-  // This is true both for originator and a tab where password change is
-  // performed.
-  bool IsPasswordChangeOngoing(content::WebContents* web_contents);
+  // Responds with PasswordChangeDelegate for a given `web_contents`.
+  // The same object is returned for a tab which initiated password change and a
+  // tab where password change is performed. Returns nullptr if `web_contents`
+  // isn't associated with any delegate.
+  PasswordChangeDelegate* GetPasswordChangeDelegate(
+      content::WebContents* web_contents);
 
   // PasswordChangeServiceInterface implementation.
   bool IsPasswordChangeSupported(const GURL& url) override;
@@ -64,8 +66,8 @@ class ChromePasswordChangeService
   // TODO(crbug.com/382652112): Remove once testing is simplified.
   OpenNewTabCallback new_tab_callback_;
 
-  std::vector<std::unique_ptr<PasswordChangeController>>
-      password_change_controllers_;
+  std::vector<std::unique_ptr<PasswordChangeDelegate>>
+      password_change_delegates_;
 
   base::WeakPtrFactory<ChromePasswordChangeService> weak_ptr_factory_{this};
 };

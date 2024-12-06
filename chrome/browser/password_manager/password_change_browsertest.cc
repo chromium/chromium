@@ -5,7 +5,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
-#include "chrome/browser/password_manager/password_change_controller.h"
+#include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
@@ -23,6 +23,16 @@ using affiliations::AffiliationService;
 using affiliations::MockAffiliationService;
 
 namespace {
+
+class MockPasswordChangeDelegateObserver
+    : public PasswordChangeDelegate::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnStateChanged,
+              (PasswordChangeDelegate::State),
+              (override));
+  MOCK_METHOD(void, OnDelegateDestroyed, (PasswordChangeDelegate*), (override));
+};
 
 std::unique_ptr<KeyedService> CreateTestAffiliationService(
     content::BrowserContext* context) {
@@ -91,10 +101,11 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        StartingPasswordChangeOpensNewTab) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
   // Assert that there is a single tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, tab_strip->count());
   ASSERT_FALSE(
-      password_change_service()->IsPasswordChangeOngoing(WebContents()));
+      password_change_service()->GetPasswordChangeDelegate(WebContents()));
 
   GURL main_url("https://example.com/"),
       change_pwd_url("https://example.com/password/");
@@ -105,18 +116,21 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                                                  WebContents());
 
   // Verify a new tab is added, although the focus remained on the initial tab.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(2, tab_strip->count());
+  EXPECT_EQ(0, tab_strip->active_index());
 
   // Verify a new tab is opened with a change pwd url.
-  EXPECT_EQ(change_pwd_url,
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(change_pwd_url, tab_strip->GetWebContentsAt(1)->GetURL());
 
-  // Verify that IsPasswordChangeOngoing() returns true for both tabs.
-  EXPECT_TRUE(password_change_service()->IsPasswordChangeOngoing(
-      browser()->tab_strip_model()->GetWebContentsAt(0)));
-  EXPECT_TRUE(password_change_service()->IsPasswordChangeOngoing(
-      browser()->tab_strip_model()->GetWebContentsAt(1)));
+  // Verify that GetPasswordChangeDelegate() returns delegate for both tabs.
+  EXPECT_TRUE(password_change_service()->GetPasswordChangeDelegate(
+      tab_strip->GetWebContentsAt(0)));
+  EXPECT_TRUE(password_change_service()->GetPasswordChangeDelegate(
+      tab_strip->GetWebContentsAt(1)));
+  EXPECT_EQ(password_change_service()->GetPasswordChangeDelegate(
+                tab_strip->GetWebContentsAt(0)),
+            password_change_service()->GetPasswordChangeDelegate(
+                tab_strip->GetWebContentsAt(1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
@@ -143,4 +157,38 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       GetElementValue(/*iframe_id=*/"null", "new_password_1");
   EXPECT_FALSE(new_password.empty());
   CheckElementValue("new_password_2", new_password);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
+  MockPasswordChangeDelegateObserver observer;
+
+  GURL main_url("https://example.com/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+
+  // Verify the delegate is created and it's currently waiting for change
+  // password form.
+  auto* delegate = password_change_service()->GetPasswordChangeDelegate(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+  ASSERT_TRUE(delegate);
+  delegate->AddObserver(&observer);
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+            delegate->GetCurrentState());
+
+  // Verify observer is invoked when the state changes.
+  EXPECT_CALL(observer,
+              OnStateChanged(PasswordChangeDelegate::State::kChangingPassword));
+
+  // Activate tab with password change to simplify testing.
+  SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
+  PasswordsNavigationObserver navigation_observer(WebContents());
+  EXPECT_TRUE(navigation_observer.Wait());
+
+  // Wait and verify the old password is filled correctly.
+  WaitForElementValue("password", "pa$$word");
+
+  delegate->RemoveObserver(&observer);
 }
