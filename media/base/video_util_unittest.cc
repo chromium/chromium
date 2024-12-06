@@ -281,11 +281,9 @@ uint8_t* target4x6_270_y_n = target4x6_90_n_y;
 uint8_t* target4x6_270_y_y = target4x6_90_n_n;
 
 struct VideoRotationTestData {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
+  // These fields are not raw_ptr<>s because they only ever point to
+  // statically-allocated data which is never freed, and hence cannot dangle.
   RAW_PTR_EXCLUSION uint8_t* src;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
   RAW_PTR_EXCLUSION uint8_t* target;
   int width;
   int height;
