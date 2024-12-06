@@ -21,13 +21,20 @@ ENROLLMENTDIR=/etc/chromium/policies/enrollment
 MENUNAME="Chromium Web Browser"
 
 # Brief package description.
-SHORTDESC="The web browser from Chromium.org"
+SHORTDESC="The web browser from the Chromium projects"
 
 # Detailed package description.
 FULLDESC="Chromium is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier."
 
 # Package maintainer information.
-# TODO(mmoss) Setup a mailbox for this address
 MAINTNAME="Chromium Linux Team"
-MAINTMAIL="chromium-linux-packager@chromium.org"
-PRODUCTURL="http://www.chromium.org/"
+MAINTMAIL="chromium-packagers@chromium.org"
+PRODUCTURL="https://www.chromium.org/Home"
+
+PROJECT_LICENSE="BSD-3-Clause and LGPL-2.1+ and Apache-2.0 and IJG and MIT and GPL-2.0+ and ISC and OpenSSL and (MPL-1.1 or GPL-2.0 or LGPL-2.0)"
+
+DEVELOPER_NAME="The Chromium Authors"
+
+BUGTRACKERURL="https://www.chromium.org/for-testers/bug-reporting-guidelines"
+
+HELPURL="https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md"

@@ -240,6 +240,7 @@ copy("common_packaging_files") {
   visibility = [ ":*" ]
   sources = [
     "//chrome/app/resources/manpage.1.in",
+    "common/appdata.xml.template",
     "common/apt.include",
     "common/default-app-block.template",
     "common/default-app.template",
@@ -257,15 +258,9 @@ copy("common_packaging_files") {
   ]
 
   if (is_chrome_branded) {
-    sources += [
-      "common/google-chrome/google-chrome.appdata.xml.template",
-      "common/google-chrome/google-chrome.info",
-    ]
+    sources += [ "common/google-chrome.info" ]
   } else {
-    sources += [
-      "common/chromium-browser/chromium-browser.appdata.xml",
-      "common/chromium-browser/chromium-browser.info",
-    ]
+    sources += [ "common/chromium-browser.info" ]
   }
 
   sources += [ "//buildtools/third_party/eu-strip/bin/eu-strip" ]

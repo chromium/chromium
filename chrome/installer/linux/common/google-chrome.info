@@ -27,7 +27,14 @@ SHORTDESC="The web browser from Google"
 FULLDESC="Google Chrome is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier."
 
 # Package maintainer information.
-# TODO(mmoss) Setup a mailbox for this address
 MAINTNAME="Chrome Linux Team"
 MAINTMAIL="chromium-dev@chromium.org"
 PRODUCTURL="https://chrome.google.com/"
+
+PROJECT_LICENSE="Freeware under Google Chrome Terms of Service"
+
+DEVELOPER_NAME="Google"
+
+BUGTRACKERURL="https://support.google.com/chrome/?p=feedback"
+
+HELPURL="https://support.google.com/chrome"
