@@ -7,9 +7,50 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
 #include "components/search/ntp_features.h"
+#include "net/base/mime_util.h"
+
+namespace {
+
+const char kBaseIconUrl[] =
+    "https://res.cdn.office.net/files/fabric-cdn-prod_20240925.001/assets/"
+    "item-types/16/";
+
+const char kBaseAttachmentResourceUrl[] =
+    "https://outlook.live.com/mail/0/deeplink/attachment/";
+
+std::string GetFileExtension(std::string mime_type) {
+  base::FilePath::StringType extension;
+  net::GetPreferredExtensionForMimeType(mime_type, &extension);
+  std::string result;
+
+#if BUILDFLAG(IS_WIN)
+  // `extension` will be of std::wstring type on Windows which needs to be
+  // handled differently than std::string. See base/files/file_path.h for more
+  // info.
+  result = base::WideToUTF8(extension);
+#else
+  result = extension;
+#endif
+
+  return result;
+}
+
+GURL GetIconUrl(std::string extension) {
+  return GURL(kBaseIconUrl + extension + ".png");
+}
+
+// The file names in the response are formatted as "name.extension" we
+// only want the file name so we remove the extension.
+std::string GetFileName(std::string full_name, std::string extension) {
+  return full_name.substr(0, full_name.size() - extension.size() - 1);
+}
+
+}  // namespace
 
 OutlookCalendarPageHandler::OutlookCalendarPageHandler(
     mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
@@ -69,6 +110,7 @@ void OutlookCalendarPageHandler::OnJsonParsed(
   std::vector<ntp::calendar::mojom::CalendarEventPtr> created_events;
   for (const auto& event : *events) {
     const auto& event_dict = event.GetDict();
+    const std::string* event_id = event_dict.FindString("id");
     std::optional<bool> has_attachments = event_dict.FindBool("hasAttachments");
     const std::string* title = event_dict.FindString("subject");
     std::optional<bool> is_canceled = event_dict.FindBool("isCancelled");
@@ -85,13 +127,14 @@ void OutlookCalendarPageHandler::OnJsonParsed(
         event_dict.FindStringByDottedPath("end.dateTime");
     std::optional<bool> is_organizer = event_dict.FindBool("isOrganizer");
     const base::Value::List* attendees = event_dict.FindList("attendees");
+    const base::Value::List* attachments = event_dict.FindList("attachments");
 
     base::Time start_timestamp;
     base::Time end_timestamp;
 
     // Do not send calendar event data if all required information is not
     // found in the response.
-    if (!has_attachments.has_value() || !title || !calendar_url ||
+    if (!event_id || !has_attachments.has_value() || !title || !calendar_url ||
         !start_time || !end_time || !is_organizer.has_value() || !attendees ||
         !location || !response_status || !is_canceled.has_value() ||
         !base::Time::FromUTCString((*start_time).c_str(), &start_timestamp) ||
@@ -128,6 +171,37 @@ void OutlookCalendarPageHandler::OnJsonParsed(
       }
     } else {
       created_event->has_other_attendee = !is_canceled.value();
+    }
+
+    // Create attachments.
+    for (const auto& attachment : *attachments) {
+      ntp::calendar::mojom::AttachmentPtr created_attachment =
+          ntp::calendar::mojom::Attachment::New();
+      const auto& attachment_dict = attachment.GetDict();
+      const std::string* id = attachment_dict.FindString("id");
+      const std::string* name = attachment_dict.FindString("name");
+      const std::string* content_type =
+          attachment_dict.FindString("@odata.mediaContentType");
+      if (!id || !name || !content_type) {
+        std::move(callback).Run(
+            std::vector<ntp::calendar::mojom::CalendarEventPtr>());
+        return;
+      }
+
+      std::string file_extension = GetFileExtension(*content_type);
+      // Skip creating an attachment if an extension cannot be found. This is
+      // being done because the `title` and `icon_url` are dependent on a
+      // correct extension.
+      if (file_extension.empty()) {
+        continue;
+      }
+
+      created_attachment->title = GetFileName(*name, file_extension);
+      created_attachment->icon_url = GetIconUrl(file_extension);
+      // TODO(376515087): Verify resource URL is valid by making a GET request.
+      created_attachment->resource_url =
+          GURL(kBaseAttachmentResourceUrl + *event_id + "/" + *id);
+      created_event->attachments.push_back(std::move(created_attachment));
     }
 
     created_event->location = *location;

@@ -62,12 +62,13 @@ std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents(
 }
 
 void GetFakeJsonResponse(GetResponseCallback callback) {
+  // clang-format off
   std::string response = R"(
     {"data-context": "some-context",
     "value": [
       {
         "id": "1",
-        "hasAttachments": false,
+        "hasAttachments": true,
         "subject": "Event 1",
         "isCancelled": false,
         "isOrganizer": true,
@@ -104,7 +105,15 @@ void GetFakeJsonResponse(GetResponseCallback callback) {
                   }
               }
         ],
-        "attachments": []
+        "attachments": [
+              {
+                    "@odata.type": "#microsoft.graph.fileAttachment",
+                    "@odata.mediaContentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "id": "1-ABC",
+                    "name": "Some document.docx"
+              }
+        ]
       },
       {
         "id": "2",
@@ -142,6 +151,7 @@ void GetFakeJsonResponse(GetResponseCallback callback) {
         "attendees": [],
         "attachments": []
       }]})";
+  // clang-format on
   std::move(callback).Run(std::move(response));
 }
 
