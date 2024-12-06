@@ -824,7 +824,8 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S, message = "crbug.com/373333486")
+    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/373333486")
     public void testNavigationFromXHRCallbackAndShortTimeout() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndWaitForIntentUrl(
@@ -970,6 +971,8 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/382632437")
     public void testOpenWindowFromSvgUserGesture() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestParams params =
