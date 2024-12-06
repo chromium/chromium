@@ -2,6 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("ui") {
+  sources = []
+  public_deps = [
+    ":accessibility_identifier_constants",
+    ":consent_presenter",
+    ":container_presenter",
+    ":network_issue_alert_presenter",
+    ":progress_bar",
+    ":protocols",
+    ":results_page_presenter",
+    ":view_controller",
+  ]
+}
+
 source_set("protocols") {
   sources = [
     "lens_overlay_bottom_sheet_presentation_delegate.h",
@@ -61,8 +75,8 @@ source_set("view_controller") {
     "lens_result_page_view_controller.mm",
   ]
   deps = [
-    ":lens_overlay_accessibility_identifier_constants",
-    ":lens_overlay_progress_bar",
+    ":accessibility_identifier_constants",
+    ":progress_bar",
     ":protocols",
     "//base",
     "//components/strings",
@@ -89,7 +103,7 @@ source_set("view_controller") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("lens_overlay_progress_bar") {
+source_set("progress_bar") {
   sources = [
     "lens_overlay_progress_bar.h",
     "lens_overlay_progress_bar.mm",
@@ -119,7 +133,7 @@ source_set("entry_point") {
   ]
 }
 
-source_set("lens_overlay_accessibility_identifier_constants") {
+source_set("accessibility_identifier_constants") {
   sources = [
     "lens_overlay_accessibility_identifier_constants.h",
     "lens_overlay_accessibility_identifier_constants.mm",
@@ -161,7 +175,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "lens_overlay_container_egtest.mm" ]
   deps = [
-    ":lens_overlay_accessibility_identifier_constants",
+    ":accessibility_identifier_constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
