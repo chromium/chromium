@@ -338,6 +338,20 @@ class WebIdlSchemaTest(unittest.TestCase):
         'test/web_idl/unsupported_type_class.idl',
     )
 
+  # Tests that if description parsing from file comments reaches the top of the
+  # file, a schema compiler error is thrown (as the top of the file should
+  # always be copyright lines and not part of the description).
+  def testDocumentationCommentReachedTopOfFile(self):
+    expected_error_regex = (
+        '.* Reached top of file when trying to parse description from file'
+        ' comment. Make sure there is a blank line before the comment.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/documentation_comment_top_of_file.idl',
+    )
+
   # Tests that an API interface that uses the nodoc extended attribute has the
   # related nodoc attribute set to true after processing.
   def testNoDocOnNamespace(self):
