@@ -918,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, HistorySyncFragment) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SafeBrowsingFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_safe_browsing_fragment_test.js",
           "runMochaSuite('SafeBrowsingFragment')");
 }
 
