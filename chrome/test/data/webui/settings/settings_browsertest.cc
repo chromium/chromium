@@ -923,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SafeBrowsingFragment) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_cookies_fragment_test.js",
           "runMochaSuite('CookiesFragment')");
 }
 
