@@ -225,11 +225,9 @@ void ReadableStream::IterationSource::GetNextIterationResult() {
   auto* read_request = MakeGarbageCollected<IterationReadRequest>(this);
 
   // 5. Perform ! ReadableStreamDefaultReaderRead(this, readRequest).
-  ScriptState* script_state = GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
-  ReadableStreamDefaultReader::Read(script_state, reader_, read_request,
-                                    exception_state);
+  ReadableStreamDefaultReader::Read(
+      GetScriptState(), reader_, read_request,
+      PassThroughException(GetScriptState()->GetIsolate()));
 }
 
 void ReadableStream::IterationSource::AsyncIteratorReturn(ScriptValue arg) {
@@ -427,8 +425,8 @@ ReadableStream* ReadableStream::CreateByteStream(
 
   // Construction of the byte stream cannot fail because the trivial start
   // algorithm will not throw.
-  NonThrowableExceptionState exception_state;
-  InitByteStream(script_state, stream, underlying_byte_source, exception_state);
+  InitByteStream(script_state, stream, underlying_byte_source,
+                 ASSERT_NO_EXCEPTION);
 
   // 5. Return stream.
   return stream;
@@ -865,9 +863,8 @@ void ReadableStream::LockAndDisturb(ScriptState* script_state) {
   DCHECK(!IsLocked(this));
 
   // Since the stream is not locked, AcquireDefaultReader cannot fail.
-  NonThrowableExceptionState exception_state(__FILE__, __LINE__);
   ReadableStreamGenericReader* reader =
-      AcquireDefaultReader(script_state, this, exception_state);
+      AcquireDefaultReader(script_state, this, ASSERT_NO_EXCEPTION);
   DCHECK(reader);
 
   is_disturbed_ = true;

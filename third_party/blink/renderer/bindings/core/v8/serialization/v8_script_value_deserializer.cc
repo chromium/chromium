@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_transform_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -813,8 +814,7 @@ scoped_refptr<BlobDataHandle> V8ScriptValueDeserializer::GetBlobDataHandle(
 v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(
     v8::Isolate* isolate) {
   DCHECK_EQ(isolate, script_state_->GetIsolate());
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
-                                 nullptr, nullptr);
+  ExceptionState exception_state(isolate);
   ScriptWrappable* wrappable = nullptr;
   SerializationTag tag = kVersionTag;
   if (ReadTag(&tag)) {
@@ -858,10 +858,8 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
     DCHECK(wrapper->IsSharedArrayBuffer());
     return v8::Local<v8::SharedArrayBuffer>::Cast(wrapper);
   }
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
-                                 nullptr, nullptr);
-  exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                    "Unable to deserialize SharedArrayBuffer.");
+  V8ThrowDOMException::Throw(isolate, DOMExceptionCode::kDataCloneError,
+                             "Unable to deserialize SharedArrayBuffer.");
   // If the id does not map to a valid index, it is expected that the
   // SerializedScriptValue emptied its shared ArrayBufferContents when crossing
   // a process boundary.
@@ -875,10 +873,8 @@ V8ScriptValueDeserializer::GetSharedValueConveyor(v8::Isolate* isolate) {
           serialized_script_value_->MaybeGetSharedValueConveyor()) {
     return conveyor;
   }
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
-                                 nullptr, nullptr);
-  exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                    "Unable to deserialize shared JS value.");
+  V8ThrowDOMException::Throw(isolate, DOMExceptionCode::kDataCloneError,
+                             "Unable to deserialize shared JS value.");
   return nullptr;
 }
 

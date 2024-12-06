@@ -289,8 +289,7 @@ CryptoKey* ConvertCryptoResult<CryptoKey*>(v8::Isolate* isolate,
 template <>
 CryptoKeyPair ConvertCryptoResult<CryptoKeyPair>(v8::Isolate* isolate,
                                                  const ScriptValue& value) {
-  NonThrowableExceptionState exception_state;
-  Dictionary dictionary(isolate, value.V8Value(), exception_state);
+  Dictionary dictionary(isolate, value.V8Value(), ASSERT_NO_EXCEPTION);
   v8::Local<v8::Value> private_key, public_key;
   EXPECT_TRUE(dictionary.Get("publicKey", public_key));
   EXPECT_TRUE(dictionary.Get("privateKey", private_key));
@@ -2057,11 +2056,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
   // Attempt to serialize the ArrayBuffer. It should not fail with a TypeError
   // even though it has an ArrayBufferDetachKey because it will not be detached.
   V8ScriptValueSerializer::Options serialize_options;
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "Window", "postMessage");
   EXPECT_TRUE(V8ScriptValueSerializerForModules(script_state, serialize_options)
-                  .Serialize(v8_ab, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
+                  .Serialize(v8_ab, ASSERT_NO_EXCEPTION));
   EXPECT_FALSE(v8_ab->WasDetached());
 }
 

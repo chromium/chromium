@@ -51,10 +51,8 @@ scoped_refptr<SerializedScriptValue> BuildSerializedScriptValue(
     Transferables& transferables) {
   SerializedScriptValue::SerializeOptions options;
   options.transferables = &transferables;
-  ExceptionState exceptionState(isolate, v8::ExceptionContext::kOperation,
-                                "MessageChannel", "postMessage");
   return SerializedScriptValue::Serialize(isolate, value, options,
-                                          exceptionState);
+                                          PassThroughException(isolate));
 }
 
 TEST(BlinkTransferableMessageStructTraitsTest,

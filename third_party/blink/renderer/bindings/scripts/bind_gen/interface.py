@@ -2116,12 +2116,9 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
             func_name = "PerformAttributeSetCEReactionsReflectTypeStringOrNull"
         else:
             return None
-        text = _format(
-            "bindings::{func_name}"
-            "(${info}, {content_attribute}, "
-            "${class_like_name}, ${property_name});",
-            func_name=func_name,
-            content_attribute=content_attribute)
+        text = _format("bindings::{func_name}(${info}, {content_attribute});",
+                       func_name=func_name,
+                       content_attribute=content_attribute)
         return TextNode(text)
 
     node = optimize_element_cereactions_reflect()

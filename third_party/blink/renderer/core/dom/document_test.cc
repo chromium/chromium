@@ -1048,9 +1048,7 @@ TEST_F(DocumentTest, HasPrivateTokenSuccess) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasPrivateToken");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasPrivateToken(
       script_state, "https://issuer.example", exception_state);
@@ -1076,9 +1074,7 @@ TEST_F(DocumentTest, HasPrivateTokenSuccessWithFalseValue) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasPrivateToken");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasPrivateToken(
       script_state, "https://issuer.example", exception_state);
@@ -1104,9 +1100,7 @@ TEST_F(DocumentTest, HasPrivateTokenOperationError) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasPrivateToken");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasPrivateToken(
       script_state, "https://issuer.example", exception_state);
@@ -1134,9 +1128,7 @@ TEST_F(DocumentTest, HasPrivateTokenInvalidArgument) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasPrivateToken");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasPrivateToken(
       script_state, "https://issuer.example", exception_state);
@@ -1164,9 +1156,7 @@ TEST_F(DocumentTest, HasPrivateTokenResourceExhausted) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasPrivateToken");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasPrivateToken(
       script_state, "https://issuer.example", exception_state);
@@ -1193,9 +1183,7 @@ TEST_F(DocumentTest, HasRedemptionRecordSuccess) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasRedemptionRecord");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasRedemptionRecord(
       script_state, "https://issuer.example", exception_state);
@@ -1221,9 +1209,7 @@ TEST_F(DocumentTest, HasRedemptionRecordSuccessWithFalseValue) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasRedemptionRecord");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasRedemptionRecord(
       script_state, "https://issuer.example", exception_state);
@@ -1249,9 +1235,7 @@ TEST_F(DocumentTest, HasRedemptionRecordOperationError) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasRedemptionRecord");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasRedemptionRecord(
       script_state, "https://issuer.example", exception_state);
@@ -1279,9 +1263,7 @@ TEST_F(DocumentTest, HasRedemptionRecordInvalidArgument) {
                          WTF::Unretained(&answerer)));
 
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasRedemptionRecord");
+  ExceptionState exception_state(script_state->GetIsolate());
 
   auto promise = document.hasRedemptionRecord(
       script_state, "https://issuer.example", exception_state);

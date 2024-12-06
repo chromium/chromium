@@ -225,10 +225,7 @@ class PLATFORM_EXPORT TryRethrowScope {
 // This can be used as a default value of an ExceptionState parameter like this:
 //
 //     Node* removeChild(Node*, ExceptionState& = IGNORE_EXCEPTION);
-#define IGNORE_EXCEPTION                                                     \
-  (::blink::ExceptionState(nullptr, v8::ExceptionContext::kUnknown, nullptr, \
-                           nullptr)                                          \
-       .ReturnThis())
+#define IGNORE_EXCEPTION (::blink::ExceptionState(nullptr).ReturnThis())
 #define IGNORE_EXCEPTION_FOR_TESTING IGNORE_EXCEPTION
 
 // Syntax sugar for NonThrowableExceptionState.

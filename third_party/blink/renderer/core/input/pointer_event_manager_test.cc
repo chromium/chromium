@@ -157,8 +157,6 @@ TEST_F(PointerEventManagerTest, HasPointerCapture) {
   ASSERT_FALSE(
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
-  ExceptionState exception(nullptr, v8::ExceptionContext::kOperation, "", "");
-
   GetEventHandler().HandleMousePressEvent(CreateTestMouseEvent(
       WebInputEvent::Type::kMouseDown, gfx::PointF(100, 100)));
 
@@ -166,7 +164,7 @@ TEST_F(PointerEventManagerTest, HasPointerCapture) {
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
   GetDocument().body()->setPointerCapture(PointerEventFactory::kMouseId,
-                                          exception);
+                                          IGNORE_EXCEPTION);
   ASSERT_TRUE(
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
@@ -179,7 +177,7 @@ TEST_F(PointerEventManagerTest, HasPointerCapture) {
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
   GetDocument().body()->releasePointerCapture(PointerEventFactory::kMouseId,
-                                              exception);
+                                              IGNORE_EXCEPTION);
   ASSERT_FALSE(
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 }
