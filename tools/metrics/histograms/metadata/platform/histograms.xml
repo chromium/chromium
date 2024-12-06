@@ -1626,7 +1626,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.DataLossErrorReason"
     enum="DataLossErrorReason" expires_after="2025-06-01">
-  <owner>jrhilke@google.com</owner>
+  <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded once each time reporting::error::DATA_LOSS is returned in
@@ -1638,7 +1638,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.DeleteEmptyMultigenerationQueueDirectories"
     enum="Boolean" expires_after="2025-04-06">
-  <owner>jrhilke@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when the Missive daemon attempts to delete empty multigeneration
@@ -1652,7 +1652,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.KeyDeliveryResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2025-03-30">
-  <owner>jrhilke@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when missive recieves a response to its request for an encryption
@@ -1725,7 +1725,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.UnavailableErrorReason"
     enum="UnavailableErrorReason" expires_after="2025-06-01">
-  <owner>jrhilke@google.com</owner>
+  <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded once each time reporting::error::UNAVAILABLE is returned in
