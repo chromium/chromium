@@ -201,6 +201,10 @@ void PaintOpReader::Read(uint8_t* data) {
   ReadSimple(data);
 }
 
+void PaintOpReader::Read(uint16_t* data) {
+  ReadSimple(data);
+}
+
 void PaintOpReader::Read(uint32_t* data) {
   ReadSimple(data);
 }
@@ -211,6 +215,10 @@ void PaintOpReader::Read(uint64_t* data) {
 
 void PaintOpReader::Read(int32_t* data) {
   ReadSimple(data);
+}
+
+void PaintOpReader::Read(SkPoint* point) {
+  ReadSimple(point);
 }
 
 void PaintOpReader::Read(SkRect* rect) {
@@ -697,24 +705,17 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
 
     ref.id_ = shader_id;
   }
-  decltype(ref.colors_)::size_type colors_size = 0;
+  size_t colors_size = 0;
   ReadSize(&colors_size);
 
   // If there are too many colors, abort.
-  if (colors_size > remaining_bytes_) {
-    SetInvalid(DeserializationError::
-                   kInsufficientRemainingBytes_Read_PaintShader_ColorSize);
-    return;
-  }
-  size_t colors_bytes =
-      colors_size * (colors_size > 0 ? sizeof(ref.colors_[0]) : 0u);
+  size_t colors_bytes = colors_size * sizeof(decltype(ref.colors_)::value_type);
   if (colors_bytes > remaining_bytes_) {
     SetInvalid(DeserializationError::
                    kInsufficientRemainingBytes_Read_PaintShader_ColorBytes);
     return;
   }
-  ref.colors_.resize(colors_size);
-  ReadData(base::as_writable_byte_span(ref.colors_));
+  ReadVectorContent(colors_size, ref.colors_);
 
   decltype(ref.positions_)::size_type positions_size = 0;
   ReadSize(&positions_size);
@@ -729,8 +730,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
                    kInsufficientRemainingBytes_Read_PaintShader_Positions);
     return;
   }
-  ref.positions_.resize(positions_size);
-  ReadData(base::as_writable_byte_span(ref.positions_));
+  ReadVectorContent(positions_size, ref.positions_);
 
   // We don't write the cached shader, so don't attempt to read it either.
 

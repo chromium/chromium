@@ -665,11 +665,8 @@ void PaintOpWriter::Write(const PaintShader* shader,
     Write(false);
   }
 
-  WriteSize(shader->colors_.size());
-  WriteData(base::as_byte_span(shader->colors_));
-
-  WriteSize(shader->positions_.size());
-  WriteData(base::as_byte_span(shader->positions_));
+  Write(shader->colors_);
+  Write(shader->positions_);
   // Explicitly don't write the cached_shader_ because that can be regenerated
   // using other fields.
 }

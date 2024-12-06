@@ -981,16 +981,16 @@ PaintOp* DrawVerticesOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
 
   std::vector<SkPoint> vertices;
-  reader.Read(&vertices);
+  reader.Read(vertices);
   op->vertices =
       base::MakeRefCounted<RefCountedBuffer<SkPoint>>(std::move(vertices));
 
   std::vector<SkPoint> uvs;
-  reader.Read(&uvs);
+  reader.Read(uvs);
   op->uvs = base::MakeRefCounted<RefCountedBuffer<SkPoint>>(std::move(uvs));
 
   std::vector<uint16_t> indices;
-  reader.Read(&indices);
+  reader.Read(indices);
   op->indices =
       base::MakeRefCounted<RefCountedBuffer<uint16_t>>(std::move(indices));
 
@@ -1150,7 +1150,7 @@ PaintOp* SaveLayerAlphaOp::Deserialize(PaintOpReader& reader, void* output) {
 PaintOp* SaveLayerFiltersOp::Deserialize(PaintOpReader& reader, void* output) {
   SaveLayerFiltersOp* op = new (output) SaveLayerFiltersOp;
   reader.Read(&op->flags);
-  reader.Read(&op->filters);
+  reader.Read(op->filters);
   return op;
 }
 

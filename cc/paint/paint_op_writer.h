@@ -24,6 +24,7 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
@@ -55,6 +56,19 @@ class DrawImage;
 class DrawLooper;
 class PaintShader;
 class PathEffect;
+
+namespace internal {
+
+template <typename T>
+inline constexpr bool kIsVec = false;
+template <typename T, typename Allocator>
+inline constexpr bool kIsVec<std::vector<T, Allocator>> = true;
+template <typename T, size_t N, typename A>
+inline constexpr bool kIsVec<absl::InlinedVector<T, N, A>> = true;
+template <typename T>
+concept IsVec = kIsVec<std::remove_cvref_t<T>>;
+
+}  // namespace internal
 
 class CC_PAINT_EXPORT PaintOpWriter {
   STACK_ALLOCATED();
@@ -224,8 +238,10 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(SkMatrix matrix);
   void Write(const SkM44& matrix);
   void Write(uint8_t data) { WriteSimple(data); }
+  void Write(uint16_t data) { WriteSimple(data); }
   void Write(uint32_t data) { WriteSimple(data); }
   void Write(int32_t data) { WriteSimple(data); }
+  void Write(const SkPoint& point) { WriteSimple(point); }
   void Write(const SkRect& rect) { WriteSimple(rect); }
   void Write(const SkIRect& rect) { WriteSimple(rect); }
   void Write(const SkRRect& rect) { WriteSimple(rect); }
@@ -352,18 +368,11 @@ class CC_PAINT_EXPORT PaintOpWriter {
     DidWrite(total_size);
   }
 
-  template <typename T>
-    requires(std::is_trivially_copyable_v<T>)
-  void Write(const std::vector<T>& vec) {
-    WriteSize(vec.size());
-    WriteData(base::as_byte_span(vec));
-  }
-
   template <typename T, typename... Args>
-    requires(!std::is_trivially_copyable_v<T>)
-  void Write(const std::vector<T>& vec, const Args&... args) {
+    requires internal::IsVec<T>
+  void Write(const T& vec, const Args&... args) {
     WriteSize(vec.size());
-    for (const T& t : vec) {
+    for (const auto& t : vec) {
       Write(t, args...);
     }
   }

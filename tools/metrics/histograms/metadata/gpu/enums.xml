@@ -1237,7 +1237,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Insufficient remaining bytes in Read(PaintShader) for
              color_bytes"/>
   <int value="7"
-      label="Insufficient remaining bytes in Read(PaintShader) for color_size"/>
+      label="Insufficient remaining bytes in Read(PaintShader) for color_size
+             (obsolete)"/>
   <int value="8"
       label="Insufficient remaining bytes in Read(PaintShader) for positions"/>
   <int value="9" label="Insufficient remaining bytes in Read(SkData)"/>
