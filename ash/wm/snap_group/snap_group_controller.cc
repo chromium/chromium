@@ -67,8 +67,6 @@ SnapGroupController::~SnapGroupController() {
 
 // static
 SnapGroupController* SnapGroupController::Get() {
-  // TODO(michelefan): Add CHECK(g_instance) after the snap group controller
-  // feature is enabled by default.
   return g_instance;
 }
 

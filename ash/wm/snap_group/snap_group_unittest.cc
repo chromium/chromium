@@ -179,8 +179,7 @@ void DragGroupItemToPoint(OverviewItemBase* item,
 
   gfx::Point location =
       gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
-  // TODO(michelefan): Use the center point of the `overview_item` after
-  // implementing or defining the event handling for the middle seam area.
+
   location.Offset(/*delta_x=*/5, /*delta_y=*/5);
   event_generator->set_current_screen_location(location);
   if (by_touch_gestures) {
@@ -2126,7 +2125,6 @@ class SnapGroupTest : public SnapGroupTestBase {
     }
   }
 
-  // TODO(michelefan): Consider put this test util in a base class or test file.
   std::unique_ptr<aura::Window> CreateTestWindowWithAppID(
       std::string app_id_key) {
     std::unique_ptr<aura::Window> window = CreateAppWindow();

@@ -921,9 +921,6 @@ void RootWindowController::StartSplitViewOverviewSession(
     return;
   }
 
-  // TODO(michelefan): Remove the `StartOverview()` here, this is currently
-  // added to limit `SplitViewOverviewSession` creation and usage to clamshell
-  // only.
   if (Shell::Get()->IsInTabletMode()) {
     OverviewController::Get()->StartOverview(
         action.value_or(OverviewStartAction::kSplitView),

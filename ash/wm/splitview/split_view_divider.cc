@@ -212,8 +212,6 @@ void SplitViewDivider::SetDividerPosition(int divider_position) {
   divider_position_ = divider_position;
   // Only clamp within `observed_windows_` if it is not empty; otherwise it
   // will return an invalid range.
-  // TODO(michelefan): Fix tablet mode regression: when the divider is dragged
-  // below the minimum window size, slide the window out to prevent errors.
   if (!observed_windows_.empty() &&
       !display::Screen::GetScreen()->InTabletMode()) {
     const gfx::Range divider_allowed_range =
@@ -653,7 +651,7 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<SplitViewDividerView>(this));
   auto* divider_widget_native_window = divider_widget_->GetNativeWindow();
-  // TODO(michelefan|sophiewen): Evaluate and remove this property if needed.
+  // TODO(sophiewen): Evaluate and remove this property if needed.
   divider_widget_native_window->SetProperty(kLockedToRootKey, true);
 
   // Use a window targeter and enlarge the hit region to allow located events

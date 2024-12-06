@@ -2719,8 +2719,6 @@ void CaptureModeController::PerformScreenshotOfGivenWindow(
     BehaviorType behavior_type) {
   const CaptureParams capture_params{given_window,
                                      gfx::Rect(given_window->bounds().size())};
-  // TODO(michelefan): Add behavior type as an input parameter, if this API is
-  // used for other entry types in future.
   CaptureImage(capture_params, BuildImagePath(), GetBehavior(behavior_type));
 }
 

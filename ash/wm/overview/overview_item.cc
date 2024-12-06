@@ -1285,21 +1285,6 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
                                  bool is_first_update) {
   aura::Window* window = GetWindow();
 
-  // TODO(michelefan): Remove the crash keys when http://b/320479135 is fixed.
-  SCOPED_CRASH_KEY_STRING32("b/320479135", "win_title",
-                            base::UTF16ToUTF8(window->GetTitle()));
-
-  SCOPED_CRASH_KEY_NUMBER(
-      "b/320479135", "win_type",
-      static_cast<int>(window->GetProperty(chromeos::kAppTypeKey)));
-
-  SCOPED_CRASH_KEY_STRING32("b/320479135", "rw_bounds",
-                            root_window_->GetBoundsInScreen().ToString());
-
-  SCOPED_CRASH_KEY_STRING32(
-      "b/320479135", "win_get_rw_bounds",
-      window->GetRootWindow()->GetBoundsInScreen().ToString());
-
   CHECK_EQ(root_window_, window->GetRootWindow());
 
   const gfx::Transform transform = ComputeTargetTransform(target_bounds);

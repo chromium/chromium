@@ -821,8 +821,6 @@ void SplitViewController::AttachToBeSnappedWindow(
   // clamshell transition or multi-user transition. If neither `snap_ratio` nor
   // `divider_position_` exists, calculate the divider position with the default
   // snap ratio i.e. `chromeos::kDefaultSnapRatio`.
-  // TODO(michelefan): See if it is a valid case to not having `snap_ratio`
-  // while `divider_position` is less than 0.
   bool do_snap_animation = false;
   int divider_position =
       split_view_divider_.divider_widget() ? GetDividerPosition() : -1;

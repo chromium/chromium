@@ -438,8 +438,7 @@ gfx::SizeF GetTotalUnionSizeIncludingTransients(
   }
 
   gfx::SizeF total_size = total_bounds.size();
-  // TODO(michelefan): Add extra width of the divider for the height of the
-  // `total_size` in portrait mode.
+
   if (windows.size() == 2u) {
     total_size.Enlarge(kSplitviewDividerShortSideLength, 0);
   }

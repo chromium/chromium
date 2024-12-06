@@ -594,7 +594,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // kOneThirdSnapRatio and kTwoThirdSnapRatio based on current
   // `SplitViewDivider::divider_position_`. Used to update
   // `SplitViewDivider::divider_position_` on work area changes.
-  // TODO(sophiewen | michelefan): Move this variable to `SplitViewDivider`.
+  // TODO(sophiewen): Move this variable to `SplitViewDivider`.
   float divider_closest_ratio_ = std::numeric_limits<float>::quiet_NaN();
 
   // The animation that animates the divider to a fixed position after resizing.
