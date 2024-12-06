@@ -11,6 +11,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/media/media_engagement_service.h"
+#include "chrome/browser/media/media_engagement_service_factory.h"
+#include "chrome/browser/media/mock_media_engagement_service.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
@@ -626,8 +629,15 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
  public:
   AutoPictureInPictureWithVideoPlaybackBrowserTest()
       : safe_browsing_factory_(
-            std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()) {
-  }
+            std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()),
+        dependency_manager_subscription_(
+            BrowserContextDependencyManager::GetInstance()
+                ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                    &AutoPictureInPictureWithVideoPlaybackBrowserTest::
+                        SetTestingFactory,
+                    // base::Unretained() is safe because `this` outlives the
+                    // dependency manager subscription.
+                    base::Unretained(this)))) {}
 
   AutoPictureInPictureWithVideoPlaybackBrowserTest(
       const AutoPictureInPictureWithVideoPlaybackBrowserTest&) = delete;
@@ -652,6 +662,17 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
     fake_safe_browsing_database_manager_->ClearDangerousUrl(dangerous_url);
   }
 
+  MediaEngagementService* GetMediaEngagementService() const {
+    return MediaEngagementServiceFactory::GetForProfile(browser()->profile());
+  }
+
+  void SetExpectedHasHighEngagement(bool has_high_engagenent) const {
+    auto* mock_media_engagement_service =
+        static_cast<MockMediaEngagementService*>(GetMediaEngagementService());
+    EXPECT_CALL(*mock_media_engagement_service, HasHighEngagement(testing::_))
+        .WillRepeatedly(testing::Return(has_high_engagenent));
+  }
+
  protected:
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
@@ -664,11 +685,17 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
         safe_browsing_factory_.get());
   }
 
+  void SetTestingFactory(content::BrowserContext* context) {
+    MediaEngagementServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildMockMediaEngagementService));
+  }
+
  private:
   scoped_refptr<safe_browsing::FakeSafeBrowsingDatabaseManager>
       fake_safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
+  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 }  // namespace
@@ -683,6 +710,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
@@ -699,6 +727,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
@@ -712,6 +741,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
   ForceLifecycleUpdate(web_contents);
@@ -727,6 +757,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
   ForceLifecycleUpdate(web_contents);
@@ -755,6 +786,7 @@ IN_PROC_BROWSER_TEST_F(
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // There should not be a picture-in-picture window, since the video element is
   // inside an iframe.
@@ -790,6 +822,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // There should not be a picture-in-picture window, since the video element is
   // inside a remote iframe.
@@ -799,8 +832,13 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   // false, since the video element is within a remote iframe.
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
-  EXPECT_FALSE(tab_helper->get_has_safe_url_for_testing());
-  EXPECT_FALSE(tab_helper->get_has_sufficiently_visible_video_for_testing());
+  EXPECT_FALSE(tab_helper->has_safe_url_);
+  EXPECT_FALSE(tab_helper->has_sufficiently_visible_video_);
+
+  // Verify that `MeetsEngagementScore` returns false (even though the mock high
+  // engagement is set to return true), since the video element is within a
+  // remote iframe.
+  EXPECT_FALSE(tab_helper->MeetsEngagementScore());
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
@@ -811,6 +849,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
   ForceLifecycleUpdate(web_contents);
@@ -827,6 +866,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Add occluding overlay to video, followed by making the occluding overlay
   // not visible.
@@ -850,6 +890,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Wait for video to be recently audible, to ensure we start from a known
   // state. Then mute audio and wait for video to not be recently audible.
@@ -869,6 +910,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   AddDangerousUrl(web_contents->GetLastCommittedURL());
+  SetExpectedHasHighEngagement(true);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
   ForceLifecycleUpdate(web_contents);
@@ -884,6 +926,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Expect AutoPiP since URL is safe.
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
@@ -906,6 +949,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   AddDangerousUrl(web_contents->GetLastCommittedURL());
+  SetExpectedHasHighEngagement(true);
 
   // Do not expect AutoPiP since URL is unsafe.
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
@@ -918,6 +962,22 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   ClearDangerousUrl(web_contents->GetLastCommittedURL());
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DoesNotVideoAutopip_LowEngagementScore) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(false);
+
+  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
+  ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SwitchToNewTabAndDontExpectAutopip();
 }
 
 // TODO(crbug.com/40923043): Flaky on "Linux ASan LSan Tests (1)"
@@ -937,6 +997,7 @@ IN_PROC_BROWSER_TEST_F(
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
   ForceLifecycleUpdate(web_contents);
@@ -1061,6 +1122,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   LOG(ERROR) << "DEBUG: waiting for playing";
   WaitForMediaSessionPlaying(original_web_contents);
   WaitForWasRecentlyAudible(original_web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Pause the video.
   LOG(ERROR) << "DEBUG: pausing playback";
@@ -1100,6 +1162,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   {
     // Open and switch to a new tab.
@@ -1124,6 +1187,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Set content setting to CONTENT_SETTING_ASK.
   auto* original_web_contents =
@@ -1546,6 +1610,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Set content setting to CONTENT_SETTING_ASK.
   auto* original_web_contents =
@@ -1639,6 +1704,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
   ForceLifecycleUpdate(web_contents);
@@ -1757,6 +1823,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
   ForceLifecycleUpdate(web_contents);
@@ -1803,6 +1870,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
   ForceLifecycleUpdate(web_contents);

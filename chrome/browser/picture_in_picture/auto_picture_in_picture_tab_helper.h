@@ -24,6 +24,7 @@ class PermissionDecisionAutoBlockerBase;
 class AutoPictureInPictureTabStripObserverHelper;
 class AutoPipSettingOverlayView;
 class HostContentSettingsMap;
+class MediaEngagementService;
 
 // The AutoPictureInPictureTabHelper is a TabHelper attached to each WebContents
 // that facilitates automatically opening and closing picture-in-picture windows
@@ -153,6 +154,8 @@ class AutoPictureInPictureTabHelper
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
   FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureTabHelperBrowserTest,
                            CannotAutopipViaHttp);
+  FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                           DoesNotDocumentAutopip_VideoInRemoteIFrame);
 
   void MaybeEnterAutoPictureInPicture();
 
@@ -188,6 +191,12 @@ class AutoPictureInPictureTabHelper
   // recently.
   bool WasRecentlyAudible() const;
 
+  // Returns true if the tab has high media engagement, false otherwise.
+  //
+  // Among other cases, this method will also return false if the media session
+  // router frame either does not exist or is not in the primary main frame.
+  bool MeetsEngagementScore() const;
+
   // Returns the current state of the 'Auto Picture-in-Picture' content
   // setting for the current website of the observed WebContents.
   ContentSetting GetCurrentContentSetting() const;
@@ -214,6 +223,15 @@ class AutoPictureInPictureTabHelper
 
   // Creates the `auto_pip_setting_helper_` if it does not already exist.
   void EnsureAutoPipSettingHelper();
+
+  // Returns the primary main routed frame for the MediaSession, if it exists.
+  // Otherwise, an empty optional is returned.
+  //
+  // This method retrieves the routed frame associated with the WebContents's
+  // MediaSession. If a routed frame is found and it resides within the primary
+  // main frame, an optional containing a pointer to the RenderFrameHost is
+  // returned. Otherwise, an empty optional is returned.
+  std::optional<content::RenderFrameHost*> GetPrimaryMainRoutedFrame() const;
 
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.
@@ -289,6 +307,13 @@ class AutoPictureInPictureTabHelper
   // safety.
   std::unique_ptr<AutoPictureInPictureSafeBrowsingCheckerClient>
       safe_browsing_checker_client_;
+
+  // The `MediaEngagementService` is used by `this` to determine whether or not
+  // the web contents origin has high media engagement.
+  //
+  // This is safe since the `MediaEngagementService` is tied to the Profile
+  // which outlives the WebContents (which `this` is tied to).
+  raw_ptr<MediaEngagementService> media_engagement_service_ = nullptr;
 
   // WeakPtrFactory used only for requesting video visibility. This weak ptr
   // factory is invalidated before sending any new visibility requests to the

@@ -9102,6 +9102,8 @@ static_library("test_support") {
     "history/history_test_utils.h",
     "interstitials/security_interstitial_page_test_utils.cc",
     "interstitials/security_interstitial_page_test_utils.h",
+    "media/mock_media_engagement_service.cc",
+    "media/mock_media_engagement_service.h",
     "media/webrtc/fake_desktop_media_list.cc",
     "media/webrtc/fake_desktop_media_list.h",
     "media/webrtc/fake_desktop_media_picker_factory.cc",
