@@ -44,6 +44,7 @@
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 #include "components/enterprise/watermarking/features.h"  // nogncheck
+#include "components/enterprise/watermarking/mojom/watermark.mojom.h"  // nogncheck
 #include "components/enterprise/watermarking/watermark.h"  // nogncheck
 #endif
 
@@ -73,22 +74,55 @@ sk_sp<SkDocument> MakeDocument(
       generate_document_outline, &stream);
 }
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+
+void DrawWatermarkBlock(
+    SkCanvas* canvas,
+    SkSize size,
+    const watermark::mojom::WatermarkBlockPtr& watermark_block) {
+  if (!watermark_block) {
+    return;
+  }
+  base::ReadOnlySharedMemoryMapping mapping =
+      watermark_block->serialized_skpicture.Map();
+  if (!mapping.IsValid()) {
+    DLOG(ERROR)
+        << "Error serializing the watermark block received from the browser";
+    return;
+  }
+  auto skpicture_span = mapping.GetMemoryAsSpan<uint8_t>();
+  SkMemoryStream stream(skpicture_span.data(), skpicture_span.size());
+  sk_sp<SkPicture> picture = SkPicture::MakeFromStream(&stream);
+
+  enterprise_watermark::DrawWatermark(canvas, picture.get(),
+                                      watermark_block->width,
+                                      watermark_block->height, size);
+}
+
+#endif
+
 }  // namespace
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-void DrawEnterpriseWatermark(SkCanvas* canvas,
-                             SkSize size,
-                             const std::string& watermark_text) {
+
+void DrawEnterpriseWatermark(
+    SkCanvas* canvas,
+    SkSize size,
+    const watermark::mojom::WatermarkBlockPtr& watermark_block) {
   if (!base::FeatureList::IsEnabled(
-          enterprise_watermark::features::kEnablePrintWatermark) ||
-      watermark_text.empty()) {
+          enterprise_watermark::features::kEnablePrintWatermark)) {
     return;
   }
-
-  enterprise_watermark::DrawWatermark(canvas, size, watermark_text,
-                                      PrintCompositorImpl::kWatermarkBlockWidth,
-                                      PrintCompositorImpl::kWatermarkTextSize);
+  DrawWatermarkBlock(canvas, size, watermark_block);
 }
+
+void DrawWatermarkBlockForTesting(
+    SkCanvas* canvas,
+    SkSize size,
+    const watermark::mojom::WatermarkBlockPtr& watermark_block) {
+  DrawWatermarkBlock(canvas, size, watermark_block);
+}
+
 #endif
 
 PrintCompositorImpl::PrintCompositorImpl(
@@ -432,12 +466,12 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
 
   for (const auto& page : pages) {
     TRACE_EVENT0("print", "PrintCompositorImpl::CompositePages draw page");
-    DrawPage(doc.get(), page, watermark_text_);
+    DrawPage(doc.get(), page);
 
     if (doc_info_) {
       // Optionally draw this page into the full document in `doc_info_` as
       // well.
-      DrawPage(doc_info_->doc.get(), page, watermark_text_);
+      DrawPage(doc_info_->doc.get(), page);
       doc_info_->pages_written++;
     }
   }
@@ -490,12 +524,11 @@ PrintCompositorImpl::GetPictureDeserializationContext(
 }
 
 void PrintCompositorImpl::DrawPage(SkDocument* doc,
-                                   const SkDocumentPage& page,
-                                   const std::string& watermark_text) {
+                                   const SkDocumentPage& page) {
   SkCanvas* canvas = doc->beginPage(page.fSize.width(), page.fSize.height());
   canvas->drawPicture(page.fPicture);
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  DrawEnterpriseWatermark(canvas, page.fSize, watermark_text);
+  DrawEnterpriseWatermark(canvas, page.fSize, watermark_block_);
 #endif
   doc->endPage();
 }
@@ -575,8 +608,17 @@ void PrintCompositorImpl::SetTitle(const std::string& title) {
   title_ = title;
 }
 
-void PrintCompositorImpl::SetWatermarkText(const std::string& watermark_text) {
-  watermark_text_ = watermark_text;
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+void PrintCompositorImpl::SetWatermarkBlock(
+    watermark::mojom::WatermarkBlockPtr watermark_block) {
+  watermark_block_ = std::move(watermark_block);
 }
+
+const watermark::mojom::WatermarkBlockPtr&
+PrintCompositorImpl::watermark_block_for_testing() const {
+  return watermark_block_;
+}
+
+#endif
 
 }  // namespace printing

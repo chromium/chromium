@@ -78,7 +78,7 @@ int block_height_offset(int block_height) {
   return block_height + kWatermarkBlockSpacing;
 }
 
-int min_x(double angle, const gfx::Rect& bounds, int block_width) {
+int min_x(double angle, const SkSize& bounds, int block_width) {
   // Due to the rotation of the watermark, X needs to start in the negatives so
   // that the rotated canvas is still large enough to cover `bounds`. This means
   // our initial X needs to be proportional to this triangle side:
@@ -109,7 +109,7 @@ int min_x(double angle, const gfx::Rect& bounds, int block_width) {
          block_width_offset(block_width);
 }
 
-int max_x(double angle, const gfx::Rect& bounds, int block_width) {
+int max_x(double angle, const SkSize& bounds, int block_width) {
   // Due to the rotation of the watermark, X needs to end further then the
   // `bounds` width. This means our final X needs to be proportional to this
   // triangle side:
@@ -132,13 +132,13 @@ int max_x(double angle, const gfx::Rect& bounds, int block_width) {
   return cos(angle) * bounds.width() + block_width_offset(block_width);
 }
 
-int min_y(double angle, const gfx::Rect& bounds) {
+int min_y(double angle, const SkSize& bounds) {
   // Instead of starting at Y=0, starting at `kTextSize` lets the first line of
   // text be in frame as text is drawn with (0,0) as the bottom-left corner.
   return kTextSize;
 }
 
-int max_y(double angle, const gfx::Rect& bounds) {
+int max_y(double angle, const SkSize& bounds) {
   // Due to the rotation of the watermark, Y needs to end further then the
   // `bounds` height. This means our final Y needs to be proportional to these
   // two triangle sides:  +-----------+
@@ -237,7 +237,7 @@ class PaintCanvasWatermarkBlockRenderer : public WatermarkBlockRenderer {
 void DrawWatermark(WatermarkBlockRenderer* watermark_block_renderer,
                    int block_width,
                    int block_height,
-                   gfx::Rect contents_bounds) {
+                   const SkSize& contents_bounds) {
   watermark_block_renderer->Save();
   watermark_block_renderer->RotateCanvas(360 - kRotationAngle);
 
@@ -295,7 +295,7 @@ void DrawWatermark(cc::PaintCanvas* canvas,
                    cc::PaintRecord* record,
                    int block_width,
                    int block_height,
-                   gfx::Rect contents_bounds) {
+                   const SkSize& contents_bounds) {
   PaintCanvasWatermarkBlockRenderer renderer(canvas, record);
   DrawWatermark(&renderer, block_width, block_height, contents_bounds);
 }
@@ -304,7 +304,7 @@ void DrawWatermark(SkCanvas* canvas,
                    SkPicture* picture,
                    int block_width,
                    int block_height,
-                   gfx::Rect contents_bounds) {
+                   const SkSize& contents_bounds) {
   SkiaWatermarkBlockRenderer renderer(canvas, picture);
   DrawWatermark(&renderer, block_width, block_height, contents_bounds);
 }
@@ -347,10 +347,8 @@ void DrawWatermark(SkCanvas* canvas,
   WatermarkBlock block =
       DrawWatermarkToPaintRecord(text, SkColorSetARGB(0xb, 0x00, 0x00, 0x00),
                                  SkColorSetARGB(0x11, 0xff, 0xff, 0xff));
-  gfx::Rect contents_bounds(size.fWidth, size.fHeight);
   cc::SkiaPaintCanvas skp_canvas(canvas);
-  DrawWatermark(&skp_canvas, &block.record, block.width, block.height,
-                contents_bounds);
+  DrawWatermark(&skp_canvas, &block.record, block.width, block.height, size);
 }
 
 }  // namespace enterprise_watermark

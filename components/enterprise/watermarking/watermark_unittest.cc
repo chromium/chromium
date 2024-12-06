@@ -68,7 +68,7 @@ TEST_P(WatermarkTest, MAYBE_PageRenderedWithWatermark) {
   SkCanvas canvas(bitmap);
   canvas.clear(GetParam().color);
   DrawWatermark(&canvas, picture.get(), watermark_block.width,
-                watermark_block.height, gfx::Rect(kWidth, kHeight));
+                watermark_block.height, SkSize::Make(kWidth, kHeight));
 
   base::FilePath path =
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
@@ -84,7 +84,7 @@ TEST_P(WatermarkTest, MAYBE_PageRenderedWithWatermark) {
   canvas.clear(GetParam().color);
   cc::SkiaPaintCanvas skia_canvas(&canvas);
   DrawWatermark(&skia_canvas, &watermark_block.record, watermark_block.width,
-                watermark_block.height, gfx::Rect(kWidth, kHeight));
+                watermark_block.height, SkSize::Make(kWidth, kHeight));
   ASSERT_TRUE(cc::MatchesPNGFile(bitmap, path, cc::ExactPixelComparator()));
 }
 

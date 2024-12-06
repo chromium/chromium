@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
   sources = [ "print_compositor.mojom" ]
@@ -15,4 +15,11 @@ mojom("mojom") {
     "//ui/accessibility/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  enabled_features = []
+  if (enterprise_watermark) {
+    public_deps += [ "//components/enterprise/watermarking/mojom" ]
+
+    enabled_features += [ "enterprise_watermark" ]
+  }
 }

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_WATERMARKING_CONTENT_WATERMARK_TEXT_CONTAINER_H_
 #define COMPONENTS_ENTERPRISE_WATERMARKING_CONTENT_WATERMARK_TEXT_CONTAINER_H_
 
+#include "components/enterprise/watermarking/mojom/watermark.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkPicture.h"
 
@@ -19,6 +20,10 @@ class WatermarkTextContainer
   void SetWatermarkText(sk_sp<SkPicture> picture,
                         int block_width,
                         int block_height);
+
+  // Returns nullptr if the `SkPicture` is not set, or if one of the block
+  // dimensions is zero.
+  watermark::mojom::WatermarkBlockPtr Serialize() const;
 
  private:
   friend class content::WebContentsUserData<WatermarkTextContainer>;

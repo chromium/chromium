@@ -53,21 +53,23 @@ std::unique_ptr<gfx::RenderText> CreateOutlineRenderText(
 
 // Draws a watermark on the surface represented by the cc::PaintCanvas instance.
 // `block_width` and `block_height` are the dimensions of the watermark block
-// represented by the cc::PaintRecord.
+// represented by the cc::PaintRecord. `contents_bounds` represents the
+// dimensions of the area over which the watermark is drawn.
 void DrawWatermark(cc::PaintCanvas* canvas,
                    cc::PaintRecord* record,
                    int block_width,
                    int block_height,
-                   gfx::Rect contents_bounds);
+                   const SkSize& contents_bounds);
 
 // Draws a watermark on the surface represented by the SkCanvas instance.
 // `block_width` and `block_height` are the dimensions of the watermark block
-// represented by the SkPicture.
+// represented by the SkPicture. `contents_bounds` represents the
+// dimensions of the area over which the watermark is drawn.
 void DrawWatermark(SkCanvas* canvas,
                    SkPicture* picture,
                    int block_width,
                    int block_height,
-                   gfx::Rect contents_bounds);
+                   const SkSize& contents_bounds);
 
 // Draws a watermark onto a PaintRecord and stores it along with the block's
 // width and height so that it can be rendered in processes other than the
