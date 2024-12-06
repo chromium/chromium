@@ -132,7 +132,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
       {"needsSigninPrompt",
        IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT},
-      {"profileCardButtonLabel", IDS_PROFILE_PICKER_PROFILE_CARD_LABEL},
       {"profileCardInputLabel", IDS_PROFILE_PICKER_PROFILE_CARD_INPUT_LABEL},
       {"menu", IDS_MENU},
       {"cancel", IDS_CANCEL},

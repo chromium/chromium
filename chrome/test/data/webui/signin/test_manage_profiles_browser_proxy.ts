@@ -40,6 +40,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       gaiaName: 'Alice',
       userName: 'Alice@gmail.com',
       avatarIcon: 'url',
+      profileCardButtonLabel: '',
       avatarBadge: '',
     };
 

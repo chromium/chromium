@@ -740,6 +740,9 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT" desc="Text on the profile card signaling that the user must sign-in in order to open a profile">
       Sign in
     </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CARD_LABEL_SUPERVISED" desc="Accessibility label that is used on the profile card button that opens an existing profile. It includes information conveyed by the Google Family Link 'Kite' icon, which indicates that the account is supervised.">
+      Open <ph name="PROFILE_NAME">$1<ex>User</ex></ph> profile. This profile is managed by your parent.
+    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_LABEL" desc="Label for a profile card button that opens a new profile">
       Open <ph name="PROFILE_NAME">$1<ex>User</ex></ph> profile
     </message>

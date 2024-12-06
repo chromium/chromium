@@ -10,8 +10,7 @@ export function getHtml(this: ProfileCardElement) {
   return html`<!--_html_template_start_-->
 <div id="profileCardContainer">
   <cr-button id="profileCardButton" @click="${this.onProfileClick_}"
-      aria-label="${this.i18n(
-          'profileCardButtonLabel', this.profileState.localProfileName)}">
+      aria-label="${this.profileState.profileCardButtonLabel}">
     <div id="avatarContainer">
       <img class="profile-avatar" alt="" .src="${this.profileState.avatarIcon}">
       <div id="iconContainer"
