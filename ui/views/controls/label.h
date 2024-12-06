@@ -349,6 +349,9 @@ class VIEWS_EXPORT Label : public View,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  void AddDisplayTextTruncationCallback(
+      base::RepeatingCallback<void(Label*)> callback);
+
  protected:
   // Create a single RenderText instance to actually be painted.
   virtual std::unique_ptr<gfx::RenderText> CreateRenderText() const;
@@ -483,6 +486,8 @@ class VIEWS_EXPORT Label : public View,
   // Updates the elide behavior used by |full_text_|.
   void UpdateFullTextElideBehavior();
 
+  void OnDisplayTextTruncation();
+
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   void MaybeRefreshAccessibleTextOffsets() const;
 
@@ -551,6 +556,9 @@ class VIEWS_EXPORT Label : public View,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   base::CallbackListSubscription full_text_changed_subscription_;
+
+  base::RepeatingCallback<void(Label*)>
+      on_display_text_truncation_changed_callback_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)
