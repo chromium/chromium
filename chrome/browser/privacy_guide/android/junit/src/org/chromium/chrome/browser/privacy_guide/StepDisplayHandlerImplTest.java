@@ -47,7 +47,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
  * compressed if @ParameterizedTest from JUnit5 can be used.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class StepDisplayHandlerImplTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -84,10 +83,6 @@ public class StepDisplayHandlerImplTest {
         when(mSBNativesMock.getSafeBrowsingState(eq(mProfile))).thenReturn(sbState);
     }
 
-    private void setSyncState(boolean enabled) {
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(enabled);
-    }
-
     private void setCookieState(@CookieControlsMode int cookieControlsMode, boolean allowCookies) {
         when(mPrefServiceMock.getInteger(PrefNames.COOKIE_CONTROLS_MODE))
                 .thenReturn(cookieControlsMode);
@@ -112,20 +107,6 @@ public class StepDisplayHandlerImplTest {
     public void testDontDisplaySBWhenSBUnsafe() {
         setSBState(SafeBrowsingState.NO_SAFE_BROWSING);
         assertFalse(mStepDisplayHandler.shouldDisplaySafeBrowsing());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testDisplayHistorySyncWhenSyncOn() {
-        setSyncState(true);
-        assertTrue(mStepDisplayHandler.shouldDisplayHistorySync());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testDontDisplayHistorySyncWhenSyncOff() {
-        setSyncState(false);
-        assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test
