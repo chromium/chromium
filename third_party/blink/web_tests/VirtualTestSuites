@@ -1565,14 +1565,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "low-priority-script-loading",
-    "owners": ["chikamune@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/devtools/network/resource-priority.js"],
-    "args": ["--enable-features=LowPriorityScriptLoading"],
-    "expires": "Jul 1, 2025"
-  },
-  {
     "prefix": "low-priority-async-script-execution",
     "platforms": ["Linux", "Mac", "Win"],
     "exclusive_tests": "ALL",
