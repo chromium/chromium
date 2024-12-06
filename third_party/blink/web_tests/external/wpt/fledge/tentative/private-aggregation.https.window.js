@@ -119,22 +119,51 @@ function stringifySamples(samplesDict) {
   return samplesArray;
 }
 
+function maybeDelay(delayParam) {
+  if (delayParam) {
+    return `&pipe=trickle(d${delayParam / 1000})`
+  } else {
+    return '';
+  }
+}
+
 function createIgOverrides(nameAndBid, fragments, originOverride = null) {
   let originToUse = originOverride ? originOverride : MAIN_ORIGIN;
   return {
     name: nameAndBid,
     biddingLogicURL: createBiddingScriptURL({
-      origin: originToUse,
-      generateBid: enableDebugMode + fragments.generateBidFragment,
-      reportWin: enableDebugMode + fragments.reportWinFragment,
-      bid: nameAndBid
-    })
+                       origin: originToUse,
+                       generateBid:
+                           enableDebugMode + fragments.generateBidFragment,
+                       reportWin: enableDebugMode + fragments.reportWinFragment,
+                       bid: nameAndBid,
+                       allowComponentAuction: true
+                     }) +
+        maybeDelay(fragments.bidderDelayFactor ?
+                       fragments.bidderDelayFactor * nameAndBid :
+                       null)
   };
 }
 
 function expectAndConsume(samplesDict, bucket, val) {
   assert_equals(samplesDict.get(bucket), val, 'sample in bucket ' + bucket);
   samplesDict.delete(bucket);
+}
+
+function createAuctionConfigOverrides(
+    uuid, fragments, moreAuctionConfigOverrides = {}) {
+  return {
+    decisionLogicURL:
+        createDecisionScriptURL(uuid, {
+          origin: MAIN_ORIGIN,
+          scoreAd: enableDebugMode + fragments.scoreAdFragment,
+          reportResult: enableDebugMode + fragments.reportResultFragment
+        }) +
+        maybeDelay(fragments.sellerDelay),
+    seller: MAIN_ORIGIN,
+    interestGroupBuyers: [MAIN_ORIGIN],
+    ...moreAuctionConfigOverrides
+  };
 }
 
 // Runs an auction with numGroups interest groups, "1" and "2", etc., with
@@ -152,16 +181,8 @@ async function runPrivateAggregationTest(
         test, uuid, MAIN_ORIGIN, createIgOverrides(i, fragments));
   }
 
-  const auctionConfigOverrides = {
-    decisionLogicURL: createDecisionScriptURL(uuid, {
-      origin: MAIN_ORIGIN,
-      scoreAd: enableDebugMode + fragments.scoreAdFragment,
-      reportResult: enableDebugMode + fragments.reportResultFragment
-    }),
-    seller: MAIN_ORIGIN,
-    interestGroupBuyers: [MAIN_ORIGIN],
-    ...moreAuctionConfigOverrides
-  };
+  const auctionConfigOverrides =
+      createAuctionConfigOverrides(uuid, fragments, moreAuctionConfigOverrides);
 
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfigOverrides);
   return await getDebugSamples(DEBUG_PATH);
@@ -380,7 +401,96 @@ subsetTest(promise_test, async test => {
   ]);
 }, 'no reserved.once in reporting');
 
-// TODO: average-code-fetch-time
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await resetReports(ALT_ORIGIN + DEBUG_PATH);
+  await resetReports(ALT_ORIGIN + MAIN_PATH);
+
+  const fragments = {
+    generateBidFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.once', {
+              bucket: {baseValue: 'average-code-fetch-time', offset: 0n},
+              value: 1});`,
+
+    reportWinFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.always', {
+              bucket: {baseValue: 'average-code-fetch-time', offset: 100000n},
+              value: 1});`,
+
+    bidderDelayFactor: 200,
+
+    scoreAdFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.once', {
+              bucket: {baseValue: 'average-code-fetch-time', offset: 200000n},
+              value: 1});`,
+
+    reportResultFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.always', {
+              bucket: {baseValue: 'average-code-fetch-time', offset: 300000n},
+              value: 1});`,
+
+    sellerDelay: 500
+  };
+
+  const altFragments = {
+    generateBidFragment: fragments.generateBidFragment,
+    bidderDelayFactor: 1000
+  };
+
+  await joinCrossOriginInterestGroup(
+      test, uuid, ALT_ORIGIN, createIgOverrides('1', altFragments, ALT_ORIGIN));
+  const auctionConfigOverrides = {
+    interestGroupBuyers: [MAIN_ORIGIN, ALT_ORIGIN]
+  };
+
+  const samples = await runPrivateAggregationTest(
+      test, uuid, fragments, 3, auctionConfigOverrides);
+
+  let generateBidVal = -1;
+  let reportWinVal = -1;
+  let scoreAdVal = -1;
+  let reportResultVal = -1;
+  assert_equals(samples.size, 4, 'main domain samples');
+
+  for (let [bucket, val] of samples.entries()) {
+    assert_equals(val, 1n, 'bucket val');
+    if (0n <= bucket && bucket < 100000n) {
+      generateBidVal = Number(bucket - 0n);
+    } else if (100000n <= bucket && bucket < 200000n) {
+      reportWinVal = Number(bucket - 100000n);
+    } else if (200000n <= bucket && bucket < 300000n) {
+      scoreAdVal = Number(bucket - 200000n);
+    } else if (300000n <= bucket && bucket < 400000n) {
+      reportResultVal = Number(bucket - 300000n);
+    } else {
+      assert_unreached('Unexpected bucket number ' + bucket);
+    }
+  }
+
+  assert_greater_than_equal(generateBidVal, 400, 'generateBid code fetch time');
+  assert_greater_than_equal(reportWinVal, 600, 'reportWin code fetch time');
+  assert_greater_than_equal(scoreAdVal, 500, 'scoreAd code fetch time');
+  assert_greater_than_equal(
+      reportResultVal, 500, 'reportResult code fetch time');
+
+  let otherSamples = await getDebugSamples(ALT_ORIGIN + DEBUG_PATH);
+  assert_equals(otherSamples.size, 1, 'alt domain samples');
+  let otherGenerateBidVal = -1;
+  for (let [bucket, val] of otherSamples.entries()) {
+    assert_equals(val, 1n, 'other bucket val');
+    if (0n <= bucket && bucket < 100000n) {
+      otherGenerateBidVal = Number(bucket - 0n);
+    } else {
+      assert_unreached('Unexpected other bucket number ' + bucket);
+    }
+  }
+  assert_greater_than_equal(
+      otherGenerateBidVal, 1000, 'other generateBid code fetch time');
+}, 'average-code-fetch-time');
 
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
@@ -434,6 +544,7 @@ subsetTest(promise_test, async test => {
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   await resetReports(ALT_ORIGIN + DEBUG_PATH);
+  await resetReports(ALT_ORIGIN + MAIN_PATH);
 
   const ADDITIONAL_BID_PUBLIC_KEY =
       '11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=';
@@ -480,8 +591,7 @@ subsetTest(promise_test, async test => {
   };
 
   const samples = await runPrivateAggregationTest(
-      test, uuid, fragments, 5, auctionConfigOverrides,
-      /*waitFor=*/ 2);
+      test, uuid, fragments, 5, auctionConfigOverrides);
 
   let expected = [
     '5 => 1',    // 5 in generateBid  (base bucket 0)
@@ -875,5 +985,81 @@ subsetTest(promise_test, async test => {
   await testStorageUsageMetric(test, 'ig-storage-used', 50000);
 }, 'ig-storage-used');
 
-// TODO: test reserved.once in a component auction; do a bit more coverage of
-// different actors.
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await resetReports(MAIN_ORIGIN + MAIN_PATH);
+  await resetReports(MAIN_ORIGIN + DEBUG_PATH);
+  await resetReports(ALT_ORIGIN + MAIN_PATH);
+  await resetReports(ALT_ORIGIN + DEBUG_PATH);
+
+  const fragments = {
+    generateBidFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.once',
+          { bucket: 1n, value: 2 });`,
+
+    reportWinFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.always',
+          { bucket: 2n, value: 3 });`,
+
+    scoreAdFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.once',
+          { bucket: 3n, value: 4 });`,
+
+    reportResultFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.always',
+          { bucket: 4n, value: 5 });`
+  };
+
+  // 4 IGs in main origin, 2 in alt origin.
+  for (let i = 1; i <= 4; ++i) {
+    await joinCrossOriginInterestGroup(
+        test, uuid, MAIN_ORIGIN, createIgOverrides(i, fragments));
+  }
+
+  for (let i = 1; i <= 2; ++i) {
+    await joinCrossOriginInterestGroup(
+        test, uuid, ALT_ORIGIN, createIgOverrides(i, fragments, ALT_ORIGIN));
+  }
+
+  // Both groups in component auction 1, only alt group in component auction 2.
+  const subAuction1 = createAuctionConfigOverrides(
+      uuid, fragments, {interestGroupBuyers: [MAIN_ORIGIN, ALT_ORIGIN]});
+  const subAuction2 = createAuctionConfigOverrides(
+      uuid, fragments, {interestGroupBuyers: [ALT_ORIGIN]});
+
+  const topFragments = {
+    scoreAdFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.once',
+          { bucket: 5n, value: 6 });`,
+
+    reportResultFragment: `
+      privateAggregation.contributeToHistogramOnEvent(
+          'reserved.always',
+          { bucket: 6n, value: 7 });`
+  };
+  const mainAuction = createAuctionConfigOverrides(
+      uuid, topFragments,
+      {interestGroupBuyers: [], componentAuctions: [subAuction1, subAuction2]});
+
+  await runBasicFledgeAuctionAndNavigate(test, uuid, mainAuction);
+  let samples = await getDebugSamples(DEBUG_PATH);
+  let otherSamples = await getDebugSamples(ALT_ORIGIN + DEBUG_PATH);
+  let expected = [
+    '1 => 2',  // generateBid only in first component, so happens 1.
+    '2 => 3',  // reportWin once.
+    '3 => 8',  // Once per each component auction (out of total 6 scored).
+    '4 => 5',  // component reportResult once.
+    '5 => 6',  // top-level scoreAd once.
+    '6 => 7',  // top-level reportResult.
+  ].sort();
+  let otherExpected = [
+    '1 => 4',  // generateBid in each components, so twice, out of 4 executions.
+  ].sort();
+  assert_array_equals(stringifySamples(samples), expected);
+  assert_array_equals(stringifySamples(otherSamples), otherExpected);
+}, 'report.once in a component auction');
