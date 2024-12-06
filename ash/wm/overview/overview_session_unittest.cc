@@ -9433,8 +9433,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
-  // Maximize `window3` as `window1` and `window3` may form a Snap Group with
-  // `kSnapGroup` enabled.
+  // Maximize `window3` as `window1` and `window3` may form a Snap Group.
   WindowState::Get(window3.get())->Maximize();
 
   // 4. Test if one window is snapped, the other windows are showing in
