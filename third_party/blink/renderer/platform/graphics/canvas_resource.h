@@ -447,7 +447,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   static scoped_refptr<ExternalCanvasResource> Create(
       scoped_refptr<gpu::ClientSharedImage> client_si,
       const viz::TransferableResource& transferable_resource,
-      bool is_overlay_candidate,
       viz::ReleaseCallback release_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>);
@@ -481,7 +480,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
 
   ExternalCanvasResource(scoped_refptr<gpu::ClientSharedImage> client_si,
                          const viz::TransferableResource& transferable_resource,
-                         bool is_overlay_candidate,
                          viz::ReleaseCallback out_callback,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                          base::WeakPtr<CanvasResourceProvider>);
