@@ -2872,6 +2872,44 @@ TEST_P(AnimationCompositorAnimationsTest, EmptyKeyframes) {
   EXPECT_FALSE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
+TEST_P(AnimationCompositorAnimationsTest, StaticPropertiesPlusStartDelay) {
+  ClearUseCounters();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes fade_in {
+        0% { opacity: 0; color: red; transform: none; }
+        100% { opacity: 1; color: red; transform: none; }
+      }
+      #target {
+        width: 100px;
+        height: 100px;
+        animation: fade_in 1s linear;
+        animation-delay: 0.5s;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
+
+  UpdateAllLifecyclePhasesForTest();
+  KeyframeEffect* keyframe_effect =
+      DynamicTo<KeyframeEffect>(animation->effect());
+  EXPECT_TRUE(target->ComputedStyleRef().HasCurrentOpacityAnimation());
+  EXPECT_TRUE(target->ComputedStyleRef().HasCurrentTransformAnimation());
+  EXPECT_TRUE(keyframe_effect->HasActiveAnimationsOnCompositor(
+      PropertyHandle(GetCSSPropertyOpacity())));
+  EXPECT_FALSE(keyframe_effect->HasActiveAnimationsOnCompositor(
+      PropertyHandle(GetCSSPropertyTransform())));
+}
+
 TEST_P(AnimationCompositorAnimationsTest,
        WebKitPrefixedPlusUnprefixedProperty) {
   SetBodyInnerHTML(R"HTML(

@@ -449,7 +449,8 @@ bool KeyframeEffect::HasActiveAnimationsOnCompositor() const {
 
 bool KeyframeEffect::HasActiveAnimationsOnCompositor(
     const PropertyHandle& property) const {
-  return HasActiveAnimationsOnCompositor() && Affects(property);
+  return HasActiveAnimationsOnCompositor() &&
+         model_->EnsureDynamicProperties().Contains(property);
 }
 
 bool KeyframeEffect::CancelAnimationOnCompositor(
