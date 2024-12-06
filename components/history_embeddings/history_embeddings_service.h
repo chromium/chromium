@@ -252,8 +252,7 @@ class HistoryEmbeddingsService : public KeyedService,
                              os_crypt_async::Encryptor encryptor);
 
     // Called on the worker sequence to persist passages and embeddings.
-    void ProcessAndStorePassages(UrlData url_passages,
-                                 std::vector<Embedding> passages_embeddings);
+    void ProcessAndStorePassages(UrlData url_data);
 
     // Runs search on worker sequence.
     std::vector<ScoredUrlRow> Search(

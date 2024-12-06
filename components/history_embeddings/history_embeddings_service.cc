@@ -675,19 +675,13 @@ void HistoryEmbeddingsService::Storage::SetEmbedderMetadata(
 }
 
 void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
-    UrlData url_passages,
-    std::vector<Embedding> embeddings) {
-  UrlData url_data(url_passages.url_id, url_passages.visit_id,
-                   url_passages.visit_time);
-  // Construct embeddings, including some information from passages.
-  url_data.embeddings = std::move(embeddings);
-  CHECK_EQ(url_passages.passages.passages_size(),
+    UrlData url_data) {
+  CHECK_EQ(url_data.passages.passages_size(),
            static_cast<int>(url_data.embeddings.size()));
-  for (int i = 0; i < url_passages.passages.passages_size(); i++) {
+  for (int i = 0; i < url_data.passages.passages_size(); i++) {
     url_data.embeddings[i].SetPassageWordCount(
-        CountWords(url_passages.passages.passages(i)));
+        CountWords(url_data.passages.passages(i)));
   }
-  url_data.passages = std::move(url_passages.passages);
 
   // Store all embeddings and passages.
   vector_database.AddUrlData(std::move(url_data));
@@ -862,8 +856,9 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
   CHECK_EQ(embeddings_index,
            static_cast<size_t>(url_passages.passages.passages_size()));
 
+  url_passages.embeddings = std::move(embeddings);
   storage_.AsyncCall(&Storage::ProcessAndStorePassages)
-      .WithArgs(url_passages, std::move(embeddings))
+      .WithArgs(url_passages)
       .Then(base::BindOnce(passages_stored_callback_for_tests_, url_passages));
 }
 
