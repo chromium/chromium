@@ -620,7 +620,6 @@ StartupProfileMode StartupProfileModeFromReason(
       return StartupProfileMode::kProfilePicker;
 
     case StartupProfileModeReason::kGuestModeRequested:
-    case StartupProfileModeReason::kGuestSessionLacros:
     case StartupProfileModeReason::kProfileDirSwitch:
     case StartupProfileModeReason::kProfileEmailSwitch:
     case StartupProfileModeReason::kIgnoreProfilePicker:
@@ -635,7 +634,6 @@ StartupProfileMode StartupProfileModeFromReason(
     case StartupProfileModeReason::kNotificationLaunchIdWin1:
     case StartupProfileModeReason::kNotificationLaunchIdWin2:
     case StartupProfileModeReason::kPickerDisabledByPolicy:
-    case StartupProfileModeReason::kProfilesDisabledLacros:
     case StartupProfileModeReason::kSingleProfile:
     case StartupProfileModeReason::kInactiveProfiles:
     case StartupProfileModeReason::kUserOptedOut:

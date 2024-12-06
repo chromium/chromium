@@ -59,7 +59,7 @@ enum class StartupProfileModeReason {
 
   // Cases when the profile picker is not shown:
   kGuestModeRequested = 10,
-  kGuestSessionLacros = 11,
+  // Deleted kGuestSessionLacros = 11,
   kProfileDirSwitch = 12,
   kProfileEmailSwitch = 13,
   kIgnoreProfilePicker = 14,
@@ -76,7 +76,7 @@ enum class StartupProfileModeReason {
   kNotificationLaunchIdWin1 = 23,
   kNotificationLaunchIdWin2 = 24,
   kPickerDisabledByPolicy = 25,
-  kProfilesDisabledLacros = 26,
+  // Deleted kProfilesDisabledLacros = 26
   kSingleProfile = 27,
   kInactiveProfiles = 28,
   kUserOptedOut = 29,
