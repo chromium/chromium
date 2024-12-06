@@ -140,6 +140,23 @@
   inset-inline-end: -9px;
 }
 
+#headerV2 #avatarIntercepted .work-badge {
+  background-color: var(--intercepted-profile-color);
+}
+
+#headerV2 #avatarPrimary .work-badge {
+  background-color: var(--primary-profile-color);
+}
+
+#headerV2 #avatarIntercepted .work-badge > cr-icon {
+  color: var(--intercepted-profile-avatar-badge-color);
+}
+
+#headerV2 #avatarPrimary .work-badge > cr-icon {
+  color: var(--primary-profile-avatar-badge-color);
+
+}
+
 #headerV2 .work-badge > cr-icon {
   --work-icon-size: 12px;
 }

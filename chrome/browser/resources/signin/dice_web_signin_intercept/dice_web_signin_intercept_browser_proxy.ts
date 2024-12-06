@@ -29,6 +29,8 @@ export interface InterceptionParameters {
   primaryAccount: AccountInfo;
   useV2Design: boolean;
   showManagedDisclaimer: boolean;
+  interceptedProfileBadgeColor: string;
+  primaryProfileBadgeColor: string;
 }
 
 export interface ChromeSigninInterceptionParameters {
