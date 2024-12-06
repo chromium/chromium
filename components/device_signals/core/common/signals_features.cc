@@ -50,7 +50,7 @@ bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 // Enables the triggering of device signals consent dialog when conditions met
 // This feature also requires UnmanagedDeviceSignalsConsentFlowEnabled policy to
 // be enabled
@@ -62,7 +62,7 @@ bool IsConsentDialogEnabled() {
   return base::FeatureList::IsEnabled(kDeviceSignalsConsentDialog);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
+        // BUILDFLAG(IS_CHROMEOS)
 
 BASE_FEATURE(kNewEvSignalsUnaffiliatedEnabled,
              "NewEvSignalsUnaffiliatedEnabled",

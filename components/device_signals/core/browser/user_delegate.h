@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_types.h"
 
 namespace device_signals {
@@ -19,11 +19,11 @@ class UserDelegate {
  public:
   virtual ~UserDelegate() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns true if the browser is currently executing in the context of the
   // ChromeOS sign-in screen.
   virtual bool IsSigninContext() const = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns true if the current browser user is managed by an organization that
   // is affiliated with the organization managing the device.

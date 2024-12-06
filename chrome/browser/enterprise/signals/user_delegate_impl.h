@@ -32,9 +32,9 @@ class UserDelegateImpl : public device_signals::UserDelegate {
   UserDelegateImpl& operator=(const UserDelegateImpl&) = delete;
 
   // UserDelegate:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsSigninContext() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   bool IsAffiliated() const override;
   bool IsManagedUser() const override;
   bool IsSameUser(const std::string& gaia_id) const override;
