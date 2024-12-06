@@ -17,7 +17,9 @@
 
 #if DCHECK_IS_ON()
 #include <array>
+#include <memory>
 
+#include "base/functional/function_ref.h"
 #include "base/synchronization/lock_subtle.h"
 #include "base/threading/platform_thread.h"
 
@@ -42,6 +44,12 @@ thread_local std::array<uintptr_t, kHeldLocksCapacity>
 thread_local size_t g_num_tracked_locks_held_by_thread = 0;
 
 }  // namespace
+
+Lock::Lock() = default;
+
+Lock::Lock(FunctionRef<void()> check_invariants)
+    : check_invariants_(
+          std::make_unique<FunctionRef<void()>>(check_invariants)) {}
 
 Lock::~Lock() {
   DCHECK(owning_thread_ref_.is_null());
@@ -84,12 +92,18 @@ void Lock::AssertNotHeld() const {
 
 void Lock::CheckHeldAndUnmark() {
   DCHECK_EQ(owning_thread_ref_, PlatformThread::CurrentRef());
+  if (check_invariants_) {
+    (*check_invariants_)();
+  }
   owning_thread_ref_ = PlatformThreadRef();
 }
 
 void Lock::CheckUnheldAndMark() {
   DCHECK(owning_thread_ref_.is_null());
   owning_thread_ref_ = PlatformThread::CurrentRef();
+  if (check_invariants_) {
+    (*check_invariants_)();
+  }
 }
 
 void Lock::AddToLocksHeldOnCurrentThread() {
