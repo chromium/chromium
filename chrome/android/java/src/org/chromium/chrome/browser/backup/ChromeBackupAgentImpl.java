@@ -28,7 +28,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -446,9 +445,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         }
 
         if (SigninFeatureMap.isEnabled(
-                        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+                SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)) {
             final CountDownLatch accountsLatch = new CountDownLatch(1);
             PostTask.runSynchronously(
                     TaskTraits.UI_DEFAULT,
@@ -514,10 +511,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                             syncAccountInfo != null
                                     && SigninFeatureMap.isEnabled(
                                             SigninFeatures
-                                                    .RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)
-                                    && ChromeFeatureList.isEnabled(
-                                            ChromeFeatureList
-                                                    .REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
+                                                    .RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP);
                     if (shouldRestoreSelectedTypesAsAccountSettings) {
                         final String gaiaID =
                                 syncAccountInfo != null
@@ -555,23 +549,8 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                         "Recorded signed in account differs from syncing account");
             }
 
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                editor.apply();
-                signInAndWaitForResult(syncAccountInfo);
-            } else {
-                // This will sign in the user on first run to the account in
-                // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME if any.
-                editor.putString(
-                        ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME,
-                        restoredSyncUserEmail);
-                editor.apply();
-
-                // The silent first run will change things, so there is no point in trying to
-                // prevent
-                // additional backups at this stage. Don't write anything to |newState|.
-                setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
-            }
+            editor.apply();
+            signInAndWaitForResult(syncAccountInfo);
         } else {
             editor.apply();
 
