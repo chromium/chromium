@@ -971,12 +971,13 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
 }
 
 void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
-  float dip_scale = chrome_client_->GetScreenInfo(*DeprecatedLocalMainFrame())
-                        .device_scale_factor;
-  gfx::InsetsF scaled_max_safe_area_insets =
-      ScaleInsets(gfx::InsetsF(max_safe_area), dip_scale);
-
+  // Update |scaled_max_safe_area_insets_| first.
   if (setter->IsMainFrame()) {
+    float dip_scale =
+        chrome_client_->GetScreenInfo(*setter).device_scale_factor;
+    gfx::InsetsF scaled_max_safe_area_insets =
+        ScaleInsets(gfx::InsetsF(max_safe_area), dip_scale);
+
     if (scaled_max_safe_area_insets_ != scaled_max_safe_area_insets) {
       scaled_max_safe_area_insets_ = scaled_max_safe_area_insets;
 
