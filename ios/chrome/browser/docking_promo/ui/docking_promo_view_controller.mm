@@ -34,6 +34,12 @@ NSString* const kEditHomeScreenKeypath = @"edit_home_screen";
 - (void)viewDidLoad {
   self.animationName = kAnimationName;
   self.animationNameDarkMode = kAnimationNameDarkMode;
+  self.animationBackgroundColor = [UIColor
+      colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
+        return (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark)
+                   ? [UIColor colorNamed:kBackgroundColor]
+                   : [UIColor colorNamed:kGrey100Color];
+      }];
   self.titleString = l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_TITLE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE);
