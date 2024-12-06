@@ -43,6 +43,10 @@ BASE_FEATURE(kPdfPortfolio, "PdfPortfolio", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPdfSearchify, "PdfSearchify", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPdfSearchifySave,
+             "PdfSearchifySave",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPdfUseShowSaveFilePicker,
              "PdfUseShowSaveFilePicker",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -67,6 +71,11 @@ void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {
 bool IsOopifPdfEnabled() {
   return g_is_oopif_pdf_policy_enabled &&
          base::FeatureList::IsEnabled(kPdfOopif);
+}
+
+bool IsPdfSearchifySaveEnabled() {
+  return base::FeatureList::IsEnabled(kPdfSearchify) &&
+         base::FeatureList::IsEnabled(kPdfSearchifySave);
 }
 
 }  // namespace chrome_pdf::features

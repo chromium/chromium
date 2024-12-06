@@ -264,6 +264,8 @@ void AddAdditionalData(bool enable_printing,
   dict->Set("pdfUseShowSaveFilePicker",
             base::FeatureList::IsEnabled(
                 chrome_pdf::features::kPdfUseShowSaveFilePicker));
+  dict->Set("pdfSearchifySaveEnabled",
+            chrome_pdf::features::IsPdfSearchifySaveEnabled());
 }
 
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {
