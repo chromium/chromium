@@ -121,7 +121,7 @@ class WPTServe(server_base.ServerBase):
                                                       'wptserve_stdout.txt')
 
         expiration_date = datetime.date(2025, 1, 4)
-        if datetime.date.today() > expiration_date - datetime.timedelta(30):
+        if datetime.date.today() > expiration_date - datetime.timedelta(20):
             _log.error(
                 'Pre-generated keys and certificates are going to be expired at %s.'
                 ' Please re-generate them by following steps in %s/README.chromium.',
