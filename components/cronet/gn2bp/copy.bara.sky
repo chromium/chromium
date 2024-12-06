@@ -54,6 +54,8 @@ cronet_origin_files = glob(
         # Note: Only used for tests.
         "testing/**",
         "url/**",
+        # https://crrev.com/c/5800287
+        "components/network_time/**",
     ],
     exclude = common_excludes + [
         # Per aosp/2367109
