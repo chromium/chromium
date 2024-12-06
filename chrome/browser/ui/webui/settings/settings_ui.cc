@@ -571,8 +571,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
   // AI
-  const bool ai_settings_refresh_enabled = base::FeatureList::IsEnabled(
-      optimization_guide::features::kAiSettingsPageRefresh);
+  const bool ai_settings_refresh_enabled =
+      optimization_guide::features::IsAiSettingsPageRefreshEnabled();
 
   if (ai_settings_refresh_enabled) {
     const bool show_ai_settings_for_testing =
@@ -633,6 +633,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean("enableAiSettingsPageRefresh",
                           ai_settings_refresh_enabled);
+  html_source->AddBoolean(
+      "enableAiSettingsInPrivacyGuide",
+      optimization_guide::features::IsPrivacyGuideAiSettingsEnabled());
 
   TryShowHatsSurveyWithTimeout();
 }

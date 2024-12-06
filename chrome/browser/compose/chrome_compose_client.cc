@@ -802,8 +802,7 @@ void ChromeComposeClient::OpenProactiveNudgeSettings() {
   }
 
   chrome::ShowSettingsSubPage(
-      browser, base::FeatureList::IsEnabled(
-                   optimization_guide::features::kAiSettingsPageRefresh)
+      browser, optimization_guide::features::IsAiSettingsPageRefreshEnabled()
                    ? chrome::kAiHelpMeWriteSubpage
                    : chrome::kOfferWritingHelpSubpage);
 }

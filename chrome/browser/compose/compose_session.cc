@@ -923,8 +923,7 @@ void ComposeSession::OpenBugReportingLink() {
 }
 
 void ComposeSession::OpenComposeLearnMorePage() {
-  if (base::FeatureList::IsEnabled(
-          optimization_guide::features::kAiSettingsPageRefresh) &&
+  if (optimization_guide::features::IsAiSettingsPageRefreshEnabled() &&
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeProactiveNudge)) {
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);

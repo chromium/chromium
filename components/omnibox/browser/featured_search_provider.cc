@@ -470,10 +470,10 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsSettingsPromoIphMatch() {
                         u" ";
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT);
-  GURL link_url = GURL(base::FeatureList::IsEnabled(
-                           optimization_guide::features::kAiSettingsPageRefresh)
-                           ? "chrome://settings/ai/historySearch"
-                           : "chrome://settings/historySearch");
+  GURL link_url =
+      GURL(optimization_guide::features::IsAiSettingsPageRefreshEnabled()
+               ? "chrome://settings/ai/historySearch"
+               : "chrome://settings/historySearch");
   AddIPHMatch(IphType::kHistoryEmbeddingsSettingsPromo, text, u"", link_text,
               link_url, true);
 }
@@ -493,10 +493,10 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsDisclaimerIphMatch() {
       u" ";
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT);
-  GURL link_url = GURL(base::FeatureList::IsEnabled(
-                           optimization_guide::features::kAiSettingsPageRefresh)
-                           ? "chrome://settings/ai/historySearch"
-                           : "chrome://settings/historySearch");
+  GURL link_url =
+      GURL(optimization_guide::features::IsAiSettingsPageRefreshEnabled()
+               ? "chrome://settings/ai/historySearch"
+               : "chrome://settings/historySearch");
   AddIPHMatch(IphType::kHistoryEmbeddingsDisclaimer, text, u"", link_text,
               link_url, false);
 }

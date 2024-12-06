@@ -81,11 +81,11 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
                      history_embeddings::GetFeatureParameters()
                          .search_query_minimum_word_count);
-  source->AddString("historyEmbeddingsSettingsUrl",
-                    base::FeatureList::IsEnabled(
-                        optimization_guide::features::kAiSettingsPageRefresh)
-                        ? chrome::kHistorySearchV2SettingURL
-                        : chrome::kHistorySearchSettingURL);
+  source->AddString(
+      "historyEmbeddingsSettingsUrl",
+      optimization_guide::features::IsAiSettingsPageRefreshEnabled()
+          ? chrome::kHistorySearchV2SettingURL
+          : chrome::kHistorySearchSettingURL);
 }
 
 }  // namespace history_embeddings

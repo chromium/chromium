@@ -193,6 +193,11 @@ BASE_FEATURE(kAiSettingsPageRefresh,
 const base::FeatureParam<bool> kShowAiSettingsForTesting{
     &kAiSettingsPageRefresh, "show_ai_settings_for_testing", false};
 
+// Enable AI settings page integration with Privacy Guide.
+BASE_FEATURE(kPrivacyGuideAiSettings,
+             "PrivacyGuideAiSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
     &kOptimizationGuideOnDeviceModel,
     "compatible_on_device_performance_classes", "5,6"};
@@ -873,6 +878,15 @@ int GetOnDeviceModelValidationAttemptCount() {
 
 bool ShouldEnableOptimizationGuideIconView() {
   return base::FeatureList::IsEnabled(kOptimizationGuideIconView);
+}
+
+bool IsAiSettingsPageRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kAiSettingsPageRefresh) ||
+         base::FeatureList::IsEnabled(kPrivacyGuideAiSettings);
+}
+
+bool IsPrivacyGuideAiSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kPrivacyGuideAiSettings);
 }
 
 }  // namespace features
