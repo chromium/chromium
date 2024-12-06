@@ -1,6 +1,7 @@
 [
     RuntimeEnabled=TranslationAPI,
-    Exposed=(Window)
+    Exposed=(Window,Worker),
+    SecureContext
 ]
 interface AITranslatorCapabilities {
   readonly attribute AICapabilityAvailability available;

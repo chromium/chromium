@@ -1800,6 +1800,12 @@ void ContentBrowserClient::BindAIManager(
   EchoAIManagerImpl::Create(std::move(receiver));
 }
 
+void ContentBrowserClient::BindTranslationManager(
+    BrowserContext* browser_context,
+    base::SupportsUserData* context_user_data,
+    const url::Origin& origin,
+    mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ContentBrowserClient::QueryInstalledWebAppsByManifestId(
     const GURL& frame_url,

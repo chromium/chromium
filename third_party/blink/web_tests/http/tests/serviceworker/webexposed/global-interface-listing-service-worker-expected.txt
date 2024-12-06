@@ -4,6 +4,7 @@ interface AI
     getter languageModel
     getter rewriter
     getter summarizer
+    getter translator
     getter writer
     method constructor
 interface AICreateMonitor : EventTarget
@@ -80,6 +81,16 @@ interface AITranslator
     method constructor
     method destroy
     method translate
+interface AITranslatorCapabilities
+    attribute @@toStringTag
+    getter available
+    method constructor
+    method languagePairAvailable
+interface AITranslatorFactory
+    attribute @@toStringTag
+    method capabilities
+    method constructor
+    method create
 interface AIWriter
     attribute @@toStringTag
     getter sharedContext
@@ -1205,6 +1216,11 @@ interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
+interface LanguageTranslator
+    attribute @@toStringTag
+    method constructor
+    method destroy
+    method translate
 interface Lock
     attribute @@toStringTag
     getter mode
@@ -2046,7 +2062,9 @@ interface TransformStreamDefaultController
     method terminate
 interface Translation
     attribute @@toStringTag
+    method canTranslate
     method constructor
+    method createTranslator
 interface TrustedHTML
     static method fromLiteral
     attribute @@toStringTag

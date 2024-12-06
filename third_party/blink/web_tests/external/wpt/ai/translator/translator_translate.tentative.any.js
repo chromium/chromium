@@ -1,4 +1,5 @@
 // META: title=Translate from English to Japanese
+// META: global=window,worker
 // META: timeout=long
 //
 // Setting `timeout=long` as this test may require downloading the translation

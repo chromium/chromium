@@ -15,7 +15,6 @@ enum TranslationAvailability {
 interface Translation {
   [
     RuntimeEnabled=TranslationAPI,
-    Exposed=Window,
     Measure,
     CallWith=ScriptState,
     RaisesException
@@ -25,7 +24,6 @@ interface Translation {
   );
   [
     RuntimeEnabled=TranslationAPI,
-    Exposed=Window,
     Measure,
     CallWith=ScriptState,
     RaisesException

@@ -486,11 +486,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-#include "chrome/browser/on_device_translation/translation_manager_impl.h"
-#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/ui/webui/glic/glic_ui.h"
@@ -903,13 +898,6 @@ void PopulateChromeFrameBinders(
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   map->Add<blink::mojom::WebPrintingService>(
       base::BindRepeating(&printing::CreateWebPrintingServiceForFrame));
-#endif
-
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-  if (base::FeatureList::IsEnabled(blink::features::kTranslationAPI)) {
-    map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
-        &on_device_translation::TranslationManagerImpl::Create));
-  }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

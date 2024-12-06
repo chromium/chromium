@@ -8,8 +8,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,27 +24,32 @@ namespace on_device_translation {
 class OnDeviceTranslationServiceController;
 
 // The browser-side implementation of `blink::mojom::TranslationManager`, it
-// should be destroyed together with the associated RFH or when the RFH is used
-// for a cross-document navigation.
-class TranslationManagerImpl
-    : public content::DocumentUserData<TranslationManagerImpl>,
-      public blink::mojom::TranslationManager {
+// is owned by a SupportsUserData (DocumentAssociatedData for frames,
+// DedicatedWorkerHost, SharedWorkerHost and ServiceWorkerHost).
+class TranslationManagerImpl : public base::SupportsUserData::Data,
+                               public blink::mojom::TranslationManager {
  public:
+  TranslationManagerImpl(base::PassKey<TranslationManagerImpl>,
+                         content::BrowserContext* browser_context,
+                         const url::Origin& origin);
   TranslationManagerImpl(const TranslationManagerImpl&) = delete;
   TranslationManagerImpl& operator=(const TranslationManagerImpl&) = delete;
 
   ~TranslationManagerImpl() override;
 
-  static void Create(
-      content::RenderFrameHost* render_frame_host,
+  static void Bind(
+      content::BrowserContext* browser_context,
+      base::SupportsUserData* context_user_data,
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::TranslationManager> receiver);
 
  private:
   friend class TranslationManagerImplTest;
-  friend class DocumentUserData<TranslationManagerImpl>;
-  DOCUMENT_USER_DATA_KEY_DECL();
 
-  explicit TranslationManagerImpl(content::RenderFrameHost* rfh);
+  static TranslationManagerImpl* GetOrCreate(
+      content::BrowserContext* browser_context,
+      base::SupportsUserData* context_user_data,
+      const url::Origin& origin);
 
   // `blink::mojom::TranslationManager` implementation.
   void CanCreateTranslator(blink::mojom::TranslatorLanguageCodePtr source_lang,
