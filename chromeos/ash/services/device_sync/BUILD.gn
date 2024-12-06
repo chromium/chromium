@@ -35,8 +35,6 @@ static_library("device_sync") {
     "cryptauth_device_activity_getter.h",
     "cryptauth_device_activity_getter_impl.cc",
     "cryptauth_device_activity_getter_impl.h",
-    "cryptauth_device_manager.cc",
-    "cryptauth_device_manager.h",
     "cryptauth_device_notifier.h",
     "cryptauth_device_notifier_impl.cc",
     "cryptauth_device_notifier_impl.h",

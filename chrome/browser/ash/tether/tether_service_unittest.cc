@@ -36,7 +36,6 @@
 #include "chromeos/ash/components/tether/fake_tether_host_fetcher.h"
 #include "chromeos/ash/components/tether/tether_component_impl.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher_impl.h"
-#include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/ash/services/device_sync/fake_cryptauth_enrollment_manager.h"
 #include "chromeos/ash/services/device_sync/fake_remote_device_provider.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client_impl.h"

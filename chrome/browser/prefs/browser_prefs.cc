@@ -1149,6 +1149,17 @@ inline constexpr char kDeleteTimePeriodV2[] =
 inline constexpr char kDeleteTimePeriodV2Basic[] =
     "browser.clear_data.time_period_v2_basic";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 12/2024
+const char kCryptAuthDeviceSyncIsRecoveringFromFailure[] =
+    "cryptauth.device_sync.is_recovering_from_failure";
+const char kCryptAuthDeviceSyncLastSyncTimeSeconds[] =
+    "cryptauth.device_sync.last_device_sync_time_seconds";
+const char kCryptAuthDeviceSyncReason[] = "cryptauth.device_sync.reason";
+const char kCryptAuthDeviceSyncUnlockKeys[] =
+    "cryptauth.device_sync.unlock_keys";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1620,6 +1631,16 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 12/2024.
   registry->RegisterIntegerPref(kDeleteTimePeriodV2, -1);
   registry->RegisterIntegerPref(kDeleteTimePeriodV2Basic, -1);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 12/2024
+  registry->RegisterDoublePref(kCryptAuthDeviceSyncLastSyncTimeSeconds, 0.0);
+  registry->RegisterBooleanPref(kCryptAuthDeviceSyncIsRecoveringFromFailure,
+                                false);
+  registry->RegisterIntegerPref(kCryptAuthDeviceSyncReason,
+                                cryptauth::INVOCATION_REASON_UNKNOWN);
+  registry->RegisterListPref(kCryptAuthDeviceSyncUnlockKeys);
+#endif
 }
 
 }  // namespace
@@ -2939,6 +2960,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 12/2024.
   profile_prefs->ClearPref(kDeleteTimePeriodV2);
   profile_prefs->ClearPref(kDeleteTimePeriodV2Basic);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 12/2024
+  profile_prefs->ClearPref(kCryptAuthDeviceSyncLastSyncTimeSeconds);
+  profile_prefs->ClearPref(kCryptAuthDeviceSyncIsRecoveringFromFailure);
+  profile_prefs->ClearPref(kCryptAuthDeviceSyncReason);
+  profile_prefs->ClearPref(kCryptAuthDeviceSyncUnlockKeys);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

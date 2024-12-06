@@ -18,7 +18,6 @@
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device.h"
-#include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/ash/services/device_sync/fake_cryptauth_v2_device_manager.h"
 #include "chromeos/ash/services/device_sync/fake_remote_device_v2_loader.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
