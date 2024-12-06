@@ -317,7 +317,7 @@ def TranslateVersionCode(version_code, is_webview=False):
                                is_next_build)
 
 
-def GenerateVersionCodes(build_number, patch_number, arch, is_next_build):
+def GenerateVersionCodes(build_number, patch_number, arch):
   """Build dict of version codes for the specified build architecture. Eg:
 
   {
@@ -341,9 +341,6 @@ def GenerateVersionCodes(build_number, patch_number, arch, is_next_build):
   Thus, this method is responsible for the final two digits of versionCode.
   """
   base_version_code = (build_number * 1000 + patch_number) * 100
-
-  if is_next_build:
-    base_version_code += _NEXT_BUILD_VERSION_CODE_DIFF
 
   mfg, bitness = _ARCH_TO_MFG_AND_BITNESS[arch]
 
@@ -375,10 +372,6 @@ def main():
   g2.add_argument('--arch',
                   choices=ARCH_CHOICES,
                   help='Set which cpu architecture the build is for.')
-  g2.add_argument('--next',
-                  action='store_true',
-                  help='Whether the current build should be a "next" '
-                  'build, which targets pre-release versions of Android.')
   args = parser.parse_args()
   if args.version_code:
     print(TranslateVersionCode(args.version_code, is_webview=args.webview))
@@ -386,7 +379,7 @@ def main():
     if not args.arch:
       parser.error('Required --arch')
     _, _, build, patch = args.version_name.split('.')
-    values = GenerateVersionCodes(int(build), int(patch), args.arch, args.next)
+    values = GenerateVersionCodes(int(build), int(patch), args.arch)
     for k, v in values.items():
       print(f'{k}={v}')
   else:
