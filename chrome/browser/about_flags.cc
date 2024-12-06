@@ -11759,6 +11759,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSignatureBasedSriDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kSRIMessageSignatureEnforcement)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"policy-promotion-banner-flag",
+     flag_descriptions::kEnablePolicyPromotionBannerName,
+     flag_descriptions::kEnablePolicyPromotionBannerDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kEnablePolicyPromotionBanner)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

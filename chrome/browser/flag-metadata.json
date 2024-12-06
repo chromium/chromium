@@ -6923,6 +6923,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "policy-promotion-banner-flag",
+    "owners": ["austinzzr@chromium.org"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "pompano",
     "owners": [
       "alanlxl@chromium.org",

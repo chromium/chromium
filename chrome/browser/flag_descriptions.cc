@@ -8174,6 +8174,13 @@ const char kEnableCertManagementV2UIWriteDescription[] =
     "chrome://certificate-manager";
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kEnablePolicyPromotionBannerName[] =
+    "Enable Policy Promotion Banner";
+const char kEnablePolicyPromotionBannerDescription[] =
+    "Enables showing the policy promotion banner on chrome://policy page.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kOverlayScrollbarsOSSettingsName[] = "Overlay Scrollbar OS Settings";
 const char kOverlayScrollbarsOSSettingsDescription[] =

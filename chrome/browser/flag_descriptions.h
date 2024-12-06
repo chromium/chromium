@@ -4792,6 +4792,11 @@ extern const char kOverlayScrollbarsOSSettingsName[];
 extern const char kOverlayScrollbarsOSSettingsDescription[];
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kEnablePolicyPromotionBannerName[];
+extern const char kEnablePolicyPromotionBannerDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kSupervisedProfileHideGuestName[];
 extern const char kSupervisedProfileHideGuestDescription[];
