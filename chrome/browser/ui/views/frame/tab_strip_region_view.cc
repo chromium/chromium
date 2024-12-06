@@ -475,15 +475,15 @@ void TabStripRegionView::Layout(PassKey) {
 
 bool TabStripRegionView::CanDrop(const OSExchangeData& data) {
   return TabDragController::IsSystemDnDSessionRunning() &&
-         data.HasCustomFormat(
-             ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
+         data.HasCustomFormat(ui::ClipboardFormatType::CustomPlatformType(
+             ui::kMimeTypeWindowDrag));
 }
 
 bool TabStripRegionView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
   format_types->insert(
-      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
+      ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag));
   return true;
 }
 

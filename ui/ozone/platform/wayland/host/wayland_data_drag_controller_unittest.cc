@@ -329,8 +329,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
   OSExchangeData data(OSExchangeDataProviderFactory::CreateProvider());
   ClipboardFormatType kCustomFormats[] = {
       ClipboardFormatType::DataTransferCustomType(),
-      ClipboardFormatType::GetType("chromium/x-bookmark-entries"),
-      ClipboardFormatType::GetType("xyz/arbitrary-custom-type")};
+      ClipboardFormatType::CustomPlatformType("chromium/x-bookmark-entries"),
+      ClipboardFormatType::CustomPlatformType("xyz/arbitrary-custom-type")};
   for (auto format : kCustomFormats) {
     data.SetPickledData(format, {});
   }

@@ -229,8 +229,8 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
   // TODO(crbug.com/40828528): This is a smoking gun code smell;
   // TabStripRegionView and Toolbar have different affordances, so they should
   // separately override the drag&drop methods.
-  if (data.HasCustomFormat(
-          ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag))) {
+  if (data.HasCustomFormat(ui::ClipboardFormatType::CustomPlatformType(
+          ui::kMimeTypeWindowDrag))) {
     return false;
   }
 

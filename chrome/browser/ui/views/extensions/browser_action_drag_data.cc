@@ -76,7 +76,7 @@ bool BrowserActionDragData::Read(const ui::OSExchangeData& data) {
 const ui::ClipboardFormatType&
 BrowserActionDragData::GetBrowserActionFormatType() {
   static base::NoDestructor<ui::ClipboardFormatType> format(
-      ui::ClipboardFormatType::GetType(kClipboardFormatString));
+      ui::ClipboardFormatType::CustomPlatformType(kClipboardFormatString));
 
   return *format;
 }

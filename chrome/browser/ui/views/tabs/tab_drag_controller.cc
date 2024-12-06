@@ -1121,7 +1121,8 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
   // happen.
   base::Pickle pickle;
   data_provider->SetPickledData(
-      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag), pickle);
+      ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag),
+      pickle);
 
   gfx::ImageSkia drag_image = GetDragImageForSystemDnD();
   data_provider->SetDragImage(

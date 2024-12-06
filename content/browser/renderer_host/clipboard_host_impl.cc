@@ -691,7 +691,7 @@ void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
 
   std::string result;
   ui::Clipboard::GetForCurrentThread()->ReadData(
-      ui::ClipboardFormatType::GetType(web_custom_format_string),
+      ui::ClipboardFormatType::CustomPlatformType(web_custom_format_string),
       data_endpoint.get(), &result);
   if (result.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
     return;

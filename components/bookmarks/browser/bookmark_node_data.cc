@@ -144,7 +144,7 @@ bool BookmarkNodeData::ClipboardContainsBookmarks() {
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-      ui::ClipboardFormatType::GetType(kClipboardFormatString),
+      ui::ClipboardFormatType::CustomPlatformType(kClipboardFormatString),
       ui::ClipboardBuffer::kCopyPaste, &data_dst);
 }
 #endif
@@ -223,16 +223,17 @@ void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
 
   base::Pickle pickle;
   WriteToPickle(base::FilePath(), &pickle);
-  scw.WritePickledData(
-      pickle, ui::ClipboardFormatType::GetType(kClipboardFormatString));
+  scw.WritePickledData(pickle, ui::ClipboardFormatType::CustomPlatformType(
+                                   kClipboardFormatString));
 }
 
 bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
   DCHECK_EQ(buffer, ui::ClipboardBuffer::kCopyPaste);
   std::string data;
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  clipboard->ReadData(ui::ClipboardFormatType::GetType(kClipboardFormatString),
-                      /* data_dst = */ nullptr, &data);
+  clipboard->ReadData(
+      ui::ClipboardFormatType::CustomPlatformType(kClipboardFormatString),
+      /* data_dst = */ nullptr, &data);
 
   if (!data.empty()) {
     base::Pickle pickle =
