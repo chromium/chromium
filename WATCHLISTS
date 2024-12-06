@@ -57,6 +57,12 @@
     'agent_scheduling_group': {
       'filepath': '.*agent_scheduling_group|.*agent_group_scheduler',
     },
+    'android_browser_controls': {
+      'filepath': 'chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/fullscreen/' \
+                  '|chrome/browser/ui/android/toolbar/'
+                  '|chrome/browser/android/compositor/scene_layer/'
+    },
     'android_crash_reporting': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/crash/' \
                   '|chrome/browser/android/crash/' \
@@ -2454,6 +2460,7 @@
                           'webapks-watchlist@chromium.org'],
     'agent_scheduling_group': ['blink-isolation-reviews@chromium.org',
                                'chikamune+watch@chromium.org'],
+    'android_browser_controls': ['peilinwang+watch@google.com'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
     'android_flags': ['hnakashima+watch@chromium.org'],
