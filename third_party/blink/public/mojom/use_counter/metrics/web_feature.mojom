@@ -4371,6 +4371,8 @@ enum WebFeature {
   kV8InvalidatedNoUndetectableObjectsProtector = 4997,
   kV8DocumentAllLegacyCall = 4998,
   kV8DocumentAllLegacyConstruct = 4999,
+  // The items above roughly this point are available in the M127 branch.
+
   kInsideListMarkerPositionQuirk = 5000,
   kZstdContentEncodingForNavigation = 5001,
   kZstdContentEncodingForMainFrameNavigation = 5002,
@@ -4409,6 +4411,8 @@ enum WebFeature {
   kWebGPUSubgroupsFeatures = 5035,
   kAudioContextOnError = 5036,
   kNoVarySearchPrerender = 5037,
+  // The items above roughly this point are available in the M128 branch.
+
   kOBSOLETE_V8AITextSession_Clone_Method = 5038,
   kGamepadHapticActuatorType = 5039,
   kSelectionDirection = 5040,
@@ -4443,6 +4447,8 @@ enum WebFeature {
   kV8AIRewriter_Rewrite_Method = 5069,
   kV8AIRewriter_RewriteStreaming_Method = 5070,
   kV8AIRewriter_Destroy_Method = 5071,
+  // The items above roughly this point are available in the M129 branch.
+
   kFencedFrameCanLoadOpaqueURL = 5072,
   kV8Performance_Memory_AttributeGetter_NotLockedToSite = 5073,
   kPartitionedPopin_OpenAttempt = 5074,
@@ -4473,6 +4479,8 @@ enum WebFeature {
   kCssDisplayPropertyMultipleValues = 5099,
   kDocumentPolicyExpectNoLinkedResources = 5100,
   kSelectionIsCollapsedBehaviorChange = 5101,
+  // The items above roughly this point are available in the M130 branch.
+
   kTopicsAPIAll = 5102,
   kPaymentRequestDeprecatedPaymentMethod = 5103,
   kV8PublicKeyCredential_SignalUnknownCredential_Method = 5104,
@@ -4491,6 +4499,8 @@ enum WebFeature {
   kV8PerformanceResourceTiming_WorkerMatchedSourceType_AttributeGetter = 5117,
   kV8PerformanceResourceTiming_WorkerFinalSourceType_AttributeGetter = 5118,
   kV8AI_LanguageModel_AttributeGetter = 5119,
+  // The items above roughly this point are available in the M131 branch.
+
   kV8RTCEncodedVideoFrame_Timestamp_AttributeGetter = 5120,
   kV8RTCEncodedAudioFrame_Timestamp_AttributeGetter = 5121,
   kOBSOLETE_V8AIAssistantCapabilities_LanguageAvailable_Method = 5122,
@@ -4562,6 +4572,8 @@ enum WebFeature {
   kDocumentIsolationPolicyCredentialless = 5188,
   kClipPathGeometryBox = 5189,
   kActiveViewTransitionPseudo = 5190,
+  // The items above roughly this point are available in the M132 branch.
+
   kScrollFunctionTimeline = 5191,
   kViewFunctionTimeline = 5192,
   kV8Animation_Constructor = 5193,
