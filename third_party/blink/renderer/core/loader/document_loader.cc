@@ -990,7 +990,8 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
       new_url, history_item, same_document_navigation_type, std::move(data),
       type, fire_popstate, frame_->DomWindow()->GetSecurityOrigin(),
       is_browser_initiated, is_synchronously_committed,
-      soft_navigation_heuristics_task_id);
+      soft_navigation_heuristics_task_id,
+      LocalFrame::HasTransientUserActivation(frame_));
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -1004,9 +1005,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool is_browser_initiated,
     bool is_synchronously_committed,
     std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id) {
+        soft_navigation_heuristics_task_id,
+    bool has_transient_user_activation) {
   CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
-
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
 
@@ -1056,6 +1057,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
                              frame_->DomWindow()->GetSecurityOrigin()) &&
                              Url().ProtocolIsInHTTPFamily()
                        : true;
+
+  last_navigation_had_transient_user_activation_ =
+      has_transient_user_activation;
 
   // We want to allow same-document text fragment navigations if they're coming
   // from the browser or same-origin. Do this only on a standard navigation so
@@ -1786,9 +1790,6 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   is_client_redirect_ =
       client_redirect == ClientRedirectPolicy::kClientRedirect;
 
-  last_navigation_had_transient_user_activation_ =
-      has_transient_user_activation;
-
   // Events fired in UpdateForSameDocumentNavigation() might change view state,
   // so stash for later restore.
   std::optional<HistoryItem::ViewState> view_state;
@@ -1803,7 +1804,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
       url, history_item, same_document_navigation_type, nullptr,
       frame_load_type, FirePopstate::kYes, initiator_origin,
       is_browser_initiated, is_synchronously_committed,
-      soft_navigation_heuristics_task_id);
+      soft_navigation_heuristics_task_id, has_transient_user_activation);
   if (!frame_)
     return;
 

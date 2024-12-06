@@ -271,7 +271,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       bool is_browser_initiated,
       bool is_synchronously_committed,
       std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id);
+          soft_navigation_heuristics_task_id,
+      bool has_transient_user_activation);
 
   const ResourceResponse& GetResponse() const { return response_; }
 

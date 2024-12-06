@@ -889,7 +889,8 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageIsNotRecorded) {
 
   // Do a replaceState() to create a new navigation entry.
   ASSERT_TRUE(
-      content::ExecJs(web_contents, "history.replaceState({foo: 'bar'},'')"));
+      content::ExecJs(web_contents, "history.replaceState({foo: 'bar'},'')",
+                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
   content::WaitForLoadStop(web_contents);
 
   // Because there was no user gesture and the url did not change, there should
@@ -899,6 +900,31 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageIsNotRecorded) {
   EXPECT_EQ(url, urls[0]);
   history::QueryURLResult url_result = QueryURL(url);
   EXPECT_EQ(1u, url_result.visits.size());
+}
+
+// Verifies history.replaceState() to the same url with a user gesture logs
+// a visit.
+IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageVisitsRecorded) {
+  // Use the default embedded_https_test_server() for this test because
+  // replaceState requires a real, non-file URL.
+  GURL url(embedded_https_test_server().GetURL("foo.com", "/title3.html"));
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  params.user_gesture = false;
+  ui_test_utils::NavigateToURL(&params);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Do a replaceState() to create a new navigation entry.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "history.replaceState({foo: 'bar'},'')"));
+  content::WaitForLoadStop(web_contents);
+
+  // The same url should have 2 visits given the user gesture.
+  std::vector<GURL> urls(GetHistoryContents());
+  ASSERT_EQ(1u, urls.size());
+  EXPECT_EQ(url, urls[0]);
+  history::QueryURLResult url_result = QueryURL(url);
+  EXPECT_EQ(2u, url_result.visits.size());
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, VisitAnnotations) {
