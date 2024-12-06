@@ -84,7 +84,7 @@ TEST(RWBufferTest, Append) {
   {
     RWBuffer buffer;
     for (size_t i = 0; i < N; ++i) {
-      buffer.Append(gABC, 26);
+      buffer.Append(base::byte_span_from_cstring(gABC));
       readers[i] = buffer.MakeROBufferSnapshot();
     }
     EXPECT_EQ(N * 26, buffer.size());
@@ -107,7 +107,7 @@ TEST(RWBufferTest, Threaded) {
   std::array<base::PlatformThreadHandle, N> handlers;
 
   for (size_t i = 0; i < N; ++i) {
-    buffer.Append(gABC, 26);
+    buffer.Append(base::byte_span_from_cstring(gABC));
     scoped_refptr<ROBuffer> reader = buffer.MakeROBufferSnapshot();
     EXPECT_EQ(reader->size(), buffer.size());
 
@@ -126,7 +126,7 @@ TEST(RWBufferTest, Threaded) {
 // Tests that it is safe to call ROBuffer::Iter::size() when exhausted.
 TEST(RWBufferTest, Size) {
   RWBuffer buffer;
-  buffer.Append(gABC, 26);
+  buffer.Append(base::byte_span_from_cstring(gABC));
 
   scoped_refptr<ROBuffer> roBuffer(buffer.MakeROBufferSnapshot());
   ROBuffer::Iter iter(roBuffer.get());
@@ -182,7 +182,7 @@ TEST(RWBufferTest, HasNoSnapshots) {
   RWBuffer buffer;
   ASSERT_EQ(0u, buffer.size());
 
-  buffer.Append(gABC, 26);
+  buffer.Append(base::byte_span_from_cstring(gABC));
 
   EXPECT_TRUE(buffer.HasNoSnapshots());
 

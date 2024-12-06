@@ -60,14 +60,14 @@ class PLATFORM_EXPORT RWBuffer {
   size_t size() const { return total_used_; }
 
   /**
-   * Append |length| bytes from |buffer|.
+   * Append bytes from |buffer|.
    *
    * If the caller knows in advance how much more data they are going to
    * append, they can pass a |reserve| hint (representing the number of upcoming
    * bytes *in addition* to the current append), to minimize the number of
    * internal allocations.
    */
-  void Append(const void* buffer, size_t length, size_t reserve = 0);
+  void Append(base::span<const uint8_t> buffer, size_t reserve = 0);
 
   scoped_refptr<ROBuffer> MakeROBufferSnapshot() const;
 

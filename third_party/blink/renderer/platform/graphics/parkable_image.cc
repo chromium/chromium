@@ -210,7 +210,7 @@ void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
   for (auto it = buffer->GetIteratorAt(offset); it != buffer->cend(); ++it) {
     DCHECK_GE(buffer->size(), rw_buffer_->size() + it->size());
     const size_t remaining = buffer->size() - rw_buffer_->size() - it->size();
-    rw_buffer_->Append(it->data(), it->size(), remaining);
+    rw_buffer_->Append(base::as_byte_span(*it), remaining);
   }
   size_ = rw_buffer_->size();
 }
