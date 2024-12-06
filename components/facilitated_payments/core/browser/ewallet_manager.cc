@@ -48,7 +48,8 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
     return;
   }
 
-  if (!PaymentLinkValidator().IsValid(payment_link_url.spec())) {
+  if (PaymentLinkValidator().GetScheme(payment_link_url) ==
+      PaymentLinkValidator::Scheme::kInvalid) {
     return;
   }
 

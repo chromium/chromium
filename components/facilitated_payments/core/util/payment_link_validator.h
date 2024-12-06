@@ -5,22 +5,30 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_UTIL_PAYMENT_LINK_VALIDATOR_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_UTIL_PAYMENT_LINK_VALIDATOR_H_
 
-#include <string>
 #include <vector>
+
+#include "url/gurl.h"
 
 namespace payments::facilitated {
 
 class PaymentLinkValidator {
  public:
+  // The list of supported payment link schemes.
+  enum class Scheme {
+    kInvalid = 0,
+    kDuitNow = 1,
+    kShopeePay = 2,
+    kTngd = 3,
+  };
+
   PaymentLinkValidator();
   ~PaymentLinkValidator();
 
   PaymentLinkValidator(const PaymentLinkValidator&) = delete;
   PaymentLinkValidator& operator=(const PaymentLinkValidator&) = delete;
 
-  // This validation method uses std::string::find(), which is safe to use in
-  // the browser process on untrusted data.
-  bool IsValid(std::string_view url) const;
+  // Returns the `Scheme` of the given `payment_link_url`.
+  Scheme GetScheme(const GURL& payment_link_url) const;
 
  private:
   const std::vector<std::string> valid_prefixes_;
