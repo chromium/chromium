@@ -1523,7 +1523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchPolicyConflict.HasConflictWith.{ConflictType}"
-    enum="Boolean" expires_after="2025-01-02">
+    enum="Boolean" expires_after="2026-01-02">
   <owner>ftirelo@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
