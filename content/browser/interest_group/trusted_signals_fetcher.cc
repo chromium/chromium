@@ -335,7 +335,7 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 
 void TrustedSignalsFetcher::FetchBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    std::string_view hostname,
+    const url::Origin& main_frame_origin,
     const url::Origin& script_origin,
     const GURL& trusted_bidding_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
@@ -344,13 +344,13 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
   EncryptRequestBodyAndStart(
       url_loader_factory, script_origin, trusted_bidding_signals_url,
       bidding_and_auction_key,
-      BuildSignalsRequestBody(hostname, compression_groups),
+      BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
       std::move(callback));
 }
 
 void TrustedSignalsFetcher::FetchScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    std::string_view hostname,
+    const url::Origin& main_frame_origin,
     const url::Origin& script_origin,
     const GURL& trusted_scoring_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
@@ -359,7 +359,7 @@ void TrustedSignalsFetcher::FetchScoringSignals(
   EncryptRequestBodyAndStart(
       url_loader_factory, script_origin, trusted_scoring_signals_url,
       bidding_and_auction_key,
-      BuildSignalsRequestBody(hostname, compression_groups),
+      BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
       std::move(callback));
 }
 
@@ -396,9 +396,8 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->headers.SetHeader("Accept", kResponseMediaType);
 
-  // TODO(crbug.com/333445540): Set reasonable initiator, isolation info, client
-  // security state, and credentials mode, and select reasonable maximum body
-  // size. Also hook up to devtools.
+  // TODO(crbug.com/333445540): Set reasonable client security state and select
+  // reasonable maximum body size. Also hook up to devtools.
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);

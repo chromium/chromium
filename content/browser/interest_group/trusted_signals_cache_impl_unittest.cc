@@ -123,7 +123,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingBiddingSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
-      std::string hostname;
+      url::Origin main_frame_origin;
       url::Origin script_origin;
       std::map<int, std::vector<FetcherBiddingPartitionArgs>>
           compression_groups;
@@ -137,7 +137,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingScoringSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
-      std::string hostname;
+      url::Origin main_frame_origin;
       url::Origin script_origin;
       std::map<int, std::vector<FetcherScoringPartitionArgs>>
           compression_groups;
@@ -156,7 +156,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
    private:
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
-        std::string_view hostname,
+        const url::Origin& main_frame_origin,
         const url::Origin& script_origin,
         const GURL& trusted_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
@@ -182,14 +182,14 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key, std::string(hostname),
+          trusted_signals_url, bidding_and_auction_key, main_frame_origin,
           script_origin, std::move(compression_groups_copy),
           std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
-        std::string_view hostname,
+        const url::Origin& main_frame_origin,
         const url::Origin& script_origin,
         const GURL& trusted_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
@@ -215,7 +215,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key, std::string(hostname),
+          trusted_signals_url, bidding_and_auction_key, main_frame_origin,
           script_origin, std::move(compression_groups_copy),
           std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
@@ -459,7 +459,7 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          const ParamType& params,
                          int expected_compression_group_id,
                          int expected_partition_id) {
-  EXPECT_EQ(fetch.hostname, params.main_frame_origin.host());
+  EXPECT_EQ(fetch.main_frame_origin, params.main_frame_origin);
   EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
   EXPECT_EQ(fetch.script_origin, params.script_origin);
   EXPECT_EQ(fetch.bidding_and_auction_key.key, params.coordinator.Serialize());

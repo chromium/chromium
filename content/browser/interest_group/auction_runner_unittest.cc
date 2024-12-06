@@ -1728,16 +1728,16 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
   // Contains all parameters for a single bidding signals request to the cache.
   struct BidderRequestInfo {
-    std::string hostname;
+    url::Origin main_frame_origin;
     url::Origin script_origin;
     GURL trusted_bidding_signals_url;
 
     std::map<int, std::vector<BiddingPartitionInfo>> compression_groups;
 
     bool operator<(const BidderRequestInfo& other) const {
-      return std::tie(hostname, script_origin, trusted_bidding_signals_url,
-                      compression_groups) <
-             std::tie(other.hostname, other.script_origin,
+      return std::tie(main_frame_origin, script_origin,
+                      trusted_bidding_signals_url, compression_groups) <
+             std::tie(other.main_frame_origin, other.script_origin,
                       other.trusted_bidding_signals_url,
                       other.compression_groups);
     }
@@ -1761,16 +1761,16 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
   // Contains all parameters for a single scoring signals request to the cache.
   struct SellerRequestInfo {
-    std::string hostname;
+    url::Origin main_frame_origin;
     url::Origin script_origin;
     GURL trusted_scoring_signals_url;
 
     std::map<int, std::vector<ScoringPartitionInfo>> compression_groups;
 
     bool operator<(const SellerRequestInfo& other) const {
-      return std::tie(hostname, script_origin, trusted_scoring_signals_url,
-                      compression_groups) <
-             std::tie(other.hostname, other.script_origin,
+      return std::tie(main_frame_origin, script_origin,
+                      trusted_scoring_signals_url, compression_groups) <
+             std::tie(other.main_frame_origin, other.script_origin,
                       other.trusted_scoring_signals_url,
                       other.compression_groups);
     }
@@ -1842,14 +1842,14 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
-        std::string_view hostname,
+        const url::Origin& main_frame_origin,
         const url::Origin& script_origin,
         const GURL& trusted_bidding_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<BiddingPartition>>& compression_groups,
         Callback callback) override {
       BidderRequestInfo request_info;
-      request_info.hostname = hostname;
+      request_info.main_frame_origin = main_frame_origin;
       request_info.script_origin = script_origin;
       request_info.trusted_bidding_signals_url = trusted_bidding_signals_url;
       for (const auto& compression_group : compression_groups) {
@@ -1875,14 +1875,14 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
-        std::string_view hostname,
+        const url::Origin& main_frame_origin,
         const url::Origin& script_origin,
         const GURL& trusted_scoring_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<ScoringPartition>>& compression_groups,
         Callback callback) override {
       SellerRequestInfo request_info;
-      request_info.hostname = hostname;
+      request_info.main_frame_origin = main_frame_origin;
       request_info.script_origin = script_origin;
       request_info.trusted_scoring_signals_url = trusted_scoring_signals_url;
       for (const auto& compression_group : compression_groups) {
@@ -3917,7 +3917,7 @@ class AuctionRunnerTrustedSignalsTest
         compression_groups;
     compression_groups.try_emplace(0, std::move(partitions));
     return MockTrustedSignalsCacheImpl::BidderRequestInfo{
-        top_frame_origin_.host(), kBidder1, kBidder1TrustedSignalsUrl,
+        top_frame_origin_, kBidder1, kBidder1TrustedSignalsUrl,
         std::move(compression_groups)};
   }
 
@@ -3935,7 +3935,7 @@ class AuctionRunnerTrustedSignalsTest
         compression_groups;
     compression_groups.try_emplace(0, std::move(partitions));
     return MockTrustedSignalsCacheImpl::BidderRequestInfo{
-        top_frame_origin_.host(), kBidder2, kBidder2TrustedSignalsUrl,
+        top_frame_origin_, kBidder2, kBidder2TrustedSignalsUrl,
         std::move(compression_groups)};
   }
 
@@ -3983,7 +3983,7 @@ class AuctionRunnerTrustedSignalsTest
         compression_groups;
     compression_groups.emplace(0, std::move(partitions));
     return MockTrustedSignalsCacheImpl::SellerRequestInfo{
-        top_frame_origin_.host(), url::Origin::Create(kSellerUrl),
+        top_frame_origin_, url::Origin::Create(kSellerUrl),
         *trusted_scoring_signals_url_, std::move(compression_groups)};
   }
 
@@ -4002,7 +4002,7 @@ class AuctionRunnerTrustedSignalsTest
         compression_groups;
     compression_groups.emplace(0, std::move(partitions));
     return MockTrustedSignalsCacheImpl::SellerRequestInfo{
-        top_frame_origin_.host(), url::Origin::Create(kSellerUrl),
+        top_frame_origin_, url::Origin::Create(kSellerUrl),
         *trusted_scoring_signals_url_, std::move(compression_groups)};
   }
 
@@ -27408,8 +27408,8 @@ TEST_P(
   compression_groups.emplace(0, std::move(partitions));
   trusted_signals_cache_impl->AddSellerSignalsResult(
       MockTrustedSignalsCacheImpl::SellerRequestInfo(
-          top_frame_origin_.host(), kComponentSeller1,
-          kComponentScoringSignalsUrl, std::move(compression_groups)),
+          top_frame_origin_, kComponentSeller1, kComponentScoringSignalsUrl,
+          std::move(compression_groups)),
       MakeCompressionGroupMapForOneGroup(kBidder1ScoringSignalsKVv2Json));
 
   // Component scoreAd() script that only accepts bids where the scoring signals

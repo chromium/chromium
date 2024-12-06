@@ -260,7 +260,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), kDefaultHostname, GetScriptOrigin(), url,
+        url_loader_factory_.get(), kDefaultMainFrameOrigin, GetScriptOrigin(),
+        url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -289,7 +290,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
-        url_loader_factory_.get(), kDefaultHostname, GetScriptOrigin(), url,
+        url_loader_factory_.get(), kDefaultMainFrameOrigin, GetScriptOrigin(),
+        url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -528,7 +530,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
   // fixture to keep them alive, since the returned BiddingPartition holds onto
   // non-owning raw pointers.
 
-  const std::string kDefaultHostname{"host.test"};
+  const url::Origin kDefaultMainFrameOrigin =
+      url::Origin::Create(GURL("https://host.test"));
   const base::Value::Dict kDefaultAdditionalParams;
 
   // Default values used by CreateBasicBiddingSignalsRequest().

@@ -155,7 +155,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // compression group id. Virtual for tests.
   virtual void FetchBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      std::string_view hostname,
+      const url::Origin& main_frame_origin,
       const url::Origin& script_origin,
       const GURL& trusted_bidding_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
@@ -169,7 +169,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // compression group id. Virtual for tests.
   virtual void FetchScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      std::string_view hostname,
+      const url::Origin& main_frame_origin,
       const url::Origin& script_origin,
       const GURL& trusted_scoring_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
