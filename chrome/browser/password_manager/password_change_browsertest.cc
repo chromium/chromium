@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback_list.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
@@ -31,7 +32,10 @@ class MockPasswordChangeDelegateObserver
               OnStateChanged,
               (PasswordChangeDelegate::State),
               (override));
-  MOCK_METHOD(void, OnDelegateDestroyed, (PasswordChangeDelegate*), (override));
+  MOCK_METHOD(void,
+              OnPasswordChangeStopped,
+              (PasswordChangeDelegate*),
+              (override));
 };
 
 std::unique_ptr<KeyedService> CreateTestAffiliationService(
@@ -203,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
                                                  WebContents());
   // Activate tab with password change to simplify testing.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
 
   PasswordsNavigationObserver observer(WebContents());
   EXPECT_TRUE(observer.Wait());
@@ -213,4 +217,28 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   WaitForPasswordStore();
   CheckThatCredentialsStored(
       /*username=*/"", GetElementValue(/*iframe_id=*/"null", "new_password_1"));
+}
+
+// Verify that after password change is stopped, password change delegate is not
+// returned.
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StopPasswordChange) {
+  GURL main_url("https://example.com/");
+
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(
+          embedded_test_server()->GetURL("/password/done.html")));
+
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+
+  auto* password_change_tab = browser()->tab_strip_model()->GetWebContentsAt(1);
+  ASSERT_TRUE(password_change_service()->GetPasswordChangeDelegate(
+      password_change_tab));
+
+  password_change_service()
+      ->GetPasswordChangeDelegate(password_change_tab)
+      ->Stop();
+
+  EXPECT_FALSE(password_change_service()->GetPasswordChangeDelegate(
+      password_change_tab));
 }

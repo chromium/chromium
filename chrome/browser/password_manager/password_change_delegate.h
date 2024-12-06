@@ -38,7 +38,7 @@ class PasswordChangeDelegate {
     virtual void OnStateChanged(State new_state) {}
 
     // Invoked before `delegate` is destroyed. Should be used to stop observing.
-    virtual void OnDelegateDestroyed(PasswordChangeDelegate* delegate) {}
+    virtual void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) {}
   };
 
   virtual ~PasswordChangeDelegate() = default;
@@ -52,8 +52,8 @@ class PasswordChangeDelegate {
   virtual State GetCurrentState() const = 0;
 
   // Terminates password change operation immediately. Delegate shouldn't be
-  // invoked after canceling the flow as it can be already destroyed.
-  virtual void Cancel() = 0;
+  // invoked after this function is called as the object will soon be destroyed.
+  virtual void Stop() = 0;
 
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;

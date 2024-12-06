@@ -48,7 +48,7 @@ class PasswordChangeDelegateImpl
   // PasswordChangeDelegate Impl
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   State GetCurrentState() const override;
-  void Cancel() override;
+  void Stop() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

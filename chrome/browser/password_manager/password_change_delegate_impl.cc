@@ -137,7 +137,10 @@ PasswordChangeDelegate::State PasswordChangeDelegateImpl::GetCurrentState()
   return State::kWaitingForChangePasswordForm;
 }
 
-void PasswordChangeDelegateImpl::Cancel() {}
+void PasswordChangeDelegateImpl::Stop() {
+  observers_.Notify(&PasswordChangeDelegate::Observer::OnPasswordChangeStopped,
+                    this);
+}
 
 void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

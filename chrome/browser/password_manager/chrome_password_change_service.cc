@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -30,7 +31,11 @@ ChromePasswordChangeService::ChromePasswordChangeService(
     : affiliation_service_(affiliation_service),
       new_tab_callback_(base::BindRepeating(&OpenNewTab)) {}
 
-ChromePasswordChangeService::~ChromePasswordChangeService() = default;
+ChromePasswordChangeService::~ChromePasswordChangeService() {
+  for (const auto& delegate : password_change_delegates_) {
+    delegate->RemoveObserver(this);
+  }
+}
 
 bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
   if (!base::FeatureList::IsEnabled(
@@ -49,9 +54,11 @@ void ChromePasswordChangeService::StartPasswordChange(
   GURL change_pwd_url = affiliation_service_->GetChangePasswordURL(url);
   CHECK(change_pwd_url.is_valid());
 
-  auto controller = std::make_unique<PasswordChangeDelegateImpl>(
-      std::move(change_pwd_url), username, password, web_contents,
-      new_tab_callback_);
+  std::unique_ptr<PasswordChangeDelegate> controller =
+      std::make_unique<PasswordChangeDelegateImpl>(
+          std::move(change_pwd_url), username, password, web_contents,
+          new_tab_callback_);
+  controller->AddObserver(this);
   password_change_delegates_.push_back(std::move(controller));
 }
 
@@ -63,4 +70,18 @@ PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(
     }
   }
   return nullptr;
+}
+
+void ChromePasswordChangeService::OnPasswordChangeStopped(
+    PasswordChangeDelegate* delegate) {
+  delegate->RemoveObserver(this);
+
+  auto iter = base::ranges::find(password_change_delegates_, delegate,
+                                 &std::unique_ptr<PasswordChangeDelegate>::get);
+  CHECK(iter != password_change_delegates_.end());
+
+  std::unique_ptr<PasswordChangeDelegate> deleted_delegate = std::move(*iter);
+  password_change_delegates_.erase(iter);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(deleted_delegate));
 }

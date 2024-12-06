@@ -10,11 +10,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/password_manager/password_change_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 
 class GURL;
-class PasswordChangeDelegate;
 
 namespace affiliations {
 class AffiliationService;
@@ -26,7 +26,8 @@ class WebContents;
 
 class ChromePasswordChangeService
     : public KeyedService,
-      public password_manager::PasswordChangeServiceInterface {
+      public password_manager::PasswordChangeServiceInterface,
+      public PasswordChangeDelegate::Observer {
  public:
   // Callback which allows to open a new tab for password change. Useful for
   // testing UI interactions in browser tests.
@@ -61,6 +62,9 @@ class ChromePasswordChangeService
   }
 
  private:
+  // PasswordChangeDelegate::Observer impl.
+  void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
+
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
 
   // TODO(crbug.com/382652112): Remove once testing is simplified.
