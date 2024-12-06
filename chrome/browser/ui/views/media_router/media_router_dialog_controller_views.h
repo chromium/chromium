@@ -101,8 +101,7 @@ class MediaRouterDialogControllerViews
 
   // Responsible for notifying the dialog view of dialog model updates and
   // sending route requests to MediaRouter. Set to nullptr when the dialog is
-  // closed. Not used for presentation requests when
-  // GlobalMediaControlsCastStartStopEnabled() returns true.
+  // closed. Not used for presentation requests.
   std::unique_ptr<MediaRouterUI> ui_;
 
   CastDialogCoordinator cast_dialog_coordinator_;

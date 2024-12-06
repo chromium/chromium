@@ -5,7 +5,6 @@
 #include "chrome/test/media_router/media_router_gmc_ui_for_test.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
@@ -29,7 +28,6 @@ MediaRouterGmcUiForTest::~MediaRouterGmcUiForTest() {
 }
 
 void MediaRouterGmcUiForTest::SetUp() {
-  feature_list_.InitAndEnableFeature(kGlobalMediaControlsCastStartStop);
 }
 
 void MediaRouterGmcUiForTest::ShowDialog() {
