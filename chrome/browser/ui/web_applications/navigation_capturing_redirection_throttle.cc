@@ -340,10 +340,14 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  // TODO(https://crbug.com/382542355): Populate
+  // `navigate_params_requested_browser` by passing it through the redirection
+  // info from `MaybeHandleAppNavigation`.
   ClientModeAndBrowser client_mode_and_browser =
       GetEffectiveClientModeAndBrowserForCapturing(
           *profile_, *target_app_id, source_tab_app_id,
-          /*ignore_browser_tabs_for_standalone_apps=*/false);
+          /*ignore_browser_tabs_for_standalone_apps=*/false,
+          /*navigate_params_requested_browser=*/nullptr);
 
   // After this point:
   // - The navigation is non-user-modified.

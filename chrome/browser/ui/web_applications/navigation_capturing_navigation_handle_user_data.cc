@@ -7,7 +7,9 @@
 #include "base/strings/to_string.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/web_app_launch_params.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -165,13 +167,20 @@ void NavigationCapturingNavigationHandleUserData::
       web_contents, app_id, navigation_handle_->GetURL(),
       /*wait_for_navigation_to_complete=*/!navigation_handle_->HasCommitted());
 
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+
   apps::LaunchContainer container =
-      WebAppTabHelper::FromWebContents(web_contents)->is_in_app_window()
+      tab_helper->is_in_app_window()
           ? apps::LaunchContainer::kLaunchContainerWindow
           : apps::LaunchContainer::kLaunchContainerTab;
   RecordLaunchMetrics(app_id, container,
                       apps::LaunchSource::kFromNavigationCapturing,
                       navigation_handle_->GetURL(), web_contents);
+
+  WebAppProvider::GetForWebContents(web_contents)
+      ->navigation_capturing_log()
+      .StoreNavigationCapturedDebugData(ToDebugData());
 
   if (!force_iph_off_) {
     // TODO(crbug.com/371237535): Avoid reliance on FindBrowserWithTab and
@@ -179,6 +188,17 @@ void NavigationCapturingNavigationHandleUserData::
     Browser* browser = chrome::FindBrowserWithTab(web_contents);
     MaybeShowNavigationCaptureIph(app_id, browser->profile(), browser);
   }
+}
+
+base::Value NavigationCapturingNavigationHandleUserData::ToDebugData() const {
+  return base::Value(
+      base::Value::Dict()
+          .Set("launched_app", launched_app_.value_or("<none>"))
+          .Set("force_iph_off", force_iph_off_)
+          .Set("handle",
+               base::Value::Dict().Set(
+                   "url",
+                   navigation_handle_->GetURL().possibly_invalid_spec())));
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(

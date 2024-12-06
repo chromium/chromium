@@ -200,6 +200,8 @@ class NavigationCapturingNavigationHandleUserData
 
   friend NavigationHandleUserData;
 
+  base::Value ToDebugData() const;
+
   raw_ref<content::NavigationHandle> navigation_handle_;
   std::optional<NavigationCapturingRedirectionInfo> redirection_info_;
   std::optional<webapps::AppId> launched_app_;

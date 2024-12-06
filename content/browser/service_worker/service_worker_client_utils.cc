@@ -490,15 +490,9 @@ void OpenWindow(const GURL& url,
           ? WindowOpenDisposition::NEW_POPUP
           : WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true /* is_renderer_initiated */);
-  // Disable the hack that always opens pwa windows if navigation capturing
-  // (reimplementation) is enabled.
-  if (!base::FeatureList::IsEnabled(features::kPwaNavigationCapturing) ||
-      (features::kNavigationCapturingDefaultState.Get() !=
-           features::CapturingState::kReimplDefaultOn &&
-       features::kNavigationCapturingDefaultState.Get() !=
-           features::CapturingState::kReimplDefaultOff)) {
-    params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
-  }
+  // TODO(https://crbug.com/382542907): Remove `open_pwa_window_if_possible` or
+  // make it IWA-specific.
+  params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
   params.initiator_origin =
       url::Origin::Create(script_url.DeprecatedGetOriginAsURL());
 

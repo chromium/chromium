@@ -282,8 +282,8 @@ void LaunchWebApp(apps::AppLaunchParams params,
 //     `app_id`, unless `ignore_browser_tabs_for_standalone_apps` is set.
 //   - Otherwise set `browser` to `nullptr`.
 // - If the display mode is `kBrowser`:
-//   - Fall back to returning the first normal browser window, and `nullopt` for
-//     the tab.
+//   - Fall back to returning `navigate_params_requested_browser` or the first
+//     normal browser window, and `nullopt` for the tab.
 //   - Otherwise set `browser` to `nullptr`.
 // - Set `browser` to `nullptr` for all other cases.
 struct ClientModeAndBrowser {
@@ -296,7 +296,8 @@ ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
     Profile& profile,
     const webapps::AppId& app_id,
     const std::optional<webapps::AppId> source_tab_app_id_from_navigation,
-    bool ignore_browser_tabs_for_standalone_apps);
+    bool ignore_browser_tabs_for_standalone_apps,
+    Browser* navigate_params_requested_browser);
 
 // Returns an AppNavigationResult with pertinent details on how to handle a
 // navigation if the web app system can do so. If not, the
