@@ -2046,7 +2046,11 @@ void VideoFrame::WrapScopedSharedImageMapping(
 }
 
 bool VideoFrame::IsTextureOriginTopLeft() const {
-  return metadata().texture_origin_is_top_left;
+  // Software video frames are always top-left.
+  if (!HasSharedImage()) {
+    return true;
+  }
+  return shared_image()->surface_origin() == kTopLeft_GrSurfaceOrigin;
 }
 
 }  // namespace media
