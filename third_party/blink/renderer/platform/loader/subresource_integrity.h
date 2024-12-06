@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_SUBRESOURCE_INTEGRITY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_SUBRESOURCE_INTEGRITY_H_
 
+#include <string_view>
+
 #include "base/gtest_prod_util.h"
+#include "base/types/expected.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -85,30 +88,19 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                   const String& raw_headers,
                                   IntegrityReport&);
 
-  enum AlgorithmParseResult {
-    kAlgorithmValid,
-    kAlgorithmUnparsable,
-    kAlgorithmUnknown
-  };
+  enum AlgorithmParseError { kAlgorithmUnparsable, kAlgorithmUnknown };
+  using AlgorithmParseResult = base::expected<size_t, AlgorithmParseError>;
 
   static IntegrityAlgorithm FindBestAlgorithm(
       const WTF::HashSet<IntegrityMetadataPair>&);
 
-  typedef bool (*CheckFunction)(const IntegrityMetadata&,
-                                const char*,
-                                size_t,
-                                const String&);
-
   static bool CheckSubresourceIntegrityDigest(const IntegrityMetadata&,
                                               const SegmentedBuffer* buffer);
 
-  static AlgorithmParseResult ParseAttributeAlgorithm(const UChar*& begin,
-                                                      const UChar* end,
+  static AlgorithmParseResult ParseAttributeAlgorithm(std::string_view token,
                                                       IntegrityAlgorithm&);
   typedef std::pair<const char*, IntegrityAlgorithm> AlgorithmPrefixPair;
-  static bool ParseDigest(const UChar*& begin,
-                          const UChar* end,
-                          String& digest);
+  static bool ParseDigest(std::string_view maybe_digest, String& digest);
 };
 
 }  // namespace blink
