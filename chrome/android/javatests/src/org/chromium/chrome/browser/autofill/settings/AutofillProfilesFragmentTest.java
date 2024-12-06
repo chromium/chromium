@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -618,6 +620,9 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
+            message = "https://crbug.com/381982174")
     public void testKeyboardShownOnDpadCenter() throws TimeoutException {
         AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
         AutofillProfileEditorPreference addProfile =
