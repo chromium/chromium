@@ -715,7 +715,6 @@ void PdfAccessibilityTree::UnserializeNodes() {
     if (!had_accessible_text_) {
       base::UmaHistogramCounts1000(
           "Accessibility.PdfOcr.InaccessiblePdfPageCount", page_count_);
-      render_accessibility->RecordInaccessiblePdfUkm();
     }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

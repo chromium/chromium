@@ -320,26 +320,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Accessibility.InaccessiblePDFs">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records inaccessible PDFs.
-  </summary>
-  <metric name="Seen" enum="Boolean">
-    <summary>
-      A boolean signaling that the PDF was opened by the user.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
 <event name="Accessibility.PageZoom">
   <owner>aldietz@google.com</owner>
   <owner>mschillaci@google.com</owner>

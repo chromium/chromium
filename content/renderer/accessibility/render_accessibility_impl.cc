@@ -642,13 +642,6 @@ void RenderAccessibilityImpl::ConnectionClosed() {
   ax_context_->OnSerializationCancelled();
 }
 
-void RenderAccessibilityImpl::RecordInaccessiblePdfUkm() {
-  ukm::builders::Accessibility_InaccessiblePDFs(
-      GetMainDocument().GetUkmSourceId())
-      .SetSeen(true)
-      .Record(ukm_recorder_.get());
-}
-
 void RenderAccessibilityImpl::SetPluginAXTreeActionTargetAdapter(
     PluginAXTreeActionTargetAdapter* adapter) {
   plugin_action_target_adapter_ = adapter;
