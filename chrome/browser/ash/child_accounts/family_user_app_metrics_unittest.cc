@@ -58,7 +58,6 @@ inline constexpr std::optional<apps::AppType> ToAppType(int value) {
     case apps::AppType::kChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kPluginVm:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kSystemWeb:
@@ -209,10 +208,6 @@ class FamilyUserAppMetricsTest
         /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::AppType::kPluginVm));
     deltas.push_back(MakeApp(
-        /*app_id=*/"l", /*app_name=*/"lacros",
-        /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::AppType::kStandaloneBrowser));
-    deltas.push_back(MakeApp(
         /*app_id=*/"r", /*app_name=*/"remote",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::AppType::kRemote));
@@ -340,14 +335,13 @@ TEST_P(FamilyUserAppMetricsTest, FastForwardOneDay) {
         /*sample=*/3, /*expected_count=*/1);
   }
 
-  const apps::AppType fresh_app_types[7] = {
+  constexpr apps::AppType fresh_app_types[] = {
       apps::AppType::kUnknown,   apps::AppType::kArc, apps::AppType::kCrostini,
       apps::AppType::kChromeApp, apps::AppType::kWeb, apps::AppType::kBorealis,
   };
   // Launched over 28 days ago and dropped from the count.
-  const apps::AppType stale_app_types[3] = {
+  constexpr apps::AppType stale_app_types[] = {
       apps::AppType::kPluginVm,
-      apps::AppType::kStandaloneBrowser,
       apps::AppType::kRemote,
   };
   for (apps::AppType app_type : fresh_app_types) {

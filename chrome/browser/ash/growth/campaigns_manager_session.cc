@@ -446,7 +446,6 @@ void CampaignsManagerSession::OnInstanceUpdate(
     case apps::AppType::kUnknown:
       // e.g Ash debug browser.
       break;
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kChromeApp:
       HandleWebBrowserInstanceUpdate(update);
       break;

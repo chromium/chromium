@@ -20,8 +20,6 @@ std::ostream& operator<<(std::ostream& os, AppType v) {
       return os << "AppType::kWeb";
     case AppType::kPluginVm:
       return os << "AppType::kPluginVm";
-    case AppType::kStandaloneBrowser:
-      return os << "AppType::kStandaloneBrowser";
     case AppType::kRemote:
       return os << "AppType::kRemote";
     case AppType::kBorealis:
@@ -174,8 +172,6 @@ ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type) {
       return ApplicationType::APPLICATION_TYPE_WEB;
     case AppType::kPluginVm:
       return ApplicationType::APPLICATION_TYPE_PLUGIN_VM;
-    case AppType::kStandaloneBrowser:
-      return ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER;
     case AppType::kRemote:
       return ApplicationType::APPLICATION_TYPE_REMOTE;
     case AppType::kBorealis:
@@ -225,7 +221,6 @@ std::optional<PackageType> ConvertAppTypeToPackageType(AppType app_type) {
     case AppType::kBruschetta:
     case AppType::kCrostini:
     case AppType::kPluginVm:
-    case AppType::kStandaloneBrowser:
     case AppType::kRemote:
     case AppType::kSystemWeb:
     case AppType::kExtension:

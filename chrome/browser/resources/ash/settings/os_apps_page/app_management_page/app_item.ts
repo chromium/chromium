@@ -63,7 +63,6 @@ export class AppManagementAppItemElement extends
       case AppType.kArc:
         return AppManagementEntryPoint.MAIN_VIEW_ARC;
       case AppType.kChromeApp:
-      case AppType.kStandaloneBrowser:
         return AppManagementEntryPoint.MAIN_VIEW_CHROME_APP;
       case AppType.kWeb:
         return AppManagementEntryPoint.MAIN_VIEW_WEB_APP;

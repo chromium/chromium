@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Web app in a tab"/>
   <int value="8" label="(Obsolete) Mac OS app"/>
   <int value="9" label="Plugin VM"/>
-  <int value="10" label="Standalone browser"/>
+  <int value="10" label="(Obsolete) Standalone browser"/>
   <int value="11" label="Remote app"/>
   <int value="12" label="Borealis app"/>
   <int value="13" label="System web app"/>

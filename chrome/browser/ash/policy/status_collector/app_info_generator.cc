@@ -69,7 +69,6 @@ em::AppInfo::AppType ExtractAppType(const apps::AppType app_type) {
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_BOREALIS;
     case apps::AppType::kBruschetta:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_BRUSCHETTA;
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kExtension:
     case apps::AppType::kRemote:
     case apps::AppType::kUnknown:

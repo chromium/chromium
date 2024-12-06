@@ -106,7 +106,6 @@ bool AppTypeUsesWebContents(apps::AppType app_type) {
     case apps::AppType::kArc:
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:

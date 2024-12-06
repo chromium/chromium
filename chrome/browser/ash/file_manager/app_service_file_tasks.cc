@@ -104,7 +104,6 @@ TaskType GetTaskType(apps::AppType app_type) {
     case apps::AppType::kPluginVm:
       return TASK_TYPE_PLUGIN_VM_APP;
     case apps::AppType::kUnknown:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
       return TASK_TYPE_UNKNOWN;

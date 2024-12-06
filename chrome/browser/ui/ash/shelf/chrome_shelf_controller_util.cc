@@ -169,9 +169,6 @@ bool IsAppPinEditable(apps::AppType app_type,
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
       return true;
-    case apps::AppType::kStandaloneBrowser:
-      // Lacros behaves like the Chrome browser icon and cannot be unpinned.
-      return false;
     case apps::AppType::kUnknown:
       // Type kUnknown is used for "unregistered" Crostini apps, which do not
       // have a .desktop file and can only be closed, not pinned.

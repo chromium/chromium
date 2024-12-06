@@ -14,7 +14,6 @@ enum AppType {
   kChromeApp,             // Chrome app.
   kWeb,                   // Web app.
   kPluginVm,              // Plugin VM app, see go/pluginvm.
-  kStandaloneBrowser,     // Lacros browser app, see //docs/lacros.md.
   kRemote,                // Remote app.
   kBorealis,              // Borealis app, see go/borealis-app.
   kSystemWeb,             // System web app.

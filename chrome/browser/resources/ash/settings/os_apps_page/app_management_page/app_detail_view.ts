@@ -115,7 +115,6 @@ export class AppManagementAppDetailViewElement extends
       case (AppType.kWeb):
         return 'pwa-detail-view';
       case (AppType.kChromeApp):
-      case (AppType.kStandaloneBrowser):
         return 'chrome-app-detail-view';
       case (AppType.kArc):
         return 'arc-detail-view';

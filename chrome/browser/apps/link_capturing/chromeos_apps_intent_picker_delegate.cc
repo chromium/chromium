@@ -37,7 +37,6 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
     case AppType::kPluginVm:
     case AppType::kChromeApp:
     case AppType::kExtension:
-    case AppType::kStandaloneBrowser:
     case AppType::kRemote:
     case AppType::kBorealis:
     case AppType::kBruschetta:

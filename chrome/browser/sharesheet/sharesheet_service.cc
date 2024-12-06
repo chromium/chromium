@@ -487,7 +487,6 @@ void SharesheetService::RecordUserActionMetrics(
       case apps::AppType::kCrostini:
       case apps::AppType::kChromeApp:
       case apps::AppType::kPluginVm:
-      case apps::AppType::kStandaloneBrowser:
       case apps::AppType::kRemote:
       case apps::AppType::kBorealis:
       case apps::AppType::kBruschetta:

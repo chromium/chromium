@@ -212,15 +212,6 @@ bool IsRemoteApp(const std::string& app_id) {
   return cache && cache->GetAppType(app_id) == apps::AppType::kRemote;
 }
 
-bool IsStandaloneBrowser(const std::string& app_id) {
-  AccountId account_id =
-      Shell::Get()->session_controller()->GetActiveAccountId();
-  apps::AppRegistryCache* cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
-  return cache &&
-         cache->GetAppType(app_id) == apps::AppType::kStandaloneBrowser;
-}
-
 // Records the user metric action for whenever a shelf item is pinned or
 // unpinned.
 void RecordPinUnpinUserAction(bool pinned) {
@@ -1905,11 +1896,6 @@ ShelfView::RemovableState ShelfView::RemovableByRipOff(int index) const {
 
   // Note: Only pinned app shortcuts can be removed!
   const std::string& app_id = model_->items()[index].id.app_id;
-
-  // Pinned standalone browser apps should not be removable.
-  if (IsStandaloneBrowser(app_id))
-    return DRAGGABLE;
-
   return (type == TYPE_PINNED_APP && model_->IsAppPinned(app_id)) ? REMOVABLE
                                                                   : DRAGGABLE;
 }

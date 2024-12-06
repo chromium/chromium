@@ -42,7 +42,6 @@ apps::AppTypeName GetHistogrameAppType(apps::AppType app_type) {
     case apps::AppType::kWeb:
       return apps::AppTypeName::kWeb;
     case apps::AppType::kPluginVm:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
@@ -168,10 +167,6 @@ void AppLaunchHandler::LaunchApp(apps::AppType app_type,
       if (ShouldLaunchSystemWebAppOrChromeApp(app_id, it->second))
         LaunchSystemWebAppOrChromeApp(app_type, app_id, it->second);
       break;
-    case apps::AppType::kStandaloneBrowser:
-      // For Lacros, we can't use the AppService launch interface to restore,
-      // but call Lacros interface to restore with session restore.
-      return;
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
     case apps::AppType::kUnknown:

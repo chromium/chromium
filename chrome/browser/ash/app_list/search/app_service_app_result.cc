@@ -94,8 +94,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
       return ash::EXTENSION_APP;
-    case apps::AppType::kStandaloneBrowser:
-      return ash::LACROS;
     case apps::AppType::kRemote:
       return ash::REMOTE_APP;
     case apps::AppType::kBorealis:

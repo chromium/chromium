@@ -598,7 +598,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="Web app in a window"/>
   <int value="6" label="(Obsolete) Mac OS app"/>
   <int value="7" label="Plugin VM"/>
-  <int value="8" label="Standalone browser"/>
+  <int value="8" label="(Obsolete) Standalone browser"/>
   <int value="9" label="Remote app"/>
   <int value="10" label="Borealis app"/>
   <int value="11" label="System web app"/>

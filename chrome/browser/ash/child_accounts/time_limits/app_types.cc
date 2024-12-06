@@ -29,8 +29,6 @@ std::string AppTypeToString(apps::AppType app_type) {
       return "Crostini";
     case apps::AppType::kPluginVm:
       return "Plugin VM";
-    case apps::AppType::kStandaloneBrowser:
-      return "LaCrOS";
     case apps::AppType::kRemote:
       return "Remote";
     case apps::AppType::kBorealis:

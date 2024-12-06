@@ -101,7 +101,6 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
     case AppType::kCrostini:
     case AppType::kChromeApp:
     case AppType::kPluginVm:
-    case AppType::kStandaloneBrowser:
     case AppType::kRemote:
     case AppType::kBorealis:
     case AppType::kExtension:

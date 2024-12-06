@@ -50,8 +50,6 @@ std::optional<std::string> GetAppReportingCategoryForType(
       return kAppCategoryChromeAppsExtensions;
     case ::apps::AppType::kWeb:
       return kAppCategoryPWA;
-    case ::apps::AppType::kStandaloneBrowser:
-      return kAppCategoryBrowser;
     case ::apps::AppType::kBorealis:
       return kAppCategoryGames;
     case ::apps::AppType::kPluginVm:  // Only applies to MGS, so we skip.

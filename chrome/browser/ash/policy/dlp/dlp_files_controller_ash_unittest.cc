@@ -85,7 +85,6 @@ constexpr char kExampleUrl2[] = "https://2.example.com/";
 constexpr char kExampleUrl3[] = "https://3.example.com/";
 constexpr char kExampleUrl4[] = "https://4.example.com/";
 constexpr char kExampleUrl5[] = "https://5.example.com/";
-constexpr char kExampleUrl6[] = "https://6.example.com/";
 
 constexpr char kExampleSourceUrl1[] = "1.example.com";
 constexpr char kExampleSourceUrl2[] = "2.example.com";
@@ -123,7 +122,6 @@ constexpr char kPluginVmAppId[] = "pluginVmApp";
 constexpr char kWebAppId[] = "webApp";
 constexpr char kSystemWebAppId[] = "systemWebApp";
 constexpr char kUnknownAppId[] = "unknownApp";
-constexpr char kStandaloneBrowserAppId[] = "standaloneBrowserApp";
 constexpr char kRemoteAppId[] = "remoteApp";
 constexpr char kBorealisAppId[] = "borealisApp";
 constexpr char kBruschettaAppId[] = "bruschettaApp";
@@ -2390,13 +2388,11 @@ class DlpFilesAppLaunchTest_Unsupported
     DlpFilesAppLaunchTest::SetUp();
 
     CreateAndStoreFakeApp(kUnknownAppId, apps::AppType::kUnknown, kExampleUrl1);
-    CreateAndStoreFakeApp(kStandaloneBrowserAppId,
-                          apps::AppType::kStandaloneBrowser, kExampleUrl3);
-    CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl4);
+    CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl2);
     CreateAndStoreFakeApp(kBorealisAppId, apps::AppType::kBorealis,
-                          kExampleUrl5);
+                          kExampleUrl3);
     CreateAndStoreFakeApp(kBruschettaAppId, apps::AppType::kBruschetta,
-                          kExampleUrl6);
+                          kExampleUrl4);
   }
 };
 
@@ -2404,8 +2400,6 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
     DlpFilesAppLaunchTest_Unsupported,
     ::testing::Values(std::make_tuple(apps::AppType::kUnknown, kUnknownAppId),
-                      std::make_tuple(apps::AppType::kStandaloneBrowser,
-                                      kStandaloneBrowserAppId),
                       std::make_tuple(apps::AppType::kRemote, kRemoteAppId),
                       std::make_tuple(apps::AppType::kBorealis, kBorealisAppId),
                       std::make_tuple(apps::AppType::kBruschetta,

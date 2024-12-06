@@ -54,8 +54,6 @@ constexpr auto kAppTypeNameMap =
         {apps::kChromeAppHistogramName, apps::AppTypeName::kChromeApp},
         {apps::kWebAppHistogramName, apps::AppTypeName::kWeb},
         {apps::kPluginVmHistogramName, apps::AppTypeName::kPluginVm},
-        {apps::kStandaloneBrowserHistogramName,
-         apps::AppTypeName::kStandaloneBrowser},
         {apps::kRemoteHistogramName, apps::AppTypeName::kRemote},
         {apps::kBorealisHistogramName, apps::AppTypeName::kBorealis},
         {apps::kSystemWebAppHistogramName, apps::AppTypeName::kSystemWeb},
@@ -145,10 +143,7 @@ constexpr int kUsageTimeBuckets = 50;
 AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
                                     apps::LaunchContainer container) {
-  AppTypeName default_type_name = crosapi::browser_util::IsLacrosEnabled()
-                                      ? AppTypeName::kStandaloneBrowser
-                                      : AppTypeName::kChromeBrowser;
-  AppTypeName type_name = default_type_name;
+  AppTypeName type_name = AppTypeName::kChromeBrowser;
   WindowMode window_mode = WindowMode::kBrowser;
   AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache().ForOneApp(
       app_id, [&type_name, &window_mode](const AppUpdate& update) {
@@ -172,12 +167,12 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
     case apps::LaunchContainer::kLaunchContainerWindow:
       return apps::AppTypeName::kWeb;
     case apps::LaunchContainer::kLaunchContainerTab:
-      return default_type_name;
+      return AppTypeName::kChromeBrowser;
     default:
       break;
   }
 
-  return window_mode == WindowMode::kBrowser ? default_type_name
+  return window_mode == WindowMode::kBrowser ? AppTypeName::kChromeBrowser
                                              : apps::AppTypeName::kWeb;
 }
 
@@ -190,18 +185,15 @@ bool IsAshBrowserWindow(aura::Window* window) {
 }
 
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id) {
-  return (app_type_name == apps::AppTypeName::kChromeBrowser &&
-          app_id != app_constants::kChromeAppId) ||
-         (app_type_name == apps::AppTypeName::kStandaloneBrowser &&
-          app_id != app_constants::kLacrosAppId);
+  return app_type_name == apps::AppTypeName::kChromeBrowser &&
+         app_id != app_constants::kChromeAppId;
 }
 
 bool IsAppOpenedWithBrowserWindow(Profile* profile,
                                   AppType app_type,
                                   const std::string& app_id) {
   if (app_type == AppType::kWeb || app_type == AppType::kSystemWeb ||
-      app_type == AppType::kExtension ||
-      app_type == AppType::kStandaloneBrowser) {
+      app_type == AppType::kExtension) {
     return true;
   }
 
@@ -253,8 +245,6 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
       return GetAppTypeNameForWebAppWindow(profile, app_id, window);
     case AppType::kPluginVm:
       return apps::AppTypeName::kPluginVm;
-    case AppType::kStandaloneBrowser:
-      return apps::AppTypeName::kStandaloneBrowser;
     case AppType::kRemote:
       return apps::AppTypeName::kRemote;
     case AppType::kBorealis:
@@ -282,8 +272,6 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return kWebAppHistogramName;
     case apps::AppTypeName::kPluginVm:
       return kPluginVmHistogramName;
-    case apps::AppTypeName::kStandaloneBrowser:
-      return kStandaloneBrowserHistogramName;
     case apps::AppTypeName::kRemote:
       return kRemoteHistogramName;
     case apps::AppTypeName::kBorealis:
@@ -375,7 +363,6 @@ bool ShouldRecordAppKMForAppTypeName(AppType app_type) {
     case AppType::kCrostini:
     case AppType::kBorealis:
     case AppType::kExtension:
-    case AppType::kStandaloneBrowser:
       return true;
     case AppType::kBruschetta:
     case AppType::kUnknown:
@@ -427,8 +414,6 @@ AppTypeName GetAppTypeName(Profile* profile,
       return GetAppTypeNameForWebApp(profile, app_id, container);
     case AppType::kPluginVm:
       return apps::AppTypeName::kPluginVm;
-    case AppType::kStandaloneBrowser:
-      return apps::AppTypeName::kStandaloneBrowser;
     case AppType::kRemote:
       return apps::AppTypeName::kRemote;
     case AppType::kBorealis:
