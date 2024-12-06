@@ -38,6 +38,7 @@ dependencies {
     compile 'androidx.compose.ui:ui:{{androidx_dependency_version}}'
     compile 'androidx.compose.ui:ui-text-google-fonts:{{androidx_dependency_version}}'
     compile 'androidx.activity:activity-compose:{{androidx_dependency_version}}'
+    compile 'androidx.fragment:fragment-compose:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-viewmodel-compose:{{androidx_dependency_version}}'
 
     compile 'androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}'
