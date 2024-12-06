@@ -127,7 +127,6 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
   UpdateServiceStubUntrusted(const UpdateServiceStubUntrusted&) = delete;
   UpdateServiceStubUntrusted& operator=(const UpdateServiceStubUntrusted&) =
       delete;
-  ~UpdateServiceStubUntrusted() override = default;
 
   // updater::mojom::UpdateService
   void GetVersion(GetVersionCallback callback) override {

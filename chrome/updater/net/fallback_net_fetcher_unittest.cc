@@ -24,7 +24,6 @@ class FakeFetcher : public update_client::NetworkFetcher {
   FakeFetcher() = delete;
   FakeFetcher(const FakeFetcher&) = delete;
   FakeFetcher& operator=(const FakeFetcher&) = delete;
-  ~FakeFetcher() override = default;
   FakeFetcher(
       base::OnceCallback<
           void(update_client::NetworkFetcher::PostRequestCompleteCallback)>

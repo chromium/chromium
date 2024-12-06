@@ -90,7 +90,6 @@ using ScopedScHandle =
 class ProcessFilterName : public base::ProcessFilter {
  public:
   explicit ProcessFilterName(const std::wstring& process_name);
-  ~ProcessFilterName() override = default;
 
   // Overrides for base::ProcessFilter.
   bool Includes(const base::ProcessEntry& entry) const override;

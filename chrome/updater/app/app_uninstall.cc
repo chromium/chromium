@@ -177,9 +177,6 @@ void UninstallInThreadPool(UpdaterScope scope,
 
 // AppUninstall uninstalls the updater.
 class AppUninstall : public App {
- public:
-  AppUninstall() = default;
-
  private:
   ~AppUninstall() override = default;
   [[nodiscard]] int Initialize() override;

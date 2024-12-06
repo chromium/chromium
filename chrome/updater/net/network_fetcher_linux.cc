@@ -396,7 +396,6 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
   LibcurlNetworkFetcher() = delete;
   LibcurlNetworkFetcher(const LibcurlNetworkFetcher&) = delete;
   LibcurlNetworkFetcher& operator=(const LibcurlNetworkFetcher&) = delete;
-  ~LibcurlNetworkFetcher() override = default;
 
   explicit LibcurlNetworkFetcher(CurlUniquePtr curl);
 

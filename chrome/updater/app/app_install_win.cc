@@ -78,7 +78,6 @@ namespace {
 class InstallProgressSilentObserver : public AppInstallProgress {
  public:
   explicit InstallProgressSilentObserver(ui::OmahaWndEvents* events_sink);
-  ~InstallProgressSilentObserver() override = default;
 
   // Overrides for AppInstallProgress.
   void OnCheckingForUpdate() override;
@@ -201,7 +200,6 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   AppInstallProgressIPC(const AppInstallProgressIPC&) = delete;
   AppInstallProgressIPC& operator=(const AppInstallProgressIPC&) = delete;
-  ~AppInstallProgressIPC() override = default;
 
   // Called by the window proc when a specific application message is processed
   // by the progress window. This call always occurs in the context of the

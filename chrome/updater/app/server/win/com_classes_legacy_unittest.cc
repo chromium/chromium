@@ -51,10 +51,6 @@ constexpr wchar_t kCmdId2[] = L"command 2";
 
 class LegacyAppCommandWebImplTest : public testing::Test {
  protected:
-  LegacyAppCommandWebImplTest()
-      : cmd_exe_command_line_(base::CommandLine::NO_PROGRAM) {}
-  ~LegacyAppCommandWebImplTest() override = default;
-
   void SetUp() override {
     SetupCmdExe(GetUpdaterScopeForTesting(), cmd_exe_command_line_,
                 temp_programfiles_dir_);
@@ -87,7 +83,7 @@ class LegacyAppCommandWebImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment environment_;
-  base::CommandLine cmd_exe_command_line_;
+  base::CommandLine cmd_exe_command_line_{base::CommandLine::NO_PROGRAM};
   base::ScopedTempDir temp_programfiles_dir_;
 };
 

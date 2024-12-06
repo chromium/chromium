@@ -90,10 +90,9 @@ class AppInstallControllerImpl : public AppInstallController {
     update_service_ = update_service;
   }
 
- protected:
+ private:
   ~AppInstallControllerImpl() override = default;
 
- private:
   scoped_refptr<UpdateService> update_service_;
 };
 

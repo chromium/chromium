@@ -33,7 +33,6 @@ using ::testing::ValuesIn;
 
 class MockMsiHandle : public MsiHandleInterface {
  public:
-  ~MockMsiHandle() override = default;
   MOCK_METHOD(UINT,
               GetProperty,
               (const std::wstring& name,

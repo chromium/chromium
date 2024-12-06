@@ -42,7 +42,6 @@ class PostRequestObserverImpl : public mojom::PostRequestObserver {
             std::move(post_request_complete_callback)) {}
   PostRequestObserverImpl(const PostRequestObserverImpl&) = delete;
   PostRequestObserverImpl& operator=(const PostRequestObserverImpl&) = delete;
-  ~PostRequestObserverImpl() override = default;
 
   // Overrides for mojom::PostRequestObserver.
   void OnResponseStarted(uint32_t http_status_code,
@@ -88,7 +87,6 @@ class FileDownloadObserverImpl : public mojom::FileDownloadObserver {
         download_complete_callback_(std::move(download_complete_callback)) {}
   FileDownloadObserverImpl(const FileDownloadObserverImpl&) = delete;
   FileDownloadObserverImpl& operator=(const FileDownloadObserverImpl&) = delete;
-  ~FileDownloadObserverImpl() override = default;
 
   // Overrides for mojom::FileDownloadObserver.
   void OnResponseStarted(uint32_t http_status_code,

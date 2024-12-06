@@ -120,7 +120,6 @@ class StateChangeObserverImpl : public mojom::StateChangeObserver {
         complete_callback_(std::move(complete_callback)) {}
   StateChangeObserverImpl(const StateChangeObserverImpl&) = delete;
   StateChangeObserverImpl& operator=(const StateChangeObserverImpl&) = delete;
-  ~StateChangeObserverImpl() override = default;
 
   // Overrides for mojom::StateChangeObserver.
   void OnStateChange(mojom::UpdateStatePtr state_mojom) override {

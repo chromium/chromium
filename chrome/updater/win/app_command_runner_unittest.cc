@@ -59,9 +59,6 @@ std::wstring GetCommandLine(int key, const std::wstring& exe_name) {
 
 class AppCommandRunnerTestBase : public ::testing::Test {
  protected:
-  AppCommandRunnerTestBase() = default;
-  ~AppCommandRunnerTestBase() override = default;
-
   void SetUp() override {
     test::SetupCmdExe(GetUpdaterScopeForTesting(), cmd_exe_command_line_,
                       temp_programfiles_dir_);
