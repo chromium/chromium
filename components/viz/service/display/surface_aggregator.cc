@@ -1527,6 +1527,10 @@ void SurfaceAggregator::CopyQuadsToPass(
             static_cast<TextureDrawQuad*>(dest_quad)->nearest_neighbor =
                 override_filter_quality == cc::PaintFlags::FilterQuality::kNone;
           }
+          if (override_dynamic_range_limit.has_value()) {
+            static_cast<TextureDrawQuad*>(dest_quad)->dynamic_range_limit =
+                override_dynamic_range_limit.value();
+          }
         }
       } else {
         dest_quad = dest_pass->CopyFromAndAppendDrawQuad(quad);

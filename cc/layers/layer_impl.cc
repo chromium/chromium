@@ -922,6 +922,7 @@ void LayerImpl::SetDynamicRangeLimit(
     return;
   }
   EnsureRareProperties().dynamic_range_limit = dynamic_range_limit;
+  NoteLayerPropertyChanged();
 }
 
 PropertyTrees* LayerImpl::GetPropertyTrees() const {

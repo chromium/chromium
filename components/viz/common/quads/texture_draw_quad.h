@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "cc/paint/paint_flags.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -60,6 +61,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   gfx::PointF uv_top_left;
   gfx::PointF uv_bottom_right;
   SkColor4f background_color = SkColors::kTransparent;
+  cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit;
   bool nearest_neighbor : 1;
   bool premultiplied_alpha : 1;
 

@@ -69,23 +69,6 @@ bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
          behavior == PaintShader::ScalingBehavior::kFixedScale;
 }
 
-float ComputeHdrHeadroom(
-    const PaintFlags::DynamicRangeLimitMixture& dynamic_range_limit,
-    float target_hdr_headroom) {
-  const float dynamic_range_high_mix =
-      1.f - dynamic_range_limit.constrained_high_mix -
-      dynamic_range_limit.standard_mix;
-  float hdr_headroom = 1.f;
-  if (dynamic_range_limit.constrained_high_mix > 0) {
-    hdr_headroom *= std::pow(std::min(2.f, target_hdr_headroom),
-                             dynamic_range_limit.constrained_high_mix);
-  }
-  if (dynamic_range_high_mix > 0) {
-    hdr_headroom *= std::pow(target_hdr_headroom, dynamic_range_high_mix);
-  }
-  return hdr_headroom;
-}
-
 }  // namespace
 
 PaintOpReader::PaintOpReader(const volatile void* memory,
@@ -369,7 +352,7 @@ void PaintOpReader::Read(
 
   // Compute the HDR headroom for tone mapping.
   const float hdr_headroom =
-      ComputeHdrHeadroom(dynamic_range_limit, options_.hdr_headroom);
+      dynamic_range_limit.ComputeHdrHeadroom(options_.hdr_headroom);
 
   if (enable_security_constraints_) {
     switch (serialized_type) {

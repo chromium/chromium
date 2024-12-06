@@ -172,7 +172,8 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
       !data.ReadUvBottomRight(&quad->uv_bottom_right) ||
       !data.ReadProtectedVideoType(&protected_video_type) ||
       !data.ReadOverlayPriorityHint(&overlay_priority_hint) ||
-      !data.ReadRoundedDisplayMasksInfo(&quad->rounded_display_masks_info)) {
+      !data.ReadRoundedDisplayMasksInfo(&quad->rounded_display_masks_info) ||
+      !data.ReadDynamicRangeLimit(&quad->dynamic_range_limit)) {
     return false;
   }
   quad->protected_video_type = protected_video_type;

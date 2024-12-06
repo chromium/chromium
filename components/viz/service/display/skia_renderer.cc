@@ -2707,8 +2707,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     DCHECK(SkColorSpace::Equals(image->colorSpace(),
                                 dst_color_space.ToSkColorSpace().get()));
     sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
-        src_color_space, std::nullopt, src_hdr_metadata, dst_color_space,
-        quad->is_video_frame);
+        src_color_space, std::nullopt, src_hdr_metadata,
+        quad->dynamic_range_limit, dst_color_space, quad->is_video_frame);
     paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
   }
 
@@ -2951,6 +2951,7 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     const gfx::ColorSpace& src,
     std::optional<uint32_t> src_bit_depth,
     std::optional<gfx::HDRMetadata> src_hdr_metadata,
+    const cc::PaintFlags::DynamicRangeLimitMixture& src_dynamic_range_limit,
     const gfx::ColorSpace& dst,
     bool is_video_frame) {
   // Use the current SDR slider white level for PQ HDR videos on
@@ -2966,10 +2967,12 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     hdr_metadata->ndwl = gfx::HdrMetadataNdwl(
         current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
   }
+
   return color_filter_cache_.Get(
       src, dst, src_bit_depth, hdr_metadata,
       current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
-      current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative());
+      src_dynamic_range_limit.ComputeHdrHeadroom(
+          current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative()));
 }
 
 namespace {
