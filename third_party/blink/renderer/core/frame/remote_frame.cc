@@ -424,6 +424,7 @@ void RemoteFrame::AddResourceTimingFromChild(
 }
 
 void RemoteFrame::DidStartLoading() {
+  TRACE_EVENT("navigation", "RemoteFrame::DidStartLoading");
   // If this proxy was created for a frame that hasn't yet finished loading,
   // let the renderer know so it can also mark the proxy as loading. See
   // https://crbug.com/916137.
@@ -431,6 +432,8 @@ void RemoteFrame::DidStartLoading() {
 }
 
 void RemoteFrame::DidStopLoading() {
+  TRACE_EVENT("navigation", "RemoteFrame::DidStopLoading");
+
   SetIsLoading(false);
 
   // When a subframe finishes loading, the parent should check if *all*
@@ -562,22 +565,27 @@ void RemoteFrame::WillEnterFullscreen(
 
 void RemoteFrame::EnforceInsecureNavigationsSet(
     const WTF::Vector<uint32_t>& set) {
+  TRACE_EVENT("navigation", "RemoteFrame::EnforceInsecureNavigationsSet");
   security_context_.SetInsecureNavigationsSet(set);
 }
 
 void RemoteFrame::SetFrameOwnerProperties(
     mojom::blink::FrameOwnerPropertiesPtr properties) {
+  TRACE_EVENT("navigation", "RemoteFrame::SetFrameOwnerProperties");
   Frame::ApplyFrameOwnerProperties(std::move(properties));
 }
 
 void RemoteFrame::EnforceInsecureRequestPolicy(
     mojom::blink::InsecureRequestPolicy policy) {
+  TRACE_EVENT("navigation", "RemoteFrame::EnforceInsecureRequestPolicy");
   SetInsecureRequestPolicy(policy);
 }
 
 void RemoteFrame::SetReplicatedOrigin(
     const scoped_refptr<const SecurityOrigin>& origin,
     bool is_potentially_trustworthy_unique_origin) {
+  TRACE_EVENT("navigation", "RemoteFrame::SetReplicatedOrigin");
+
   scoped_refptr<SecurityOrigin> security_origin = origin->IsolatedCopy();
   security_origin->SetOpaqueOriginIsPotentiallyTrustworthy(
       is_potentially_trustworthy_unique_origin);
@@ -604,11 +612,13 @@ bool RemoteFrame::IsAdFrame() const {
 }
 
 void RemoteFrame::SetReplicatedIsAdFrame(bool is_ad_frame) {
+  TRACE_EVENT("navigation", "RemoteFrame::SetReplicatedIsAdFrame");
   is_ad_frame_ = is_ad_frame;
 }
 
 void RemoteFrame::SetReplicatedName(const String& name,
                                     const String& unique_name) {
+  TRACE_EVENT("navigation", "RemoteFrame::SetReplicatedName");
   Tree().SetName(AtomicString(name));
   unique_name_ = unique_name;
 }
@@ -628,6 +638,8 @@ void RemoteFrame::Focus() {
 }
 
 void RemoteFrame::SetHadStickyUserActivationBeforeNavigation(bool value) {
+  TRACE_EVENT("navigation",
+              "RemoteFrame::SetHadStickyUserActivationBeforeNavigation");
   Frame::SetHadStickyUserActivationBeforeNavigation(value);
 }
 
@@ -746,6 +758,8 @@ void RemoteFrame::DidSetFramePolicyHeaders(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const WTF::Vector<ParsedPermissionsPolicyDeclaration>&
         parsed_permissions_policy) {
+  TRACE_EVENT("navigation", "RemoteFrame::DidSetFramePolicyHeaders");
+
   SetReplicatedSandboxFlags(sandbox_flags);
   // Convert from WTF::Vector<ParsedPermissionsPolicyDeclaration>
   // to std::vector<ParsedPermissionsPolicyDeclaration>, since
@@ -775,6 +789,7 @@ void RemoteFrame::DidSetFramePolicyHeaders(
 // with the caveat that the FrameOwner won't learn about updates to its flags
 // until they take effect.
 void RemoteFrame::DidUpdateFramePolicy(const FramePolicy& frame_policy) {
+  TRACE_EVENT("navigation", "RemoteFrame::DidUpdateFramePolicy");
   // At the moment, this is only used to replicate sandbox flags and container
   // policy for frames with a remote owner.
   SECURITY_CHECK(IsA<RemoteFrameOwner>(Owner()));
@@ -825,6 +840,7 @@ void RemoteFrame::SetOpener(Frame* opener_frame) {
 
 void RemoteFrame::UpdateTextAutosizerPageInfo(
     mojom::blink::TextAutosizerPageInfoPtr mojo_remote_page_info) {
+  TRACE_EVENT("navigation", "RemoteFrame::UpdateTextAutosizerPageInfo");
   // Only propagate the remote page info if our main frame is remote.
   DCHECK(IsMainFrame());
   Frame* root_frame = GetPage()->MainFrame();
@@ -1005,7 +1021,7 @@ void RemoteFrame::RecordSentVisualProperties() {
   sent_visual_properties_ = pending_visual_properties_;
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-      "RenderFrameProxy::SynchronizeVisualProperties Send Message",
+      "RemoteFrame::SynchronizeVisualProperties Send Message",
       TRACE_ID_GLOBAL(
           pending_visual_properties_.local_surface_id.submission_trace_id()),
       TRACE_EVENT_FLAG_FLOW_OUT, "message",
