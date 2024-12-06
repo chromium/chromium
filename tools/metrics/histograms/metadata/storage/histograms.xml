@@ -792,6 +792,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.FileSystemAccess.ObserverUsageRate" units="%"
+    expires_after="2025-07-02">
+  <owner>memmott@chromium.org</owner>
+  <owner>dslee@chromium.org</owner>
+  <owner>christinesm@chromium.org</owner>
+  <summary>
+    Records the percentage ratio of high water mark of OS-specific observer
+    resource usage over the total available quota for a given StorageKey.
+    Recorded when FileSystemAccessObserverQuotaManager is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Storage.FileSystemAccess.RestorePermissionPromptOutcome"
     enum="FileSystemAccessRestorePermissionPromptOutcome"
     expires_after="2025-09-01">

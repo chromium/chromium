@@ -34,27 +34,29 @@ class FileSystemAccessObserverQuotaManagerTest : public testing::Test {
 
     // Histogram logging is expected to occur after the destruction of the
     // observer quota manager.
-    if (expected_usage_histogram_.has_value()) {
-      hisogram_tester_.ExpectUniqueSample(
-          "Storage.FileSystemAccess.ObserverUsage",
-          expected_usage_histogram_.value(), 1);
-    }
+    hisogram_tester_.ExpectUniqueSample(
+        "Storage.FileSystemAccess.ObserverUsage",
+        expected_highmark_usage_histogram_, 1);
+    hisogram_tester_.ExpectUniqueSample(
+        "Storage.FileSystemAccess.ObserverUsageRate",
+        expected_highmark_usage_percentage_histogram_, 1);
     hisogram_tester_.ExpectUniqueSample(
         "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
         expect_quota_exceeded_histogram_, 1);
   }
 
-  void ExpectObserverUsageHisogram(size_t max_usage) {
-    expected_usage_histogram_ = max_usage;
-  }
-
-  void ExpectObserverUsageQuotaExceededHistogram(bool exceeded) {
-    expect_quota_exceeded_histogram_ = exceeded;
+  void ExpectObserverUsageHistogram(size_t highmark_usage,
+                                    size_t highmark_usage_percentage,
+                                    bool quota_exceeded) {
+    expected_highmark_usage_histogram_ = highmark_usage;
+    expected_highmark_usage_percentage_histogram_ = highmark_usage_percentage;
+    expect_quota_exceeded_histogram_ = quota_exceeded;
   }
 
  protected:
   base::HistogramTester hisogram_tester_;
-  std::optional<size_t> expected_usage_histogram_;
+  size_t expected_highmark_usage_histogram_ = 0;
+  size_t expected_highmark_usage_percentage_histogram_ = 0;
   bool expect_quota_exceeded_histogram_ = false;
   scoped_refptr<FileSystemAccessObserverQuotaManager> observer_quota_manager_;
   base::test::TaskEnvironment task_environment_;
@@ -90,8 +92,10 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, OnUsageChange) {
   // subtract is larger than the previous total usage.
   EXPECT_EQ(observer_quota_manager_->GetTotalUsageForTesting(), 0U);
 
-  ExpectObserverUsageHisogram(10);
-  ExpectObserverUsageQuotaExceededHistogram(true);
+  // 10 usage out of 10 quota limit = 100%
+  ExpectObserverUsageHistogram(/*highmark_usage=*/10,
+                               /*highmark_usage_percentage=*/100,
+                               /*quota_exceeded=*/true);
 }
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaExceeded) {
@@ -101,7 +105,10 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaExceeded) {
       observer_quota_manager_->OnUsageChange(/*old_usage=*/0, /*new_usage=*/11),
       UsageChangeResult::kQuotaUnavailable);
 
-  ExpectObserverUsageQuotaExceededHistogram(true);
+  // 0 usage out of 10 quota limit = 0%
+  ExpectObserverUsageHistogram(/*highmark_usage=*/0,
+                               /*highmark_usage_percentage=*/0,
+                               /*quota_exceeded=*/true);
 }
 
 TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaNotExceeded) {
@@ -111,7 +118,10 @@ TEST_F(FileSystemAccessObserverQuotaManagerTest, HistogramQuotaNotExceeded) {
       observer_quota_manager_->OnUsageChange(/*old_usage=*/0, /*new_usage=*/1),
       UsageChangeResult::kOk);
 
-  ExpectObserverUsageQuotaExceededHistogram(false);
+  // 1 usage out of 10 quota limit = 10%
+  ExpectObserverUsageHistogram(/*highmark_usage=*/1,
+                               /*highmark_usage_percentage=*/10,
+                               /*quota_exceeded=*/false);
 }
 
 }  // namespace content
