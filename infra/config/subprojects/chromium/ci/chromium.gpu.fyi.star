@@ -2572,6 +2572,21 @@ ci.thin_tester(
                     },
                 ),
             ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
         },
     ),
     targets_settings = targets.settings(
