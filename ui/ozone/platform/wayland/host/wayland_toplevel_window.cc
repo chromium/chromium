@@ -262,6 +262,14 @@ void WaylandToplevelWindow::Restore() {
 
 void WaylandToplevelWindow::ActivateWithToken(std::string token) {
   DCHECK(connection()->xdg_activation());
+  // xdg-activation implementation doesn't seem to interact well with dnd in
+  // some compositors. Eg: Mutter crashes were observed in tab drag sessions.
+  // See https://gitlab.gnome.org/GNOME/mutter/-/issues/3822.
+  //
+  // TODO(crbug.com/40866970): Remove once the compositor bug gets fixed.
+  if (connection()->IsDragInProgress()) {
+    return;
+  }
   connection()->xdg_activation()->Activate(root_surface()->surface(), token);
 }
 
