@@ -238,6 +238,7 @@ source_set("sharing_factory") {
     "//components/sync/base",
     "//components/sync/model",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/common",
   ]

@@ -8,8 +8,6 @@
 
 #import "base/functional/bind.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
@@ -34,14 +32,13 @@ IOSChromePasswordReceiverServiceFactory::GetInstance() {
 password_manager::PasswordReceiverService*
 IOSChromePasswordReceiverServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordReceiverService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
 IOSChromePasswordReceiverServiceFactory::
     IOSChromePasswordReceiverServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PasswordReceiverService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PasswordReceiverService",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
