@@ -10,8 +10,6 @@ import android.app.backup.BackupDataOutput;
 import android.content.Context;
 import android.os.ParcelFileDescriptor;
 
-import org.chromium.base.BundleUtils;
-
 import java.io.IOException;
 
 /**
@@ -27,11 +25,13 @@ public class SplitCompatBackupAgent extends BackupAgent {
     }
 
     @Override
-    protected void attachBaseContext(Context unused) {
-        Context splitContext = SplitCompatApplication.createChromeContext();
-        mImpl = (Impl) BundleUtils.newInstance(splitContext, mBackupAgentClassName);
+    protected void attachBaseContext(Context baseContext) {
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContextChrome(
+                                baseContext, mBackupAgentClassName);
         mImpl.setBackupAgent(this);
-        super.attachBaseContext(splitContext);
+        super.attachBaseContext(baseContext);
     }
 
     @Override

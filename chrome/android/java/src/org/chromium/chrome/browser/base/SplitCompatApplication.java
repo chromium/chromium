@@ -256,8 +256,8 @@ public class SplitCompatApplication extends Application {
                             // by reflection from there.
                             return (JavaExceptionReporter)
                                     BundleUtils.newInstance(
-                                            createChromeContext(),
-                                            "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter");
+                                            "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter",
+                                            CHROME_SPLIT_NAME);
                         }
                     };
             PureJavaExceptionHandler.installHandler(factory);
@@ -325,11 +325,6 @@ public class SplitCompatApplication extends Application {
 
     public static boolean isBrowserProcess() {
         return !ContextUtils.getProcessName().contains(":");
-    }
-
-    /** Creates a context which can be used to load code and resources in the chrome split. */
-    public static Context createChromeContext() {
-        return BundleUtils.createIsolatedSplitContext(CHROME_SPLIT_NAME);
     }
 
     public static boolean cannotLoadIn64Bit() {

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.base;
 import android.content.Context;
 import android.os.PersistableBundle;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.components.minidump_uploader.MinidumpUploadJob;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobService;
 
@@ -24,11 +23,13 @@ public class SplitCompatMinidumpUploadJobService extends MinidumpUploadJobServic
     }
 
     @Override
-    protected void attachBaseContext(Context unused) {
-        Context splitContext = SplitCompatApplication.createChromeContext();
-        mImpl = (Impl) BundleUtils.newInstance(splitContext, mServiceClassName);
+    protected void attachBaseContext(Context baseContext) {
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContextChrome(
+                                baseContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(splitContext);
+        super.attachBaseContext(baseContext);
     }
 
     @Override
