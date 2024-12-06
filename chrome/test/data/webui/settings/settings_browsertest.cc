@@ -833,7 +833,8 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
   SettingsPrivacyGuideTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kPrivacyGuideForceAvailable,
-         content_settings::features::kTrackingProtection3pcd},
+         content_settings::features::kTrackingProtection3pcd,
+         optimization_guide::features::kPrivacyGuideAiSettings},
         {});
   }
 
@@ -950,6 +951,13 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
                        CompletionFragmentWithAdTopicsCard) {
   RunTest("settings/privacy_guide_completion_fragment_test.js",
           "runMochaSuite('CompletionFragmentWithAdTopicsCard')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
+                       CompletionFragmentAiSettingsInPrivacyGuideDisabled) {
+  RunTest(
+      "settings/privacy_guide_completion_fragment_test.js",
+      "runMochaSuite('CompletionFragmentAiSettingsInPrivacyGuideDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, AdTopicsFragment) {

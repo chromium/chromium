@@ -2132,6 +2132,8 @@ void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_LABEL},
       {"privacyGuideCompletionCardWaaSubLabel",
        IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_SUB_LABEL},
+      {"privacyGuideCompletionCardAiSettingsLabel",
+       IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_AI_SETTINGS_LABEL},
       {"privacyGuideMsbbCardHeader",
        IDS_SETTINGS_PRIVACY_GUIDE_MSBB_CARD_HEADER},
       {"privacyGuideMsbbFeatureDescription1",

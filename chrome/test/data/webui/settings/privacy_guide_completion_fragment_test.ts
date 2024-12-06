@@ -34,13 +34,12 @@ suite('CompletionFragment', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isPrivacySandboxRestrictedNoticeEnabled: false,
+      showAdvancedFeaturesMainControl: true,
     });
     resetRouterForTesting();
   });
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
@@ -51,12 +50,15 @@ suite('CompletionFragment', function() {
     PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
+    createPage();
+  });
 
+  function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fragment = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(fragment);
-
     return flushTasks();
-  });
+  }
 
   teardown(function() {
     fragment.remove();
@@ -133,12 +135,23 @@ suite('CompletionFragment', function() {
   test('updateFragmentFromSignIn', function() {
     setSignInState(true);
     assertTrue(isChildVisible(fragment, '#privacySandboxRow'));
+    assertTrue(isChildVisible(fragment, '#aiRow'));
     assertTrue(isChildVisible(fragment, '#waaRow'));
 
     // Sign the user out and expect the waa row to no longer be visible.
     setSignInState(false);
     assertTrue(isChildVisible(fragment, '#privacySandboxRow'));
+    assertTrue(isChildVisible(fragment, '#aiRow'));
     assertFalse(isChildVisible(fragment, '#waaRow'));
+  });
+
+  test('aiRowNotShownWhenAiPageHidden', function() {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: false,
+    });
+    createPage();
+
+    assertFalse(isChildVisible(fragment, '#aiRow'));
   });
 });
 
@@ -266,5 +279,43 @@ suite('CompletionFragmentWithAdTopicsCard', function() {
         fragment.i18n(
             'privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics'),
         privacySandboxRow.subLabel);
+  });
+});
+
+// TODO(crbug.com/362225975): Remove after PrivacyGuideAiSettings is launched.
+suite('CompletionFragmentAiSettingsInPrivacyGuideDisabled', function() {
+  let fragment: PrivacyGuideCompletionFragmentElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableAiSettingsInPrivacyGuide: false,
+      showAdvancedFeaturesMainControl: true,
+    });
+    resetRouterForTesting();
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
+    fragment = document.createElement('privacy-guide-completion-fragment');
+    document.body.appendChild(fragment);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    fragment.remove();
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('aiRowNotShown', function() {
+    setSignInState(false);
+    assertFalse(isChildVisible(fragment, '#aiRow'));
+
+    setSignInState(true);
+    assertFalse(isChildVisible(fragment, '#aiRow'));
   });
 });
