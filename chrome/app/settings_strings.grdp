@@ -1683,12 +1683,6 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_NEXT_BUTTON" desc="Text of a button in the 'Privacy Guide' that advances to the next step in the privacy guide.">
     Next
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_FEATURE_DESCRIPTION_HEADER" desc="Header of a description text that describes the behavior of a particular feature. This description is shown to users alongside the feature itself in the 'Privacy Guide'.">
-    When on
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_THINGS_TO_CONSIDER" desc="Header of a text column that describes things users should consider about a feature. This description is shown to users alongside the feature itself in the 'Privacy Guide'.">
-    Things to consider
-  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_WELCOME_CARD_HEADER" desc="A header shown at the top of the welcome card in the 'Privacy Guide', explaining to users what the 'Privacy Guide' is.">
     A guide of your privacy choices
   </message>
