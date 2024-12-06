@@ -7,7 +7,6 @@
 <translation id="1042552502243217427">ページのリンクを非公開でプリロードするようサイトから求められた場合、Chromium は Google サーバーを使用します。これによりプリロードしたサイトにユーザーの情報が知られることはありませんが、Google はどのようなサイトがプリロードされたかを学習します。</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
 <translation id="1083934481477628225">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました</translation>
-<translation id="1098170124587656448">Chromium でデータ侵害や不正な拡張機能などの脅威から保護されているか確認します</translation>
 <translation id="1104942323762546749">Chromium からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
 <translation id="112640046208448578">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。画像検索を使用すると、ページのスクリーンショットがサーバーに送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">既定のブラウザは Chromium です</translation>
@@ -170,7 +169,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 は、サイトのパフォーマンスを向上させるために使用される Chromium の JavaScript エンジンおよび WebAssembly エンジンです</translation>
-<translation id="3283186697780795848">Chromium のバージョン <ph name="PRODUCT_VERSION" /> がインストールされています</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="328888136576916638">Google API キーが欠落しています。Chromium の一部の機能は無効になります。</translation>
 <translation id="3296368748942286671">Chromium を閉じた際にバックグラウンド アプリの処理を続行する</translation>
@@ -261,7 +259,6 @@
 <translation id="4531137820806573936">Chromium にシーン認識とハンド トラッキングを許可する必要があります</translation>
 <translation id="4534145890176164066">Chromium でフォームの内容を正確に把握して、すばやく自動入力できます</translation>
 <translation id="4536805923587466102">別の Chromium プロフィールに <ph name="USER_EMAIL_ADDRESS" /> としてすでにログインしています</translation>
-<translation id="4544142686420020088">エラーが発生したため、Chromium が更新されませんでした。<ph name="BEGIN_LINK" />Chromium の更新に関する問題を解決してください。<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">このタブを非アクティブにして、ブラウジング環境を改善し、処理を高速に保つことができます。</translation>
 <translation id="454579500955453258">新しい Chromium プロフィールで続行しますか？</translation>
 <translation id="4548534452171747496">ページがプリロードされ、閲覧と検索をすばやく行えるようになります。<ph name="BEGIN_LINK" />ページのプリロードの詳細<ph name="END_LINK" /></translation>
@@ -370,7 +367,6 @@
 <translation id="6120345080069858279">このパスワードは Google アカウントに保存されるため、覚えておく必要はありません。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> は危険なファイルであるため、Chromium でブロックしました。</translation>
 <translation id="6132897690380286411">Chromium はまもなく終了し、データが削除されます</translation>
-<translation id="6134968993075716475">セーフ ブラウジングがオフになっています。Chromium はオンにすることをおすすめしています。</translation>
 <translation id="6145820983052037069">こちらで Chromium プロフィールを切り替えることができます</translation>
 <translation id="615103374448673771">Cookie を許可した場合、Chromium はプリロードの際に Cookie を使用することがあります。</translation>
 <translation id="6165508094623778733">詳細</translation>
@@ -382,7 +378,6 @@
 <translation id="6241367896540709610">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>
 <translation id="6245734527075554892">Chromium に保存されている安全でないサイトのリストと URL を照合します</translation>
 <translation id="6248213926982192922">Chromium を既定のブラウザにする</translation>
-<translation id="6266342355635466082">Chromium がアップデートを確認できません。インターネット接続を確認してみてください。</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="6270547683008298381">これらのタブでは追加のリソースが使用されています。パフォーマンスを改善するには、Chromium でこれらのタブを非アクティブにしてください。</translation>
 <translation id="6281746429495226318">Chromium プロフィールをカスタマイズ</translation>
@@ -537,7 +532,6 @@
 <translation id="8232193495299001329">Chromium では、この拡張機能の提供元を確認できないため、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chromium からこの拡張機能を削除してください。</translation>
 <translation id="8248265253516264921">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
 <translation id="8254601181414348851">新しいプロフィールで Chromium にログインしますか？</translation>
-<translation id="8266560134891435528">ログインしていないため、Chromium でパスワードを確認できません</translation>
 <translation id="8286943863733751221">安全でないサイトやダウンロードが見つかると <ph name="BEGIN_LINK" />Chromium が警告<ph name="END_LINK" />します</translation>
 <translation id="8313851650939857356">起動エラー: <ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chromium は組織によって終了されます。</translation>

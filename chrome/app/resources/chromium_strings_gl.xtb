@@ -9,7 +9,6 @@
 
 É posible que algunhas funcións non estean dispoñibles e que non se garden os cambios nas preferencias.</translation>
 <translation id="1083934481477628225">O teu pai ou nai desactivou en Chromium a opción Permisos para sitios, aplicacións e extensións</translation>
-<translation id="1098170124587656448">Chromium pode protexerte contra violacións da seguranza dos datos, extensións prexudiciais e moito máis</translation>
 <translation id="1104942323762546749">Chromium quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="112640046208448578">Identifica obxectos ou lugares, e copia ou traduce texto. Cando usas a busca de imaxes, envíase unha captura de pantalla da páxina ao servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium é o teu navegador predeterminado</translation>
@@ -173,7 +172,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 é o motor de Chromium para JavaScript e WebAssembly que se usa para mellorar o rendemento dos sitios</translation>
-<translation id="3283186697780795848">Tes instalada a versión <ph name="PRODUCT_VERSION" /> de Chromium</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Chromium.</translation>
 <translation id="3296368748942286671">Continuar executando aplicacións en segundo plano cando se peche Chromium</translation>
@@ -264,7 +262,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4531137820806573936">Chromium necesita permiso para analizar o que te rodea e facer un seguimento das mans</translation>
 <translation id="4534145890176164066">Chromium entenderá mellor o contido dos formularios e poderá completalos automaticamente máis rápido</translation>
 <translation id="4536805923587466102">Xa tes a sesión iniciada como <ph name="USER_EMAIL_ADDRESS" /> noutro perfil de Chromium</translation>
-<translation id="4544142686420020088">Chromium non se actualizou, xa que se produciu un erro. <ph name="BEGIN_LINK" />Soluciona os problemas de actualización de Chromium e as actualizacións que non se puidesen realizar<ph name="END_LINK" />.</translation>
 <translation id="4545268686623374213">Chromium pode desactivar esta pestana para mellorar a experiencia de navegación e axilizar as operacións.</translation>
 <translation id="454579500955453258">Queres continuar nun perfil de Chromium novo?</translation>
 <translation id="4548534452171747496">Chromium precarga as páxinas para que navegar e facer buscas sexa máis rápido. <ph name="BEGIN_LINK" />Máis información sobre como precargar páxinas<ph name="END_LINK" /></translation>
@@ -373,7 +370,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6120345080069858279">Chromium gardará este contrasinal na túa Conta de Google. Non terás que recordalo.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> é perigoso, así que Chromium bloqueouno.</translation>
 <translation id="6132897690380286411">Chromium pecharase en breve e eliminaranse os datos</translation>
-<translation id="6134968993075716475">A opción Navegación segura está desactivada. Chromium recomenda activala.</translation>
 <translation id="6145820983052037069">Aquí podes cambiar entre perfís de Chromium</translation>
 <translation id="615103374448673771">Se permites o uso de cookies, Chromium poderá utilizalas para as precargas</translation>
 <translation id="6165508094623778733">Máis información</translation>
@@ -385,7 +381,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6241367896540709610">Chromium necesita permiso de acceso ao almacenamento para descargar ficheiros</translation>
 <translation id="6245734527075554892">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium</translation>
 <translation id="6248213926982192922">Establecer Chromium como navegador predeterminado</translation>
-<translation id="6266342355635466082">Chromium non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="6268381023930128611">Pechar sesión en Chromium?</translation>
 <translation id="6270547683008298381">Estas pestanas usan recursos adicionais. Para mellorar o rendemento, permite que Chromium as desactive.</translation>
 <translation id="6281746429495226318">Personalizar o teu perfil de Chromium</translation>
@@ -540,7 +535,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8232193495299001329">Chromium non pode verificar de onde procede esta extensión, polo que pode non ser segura. Quítaa de Chromium para que non poida ver nin cambiar os teus datos (como a túa información persoal) nos sitios que visites.</translation>
 <translation id="8248265253516264921">Se unha imaxe non ten unha descrición útil, Chromium tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="8254601181414348851">Queres iniciar sesión en Chromium cun perfil novo?</translation>
-<translation id="8266560134891435528">Chromium non puido comprobar os teus contrasinais porque non iniciaches sesión</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium avísate<ph name="END_LINK" /> sobre descargas e sitios pouco seguros</translation>
 <translation id="8313851650939857356">Produciuse un erro de inicio do sistema: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">A túa organización pecha Chromium cando non se usa durante <ph name="TIMEOUT_DURATION" />.</translation>

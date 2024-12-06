@@ -1237,6 +1237,7 @@
 <translation id="3229277193950731405">Скапіраваць радок з версіяй</translation>
 <translation id="323107829343500871">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Заўсёды выяўляць важнае змесціва на гэтым сайце</translation>
+<translation id="323585066388831737">Светла-чырвоны</translation>
 <translation id="3236212803136366317">Перавагі картак</translation>
 <translation id="3238395604961564389">Адкрыць спасылку ў акне ў рэжыме інкогніта</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць выгляд браўзера, націсніце Tab, затым Enter</translation>
@@ -1854,6 +1855,7 @@
 <translation id="4277937682389409325">Мясцовы адрас</translation>
 <translation id="4278090321534187713">Карткі, якія не прымае гэты прадавец, адключаны</translation>
 <translation id="4278390842282768270">Дазволена</translation>
+<translation id="4281245629646759298">Светла-жоўты</translation>
 <translation id="4281998142035485137">{0,plural, =1{Адкрыць канфідэнцыяльны файл?}one{Адкрыць канфідэнцыяльныя файлы?}few{Адкрыць канфідэнцыяльныя файлы?}many{Адкрыць канфідэнцыяльныя файлы?}other{Адкрыць канфідэнцыяльныя файлы?}}</translation>
 <translation id="4282280603030594840">Купля аўтамабіля</translation>
 <translation id="4282346679996504092">Абвесткі пра гэты прадукт выключаны, а закладка выдалена</translation>
@@ -2742,6 +2744,7 @@
 <translation id="5969199813874624822">Захаваць і ўключыць адсочванне цаны</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шосты рулон</translation>
+<translation id="5974745851230707809">Варыянты куплі ў растэрміноўку</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5979084224081478209">Праверыць паролі</translation>
 <translation id="5984570616552610254">Вільготнасць камеры</translation>
@@ -4334,6 +4337,7 @@
 <translation id="882338992931677877">Слот ручной падачы</translation>
 <translation id="8830320733681313421">Паштоўка Hagaki</translation>
 <translation id="8830565333350631528">Паглядзець файлы ў воблаку "<ph name="CLOUD_PROVIDER" />"</translation>
+<translation id="8831783793142731637">Даступна для пакупак звыш <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Пральныя машыны і сушылкі</translation>
 <translation id="8834962751196791179">Гэта папярэджанне паказана вам, бо гэты сайт не падтрымлівае HTTPS і ў вас уключаны рэжым інкогніта. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Тэлешоу на тэму фантастыкі і фэнтэзі</translation>

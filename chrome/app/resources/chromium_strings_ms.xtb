@@ -7,7 +7,6 @@
 <translation id="1042552502243217427">Apabila laman meminta prapemuatan pautan secara peribadi pada halaman mereka, Chromium menggunakan pelayan Google. Tindakan ini akan menyembunyikan identiti anda daripada laman yang dipramuat tetapi Google mengetahui laman yang dipramuat.</translation>
 <translation id="1065672644894730302">Pilihan anda tidak dapat dibaca. Beberapa ciri mungkin tidak tersedia dan perubahan terhadap pilihan tidak akan disimpan.</translation>
 <translation id="1083934481477628225">Ibu/bapa anda telah mematikan "Kebenaran untuk laman, apl dan sambungan" untuk Chromium</translation>
-<translation id="1098170124587656448">Chromium dapat membantu untuk memastikan anda selamat daripada pelanggaran data, sambungan tidak elok dan pelbagai lagi</translation>
 <translation id="1104942323762546749">Chromium mahu mengeksport kata laluan anda. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="112640046208448578">Kenal pasti perkara atau tempat dan salin atau terjemahkan teks. Apabila anda menggunakan Carian Imej, tangkapan skrin halaman akan dihantar kepada pelayan. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium ialah penyemak imbas lalai anda</translation>
@@ -171,7 +170,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 ialah JavaScript Chromium dan enjin WebAssembly yang digunakan untuk meningkatkan prestasi laman</translation>
-<translation id="3283186697780795848">Chromium versi <ph name="PRODUCT_VERSION" /> dipasang</translation>
 <translation id="3286538390144397061">Mulakan Semula Sekarang</translation>
 <translation id="328888136576916638">Kunci API Google tiada. Sesetengah fungsi Chromium akan dilumpuhkan.</translation>
 <translation id="3296368748942286671">Terus menjalankan apl latar belakang apabila Chromium ditutup</translation>
@@ -262,7 +260,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4531137820806573936">Chromium memerlukan kebenaran untuk memetakan persekitaran dan menjejaki peranti anda</translation>
 <translation id="4534145890176164066">Chromium memahami borang dengan lebih baik dan dapat membuat autolengkap borang dengan lebih pantas untuk anda</translation>
 <translation id="4536805923587466102">Anda telah log masuk sebagai <ph name="USER_EMAIL_ADDRESS" /> dalam profil Chromium yang lain</translation>
-<translation id="4544142686420020088">Chromium tidak dikemas kini, kesilapan telah berlaku. <ph name="BEGIN_LINK" />Selesaikan masalah kemas kini dan kegagalan kemas kini Chromium.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium boleh menjadikan tab ini tidak aktif untuk meningkatkan pengalaman penyemakan imbas anda dan melancarkan pengalaman anda.</translation>
 <translation id="454579500955453258">Teruskan dalam profil Chromium baharu?</translation>
 <translation id="4548534452171747496">Chromium mempramuatkan halaman yang menjadikan penyemakan imbas dan carian lebih pantas. <ph name="BEGIN_LINK" />Ketahui halaman pramuat dengan lebih lanjut<ph name="END_LINK" /></translation>
@@ -371,7 +368,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6120345080069858279">Chromium akan menyimpan kata laluan ini dalam Google Account anda. Anda tidak perlu mengingati kata laluan tersebut.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> berbahaya, jadi Chromium telah menyekat fail itu.</translation>
 <translation id="6132897690380286411">Chromium akan ditutup dan data akan dipadamkan sebentar lagi</translation>
-<translation id="6134968993075716475">Penyemakan Imbas Selamat dimatikan. Chromium mengesyorkan agar ciri ini dihidupkan.</translation>
 <translation id="6145820983052037069">Anda boleh beralih antara profil Chromium di sini</translation>
 <translation id="615103374448673771">Jika anda membenarkan kuki, Chromium boleh menggunakan kuki tersebut semasa prapemuatan</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
@@ -383,7 +379,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6241367896540709610">Chromium memerlukan kebenaran akses storan untuk memuat turun fail</translation>
 <translation id="6245734527075554892">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chromium</translation>
 <translation id="6248213926982192922">Jadikan Chromium penyemak imbas lalai</translation>
-<translation id="6266342355635466082">Chromium tidak dapat menyemak kemas kini. Cuba periksa sambungan Internet anda.</translation>
 <translation id="6268381023930128611">Log keluar daripada Chromium?</translation>
 <translation id="6270547683008298381">Tab ini menggunakan sumber tambahan. Untuk meningkatkan prestasi anda, benarkan Chromium menjadikan tab tersebut tidak aktif.</translation>
 <translation id="6281746429495226318">Sesuaikan profil Chromium anda</translation>
@@ -538,7 +533,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8232193495299001329">Chromium tidak dapat mengesahkan tempat asal sambungan ini, maka tindakan ini mungkin tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi.</translation>
 <translation id="8248265253516264921">Jika imej tiada perihalan yang berguna, Chromium akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="8254601181414348851">Log masuk ke Chromium dalam profil baharu?</translation>
-<translation id="8266560134891435528">Chromium tidak dapat menyemak kata laluan anda kerana anda tidak log masuk</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium memberi anda amaran<ph name="END_LINK" /> tentang laman dan muat turun tidak selamat</translation>
 <translation id="8313851650939857356">Ralat permulaan: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasi anda menutup Chromium apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>

@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" />에서 Chrome 브라우저 기능을 이용해 보세요</translation>
 <translation id="259935314519650377">다운로드한 설치 프로그램을 캐시할 수 없습니다. 오류(<ph name="UNPACK_CACHING_ERROR_CODE" />)가 발생했습니다.</translation>
-<translation id="2622559029861875898">Chrome에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2632707915638608719">Chrome 확장 프로그램을 더욱 다양하게 활용하세요.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome에서는 브라우저가 가장 안전하게 설정되어 있는지 정기적으로 확인합니다. 검토가 필요한 사항이 있으면 알려 드리겠습니다.</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">취약한 비밀번호는 추측하기 쉽습니다. Chrome에서 <ph name="BEGIN_LINK" />안전한 비밀번호를 생성하고 기억하도록 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="2926952073016206995">Chrome에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="2928420929544864228">설치가 완료되었습니다.</translation>
-<translation id="2929907241665500097">문제가 발생하여 Chromium을 업데이트할 수 없습니다. <ph name="BEGIN_LINK" />Chrome 업데이트 문제 및 업데이트 실패 문제 해결하기<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">설치 오류: 설치 프로그램 프로세스를 시작할 수 없습니다.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chrome</translation>
 <translation id="2970681950995291301">Chrome에서 Google 계정을 삭제하려면 설정 페이지를 통해 Chrome에서 로그아웃하세요</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Chrome이 백그라운드 모드로 실행 중입니다.</translation>
 <translation id="3038232873781883849">설치 대기 중...</translation>
 <translation id="3045032126857188731">번역된 언어, <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">세이프 브라우징이 사용 중지되어 있습니다. 사용 설정하는 것이 좋습니다.</translation>
 <translation id="306179102415443347">바로가기를 사용하여 Google 비밀번호 관리자로 빠르게 이동하세요. 바로가기는 컴퓨터의 홈 화면이나 앱 런처로 이동할 수 있습니다.</translation>
 <translation id="3065168410429928842">Chrome 탭</translation>
 <translation id="3080151273017101988">Chrome 종료 후에도 백그라운드 앱을 계속 실행</translation>
@@ -242,7 +239,6 @@
 <translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chrome 프로필이 생성됩니다.</translation>
 <translation id="383928141529488001">블루투스 기기를 탐색하려면 Chrome에 블루투스 액세스 권한이 필요합니다. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Chrome 창을 모두 닫고 다시 시도해 보세요.</translation>
-<translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> 버전이 설치됩니다.</translation>
 <translation id="3873044882194371212">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="3889417619312448367">Chrome 제거</translation>
@@ -282,12 +278,10 @@
 <translation id="4328355335528187361">Chrome 개발자(mDNS-In)</translation>
 <translation id="4329315893554541805">맞춤설정 및 기타 기능을 사용하려면 웹 및 앱 활동 그리고 연결된 Google 서비스에 Chrome을 포함하세요</translation>
 <translation id="4334294535648607276">다운로드가 완료되었습니다.</translation>
-<translation id="4335235004908507846">Chrome이 정보 유출, 유해한 확장 프로그램 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />이(가) Chrome에 추가됨</translation>
 <translation id="4348548358339558429">맞춤설정을 사용하려면 웹 및 앱 활동에 Chrome을 포함하세요</translation>
 <translation id="436060642166082913">파일이 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chrome에서 이 다운로드를 차단했습니다</translation>
 <translation id="4367027658822022112">측면 패널 상단의 고정 버튼을 클릭하여 Google 렌즈를 고정하면 쉽게 액세스할 수 있습니다</translation>
-<translation id="4384570495110188418">로그인되어 있지 않으므로 Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="4389991535395284064">시크릿 모드로 탐색할 때 Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4434353761996769206">설치 프로그램 오류: <ph name="INSTALLER_ERROR" /></translation>
@@ -577,7 +571,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7959172989483770734">Chrome 프로필 관리</translation>
 <translation id="7962368738413920945">사이트가 제대로 작동하지만 Chrome 창을 모두 닫으면 데이터는 전부 삭제됩니다.</translation>
 <translation id="7962410387636238736">Windows XP와 Windows Vista가 더 이상 지원되지 않으므로 이 컴퓨터에서 Chrome 업데이트를 받을 수 없게 됩니다</translation>
-<translation id="8005666035647241369">이 기기의 Google 비밀번호 관리자에서</translation>
+<translation id="8005666035647241369">이 기기의 Google 비밀번호 관리자에 저장</translation>
 <translation id="8008534537613507642">Chrome 재설치</translation>
 <translation id="8009904340233602924">계정 없이 Chrome 사용</translation>
 <translation id="8010081455002666927">자동 감지</translation>

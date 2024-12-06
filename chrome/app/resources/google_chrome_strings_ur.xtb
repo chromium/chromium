@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">‏یہ اس آلہ سے آپ کے براؤزنگ ڈیٹا کو حذف کر دے گا۔ بعد میں اپنے ڈیٹا کی بازیافت کرنے کیلئے، Chrome میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>
 <translation id="2597976513418770460">‏<ph name="ACCOUNT_EMAIL" /> سے اپنے Chrome براؤزر کے مواد حاصل کریں</translation>
 <translation id="259935314519650377">ڈاؤن لوڈ کردہ انسٹالر کو کیش کرنے میں ناکام۔ خرابی: <ph name="UNPACK_CACHING_ERROR_CODE" /></translation>
-<translation id="2622559029861875898">‏Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="2632707915638608719">‏Chrome کے لیے ایکسٹینشنز کے ساتھ مزید کام کریں</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">‏Chrome باقاعدگی سے یہ یقینی بنانے کے لیے چیک کرتا ہے کہ آپ کے براؤزر میں سب سے محفوظ ترتیبات موجود ہیں۔ اگر کسی چیز کو آپ کے جائزے کی ضرورت ہے تو ہم آپ کو مطلع کریں گے۔</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">‏کمزور پاس ورڈز کا اندازہ لگانا آسان ہوتا ہے۔ Chrome کو <ph name="BEGIN_LINK" />آپ کے لیے مضبوط پاس ورڈز تخلیق کرنے اور یاد رکھنے دیں<ph name="END_LINK" />۔</translation>
 <translation id="2926952073016206995">‏Chrome کو اس سائٹ کے لیے کیمرے کی اجازت درکار ہے</translation>
 <translation id="2928420929544864228">انسٹالیشن مکمل ہو گئی۔</translation>
-<translation id="2929907241665500097">‏Chrome اپ ڈیٹ نہیں ہوا، کچھ غلط ہو گیا۔ <ph name="BEGIN_LINK" />Chrome اپ ڈیٹ کی دشواریوں اور ناکام اپ ڈیٹس کو درست کریں۔<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">انسٹال سے متعلق خرابی: انسٹالر کا عمل شروع ہونے میں ناکام رہا۔</translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان - Chrome</translation>
 <translation id="2970681950995291301">‏اپنے Google اکاؤنٹ کو Chrome سے ہٹانے کے لیے، ترتیبات کے صفحے میں Chrome سے سائن آؤٹ کریں</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">‏Google Chrome پس منظر وضع میں ہے۔</translation>
 <translation id="3038232873781883849">انسٹال ہونے کا انتظار ہے...</translation>
 <translation id="3045032126857188731">ترجمہ کردہ زبان: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">‏محفوظ براؤزنگ آف ہے۔ Chrome اسے آن کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="306179102415443347">‏Google پاس ورڈ مینیجر تک فوری طور پر پہنچنے کیلئے اپنا شارٹ کٹ استعمال کریں۔ آپ اپنا شارٹ کٹ اپنے کمپیوٹر کی ہوم اسکرین یا ایپ لانچر پر منتقل کر سکتے ہیں۔</translation>
 <translation id="3065168410429928842">‏Chrome ٹیب</translation>
 <translation id="3080151273017101988">‏Google Chrome بند ہونے پر پس منظر کی ایپس چلانا جاری رکھیں</translation>
@@ -242,7 +239,6 @@
 <translation id="3835168907083856002">‏اس سے <ph name="USER_EMAIL_ADDRESS" /> کیلئے ایک نئی Chrome پروفائل تخلیق ہو جائے گی</translation>
 <translation id="383928141529488001">‏‫Google Chrome کو بلوٹوتھ آلات دریافت کرنے کے لیے بلوٹوتھ تک رسائی درکار ہے۔ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">‏براہ کرم سبھی Google Chrome ونڈوز بند کریں اور دوبارہ کوشش کریں۔</translation>
-<translation id="3865754807470779944">‏Chrome ورژن <ph name="PRODUCT_VERSION" /> انسٹال نہیں ہے</translation>
 <translation id="3873044882194371212">‏لنک کو Chrome &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="3885770153807205175">زبان منتخب کنندہ</translation>
 <translation id="3889417619312448367">‏Google Chrome کو اَن انسٹال کریں</translation>
@@ -282,12 +278,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)‎</translation>
 <translation id="4329315893554541805">‏ذاتی نوعيت سازی اور ديگر خصوصيات حاصل کرنے کے ليے ويب اور ايپ سرگرمی اور لنک کردہ Google سروسز ميں Chrome شامل کريں</translation>
 <translation id="4334294535648607276">ڈاؤن لوڈ مکمل ہوگیا۔</translation>
-<translation id="4335235004908507846">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غلط ایکسٹینشنز اور مزید بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
 <translation id="4343195214584226067">‏<ph name="EXTENSION_NAME" /> کو Chrome میں شامل کر دیا گیا ہے</translation>
 <translation id="4348548358339558429">‏ذاتی نوعیت سازی حاصل کرنے کے لیے Chrome کو ویب اور ایپ سرگرمی میں شامل کریں</translation>
 <translation id="436060642166082913">‏Chrome نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ فائل آپ کے ذاتی اور سوشل نیٹ ورک اکاؤنٹس کو نقصان پہنچا سکتی ہے</translation>
 <translation id="4367027658822022112">‏آپ آسان رسائی کے لیے Google لینز کو پن کر سکتے ہیں؛ سائیڈ پینل کے اوپری حصے میں پن کریں بٹن پر کلک کریں</translation>
-<translation id="4384570495110188418">‏Chrome آپ کے پاس ورڈز چیک نہیں کر سکتا کیونکہ آپ سائن ان نہیں ہیں</translation>
 <translation id="4389991535395284064">‏پوشیدگی وضع میں براؤز کرتے وقت، غیر محفوظ کنکشن کا استعمال کرتے ہوئے کسی سائٹ کو لوڈ کرنے سے پہلے Chrome آپ کو متنبہ کرے گا</translation>
 <translation id="4427306783828095590">فریب دہی اور میلوئیر کو مسدود کرنے کیلئے بہتر کردہ حفاظت مزید کام کرتی ہے</translation>
 <translation id="4434353761996769206">انسٹالر کی خرابی: <ph name="INSTALLER_ERROR" /></translation>

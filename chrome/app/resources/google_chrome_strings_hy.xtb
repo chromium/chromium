@@ -130,7 +130,6 @@
 <translation id="2586406160782125153">Ձեր այցելությունների պատմությունը կջնջվի այս սարքից: Հետագայում ձեր տվյալներն առբերելու համար մուտք գործեք Chrome <ph name="USER_EMAIL" /> հաշվով:</translation>
 <translation id="2597976513418770460">Բացեք Chrome դիտարկիչի ձեր տվյալները <ph name="ACCOUNT_EMAIL" /> հաշվից</translation>
 <translation id="259935314519650377">Չհաջողվեց քեշավորել ներբեռնված տեղադրիչը։ Սխալ՝ <ph name="UNPACK_CACHING_ERROR_CODE" />։</translation>
-<translation id="2622559029861875898">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="2632707915638608719">Արդյունավետ օգտագործեք ձեր ժամանակը Chrome-ի ընդլայնումների օգնությամբ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome-ը պարբերաբար ստուգում է իրականացնում՝ համոզվելու, որ ձեր դիտարկիչն ամենաանվտանգ կարգավորումներն ունի։ Մենք ձեզ կտեղեկացնենք, եթե որևէ բան փոխելու անհրաժեշտություն լինի։</translation>
@@ -164,7 +163,6 @@
 <translation id="2926676257163822632">Թույլ գաղտնաբառերը հեշտ է գուշակել։ Թույլատրեք Chrome-ին <ph name="BEGIN_LINK" />գաղտնաբառեր ստեղծել և պահել ձեզ համար<ph name="END_LINK" />։</translation>
 <translation id="2926952073016206995">Այս կայքի համար Chrome-ին անհրաժեշտ է տեսախցիկն օգտագործելու թույլտվություն</translation>
 <translation id="2928420929544864228">Տեղադրումն ավարտված է։</translation>
-<translation id="2929907241665500097">Անհայտ սխալի պատճառով չհաջողվեց թարմացնել Chrome-ը։ <ph name="BEGIN_LINK" />Շտկել Chrome-ի թարմացման հետ կապված խնդիրները<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Տեղադրման սխալ. չհաջողվեց սկսել տեղադրումը։</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />– Ցանցի մուտք – Chrome</translation>
 <translation id="2970681950995291301">Ձեր Google հաշիվը Chrome-ից հեռացնելու համար դուրս եկեք Chrome-ից «Կարգավորումներ» էջում</translation>
@@ -174,7 +172,6 @@
 <translation id="3037838751736561277">Google Chrome-ն աշխատում է ֆոնային ռեժիմում:</translation>
 <translation id="3038232873781883849">Սպասում ենք տեղադրմանը…</translation>
 <translation id="3045032126857188731">Թարգմանության լեզուն՝ <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Անվտանգ դիտարկումն անջատված է։ Chrome-ը խորհուրդ է տալիս միացնել այն։</translation>
 <translation id="306179102415443347">Արագ բացեք Google գաղտնաբառերի կառավարիչը դյուրանցման միջոցով։ Դյուրանցումը կարող եք տեղափոխել համակարգչի հիմնական էկրան կամ հավելվածների գործարկիչ։</translation>
 <translation id="3065168410429928842">Chrome-ի ներդիր</translation>
 <translation id="3080151273017101988">Google Chrome-ը փակելուց հետո շարունակել հավելվածների աշխատանքը հետնաշերտում</translation>
@@ -240,7 +237,6 @@
 <translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջ համար կստեղծվի Chrome-ի նոր պրոֆիլ։</translation>
 <translation id="383928141529488001">Google Chrome-ին անհրաժեշտ է Bluetooth-ի հասանելիություն՝ Bluetooth սարքեր որոնելու համար։ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Փակեք Google Chrome-ի բոլոր պատուհանները և նորից փորձեք:</translation>
-<translation id="3865754807470779944">Տեղադրված է Chrome-ի <ph name="PRODUCT_VERSION" /> տարբերակը</translation>
 <translation id="3873044882194371212">Բացել հղումը Chrome-ի ինկ&amp;ոգնիտո պատուհանում</translation>
 <translation id="3885770153807205175">Լեզվի ընտրիչ</translation>
 <translation id="3889417619312448367">Ապատեղադրել Google Chrome-ը</translation>
@@ -280,12 +276,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Անհատականացումը և այլ գործառույթներ կարգավորելու համար ավելացրեք Chrome-ը Վեբ որոնման և հավելվածների պատմության մեջ և Google-ի կապված ծառայություններում</translation>
 <translation id="4334294535648607276">Ներբեռնումն ավարտվեց:</translation>
-<translation id="4335235004908507846">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վնասաբեր ընդլայնումներից և այլ խնդիրներից</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> ընդլայնումն ավելացվել է Chrome-ին</translation>
 <translation id="4348548358339558429">Անհատականացումը կարգավորելու համար ավելացրեք Chrome-ը Վեբ որոնման և հավելվածների պատմության մեջ</translation>
 <translation id="436060642166082913">Chrome-ն արգելափակել է այս ներբեռնումը, քանի որ ֆայլը կարող է վնասել ձեր անձնական և սոցիալական ցանցերի հաշիվները</translation>
 <translation id="4367027658822022112">Google Տեսապակուց արագ օգտվելու համար սեղմեք կողային վահանակի վերևի հատվածում գտնվող «Ամրացնել» կոճակը</translation>
-<translation id="4384570495110188418">Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը, քանի որ դուք հաշիվ չեք մտել։</translation>
 <translation id="4389991535395284064">Երբ ինկոգնիտո ռեժիմում դիտարկելիս լինեք, նախքան ոչ ապահով միացման միջոցով կայք բեռնելը Chrome-ը ձեզ կնախազգուշացնի</translation>
 <translation id="4427306783828095590">Լրացուցիչ պաշտպանությունն օգնում է խուսափել ֆիշինգից և արգելափակել վնասաբեր ծրագրերը</translation>
 <translation id="4434353761996769206">Տեղադրիչի սխալ՝ <ph name="INSTALLER_ERROR" /></translation>

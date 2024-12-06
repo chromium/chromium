@@ -9,7 +9,6 @@
 
 Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</translation>
 <translation id="1083934481477628225">Tvůj rodič pro prohlížeč Chromium vypnul možnost Oprávnění pro weby, aplikace a rozšíření</translation>
-<translation id="1098170124587656448">Chromium vás pomáhá chránit před porušeními zabezpečení údajů, škodlivými rozšířeními a dalšími hrozbami</translation>
 <translation id="1104942323762546749">Chromium chce exportovat vaše hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="112640046208448578">Identifikujte věci nebo místa a kopírujte nebo překládejte text. Když použijete Vyhledávání obrázků, odešle se na server snímek obrazovky stránky. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium je vaším výchozím prohlížečem</translation>
@@ -172,7 +171,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 je modul prohlížeče Chromium pro JavaScript a WebAssembly používaný ke zlepšení výkonu webů</translation>
-<translation id="3283186697780795848">Je nainstalována tato verze prohlížeče Chromium: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Restartovat</translation>
 <translation id="328888136576916638">Chybí klíče rozhraní Google API. Některé funkce Chromium nebudou k dispozici.</translation>
 <translation id="3296368748942286671">Po ukončení prohlížeče Chromium nechat aplikace na pozadí spuštěné</translation>
@@ -263,7 +261,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="4531137820806573936">Chromium potřebuje oprávnění k mapování vašeho okolí a sledování vašich rukou</translation>
 <translation id="4534145890176164066">Chromium lépe rozumí formulářům a může je automaticky vyplňovat rychleji</translation>
 <translation id="4536805923587466102">Jako <ph name="USER_EMAIL_ADDRESS" /> už jste přihlášeni v jiném profilu Chromium</translation>
-<translation id="4544142686420020088">Prohlížeč Chromium se neaktualizoval, něco se pokazilo. <ph name="BEGIN_LINK" />Vyřešte problémy se stahováním aktualizací prohlížeče Chromium a neúspěšnými aktualizacemi.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium může tuto kartu deaktivovat, aby při procházení vše lépe fungovalo a prohlížeč byl celkově rychlejší.</translation>
 <translation id="454579500955453258">Pokračovat v novém profilu Chromium?</translation>
 <translation id="4548534452171747496">Chromium načítá stránky předběžně, což zrychluje procházení a vyhledávání. <ph name="BEGIN_LINK" />Další informace o předběžném načítání stránek<ph name="END_LINK" /></translation>
@@ -372,7 +369,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6120345080069858279">Chromium vám toto heslo uloží do účtu Google. Nebudete si ho muset pamatovat.</translation>
 <translation id="6129621093834146363">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="6132897690380286411">Chromium se brzy zavře a smaže data</translation>
-<translation id="6134968993075716475">Bezpečné prohlížení je vypnuté. Chromium ho doporučuje zapnout.</translation>
 <translation id="6145820983052037069">Zde můžete přepínat mezi profily Chromium</translation>
 <translation id="615103374448673771">Pokud máte povolené soubory cookie, může je Chromium při předběžném načítání použít</translation>
 <translation id="6165508094623778733">Další informace</translation>
@@ -384,7 +380,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6241367896540709610">Ke stahování souborů potřebuje Chromium přístup k úložišti</translation>
 <translation id="6245734527075554892">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v prohlížeči Chromium</translation>
 <translation id="6248213926982192922">Nastavit Chromium jako výchozí prohlížeč</translation>
-<translation id="6266342355635466082">Chromium nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="6268381023930128611">Odhlásit se z prohlížeče Chromium?</translation>
 <translation id="6270547683008298381">Tyto karty využívají další zdroje. Ke zlepšení výkonu je Chromium nechte deaktivovat.</translation>
 <translation id="6281746429495226318">Upravit profil Chromium</translation>
@@ -539,7 +534,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8232193495299001329">Toto rozšíření nemusí být bezpečné. Chromium nedokáže ověřit, odkud pochází. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit vaše data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="8248265253516264921">Pokud obrázek nemá užitečný popis, Chromium se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>
 <translation id="8254601181414348851">Přihlásit se do prohlížeče Chromium v novém profilu?</translation>
-<translation id="8266560134891435528">Chromium nemůže zkontrolovat vaše hesla, protože nejste přihlášeni</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vás varuje<ph name="END_LINK" /> před nebezpečnými weby a soubory ke stažení</translation>
 <translation id="8313851650939857356">Chyba při spuštění: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Když prohlížeč Chromium <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>

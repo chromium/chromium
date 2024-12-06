@@ -1237,6 +1237,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3229277193950731405">Kopioi version merkkijono</translation>
 <translation id="323107829343500871">Anna kortin <ph name="CREDIT_CARD" /> CVC</translation>
 <translation id="3234666976984236645">Havaitse aina tärkeä sisältö tällä sivustolla</translation>
+<translation id="323585066388831737">Vaaleanpunainen</translation>
 <translation id="3236212803136366317">Korttiedut</translation>
 <translation id="3238395604961564389">Avaa linkki incognito-ikkunassa</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, muokkaa selaimen ulkoasua painamalla sarkainta ja sitten Enter</translation>
@@ -1855,6 +1856,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4277937682389409325">Paikallinen osoite</translation>
 <translation id="4278090321534187713">Kortteja, joita tämä kauppias ei hyväksy, ei voi valita</translation>
 <translation id="4278390842282768270">Sallittu</translation>
+<translation id="4281245629646759298">Vaaleankeltainen</translation>
 <translation id="4281998142035485137">{0,plural, =1{Avataanko luottamuksellinen tiedosto?}other{Avataanko luottamukselliset tiedostot?}}</translation>
 <translation id="4282280603030594840">Ajoneuvojen myynti</translation>
 <translation id="4282346679996504092">Tämän tuotteen ilmoitukset on laitettu pois päältä ja kirjanmerkki poistettu</translation>

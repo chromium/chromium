@@ -132,7 +132,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2586406160782125153">Webbinformationen raderas från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="2597976513418770460">Få saker i webbläsaren Chrome från <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Det gick inte att cachelagra det nedladdade installationsprogrammet. Fel: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome kan inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2632707915638608719">Få mer gjort med tillägg för Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
@@ -166,7 +165,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2926676257163822632">Svaga lösenord är lätta att lista ut. Låt Chrome <ph name="BEGIN_LINK" />skapa och spara starka lösenord åt dig<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Du behöver ge Chrome kamerabehörighet för den här webbplatsen</translation>
 <translation id="2928420929544864228">Installationen har slutförts.</translation>
-<translation id="2929907241665500097">Ett fel uppstod och Chrome uppdaterades inte. <ph name="BEGIN_LINK" />Åtgärda uppdateringsproblem och misslyckade uppdateringar i Chrome.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Installationsfel: Det gick inte att starta installationsprocessen.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nätverksinloggning – Chrome</translation>
 <translation id="2970681950995291301">Du kan ta bort Google-kontot från Chrome genom att logga ut från Chrome på sidan Inställningar</translation>
@@ -176,7 +174,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3037838751736561277">Google Chrome körs i bakgrundsläge.</translation>
 <translation id="3038232873781883849">Väntar på installation …</translation>
 <translation id="3045032126857188731">Översatt språk: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Säker webbsökning har inaktiverats. Du rekommenderas att aktivera funktionen i Chrome.</translation>
 <translation id="306179102415443347">Använd genvägen för att snabbt öppna Google Lösenordshantering. Du kan flytta genvägen till startskärmen eller startprogrammet för appar på datorn.</translation>
 <translation id="3065168410429928842">Chrome-flik</translation>
 <translation id="3080151273017101988">Fortsätt köra bakgrundsappar när Google Chrome avslutas</translation>
@@ -243,7 +240,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="383928141529488001">Google Chrome behöver åtkomst till Bluetooth för att utforska 
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Stäng alla Google Chrome-fönster och försök igen.</translation>
-<translation id="3865754807470779944">Chrome-version <ph name="PRODUCT_VERSION" /> har installerats</translation>
 <translation id="3873044882194371212">Öppna länken i ett inko&amp;gnitofönster i Chrome</translation>
 <translation id="3885770153807205175">Språkväljare</translation>
 <translation id="3889417619312448367">Avinstallera Google Chrome</translation>
@@ -283,12 +279,10 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-in)</translation>
 <translation id="4329315893554541805">Om du vill få tillgång till anpassning och andra funktioner kan du ta med Chrome i webb- och appaktiviteten och de länkade Google-tjänsterna</translation>
 <translation id="4334294535648607276">Nedladdningen har slutförts.</translation>
-<translation id="4335235004908507846">Chrome kan skydda dig från dataintrång, olämpliga tillägg med mera</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> har lagts till i Chrome</translation>
 <translation id="4348548358339558429">Om du vill få tillgång till anpassning kan du ta med Chrome i webb- och appaktiviteten</translation>
 <translation id="436060642166082913">Den här nedladdningen blockerades av Chrome eftersom filen kan skada dina personliga konton och sociala nätverkskonton</translation>
 <translation id="4367027658822022112">Du kan fästa Google Lens för enkel åtkomst. Klicka på knappen Fäst högst upp på sidopanelen</translation>
-<translation id="4384570495110188418">Chrome kan inte kontrollera dina lösenord eftersom du inte är inloggad</translation>
 <translation id="4389991535395284064">När du surfar i inkognitoläge visas en varning i Chrome innan en webbplats läses in med en osäker anslutning</translation>
 <translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4434353761996769206">Installationsfel: <ph name="INSTALLER_ERROR" /></translation>

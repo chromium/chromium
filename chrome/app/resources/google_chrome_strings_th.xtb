@@ -128,7 +128,6 @@
 <translation id="2586406160782125153">การดำเนินการนี้จะลบข้อมูลการท่องเว็บออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chrome ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="2597976513418770460">ดึงข้อมูลของคุณในเบราว์เซอร์ Chrome จาก <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">การแคชโปรแกรมติดตั้งที่ดาวน์โหลดไว้ล้มเหลว ข้อผิดพลาด: <ph name="UNPACK_CACHING_ERROR_CODE" /></translation>
-<translation id="2622559029861875898">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2632707915638608719">ทำสิ่งต่างๆ ได้มากขึ้นด้วยส่วนขยายสำหรับ Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome ดำเนินการตรวจสอบเป็นประจำเพื่อให้มั่นใจว่าเบราว์เซอร์มีการตั้งค่าที่ปลอดภัยที่สุด เราจะแจ้งให้คุณทราบหากมีสิ่งใดที่คุณต้องตรวจสอบ</translation>
@@ -162,7 +161,6 @@
 <translation id="2926676257163822632">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ให้ Chrome <ph name="BEGIN_LINK" />สร้างและจดจำรหัสผ่านที่รัดกุมให้คุณ<ph name="END_LINK" /></translation>
 <translation id="2926952073016206995">Chrome ต้องการสิทธิ์เข้าถึงกล้องสำหรับเว็บไซต์นี้</translation>
 <translation id="2928420929544864228">การติดตั้งเสร็จสมบูรณ์</translation>
-<translation id="2929907241665500097">Chrome ไม่ได้อัปเดตเนื่องจากเกิดข้อผิดพลาด <ph name="BEGIN_LINK" />โปรดแก้ปัญหาการอัปเดต Chrome และการอัปเดตที่ไม่สำเร็จ<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">ข้อผิดพลาดในการติดตั้ง: เริ่มขั้นตอนของโปรแกรมติดตั้งไม่สำเร็จ</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - หน้าลงชื่อเข้าใช้ของเครือข่าย - Chrome</translation>
 <translation id="2970681950995291301">หากต้องการนำบัญชี Google ออกจาก Chrome ให้ออกจากระบบ Chrome ในหน้าการตั้งค่า</translation>
@@ -172,7 +170,6 @@
 <translation id="3037838751736561277">Google Chrome กำลังอยู่ในโหมดทำงานในพื้นหลัง</translation>
 <translation id="3038232873781883849">กำลังรอติดตั้ง...</translation>
 <translation id="3045032126857188731">ภาษาที่แปล: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Google Safe Browsing ปิดอยู่ Chrome ขอแนะนำให้เปิด</translation>
 <translation id="306179102415443347">ใช้ทางลัดเพื่อไปยังเครื่องมือจัดการรหัสผ่านบน Google อย่างรวดเร็ว คุณสามารถย้ายทางลัดไปยังหน้าจอหลักหรือตัวเปิดแอปของคอมพิวเตอร์ได้</translation>
 <translation id="3065168410429928842">แท็บ Chrome</translation>
 <translation id="3080151273017101988">เรียกใช้แอปพลิเคชันเบื้องหลังต่อไปเมื่อ Google Chrome ถูกปิดลง</translation>
@@ -238,7 +235,6 @@
 <translation id="3835168907083856002">การดำเนินการนี้จะสร้างโปรไฟล์ Chrome ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อสำรวจอุปกรณ์บลูทูธ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">โปรดปิดหน้าต่าง Google Chrome ทั้งหมดและลองใหม่อีกครั้ง</translation>
-<translation id="3865754807470779944">ติดตั้ง Chrome เวอร์ชัน <ph name="PRODUCT_VERSION" /> ไว้แล้ว</translation>
 <translation id="3873044882194371212">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chrome</translation>
 <translation id="3885770153807205175">เครื่องมือเลือกภาษา</translation>
 <translation id="3889417619312448367">ยกเลิกการติดตั้ง Google Chrome</translation>
@@ -278,12 +274,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">รวม Chrome ไว้ในกิจกรรมบนเว็บและแอป ตลอดจนบริการของ Google ที่ลิงก์ไว้เพื่อรับการปรับเปลี่ยนในแบบของคุณและฟีเจอร์อื่นๆ</translation>
 <translation id="4334294535648607276">ดาวน์โหลดเสร็จสมบูรณ์</translation>
-<translation id="4335235004908507846">Chrome ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล ส่วนขยายที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
 <translation id="4343195214584226067">เพิ่ม <ph name="EXTENSION_NAME" /> ลงใน Chrome แล้ว</translation>
 <translation id="4348548358339558429">รวม Chrome ไว้ในกิจกรรมบนเว็บและแอปเพื่อรับการปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="436060642166082913">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์อาจเป็นอันตรายต่อบัญชีส่วนตัวและบัญชีโซเชียลเน็ตเวิร์กของคุณ</translation>
 <translation id="4367027658822022112">คุณสามารถปักหมุด Google Lens เพื่อให้เข้าถึงได้ง่าย โดยการคลิกปุ่ม "ปักหมุด" ที่ด้านบนของแผงด้านข้าง</translation>
-<translation id="4384570495110188418">Chrome ตรวจสอบรหัสผ่านไม่ได้เพราะคุณไม่ได้ลงชื่อเข้าใช้</translation>
 <translation id="4389991535395284064">เมื่อท่องเว็บในโหมดไม่ระบุตัวตน Chrome จะแจ้งเตือนคุณก่อนโหลดเว็บไซต์โดยใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
 <translation id="4427306783828095590">การปกป้องที่ปรับปรุงแล้วทำได้มากกว่าบล็อกฟิชชิงและมัลแวร์</translation>
 <translation id="4434353761996769206">ข้อผิดพลาดของโปรแกรมติดตั้ง: <ph name="INSTALLER_ERROR" /></translation>

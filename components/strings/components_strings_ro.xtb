@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">Copiază șirul versiunii</translation>
 <translation id="323107829343500871">Introdu codul CVC pentru <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detectează întotdeauna conținutul important pe acest site</translation>
+<translation id="323585066388831737">Roșu deschis</translation>
 <translation id="3236212803136366317">Beneficiile cardului</translation>
 <translation id="3238395604961564389">Deschide linkul într-o fereastră incognito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a personaliza aspectul browserului</translation>
@@ -1854,6 +1855,7 @@
 <translation id="4277937682389409325">Adresa locală</translation>
 <translation id="4278090321534187713">Cardurile neacceptate de acest comerciant sunt dezactivate</translation>
 <translation id="4278390842282768270">Se permite</translation>
+<translation id="4281245629646759298">Galben deschis</translation>
 <translation id="4281998142035485137">{0,plural, =1{Deschizi fișierul confidențial?}few{Deschizi fișierele confidențiale?}other{Deschizi fișierele confidențiale?}}</translation>
 <translation id="4282280603030594840">Achiziționări de autovehicule</translation>
 <translation id="4282346679996504092">Alertele pentru acest produs au fost dezactivate și marcajul a fost eliminat</translation>

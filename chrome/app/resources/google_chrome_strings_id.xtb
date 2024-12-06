@@ -128,7 +128,6 @@
 <translation id="2586406160782125153">Tindakan ini akan menghapus data browsing dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Dapatkan data browser Chrome Anda dari <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Gagal menyimpan cache penginstal yang didownload. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome tidak dapat memeriksa update. Coba periksa koneksi internet Anda.</translation>
 <translation id="2632707915638608719">Selesaikan lebih banyak hal dengan ekstensi untuk Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome memeriksa secara berkala untuk memastikan browser Anda memiliki setelan yang paling aman. Kami akan memberi tahu Anda jika ada yang perlu ditinjau.</translation>
@@ -162,7 +161,6 @@
 <translation id="2926676257163822632">Sandi yang lemah mudah ditebak. Izinkan Chrome <ph name="BEGIN_LINK" />membuat dan mengingat sandi yang kuat untuk Anda<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome memerlukan izin kamera untuk situs ini</translation>
 <translation id="2928420929544864228">Penginstalan selesai.</translation>
-<translation id="2929907241665500097">Chrome tidak dapat diupdate, terjadi error. <ph name="BEGIN_LINK" />Perbaiki masalah update Chrome dan update yang gagal.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Error penginstalan: Proses penginstal gagal dimulai.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Login Jaringan - Chrome</translation>
 <translation id="2970681950995291301">Untuk menghapus Akun Google Anda dari Chrome, logout dari Chrome di halaman Setelan</translation>
@@ -172,7 +170,6 @@
 <translation id="3037838751736561277">Google Chrome berjalan di mode latar belakang.</translation>
 <translation id="3038232873781883849">Menunggu untuk menginstal...</translation>
 <translation id="3045032126857188731">Bahasa terjemahan: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Safe Browsing nonaktif. Chrome merekomendasikan untuk mengaktifkannya.</translation>
 <translation id="306179102415443347">Gunakan pintasan Anda untuk mengakses Pengelola Sandi Google dengan cepat. Anda dapat memindahkan pintasan ke layar utama atau peluncur aplikasi di komputer.</translation>
 <translation id="3065168410429928842">Tab Chrome</translation>
 <translation id="3080151273017101988">Terus jalankan apl latar belakang saat Google Chrome ditutup</translation>
@@ -239,7 +236,6 @@
 <translation id="383928141529488001">Google Chrome memerlukan akses Bluetooth untuk menjelajah 
  perangkat Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Tutup semua jendela Google Chrome, lalu coba lagi.</translation>
-<translation id="3865754807470779944">Chrome versi <ph name="PRODUCT_VERSION" /> sudah terinstal</translation>
 <translation id="3873044882194371212">Buka link di jendela sa&amp;maran Chrome</translation>
 <translation id="3885770153807205175">Pemilih bahasa</translation>
 <translation id="3889417619312448367">Hapus Penginstalan Google Chrome</translation>
@@ -279,12 +275,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Untuk mendapatkan personalisasi dan fitur lainnya, sertakan Chrome dalam Aktivitas Web &amp; Aplikasi serta layanan Google tertaut</translation>
 <translation id="4334294535648607276">Download selesai.</translation>
-<translation id="4335235004908507846">Chrome dapat membantu Anda agar tetap aman dari pelanggaran data, ekstensi berbahaya, dan lainnya</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> telah ditambahkan ke Chrome</translation>
 <translation id="4348548358339558429">Untuk mendapatkan personalisasi, sertakan Chrome dalam Aktivitas Web &amp; Aplikasi</translation>
 <translation id="436060642166082913">Chrome memblokir download ini karena file tersebut dapat membahayakan akun pribadi dan jejaring sosial Anda</translation>
 <translation id="4367027658822022112">Anda dapat menyematkan Google Lens agar mudah diakses; klik tombol Sematkan di bagian atas panel samping</translation>
-<translation id="4384570495110188418">Chrome tidak dapat memeriksa sandi karena Anda tidak login</translation>
 <translation id="4389991535395284064">Jika menjelajah dalam mode Samaran, Chrome akan memperingatkan Anda sebelum memuat situs menggunakan koneksi yang tidak aman</translation>
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>

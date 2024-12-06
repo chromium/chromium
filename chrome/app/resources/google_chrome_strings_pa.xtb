@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> ਤੋਂ ਆਪਣੀ Chrome ਬ੍ਰਾਊਜ਼ਰ ਸਮੱਗਰੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="259935314519650377">ਡਾਊਨਲੋਡ ਕੀਤੇ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਕੈਸ਼ੇ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਗੜਬੜ: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
-<translation id="2622559029861875898">Chrome ਅੱਪਡੇਟਾਂ ਲਈ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੇਖੋ।</translation>
 <translation id="2632707915638608719">Chrome ਲਈ ਉਪਲਬਧ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨਾਲ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕਰੋ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਜਾਂਚ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਸਭ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹਨ। ਜੇ ਕਿਸੇ ਚੀਜ਼ ਨੂੰ ਤੁਹਾਡੀ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ, ਤਾਂ ਅਸੀਂ ਤੁਹਾਨੂੰ ਦੱਸ ਦੇਵਾਂਗੇ।</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">ਕਮਜ਼ੋਰ ਪਾਸਵਰਡਾਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣਾ ਆਸਾਨ ਹੁੰਦਾ ਹੈ। Chrome ਨੂੰ <ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਲਈ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾਉਣ ਅਤੇ ਯਾਦ ਰੱਖਣ<ph name="END_LINK" /> ਦਿਓ।</translation>
 <translation id="2926952073016206995">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="2928420929544864228">ਸਥਾਪਨਾ ਪੂਰੀ ਹੋਈ।</translation>
-<translation id="2929907241665500097">Chrome ਅੱਪਡੇਟ ਨਹੀਂ ਹੋਇਆ, ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। <ph name="BEGIN_LINK" />Chrome ਅੱਪਡੇਟ ਦੀਆਂ ਸਮੱਸਿਆਵਾਂ ਅਤੇ ਅਸਫਲ ਹੋਈਆਂ ਅੱਪਡੇਟਾਂ ਨੂੰ ਠੀਕ ਕਰੋ।<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ: ਸਥਾਪਨਾਕਾਰ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਸ਼ੁਰੂ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ਨੈੱਟਵਰਕ ਸਾਈਨ-ਇਨ - Chrome</translation>
 <translation id="2970681950995291301">Chrome ਤੋਂ ਆਪਣਾ Google ਖਾਤਾ ਹਟਾਉਣ ਲਈ, ਸੈਟਿੰਗਾਂ ਪੰਨੇ 'ਤੇ ਜਾ ਕੇ Chrome ਤੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome ਬੈਕਗ੍ਰਾਊਂਡ ਮੋਡ ਵਿੱਚ ਹੈ।</translation>
 <translation id="3038232873781883849">ਸਥਾਪਤ ਕਰਨ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="3045032126857188731">ਅਨੁਵਾਦਿਤ ਭਾਸ਼ਾ: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਬੰਦ ਹੈ। Chrome ਇਸਨੂੰ ਚਾਲੂ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
 <translation id="306179102415443347">Google Password Manager ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚਣ ਲਈ ਆਪਣਾ ਸ਼ਾਰਟਕੱਟ ਵਰਤੋ। ਤੁਸੀਂ ਆਪਣੇ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਆਪਣੇ ਕੰਪਿਊਟਰ ਦੀ ਹੋਮ ਸਕ੍ਰੀਨ ਜਾਂ ਐਪ ਲਾਂਚਰ 'ਤੇ ਲਿਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3065168410429928842">Chrome ਟੈਬ</translation>
 <translation id="3080151273017101988">Google Chrome ਬੰਦ ਹੋਣ 'ਤੇ ਵੀ ਬੈਕਗ੍ਰਾਊਂਡ ਐਪਾਂ ਨੂੰ ਚਲਦੇ ਰਹਿਣ ਦਿਓ</translation>
@@ -243,7 +240,6 @@
 <translation id="383928141529488001">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦੀ ਪੜਚੋਲ ਕਰਨ ਲਈ Google Chrome ਨੂੰ ਬਲੂਟੁੱਥ ਪਹੁੰਚ 
  ਦੀ ਲੋੜ ਹੈ। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੀਆਂ Google Chrome ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="3865754807470779944">Chrome ਵਰਜਨ <ph name="PRODUCT_VERSION" /> ਸਥਾਪਤ ਹੈ</translation>
 <translation id="3873044882194371212">Chrome ਇਨ&amp;ਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="3885770153807205175">ਭਾਸ਼ਾ ਚੋਣਕਾਰ</translation>
 <translation id="3889417619312448367">Google Chrome ਨੂੰ ਅਣਸਥਾਪਤ ਕਰੋ</translation>
@@ -283,12 +279,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ਵਿਅਕਤੀਗਤਕਰਨ ਅਤੇ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ, 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਅਤੇ ਲਿੰਕ ਕੀਤੀਆਂ Google ਸੇਵਾਵਾਂ ਵਿੱਚ Chrome ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4334294535648607276">ਡਾਉਨਲੋਡ ਪੂਰਾ ਹੋਇਆ</translation>
-<translation id="4335235004908507846">ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ, ਮਾੜੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਵਿੱਚ Chrome ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> ਨੂੰ Chrome ਵਿੱਚ ਸ਼ਾਮਲ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4348548358339558429">ਵਿਅਕਤੀਗਤਕਰਨ ਲਈ, 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਵਿੱਚ Chrome ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="436060642166082913">Chrome ਨੇ ਇਸ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ, ਕਿਉਂਕਿ ਇਹ ਫ਼ਾਈਲ ਤੁਹਾਡੇ ਨਿੱਜੀ ਅਤੇ ਸੋਸ਼ਲ ਨੈੱਟਵਰਕ ਖਾਤਿਆਂ ਨੂੰ ਨੁਕਸਾਨ ਪਹੁੰਚਾ ਸਕਦੀ ਹੈ</translation>
 <translation id="4367027658822022112">ਤੁਸੀਂ ਆਸਾਨ ਪਹੁੰਚ ਲਈ Google Lens ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ; ਸਾਈਡ ਪੈਨਲ ਦੇ ਸਿਖਰ 'ਤੇ 'ਪਿੰਨ ਕਰੋ' ਬਟਨ ਨੂੰ ਕਲਿੱਕ ਕਰੋ</translation>
-<translation id="4384570495110188418">Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਸੀਂ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਹੈ</translation>
 <translation id="4389991535395284064">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਿੰਗ ਕਰਨ ਵੇਲੇ, ਅਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ Chrome ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦੇਵੇਗਾ</translation>
 <translation id="4427306783828095590">ਧੋਖਾਧੜੀ ਅਤੇ ਮਾਲਵੇਅਰ ਨੂੰ ਬਲਾਕ ਕਰਨ ਵਾਸਤੇ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਹੋਰ ਵੱਧ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="4434353761996769206">ਸਥਾਪਨਾ ਸੰਬੰਧੀ ਗਲਤੀ: <ph name="INSTALLER_ERROR" /></translation>

@@ -130,7 +130,6 @@
 <translation id="2586406160782125153">Данните за сърфирането ви ще се изтрият от това устройство. За да ги извлечете по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Използвайте нещата си в браузъра Chrome от <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Кеширането на изтеглената инсталационна програма не бе успешно. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome не може да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="2632707915638608719">Вършете повече неща с разширенията за Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Браузърът Chrome редовно проверява дали настройките му са най-безопасните. Ще ви уведомим, ако е необходим преглед от ваша страна.</translation>
@@ -164,7 +163,6 @@
 <translation id="2926676257163822632">Ненадеждните пароли са лесни за отгатване. Използвайте Chrome <ph name="BEGIN_LINK" />за създаване и запомняне на надеждни пароли за профилите ви<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">За този сайт Chrome се нуждае от разрешение за достъп до камерата</translation>
 <translation id="2928420929544864228">Инсталирането завърши.</translation>
-<translation id="2929907241665500097">Chrome не се актуализира, защото нещо се обърка. <ph name="BEGIN_LINK" />Отстранете проблеми с актуализирането на Chrome и неуспешни актуализации<ph name="END_LINK" />.</translation>
 <translation id="2945997411976714835">Грешка при инсталирането: Стартирането на инсталационния процес не бе успешно.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вход в мрежата – Chrome</translation>
 <translation id="2970681950995291301">За да премахнете профила си в Google от Chrome, излезте от браузъра на страницата „Настройки“</translation>
@@ -174,7 +172,6 @@
 <translation id="3037838751736561277">Google Chrome работи на заден план.</translation>
 <translation id="3038232873781883849">Изчаква се инсталирането да започне...</translation>
 <translation id="3045032126857188731">Език на превода: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Функцията „Безопасно сърфиране“ е изключена. Chrome препоръчва да я включите.</translation>
 <translation id="306179102415443347">Използвайте прекия път за бърз достъп до Google Мениджър на пароли. Можете да го преместите на началния екран или стартовия панел с приложения на компютъра си.</translation>
 <translation id="3065168410429928842">Раздел в Chrome</translation>
 <translation id="3080151273017101988">Изпълняване на приложения на заден план при затворен браузър Google Chrome</translation>
@@ -241,7 +238,6 @@
 <translation id="383928141529488001">Google Chrome се нуждае от достъп до Bluetooth, за да преглежда
 устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Моля, затворете всички прозорци на Google Chrome и опитайте отново.</translation>
-<translation id="3865754807470779944">Инсталирана е версия <ph name="PRODUCT_VERSION" /> на Chrome</translation>
 <translation id="3873044882194371212">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chrome</translation>
 <translation id="3885770153807205175">Инструмент за избор на език</translation>
 <translation id="3889417619312448367">Деинсталиране на Google Chrome</translation>
@@ -281,12 +277,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">За да се възползвате от персонализиране и други функции, включете Chrome в „Активност в мрежата и приложенията“ и свързаните услуги на Google</translation>
 <translation id="4334294535648607276">Изтеглянето завърши.</translation>
-<translation id="4335235004908507846">Chrome може да ви защити от нарушения на сигурността на данните, злонамерени разширения и др.</translation>
 <translation id="4343195214584226067">Разширението <ph name="EXTENSION_NAME" /> бе добавено към Chrome</translation>
 <translation id="4348548358339558429">За да се възползвате от персонализиране, включете Chrome в „Активност в мрежата и приложенията“</translation>
 <translation id="436060642166082913">Chrome блокира това изтегляне, защото файлът може да навреди на личния ви профил и на профилите ви в социалните мрежи</translation>
 <translation id="4367027658822022112">Можете да фиксирате Google Обектив за лесен достъп, като кликнете върху бутона „Фиксиране“ в горната част на страничния панел</translation>
-<translation id="4384570495110188418">Chrome не може да провери паролите ви, защото не сте влезли в профила си</translation>
 <translation id="4389991535395284064">При сърфиране в режим „инкогнито“ Chrome ще ви предупреди, преди да зареди сайт, който използва незащитена връзка</translation>
 <translation id="4427306783828095590">Режимът за подобрена защита предприема повече действия за блокиране на фишинг атаки и злонамерен софтуер</translation>
 <translation id="4434353761996769206">Грешка в инсталационната програма: <ph name="INSTALLER_ERROR" /></translation>

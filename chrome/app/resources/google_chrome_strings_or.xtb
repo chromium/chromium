@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">ଏହା ଏହି ଡିଭାଇସ୍‍ରୁ ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରିଦେବେ। ପରେ ଆପଣଙ୍କର ଡାଟା ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ Chromeରେ <ph name="USER_EMAIL" />ରୂପେ ସାଇନ୍ ଇନ୍‌ କରନ୍ତୁ।</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" />ରୁ ଆପଣଙ୍କ Chrome ବ୍ରାଉଜର ଷ୍ଟଫ ପାଆନ୍ତୁ</translation>
 <translation id="259935314519650377">ଡାଉନଲୋଡ କରାଯାଇଥିବା ଇନଷ୍ଟଲରକୁ କେଶେ କରିବାରେ ବିଫଳ ହୋଇଛି। ତ୍ରୁଟି: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
-<translation id="2622559029861875898">Chrome ଅପଡେଟଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। ଆପଣଙ୍କର ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="2632707915638608719">Chrome ପାଇଁ ଏକ୍ସଟେନସନ ସହିତ ଅଧିକ କାର୍ଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">ଆପଣଙ୍କ ବ୍ରାଉଜରର ସବୁଠାରୁ ସୁରକ୍ଷିତ ସେଟିଂସ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ Chrome ନିୟମିତ ଭାବେ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ବିଷୟ ପାଇଁ ଆପଣଙ୍କ ସମୀକ୍ଷାର ଆବଶ୍ୟକତା ହୁଏ, ତେବେ ଆମେ ଆପଣଙ୍କୁ ଜଣାଇବୁ।</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">ଦୁର୍ବଳ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଅନୁମାନ କରିବା ସହଜ ଅଟେ। Chromeକୁ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ପାଇଁ ଜଟିଳ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ତିଆରି କରି ମନେ ରଖିବାକୁ ଦିଅନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="2926952073016206995">ଏହି ସାଇଟ୍ ପାଇଁ Chrome କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2928420929544864228">ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
-<translation id="2929907241665500097">Chrome ଅପଡେଟ୍ ହେଲା ନାହିଁ, କିଛି ତ୍ରୁଟି ହୋଇଗଲା। <ph name="BEGIN_LINK" />Chrome ଅପଡେଟ୍ ସମସ୍ୟା ଏବଂ ବିଫଳ ଅପଡେଟଗୁଡ଼ିକର ସମାଧାନ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ପ୍ରକ୍ରିୟା ଆରମ୍ଭ ହେବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - Chrome</translation>
 <translation id="2970681950995291301">Chromeରୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟକୁ କାଢ଼ି ଦେବା ପାଇଁ ସେଟିଂସ ପୃଷ୍ଠାରେ Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome ପୃଷ୍ଠପଟ ମୋଡ୍‌ରେ ଅଛି।</translation>
 <translation id="3038232873781883849">ଇନଷ୍ଟଲ କରିବା ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି...</translation>
 <translation id="3045032126857188731">ଅନୁବାଦ କରାଯାଇଥିବା ଭାଷା: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ ଅଛି। Chrome ଏହାକୁ ଚାଲୁ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
 <translation id="306179102415443347">Google Password Managerକୁ ଶୀଘ୍ର ଯିବା ପାଇଁ ଆପଣଙ୍କ ସର୍ଟକଟ ବ୍ୟବହର କରନ୍ତୁ। ଆପଣ ଆପଣଙ୍କ ସର୍ଟକଟକୁ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରର ହୋମ ସ୍କ୍ରିନ କିମ୍ବା ଆପ ଲଞ୍ଚରକୁ ମୁଭ କରିପାରିବେ।</translation>
 <translation id="3065168410429928842">Chrome ଟାବ୍</translation>
 <translation id="3080151273017101988">ଯେତେବେଳେ Google Chrome ବନ୍ଦ ଅଛି, ସେତେବେଳେ ପୃଷ୍ଠପଟରେ ଥିବା ଆପ୍ସ ଚାଲିବା ଜାରି ରଖନ୍ତୁ।</translation>
@@ -242,7 +239,6 @@
 <translation id="3835168907083856002">ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="383928141529488001">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକୁ ଏକ୍ସପ୍ଲୋର କରିବା ପାଇଁ Chrome ବ୍ଲୁଟୁଥ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ଦୟାକରି ସମସ୍ତ Google Chrome ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="3865754807470779944">Chrome ସଂସ୍କରଣ <ph name="PRODUCT_VERSION" /> ଇନଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
 <translation id="3873044882194371212">Chromeର ଇନ୍‍କ&amp;ଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍‍ ଖୋଲନ୍ତୁ</translation>
 <translation id="3885770153807205175">ଭାଷା ପିକର</translation>
 <translation id="3889417619312448367">Google Chrome ଅସଂସ୍ଥାପନ କରନ୍ତୁ</translation>
@@ -282,12 +278,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଅନ୍ୟ ଫିଚରଗୁଡ଼ିକ ପାଇବାକୁ ୱେବ ଏବଂ ଆପ କାର୍ଯ୍ୟକଳାପରେ Chrome ଏବଂ ଲିଙ୍କ ହୋଇଥିବା Google ସେବାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="4334294535648607276">ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
-<translation id="4335235004908507846">ଡାଟା ଚୋରି, କ୍ଷତିକାରକ ଏକ୍ସଟେନସନ୍ ଏବଂ ଆହୁରି ଅନେକ କିଛିରୁ Chrome ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିପାରିବ</translation>
 <translation id="4343195214584226067">Chromeରେ <ph name="EXTENSION_NAME" /> ଯୋଗକରାଯାଇଛି</translation>
 <translation id="4348548358339558429">ପର୍ସନାଲାଇଜେସନ ପାଇବାକୁ ୱେବ ଓ ଆପ କାର୍ଯ୍ୟକଳାପରେ Chrome ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="436060642166082913">ଏହି ଫାଇଲଟି ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ଏବଂ ସୋସିଆଲ ନେଟୱାର୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ କ୍ଷତି କରିପାରୁଥିବା ଯୋଗୁଁ Chrome ଏହି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି</translation>
 <translation id="4367027658822022112">ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ ଆପଣ Google Lensକୁ ପିନ କରିପାରିବେ; ସାଇଡ ପେନେଲର ଶୀର୍ଷରେ ଥିବା 'ପିନ କରନ୍ତୁ' ବଟନରେ କ୍ଲିକ କରିପାରିବେ</translation>
-<translation id="4384570495110188418">ଆପଣ ସାଇନ୍ ଇନ୍ କରିନଥିବା ଯୋଗୁଁ Chrome ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="4389991535395284064">ଇନକଗ୍ନିଟୋ ମୋଡରେ ବ୍ରାଉଜ କରିବା ସମୟରେ, ଏକ ଅସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରି କୌଣସି ସାଇଟ ଲୋଡ କରିବା ପୂର୍ବରୁ Chrome ଆପଣଙ୍କୁ ଚେତାବନୀ ଦେବ</translation>
 <translation id="4427306783828095590">ଉନ୍ନତ ସୁରକ୍ଷା ଫିସିଂ ଓ ମାଲୱେୟାରକୁ ବ୍ଲକ୍ କରିବାକୁ ଅନେକ କିଛି କରେ</translation>
 <translation id="4434353761996769206">ଇନଷ୍ଟଲର ତ୍ରୁଟି: <ph name="INSTALLER_ERROR" /></translation>

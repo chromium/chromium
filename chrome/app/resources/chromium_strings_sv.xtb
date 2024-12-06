@@ -9,7 +9,6 @@
 
 Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna sparas inte.</translation>
 <translation id="1083934481477628225">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium.</translation>
-<translation id="1098170124587656448">Chromium kan skydda dig från dataintrång, olämpliga tillägg med mera</translation>
 <translation id="1104942323762546749">Lösenorden exporteras från Chromium. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
 <translation id="112640046208448578">Identifiera saker eller platser och kopiera eller översätt text. När du använder bildsökning skickas en skärmbild av sidan till servern. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium är din standardwebbläsare</translation>
@@ -173,7 +172,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 är Chromiums JavaScript- och WebAssembly-motor som används för att förbättra webbplatsens prestanda</translation>
-<translation id="3283186697780795848">Chromium-version <ph name="PRODUCT_VERSION" /> har installerats</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
 <translation id="328888136576916638">Googles API-nycklar saknas. Vissa funktioner i Google Chromium kommer att vara inaktiverade.</translation>
 <translation id="3296368748942286671">Fortsätt köra bakgrundsappar när Chromium avslutas</translation>
@@ -264,7 +262,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4531137820806573936">Chromium behöver behörighet för att kartlägga din omgivning och spåra dina händer</translation>
 <translation id="4534145890176164066">Chromium förstår formulär bättre och kan autofylla dem snabbare</translation>
 <translation id="4536805923587466102">Du är redan inloggad som <ph name="USER_EMAIL_ADDRESS" /> i en annan Chromium-profil</translation>
-<translation id="4544142686420020088">Ett fel uppstod och Chromium uppdaterades inte. <ph name="BEGIN_LINK" />Åtgärda uppdateringsproblem och misslyckade uppdateringar i Chromium<ph name="END_LINK" />.</translation>
 <translation id="4545268686623374213">Chromium kan inaktivera den här fliken så att allt förblir snabbt och din surfupplevelse blir bättre.</translation>
 <translation id="454579500955453258">Vill du fortsätta med en ny Chromium-profil?</translation>
 <translation id="4548534452171747496">Sidor läses in i förväg i Chromium, vilket gör det snabbare att surfa och söka. <ph name="BEGIN_LINK" />Läs mer om att läsa in sidor i förväg<ph name="END_LINK" /></translation>
@@ -373,7 +370,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6120345080069858279">Det här lösenordet sparas i ditt Google-konto. Du behöver inte komma ihåg det.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> är skadlig och har blockerats av Chromium.</translation>
 <translation id="6132897690380286411">Chromium avslutas snart och data raderas</translation>
-<translation id="6134968993075716475">Säker webbsökning har inaktiverats. Du rekommenderas att aktivera funktionen i Chromium.</translation>
 <translation id="6145820983052037069">Du kan byta mellan Chromium-profiler här</translation>
 <translation id="615103374448673771">Om du tillåter cookies kan Chromium använda dem när innehåll läses in i förväg</translation>
 <translation id="6165508094623778733">Läs mer</translation>
@@ -385,7 +381,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6241367896540709610">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="6245734527075554892">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium</translation>
 <translation id="6248213926982192922">Använd Chromium som standardwebbläsare</translation>
-<translation id="6266342355635466082">Chromium kan inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
 <translation id="6270547683008298381">Extra resurser används för dessa flikar. Du kan förbättra prestandan genom att låta Chromium inaktivera dem.</translation>
 <translation id="6281746429495226318">Anpassa din Chromium-profil</translation>
@@ -540,7 +535,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8232193495299001329">Chromium kan inte verifiera var tillägget kommer från. Det kan vara osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="8248265253516264921">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chromium. Bilderna skickas till Google så att beskrivningen kan genereras. Du kan när som helst inaktivera den här inställningen.</translation>
 <translation id="8254601181414348851">Vill du logga in i Chromium på en ny profil?</translation>
-<translation id="8266560134891435528">Chromium kan inte kontrollera dina lösenord eftersom du inte är inloggad</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium visar en varning<ph name="END_LINK" /> om osäkra webbplatser och nedladdningar</translation>
 <translation id="8313851650939857356">Startfel: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisationen avslutar Chromium när det inte har använts på <ph name="TIMEOUT_DURATION" />.</translation>

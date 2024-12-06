@@ -128,7 +128,6 @@
 <translation id="2586406160782125153">‏הפעולה תמחק את נתוני הגלישה מהמכשיר. כדי לאחזר את הנתונים מאוחר יותר, יש להיכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">‏אפשר לקבל את הנתונים של <ph name="ACCOUNT_EMAIL" /> ולשמור אותם בדפדפן Chrome</translation>
 <translation id="259935314519650377">שמירת מנהל ההתקנה שהורד במטמון נכשלה. השגיאה: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">‏Chrome לא יכול לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2632707915638608719">‏אפשר להספיק יותר עם תוספים ל-Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">‏Chrome מוודא בקביעות שלדפדפן שלך יש את ההגדרות הבטוחות ביותר. נודיע לך אם צריך לבדוק משהו.</translation>
@@ -162,7 +161,6 @@
 <translation id="2926676257163822632">‏קל לנחש סיסמאות חלשות. באמצעות Chrome אפשר <ph name="BEGIN_LINK" />ליצור ולזכור סיסמאות חזקות<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">‏נדרשת הרשאת גישה למצלמה ב-Chrome עבור האתר הזה</translation>
 <translation id="2928420929544864228">ההתקנה הושלמה.</translation>
-<translation id="2929907241665500097">‏Chrome לא התעדכן, משהו השתבש. <ph name="BEGIN_LINK" />לטיפול בבעיות בעדכון של Chrome ובעדכונים שנכשלו<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">שגיאת התקנה: הפעלת התהליך של מנהל ההתקנה נכשלה.</translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chrome</translation>
 <translation id="2970681950995291301">‏כדי להסיר את החשבון שלך ב-Google מ-Chrome, צריך לצאת מ-Chrome בדף ההגדרות</translation>
@@ -172,7 +170,6 @@
 <translation id="3037838751736561277">‏Google Chrome נמצא במצב רקע.</translation>
 <translation id="3038232873781883849">בהמתנה להתקנה…</translation>
 <translation id="3045032126857188731">שפת התרגום: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">‏הגלישה הבטוחה כבויה. ההמלצה של Chrome היא להפעיל אותה.</translation>
 <translation id="306179102415443347">‏באמצעות קיצורי הדרך אפשר להגיע מהר למנהל הסיסמאות של Google. ניתן להעביר את קיצור הדרך למרכז האפליקציות או למסך הבית של המחשב.</translation>
 <translation id="3065168410429928842">‏כרטיסייה של Chrome</translation>
 <translation id="3080151273017101988">‏המשך הפעלת אפליקציות ברקע כאשר Google Chrome סגור</translation>
@@ -239,7 +236,6 @@
 <translation id="383928141529488001">‏ל-Google Chrome נדרשת גישה ל-Bluetooth כדי למצוא 
  מכשירי Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">‏יש לסגור את כל החלונות של Google Chrome ולנסות שוב.</translation>
-<translation id="3865754807470779944">‏מותקנת גרסה <ph name="PRODUCT_VERSION" /> של Chrome</translation>
 <translation id="3873044882194371212">‏פתיחת הקישור בחלון &amp;אנונימי של Chrome</translation>
 <translation id="3885770153807205175">הכלי לבחירת שפה</translation>
 <translation id="3889417619312448367">‏הסרת Google Chrome</translation>
@@ -279,12 +275,10 @@
 <translation id="4328355335528187361">‏גרסת הפיתוח של Google Chrome ‏(mDNS-In)</translation>
 <translation id="4329315893554541805">‏כדי להשתמש בהתאמה אישית ובתכונות אחרות, צריך לכלול את Chrome ב'פעילות באינטרנט ובאפליקציות' ובשירותי Google המקושרים</translation>
 <translation id="4334294535648607276">ההורדה הושלמה.</translation>
-<translation id="4335235004908507846">‏Chrome עוזר להגן עליך מפני פרצות באבטחת המידע, תוספים לא תקינים ועוד</translation>
 <translation id="4343195214584226067">‏<ph name="EXTENSION_NAME" /> נוסף ל-‏Chrome</translation>
 <translation id="4348548358339558429">‏כדי להשתמש בהתאמה אישית, צריך לכלול את Chrome ב'פעילות באינטרנט ובאפליקציות'</translation>
 <translation id="436060642166082913">‏‫Chrome חסם את ההורדה הזו כי הקובץ יכול לפגוע בחשבונות האישיים ובחשבונות שלך ברשתות החברתיות</translation>
 <translation id="4367027658822022112">‏אפשר להצמיד את Google Lens כדי לאפשר גישה נוחה: פשוט לוחצים על הלחצן 'הצמדה' בחלק העליון של החלונית הצדדית</translation>
-<translation id="4384570495110188418">‏Chrome לא יכול לבדוק את הסיסמאות שלך כי לא נכנסת לחשבון</translation>
 <translation id="4389991535395284064">‏בגלישה במצב פרטי, Chrome יציג אזהרה לפני טעינת אתר באמצעות חיבור לא מאובטח</translation>
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4434353761996769206">שגיאת מנהל התקנה: <ph name="INSTALLER_ERROR" /></translation>

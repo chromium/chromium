@@ -106,7 +106,7 @@
 <translation id="3522659714780527202">เปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
 <translation id="364480321352456989">Chrome ของคุณเป็นเวอร์ชันเก่า</translation>
 <translation id="3646736009628185125">สมาชิกในครอบครัวของคุณไม่สามารถรับรหัสผ่านได้ในขณะนี้ ขอให้สมาชิกอัปเดต Chrome และซิงค์รหัสผ่าน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="3655656110921623717">ซึ่งหมายความว่า Chrome จะขอเว็บไซต์ในอุปกรณ์เคลื่อนที่ทุกครั้ง</translation>
+<translation id="3655656110921623717">ซึ่งหมายความว่า Chrome จะขอเว็บไซต์เวอร์ชันอุปกรณ์เคลื่อนที่ทุกครั้ง</translation>
 <translation id="3740397331642243698">เปิด URL ที่ป้อนใน Google Chrome ในโหมดไม่ระบุตัวตน</translation>
 <translation id="3741995255368156336">เปิดเรื่องรออ่านใน Chrome</translation>
 <translation id="3808570423967020928">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
@@ -218,7 +218,7 @@
 <translation id="6838525730752203626">ใช้ Chrome โดยค่าเริ่มต้น</translation>
 <translation id="686691656039982452">คุณ<ph name="BEGIN_LINK" />จัดการข้อมูล Chrome ที่บันทึกไว้<ph name="END_LINK" />ได้ในบัญชี Google
 
-หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
+หากต้องการดูการตั้งค่าอื่นๆ ที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="6922332667202044570">ลบข้อมูลการท่องเว็บใน Chrome</translation>
 <translation id="6924922227983877439">เปิดลิงก์ใน Chrome โดยค่าเริ่มต้น</translation>
 <translation id="6931601805528922498">การลงชื่อเข้าใช้จะเพิ่มบัญชีของคุณไปยัง Chrome สำหรับการท่องเว็บที่เกี่ยวข้องกับงาน</translation>

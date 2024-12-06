@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">Гэта дзеянне выдаліць з прылады даныя прагляду старонак у інтэрнэце. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Атрымайце доступ да даных браўзера Chrome, звязаных з уліковым запісам <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Не ўдалося кэшаваць спампаваны ўсталёўшчык. Памылка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Браўзеру Chrome не ўдаецца праверыць наяўнасць абнаўленняў. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="2632707915638608719">Паспявайце больш – дзякуючы пашырэнням для Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome пастаянна сочыць за тым, каб у вашым браўзеры былі самыя бяспечныя налады. Мы паведамім вам, калі нешта будзе патрабаваць вашай увагі.</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">Ненадзейныя паролі лёгка адгадаць. Дазвольце Chrome <ph name="BEGIN_LINK" />ствараць для вас надзейныя паролі і запамінаць іх<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome запытвае дазвол на доступ да камеры для гэтага сайта</translation>
 <translation id="2928420929544864228">Усталяванне завершана.</translation>
-<translation id="2929907241665500097">Chrome не абнавіўся. Нешта пайшло не так. <ph name="BEGIN_LINK" />Выправіце праблемы з абнаўленнем Chrome і памылкі абнаўлення.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Адбылася памылка. Не ўдалося пачаць усталяванне.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Уваход у сетку – Chrome</translation>
 <translation id="2970681950995291301">Каб выдаліць свой Уліковы Google з Chrome, выйдзіце з Chrome на старонцы налад</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome працуе ў фонавым рэжыме.</translation>
 <translation id="3038232873781883849">Чаканне ўсталявання...</translation>
 <translation id="3045032126857188731">Мова перакладу: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">"Бяспечны прагляд" выключаны. Chrome рэкамендуе ўключыць гэты рэжым.</translation>
 <translation id="306179102415443347">Каб хутка адкрываць Менеджар пароляў Google, выкарыстоўвайце ярлык. Яго можна перамясціць на панэль запуску праграм або на галоўны экран камп’ютара.</translation>
 <translation id="3065168410429928842">Укладка Chrome</translation>
 <translation id="3080151273017101988">Працягваць выконваць фонавыя праграмы, калі Google Chrome закрыты</translation>
@@ -242,7 +239,6 @@
 <translation id="3835168907083856002">Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Браўзеру Google Chrome неабходны доступ да Bluetooth для пошуку прылад з Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Закрыйце ўсе вокны Google Chrome і паўтарыце спробу.</translation>
-<translation id="3865754807470779944">Усталявана версія Chrome <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Адкрыць спасылку ў акне &amp;інкогніта Chrome</translation>
 <translation id="3885770153807205175">Інструмент выбару мовы</translation>
 <translation id="3889417619312448367">Выдаленне Google Chrome</translation>
@@ -282,12 +278,10 @@
 <translation id="4328355335528187361">Google Chrome для распрацоўшчыкаў (mDNS-In)</translation>
 <translation id="4329315893554541805">Каб наладзіць персаналізацыю і іншыя функцыі, уключыце Chrome у гісторыю дзеянняў у інтэрнэце і праграмах і звязаныя сэрвісы Google</translation>
 <translation id="4334294535648607276">Спампоўванне завершана.</translation>
-<translation id="4335235004908507846">Chrome дапамагае прадухіляць праблемы, звязаныя з уцечкай даных, выкарыстаннем няправільных пашырэнняў і г. д.</translation>
 <translation id="4343195214584226067">Пашырэнне <ph name="EXTENSION_NAME" /> дададзена ў Chrome</translation>
 <translation id="4348548358339558429">Каб наладзіць персаналізацыю, уключыце Chrome у гісторыю дзеянняў у інтэрнэце і праграмах</translation>
 <translation id="436060642166082913">Браўзер Chrome заблакіраваў спампоўку, бо гэты файл можа нанесці шкоду вашым асабістым уліковым запісам і ўліковым запісам у сацыяльных сетках</translation>
 <translation id="4367027658822022112">Для зручнага доступу можна замацаваць Google Аб’ектыў: націсніце кнопку "Замацаваць" уверсе бакавой панэлі</translation>
-<translation id="4384570495110188418">Chrome не можа праверыць вашы паролі, пакуль вы не ўвойдзеце ва ўліковы запіс</translation>
 <translation id="4389991535395284064">Пры праглядзе старонак у рэжыме інкогніта Chrome будзе папярэджваць вас, перш чым загружаць сайт праз неабароненае падключэнне</translation>
 <translation id="4427306783828095590">Функцыя палепшанай абароны яшчэ надзейней блакіруе фішынг і шкодныя праграмы</translation>
 <translation id="4434353761996769206">Памылка ўсталёўшчыка. <ph name="INSTALLER_ERROR" />.</translation>

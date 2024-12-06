@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">Копиране на низа за версията</translation>
 <translation id="323107829343500871">Въведете кода за проверка за <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Важното съдържание на този сайт да се открива винаги</translation>
+<translation id="323585066388831737">Светлочервено</translation>
 <translation id="3236212803136366317">Предимства на картата</translation>
 <translation id="3238395604961564389">Отваряне на връзката в прозорец в режим „инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
@@ -1854,6 +1855,7 @@
 <translation id="4277937682389409325">Местен адрес</translation>
 <translation id="4278090321534187713">Картите, които не се приемат от този търговец, са деактивирани</translation>
 <translation id="4278390842282768270">Разрешено</translation>
+<translation id="4281245629646759298">светложълто</translation>
 <translation id="4281998142035485137">{0,plural, =1{Да се отвори ли поверителният файл?}other{Да се отворят ли поверителните файлове?}}</translation>
 <translation id="4282280603030594840">Закупуване на превозно средство</translation>
 <translation id="4282346679996504092">Сигналите за този продукт са изключени и отметката е премахната</translation>

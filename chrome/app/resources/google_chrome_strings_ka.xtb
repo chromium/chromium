@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">ეს მოქმედება წაშლის თქვენს დათვალიერების მონაცემებს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">მიიღეთ Chrome ბრაუზერში შენახული თქვენი კონტენტი <ph name="ACCOUNT_EMAIL" />-დან</translation>
 <translation id="259935314519650377">ჩამოტვირთული ინსტალატორის ქეშირება ვერ მოხერხდა. შეცდომა: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome ვერ ახერხებს განახლებების შემოწმებას. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="2632707915638608719">Chrome-ის გაფართოებებით კიდევ უფრო მეტს შეძლებთ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome რეგულარულად ამოწმებს, არის თუ არა თქვენს ბრაუზერში ყველაზე უსაფრთხო პარამეტრები. გაცნობებთ, თუ რაიმეს შემოწმება იქნება საჭირო.</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">სუსტი პაროლები ადვილი გამოსაცნობია, ამიტომ მიეცით საშუალება Chrome-ს, <ph name="BEGIN_LINK" />თქვენთვის შექმნას და დაიმახსოვროს ძლიერი პაროლები<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome საჭიროებს კამერზე წვდომის ნებართვას ამ საიტისთვის</translation>
 <translation id="2928420929544864228">ინსტალაცია დასრულდა.</translation>
-<translation id="2929907241665500097">Chrome-ის განახლება ვერ მოხერხდა შეფერხების გამო. <ph name="BEGIN_LINK" />შეასწორეთ Chrome-ის განახლებასთან დაკავშირებული პრობლემები და განუხორციელებელი განახლებები.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">შეცდომა ინსტალაციისას: ინსტალატორის პროცესი ვერ გაეშვა.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> — ქსელში შესვლა — Chrome</translation>
 <translation id="2970681950995291301">Chrome-იდან Google ანგარიში რომ ამოშალოთ, საჭიროა, სისტემიდან გახვიდეთ Chrome-ის პარამეტრების გვერდზე</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome ფონურ რეჟიმშია.</translation>
 <translation id="3038232873781883849">ინსტალაციის მოლოდინში...</translation>
 <translation id="3045032126857188731">თარგმანის ენა: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Safe Browsing გამორთულია. Chrome გირჩევთ მის ჩართვას.</translation>
 <translation id="306179102415443347">ისარგებლეთ მალსახმობით, Google პაროლების მმართველზე სწრაფად რომ გადახვიდეთ. მალსახმობის გადატანა შეგიძლიათ თქვენი კომპიუტერის მთავარ ეკრანზე ან აპების გამშვებში.</translation>
 <translation id="3065168410429928842">Chrome-ის ჩანართი</translation>
 <translation id="3080151273017101988">გაგრძელება გაშვებული ფონური პროგრამებით Google Chrome-ის დახურვისას</translation>
@@ -243,7 +240,6 @@
 <translation id="383928141529488001">Bluetooth მოწყობილობების აღმოსაჩენად Google Chrome საჭიროებს 
  Bluetooth-ზე წვდომას. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">დახურეთ Google Chrome-ის ყველა ფანჯარა და ხელახლა სცადეთ.</translation>
-<translation id="3865754807470779944">დაინსტალირებულია Chrome-ის ვერსია <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">ბმულის გახსნა Chrome-ი ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="3885770153807205175">ენის ამომრჩევი</translation>
 <translation id="3889417619312448367">Google Chrome-ის დეინსტალაცია</translation>
@@ -283,12 +279,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">პერსონალიზაციის და სხვა ფუნქციებით რომ ისარგებლოთ, დაურთეთ Chrome როგორც ვებსა და აპებში აქტივობას, ისე მიბმულ Google სერვისებს</translation>
 <translation id="4334294535648607276">ჩამოტვირთვა დასრულდა.</translation>
-<translation id="4335235004908507846">Chrome დაგიცავთ პერსონალურ მონაცემთა გაჟონვის შემთხვევებისგან, არასათანადო გაფართოებებისა და სხვა უსიამოვნებისგან</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> დაემატა Chrome-ს</translation>
 <translation id="4348548358339558429">პერსონალიზაციით რომ ისარგებლოთ, დაურთეთ Chrome ვებსა და აპებში აქტივობას</translation>
 <translation id="436060642166082913">Chrome-მა დაბლოკა ეს ჩამოტვირთვა, რადგან ფაილს შეუძლია თქვენი პირადი და სოციალური ქსელების ანგარიშების დაზიანება.</translation>
 <translation id="4367027658822022112">შეგიძლიათ, ჩაამაგროთ Google Lens მასზე მარტივად წვდომისთვის; დააწკაპუნეთ ჩამაგრების ღილაკს გვერდითი ზოლის ზედა ნაწილში</translation>
-<translation id="4384570495110188418">Chrome ვერ ახერხებს თქვენი პაროლების შემოწმებას, რადგან შესული არ ხართ</translation>
 <translation id="4389991535395284064">ვების ინკოგნიტო რეჟიმში დათვალიერებისას Chrome გაგაფრთხილებთ საიტის დაუცველი კავშირის გამოყენებით ჩატვირთვამდე</translation>
 <translation id="4427306783828095590">გაძლიერებული დაცვა გთავაზობთ ფიშინგისა და მავნე პროგრამებისგან დაცვის მეტ საშუალებას</translation>
 <translation id="4434353761996769206">ინსტალატორის შეცდომა: <ph name="INSTALLER_ERROR" /></translation>

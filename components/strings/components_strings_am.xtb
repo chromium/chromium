@@ -1235,6 +1235,7 @@
 <translation id="3229277193950731405">የስሪት ሕብረቁምፊን ቅዳ</translation>
 <translation id="323107829343500871">የ<ph name="CREDIT_CARD" /> ሲቪሲ ያስገቡ</translation>
 <translation id="3234666976984236645">ሁልጊዜ በዚህ ጣቢያ ላይ ያለ አስፈላጊ ይዘትን አግኝ</translation>
+<translation id="323585066388831737">ፈካ ያለ ቀይ</translation>
 <translation id="3236212803136366317">የካርድ ጥቅማጥቅሞች</translation>
 <translation id="3238395604961564389">አገናኙን ማንነትዎን በማያሳውቅ መስኮት ይክፈቱ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የአሳሽዎን መልክ ለማበጀት ትርን ከዚያ አስገባን ይጫኑ</translation>
@@ -1853,6 +1854,7 @@
 <translation id="4277937682389409325">አካባቢያዊ አድራሻ</translation>
 <translation id="4278090321534187713">በዚህ ነጋዴ ተቀባይነት የሌላቸው ካርዶች ይሰናከላሉ</translation>
 <translation id="4278390842282768270">ተፈቅዷል</translation>
+<translation id="4281245629646759298">ፈካ ያለ ቢጫ</translation>
 <translation id="4281998142035485137">{0,plural, =1{የምስጢር ፋይል ይከፈት?}one{የምስጢር ፋይል ይከፈት?}other{የምስጢር ፋይሎች ይከፈቱ?}}</translation>
 <translation id="4282280603030594840">የተሽከርካሪ ግዢ</translation>
 <translation id="4282346679996504092">የዚህ ምርት ማንቂያዎች ጠፍተዋል እና ዕልባቱ ተወግዷል</translation>
@@ -2742,6 +2744,7 @@
 <translation id="5969199813874624822">ዋጋን ያስቀምጡ እና ይከታተሉ</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ስድስተኛ ጥቅልል</translation>
+<translation id="5974745851230707809">በጊዜ ሂደት የመክፈል አማራጮች</translation>
 <translation id="5975083100439434680">አሳንስ</translation>
 <translation id="5979084224081478209">የይለፍ ቃላትዎን ይፈትሹ</translation>
 <translation id="5984570616552610254">የክፍል አየር እርጥበት</translation>
@@ -4336,6 +4339,7 @@
 <translation id="882338992931677877">ራስዎ የሚያስገቡበት ክፍተት</translation>
 <translation id="8830320733681313421">ሃጋኪ ፖስታ ካርድ</translation>
 <translation id="8830565333350631528">ፋይሎችን <ph name="CLOUD_PROVIDER" /> ውስጥ አሳይ</translation>
+<translation id="8831783793142731637">ከ<ph name="RANGE_MINIMUM" /> በላይ ለሆኑ ግዢዎች ይገኛል</translation>
 <translation id="8833007469711500369">የልብስ ማጠቢያዎች እና ማድረቂያዎች</translation>
 <translation id="8834962751196791179">ይህን ማስጠንቀቂያ እያዩ ያሉት ይህ ጣቢያ ኤችቲቲፒኤስን ስለማይደግፍ እና እርስዎ ማንነት በማያሳውቅ ሁነታ ላይ ስላሉ ነው። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይረዱ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">የቴሌቪዥን ሳይሳዊ ልብወለድ እና ምናባዊ ትርዒቶች</translation>

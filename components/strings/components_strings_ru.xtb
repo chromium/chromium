@@ -1235,6 +1235,7 @@
 <translation id="3229277193950731405">Скопировать строку с версией</translation>
 <translation id="323107829343500871">Введите CVC-код карты <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Всегда находить важный контент на этом сайте</translation>
+<translation id="323585066388831737">Светло-красный</translation>
 <translation id="3236212803136366317">Преимущества карт</translation>
 <translation id="3238395604961564389">Открыть ссылку в режиме инкогнито</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить внешний вид браузера.</translation>
@@ -1853,6 +1854,7 @@
 <translation id="4277937682389409325">Местный адрес</translation>
 <translation id="4278090321534187713">Карты, которые не принимает этот продавец, отключены</translation>
 <translation id="4278390842282768270">Разрешены</translation>
+<translation id="4281245629646759298">Светло-желтый</translation>
 <translation id="4281998142035485137">{0,plural, =1{Открыть конфиденциальный файл?}one{Открыть конфиденциальные файлы?}few{Открыть конфиденциальные файлы?}many{Открыть конфиденциальные файлы?}other{Открыть конфиденциальные файлы?}}</translation>
 <translation id="4282280603030594840">Покупка автомобиля</translation>
 <translation id="4282346679996504092">Оповещения об этом товаре отключены, а закладка удалена.</translation>
@@ -2686,7 +2688,7 @@
 <translation id="5866257070973731571">Добавьте номер телефона</translation>
 <translation id="5866898949289125849">Вы просматриваете страницу инструментов разработчика</translation>
 <translation id="5869405914158311789">Не удается получить доступ к сайту</translation>
-<translation id="5869522115854928033">Сайты с сохраненными паролями</translation>
+<translation id="5869522115854928033">Сохраненные пароли</translation>
 <translation id="5872692522325383488">Код IBAN сохранен</translation>
 <translation id="5873297634595728366">Дизельные автомобили</translation>
 <translation id="5877359070305966420">Кадровые ресурсы</translation>
@@ -2742,6 +2744,7 @@
 <translation id="5969199813874624822">Сохранить и включить отслеживание цены</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шестой рулон</translation>
+<translation id="5974745851230707809">Рассрочка</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5979084224081478209">Проверить пароли</translation>
 <translation id="5984570616552610254">Влажность камеры</translation>
@@ -4335,6 +4338,7 @@
 <translation id="882338992931677877">Слот для ручной подачи</translation>
 <translation id="8830320733681313421">Hagaki (открытка)</translation>
 <translation id="8830565333350631528">Посмотреть файлы в сервисе "<ph name="CLOUD_PROVIDER" />"</translation>
+<translation id="8831783793142731637">Для покупок на сумму более <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Стиральные и сушильные машины</translation>
 <translation id="8834962751196791179">Вы видите это предупреждение, потому что сайт не поддерживает HTTPS и у вас включен режим инкогнито. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="8837398923270275776">Научно-фантастические и фэнтезийные сериалы</translation>

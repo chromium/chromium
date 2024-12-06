@@ -1236,6 +1236,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3229277193950731405">Kopiraj string verzije</translation>
 <translation id="323107829343500871">Unesite CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Uvek otkrivaj važan sadržaj na ovom sajtu</translation>
+<translation id="323585066388831737">Svetlocrvena</translation>
 <translation id="3236212803136366317">Prednosti kartica</translation>
 <translation id="3238395604961564389">Otvori link u prozoru bez arhiviranja</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste prilagodili izgled pregledača</translation>
@@ -1854,6 +1855,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4277937682389409325">Lokalna adresa</translation>
 <translation id="4278090321534187713">Kartice koje ovaj prodavac ne prihvata su onemogućene</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
+<translation id="4281245629646759298">Svetložuta</translation>
 <translation id="4281998142035485137">{0,plural, =1{Želite da otvorite poverljiv fajl?}one{Želite da otvorite poverljive fajlove?}few{Želite da otvorite poverljive fajlove?}other{Želite da otvorite poverljive fajlove?}}</translation>
 <translation id="4282280603030594840">Kupovina vozila</translation>
 <translation id="4282346679996504092">Obaveštenja za ovaj proizvod su isključena, a obeleživač je uklonjen</translation>
@@ -4532,6 +4534,7 @@ Dodatni detalji:
 <translation id="9183425211371246419">Host <ph name="HOST_NAME" /> koristi nepodržani protokol.</translation>
 <translation id="918454845714257218">Proverite kôd na <ph name="SIDE_OF_CARD" /> i probajte ponovo</translation>
 <translation id="9186203289258525843">Dugme Podesi Chrome kao podrazumevani pregledač, aktivirajte ga da biste podesili Chrome kao podrazumevani pregledač sistema</translation>
+<translation id="9189789270972826888">Kliknite na podatke o kartici u nastavku da biste ih kopirali i nalepili ako kartica nije popunjena. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Teme starije od 4 nedelje se automatski brišu</translation>
 <translation id="9191834167571392248">Bušenje u donjem levom uglu</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>

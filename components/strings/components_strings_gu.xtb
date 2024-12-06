@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">વર્ઝનની સ્ટ્રિંગ કૉપિ કરો</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> માટે CVC દાખલ કરો</translation>
 <translation id="3234666976984236645">હંમેશાં આ સાઇટ પરનું મહત્ત્વનું કન્ટેન્ટ શોધો</translation>
+<translation id="323585066388831737">આછો લાલ</translation>
 <translation id="3236212803136366317">કાર્ડના લાભ</translation>
 <translation id="3238395604961564389">છૂપી વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
@@ -1854,6 +1855,7 @@
 <translation id="4277937682389409325">સ્થાનિક સરનામું</translation>
 <translation id="4278090321534187713">આ વેપારી દ્વારા સ્વીકારવામાં ન આવતા કાર્ડ બંધ કરવામાં આવ્યા છે</translation>
 <translation id="4278390842282768270">મંજૂર</translation>
+<translation id="4281245629646759298">આછો પીળો</translation>
 <translation id="4281998142035485137">{0,plural, =1{ગોપનીય ફાઇલ ખોલીએ?}one{ગોપનીય ફાઇલ ખોલીએ?}other{ગોપનીય ફાઇલો ખોલીએ?}}</translation>
 <translation id="4282280603030594840">વાહનની ખરીદી</translation>
 <translation id="4282346679996504092">આ પ્રોડક્ટ માટેના અલર્ટ બંધ કરવામાં આવ્યા છે અને બુકમાર્ક કાઢી નાખવામાં આવી છે</translation>
@@ -2743,6 +2745,7 @@
 <translation id="5969199813874624822">સાચવો અને કિંમત ટ્રૅક કરો</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">છઠ્ઠો રોલ</translation>
+<translation id="5974745851230707809">સમયાંતરે ચુકવણી કરવાના વિકલ્પો</translation>
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5979084224081478209">પાસવર્ડ ચેક કરો</translation>
 <translation id="5984570616552610254">ચેમ્બરમાં ભેજનું પ્રમાણ</translation>
@@ -4336,6 +4339,7 @@
 <translation id="882338992931677877">મેન્યુઅલ સ્લૉટ</translation>
 <translation id="8830320733681313421">Hagaki પોસ્ટકાર્ડ</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" />માં ફાઇલો જુઓ</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" />થી વધુની ખરીદીઓ માટે ઉપલબ્ધ છે</translation>
 <translation id="8833007469711500369">વૉશર અને ડ્રાયર</translation>
 <translation id="8834962751196791179">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી અને તમે છૂપા મોડમાં છો. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">સાયન્સ ફિક્શન અને કાલ્પનિક ટીવી શો</translation>

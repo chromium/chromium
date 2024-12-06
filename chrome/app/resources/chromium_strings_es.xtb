@@ -9,7 +9,6 @@
 
 Es posible que algunas funciones no estén disponibles y que no se guarden los cambios que hagas en las preferencias.</translation>
 <translation id="1083934481477628225">Tus padres han desactivado Permisos de sitios, aplicaciones y extensiones en Chromium</translation>
-<translation id="1098170124587656448">Chromium puede protegerte frente a quiebras de seguridad de datos, extensiones dañinas y mucho más</translation>
 <translation id="1104942323762546749">Chromium quiere exportar tus contraseñas. Escribe tu contraseña de Windows para permitirlo.</translation>
 <translation id="112640046208448578">Identifica objetos o lugares y copia o traduce texto. Al usar la búsqueda por imágenes, se envía una captura de pantalla de la página al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium es tu navegador predeterminado</translation>
@@ -173,7 +172,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 es el motor de Chromium para JavaScript y WebAssembly que se usa para mejorar el rendimiento de los sitios</translation>
-<translation id="3283186697780795848">Está instalada la versión <ph name="PRODUCT_VERSION" /> de Chromium</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="328888136576916638">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Chromium.</translation>
 <translation id="3296368748942286671">Seguir ejecutando aplicaciones en segundo plano al cerrar Chromium</translation>
@@ -264,7 +262,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="4531137820806573936">Chromium necesita permiso para mapear tu entorno y hacer un seguimiento de tus manos</translation>
 <translation id="4534145890176164066">Chromium entiende mejor los formularios y puede autocompletarlos más rápido</translation>
 <translation id="4536805923587466102">Ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chromium</translation>
-<translation id="4544142686420020088">Chromium no se ha actualizado, algo no va bien. <ph name="BEGIN_LINK" />Soluciona los problemas y errores de actualización de Chromium<ph name="END_LINK" />.</translation>
 <translation id="4545268686623374213">Chromium puede inactivar esta pestaña para mejorar y agilizar tu experiencia de navegación.</translation>
 <translation id="454579500955453258">¿Continuar en un nuevo perfil de Chromium?</translation>
 <translation id="4548534452171747496">Chromium precarga las páginas, lo que te permite navegar y hacer búsquedas más rápido. <ph name="BEGIN_LINK" />Más información sobre la precarga de páginas<ph name="END_LINK" /></translation>
@@ -373,7 +370,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="6120345080069858279">Chromium guardará esta contraseña en tu cuenta de Google para que no tengas que recordarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> es peligroso, por lo que Chromium lo ha bloqueado.</translation>
 <translation id="6132897690380286411">Chromium se cerrará y los datos se eliminarán dentro de poco</translation>
-<translation id="6134968993075716475">La función Navegación segura está desactivada. Chromium recomienda activarla.</translation>
 <translation id="6145820983052037069">Puedes cambiar de un perfil de Chromium a otro aquí</translation>
 <translation id="615103374448673771">Si permites las cookies, es posible que Chromium las use en la precarga</translation>
 <translation id="6165508094623778733">Más información</translation>
@@ -385,7 +381,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="6241367896540709610">Chromium necesita el permiso de acceso al almacenamiento para descargar archivos</translation>
 <translation id="6245734527075554892">Comprueba URLs con una lista de sitios no seguros guardada en Chromium.</translation>
 <translation id="6248213926982192922">Establecer Chromium como navegador predeterminado</translation>
-<translation id="6266342355635466082">Chromium no puede comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
 <translation id="6268381023930128611">¿Cerrar sesión en Chromium?</translation>
 <translation id="6270547683008298381">Estas pestañas están usando recursos adicionales. Para mejorar tu rendimiento, permite que Chromium las inactive.</translation>
 <translation id="6281746429495226318">Personaliza tu perfil de Chromium</translation>
@@ -540,7 +535,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8232193495299001329">Chromium no puede verificar el origen de esta extensión y podría no ser segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="8248265253516264921">Si una imagen no tiene ninguna descripción útil, Chromium intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>
 <translation id="8254601181414348851">¿Iniciar sesión en Chromium con un perfil nuevo?</translation>
-<translation id="8266560134891435528">Chromium no puede comprobar tus contraseñas porque no has iniciado sesión</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium te advierte<ph name="END_LINK" /> sobre sitios y descargas no seguros</translation>
 <translation id="8313851650939857356">Error de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Tu organización cierra Chromium cuando lleva <ph name="TIMEOUT_DURATION" /> sin usarse.</translation>

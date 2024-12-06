@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">ברשימה שבהמשך יש <ph name="SUGGESTIONS_COUNT" /> הצעות לפריטים.</translation>
 <translation id="1598163867407640634">יש לך אפשרות להשתמש באתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">‏כשההגדרה מופעלת, נעשה שימוש בנתונים והם נשמרים בחשבון Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה.</translation>
+<translation id="1619648179761984213">כרטיסייה הוסרה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{הסרת פריט אחד שנבחר}one{הסרת # פריטים שנבחרו}two{הסרת # פריטים שנבחרו}other{הסרת # פריטים שנבחרו}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{‏סימנייה אחת ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}one{‏‫# סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}two{‏‫# סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}other{‏‫# סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="1637407510758033366">‫<ph name="USER_DISPLAY_NAME" /> הצטרפ/ה לקבוצה</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="164269334534774161">זהו עותק אופליין של הדף הזה מ-<ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">היסטוריה</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">‏תוכן של Google לילדים</translation>
 <translation id="2579297619530305344">הסיסמאות בכל המכשירים נפתחו במסך מלא</translation>
 <translation id="2581165646603367611">‏פעולה זו תמחק את קובצי ה-Cookie, את המטמון ונתונים אחרים של אתרים ש-Chrome לא מחשיב כחשובים.</translation>
+<translation id="258135245577667916">כרטיסייה נוספה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="2587052924345400782">יש גרסה חדשה יותר</translation>
 <translation id="2593272815202181319">רוחב אחיד</translation>
 <translation id="2603212228005142861">צריך להיכנס לחשבון כדי לנהל את ההעדפות</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">נותרה שנייה אחת</translation>
 <translation id="2789486458103222910">אישור</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{‏‫Chrome זיהה סיסמה בשימוש חוזר שאפשר לשפר}one{‏‫Chrome זיהה # סיסמאות בשימוש חוזר שאפשר לשפר}two{‏‫Chrome זיהה # סיסמאות בשימוש חוזר שאפשר לשפר}other{‏‫Chrome זיהה # סיסמאות בשימוש חוזר שאפשר לשפר}}</translation>
+<translation id="2796651346651857052">כדי לשנות את המיקום, לוחצים לחיצה ארוכה על סרגל הכתובות.</translation>
 <translation id="2800066122460699237">הכרטיסייה <ph name="TAB_TITLE" /> תיסגר</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="281504910091592009">‏הצגה וניהול של סיסמאות שמורות ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /></translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">‏נכנסת לחשבון בתור <ph name="EMAIL" />. אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="5304593522240415983">שדה זה לא יכול להיות ריק</translation>
 <translation id="5306014156308790439">הלחצן 'הוספה לאוסף' מושבת</translation>
+<translation id="5307109011461144709">הצבע של הקבוצה השתנה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="5308380583665731573">התחברות</translation>
 <translation id="5310963254742922113">הסיסמה בשימוש.</translation>
 <translation id="5316947901395241499">האפשרות לשמור סיסמאות הושבתה על ידי האדמין</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507">אין ביקורים באתרים מאז <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="5364112109233799727">‏כתובת ה-URL של הדף שעליו רצית לשלוח משוב תישלח ל-Google. יכול להיות שבודקים אנושיים יבדקו את הדף כדי לשפר את התכונה הזו.</translation>
+<translation id="537425196847960924">כרטיסייה שונתה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="5375374982898812658">הגישה שלך לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
 <translation id="5375577065097716013">‏חיפוש תמונה בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">יציאה ממצב פרטי</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378">נותרו <ph name="HOURS" /> שעות</translation>
 <translation id="6095578583683628124">‏אם Google הוא גם מנוע החיפוש המוגדר אצלך כברירת מחדל, יוצגו לך הצעות משופרות ורלוונטיות מבחינת הקשר.</translation>
 <translation id="610630277578876674">פתיחת קישורים בהודעות במהירות ועוד</translation>
+<translation id="6107864469867367783">שם הקבוצה שונה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="6108923351542677676">ההגדרה מתבצעת…</translation>
 <translation id="6112702117600201073">רענון הדף מתבצע</translation>
 <translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{כרטיסייה אחת}one{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}two{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}other{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}}</translation>
 <translation id="6929224077895306814">‏כל קודי האבטחה שנשמרו במכשיר ובחשבון Google שלך יימחקו</translation>
 <translation id="6937524809504266803">התאמה אישית וקישור</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">כינוי (אופציונלי)</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
 <translation id="694267552845942083">מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון. כדי להשלים את הפעלת הסנכרון יש להקיש על הלחצן 'אישור', קרוב לתחתית המסך. ניווט למעלה</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">אין אתרים</translation>
 <translation id="7656862631699126784">הפעלה של נעילת הכרטיסיות הפרטיות</translation>
 <translation id="7658239707568436148">ביטול</translation>
+<translation id="7662911501613893058">‫<ph name="USER_DISPLAY_NAME" /> עזב/ה את הקבוצה</translation>
 <translation id="7663320421139257046">כדי להמשיך, פרטים מסוימים (<ph name="FIELDS_STRING" />) ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK1" />כאן מפורטת מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
 <translation id="7665369617277396874">חשבון חדש</translation>
 <translation id="766587987807204883">כאן יוצגו מאמרים, ואפשר לקרוא אותם גם במצב אונליין</translation>

@@ -9,7 +9,6 @@
 
 Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren worden niet opgeslagen.</translation>
 <translation id="1083934481477628225">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chromium</translation>
-<translation id="1098170124587656448">Chromium kan je beschermen tegen gegevenslekken, schadelijke extensies en meer</translation>
 <translation id="1104942323762546749">Chromium wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="112640046208448578">Herken voorwerpen of plaatsen en kopieer of vertaal tekst. Als je Zoeken met afbeelding gebruikt, wordt een screenshot van de pagina naar de server gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium is je standaardbrowser</translation>
@@ -172,7 +171,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 is de JavaScript- en WebAssembly-engine van Chromium die wordt gebruikt om de siteprestaties te verbeteren</translation>
-<translation id="3283186697780795848">Chromium-versie <ph name="PRODUCT_VERSION" /> is geïnstalleerd</translation>
 <translation id="3286538390144397061">Nu herstarten</translation>
 <translation id="328888136576916638">Google API-sleutels ontbreken. Sommige functies van Chromium worden uitgezet.</translation>
 <translation id="3296368748942286671">Achtergrondapps actief houden als Chromium is gesloten</translation>
@@ -263,7 +261,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="4531137820806573936">Chromium heeft rechten nodig om je omgeving in kaart te brengen en je handen te volgen</translation>
 <translation id="4534145890176164066">Chromium begrijpt formulieren beter en kan ze sneller automatisch voor je invullen</translation>
 <translation id="4536805923587466102">Je bent al ingelogd als <ph name="USER_EMAIL_ADDRESS" /> bij een ander Chromium-profiel</translation>
-<translation id="4544142686420020088">Chromium is niet geüpdatet. Er is een fout opgetreden. <ph name="BEGIN_LINK" />Updateproblemen en mislukte updates voor Chromium verhelpen<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium kan dit tabblad inactief maken om de browsefunctionaliteit te verbeteren en te zorgen dat alles snel blijft werken.</translation>
 <translation id="454579500955453258">Doorgaan met een nieuw Chromium-profiel?</translation>
 <translation id="4548534452171747496">Chromium laadt pagina's vooraf, zodat je sneller kunt browsen en zoeken. <ph name="BEGIN_LINK" />Meer informatie over hoe je pagina's vooraf laadt<ph name="END_LINK" /></translation>
@@ -372,7 +369,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6120345080069858279">Chromium slaat dit wachtwoord op in je Google-account. Je hoeft het niet te onthouden.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> is gevaarlijk en is daarom door Chromium geblokkeerd.</translation>
 <translation id="6132897690380286411">Chromium wordt zo meteen gesloten en de gegevens worden verwijderd</translation>
-<translation id="6134968993075716475">Safe Browsing staat uit. Chromium raadt je aan deze functie aan te zetten.</translation>
 <translation id="6145820983052037069">Je kunt hier schakelen tussen verschillende Chromium-profielen</translation>
 <translation id="615103374448673771">Als je cookies toestaat, kan Chromium deze gebruiken voor vooraf laden.</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
@@ -384,7 +380,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6241367896540709610">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
 <translation id="6245734527075554892">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chromium</translation>
 <translation id="6248213926982192922">Chromium als standaardbrowser instellen</translation>
-<translation id="6266342355635466082">Chromium kan niet checken op updates. Check de internetverbinding.</translation>
 <translation id="6268381023930128611">Uitloggen bij Chromium?</translation>
 <translation id="6270547683008298381">Deze tabbladen gebruiken extra resources. Laat Chromium ze inactief maken om de prestaties te verbeteren.</translation>
 <translation id="6281746429495226318">Je Chromium-profiel aanpassen</translation>
@@ -539,7 +534,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8232193495299001329">Chromium kan niet verifiëren waar deze extensie vandaan komt en de extensie is misschien onveilig. Verwijder de extensie uit Chromium zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="8248265253516264921">Als een afbeelding geen nuttige beschrijving bevat, probeert Chromium je er een te geven. Afbeeldingen worden naar Google gestuurd om beschrijvingen te maken. Je kunt dit op elk gewenst moment uitzetten in Instellingen.</translation>
 <translation id="8254601181414348851">Inloggen bij Chromium in een nieuw profiel?</translation>
-<translation id="8266560134891435528">Chromium kan je wachtwoorden niet checken omdat je niet bent ingelogd.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium waarschuwt je<ph name="END_LINK" /> voor onveilige sites en downloads</translation>
 <translation id="8313851650939857356">Opstartfout: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Je organisatie sluit Chromium als deze <ph name="TIMEOUT_DURATION" /> niet wordt gebruikt.</translation>

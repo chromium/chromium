@@ -1236,6 +1236,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3229277193950731405">Kopyahin ang string ng bersyon</translation>
 <translation id="323107829343500871">Ilagay ang iyong CVC para sa <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Palaging tukuyin ang mahalagang content sa site na ito</translation>
+<translation id="323585066388831737">Light Red</translation>
 <translation id="3236212803136366317">Mga benepisyo ng card</translation>
 <translation id="3238395604961564389">Buksan ang Link sa Incognito Window</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para i-customize ang hitsura ng iyong browser</translation>
@@ -1854,6 +1855,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4277937682389409325">Lokal na address</translation>
 <translation id="4278090321534187713">Naka-disable ang mga card na hindi tinatanggap ng merchant na ito</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
+<translation id="4281245629646759298">Light Yellow</translation>
 <translation id="4281998142035485137">{0,plural, =1{Buksan ang kumpidensyal na file?}one{Buksan ang mga kumpidensyal na file?}other{Buksan ang mga kumpidensyal na file?}}</translation>
 <translation id="4282280603030594840">Pamimili ng Sasakyan</translation>
 <translation id="4282346679996504092">Na-off ang mga alerto para sa produktong ito at inalis ang bookmark</translation>

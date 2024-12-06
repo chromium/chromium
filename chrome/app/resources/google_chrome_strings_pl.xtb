@@ -128,7 +128,6 @@
 <translation id="2586406160782125153">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Uzyskaj dostęp do danych z przeglądarki Chrome z konta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Pobranego instalatora nie udało się załadować do pamięci podręcznej. Błąd: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome nie może sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="2632707915638608719">Zwiększ swoją produktywność dzięki rozszerzeniom do Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regularnie sprawdza, czy przeglądarka ma możliwie najbezpieczniejsze ustawienia. Jeśli będziemy potrzebować Twojej weryfikacji, powiadomimy Cię.</translation>
@@ -162,7 +161,6 @@
 <translation id="2926676257163822632">Słabe hasła są łatwe do odgadnięcia. Pozwól Chrome <ph name="BEGIN_LINK" />utworzyć i zapamiętać silne hasła<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Ta strona musi mieć w Chrome dostęp do aparatu</translation>
 <translation id="2928420929544864228">Instalacja ukończona.</translation>
-<translation id="2929907241665500097">Coś poszło nie tak i nie udało się zaktualizować Chrome. <ph name="BEGIN_LINK" />Napraw nieudane aktualizacje Chrome i rozwiąż inne problemy z aktualizacjami<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Błąd instalacji: nie udało się uruchomić procesu instalatora.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – logowanie do sieci – Chrome</translation>
 <translation id="2970681950995291301">Aby usunąć swoje konto Google z Chrome, wyloguj się z Chrome na stronie Ustawienia</translation>
@@ -172,7 +170,6 @@
 <translation id="3037838751736561277">Google Chrome jest w trybie działania w tle</translation>
 <translation id="3038232873781883849">Czekam na instalację…</translation>
 <translation id="3045032126857188731">Język tłumaczenia: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Bezpieczne przeglądanie jest wyłączone. Chrome zaleca jego włączenie.</translation>
 <translation id="306179102415443347">Aby szybko otworzyć Menedżera haseł Google, użyj skrótu. Skrót na komputerze możesz przenieść na ekran główny lub do Menu z aplikacjami.</translation>
 <translation id="3065168410429928842">Karta Chrome</translation>
 <translation id="3080151273017101988">Kontynuuj działanie aplikacji w tle po zamknięciu przeglądarki Google Chrome</translation>
@@ -238,7 +235,6 @@
 <translation id="3835168907083856002">Spowoduje to utworzenie nowego profilu Chrome dla użytkownika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Aby można było przeglądać urządzenia Bluetooth, Google Chrome musi mieć dostęp do Bluetootha. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Zamknij wszystkie okna przeglądarki Google Chrome i spróbuj ponownie.</translation>
-<translation id="3865754807470779944">Zainstalowana jest wersja Chrome <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Otwórz link w oknie inco&amp;gnito Chrome</translation>
 <translation id="3885770153807205175">Selektor języka</translation>
 <translation id="3889417619312448367">Odinstaluj Google Chrome</translation>
@@ -278,12 +274,10 @@
 <translation id="4328355335528187361">Wersja deweloperska Google Chrome (mDNS-In)</translation>
 <translation id="4329315893554541805">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chrome w Aktywności w internecie i aplikacjach oraz w połączonych usługach Google</translation>
 <translation id="4334294535648607276">Pobieranie ukończone.</translation>
-<translation id="4335235004908507846">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi rozszerzeniami i innymi zagrożeniami.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> – dodano do Chrome</translation>
 <translation id="4348548358339558429">Aby korzystać z personalizacji, uwzględnij Chrome w Aktywności w internecie i aplikacjach</translation>
 <translation id="436060642166082913">Pobieranie zostało zablokowane przez Chrome, ponieważ plik może zaszkodzić Twoim kontom osobistym i tym w sieciach społecznościowych</translation>
 <translation id="4367027658822022112">Możesz przypiąć Obiektyw Google, aby mieć do niego łatwy dostęp. Kliknij przycisk Przypnij u góry panelu bocznego</translation>
-<translation id="4384570495110188418">Chrome nie może sprawdzić haseł, jeśli się nie zalogujesz</translation>
 <translation id="4389991535395284064">Podczas przeglądania w trybie incognito Chrome będzie Cię ostrzegać przed wczytaniem strony korzystającej z niezabezpieczonego połączenia</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>

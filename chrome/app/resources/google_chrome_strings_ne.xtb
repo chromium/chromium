@@ -130,7 +130,6 @@
 <translation id="2586406160782125153">यसले यस यन्त्रको तपाईंको ब्राउजिङको डेटा मेट्नेछ। पछि आफ्नो डेटा प्राप्त गर्न Chrome मा <ph name="USER_EMAIL" /> को रूपमा साइन इन गर्नुहोस्।</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> मार्फत Chrome ब्राउजरमा भएका आफ्ना डेटा प्राप्त गर्नुहोस्</translation>
 <translation id="259935314519650377">डाउनलोड गरिएको इन्स्टलरको क्यास बनाउन सकिएन। त्रुटि भयो: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
-<translation id="2622559029861875898">Chrome ले अद्यावधिक छ वा छैन भन्ने कुराको जाँच गर्न सकेन। आफ्नो इन्टरनेट जडान जाँच गरी हेर्नुहोस्।</translation>
 <translation id="2632707915638608719">Chrome का लागि उपलब्ध एक्स्टेन्सनहरू प्रयोग गरी अझ धेरै कार्य सम्पन्न गर्नुहोस्</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome ले तपाईंको ब्राउजरका सेटिङ सबैभन्दा सुरक्षित छ भन्ने कुराको सुनिश्चित गर्न नियमित रूपमा जाँच गर्छ। केही कुराको समीक्षा गर्नु पर्ने भएमा हामी तपाईंलाई जानकारी गराउने छौँ।</translation>
@@ -164,7 +163,6 @@
 <translation id="2926676257163822632">कमजोर पासवर्डहरू सजिलै अनुमान लगाउन सकिन्छ। Chrome लाई <ph name="BEGIN_LINK" />तपाईंका लागि भरपर्दा पासवर्ड बनाउन र याद राख्न<ph name="END_LINK" /> दिनुहोस्।</translation>
 <translation id="2926952073016206995">यो साइट चलाउन Chrome लाई क्यामेरा प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="2928420929544864228">इन्स्टल गरियो।</translation>
-<translation id="2929907241665500097">Chrome अद्यावधिक भएन, कुनै समस्या आयो। <ph name="BEGIN_LINK" />Chrome अद्यावधिक गर्दा देखिएका समस्या तथा अद्यावधिक नहुने समस्याहरू समाधान गर्नुहोस्।<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">इन्स्टल गर्ने क्रममा त्रुटि भयो: इन्स्टल गर्ने प्रक्रिया सुरु गर्न सकिएन।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="2970681950995291301">Chrome बाट आफ्नो Google खाता हटाउन "सेटिङ" पेजमा गई Chrome बाट साइन आउट गर्नुहोस्</translation>
@@ -174,7 +172,6 @@
 <translation id="3037838751736561277">Google Chrome पृष्ठभूमि मोडमा छ।</translation>
 <translation id="3038232873781883849">इन्स्टल गर्ने प्रतीक्षा गरिँदै छ...</translation>
 <translation id="3045032126857188731">अनुवादित भाषा: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">सुरक्षित ब्राउजिङ अफ छ। Chrome ले यो सेवा सक्रिय गर्न सिफारिस गर्छ।</translation>
 <translation id="306179102415443347">Google पासवर्ड म्यानेजरमा तुरुन्तै जान आफ्नो सर्टकट प्रयोग गर्नुहोस्। तपाईं आफ्नो सर्टकट सारेर कम्प्युटरको होम स्क्रिन वा एप लन्चरमा लैजान सक्नुहुन्छ।</translation>
 <translation id="3065168410429928842">Chrome को ट्याब</translation>
 <translation id="3080151273017101988">Google Chrome बन्दा हुँदा पृष्ठभूमि एपहरू चालू हुन जारी राख्नुहोस्</translation>
@@ -241,7 +238,6 @@
 <translation id="383928141529488001">Chrome सँग ब्लुटुथ डिभाइसहरू खोज्नका निम्ति 
  ब्लुटुथको एक्सेस हुनु पर्छ। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">कृपया सबै Google Chrome सन्झ्यालहरू बन्द गर्नुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
-<translation id="3865754807470779944">Chrome को संस्करण <ph name="PRODUCT_VERSION" /> स्थापित छ</translation>
 <translation id="3873044882194371212">लिंकलाई Chrome को इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="3885770153807205175">ल्याङ्वेज पिकर</translation>
 <translation id="3889417619312448367">Google Chrome को स्थापना हटाउनुहोस्</translation>
@@ -281,12 +277,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">पर्सनलाइजेसन र अन्य सुविधाहरू प्राप्त गर्न Chrome लाई वेब तथा एपसम्बन्धी गतिविधि र Google का लिंक गरिएका सेवाहरूमा समावेश गर्नुहोस्</translation>
 <translation id="4334294535648607276">डाउनलोड सम्पन्न भयो</translation>
-<translation id="4335235004908507846">Chrome ले तपाईंलाई डेटा चोरीका घटना, हानिकारक एक्स्टेन्सन र थप समस्याहरूबाट सुरक्षित रहन मद्दत गर्न सक्छ</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> लाई Chrome मा थपिएको छ</translation>
 <translation id="4348548358339558429">पर्सनलाइजेसन प्राप्त गर्न Chrome लाई वेब तथा एपसम्बन्धी गतिविधिमा समावेश गर्नुहोस्</translation>
 <translation id="436060642166082913">यो फाइलले तपाईंको व्यक्तिगत तथा सामाजिक सञ्जाल खाताहरूमा हानि पुर्‍याउन सक्ने भएकाले Chrome ले यो फाइल डाउनलोड गर्न रोक लगाएको छ</translation>
 <translation id="4367027658822022112">तपाईं Google लेन्स पिन गरी सजिलै एक्सेस गर्न सक्नुहुन्छ; साइड प्यानलको सिरानमा रहेको "पिन गर्नुहोस्" बटन क्लिक गर्नुहोस्</translation>
-<translation id="4384570495110188418">तपाईं साइन इन नहुनुभएकाले Chrome ले तपाईंका पासवर्डहरूको जाँच गर्न सकेन</translation>
 <translation id="4389991535395284064">तपाईं इन्कोग्निटो मोड प्रयोग गरेर साइटहरू ब्राउज गर्दै हुनुहुन्छ भने तपाईंले कुनै असुरक्षित कनेक्सन प्रयोग गरी साइट लोड गर्नुअघि Chrome ले तपाईंलाई चेतावनी दिने छ</translation>
 <translation id="4427306783828095590">परिष्कृत सुरक्षा प्रयोग गरी फिसिङ तथा मालवेयरमाथि अझ राम्रोसँग रोक लगाउन सकिन्छ</translation>
 <translation id="4434353761996769206">इन्स्टलरसम्बन्धी त्रुटि भयो: <ph name="INSTALLER_ERROR" /></translation>

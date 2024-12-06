@@ -132,7 +132,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2586406160782125153">Ovim ćete izbrisati podatke pregledanja sa uređaja. Da biste kasnije vratili podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Preuzmite sadržaj iz Chrome pregledača sa: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Keširanje preuzetog instalacionog programa nije uspelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
 <translation id="2632707915638608719">Uradite više pomoću dodataka za Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome redovno proverava da li pregledač ima najbezbednija podešavanja. Obavestićemo vas ako je potrebno da nešto pregledate.</translation>
@@ -166,7 +165,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2926676257163822632">Slabe lozinke lako mogu da se pogode. Dozvolite da Chrome <ph name="BEGIN_LINK" />pravi i pamti jake lozinke za vas<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome-u treba dozvola za kameru za ovaj sajt</translation>
 <translation id="2928420929544864228">Instalacija je dovršena.</translation>
-<translation id="2929907241665500097">Chrome se nije ažurirao. Došlo je do greške. <ph name="BEGIN_LINK" />Otklonite probleme sa ažuriranjem Chrome-a i neuspela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Greška pri instalaciji: Proces instalacije nije uspeo.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijavljivanje na mrežu – Chrome</translation>
 <translation id="2970681950995291301">Da biste uklonili Google nalog iz Chrome-a, odjavite se iz Chrome-a na stranici Podešavanja</translation>
@@ -176,7 +174,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3037838751736561277">Google Chrome je u pozadinskom režimu.</translation>
 <translation id="3038232873781883849">Čeka se instaliranje...</translation>
 <translation id="3045032126857188731">Jezik prevoda: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Bezbedno pregledanje je isključeno. Chrome preporučuje da ga uključite.</translation>
 <translation id="306179102415443347">Koristite prečicu da biste brzo pristupali Google menadžeru lozinki. Prečicu možete da premestite na početni ekran računara ili u pokretač aplikacija.</translation>
 <translation id="3065168410429928842">Chrome kartica</translation>
 <translation id="3080151273017101988">Nastavi sa pokretanjem aplikacija u pozadini kada se Google Chrome zatvori</translation>
@@ -243,7 +240,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="383928141529488001">Google Chrome zahteva pristup Bluetooth-u da bi istraživao 
  Bluetooth uređaje. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Zatvorite sve prozore Google Chrome pregledača i pokušajte ponovo.</translation>
-<translation id="3865754807470779944">Instalirana je verzija Chrome-a <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Otvori link u Chrome prozoru bez arhi&amp;viranja</translation>
 <translation id="3885770153807205175">Birač jezika</translation>
 <translation id="3889417619312448367">Deinstaliraj Google Chrome</translation>
@@ -283,12 +279,10 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4328355335528187361">Programerska verzija Google Chrome-a (mDNS-In)</translation>
 <translation id="4329315893554541805">Da biste dobili personalizaciju i druge funkcije, uvrstite Chromium u aktivnosti na vebu i u aplikacijama i povezane Google usluge</translation>
 <translation id="4334294535648607276">Preuzimanje je dovršeno.</translation>
-<translation id="4335235004908507846">Chrome može da vas štiti od upada u podatke, neispravnih dodataka i drugih problema</translation>
 <translation id="4343195214584226067">Dodatak <ph name="EXTENSION_NAME" /> je dodat u Chrome</translation>
 <translation id="4348548358339558429">Da biste dobili personalizaciju, uvrstite Chrome u aktivnosti na vebu i u aplikacijama</translation>
 <translation id="436060642166082913">Chrome je blokirao ovo preuzimanje jer ovaj fajl može da naškodi ličnim nalozima i nalozima na društvenim mrežama</translation>
 <translation id="4367027658822022112">Možete da zakačite Google objektiv radi jednostavnog pristupa; kliknite na dugme Zakači u vrhu bočne table</translation>
-<translation id="4384570495110188418">Chrome ne može da vam proverava lozinke zato što niste prijavljeni</translation>
 <translation id="4389991535395284064">Kada pregledate u režimu bez arhiviranja, Chrome će vas upozoriti pre učitavanja sajta pomoću nebezbedne veze</translation>
 <translation id="4427306783828095590">Poboljšana zaštita nudi više mogućnosti za blokiranje „pecanja“ i malvera</translation>
 <translation id="4434353761996769206">Greška programa za instalaciju: <ph name="INSTALLER_ERROR" /></translation>

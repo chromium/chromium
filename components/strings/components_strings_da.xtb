@@ -1236,6 +1236,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3229277193950731405">Kopiér versionsstreng</translation>
 <translation id="323107829343500871">Angiv CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Registrer altid vigtigt indhold på dette website</translation>
+<translation id="323585066388831737">Lys rød</translation>
 <translation id="3236212803136366317">Kortfordele</translation>
 <translation id="3238395604961564389">Åbn link i inkognitovindue</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at tilpasse din browsers udseende</translation>
@@ -1854,6 +1855,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4277937682389409325">Lokal adresse</translation>
 <translation id="4278090321534187713">Kort, der ikke accepteres af denne sælger, er deaktiveret</translation>
 <translation id="4278390842282768270">Tilladt</translation>
+<translation id="4281245629646759298">Lysegul</translation>
 <translation id="4281998142035485137">{0,plural, =1{Vil du åbne den fortrolige fil?}one{Vil du åbne den fortrolige fil?}other{Vil du åbne de fortrolige filer?}}</translation>
 <translation id="4282280603030594840">Indkøb af køretøj</translation>
 <translation id="4282346679996504092">Underretninger for dette produkt er deaktiveret, og bogmærket er fjernet</translation>

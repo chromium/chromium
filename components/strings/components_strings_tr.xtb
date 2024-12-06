@@ -1236,6 +1236,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3229277193950731405">Sürüm dizesini kopyala</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> numaralı kartın CVC kodunu girin</translation>
 <translation id="3234666976984236645">Her zaman bu sitedeki önemli içeriği algıla</translation>
+<translation id="323585066388831737">Açık Kırmızı</translation>
 <translation id="3236212803136366317">Kart avantajları</translation>
 <translation id="3238395604961564389">Bağlantıyı Gizli Pencere'de Aç</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tarayıcınızın görünümünü özelleştirmek için sekmeye, ardından Enter'a basın</translation>
@@ -1854,6 +1855,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4277937682389409325">Yerel adres</translation>
 <translation id="4278090321534187713">Bu satıcı tarafından kabul edilmeyen kartlar devre dışı bırakıldı</translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
+<translation id="4281245629646759298">Açık Sarı</translation>
 <translation id="4281998142035485137">{0,plural, =1{Gizli dosya açılsın mı?}other{Gizli dosyalar açılsın mı?}}</translation>
 <translation id="4282280603030594840">Araç Alım-Satım</translation>
 <translation id="4282346679996504092">Bu ürünle ilgili uyarılar devre dışı bırakıldı ve yer işareti kaldırıldı</translation>
@@ -2743,6 +2745,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5969199813874624822">Fiyatı kaydet ve takip et</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Altıncı Rulo</translation>
+<translation id="5974745851230707809">Taksitli ödeme seçenekleri</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>
 <translation id="5979084224081478209">Şifreleri kontrol et</translation>
 <translation id="5984570616552610254">Oda nemi</translation>
@@ -4337,6 +4340,7 @@ Ek ayrıntılar:
 <translation id="882338992931677877">Manuel Yuva</translation>
 <translation id="8830320733681313421">Hagaki Kartpostal</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" /> içindeki dosyaları görüntüleyin</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> ve üzeri satın alma işlemlerinde kullanılabilir</translation>
 <translation id="8833007469711500369">Çamaşır Makineleri ve Kurutucular</translation>
 <translation id="8834962751196791179">Bu site HTTPS'yi desteklemediği ve Gizli modda olduğunuz için bu uyarıyı görüyorsunuz. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="8837398923270275776">TV Bilim Kurgu Dizileri ve Fantastik Programlar</translation>

@@ -1236,6 +1236,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3229277193950731405">Kopier versjonsstrengen</translation>
 <translation id="323107829343500871">Skriv inn verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Oppdag alltid viktig innhold på dette nettstedet</translation>
+<translation id="323585066388831737">Lys rød</translation>
 <translation id="3236212803136366317">Kortfordeler</translation>
 <translation id="3238395604961564389">Åpne linken i et inkognitovindu</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tilpasse nettleserens utseende</translation>
@@ -1854,6 +1855,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4277937682389409325">Lokal adresse</translation>
 <translation id="4278090321534187713">Kort som ikke godtas av denne selgeren, er deaktivert</translation>
 <translation id="4278390842282768270">Tillatt</translation>
+<translation id="4281245629646759298">Lys gul</translation>
 <translation id="4281998142035485137">{0,plural, =1{Vil du åpne den konfidensielle filen?}other{Vil du åpne de konfidensielle filene?}}</translation>
 <translation id="4282280603030594840">Kjøp av kjøretøy</translation>
 <translation id="4282346679996504092">Varsler for dette produktet er slått av, og bokmerket er fjernet</translation>

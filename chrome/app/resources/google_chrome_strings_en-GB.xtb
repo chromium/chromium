@@ -132,7 +132,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome can't check for updates. Try checking your Internet connection.</translation>
 <translation id="2632707915638608719">Get more done with extensions for Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
@@ -166,7 +165,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2926676257163822632">Weak passwords are easy to guess. Let Chrome <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2928420929544864228">Installation complete.</translation>
-<translation id="2929907241665500097">Chrome didn't update. Something went wrong. <ph name="BEGIN_LINK" />Fix Chrome update problems and failed updates.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="2970681950995291301">To remove your Google Account from Chrome, sign out of Chrome in the Settings page</translation>
@@ -176,7 +174,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
 <translation id="3045032126857188731">Translated language: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Safe Browsing is off. Chrome recommends turning it on.</translation>
 <translation id="306179102415443347">Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
 <translation id="3065168410429928842">Chrome Tab</translation>
 <translation id="3080151273017101988">Continue running background apps when Google Chrome is closed</translation>
@@ -243,7 +240,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="383928141529488001">Google Chrome needs Bluetooth access to explore 
  Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Please close all Google Chrome windows and try again.</translation>
-<translation id="3865754807470779944">Chrome version <ph name="PRODUCT_VERSION" /> is installed</translation>
 <translation id="3873044882194371212">Open link in Chrome inco&amp;gnito window</translation>
 <translation id="3885770153807205175">Language picker</translation>
 <translation id="3889417619312448367">Uninstall Google Chrome</translation>
@@ -283,12 +279,10 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">To get personalisation and other features, include Chrome in Web &amp; App Activity and linked Google services</translation>
 <translation id="4334294535648607276">Download complete.</translation>
-<translation id="4335235004908507846">Chrome can help keep you safe from data breaches, bad extensions and more</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> has been added to Chrome</translation>
 <translation id="4348548358339558429">To get personalisation, include Chrome in Web &amp; App Activity</translation>
 <translation id="436060642166082913">Chrome blocked this download because the file can harm your personal and social network accounts</translation>
 <translation id="4367027658822022112">You can pin Google Lens for easy access; click the Pin button at the top of the side panel</translation>
-<translation id="4384570495110188418">Chrome can't check your passwords because you're not signed in</translation>
 <translation id="4389991535395284064">When browsing in Incognito mode, Chrome will warn you before loading a site using an insecure connection</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>

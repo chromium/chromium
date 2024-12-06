@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">ສຳເນົາສະຕຣິງເວີຊັນ</translation>
 <translation id="323107829343500871">ປ້ອນ CVC ສຳລັບ <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">ກວດ​ຫາ​ເນື້ອ​ໃນ​ສຳ​ຄັນ​ຢູ່​ເທິງ​ເວັບ​ໄຊ​ທ໌​ນີ້​ທຸກ​ຄັ້ງ</translation>
+<translation id="323585066388831737">ສີແດງອ່ອນ</translation>
 <translation id="3236212803136366317">ສິດທິປະໂຫຍດບັດ</translation>
 <translation id="3238395604961564389">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ tab ຈາກນັ້ນກົດ Enter ເພື່ອປັບແຕ່ງໜ້າຕາຂອງໂປຣແກຣມທ່ອງເວັບທ່ານ</translation>
@@ -1854,6 +1855,7 @@
 <translation id="4277937682389409325">ທີ່ຢູ່ໃນທ້ອງຖິ່ນ</translation>
 <translation id="4278090321534187713">ບັດທີ່ບໍ່ໄດ້ຮັບການຍອມຮັບຈາກຜູ້ຂາຍນີ້ຈະຖືກປິດການນຳໃຊ້</translation>
 <translation id="4278390842282768270">ອະນຸຍາດແລ້ວ</translation>
+<translation id="4281245629646759298">ສີເຫຼືອງອ່ອນ</translation>
 <translation id="4281998142035485137">{0,plural, =1{ຕ້ອງການເປີດໄຟລ໌ທີ່ເປັນຄວາມລັບບໍ?}other{ຕ້ອງການເປີດໄຟລ໌ທີ່ເປັນຄວາມລັບບໍ?}}</translation>
 <translation id="4282280603030594840">ການຊື້ຍານພາຫະນະ</translation>
 <translation id="4282346679996504092">ການແຈ້ງເຕືອນສຳລັບສິນຄ້ານີ້ໄດ້ຖືກປິດໄວ້ແລ້ວ ແລະ ລຶບບຸກມາກອອກແລ້ວ</translation>

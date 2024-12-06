@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">దిగువ లిస్ట్‌లో <ph name="SUGGESTIONS_COUNT" /> సూచించిన ఐటెమ్‌లు ఉన్నాయి.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను ఉపయోగించండి</translation>
 <translation id="160275202205869636">ఆన్‌లో ఉన్నప్పుడు, మీ Google ఖాతాలో డేటాను ఉపయోగించండి, దానిని సేవ్ చేయండి. ఆఫ్‌లో ఉన్నప్పుడు, డేటా ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ఈ ట్యాబ్‌ను తీసివేశారు</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ఎంచుకోబడిన 1 అంశాన్ని తీసివేస్తుంది}other{ఎంచుకోబడిన # అంశాలను తీసివేస్తుంది}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{ఈ పరికరంలో 1 బుక్‌మార్క్, ఇతర ఐటెమ్‌లు మాత్రమే సేవ్ చేయబడ్డాయి. మీ ఇతర పరికరాలలో వీటిని ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో సేవ్ చేయండి.}other{ఈ పరికరంలో # బుక్‌మార్క్‌లు, ఇతర ఐటెమ్‌లు మాత్రమే సేవ్ చేయబడ్డాయి. మీ ఇతర పరికరాలలో వీటిని ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో సేవ్ చేయండి.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> గ్రూప్‌లో చేరారు</translation>
 <translation id="1641113438599504367">సురక్షిత బ్రౌజింగ్</translation>
 <translation id="164269334534774161">మీరు <ph name="CREATION_TIME" /> నుండి ఈ పేజీ యొక్క ఆఫ్‌లైన్ కాపీని వీక్షిస్తున్నారు</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">టీనేజర్‌ల కోసం Google కంటెంట్</translation>
 <translation id="2579297619530305344">పూర్తి ఎత్తులో తెరిచిన మీ పరికరాలన్నింటిలోని పాస్‌వర్డ్‌‌లు</translation>
 <translation id="2581165646603367611">ఇది Chrome ముఖ్యమైనదిగా భావించని కుక్కీలు, కాష్, సైట్‌ల ఇతర డేటాను తీసివేస్తుంది.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ట్యాబ్‌ను జోడించారు</translation>
 <translation id="2587052924345400782">సరికొత్త వెర్షన్ ఉంది</translation>
 <translation id="2593272815202181319">మోనోస్పేస్</translation>
 <translation id="2603212228005142861">మీ ప్రాధాన్యతలను మేనేజ్ చేయడానికి సైన్ ఇన్ చేయండి</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">1 సెకను మిగిలి ఉంది</translation>
 <translation id="2789486458103222910">సరే</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome, మీరు మెరుగుపరచగల వేరే చోట వాడిన పాస్‌వర్డ్‌ను కనుగొంది}other{Chrome, మీరు మెరుగుపరచగల # వేరే చోట వాడిన పాస్‌వర్డ్‌లను కనుగొంది}}</translation>
+<translation id="2796651346651857052">అడ్రస్ బార్ పోజిషన్‌ను మార్చడానికి దాన్ని నొక్కి, పట్టుకోండి</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ట్యాబ్ మూసివేయబడుతుంది</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="281504910091592009">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">మీరు <ph name="EMAIL" />‌గా సైన్ ఇన్ చేశారు. మీరు సింక్ అవ్వడాన్ని ఏ సమయంలోనైనా సెట్టింగ్‌లలో ఆపివేయవచ్చు. మీ హిస్టరీ ఆధారంగా Searchను, ఇతర సర్వీస్‌లను Google వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="5304593522240415983">ఈ ఫీల్డ్ ఖాళీగా ఉండరాదు</translation>
 <translation id="5306014156308790439">కలెక్షన్‌కు జోడించడం డిజేబుల్ చేయబడింది</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> గ్రూప్ రంగును మార్చారు</translation>
 <translation id="5308380583665731573">కనెక్ట్ చేయండి</translation>
 <translation id="5310963254742922113">పాస్‌వర్డ్ ఉపయోగించబడింది.</translation>
 <translation id="5316947901395241499">మీ అడ్మినిస్ట్రేటర్, పాస్‌వర్డ్‌ను సేవ్ చేసే ఫీచర్‌ను ఆఫ్ చేశారు</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> లో ఒక్క సైట్‌కు కూడా సందర్శకులు లేరు</translation>
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="5364112109233799727">మీరు ఏ పేజీపై అయితే ఫీడ్‌బ్యాక్‌ను అందిస్తున్నారో, దాని URLను Google పంపిస్తుంది, ఈ ఫీచర్‌ను మెరుగుపరచడానికి దాన్ని రివ్యూవర్‌లు రివ్యూ చేసే అవకాశం ఉంది</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ట్యాబ్‌ను మార్చారు</translation>
 <translation id="5375374982898812658">మీరు వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అది మీ అన్ని పరికరాల నుండి తొలగించబడుతుంది</translation>
 <translation id="5375577065097716013">Google Lens ఇమేజ్ సెర్చ్ <ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">అజ్ఞాత మోడ్ నుండి మారండి</translation>
@@ -1045,7 +1051,7 @@
 <translation id="5797949256525811424">బ్లాక్ చేసిన టాపిక్</translation>
 <translation id="580893287573699959">మీకు ఆసక్తి ఉన్న టాపిక్‌లను, సైట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# గంట క్రితం}other{# గంటల క్రితం}}</translation>
-<translation id="5810288467834065221">కాపీరైట్ <ph name="YEAR" /> Google LLC. సర్వ హక్కులు ప్రత్యేకించబడ్డాయి.</translation>
+<translation id="5810288467834065221">కాపీరైట్ <ph name="YEAR" /> సర్వ హక్కులు Google LLCకి రిజర్వ్ అయ్యాయి.</translation>
 <translation id="5814749351757353073">మీకు ఇష్టమైన సైట్‌ల గురించి తెలుసుకోండి</translation>
 <translation id="5822875253699806474">మీరు బ్రౌజ్ చేసిన సైట్‌లకు తిరిగి క్విక్‌గా వెళ్లడానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="5828921839638612740">మీరు Chrome సెట్టింగ్‌లలో డేటాను తొలగించవచ్చు</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378"><ph name="HOURS" /> గంటలు మిగిలి ఉంది</translation>
 <translation id="6095578583683628124">అలాగే Google మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ అయితే, మీకు మరింత సందర్భోచితమైన సూచనలు కనిపిస్తాయి</translation>
 <translation id="610630277578876674">మెసేజ్‌లలో, మరిన్నింటిలో లింక్‌లను వేగంగా తెరవండి</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> గ్రూప్ పేరు మార్చారు</translation>
 <translation id="6108923351542677676">సెటప్ ప్రోగ్రెస్‌లో ఉంది...</translation>
 <translation id="6112702117600201073">పేజీని రిఫ్రెష్ చేస్తోంది</translation>
 <translation id="6122831415929794347">సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేయాలా?</translation>
@@ -1323,6 +1330,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ట్యాబ్}other{<ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు}}</translation>
 <translation id="6929224077895306814">మీ పరికరంలో, Google ఖాతాలో సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లన్నీ తొలగించబడతాయి</translation>
 <translation id="6937524809504266803">వ్యక్తిగతీకరణ &amp; లింక్ చేయడం</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">మారుపేరు (ఆప్షనల్)</translation>
 <translation id="6942665639005891494">సెట్టింగ్‌ల మెనూ ఎంపికను ఉపయోగించి డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని మార్చండి</translation>
 <translation id="694267552845942083">మీరు ప్రస్తుతం మీ సింక్ సెట్టింగ్‌లను అనుకూలీకరిస్తున్నారు. సింక్‌ను ఆన్ చేయడం పూర్తి చేయడానికి, స్క్రీన్ దిగువ భాగం సమీపంలోని 'నిర్ధారించు' బటన్‌ను ట్యాప్ చేయండి. పైకి నావిగేట్ చేయి</translation>
@@ -1491,6 +1499,7 @@
 <translation id="7656721520530864426">సైట్‌లేవీ లేవు</translation>
 <translation id="7656862631699126784">'అజ్ఞాత మోడ్ లాక్'‌ను ఆన్ చేయండి</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> గ్రూప్ నుండి నిష్క్రమించారు</translation>
 <translation id="7663320421139257046">కొనసాగించడానికి, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో మీ <ph name="FIELDS_STRING" />‌ను షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీని<ph name="END_LINK1" /> చూడండి.</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="766587987807204883">కథనాలు ఇక్కడ కనిపిస్తాయి, మీరు ఆఫ్‌లైన్‌లో ఉన్నప్పటికీ కూడా వీటిని చదవవచ్చు</translation>

@@ -132,7 +132,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2586406160782125153">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Prenesite stvari za brskalnik Chrome iz računa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Prenesenega namestitvenega programa ni bilo mogoče predpomniti. Napaka: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome ne more preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="2632707915638608719">Opravite več z razširitvami za Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome redno preverja, ali so v brskalniku na voljo najvarnejše nastavitve Če boste morali kaj pregledati, vam bomo sporočili.</translation>
@@ -166,7 +165,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2926676257163822632">Šibka gesla je preprosto ugotoviti. Chromu omogočite, da <ph name="BEGIN_LINK" />ustvari zapletena gesla za vas in jih shrani<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome potrebuje dovoljenje za fotoaparat za to spletno mesto.</translation>
 <translation id="2928420929544864228">Namestitev je dokončana.</translation>
-<translation id="2929907241665500097">Chrome se ni posodobil, prišlo je do napake. <ph name="BEGIN_LINK" />Odpravite težave s posodobitvijo Chroma in neuspelimi posodobitvami Chroma.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Napaka pri namestitvi: Proces namestitvenega programa se ni zagnal.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Prijava v omrežje – Chrome</translation>
 <translation id="2970681950995291301">Če želite račun Google odstraniti iz Chroma, se na strani z nastavitvami odjavite iz Chroma.</translation>
@@ -176,7 +174,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3037838751736561277">Google Chrome se izvaja v ozadju.</translation>
 <translation id="3038232873781883849">Čakanje na namestitev …</translation>
 <translation id="3045032126857188731">Jezik prevoda: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Varno brskanje je izklopljeno. Chrome priporoča, da ga vklopite.</translation>
 <translation id="306179102415443347">Z bližnjico lahko hitro odprete Googlovega upravitelja gesel. Bližnjico lahko premaknete na začetni zaslon računalnika ali v zaganjalnik aplikacij.</translation>
 <translation id="3065168410429928842">Zavihek v Chromu</translation>
 <translation id="3080151273017101988">Nadaljuj izvajanje programov v ozadju, ko je Google Chrome zaprt</translation>
@@ -243,7 +240,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="383928141529488001">Google Chrome potrebuje dostop do Bluetootha za raziskovanje 
  naprav Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Zaprite vsa okna brskalnika Google Chrome in poskusite znova.</translation>
-<translation id="3865754807470779944">Nameščen je Chrome različice <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
 <translation id="3885770153807205175">Izbirnik jezika</translation>
 <translation id="3889417619312448367">Odstrani Google Chrome</translation>
@@ -283,12 +279,10 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Če želite uporabljati osebno prilagajanje in druge funkcije, vključite Chrome v dejavnost v spletu in aplikacijah ter povezane Googlove storitve</translation>
 <translation id="4334294535648607276">Prenos končan.</translation>
-<translation id="4335235004908507846">Chrome vas lahko varuje pred podatkovnimi kršitvami, zlonamernimi razširitvami in drugim</translation>
 <translation id="4343195214584226067">Razširitev <ph name="EXTENSION_NAME" /> je dodana v Chrome</translation>
 <translation id="4348548358339558429">Če želite omogočiti osebno prilagajanje, vključite Chrome v dejavnost v spletu in aplikacijah</translation>
 <translation id="436060642166082913">Chrome je blokiral ta prenos, ker lahko datoteka škoduje vašim osebnim računom in računom v družbenih omrežjih</translation>
 <translation id="4367027658822022112">Google Lens lahko pripnete za preprost dostop. Kliknite gumb za pripenjanje na vrhu stranskega podokna.</translation>
-<translation id="4384570495110188418">Chrome ne more preveriti gesel, ker niste prijavljeni</translation>
 <translation id="4389991535395284064">Pri brskanju v anonimnem načinu vas bo Chrome opozoril pred nalaganjem spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="4427306783828095590">Izboljšana zaščita učinkoviteje blokira lažno predstavljanje in zlonamerno programsko opremo.</translation>
 <translation id="4434353761996769206">Napaka namestitvenega programa: <ph name="INSTALLER_ERROR" /></translation>

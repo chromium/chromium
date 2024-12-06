@@ -7,7 +7,6 @@
 <translation id="1042552502243217427">Saat sebuah situs meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chromium akan menggunakan server Google. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat, tetapi Google akan mempelajari situs apa yang dipramuat.</translation>
 <translation id="1065672644894730302">Preferensi Anda tidak dapat dibaca. Beberapa fitur mungkin tidak tersedia dan perubahan pada preferensi tidak akan disimpan.</translation>
 <translation id="1083934481477628225">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chromium</translation>
-<translation id="1098170124587656448">Chromium dapat membantu Anda agar tetap aman dari pelanggaran data, ekstensi berbahaya, dan lainnya</translation>
 <translation id="1104942323762546749">Chromium ingin mengekspor sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="112640046208448578">Identifikasi berbagai hal atau tempat, serta salin atau terjemahkan teks. Saat Anda menggunakan Penelusuran Gambar, screenshot halaman akan dikirim ke server. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium adalah browser default Anda</translation>
@@ -171,7 +170,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 adalah mesin WebAssembly dan JavaScript Chromium yang digunakan untuk meningkatkan performa situs</translation>
-<translation id="3283186697780795848">Chromium versi <ph name="PRODUCT_VERSION" /> telah terinstal</translation>
 <translation id="3286538390144397061">Mulai Ulang Sekarang</translation>
 <translation id="328888136576916638">Kunci API Google tidak ada. Beberapa fungsi Chromium tidak akan berfungsi.</translation>
 <translation id="3296368748942286671">Lanjutkan aplikasi yang berjalan di latar belakang jika Chromium ditutup</translation>
@@ -262,7 +260,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="4531137820806573936">Chromium memerlukan izin untuk memetakan lingkungan dan melacak tangan Anda</translation>
 <translation id="4534145890176164066">Chromium memahami formulir lebih baik dan dapat melakukan pengisian otomatis lebih cepat untuk Anda</translation>
 <translation id="4536805923587466102">Anda sudah login sebagai <ph name="USER_EMAIL_ADDRESS" /> di profil Chromium lain</translation>
-<translation id="4544142686420020088">Chromium tidak dapat diupdate, terjadi error. <ph name="BEGIN_LINK" />Perbaiki masalah update Chrome dan update yang gagal.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium dapat menonaktifkan tab ini untuk meningkatkan pengalaman penjelajahan Anda dan menjaga performanya tetap cepat.</translation>
 <translation id="454579500955453258">Lanjutkan di profil Chromium baru?</translation>
 <translation id="4548534452171747496">Chromium akan melakukan pramuat halaman yang membuat penjelajahan dan penelusuran menjadi lebih cepat. <ph name="BEGIN_LINK" />Pelajari lebih lanjut cara melakukan pramuat halaman<ph name="END_LINK" /></translation>
@@ -371,7 +368,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6120345080069858279">Chromium akan menyimpan sandi ini di Akun Google. Anda tidak perlu mengingatnya.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> berbahaya, sehingga Chromium memblokirnya.</translation>
 <translation id="6132897690380286411">Chromium akan segera ditutup serta menghapus data</translation>
-<translation id="6134968993075716475">Safe Browsing nonaktif. Chromium merekomendasikan untuk mengaktifkannya.</translation>
 <translation id="6145820983052037069">Anda dapat berpindah-pindah profil Chromium di sini</translation>
 <translation id="615103374448673771">Jika Anda mengizinkan cookie, Chromium dapat menggunakannya saat melakukan pramuat</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
@@ -383,7 +379,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6241367896540709610">Chromium memerlukan izin akses penyimpanan untuk mendownload file</translation>
 <translation id="6245734527075554892">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium</translation>
 <translation id="6248213926982192922">Jadikan Chromium browser default</translation>
-<translation id="6266342355635466082">Chromium tidak dapat memeriksa update. Coba periksa koneksi internet Anda.</translation>
 <translation id="6268381023930128611">Keluar dari Chromium?</translation>
 <translation id="6270547683008298381">Tab ini menggunakan lebih banyak resource. Untuk meningkatkan performa, izinkan Chromium menonaktifkannya.</translation>
 <translation id="6281746429495226318">Sesuaikan profil Chromium Anda</translation>
@@ -538,7 +533,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8232193495299001329">Chromium tidak dapat memverifikasi asal ekstensi ini, dan mungkin ekstensi ini tidak aman. Hapus dari Chromium agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="8248265253516264921">Jika gambar tidak memiliki deskripsi yang berguna, Chromium akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google. Anda dapat menonaktifkannya kapan saja di setelan.</translation>
 <translation id="8254601181414348851">Login ke Chromium di profil baru?</translation>
-<translation id="8266560134891435528">Chromium tidak dapat memeriksa sandi karena Anda tidak login</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium akan memperingatkan Anda<ph name="END_LINK" /> tentang situs dan download yang tidak aman</translation>
 <translation id="8313851650939857356">Error saat sistem dimulai: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasi Anda menutup Chromium saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>

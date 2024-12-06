@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">ვერსიის ფრაზის კოპირება</translation>
 <translation id="323107829343500871">შეიყვანეთ <ph name="CREDIT_CARD" />-ის CVC</translation>
 <translation id="3234666976984236645">ამ საიტზე ყოველთვის აღმოაჩინოს მნიშვნელოვანი შინაარსი</translation>
+<translation id="323585066388831737">ღია წითელი</translation>
 <translation id="3236212803136366317">ბარათების უპირატესობები</translation>
 <translation id="3238395604961564389">ბმულის გახსნა ინკოგნიტო ფანჯარაში</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, თქვენი ბრაუზერის იერსახის მოსარგებად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -1854,6 +1855,7 @@
 <translation id="4277937682389409325">ადგილობრივი მისამართი</translation>
 <translation id="4278090321534187713">ბარათები, რომლებსაც ეს მოვაჭრე არ იღებს, გათიშულია</translation>
 <translation id="4278390842282768270">დაშვებულია</translation>
+<translation id="4281245629646759298">ღია ყვითელი</translation>
 <translation id="4281998142035485137">{0,plural, =1{გსურთ, გახსნათ კონფიდენციალური ფაილი?}other{გსურთ, გახსნათ კონფიდენციალური ფაილები?}}</translation>
 <translation id="4282280603030594840">ავტომობილების ყიდვა</translation>
 <translation id="4282346679996504092">ამ პროდუქტთან დაკავშირებული გაფრთხილებები გამოირთო, ხოლო სანიშნე ამოიშალა</translation>
@@ -4531,6 +4533,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> მხარდაუჭერელ პროტოკოლს იყენებს.</translation>
 <translation id="918454845714257218">შეამოწმეთ კოდი <ph name="SIDE_OF_CARD" />-ზე და ცადეთ ხელახლა</translation>
 <translation id="9186203289258525843">სისტემის ნაგულისხმევ ბრაუზერად Chrome-ის დაყენების ღილაკი, Chrome სისტემის ნაგულისხმევ ბრაუზერად რომ დააყენოთ, გაააქტიურეთ ის</translation>
+<translation id="9189789270972826888">დააწკაპუნეთ ბარათის დეტალებზე ქვემოთ, რომ დააკოპიროთ და ჩასვათ, თუ ბარათი არ შეივსო. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 კვირაზე ძველი თემები ავტომატურად იშლება</translation>
 <translation id="9191834167571392248">ქვედა მარცხენა ნაწილის გახვრეტა</translation>
 <translation id="9192361865877479444">ლითონი (მქრქალი)</translation>

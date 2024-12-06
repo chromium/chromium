@@ -128,7 +128,6 @@
 <translation id="2586406160782125153">Ezzel az eszközön lévő összes böngészési adat törlődik. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Szinkronizálhatja a Chrome böngészőhöz tartozó tartalmait a következő fiókból: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">A letöltött telepítő gyorsítótárazása sikertelen. Hiba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">A Chrome nem tud frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2632707915638608719">Végezzen el több mindent a Chrome-bővítményekkel</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">A Chrome rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
@@ -162,7 +161,6 @@
 <translation id="2926676257163822632">A gyenge jelszavakat könnyű kitalálni. Engedélyezze a Chrome számára, hogy <ph name="BEGIN_LINK" /> erős jelszavakat hozzon létre Önnek, és megjegyezze őket<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">A Chrome-nak kamerahasználati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="2928420929544864228">A telepítés befejeződött.</translation>
-<translation id="2929907241665500097">Ismeretlen hiba történt, ezért a Chrome nem frissült. <ph name="BEGIN_LINK" />A Chrome frissítési problémáinak megoldása.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Telepítési hiba: Nem sikerült elindítani a telepítést.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés – Chrome</translation>
 <translation id="2970681950995291301">Ha el szeretné távolítani Google-fiókját a Chrome-ból, jelentkezzen ki a Chrome-ból a Beállítások oldalon</translation>
@@ -172,7 +170,6 @@
 <translation id="3037838751736561277">A Google Chrome háttérmódban van.</translation>
 <translation id="3038232873781883849">Várakozás a telepítésre…</translation>
 <translation id="3045032126857188731">Fordítás nyelve: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">A Biztonságos Böngészés ki van kapcsolva. A Chrome a szolgáltatás bekapcsolását javasolja.</translation>
 <translation id="306179102415443347">Parancsikon segítségével gyorsan megnyithatja a Google Jelszókezelőt. A parancsikont áthelyezheti a számítógép kezdőképernyőjére vagy az alkalmazásindítóba.</translation>
 <translation id="3065168410429928842">Chrome-lap</translation>
 <translation id="3080151273017101988">A háttéralkalmazások továbbfuttatása, ha a Google Chrome-ot bezárják</translation>
@@ -239,7 +236,6 @@
 <translation id="383928141529488001">A Google Chrome-nak Bluetooth-hozzáférésre van szüksége a 
  Bluetooth-eszközök felfedezéséhez. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="386202838227397562">Zárjon be minden Google Chrome-ablakot, és próbálkozzon újra.</translation>
-<translation id="3865754807470779944">A Chrome <ph name="PRODUCT_VERSION" /> verziója telepítve van</translation>
 <translation id="3873044882194371212">Link megnyitása Chrome-inko&amp;gnitóablakban</translation>
 <translation id="3885770153807205175">Nyelvválasztó</translation>
 <translation id="3889417619312448367">A Google Chrome eltávolítása</translation>
@@ -279,12 +275,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">A személyre szabás és az egyéb funkciók használatához vegye fel a Chrome-ot az Internetes és alkalmazástevékenységek közé, valamint az összekapcsolt Google-szolgáltatásokba</translation>
 <translation id="4334294535648607276">A letöltés befejeződött.</translation>
-<translation id="4335235004908507846">A Chrome segíthet az adatvédelmi incidensek, nem biztonságos bővítmények és egyebek elleni védekezésben</translation>
 <translation id="4343195214584226067">A(z) <ph name="EXTENSION_NAME" /> hozzá lett adva a Chrome-hoz</translation>
 <translation id="4348548358339558429">A személyre szabáshoz vegye fel a Chrome-ot az Internetes és alkalmazástevékenységek közé</translation>
 <translation id="436060642166082913">A Chrome letiltotta ezt a letöltést, mert a fájl károkat okozhat az Ön személyes és közösségi fiókjaiban</translation>
 <translation id="4367027658822022112">Az egyszerű hozzáférés érdekében kitűzheti a Google Lens funkciót. Ehhez kattintson az oldalsó panel tetején található Rögzítés gombra.</translation>
-<translation id="4384570495110188418">A Chrome nem tudja ellenőrizni az Ön jelszavait, mert nincs bejelentkezve</translation>
 <translation id="4389991535395284064">Inkognitó módban való böngészéskor a Chrome figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
 <translation id="4434353761996769206">Telepítőhiba: <ph name="INSTALLER_ERROR" /></translation>

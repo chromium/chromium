@@ -1236,6 +1236,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3229277193950731405">Kopiraj niz verzije</translation>
 <translation id="323107829343500871">Unesite CVC za <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Uvijek detektiraj važan sadržaj s ove web lokacije</translation>
+<translation id="323585066388831737">Svijetlocrvena</translation>
 <translation id="3236212803136366317">Pogodnosti kartice</translation>
 <translation id="3238395604961564389">Otvori link u anonimnom prozoru</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da prilagodite izgled preglednika</translation>
@@ -1854,6 +1855,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4277937682389409325">Lokalna adresa</translation>
 <translation id="4278090321534187713">Onemogućene su kartice koje ovaj trgovac ne prihvata</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
+<translation id="4281245629646759298">Svijetložuta</translation>
 <translation id="4281998142035485137">{0,plural, =1{Otvoriti povjerljivi fajl?}one{Otvoriti povjerljive fajlove?}few{Otvoriti povjerljive fajlove?}other{Otvoriti povjerljive fajlove?}}</translation>
 <translation id="4282280603030594840">Kupovina vozila</translation>
 <translation id="4282346679996504092">Obavještenja za ovaj proizvod su isključena, a oznaka uklonjena</translation>
@@ -4337,7 +4339,7 @@ Dodatni detalji:
 <translation id="882338992931677877">Ručni utor</translation>
 <translation id="8830320733681313421">Hagaki razglednica</translation>
 <translation id="8830565333350631528">Pregledajte fajlove na usluzi <ph name="CLOUD_PROVIDER" /></translation>
-<translation id="8831783793142731637">Dostupno za kupnje iznad <ph name="RANGE_MINIMUM" /></translation>
+<translation id="8831783793142731637">Dostupno je za kupovine u iznosu većem od <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Mašine za pranje i sušenje veša</translation>
 <translation id="8834962751196791179">Ovo upozorenje vam se prikazuje jer ova web lokacija ne podržava HTTPS, a nalazite se u anonimnom načinu rada. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">TV serije naučne fantastike i fantazije</translation>

@@ -1236,6 +1236,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3229277193950731405">Kopiera versionssträngen</translation>
 <translation id="323107829343500871">Ange CVC-koden för <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Upptäck alltid viktigt innehåll på den här webbplatsen</translation>
+<translation id="323585066388831737">Ljusröd</translation>
 <translation id="3236212803136366317">Kortförmåner</translation>
 <translation id="3238395604961564389">Öppna länk i inkognitofönster</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa webbläsarens utseende</translation>
@@ -1854,6 +1855,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4277937682389409325">Lokal adress</translation>
 <translation id="4278090321534187713">Kort som inte godkänns av den här säljaren inaktiveras</translation>
 <translation id="4278390842282768270">Tillåts</translation>
+<translation id="4281245629646759298">Ljusgul</translation>
 <translation id="4281998142035485137">{0,plural, =1{Vill du öppna den konfidentiella filen?}other{Vill du öppna de konfidentiella filerna?}}</translation>
 <translation id="4282280603030594840">Bilhandel</translation>
 <translation id="4282346679996504092">Aviseringar för den här produkten har inaktiverats och bokmärket har tagits bort</translation>

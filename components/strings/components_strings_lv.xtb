@@ -1236,6 +1236,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3229277193950731405">Kopēt versijas virkni</translation>
 <translation id="323107829343500871">Ievadiet kredītkartes <ph name="CREDIT_CARD" /> CVC</translation>
 <translation id="3234666976984236645">Vienmēr noteikt nozīmīgu saturu šajā vietnē</translation>
+<translation id="323585066388831737">Sārta</translation>
 <translation id="3236212803136366317">Kartes priekšrocības</translation>
 <translation id="3238395604961564389">Atvērt saiti inkognito režīma logā</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pielāgotu pārlūka izskatu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
@@ -1852,6 +1853,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4277937682389409325">Vietējā adrese</translation>
 <translation id="4278090321534187713">Kartes, ko šis tirgotājs nepieņem, ir atspējotas.</translation>
 <translation id="4278390842282768270">Atļauts</translation>
+<translation id="4281245629646759298">Gaiši dzeltena</translation>
 <translation id="4281998142035485137">{0,plural, =1{Vai atvērt konfidenciālu failu?}zero{Vai atvērt konfidenciālus failus?}one{Vai atvērt konfidenciālus failus?}other{Vai atvērt konfidenciālus failus?}}</translation>
 <translation id="4282280603030594840">Transportlīdzekļu iegāde</translation>
 <translation id="4282346679996504092">Paziņojumi par šo produktu ir izslēgti, un grāmatzīme ir noņemta.</translation>

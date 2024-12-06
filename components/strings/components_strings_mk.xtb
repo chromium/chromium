@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">Копирај ја низата на верзијата</translation>
 <translation id="323107829343500871">Внесете го CVC за <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Секогаш откривај важна содржина на оваа локација</translation>
+<translation id="323585066388831737">Светлоцрвена</translation>
 <translation id="3236212803136366317">Поволности на картичката</translation>
 <translation id="3238395604961564389">Отвори го линкот во прозорец „Инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го приспособите изгледот на прелистувачот</translation>
@@ -1854,6 +1855,7 @@
 <translation id="4277937682389409325">Локална адреса</translation>
 <translation id="4278090321534187713">Картичките што не ги прифаќа трговецов се оневозможени</translation>
 <translation id="4278390842282768270">Дозволено</translation>
+<translation id="4281245629646759298">Светложолта</translation>
 <translation id="4281998142035485137">{0,plural, =1{Да се отвори доверливата датотека?}one{Да се отворат доверливите датотеки?}other{Да се отворат доверливите датотеки?}}</translation>
 <translation id="4282280603030594840">Купување возила</translation>
 <translation id="4282346679996504092">Известувањата за овој производ се исклучени, а обележувачот е отстранет</translation>
@@ -2743,6 +2745,7 @@
 <translation id="5969199813874624822">Зачувајте и следете ја цената</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шеста ролна</translation>
+<translation id="5974745851230707809">Опции за плаќање на рати</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5979084224081478209">Провери ги лозинките</translation>
 <translation id="5984570616552610254">Влажност на комората</translation>
@@ -4335,6 +4338,7 @@
 <translation id="882338992931677877">Отвор за рачно полнење</translation>
 <translation id="8830320733681313421">Разгледница Hagaki</translation>
 <translation id="8830565333350631528">Прегледајте ги датотеките во <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Достапно за купувања над <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Машини за перење и сушење алишта</translation>
 <translation id="8834962751196791179">Го гледате предупредувањево бидејќи сајтов не поддржува HTTPS, а вие сте во режим „Инкогнито“. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Научнофантастични и фиктивни ТВ-серии</translation>

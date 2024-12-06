@@ -9,7 +9,6 @@
 
 Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išsaugoti.</translation>
 <translation id="1083934481477628225">Vienas iš tėvų išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chromium“</translation>
-<translation id="1098170124587656448">„Chromium“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, blogų plėtinių ir daugiau</translation>
 <translation id="1104942323762546749">„Chromium“ nori eksportuoti jūsų slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="112640046208448578">Nustatykite daiktus ar vietas ir kopijuokite arba verskite tekstą. Kai naudojate vaizdų paiešką, puslapio ekrano kopija siunčiama į serverį. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">„Chromium“ yra numatytoji naršyklė</translation>
@@ -173,7 +172,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 yra „Chromium“ „JavaScript“ ir „WebAssembly“ variklis, naudojamas svetainės našumui pagerinti</translation>
-<translation id="3283186697780795848">„Chromium“ versija <ph name="PRODUCT_VERSION" /> įdiegta</translation>
 <translation id="3286538390144397061">Paleisti iš naujo dabar</translation>
 <translation id="328888136576916638">Trūksta „Google“ API raktų. Bus išjungtos kai kurios „Chromium“ funkcijos.</translation>
 <translation id="3296368748942286671">Toliau vykdyti fonines programas, kai „Chromium“ uždaroma</translation>
@@ -264,7 +262,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="4531137820806573936">„Chromium“ reikia leidimo susieti jūsų aplinką ir stebėti jūsų rankas</translation>
 <translation id="4534145890176164066">„Chromium“ geriau supranta formas ir gali greičiau jas automatiškai užpildyti</translation>
 <translation id="4536805923587466102">Jau esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" /> kitame „Chromium“ profilyje</translation>
-<translation id="4544142686420020088">Nepavyko atnaujinti „Chromium“, įvyko klaida. <ph name="BEGIN_LINK" />Pašalinkite „Chromium“ naujinimo problemas ir naujinių klaidas.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">„Chromium“ gali padaryti šį skirtuką neaktyvų, kad pagerintų naršymo patirtį ir viskas veiktų sparčiai.</translation>
 <translation id="454579500955453258">Tęsti naudojant naują „Chromium“ profilį?</translation>
 <translation id="4548534452171747496">„Chromium“ iš anksto įkelia puslapius, kad būtų galima sparčiau naršyti ir ieškoti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie išankstinį puslapių įkėlimą<ph name="END_LINK" /></translation>
@@ -373,7 +370,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6120345080069858279">„Chromium“ išsaugos šį slaptažodį „Google“ paskyroje. Jums nereikia jo prisiminti.</translation>
 <translation id="6129621093834146363">Failas „<ph name="FILE_NAME" />“ pavojingas, todėl „Chromium“ jį užblokavo.</translation>
 <translation id="6132897690380286411">„Chromium“ netrukus bus uždaryta ir ištrins duomenis</translation>
-<translation id="6134968993075716475">Saugaus naršymo funkcija išjungta. „Chromium“ rekomenduoja ją įjungti.</translation>
 <translation id="6145820983052037069">Čia galite perjungti „Chromium“ profilius</translation>
 <translation id="615103374448673771">Jei leisite slapukus, „Chromium“ gali naudoti juos iš anksto įkeldama puslapius</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
@@ -385,7 +381,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6241367896540709610">„Chromium“ reikia prieigos prie saugyklos, kad būtų galima atsisiųsti failus</translation>
 <translation id="6245734527075554892">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chromium“</translation>
 <translation id="6248213926982192922">Padaryti „Chromium“ numatytąja naršykle</translation>
-<translation id="6266342355635466082">„Chromium“ negali tikrinti naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="6268381023930128611">Atsijungti nuo „Chromium“?</translation>
 <translation id="6270547683008298381">Šie skirtukai naudoja papildomus šaltinius. Kad padidintumėte našumą, leiskite „Chromium“ juos padaryti neaktyvius.</translation>
 <translation id="6281746429495226318">Tinkinti „Chromium“ profilį</translation>
@@ -540,7 +535,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8232193495299001329">„Chromium“ negali patvirtinti, iš kur gaunamas šis plėtinys, ir jis gali būti nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="8248265253516264921">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
 <translation id="8254601181414348851">Prisijungti prie „Chromium“ naujame profilyje?</translation>
-<translation id="8266560134891435528">„Chromium“ negali patikrinti jūsų slaptažodžių, nes esate neprisijungę</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />„Chromium“ jus įspėja<ph name="END_LINK" /> apie nesaugias svetaines ir atsisiuntimus</translation>
 <translation id="8313851650939857356">Paleisties klaida: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organizacija uždaro „Chromium“, kai ji nenaudojama <ph name="TIMEOUT_DURATION" />.</translation>

@@ -9,7 +9,6 @@
 
 কিছুমান সুবিধা উপলব্ধ নহ'ব পাৰে আৰু অগ্ৰাধিকাৰসমূহত কৰা সলনি কার্য ছেভ নহ'ব পাৰে।</translation>
 <translation id="1083934481477628225">আপোনাৰ অভিভাৱকে Chromiumত "ছাইট, এপ্ আৰু এক্সটেনশ্বনসমূহৰ বাবে অনুমতি" অফ কৰিছে</translation>
-<translation id="1098170124587656448">Chromiumএ আপোনাক ডেটা উলংঘন, ক্ষতিকাৰক এক্সটেনশ্বন তথা আন বহুতৰ পৰা সুৰক্ষিত থকাত সহায় কৰিব পাৰে</translation>
 <translation id="1104942323762546749">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ ৰপ্তানি কৰিব খোজে। ইয়াৰ অনুমতি আপোনাৰ দিবলৈ Windows পাছৱৰ্ড টাইপ কৰক।</translation>
 <translation id="112640046208448578">বস্তু বা স্থান চিনাক্ত কৰক আৰু পাঠ প্ৰতিলিপি বা অনুবাদ কৰক। আপুনি প্ৰতিচ্ছবিৰ সন্ধান সুবিধাটো ব্যৱহাৰ কৰিলে, পৃষ্ঠাখনৰ এটা স্ক্ৰীনশ্বট ছাৰ্ভাৰলৈ প্ৰেৰণ কৰা হয়। <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium হৈছে আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ</translation>
@@ -173,7 +172,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 হৈছে Chromiumৰ JavaScript আৰু ছাইটৰ কাৰ্যদক্ষতা উন্নত কৰিবলৈ WebAssembly ইঞ্জিন ব্যৱহাৰ কৰা হয়</translation>
-<translation id="3283186697780795848">Chromiumৰ সংস্কৰণ <ph name="PRODUCT_VERSION" /> ইনষ্টল কৰা হ’ল</translation>
 <translation id="3286538390144397061">এতিয়াই ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="328888136576916638">Google API চাবিসমূহ নাই। Chromiumৰ কিছুমান কাৰ্যক্ষতা অক্ষম কৰা হ’ব।</translation>
 <translation id="3296368748942286671">Chromium বন্ধ কৰাৰ পিছতো নেপথ্যত এপ্‌সমূহ চলি থাকিবলৈ দিয়ক</translation>
@@ -264,7 +262,6 @@
 <translation id="4531137820806573936">আপোনাৰ চৌপাশৰ ঠাইসমূহ মেপ কৰিবলৈ আৰু আপোনাৰ হাত ট্ৰেক কৰিবলৈ Chromiumক অনুমতিৰ প্ৰয়োজন</translation>
 <translation id="4534145890176164066">Chromiumএ ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে</translation>
 <translation id="4536805923587466102">আপুনি আন এটা Chromium প্ৰ’ফাইলত ইতিমধ্যে <ph name="USER_EMAIL_ADDRESS" /> হিচাপে ছাইন ইন কৰিছে</translation>
-<translation id="4544142686420020088">Chromium আপডে'ট হোৱা নাই, কিবা ভুল হৈছে। <ph name="BEGIN_LINK" />Chromiumৰ আপডে'ট সম্পর্কীয় সমস্যাবোৰ আৰু বিফল হোৱা আপডে'টসমূহ সমাধান কৰক।<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা উন্নত কৰিবলৈ আৰু কামবোৰ দ্ৰুত কৰি ৰাখিবলৈ Chromiumএ এই টেবটো নিষ্ক্ৰিয় কৰিব পাৰে।</translation>
 <translation id="454579500955453258">এটা নতুন Chromium প্ৰ'ফাইলত অব্যাহত ৰাখিবনে?</translation>
 <translation id="4548534452171747496">Chromiumএ পৃষ্ঠাসমূহ আগতীয়াকৈ ল’ড কৰে যিয়ে ব্ৰাউজিং আৰু সন্ধান দ্ৰুত কৰে। <ph name="BEGIN_LINK" />আগতীয়াকৈ ল’ড কৰা পৃষ্ঠাসমূহৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
@@ -373,7 +370,6 @@
 <translation id="6120345080069858279">Chromiumএ এই পাছৱৰ্ডটো আপোনাৰ Google একাউণ্টত ছেভ কৰিব৷ আপুনি ইয়াক মনত ৰাখিব নালাগে৷</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> ক্ষতিকাৰক বাবে Chromiumএ ইয়াক অৱৰোধ কৰিছে।</translation>
 <translation id="6132897690380286411">Chromium শীঘ্ৰেই বন্ধ হ’ব আৰু ডেটা মচি পেলাব</translation>
-<translation id="6134968993075716475">সুৰক্ষিত ব্ৰাউজিং অফ আছে। Chromiumএ ইয়াক অন কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="6145820983052037069">ইয়াত আপুনি Chromiumৰ প্ৰ’ফাইলসমূহৰ মাজত সালসলনি কৰিব পাৰে</translation>
 <translation id="615103374448673771">আপুনি যদি কুকিৰ অনুমতি দিয়ে, আগতীয়াকৈ ল’ড কৰোঁতে Chromiumএ সেয়া ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
@@ -385,7 +381,6 @@
 <translation id="6241367896540709610">Chromiumক ফাইল ডাউনল’ড কৰিবলৈ ষ্ট’ৰেজৰ এক্সেছৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="6245734527075554892">Chromiumত ষ্ট’ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে</translation>
 <translation id="6248213926982192922">Chromiumক ডিফ’ল্ট ব্ৰাউজাৰ বনাওক</translation>
-<translation id="6266342355635466082">Chromiumএ আপডে'টসমূহ পৰীক্ষা কৰিব নোৱাৰে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি চাওক।</translation>
 <translation id="6268381023930128611">Chromiumৰ পৰা ছাইন আউট কৰিবনে?</translation>
 <translation id="6270547683008298381">এই টেবসমূহে অতিৰিক্ত সম্পদ ব্যৱহাৰ কৰি আছে। আপোনাৰ কাৰ্যদক্ষতা উন্নত কৰিবলৈ Chromiumক সেইসমূহ নিষ্ক্ৰিয় কৰিবলৈ দিয়ক।</translation>
 <translation id="6281746429495226318">আপোনাৰ Chromium প্ৰ’ফাইল কাষ্টমাইজ কৰক</translation>
@@ -540,7 +535,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8232193495299001329">এই এক্সটেনশ্বনটো ক’ৰ পৰা আহিছে সেয়া Chromiumএ সত্যাপন কৰিব নোৱাৰে আৰু ই অসুৰক্ষিত হ’ব পাৰে। এইটো Chromiumৰ পৰা আঁতৰাই পেলাওক যাতে ই আপুনি চোৱা ছাইটসমূহত ব্যক্তিগত তথ্যকে ধৰি আপোনাৰ ডেটা আৰু চাব আৰু সলনি কৰিব নোৱাৰে।</translation>
 <translation id="8248265253516264921">যদি কোনো প্ৰতিচ্ছবিত উপযোগী বিৱৰণ নাই তেন্তে Chromiumএ আপোনাক সেয়া প্ৰদান কৰিবলৈ চেষ্টা কৰিব। বিৱৰণ সৃষ্টি কৰিবলৈ প্ৰতিচ্ছবি Googleলৈ প্ৰেৰণ কৰা হয়। আপুনি যিকোনো সময়তে ছেটিঙলৈ গৈ ইয়াক অফ কৰিব পাৰে।</translation>
 <translation id="8254601181414348851">এটা নতুন প্ৰ’ফাইলত Chromiumত ছাইন ইন কৰক?</translation>
-<translation id="8266560134891435528">আপুনি ছাইন ইন হৈ নথকাৰ বাবে Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="8286943863733751221">অসুৰক্ষিত ছাইট আৰু ডাউনল’ডৰ বিষয়ে<ph name="BEGIN_LINK" />Chromiumএ আপোনাক সকীয়নি দিয়ে<ph name="END_LINK" /></translation>
 <translation id="8313851650939857356">ষ্টাৰ্টআপ সম্পৰ্কীয় আসোঁৱাহ: <ph name="STARTUP_ERROR" />।</translation>
 <translation id="8318772038038596122">Chromium <ph name="TIMEOUT_DURATION" />ৰ বাবে ব্যৱহাৰ নকৰিলে আপোনাৰ প্ৰতিষ্ঠানে ইয়াক বন্ধ কৰে।</translation>

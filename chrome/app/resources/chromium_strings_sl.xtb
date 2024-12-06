@@ -9,7 +9,6 @@
 
 Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.</translation>
 <translation id="1083934481477628225">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chromium</translation>
-<translation id="1098170124587656448">Chromium vas lahko varuje pred podatkovnimi kršitvami, zlonamernimi razširitvami in drugim</translation>
 <translation id="1104942323762546749">Chromium želi izvoziti gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="112640046208448578">Določite stvari ali mesta in kopirajte ali prevedite besedilo. Če uporabljate slikovno iskanje, se posnetek zaslona strani pošlje strežniku. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium je privzeti brskalnik</translation>
@@ -173,7 +172,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 je mehanizem za JavaScript in WebAssembly za Chromium, ki se uporablja za izboljšanje učinkovitosti delovanja spletnih mest</translation>
-<translation id="3283186697780795848">Nameščen je Chromium različice <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
 <translation id="328888136576916638">Manjkajo ključi za Google API. Nekatere funkcije Chromiuma bodo onemogočene.</translation>
 <translation id="3296368748942286671">Nadaljuj izvajanje aplikacij v ozadju, ko je Chromium zaprt</translation>
@@ -264,7 +262,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="4531137820806573936">Chromium potrebuje dovoljenje za ustvarjanje zemljevida vašega okolja in sledenje rokam</translation>
 <translation id="4534145890176164066">Chromium bolje razume obrazce in jih lahko hitreje samodejno izpolni</translation>
 <translation id="4536805923587466102">V drugem profilu za Chromium ste že prijavljeni kot <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="4544142686420020088">Chromium se ni posodobil, prišlo je do napake. <ph name="BEGIN_LINK" />Odpravite težave s posodobitvijo Chromiuma in neuspelimi posodobitvami Chromiuma.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium lahko zaradi izboljšanja izkušnje brskanja in hitrejšega delovanja ta zavihek spremeni v neaktivnega.</translation>
 <translation id="454579500955453258">Ali želite nadaljevati v novem profilu v Chromiumu?</translation>
 <translation id="4548534452171747496">Chromium vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje. <ph name="BEGIN_LINK" />Preberite več o vnaprejšnjem nalaganju strani<ph name="END_LINK" />.</translation>
@@ -373,7 +370,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6120345080069858279">Chromium bo shranil to geslo v Google Računu. Ni si vam ga treba zapomniti.</translation>
 <translation id="6129621093834146363">Datoteka <ph name="FILE_NAME" /> je nevarna, zato jo je Chromium blokiral.</translation>
 <translation id="6132897690380286411">Chromium se bo kmalu zaprl in izbrisal bo podatke</translation>
-<translation id="6134968993075716475">Varno brskanje je izklopljeno. Chromium priporoča, da ga vklopite.</translation>
 <translation id="6145820983052037069">Med profili v Chromiumu lahko preklapljate tukaj</translation>
 <translation id="615103374448673771">Če omogočite piškotke, jih bo Chromium morda uporabil za vnaprejšnje nalaganje</translation>
 <translation id="6165508094623778733">Več o tem</translation>
@@ -385,7 +381,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6241367896540709610">Chromium potrebuje dovoljenje za dostop do shrambe za prenos datotek.</translation>
 <translation id="6245734527075554892">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromiumu.</translation>
 <translation id="6248213926982192922">Nastavi Chromium kot privzeti brskalnik</translation>
-<translation id="6266342355635466082">Chromium ne more preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="6268381023930128611">Se želite odjaviti iz Chromiuma?</translation>
 <translation id="6270547683008298381">Ti zavihki porabljajo dodatna sredstva. Če želite izboljšati učinkovitost delovanja, pustite Chromiumu, da jih spremeni v neaktivne.</translation>
 <translation id="6281746429495226318">Prilagajanje profila v Chromiumu</translation>
@@ -540,7 +535,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8232193495299001329">Chromium ne more preveriti, od kod je ta razširitev, in morda ni varna. Odstranite jo iz Chromiuma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
 <translation id="8248265253516264921">Če slika nima koristnega opisa, ga bo Chromium poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
 <translation id="8254601181414348851">Se želite v Chromium prijaviti v novem profilu?</translation>
-<translation id="8266560134891435528">Chromium ne more preveriti gesel, ker niste prijavljeni</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vas opozori<ph name="END_LINK" /> glede spletnih mest in prenosov, ki niso varni</translation>
 <translation id="8313851650939857356">Napaka pri zagonu: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Vaša organizacija zapre Chromium, če se ne uporablja <ph name="TIMEOUT_DURATION" />.</translation>

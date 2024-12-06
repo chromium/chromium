@@ -7,7 +7,6 @@
 <translation id="1042552502243217427">当某个网站请求以私密方式预加载其网页上的链接时，Chromium 会使用 Google 服务器。如此一来，Google 能知道会预加载哪些网站，但这些网站无法得知您的身份。</translation>
 <translation id="1065672644894730302">系统无法读取您的偏好设置。某些功能可能无法使用，并且对偏好设置所做的更改不会保存。</translation>
 <translation id="1083934481477628225">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”</translation>
-<translation id="1098170124587656448">Chromium 有助于保护您免受数据泄露、不良扩展程序等问题的影响</translation>
 <translation id="1104942323762546749">Chromium 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="112640046208448578">识别事物或地点，以及复制或翻译文本。当您使用图片搜索功能时，系统会将相关页面的屏幕截图发送给服务器。<ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium 是您的默认浏览器</translation>
@@ -170,7 +169,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 是 Chromium 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
-<translation id="3283186697780795848">已安装 Chromium 版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>
@@ -261,7 +259,6 @@
 <translation id="4531137820806573936">Chromium 需要获得权限，才能绘制您周边环境的地图并跟踪您的双手</translation>
 <translation id="4534145890176164066">Chromium 可以更好地理解表单，并更快地为您自动填充表单</translation>
 <translation id="4536805923587466102">您已使用另一份 Chromium 个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录</translation>
-<translation id="4544142686420020088">Chromium 未能更新，因为出了点问题。<ph name="BEGIN_LINK" />请解决导致 Chromium 更新失败的问题<ph name="END_LINK" />。</translation>
 <translation id="4545268686623374213">Chromium 可让此标签页处于非活跃状态，以改善您的浏览体验并保持快速运行。</translation>
 <translation id="454579500955453258">使用一份新的 Chromium 个人资料继续浏览？</translation>
 <translation id="4548534452171747496">Chromium 会预加载网页，以便您更快速地浏览和搜索内容。<ph name="BEGIN_LINK" />详细了解预加载网页<ph name="END_LINK" /></translation>
@@ -370,7 +367,6 @@
 <translation id="6120345080069858279">Chromium 会将此密码保存在您的 Google 账号中，因此您不必记住它。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="6132897690380286411">Chromium 即将关闭并删除数据</translation>
-<translation id="6134968993075716475">“安全浏览”功能已关闭。Chromium 建议开启此功能。</translation>
 <translation id="6145820983052037069">您可在此处切换 Chromium 个人资料</translation>
 <translation id="615103374448673771">如果您允许使用 Cookie，Chromium 便可能会使用 Cookie 进行预加载</translation>
 <translation id="6165508094623778733">了解详情</translation>
@@ -382,7 +378,6 @@
 <translation id="6241367896540709610">Chromium 需要获得存储空间使用权限才能下载文件</translation>
 <translation id="6245734527075554892">将网址与存储在 Chromium 中的不安全网站列表进行比对</translation>
 <translation id="6248213926982192922">将 Chromium 设置为默认浏览器</translation>
-<translation id="6266342355635466082">Chromium 无法检查是否有更新。请检查您的互联网连接。</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
 <translation id="6270547683008298381">这些标签页正在使用额外的资源。为了提升性能，请让 Chromium 将它们设为非活跃状态。</translation>
 <translation id="6281746429495226318">自定义您的 Chromium 个人资料</translation>
@@ -537,7 +532,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8232193495299001329">Chromium 无法验证此扩展程序的来源，它可能不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括个人信息。</translation>
 <translation id="8248265253516264921">如果图片缺少有用的说明，则 Chromium 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。您可以随时在“设置”中关闭此功能。</translation>
 <translation id="8254601181414348851">要使用新的个人资料登录 Chromium 吗？</translation>
-<translation id="8266560134891435528">Chromium 无法检查您的密码，因为您未登录</translation>
 <translation id="8286943863733751221">在检测到不安全的网站和下载内容时，<ph name="BEGIN_LINK" />Chromium 会向您发出警告<ph name="END_LINK" /></translation>
 <translation id="8313851650939857356">启动错误：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">贵组织会在 Chromium 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>

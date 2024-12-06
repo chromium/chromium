@@ -1236,6 +1236,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3229277193950731405">Salin rentetan versi</translation>
 <translation id="323107829343500871">Masukkan CVC untuk <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Sentiasa kesan kandungan penting di laman web ini</translation>
+<translation id="323585066388831737">Merah Cerah</translation>
 <translation id="3236212803136366317">Manfaat kad</translation>
 <translation id="3238395604961564389">Buka Pautan dalam Tetingkap Inkognito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk menyesuaikan rupa penyemak imbas anda</translation>
@@ -1855,6 +1856,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4277937682389409325">Alamat tempatan</translation>
 <translation id="4278090321534187713">Kad yang tidak diterima oleh pedagang ini dilumpuhkan</translation>
 <translation id="4278390842282768270">Dibenarkan</translation>
+<translation id="4281245629646759298">Kuning Cerah</translation>
 <translation id="4281998142035485137">{0,plural, =1{Buka fail sulit?}other{Buka fail sulit?}}</translation>
 <translation id="4282280603030594840">Beli-belah Kenderaan</translation>
 <translation id="4282346679996504092">Makluman untuk produk ini telah dimatikan dan penanda halaman dialih keluar</translation>
@@ -4534,6 +4536,7 @@ Butiran tambahan:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> menggunakan protokol yang tidak disokong.</translation>
 <translation id="918454845714257218">Semak kod pada <ph name="SIDE_OF_CARD" /> dan cuba lagi</translation>
 <translation id="9186203289258525843">Butang tetapkan Chrome sebagai penyemak imbas lalai, aktifkan untuk menetapkan Chrome sebagai penyemak imbas lalai sistem</translation>
+<translation id="9189789270972826888">Klik butiran kad di bawah untuk menyalin dan menampal jika kad tidak diisi. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Topik yang disimpan melebihi 4 minggu akan dipadamkan secara automatik</translation>
 <translation id="9191834167571392248">Tebukan bawah sebelah kiri</translation>
 <translation id="9192361865877479444">Logam (Kusam)</translation>

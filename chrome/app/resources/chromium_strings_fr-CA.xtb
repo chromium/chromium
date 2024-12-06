@@ -9,7 +9,6 @@
 
 Certaines fonctionnalités ne seront peut-être pas disponibles et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
 <translation id="1083934481477628225">Ton parent a désactivé le paramètre « Autorisations pour les sites, les applications et les extensions » dans Chromium</translation>
-<translation id="1098170124587656448">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les extensions malveillantes</translation>
 <translation id="1104942323762546749">Chromium veut exporter vos mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="112640046208448578">Identifiez des objets ou des lieux et copiez ou traduisez du texte. Lorsque vous utilisez la recherche d'images, une capture d'écran de la page est envoyée au serveur. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium est votre navigateur par défaut</translation>
@@ -172,7 +171,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 est le moteur JavaScript et WebAssembly de Chromium utilisé pour améliorer les performances du site</translation>
-<translation id="3283186697780795848">La version <ph name="PRODUCT_VERSION" /> de Chromium est installée</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="328888136576916638">Les clés d'API Google sont manquantes. Certaines fonctionnalités de Chromium seront désactivées</translation>
 <translation id="3296368748942286671">Continuer l'exécution d'applications en arrière-plan après la fermeture de Chromium</translation>
@@ -263,7 +261,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4531137820806573936">Chromium a besoin d'une autorisation pour cartographier votre environnement et suivre vos mains</translation>
 <translation id="4534145890176164066">Chromium comprend mieux les formulaires et peut les remplir automatiquement plus rapidement pour vous</translation>
 <translation id="4536805923587466102">Vous êtes déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /> dans un autre profil Chromium</translation>
-<translation id="4544142686420020088">La mise à jour de Chromium n'a pas été installée. Une erreur s'est produite. <ph name="BEGIN_LINK" />Découvrez comment résoudre les problèmes de mise à jour de Chromium.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium peut rendre cet onglet inactif pour améliorer votre expérience de navigation et accélérer les choses.</translation>
 <translation id="454579500955453258">Continuer avec un nouveau profil Chromium?</translation>
 <translation id="4548534452171747496">Chromium précharge les pages, ce qui accélère la navigation et la recherche. <ph name="BEGIN_LINK" />En savoir plus sur les pages de préchargement<ph name="END_LINK" /></translation>
@@ -372,7 +369,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6120345080069858279">Chromium enregistrera ce mot de passe dans votre compte Google. Vous n'aurez pas à le retenir.</translation>
 <translation id="6129621093834146363">Chromium a bloqué le fichier <ph name="FILE_NAME" />, car il est dangereux.</translation>
 <translation id="6132897690380286411">Chromium va bientôt se fermer et supprimer des données</translation>
-<translation id="6134968993075716475">La navigation sécurisée est désactivée. Chromium vous recommande de l'activer.</translation>
 <translation id="6145820983052037069">Vous pouvez basculer entre les profils Chromium ici</translation>
 <translation id="615103374448673771">Si vous autorisez les témoins, Chromium peut les utiliser pour procéder au préchargement.</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
@@ -384,7 +380,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6241367896540709610">Chromium requiert l'autorisation d'accéder à l'espace de stockage pour télécharger des fichiers</translation>
 <translation id="6245734527075554892">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chromium</translation>
 <translation id="6248213926982192922">Faire de Chromium le navigateur par défaut</translation>
-<translation id="6266342355635466082">Chromium ne peut pas vérifier la présence de mises à jour. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="6270547683008298381">Ces onglets utilisent des ressources supplémentaires. Pour améliorer vos performances, laissez Chromium les rendre inactifs.</translation>
 <translation id="6281746429495226318">Personnaliser votre profil Chromium</translation>
@@ -539,7 +534,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8232193495299001329">Chromium ne peut pas vérifier l'origine de cette extension et elle peut s'avérer dangereuse. Retirez-la de Chromium afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="8248265253516264921">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>
 <translation id="8254601181414348851">Vous connecter à Chromium avec un nouveau profil?</translation>
-<translation id="8266560134891435528">Chromium ne peut pas vérifier vos mots de passe parce que vous n'êtes pas connecté.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vous avertit<ph name="END_LINK" /> au sujet des sites et des téléchargements dangereux</translation>
 <translation id="8313851650939857356">Erreur de démarrage : <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Votre organisation ferme Chromium lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>

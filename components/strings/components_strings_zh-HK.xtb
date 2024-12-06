@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">複製版本字串</translation>
 <translation id="323107829343500871">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼 (CVC)</translation>
 <translation id="3234666976984236645">一律在這個網站上偵測重要內容</translation>
+<translation id="323585066388831737">淺紅色</translation>
 <translation id="3236212803136366317">付款卡禮遇</translation>
 <translation id="3238395604961564389">在無痕式視窗中開啟連結</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以自訂瀏覽器外觀</translation>
@@ -1853,6 +1854,7 @@
 <translation id="4277937682389409325">本機位址</translation>
 <translation id="4278090321534187713">此商家不接受的付款卡已停用</translation>
 <translation id="4278390842282768270">已允許</translation>
+<translation id="4281245629646759298">淺黃色</translation>
 <translation id="4281998142035485137">{0,plural, =1{要開啟機密檔案嗎？}other{要開啟機密檔案嗎？}}</translation>
 <translation id="4282280603030594840">購買汽車</translation>
 <translation id="4282346679996504092">此產品的通知已關閉，網頁亦已從書籤中移除</translation>

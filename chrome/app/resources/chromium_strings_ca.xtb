@@ -7,7 +7,6 @@
 <translation id="1042552502243217427">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chromium fa servir els servidors de Google. Això amaga la teva identitat del lloc web precarregat, però Google sap quins llocs web es precarreguen.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
 <translation id="1083934481477628225">El teu pare o mare ha desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chromium</translation>
-<translation id="1098170124587656448">Chromium pot ajudar a protegir-te de violacions de les dades, d'extensions malicioses i més</translation>
 <translation id="1104942323762546749">Chromium vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
 <translation id="112640046208448578">Identifica coses o llocs i copia o tradueix text. Quan utilitzes la cerca d'imatges, s'envia al servidor una captura de pantalla de la pàgina. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium és el navegador predeterminat</translation>
@@ -171,7 +170,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 és el motor JavaScript i WebAssembly de Chromium que s'utilitza per millorar el rendiment dels llocs web</translation>
-<translation id="3283186697780795848">Està instal·lada la versió <ph name="PRODUCT_VERSION" /> de Chromium</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="328888136576916638">Falten les claus de l'API de Google. Es desactivaran algunes de les funcions de Chromium.</translation>
 <translation id="3296368748942286671">Continua executant les aplicacions en segon pla quan es tanqui Chromium</translation>
@@ -262,7 +260,6 @@
 <translation id="4531137820806573936">Chromium necessita permís per mapar el teu entorn i fer un seguiment de les teves mans</translation>
 <translation id="4534145890176164066">Chromium entén millor els formularis i pot emplenar-los automàticament més ràpid</translation>
 <translation id="4536805923587466102">Ja has iniciat la sessió amb <ph name="USER_EMAIL_ADDRESS" /> en un altre perfil de Chromium</translation>
-<translation id="4544142686420020088">No s'ha actualitzat Chromium. S'ha produït un error. <ph name="BEGIN_LINK" />Soluciona els problemes i errors d'actualització de Chromium<ph name="END_LINK" />.</translation>
 <translation id="4545268686623374213">Chromium pot desactivar aquesta pestanya per millorar i agilitzar la teva experiència de navegació.</translation>
 <translation id="454579500955453258">Vols continuar en un perfil de Chromium nou?</translation>
 <translation id="4548534452171747496">Chromium precarrega les pàgines perquè la navegació i la cerca siguin més ràpides. <ph name="BEGIN_LINK" />Obtén més informació sobre la precàrrega de pàgines<ph name="END_LINK" />.</translation>
@@ -371,7 +368,6 @@
 <translation id="6120345080069858279">Chromium desarà aquesta contrasenya al Compte de Google. No caldrà que la recordis.</translation>
 <translation id="6129621093834146363">Chromium ha bloquejat <ph name="FILE_NAME" /> perquè és perillós.</translation>
 <translation id="6132897690380286411">Chromium es tancarà aviat i suprimirà les dades</translation>
-<translation id="6134968993075716475">Navegació segura està desactivada. Chromium recomana activar-la.</translation>
 <translation id="6145820983052037069">Pots canviar entre perfils de Chromium aquí</translation>
 <translation id="615103374448673771">Si permets les galetes, Chromium pot utilitzar-les en la precàrrega</translation>
 <translation id="6165508094623778733">Més informació</translation>
@@ -383,7 +379,6 @@
 <translation id="6241367896540709610">Chromium necessita permís d'accés a l'emmagatzematge per poder baixar fitxers</translation>
 <translation id="6245734527075554892">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium</translation>
 <translation id="6248213926982192922">Estableix Chromium com a navegador predeterminat</translation>
-<translation id="6266342355635466082">Chromium no pot cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
 <translation id="6270547683008298381">Aquestes pestanyes utilitzen recursos addicionals. Per millorar el rendiment, permet que Chromium les desactivi.</translation>
 <translation id="6281746429495226318">Personalitza el teu perfil de Chromium</translation>
@@ -538,7 +533,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8232193495299001329">Chromium no pot verificar d'on prové aquesta extensió i és possible que no sigui segura. Suprimeix-la de Chromium perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la informació personal.</translation>
 <translation id="8248265253516264921">Si una imatge no té una descripció útil, Chromium provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>
 <translation id="8254601181414348851">Vols iniciar la sessió a Chromium en un altre perfil?</translation>
-<translation id="8266560134891435528">Chromium no pot comprovar les teves contrasenyes perquè no tens la sessió iniciada</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium t'avisa<ph name="END_LINK" /> sobre baixades i llocs web que no són segurs</translation>
 <translation id="8313851650939857356">Error d'arrencada: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">La teva organització tanca Chromium quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />.</translation>

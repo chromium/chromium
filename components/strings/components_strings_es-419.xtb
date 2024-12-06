@@ -1237,6 +1237,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3229277193950731405">Copiar string de la versión</translation>
 <translation id="323107829343500871">Ingresar el CVC de la tarjeta <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Siempre detectar contenido importante en este sitio</translation>
+<translation id="323585066388831737">Rojo claro</translation>
 <translation id="3236212803136366317">Beneficios de tarjeta</translation>
 <translation id="3238395604961564389">Abrir el vínculo en una ventana de incógnito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar el estilo del navegador</translation>
@@ -1855,6 +1856,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278090321534187713">Se inhabilitan las tarjetas que no acepta este comercio</translation>
 <translation id="4278390842282768270">Permitidas</translation>
+<translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Quieres abrir un archivo confidencial?}other{¿Quieres abrir archivos confidenciales?}}</translation>
 <translation id="4282280603030594840">Compra de vehículos</translation>
 <translation id="4282346679996504092">Se desactivaron las alertas para este producto y se quitó el favorito</translation>

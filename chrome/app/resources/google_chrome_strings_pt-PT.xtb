@@ -128,7 +128,6 @@
 <translation id="2586406160782125153">Esta ação elimina os seus dados de navegação deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Obtenha os seus itens do navegador Chrome a partir de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Falha ao colocar o instalador transferido em cache. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">O Chrome não consegue verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2632707915638608719">Faça mais com extensões para o Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as definições mais seguras. Entraremos em contacto consigo se precisar de revisão.</translation>
@@ -162,7 +161,6 @@
 <translation id="2926676257163822632">As palavras-passe fracas são fáceis de adivinhar. Permita que o Chrome <ph name="BEGIN_LINK" />crie e memorize palavra-passes fortes<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">O Chrome necessita da autorização da câmara para este site</translation>
 <translation id="2928420929544864228">Instalação concluída.</translation>
-<translation id="2929907241665500097">O Chrome não foi atualizado. Ocorreu um erro. <ph name="BEGIN_LINK" />Corrija problemas de atualização do Chrome e falhas nas atualizações<ph name="END_LINK" />.</translation>
 <translation id="2945997411976714835">Erro de instalação: não foi possível iniciar o processo do instalador.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Início de sessão na rede – Chrome</translation>
 <translation id="2970681950995291301">Para remover a sua Conta Google do Chrome, termine sessão no Chrome na página Definições</translation>
@@ -172,7 +170,6 @@
 <translation id="3037838751736561277">O Google Chrome está no modo em segundo plano.</translation>
 <translation id="3038232873781883849">A aguardar a instalação…</translation>
 <translation id="3045032126857188731">Idioma traduzido: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">A Navegação segura está desativada. O Chrome recomenda que a ative.</translation>
 <translation id="306179102415443347">Use o atalho para aceder rapidamente ao Gestor de Palavras-passe da Google. Pode mover o atalho para o Launcher de apps ou o ecrã principal do computador.</translation>
 <translation id="3065168410429928842">Separador do Chrome</translation>
 <translation id="3080151273017101988">Continuar a executar aplicações em segundo plano quando o Google Chrome está fechado</translation>
@@ -239,7 +236,6 @@
 <translation id="383928141529488001">O Google Chrome precisa de acesso ao Bluetooth para explorar 
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Feche todas as janelas do Google Chrome e tente novamente.</translation>
-<translation id="3865754807470779944">A versão <ph name="PRODUCT_VERSION" /> do Chrome está instalada.</translation>
 <translation id="3873044882194371212">Abrir link numa janela de nave&amp;gação anónima do Chrome</translation>
 <translation id="3885770153807205175">Selecionador de idiomas</translation>
 <translation id="3889417619312448367">Desinstalar o Google Chrome</translation>
@@ -279,12 +275,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Para usar a personalização e outras funcionalidades, inclua o Chrome na Atividade da Web e de apps e nos serviços Google associados</translation>
 <translation id="4334294535648607276">Transferência concluída.</translation>
-<translation id="4335235004908507846">O Chrome pode ajudar a proteger contra violações de dados, extensões prejudiciais e muito mais</translation>
 <translation id="4343195214584226067">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chrome</translation>
 <translation id="4348548358339558429">Para usar a personalização, inclua o Chrome na Atividade da Web e de apps</translation>
 <translation id="436060642166082913">O Chrome bloqueou esta transferência porque o ficheiro pode prejudicar as suas contas pessoais e de redes sociais</translation>
 <translation id="4367027658822022112">Pode fixar o Google Lens para acesso fácil; clique no botão Fixar na parte superior do painel lateral</translation>
-<translation id="4384570495110188418">O Chrome não consegue verificar as suas palavras-passe porque não tem sessão iniciada.</translation>
 <translation id="4389991535395284064">Ao navegar no Modo de navegação anónima, o Chrome envia-lhe um aviso antes de carregar um site através de uma ligação insegura</translation>
 <translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
 <translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>

@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">Copier la chaîne de version</translation>
 <translation id="323107829343500871">Entrez le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Toujours détecter le contenu important sur ce site</translation>
+<translation id="323585066388831737">Rouge clair</translation>
 <translation id="3236212803136366317">Avantages de la carte</translation>
 <translation id="3238395604961564389">Ouvrir le lien dans une fenêtre de navigation privée</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser le style de votre navigateur</translation>
@@ -1854,6 +1855,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4277937682389409325">Adresse locale</translation>
 <translation id="4278090321534187713">Les cartes non acceptées par ce marchand sont désactivées</translation>
 <translation id="4278390842282768270">Autorisé</translation>
+<translation id="4281245629646759298">Jaune clair</translation>
 <translation id="4281998142035485137">{0,plural, =1{Ouvrir un fichier confidentiel?}one{Ouvrir un fichier confidentiel?}other{Ouvrir des fichiers confidentiels?}}</translation>
 <translation id="4282280603030594840">Achat de véhicules</translation>
 <translation id="4282346679996504092">Les alertes pour ce produit ont été désactivées, et le favori a été supprimé</translation>

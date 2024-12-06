@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">სვეტი</translation>
 <translation id="6387719785439924554">ცალკე</translation>
 <translation id="6393014464788431702">მოვლენების ყველა ფილტრის გათიშვა</translation>
+<translation id="6406989068857078334">მაუსის სიჩქარე შემცირდა, დაწკაპუნებისთვის ხელახლა გამოიყენეთ ჟესტი „<ph name="GESTURE" />“</translation>
 <translation id="6411569524720229058">შემოდგომა</translation>
 <translation id="6417265370957905582">Google ასისტენტი</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{სვეტი}other{# სვეტები}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">დეველოპერთა ჟურნალის გვერდის გახსნა</translation>
 <translation id="8212109599554677485">ჩვენების სტილის შეცვლა გვერდიგვერდით</translation>
 <translation id="8215202828671303819">მრავლობითი არჩევა</translation>
+<translation id="822316432305106615">ზუსტი დაწკაპუნების დაწყება</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />%-ანი გაუმჭვირვალობა.</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="826825447994856889">შესავალი</translation>

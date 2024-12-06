@@ -130,7 +130,6 @@
 <translation id="2586406160782125153">ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಇದು ಅಳಿಸುತ್ತದೆ. ನಂತರ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಪಡೆಯಲು, <ph name="USER_EMAIL" /> ನಂತೆ Chrome ಗೆ ಸೈನ್‌ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> ಬಳಸಿ ನಿಮ್ಮ Chrome ಬ್ರೌಸರ್‌ನ ವಿಷಯಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="259935314519650377">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ಕ್ಯಾಷ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ದೋಷ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂದು ನೋಡಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ನೋಡಿ.</translation>
 <translation id="2632707915638608719">Chrome ನ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಮೂಲಕ ಮತ್ತಷ್ಟು ಕಾರ್ಯಗಳನ್ನು ಮಾಡಿರಿ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸುರಕ್ಷಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಹೊಂದಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು Chrome ನಿಯಮಿತವಾಗಿ ಪರಿಶೀಲಿಸುತ್ತದೆ. ನಿಮ್ಮ ಪರಿಶೀಲನೆ ಏನಾದರೂ ಅಗತ್ಯವಿದ್ದರೆ ನಾವು ನಿಮಗೆ ತಿಳಿಸುತ್ತೇವೆ.</translation>
@@ -164,7 +163,6 @@
 <translation id="2926676257163822632">ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುಲಭವಾಗಿ ಊಹಿಸಬಹುದು. Chrome <ph name="BEGIN_LINK" />ನಿಮಗಾಗಿ ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಲು ಮತ್ತು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು<ph name="END_LINK" /> ಅವಕಾಶ ಮಾಡಿಕೊಡಿ.</translation>
 <translation id="2926952073016206995">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದಂತೆ Chrome ಗೆ ಕ್ಯಾಮರಾ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="2928420929544864228">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
-<translation id="2929907241665500097">Chrome ಅಪ್‌ಡೇಟ್ ಆಗಲಿಲ್ಲ, ಏನೋ ಸಮಸ್ಯೆಯಾಗಿದೆ. <ph name="BEGIN_LINK" />Chrome ಅಪ್‌ಡೇಟ್ ಸಮಸ್ಯೆಗಳು ಹಾಗೂ ವಿಫಲವಾದ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸರಿಪಡಿಸಿ.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಲ್ಲಿ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಪ್ರಕ್ರಿಯೆಯು ಪ್ರಾರಂಭಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ನೆಟ್‌ವರ್ಕ್ ಸೈನ್ ಇನ್ - Chrome</translation>
 <translation id="2970681950995291301">Chrome ನಿಂದ ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಪುಟದಲ್ಲಿ Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
@@ -174,7 +172,6 @@
 <translation id="3037838751736561277">Google Chrome ಹಿನ್ನೆಲೆ ಮೋಡ್‌ನಲ್ಲಿದೆ.</translation>
 <translation id="3038232873781883849">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3045032126857188731">ಅನುವಾದಿಸಿದ ಭಾಷೆ: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು ಆನ್ ಮಾಡಲು Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="306179102415443347">Google Password Manager ಗೆ ತ್ವರಿತವಾಗಿ ಹೋಗಲು ನಿಮ್ಮ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಿ. ನಿಮ್ಮ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ಹೋಮ್‌ಸ್ಕ್ರೀನ್ ಅಥವಾ ಆ್ಯಪ್ ಲಾಂಚರ್‌ಗೆ ನೀವು ಸರಿಸಬಹುದು.</translation>
 <translation id="3065168410429928842">Chrome ಟ್ಯಾಬ್</translation>
 <translation id="3080151273017101988">Google Chrome ಮುಚ್ಚಿದಾಗ ರನ್‌ ಆಗುತ್ತಿರುವ ಹಿನ್ನೆಲೆ ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಂದುವರಿಸಿ</translation>
@@ -241,7 +238,6 @@
 <translation id="383928141529488001">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಲು
 Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ ಅಗತ್ಯವಿದೆ. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ದಯವಿಟ್ಟು ಎಲ್ಲಾ Google Chrome ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="3865754807470779944">Chrome ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3873044882194371212">ಲಿಂಕ್‌ ಅನ್ನು Chrome ಅ&amp;ದೃಶ್ಯ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="3885770153807205175">ಭಾಷಾ ಪಿಕರ್‌</translation>
 <translation id="3889417619312448367">Google Chrome ಅನ್ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
@@ -281,12 +277,10 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ವೈಯಕ್ತೀಕರಣ ಮತ್ತು ಇತರ ಫೀಚರ್‌ಗಳನ್ನು ಪಡೆಯಲು, ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ ಹಾಗೂ ಲಿಂಕ್ ಮಾಡಲಾದ Google ಸೇವೆಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4334294535648607276">ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
-<translation id="4335235004908507846">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳು, ಕಳಪೆ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು Chrome ಸಹಾಯ ಮಾಡಬಹುದು</translation>
 <translation id="4343195214584226067">Chrome ಗೆ <ph name="EXTENSION_NAME" /> ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="4348548358339558429">ವೈಯಕ್ತೀಕರಣವನ್ನು ಪಡೆಯಲು, ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆಯಲ್ಲಿ Chrome ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="436060642166082913">Chrome ಈ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ ಏಕೆಂದರೆ ಫೈಲ್ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮತ್ತು ಸಾಮಾಜಿಕ ನೆಟ್‌ವರ್ಕ್ ಖಾತೆಗಳಿಗೆ ಹಾನಿಯುಂಟುಮಾಡಬಹುದು</translation>
 <translation id="4367027658822022112">ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ ನೀವು Google Lens ಅನ್ನು ಪಿನ್ ಮಾಡಬಹುದು; ಸೈಡ್ ಪ್ಯಾನಲ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿರುವ ಪಿನ್ ಬಟನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
-<translation id="4384570495110188418">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರದ ಕಾರಣ Chrome ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="4389991535395284064">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡುವಾಗ, ಅಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಸೈಟ್ ಅನ್ನು ಲೋಡ್ ಮಾಡುವ ಮೊದಲು Chrome ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
 <translation id="4427306783828095590">ಫಿಶಿಂಗ್ ಮತ್ತು ಮಾಲ್‌ವೇರ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲು ವರ್ಧಿತ ಸುರಕ್ಷತೆ ಹೆಚ್ಚಿನ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="4434353761996769206">ಇನ್‌ಸ್ಟಾಲರ್‌‌ ದೋಷ: <ph name="INSTALLER_ERROR" /></translation>

@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">၎င်းသည် ဤစက်ပစ္စည်းထဲရှိ အင်တာနက်အသုံးပြုမှု အချက်အလက်များကို ဖျက်လိုက်ပါမည်။ သင့်ဒေတာကို နောက်မှ ပြန်ယူရန် Chrome သို့ <ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> ၏ Chrome ဘရောင်ဇာ အကြောင်းအရာများကို ရယူပါ</translation>
 <translation id="259935314519650377">ဒေါင်းလုဒ်လုပ်ထားသော ထည့်သွင်းသည့်ဖိုင်ကို ကက်ရှ်လုပ်၍မရပါ။ အမှား- <ph name="UNPACK_CACHING_ERROR_CODE" />။</translation>
-<translation id="2622559029861875898">Chrome က အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="2632707915638608719">Chrome အတွက် နောက်ဆက်တွဲများဖြင့် အလုပ်ပိုပြီးအောင် လုပ်လိုက်ပါ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">သင့်ဘရောင်ဇာတွင် အလုံခြုံဆုံး ဆက်တင်များ ရှိနေကြောင်း သေချာစေရန် Chrome က ပုံမှန်စစ်ဆေးသည်။ သင်စစ်ဆေးရန် လိုအပ်ပါက ကျွန်ုပ်တို့ အသိပေးပါမည်။</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">လုံခြုံမှုလျော့နည်းသည့် စကားဝှက်များကို အလွယ်တကူ ခန့်မှန်းနိုင်သည်။ <ph name="BEGIN_LINK" />သင့်အတွက် လုံခြုံမှုမြင့်သည့်စကားဝှက်များ ပြုလုပ်ပြီး မှတ်ထားရန်<ph name="END_LINK" /> Chrome ကို ခွင့်ပြုပါ။</translation>
 <translation id="2926952073016206995">Chrome သည် ဤဝဘ်ဆိုက်အတွက် ကင်မရာခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="2928420929544864228">ထည့်သွင်းပြီးပါပြီ။</translation>
-<translation id="2929907241665500097">Chrome အပ်ဒိတ်လုပ်၍ မရပါ၊ တစ်ခုခု မှားသွားသည်။ <ph name="BEGIN_LINK" />Chrome အပ်ဒိတ်ပြဿနာများနှင့် လုပ်၍မရသော အပ်ဒိတ်များကို ပြင်ဆင်ပါ။<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">ထည့်သွင်းမှုအမှား- ထည့်သွင်းစနစ်လုပ်ဆောင်မှုကို စ၍မရပါ။</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း - Chrome</translation>
 <translation id="2970681950995291301">သင့် Google Account ကို Chrome မှ ဖယ်ရှားရန် ဆက်တင်များ စာမျက်နှာတွင် Chrome မှထွက်ပါ</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
 <translation id="3038232873781883849">ထည့်သွင်းရန်စောင့်နေသည်…</translation>
 <translation id="3045032126857188731">ပြန်ဆိုထားသော ဘာသာစကား- <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">'လုံခြုံစွာ ကြည့်ရှုခြင်း' ပိတ်ထားသည်။ ၎င်းကိုဖွင့်ရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="306179102415443347">Google Password Manager ကို အမြန်ဖွင့်ရန် ဖြတ်လမ်းလင့်ခ် သုံးပါ။ ကွန်ပျူတာ ပင်မစာမျက်နှာ (သို့) App Launcher သို့ ဖြတ်လမ်းလင့်ခ်ကို ရွှေ့ထားနိုင်သည်။</translation>
 <translation id="3065168410429928842">Chrome တဘ်</translation>
 <translation id="3080151273017101988">Google Chrome ကို ပိတ်လိုက်ချိန်မှာ နောက်ခံအက်ပ်များကို ဆက်ဖွင့် ထားရန်</translation>
@@ -243,7 +240,6 @@
 <translation id="383928141529488001">Google Chrome သည် ဘလူးတုသ်သုံးစက်များကို ရှာဖွေရန်
  ဘလူးတုသ်သုံးခွင့် လိုအပ်သည်။ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ကျေးဇူးပြုပြီး Google Chrome ဝင်ဒိုးများကို ပိတ်ပြီ ထပ်စမ်းပါ။</translation>
-<translation id="3865754807470779944">Chrome ဗားရှင်း <ph name="PRODUCT_VERSION" /> ကို ထည့်သွင်းလိုက်သည်</translation>
 <translation id="3873044882194371212">Chrome ရုပ်ဖျက်ဝင်းဒိုးတွင် လင့်ခ်ကို ဖွင့်ရန်</translation>
 <translation id="3885770153807205175">ဘာသာစကား ရွေးချယ်စနစ်</translation>
 <translation id="3889417619312448367">Google Chrome ကို ဖြုတ်ရန်</translation>
@@ -283,12 +279,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်းနှင့် အခြားတူးလ်များ ရယူရန် ‘ဝဘ်နှင့်အက်ပ်လုပ်ဆောင်ချက်’၊ လင့်ခ်ချိတ်ထားသော Google ဝန်ဆောင်မှုများတွင် Chrome ထည့်သွင်းပါ</translation>
 <translation id="4334294535648607276">ဒေါင်းလုဒ်လုပ်ခြင်း ပြီးပါပြီ။</translation>
-<translation id="4335235004908507846">ဒေတာပေါက်ကြားမှု၊ ဘေးကင်းမှုမရှိသော နောက်ဆက်တွဲနှင့် အခြားအန္တရာယ်များမှ သင့်ကိုလုံခြုံအောင် Chrome က ကူညီပေးနိုင်သည်</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> ကို Chrome သို့ပေါင်းထည့်ပြီးပါပြီ</translation>
 <translation id="4348548358339558429">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း ရယူရန် ‘ဝဘ်နှင့်အက်ပ်လုပ်ဆောင်ချက်’ တွင် Chrome ထည့်သွင်းပါ</translation>
 <translation id="436060642166082913">ဒေါင်းလုဒ်ဖိုင်သည် သင်၏ ကိုယ်ပိုင်နှင့် လူမှုကွန်ရက်အကောင့်များကို အန္တရာယ်ဖြစ်စေနိုင်သောကြောင့် ၎င်းကို Chrome က ပိတ်ထားသည်</translation>
 <translation id="4367027658822022112">Google Lens ကို အလွယ်တကူသုံးရန် ပင်ထိုးနိုင်သည်။ ဘေးအကန့်ထိပ်ရှိ ‘ပင်ထိုးရန်’ ခလုတ်ကိုနှိပ်ပါ</translation>
-<translation id="4384570495110188418">လက်မှတ်ထိုးဝင်မထားသဖြင့် Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="4389991535395284064">ရုပ်ဖျက်မုဒ်တွင် ဘရောက်စ်လုပ်သောအခါ Chrome က လုံခြုံမှုမရှိသော ချိတ်ဆက်မှုသုံးသည့် ဝဘ်ဆိုက်ကို မဖွင့်မီ သတိပေးပါမည်</translation>
 <translation id="4427306783828095590">အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှုက ဖြားယောင်းမှုနှင့် မဲလ်ဝဲများကို ပိုမိုပိတ်ဆို့ပေးသည်</translation>
 <translation id="4434353761996769206">ထည့်သွင်းသည့်ကိရိယာ အမှား- <ph name="INSTALLER_ERROR" /></translation>

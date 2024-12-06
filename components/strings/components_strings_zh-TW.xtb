@@ -1234,6 +1234,7 @@
 <translation id="3229277193950731405">複製版本字串</translation>
 <translation id="323107829343500871">輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼</translation>
 <translation id="3234666976984236645">一律偵測這個網站的重要內容</translation>
+<translation id="323585066388831737">淺紅色</translation>
 <translation id="3236212803136366317">卡片福利</translation>
 <translation id="3238395604961564389">在無痕視窗中開啟連結</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可自訂瀏覽器外觀</translation>
@@ -1852,6 +1853,7 @@
 <translation id="4277937682389409325">當地地址</translation>
 <translation id="4278090321534187713">此商家不接受的卡片無法使用</translation>
 <translation id="4278390842282768270">允許</translation>
+<translation id="4281245629646759298">淺黃</translation>
 <translation id="4281998142035485137">{0,plural, =1{要開啟機密檔案嗎？}other{要開啟機密檔案嗎？}}</translation>
 <translation id="4282280603030594840">購車</translation>
 <translation id="4282346679996504092">這項產品的快訊已關閉，這個網頁也已從書籤中移除</translation>
@@ -4130,7 +4132,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">我知道了</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理 Cookie 偏好設定</translation>
-<translation id="8433057134996913067">您會因此登出大多數網站。</translation>
+<translation id="8433057134996913067">你會因此登出大多數網站。</translation>
 <translation id="8434840396568290395">寵物</translation>
 <translation id="8436623588884785770">新增政策</translation>
 <translation id="8437238597147034694">復原移動(&amp;U)</translation>

@@ -1236,6 +1236,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3229277193950731405">Copiar string da versão</translation>
 <translation id="323107829343500871">Introduzir o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detetar sempre conteúdo importante neste site</translation>
+<translation id="323585066388831737">Vermelho claro</translation>
 <translation id="3236212803136366317">Vantagens do cartão</translation>
 <translation id="3238395604961564389">Abrir link numa janela de navegação anónima</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar o aspeto do seu navegador</translation>
@@ -1854,6 +1855,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4277937682389409325">Morada local</translation>
 <translation id="4278090321534187713">Os cartões não aceites por este comerciante são desativados</translation>
 <translation id="4278390842282768270">Permitido</translation>
+<translation id="4281245629646759298">Amarelo-claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{Abrir ficheiro confidencial?}other{Abrir ficheiros confidenciais?}}</translation>
 <translation id="4282280603030594840">Compra de veículos</translation>
 <translation id="4282346679996504092">Os alertas para este produto foram desativados e o marcador foi removido</translation>

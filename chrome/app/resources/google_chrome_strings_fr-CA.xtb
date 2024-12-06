@@ -132,7 +132,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2586406160782125153">Cette action entraînera la suppression de vos données de navigation sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Profitez de vos données du navigateur Chrome associées au compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome ne peut pas vérifier la présence de mises à jour. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="2632707915638608719">Faites-en plus avec les extensions pour Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome vérifie régulièrement que votre navigateur dispose des paramètres les plus sûrs. Nous vous informerons si nous avons besoin de votre avis pour quelque chose.</translation>
@@ -166,7 +165,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2926676257163822632">Les mots de passe faibles sont faciles à deviner. Vous pouvez laisser Chrome <ph name="BEGIN_LINK" />créer et mémoriser des mots de passe forts pour vous<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome requiert l'autorisation d'accéder à l'appareil photo pour ce site</translation>
 <translation id="2928420929544864228">Installation terminée.</translation>
-<translation id="2929907241665500097">La mise à jour de Chrome n'a pas été installée. Une erreur s'est produite. <ph name="BEGIN_LINK" />Découvrez comment résoudre les problèmes de mise à jour de Chrome.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Erreur d'installation : le processus d'installation n'a pas pu démarrer.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Connexion au réseau – Chrome</translation>
 <translation id="2970681950995291301">Pour retirer votre compte Google de Chrome, déconnectez-vous de Chrome sur la page Paramètres</translation>
@@ -176,7 +174,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3037838751736561277">Google Chrome fonctionne en mode arrière-plan.</translation>
 <translation id="3038232873781883849">Installation en attente…</translation>
 <translation id="3045032126857188731">Langue de la traduction : <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">La navigation sécurisée est désactivée. Chrome vous recommande de l'activer.</translation>
 <translation id="306179102415443347">Utilisez votre raccourci pour accéder rapidement au gestionnaire de mots de passe Google. Vous pouvez déplacer votre raccourci vers l'écran d'accueil ou le lanceur d'applications de votre ordinateur.</translation>
 <translation id="3065168410429928842">Onglet Chrome</translation>
 <translation id="3080151273017101988">Continuer l'exécution des applications en arrière-plan après la fermeture de Google Chrome</translation>
@@ -242,7 +239,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3835168907083856002">Cette action créera un profil Chrome associé au compte <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="383928141529488001">Google Chrome a besoin d'un accès au Bluetooth pour découvrir les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
-<translation id="3865754807470779944">La version <ph name="PRODUCT_VERSION" /> de Chrome est installée</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="3885770153807205175">Sélecteur de langue</translation>
 <translation id="3889417619312448367">Désinstaller Google Chrome</translation>
@@ -282,12 +278,10 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Pour bénéficier de la personnalisation et d'autres fonctionnalités, incluez Chrome dans l'activité sur le Web et dans les applications et les services Google associés</translation>
 <translation id="4334294535648607276">Téléchargement terminé.</translation>
-<translation id="4335235004908507846">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les extensions malveillantes</translation>
 <translation id="4343195214584226067">L'extension « <ph name="EXTENSION_NAME" /> » a été ajoutée à Chrome</translation>
 <translation id="4348548358339558429">Pour bénéficier de la personnalisation, incluez Chrome dans l'activité sur le Web et dans les applications</translation>
 <translation id="436060642166082913">Chrome a bloqué ce téléchargement, car le fichier peut endommager vos comptes personnels et de réseaux sociaux</translation>
 <translation id="4367027658822022112">Vous pouvez épingler Lentille Google pour un accès facile; cliquez sur le bouton Épingler en haut du panneau latéral</translation>
-<translation id="4384570495110188418">Chrome ne peut pas vérifier vos mots de passe parce que vous n'êtes pas connecté.</translation>
 <translation id="4389991535395284064">Lors de la navigation en mode Navigation privée, Chrome vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>

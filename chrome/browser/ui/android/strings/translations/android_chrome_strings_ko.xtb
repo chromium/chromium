@@ -146,8 +146,10 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1594635596540195766">아래 리스트에 추천된 항목이 <ph name="SUGGESTIONS_COUNT" />개 있습니다.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" /> 사용하기</translation>
 <translation id="160275202205869636">이 설정을 사용하도록 설정하면 Google 계정을 통해 데이터를 사용하고 저장할 수 있습니다. 사용 중지하면 데이터가 이 기기에만 저장됩니다.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />님이 탭을 삭제했습니다.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{북마크 1개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{북마크 #개 및 기타 항목이 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" />님이 그룹에 참여했습니다.</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
@@ -347,6 +349,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2578337197553672982">어린이를 위한 Google 콘텐츠</translation>
 <translation id="2579297619530305344">모든 기기의 비밀번호가 전체 높이로 열림</translation>
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />님이 탭을 추가했습니다.</translation>
 <translation id="2587052924345400782">최신 버전 사용 가능</translation>
 <translation id="2593272815202181319">고정 너비</translation>
 <translation id="2603212228005142861">환경설정을 관리하려면 로그인하세요</translation>
@@ -392,6 +395,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2781151931089541271">1초 남음</translation>
 <translation id="2789486458103222910">확인</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome에서 개선이 가능한 재사용된 비밀번호를 찾았습니다.}other{Chrome에서 개선이 가능한 재사용된 비밀번호 #개를 찾았습니다.}}</translation>
+<translation id="2796651346651857052">주소 표시줄을 길게 터치하여 위치를 변경할 수 있습니다.</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> 탭이 닫힙니다.</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
@@ -937,6 +941,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5301876394151419436"><ph name="EMAIL" /> 계정으로 로그인했습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="5304593522240415983">필수 입력란입니다.</translation>
 <translation id="5306014156308790439">컬렉션에 추가 사용 중지됨</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />님이 그룹 색상을 변경했습니다.</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5310963254742922113">비밀번호가 사용되었습니다.</translation>
 <translation id="5316947901395241499">관리자가 비밀번호 저장을 사용 중지했습니다</translation>
@@ -948,6 +953,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> 동안의 사이트 없음</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="5364112109233799727">의견을 제공하시는 페이지의 URL은 Google에 전송되며 기능 개선을 위해 담당자가 검토할 수 있습니다.</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />님이 탭을 변경했습니다.</translation>
 <translation id="5375374982898812658">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">시크릿 모드 종료</translation>
@@ -1111,6 +1117,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="60923314841986378"><ph name="HOURS" />시간 남음</translation>
 <translation id="6095578583683628124">Google이 기본 검색엔진이면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>
 <translation id="610630277578876674">메시지에서 링크를 빠르게 여는 등의 기능을 이용하세요</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />님이 그룹 이름을 변경했습니다.</translation>
 <translation id="6108923351542677676">설정 진행 중...</translation>
 <translation id="6112702117600201073">페이지 새로고침</translation>
 <translation id="6122831415929794347">세이프 브라우징을 사용 중지하시겠습니까?</translation>
@@ -1325,6 +1332,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{탭 1개}other{탭 <ph name="NUMBER_OF_TABS" />개}}</translation>
 <translation id="6929224077895306814">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
 <translation id="6937524809504266803">맞춤설정 및 연결</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">닉네임(선택사항)</translation>
 <translation id="6942665639005891494">언제든지 설정 메뉴 옵션으로 기본 다운로드 위치 변경 가능</translation>
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
@@ -1493,6 +1501,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7656721520530864426">사이트 없음</translation>
 <translation id="7656862631699126784">시크릿 모드 탭 잠금 사용 설정</translation>
 <translation id="7658239707568436148">취소</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />님이 그룹을 나갔습니다.</translation>
 <translation id="7663320421139257046">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />를 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />을 확인하세요.</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="766587987807204883">기사가 여기 표시되며 오프라인 상태에서도 읽을 수 있습니다.</translation>
@@ -1660,7 +1669,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8398389123831319859">시크릿 모드로 전환하려면 두 번 탭하고 길게 누르세요.</translation>
 <translation id="8402673309244746971">팔로우 중으로 이동</translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>
-<translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠도 전송됩니다.</translation>
+<translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 일부 페이지 콘텐츠도 전송됩니다.</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
 <translation id="8419144699778179708">검색창에 입력한 내용을 비롯한 방문 기록 삭제</translation>
 <translation id="8419244640277402268">포함</translation>

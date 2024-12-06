@@ -1233,6 +1233,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3229277193950731405">Kopírovať reťazec verzie</translation>
 <translation id="323107829343500871">Zadajte kód CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Vždy na tomto webe zisťovať dôležitý obsah</translation>
+<translation id="323585066388831737">Svetločervená</translation>
 <translation id="3236212803136366317">Výhody karty</translation>
 <translation id="3238395604961564389">Otvoriť odkaz v okne inkognito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter si prispôsobte vzhľad prehliadača</translation>
@@ -1850,6 +1851,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4277937682389409325">Miestna adresa</translation>
 <translation id="4278090321534187713">Karty, ktoré tento obchodník neakceptuje, sú deaktivované</translation>
 <translation id="4278390842282768270">Povolené</translation>
+<translation id="4281245629646759298">Svetložltá</translation>
 <translation id="4281998142035485137">{0,plural, =1{Chcete otvoriť dôverný súbor?}few{Chcete otvoriť dôverné súbory?}many{Open confidential files?}other{Chcete otvoriť dôverné súbory?}}</translation>
 <translation id="4282280603030594840">Nákup vozidiel</translation>
 <translation id="4282346679996504092">Upozornenia na tento výrobok boli vypnuté a záložka bola odstránená</translation>
@@ -2739,6 +2741,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5969199813874624822">Uloženie a sledovanie ceny</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Šiesty kotúč</translation>
+<translation id="5974745851230707809">Možnosti platby na splátky</translation>
 <translation id="5975083100439434680">Oddialiť</translation>
 <translation id="5979084224081478209">Skontrolovať heslá</translation>
 <translation id="5984570616552610254">Vlhkosť komory</translation>
@@ -4332,6 +4335,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="882338992931677877">Manuálny slot</translation>
 <translation id="8830320733681313421">Hagaki pohľadnica</translation>
 <translation id="8830565333350631528">Zobraziť súbory v službe <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">K dispozícii pre nákupy nad <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Práčky a sušičky</translation>
 <translation id="8834962751196791179">Toto upozornenie sa vám zobrazuje, pretože tento web nepodporuje protokol HTTPS a ste v režime inkognito. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie o tomto upozornení<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Sci‑fi a fantasy televízne relácie</translation>

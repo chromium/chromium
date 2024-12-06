@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">Ова ќе ги избрише податоците од прелистувањето од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Преземете ги работите на прелистувачот Chrome од <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Преземениот инсталатор не можеше да се кешира. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome не може да провери дали се достапни ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="2632707915638608719">Завршувајте повеќе обврски со екстензиите за Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome редовно проверува за да се погрижи вашиот прелистувач да ги има најбезбедните поставки. Ќе ве известиме ако треба да се прегледа нешто.</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">Слабите лозинки се лесни за погаѓање. Дозволете Chrome да ви <ph name="BEGIN_LINK" />создаде и запомни силни лозинки<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">На Chrome му треба дозвола за камерата за сајтов</translation>
 <translation id="2928420929544864228">Инсталирањето заврши.</translation>
-<translation id="2929907241665500097">Chrome не се ажурираше, нешто тргна наопаку. <ph name="BEGIN_LINK" />Поправете ги проблемите со ажурирањето на Chrome и со неуспешните ажурирања.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Грешка при инсталирање: процесот на инсталаторот не можеше да започне.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Мрежно најавување - Chrome</translation>
 <translation id="2970681950995291301">Одјавете се од Chrome на страницата „Поставки“ за да се отстрани вашата сметка на Google од Chrome</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome е во заднински режим.</translation>
 <translation id="3038232873781883849">Се чека инсталирање…</translation>
 <translation id="3045032126857188731">Јазик на преводот: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">„Безбедното прелистување“ е исклучено. Chrome препорачува да го вклучите.</translation>
 <translation id="306179102415443347">Користете ја вашата кратенка за да го отворите Google Password Manager брзо. Кратенката може да ја преместите на почетниот екран или „Стартерот на апликации“ на вашиот компјутер.</translation>
 <translation id="3065168410429928842">Картичка на Chrome</translation>
 <translation id="3080151273017101988">Продолжи со извршување апликации во заднина кога е затворен Google Chrome</translation>
@@ -243,7 +240,6 @@
 <translation id="383928141529488001">Google Chrome бара пристап до Bluetooth за да открива 
  уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Затворете ги сите прозорци на Google Chrome и пробајте повторно.</translation>
-<translation id="3865754807470779944">Инсталирана е верзијата <ph name="PRODUCT_VERSION" /> на Chrome</translation>
 <translation id="3873044882194371212">Отвори го линкот во инко&amp;гнито прозорец на Chrome</translation>
 <translation id="3885770153807205175">Избор на јазик</translation>
 <translation id="3889417619312448367">Деинсталирај го Google Chrome</translation>
@@ -283,12 +279,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">За да добиете персонализација и други функции, опфатете го Chrome во „Активноста на интернет и апликации“ и поврзаните услуги на Google</translation>
 <translation id="4334294535648607276">Преземањето заврши.</translation>
-<translation id="4335235004908507846">Chrome може да ве штити од упад во податоците, злонамерни екстензии и друго</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> е додадена на Chrome</translation>
 <translation id="4348548358339558429">За да добиете персонализација, опфатете го Chrome во „Активноста на интернет и апликации“</translation>
 <translation id="436060642166082913">Chrome го блокираше преземањево бидејќи датотеката може да им наштети на вашите лични сметки и на вашите сметки на друштвените мрежи</translation>
 <translation id="4367027658822022112">Може да ја закачите Google Lens за лесен пристап. Само кликнете го копчето „Закачи“ најгоре на страничната табла</translation>
-<translation id="4384570495110188418">Chrome не може да ги провери вашите лозинки бидејќи не сте најавени</translation>
 <translation id="4389991535395284064">При прелистување во режим „Инкогнито“, Chrome ќе ве предупреди пред да вчита сајт преку небезбедна врска</translation>
 <translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
 <translation id="4434353761996769206">Грешка на инсталаторот: <ph name="INSTALLER_ERROR" /></translation>

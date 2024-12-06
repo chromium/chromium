@@ -132,7 +132,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2586406160782125153">Hatua hii itafuta data yako ya kuvinjari kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Pata vitu vinavyohusu kivinjari chako cha Chrome kwenye <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Imeshindwa kuweka akiba ya kisakinishaji kilichopakuliwa. Hitilafu: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome imeshindwa kukagua masasisho. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
 <translation id="2632707915638608719">Fanikisha mengi ukitumia viendelezi vya Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome hukagua kila mara ili kuhakikisha kuwa kivinjari chako kina mipangilio salama zaidi. Tutakufahamisha ikiwa kuna chochote kinachohitaji ukague.</translation>
@@ -166,7 +165,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2926676257163822632">Ni rahisi kukisia manenosiri dhaifu. Iruhusu Chrome <ph name="BEGIN_LINK" />itunge na ikumbuke manenosiri thabiti kwa niaba yako<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome inahitaji ruhusa ya kufikia kamera kwa ajili ya tovuti hii</translation>
 <translation id="2928420929544864228">Usakinishaji umekamilika.</translation>
-<translation id="2929907241665500097">Chrome haijasasishwa, hitilafu fulani imetokea. <ph name="BEGIN_LINK" />Rekebisha matatizo ya sasisho la Chrome na masasisho ambayo hayakuwekwa.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Hitilafu ya kusakinisha: Mchakato wa kisakinishaji umeshindwa kuanza.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Kuingia katika Akaunti ya Mtandao - Chrome</translation>
 <translation id="2970681950995291301">Ili uondoe Akaunti yako ya Google kwenye Chrome, ondoka kwenye Chrome katika ukurasa wa Mipangilio</translation>
@@ -176,7 +174,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3037838751736561277">Google Chrome iko katika hali ya chini chini.</translation>
 <translation id="3038232873781883849">Inasubiri kusakinisha...</translation>
 <translation id="3045032126857188731">Lugha iliyotafsiriwa: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Kipengele cha Kuvinjari Salama kimezimwa. Chrome inapendekeza ukiwashe.</translation>
 <translation id="306179102415443347">Tumia njia yako ya mkato ili ufikie Kidhibiti cha Manenosiri cha Google kwa haraka. Unaweza kuhamishia njia yako ya mkato kwenye skrini ya kwanza ya kompyuta yako au kifungua programu.</translation>
 <translation id="3065168410429928842">Kichupo cha Chrome</translation>
 <translation id="3080151273017101988">Endelea kuendesha programu zinazofanya kazi chini chini wakati Google Chrome imefungwa</translation>
@@ -243,7 +240,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="383928141529488001">Google Chrome inahitaji ruhusa ya kufikia Bluetooth ili kugundua 
  vifaa vyenye Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Tafadhali funga madirisha yote ya Google Chrome na ujaribu tena.</translation>
-<translation id="3865754807470779944">Umesakinisha toleo la Chrome la <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Fungua kiungo katika dirisha fiche la Chrome</translation>
 <translation id="3885770153807205175">Kiteua lugha</translation>
 <translation id="3889417619312448367">Ondoa Google Chrome</translation>
@@ -283,12 +279,10 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Ili upate mapendeleo na vipengele vingine, jumuisha Chrome kwenye Historia ya Shughuli kwenye Wavuti na Programu pamoja na huduma za Google zilizounganishwa</translation>
 <translation id="4334294535648607276">Upakuaji umekamilika.</translation>
-<translation id="4335235004908507846">Chrome inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, viendelezi vibaya na zaidi</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> imeongezwa kwenye Chrome</translation>
 <translation id="4348548358339558429">Ili upate mapendeleo, jumuisha Chrome kwenye Historia ya Shughuli kwenye Wavuti na Programu</translation>
 <translation id="436060642166082913">Chrome imezuia upakuaji huu kwa sababu faili inaweza kuathiri akaunti zako binafsi na za mitandao ya kijamii</translation>
 <translation id="4367027658822022112">Unaweza kubandika Lenzi ya Google ili uifikie kwa urahisi; bofya kitufe cha Bandika kilicho sehemu ya juu ya kidirisha cha pembeni</translation>
-<translation id="4384570495110188418">Chrome imeshindwa kukagua manenosiri yako kwa sababu hujaingia katika akaunti</translation>
 <translation id="4389991535395284064">Unapovinjari katika hali fiche, Chrome itakutahadharisha kabla ya kupakia tovuti kwa kutumia muunganisho usio salama</translation>
 <translation id="4427306783828095590">Kipengele cha ulinzi wa hali ya juu hufanya mengi zaidi ili kuzuia programu hasidi na wizi wa data binafsi</translation>
 <translation id="4434353761996769206">Hitilafu ya kisakinishaji: <ph name="INSTALLER_ERROR" /></translation>
