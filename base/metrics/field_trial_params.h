@@ -356,12 +356,12 @@ struct FeatureParam<Enum, true> {
     NOTREACHED();
   }
 
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const base::Feature* const feature;
+  const raw_ptr<const base::Feature> feature;
   const char* const name;
   const Enum default_value;
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const Option* const options;
+  // TODO(crbug.com/40284755): Remove AllowPtrArithmetic if possible after
+  // unsafe buffers have been evaluated.
+  const raw_ptr<const Option, AllowPtrArithmetic> options;
   const size_t option_count;
   Enum (*const cache_getter)(const FeatureParam<Enum>*);
 };
