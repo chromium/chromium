@@ -39,13 +39,13 @@ namespace autofill_ai {
 
 namespace {
 
+using autofill::AutofillAiSuggestionButtonAction;
 using autofill::MockAccessibilitySelectionDelegate;
 using autofill::MockAutofillPopupController;
 using autofill::MockSelectionDelegate;
 using autofill::PopupCellSelectionSource;
 using autofill::PopupRowView;
 using autofill::PopupViewViews;
-using autofill::PredictionImprovementsButtonActions;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::MockFunction;
@@ -135,8 +135,8 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
                   /*line_number=*/0,
-                  VariantWith<PredictionImprovementsButtonActions>(
-                      PredictionImprovementsButtonActions::kThumbsUpClicked)));
+                  VariantWith<AutofillAiSuggestionButtonAction>(
+                      AutofillAiSuggestionButtonAction::kThumbsUpClicked)));
   // In test env we have to manually set the bounds when a view becomes visible.
   generator().MoveMouseTo(
       view().GetThumbsUpButtonForTest()->GetBoundsInScreen().CenterPoint());
@@ -150,12 +150,11 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
   view().SetSelectedCell(PopupRowView::CellType::kContent);
 
   // Assert thumbs down button callback is run when clicked.
-  EXPECT_CALL(
-      controller(),
-      PerformButtonActionForSuggestion(
-          /*line_number=*/0,
-          VariantWith<PredictionImprovementsButtonActions>(
-              PredictionImprovementsButtonActions::kThumbsDownClicked)));
+  EXPECT_CALL(controller(),
+              PerformButtonActionForSuggestion(
+                  /*line_number=*/0,
+                  VariantWith<AutofillAiSuggestionButtonAction>(
+                      AutofillAiSuggestionButtonAction::kThumbsDownClicked)));
   generator().MoveMouseTo(
       view().GetThumbsDownButtonForTest()->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
@@ -192,8 +191,8 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest, LearnMoreClickTriggersCallback) {
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
                   /*line_number=*/0,
-                  VariantWith<PredictionImprovementsButtonActions>(
-                      PredictionImprovementsButtonActions::kLearnMoreClicked)));
+                  VariantWith<AutofillAiSuggestionButtonAction>(
+                      AutofillAiSuggestionButtonAction::kLearnMoreClicked)));
 
   auto* suggestion_text =
       views::AsViewClass<views::StyledLabel>(view().GetViewByID(
@@ -273,8 +272,8 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
                   /*index=*/0,
-                  VariantWith<PredictionImprovementsButtonActions>(
-                      PredictionImprovementsButtonActions::kLearnMoreClicked)));
+                  VariantWith<AutofillAiSuggestionButtonAction>(
+                      AutofillAiSuggestionButtonAction::kLearnMoreClicked)));
 
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
 }
@@ -290,8 +289,8 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest, EnterIsHandledForFocusedThumbsUp) {
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
                   /*index=*/0,
-                  VariantWith<PredictionImprovementsButtonActions>(
-                      PredictionImprovementsButtonActions::kThumbsUpClicked)));
+                  VariantWith<AutofillAiSuggestionButtonAction>(
+                      AutofillAiSuggestionButtonAction::kThumbsUpClicked)));
 
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
 }
@@ -305,12 +304,11 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest, EnterIsHandledForFocusedThumbsDown) {
   ASSERT_EQ(view().focused_control_for_testing(),
             PopupRowAutofillAiFeedbackView::FocusableControl::kThumbsDown);
 
-  EXPECT_CALL(
-      controller(),
-      PerformButtonActionForSuggestion(
-          /*index=*/0,
-          VariantWith<PredictionImprovementsButtonActions>(
-              PredictionImprovementsButtonActions::kThumbsDownClicked)));
+  EXPECT_CALL(controller(),
+              PerformButtonActionForSuggestion(
+                  /*index=*/0,
+                  VariantWith<AutofillAiSuggestionButtonAction>(
+                      AutofillAiSuggestionButtonAction::kThumbsDownClicked)));
 
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
 }

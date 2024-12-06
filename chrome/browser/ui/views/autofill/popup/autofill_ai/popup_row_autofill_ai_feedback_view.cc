@@ -246,8 +246,7 @@ PopupRowAutofillAiFeedbackView::PopupRowAutofillAiFeedbackView(
               &AutofillPopupController::PerformButtonActionForSuggestion,
               controller,
               line_number,
-              autofill::PredictionImprovementsButtonActions::
-                  kLearnMoreClicked))) {
+              autofill::AutofillAiSuggestionButtonAction::kLearnMoreClicked))) {
   CHECK(line_number < controller->GetLineCount() &&
         !controller->GetSuggestionAt(line_number).voice_over->empty());
 
@@ -270,13 +269,13 @@ PopupRowAutofillAiFeedbackView::PopupRowAutofillAiFeedbackView(
       base::BindRepeating(
           &AutofillPopupController::PerformButtonActionForSuggestion,
           controller, line_number,
-          autofill::PredictionImprovementsButtonActions::kThumbsUpClicked)));
+          autofill::AutofillAiSuggestionButtonAction::kThumbsUpClicked)));
   thumbs_down_button_ = buttons_wrapper->AddChildView(CreateFeedbackButton(
       vector_icons::kThumbDownIcon,
       base::BindRepeating(
           &AutofillPopupController::PerformButtonActionForSuggestion,
           controller, line_number,
-          autofill::PredictionImprovementsButtonActions::kThumbsDownClicked)));
+          autofill::AutofillAiSuggestionButtonAction::kThumbsDownClicked)));
 
   auto* content_layout = static_cast<views::BoxLayout*>(
       feedback_text_and_buttons_container->GetLayoutManager());
@@ -314,17 +313,17 @@ bool PopupRowAutofillAiFeedbackView::HandleKeyPressEvent(
         case FocusableControl::kManageAutofillAiLink:
           controller()->PerformButtonActionForSuggestion(
               line_number(),
-              autofill::PredictionImprovementsButtonActions::kLearnMoreClicked);
+              autofill::AutofillAiSuggestionButtonAction::kLearnMoreClicked);
           break;
         case FocusableControl::kThumbsUp:
           controller()->PerformButtonActionForSuggestion(
               line_number(),
-              autofill::PredictionImprovementsButtonActions::kThumbsUpClicked);
+              autofill::AutofillAiSuggestionButtonAction::kThumbsUpClicked);
           break;
         case FocusableControl::kThumbsDown:
           controller()->PerformButtonActionForSuggestion(
-              line_number(), autofill::PredictionImprovementsButtonActions::
-                                 kThumbsDownClicked);
+              line_number(),
+              autofill::AutofillAiSuggestionButtonAction::kThumbsDownClicked);
           break;
       }
       UpdateFocusedControl(std::nullopt);

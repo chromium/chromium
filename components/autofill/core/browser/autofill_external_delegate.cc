@@ -954,20 +954,20 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       if (!delegate) {
         break;
       }
-      CHECK(absl::holds_alternative<PredictionImprovementsButtonActions>(
+      CHECK(absl::holds_alternative<AutofillAiSuggestionButtonAction>(
           button_action));
-      PredictionImprovementsButtonActions action =
-          absl::get<PredictionImprovementsButtonActions>(button_action);
+      AutofillAiSuggestionButtonAction action =
+          absl::get<AutofillAiSuggestionButtonAction>(button_action);
       switch (action) {
-        case PredictionImprovementsButtonActions::kThumbsUpClicked:
+        case AutofillAiSuggestionButtonAction::kThumbsUpClicked:
           delegate->UserFeedbackReceived(
               AutofillAiDelegate::UserFeedback::kThumbsUp);
           break;
-        case PredictionImprovementsButtonActions::kThumbsDownClicked:
+        case AutofillAiSuggestionButtonAction::kThumbsDownClicked:
           delegate->UserFeedbackReceived(
               AutofillAiDelegate::UserFeedback::kThumbsDown);
           break;
-        case PredictionImprovementsButtonActions::kLearnMoreClicked:
+        case AutofillAiSuggestionButtonAction::kLearnMoreClicked:
           delegate->UserClickedLearnMore();
           break;
       }
