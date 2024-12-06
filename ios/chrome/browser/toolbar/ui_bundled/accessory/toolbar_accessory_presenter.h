@@ -9,28 +9,36 @@
 
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter.h"
 
-// Presenter that displays accessories over or next to the toolbar. Note that
-// there are different presentations styles for iPhone (Compact Toolbar) vs.
-// iPad. This is used by Find in Page.
+class OmniboxPositionBrowserAgent;
+
+/// Presenter that displays accessories over or next to the toolbar. Note that
+/// there are different presentations styles for iPhone (Compact Toolbar) vs.
+/// iPad. This is used by Find in Page.
 @interface ToolbarAccessoryPresenter : NSObject <ContainedPresenter>
 
-- (instancetype)initWithIsIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
+/// Whether the presenter is currently presenting a view.
+@property(nonatomic, readonly, getter=isPresenting) BOOL presenting;
+
+/// The main presented view.
+@property(nonatomic, strong, readonly) UIView* backgroundView;
+
+/// The layout guide representing the top toolbar.
+@property(nonatomic, strong) UILayoutGuide* topToolbarLayoutGuide;
+
+/// The layout guide representing the bottom toolbar.
+@property(nonatomic, strong) UILayoutGuide* bottomToolbarLayoutGuide;
+
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito
+        omniboxPositionBrowserAgent:
+            (OmniboxPositionBrowserAgent*)omniboxPositionBrowserAgent
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+/// Removes C++ object reference.
+- (void)disconnect;
+
 - (BOOL)isPresentingViewController:(UIViewController*)viewController;
-
-// Whether the presenter is currently presenting a view
-@property(nonatomic, readonly, getter=isPresenting) BOOL presenting;
-
-// The main presented view.
-@property(nonatomic, strong, readonly) UIView* backgroundView;
-
-// The layout guide representing the top toolbar.
-@property(nonatomic, strong) UILayoutGuide* topToolbarLayoutGuide;
-
-// The layout guide representing the bottom toolbar.
-@property(nonatomic, strong) UILayoutGuide* bottomToolbarLayoutGuide;
 
 @end
 

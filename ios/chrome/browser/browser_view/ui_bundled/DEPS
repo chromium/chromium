@@ -45,6 +45,7 @@ include_rules = [
   "+ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/ui_bundled",
+  "+ios/chrome/browser/omnibox/model",
   "+ios/chrome/browser/omnibox/ui_bundled",
   "+ios/chrome/browser/overlays/model/public/overlay_presenter.h",
   "+ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h",

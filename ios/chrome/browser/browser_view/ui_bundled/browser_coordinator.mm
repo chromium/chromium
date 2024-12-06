@@ -108,6 +108,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
@@ -1054,8 +1055,11 @@ enum class ToolbarKind {
   _toolbarCoordinator =
       [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
 
+  OmniboxPositionBrowserAgent* omniboxPositionBrowserAgent =
+      OmniboxPositionBrowserAgent::FromBrowser(self.browser);
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
-      initWithIsIncognito:profile->IsOffTheRecord()];
+              initWithIsIncognito:profile->IsOffTheRecord()
+      omniboxPositionBrowserAgent:omniboxPositionBrowserAgent];
   _toolbarAccessoryPresenter.topToolbarLayoutGuide =
       [_layoutGuideCenter makeLayoutGuideNamed:kPrimaryToolbarGuide];
   _toolbarAccessoryPresenter.bottomToolbarLayoutGuide =
@@ -1233,6 +1237,7 @@ enum class ToolbarKind {
   _loadQueryCommandsHandler = nil;
   _omniboxCommandsHandler = nil;
 
+  [_toolbarAccessoryPresenter disconnect];
   _toolbarAccessoryPresenter = nil;
 
   [_contextualPanelEntrypointHelpPresenter dismissAnimated:NO];

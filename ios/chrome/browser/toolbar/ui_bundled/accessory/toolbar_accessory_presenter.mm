@@ -6,6 +6,8 @@
 
 #import "base/i18n/rtl.h"
 #import "base/logging.h"
+#import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -50,7 +52,13 @@ const CGFloat kAnimationDuration = 0.15;
 
 @end
 
-@implementation ToolbarAccessoryPresenter
+@implementation ToolbarAccessoryPresenter {
+  /// Whether the accessory is presented above the bottom toolbar.
+  BOOL _isPresentedAboveBottomToolbar;
+
+  /// Browser agent to get the omnibox position.
+  raw_ptr<OmniboxPositionBrowserAgent> _omniboxPositionBrowserAgent;
+}
 
 @synthesize baseViewController = _baseViewController;
 @synthesize presentedViewController = _presentedViewController;
@@ -58,11 +66,18 @@ const CGFloat kAnimationDuration = 0.15;
 
 #pragma mark - Public
 
-- (instancetype)initWithIsIncognito:(BOOL)isIncognito {
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito
+        omniboxPositionBrowserAgent:
+            (OmniboxPositionBrowserAgent*)omniboxPositionBrowserAgent {
   if ((self = [super init])) {
     _isIncognito = isIncognito;
+    _omniboxPositionBrowserAgent = omniboxPositionBrowserAgent;
   }
   return self;
+}
+
+- (void)disconnect {
+  _omniboxPositionBrowserAgent = nullptr;
 }
 
 - (BOOL)isPresentingViewController:(UIViewController*)viewController {
@@ -76,6 +91,7 @@ const CGFloat kAnimationDuration = 0.15;
   [self.baseViewController addChildViewController:self.presentedViewController];
   [self.baseViewController.view addSubview:self.backgroundView];
 
+  _isPresentedAboveBottomToolbar = NO;
   if (ShouldShowCompactToolbar(self.baseViewController)) {
     [self prepareForPresentationOnIPhone];
   } else {
@@ -133,15 +149,19 @@ const CGFloat kAnimationDuration = 0.15;
   };
   if (animated) {
     void (^animation)();
+    // Dismiss iPhone presentation.
     if (ShouldShowCompactToolbar(self.baseViewController)) {
       CGRect oldFrame = self.backgroundView.frame;
-      self.backgroundView.layer.anchorPoint = CGPointMake(0.5, 0);
+      self.backgroundView.layer.anchorPoint =
+          CGPointMake(0.5, _isPresentedAboveBottomToolbar ? 1 : 0);
       self.backgroundView.frame = oldFrame;
+      CGFloat fadeDirectionModifier = _isPresentedAboveBottomToolbar ? -1 : 1;
       animation = ^{
-        self.backgroundView.transform = CGAffineTransformMakeScale(1, 0.05);
+        self.backgroundView.transform =
+            CGAffineTransformMakeScale(1, fadeDirectionModifier * 0.05);
         self.backgroundView.alpha = 0;
       };
-    } else {
+    } else {  // Dismiss iPad presentation.
       CGFloat rtlModifier = base::i18n::IsRTL() ? -1 : 1;
       animation = ^{
         self.backgroundView.transform = CGAffineTransformMakeTranslation(
@@ -160,7 +180,16 @@ const CGFloat kAnimationDuration = 0.15;
 
 // Positions the view into its initial, pre-animation position on iPhone.
 - (void)prepareForPresentationOnIPhone {
-  [self prepareForPresentationOnIPhoneTopToolbar];
+  if (_omniboxPositionBrowserAgent) {
+    _isPresentedAboveBottomToolbar =
+        _omniboxPositionBrowserAgent->IsCurrentLayoutBottomOmnibox();
+  }
+
+  if (_isPresentedAboveBottomToolbar) {
+    [self prepareForPresentationOnIPhoneBottomToolbar];
+  } else {
+    [self prepareForPresentationOnIPhoneTopToolbar];
+  }
 }
 
 // Prepare the view to be presented over the top toolbar on iPhone. The
@@ -271,7 +300,11 @@ const CGFloat kAnimationDuration = 0.15;
 // Sets up the constraints on iPhone such that the view is ready to be animated
 // to its final position.
 - (void)setupFinalConstraintsOnIPhone {
-  [self setupFinalConstraintsOnIPhoneTopToolbar];
+  if (_isPresentedAboveBottomToolbar) {
+    [self setupFinalConstraintsOnIPhoneBottomToolbar];
+  } else {
+    [self setupFinalConstraintsOnIPhoneTopToolbar];
+  }
 }
 
 // Sets up the final constraints on iPhone over the top toolbar.
