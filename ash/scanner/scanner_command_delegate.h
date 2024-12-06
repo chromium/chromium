@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 
 class GURL;
 
@@ -41,6 +42,8 @@ class ASH_EXPORT ScannerCommandDelegate {
 
   // Sets the clipboard to the given `ui::ClipboardData`.
   virtual void SetClipboard(std::unique_ptr<ui::ClipboardData> data) = 0;
+
+  virtual base::WeakPtr<ScannerCommandDelegate> GetWeakPtr() = 0;
 };
 
 }  // namespace ash

@@ -16,6 +16,7 @@
 
 namespace ash {
 
+class ScannerCommandDelegateImpl;
 class ScannerDelegate;
 
 // This is the top level controller used for Scanner. It acts as a mediator
@@ -59,6 +60,11 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
  private:
   std::unique_ptr<ScannerDelegate> delegate_;
+
+  // Delegate to handle Scanner commands for actions fetched during a session.
+  // `command_delegate_` should outlive `scanner_session_`, to allow commands to
+  // be completed in the background after the session UI has been closed.
+  std::unique_ptr<ScannerCommandDelegateImpl> command_delegate_;
 
   // May hold an active Scanner session, to allow access to the Scanner feature.
   std::unique_ptr<ScannerSession> scanner_session_;

@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/scanner/scanner_action_view_model.h"
-#include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +22,7 @@
 
 namespace ash {
 
+class ScannerCommandDelegate;
 class ScannerProfileScopedDelegate;
 
 // A ScannerSession represents a single "use" of the Scanner feature. A session
@@ -31,27 +31,22 @@ class ScannerProfileScopedDelegate;
 // session will be triggered on the creation of a new SunfishSession, however
 // a ScannerSession's lifetime is not strictly bound to the lifetime of a
 // SunfishSession.
-class ASH_EXPORT ScannerSession : public ScannerCommandDelegate {
+class ASH_EXPORT ScannerSession {
  public:
   // Callback used to receive the actions returned from a FetchActions call.
   using FetchActionsCallback =
       base::OnceCallback<void(std::vector<ScannerActionViewModel> actions)>;
 
-  ScannerSession(ScannerProfileScopedDelegate* delegate);
+  ScannerSession(ScannerProfileScopedDelegate* delegate,
+                 ScannerCommandDelegate* command_delegate);
   ScannerSession(const ScannerSession&) = delete;
   ScannerSession& operator=(const ScannerSession&) = delete;
-  ~ScannerSession() override;
+  ~ScannerSession();
 
   // Fetches Scanner actions that are available based on the contents of
   // `jpeg_bytes`. The actions are returned via `callback`.
   void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
                             FetchActionsCallback callback);
-
-  // ScannerCommandDelegate:
-  void OpenUrl(const GURL& url) override;
-  drive::DriveServiceInterface* GetDriveService() override;
-  void SetClipboard(std::unique_ptr<ui::ClipboardData> data) override;
-  google_apis::RequestSender* GetGoogleApisRequestSender() override;
 
  private:
   void OnActionsReturned(
@@ -70,6 +65,10 @@ class ASH_EXPORT ScannerSession : public ScannerCommandDelegate {
       ScannerUnpopulatedAction::PopulatedProtoCallback callback);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
+
+  // Delegate for performing relevant commands after an action is fetched.
+  // Should outlive `this`.
+  const raw_ptr<ScannerCommandDelegate> command_delegate_;
 
   base::WeakPtrFactory<ScannerSession> weak_ptr_factory_{this};
 };
