@@ -67,9 +67,11 @@ void MlEmbedder::OnModelUpdated(
     return;
   }
 
-  if (service_controller_ &&
-      service_controller_->MaybeUpdateModelPaths(model_info) &&
-      on_embedder_ready_) {
+  if (!service_controller_->MaybeUpdateModelInfo(model_info)) {
+    return;
+  }
+
+  if (on_embedder_ready_) {
     std::move(on_embedder_ready_)
         .Run(service_controller_->GetEmbedderMetadata());
   }

@@ -111,12 +111,15 @@ class FakePassageEmbeddingsService
  private:
   // mojom::PassageEmbeddingsService:
   void LoadModels(
-      passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr params,
-      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder> model,
+      passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr
+          model_params,
+      passage_embeddings::mojom::PassageEmbedderParamsPtr embedder_params,
+      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder>
+          receiver,
       LoadModelsCallback callback) override {
-    bool valid = params->input_window_size != 0;
+    bool valid = model_params->input_window_size != 0;
     if (valid) {
-      embedder_ = std::make_unique<FakePassageEmbedder>(std::move(model));
+      embedder_ = std::make_unique<FakePassageEmbedder>(std::move(receiver));
     }
     // Use input window size as a signal to fail the request.
     std::move(callback).Run(valid);
@@ -202,8 +205,8 @@ class MlEmbedderTest : public testing::Test {
 };
 
 TEST_F(MlEmbedderTest, RegistersForTarget) {
-  auto ml_embedder = std::make_unique<MlEmbedder>(
-      model_provider_.get(), /*service_controller=*/nullptr);
+  auto ml_embedder = std::make_unique<MlEmbedder>(model_provider_.get(),
+                                                  service_controller_.get());
 
   EXPECT_TRUE(model_provider_->passage_embedder_target_registered());
 }

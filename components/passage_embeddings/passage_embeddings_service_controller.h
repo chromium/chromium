@@ -22,11 +22,11 @@ class PassageEmbeddingsServiceController {
   // service process.
   virtual void LaunchService() = 0;
 
-  // Updates the paths needed for executing the passage embeddings model if the
-  // paths provided are valid. The original paths will be erased regardless of
-  // the validity of the new model paths. Returns true if the given model_info
-  // is valid.
-  bool MaybeUpdateModelPaths(
+  // Updates the paths and the metadata needed for executing the passage
+  // embeddings model. The original paths and metadata will be erased regardless
+  // of the validity of the new model paths. Returns true if the given paths are
+  // valid.
+  bool MaybeUpdateModelInfo(
       base::optional_ref<const optimization_guide::ModelInfo> model_info);
 
   // Starts the service and calls `callback` with the embeddings. It is
@@ -58,7 +58,8 @@ class PassageEmbeddingsServiceController {
   // Called when the model files on disks are opened and ready to be sent to
   // the service.
   void LoadModelsToService(
-      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder> model,
+      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder>
+          receiver,
       passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr params);
 
   // Called when an attempt to load models to service finishes.

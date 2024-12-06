@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/passage_embeddings/passage_embeddings_features.h"
 
 namespace passage_embeddings {
 
@@ -22,6 +23,16 @@ mojom::PassageEmbeddingsLoadModelsParamsPtr MakeModelParams(
   params->sp_model =
       base::File(sp_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   params->input_window_size = input_window_size;
+  return params;
+}
+
+// Makes the parameters used to run the passage embedder.
+passage_embeddings::mojom::PassageEmbedderParamsPtr MakeEmbedderParams() {
+  auto params = passage_embeddings::mojom::PassageEmbedderParams::New();
+  params->user_initiated_priority_num_threads =
+      kUserInitiatedPriorityNumThreads.Get();
+  params->passive_priority_num_threads = kPassivePriorityNumThreads.Get();
+  params->embedder_cache_size = kEmbedderCacheSize.Get();
   return params;
 }
 
@@ -46,7 +57,7 @@ PassageEmbeddingsServiceController::PassageEmbeddingsServiceController() =
 PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() =
     default;
 
-bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
+bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   // Reset everything, so if the model info is invalid, the service controller
   // would stop accepting requests.
@@ -89,8 +100,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
   embeddings_model_path_ = model_info->GetModelFilePath();
   sp_model_path_ = *(additional_files.begin());
 
-  CHECK(!embeddings_model_path_.empty());
-  CHECK(!sp_model_path_.empty());
+  CHECK(EmbedderReady());
   logger.set_status(EmbeddingsModelInfoStatus::kValid);
   return true;
 }
@@ -106,7 +116,7 @@ void PassageEmbeddingsServiceController::LoadModelsToService(
   }
 
   service_remote_->LoadModels(
-      std::move(params), std::move(receiver),
+      std::move(params), MakeEmbedderParams(), std::move(receiver),
       base::BindOnce(&PassageEmbeddingsServiceController::OnLoadModelsResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -130,7 +140,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
     std::vector<std::string> passages,
     mojom::PassagePriority priority,
     GetEmbeddingsCallback callback) {
-  if (embeddings_model_path_.empty() || sp_model_path_.empty()) {
+  if (!EmbedderReady()) {
     VLOG(1) << "Missing model path: embeddings='" << embeddings_model_path_
             << "'; sp='" << sp_model_path_ << "'";
     std::move(callback).Run({}, ComputeEmbeddingsStatus::KModelUnavailable);
@@ -139,20 +149,20 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
 
   if (!service_remote_) {
     LaunchService();
+    auto receiver = embedder_remote_.BindNewPipeAndPassReceiver();
+    embedder_remote_.set_disconnect_handler(
+        base::BindOnce(&PassageEmbeddingsServiceController::OnDisconnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+    embedder_remote_.set_idle_handler(
+        kEmbedderTimeout.Get(),
+        base::BindRepeating(&PassageEmbeddingsServiceController::ResetRemotes,
+                            weak_ptr_factory_.GetWeakPtr()));
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&MakeModelParams, embeddings_model_path_, sp_model_path_,
                        model_metadata_->input_window_size()),
         base::BindOnce(&PassageEmbeddingsServiceController::LoadModelsToService,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       embedder_remote_.BindNewPipeAndPassReceiver()));
-    embedder_remote_.set_disconnect_handler(
-        base::BindOnce(&PassageEmbeddingsServiceController::OnDisconnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    embedder_remote_.set_idle_handler(
-        base::Seconds(60),
-        base::BindRepeating(&PassageEmbeddingsServiceController::ResetRemotes,
-                            weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
   }
 
   embedder_remote_->GenerateEmbeddings(

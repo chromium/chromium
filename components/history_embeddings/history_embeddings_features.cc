@@ -152,14 +152,6 @@ const base::FeatureParam<bool> kSendQualityLogV2(&kHistoryEmbeddings,
                                                  "SendQualityLogV2",
                                                  false);
 
-const base::FeatureParam<int> kEmbedderNumThreads(&kHistoryEmbeddings,
-                                                  "EmbeddingsNumThreads",
-                                                  4);
-
-const base::FeatureParam<int> kEmbedderCacheSize(&kHistoryEmbeddings,
-                                                 "EmbedderCacheSize",
-                                                 1000);
-
 const base::FeatureParam<int> kMaxPassagesPerPage(&kHistoryEmbeddings,
                                                   "MaxPassagesPerPage",
                                                   30);
@@ -179,11 +171,6 @@ const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder(
 const base::FeatureParam<bool> kUseUrlFilter(&kHistoryEmbeddings,
                                              "UseUrlFilter",
                                              false);
-
-const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout(
-    &kHistoryEmbeddings,
-    "EmbeddingsServiceTimeout",
-    base::Seconds(60));
 
 const base::FeatureParam<bool> kEnableSidePanel(&kHistoryEmbeddings,
                                                 "EnableSidePanel",
@@ -284,14 +271,11 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   scheduled_embeddings_max = kScheduledEmbeddingsMax.Get();
   send_quality_log = kSendQualityLog.Get();
   send_quality_log_v2 = kSendQualityLogV2.Get();
-  embedder_num_threads = kEmbedderNumThreads.Get();
-  embedder_cache_size = kEmbedderCacheSize.Get();
   max_passages_per_page = kMaxPassagesPerPage.Get();
   delete_embeddings = kDeleteEmbeddings.Get();
   rebuild_embeddings = kRebuildEmbeddings.Get();
   use_database_before_embedder = kUseDatabaseBeforeEmbedder.Get();
   use_url_filter = kUseUrlFilter.Get();
-  embeddings_service_timeout = kEmbeddingsServiceTimeout.Get();
   enable_side_panel = kEnableSidePanel.Get();
   trim_after_host_in_results = kTrimAfterHostInResults.Get();
   max_answerer_context_url_count = kMaxAnswererContextUrlCount.Get();

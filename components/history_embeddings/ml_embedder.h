@@ -43,12 +43,14 @@ class MlEmbedder : public Embedder,
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
-  // The provider of the embeddings model. Guaranteed to outlive `this`, since
-  // model_provider will be owned by OptimizationGuideKeyedServiceFactory, which
-  // HistoryEmbeddingsServiceFactory depends on.
+  // The provider of the embeddings model. It may be nullptr if
+  // `optimization_guide::kOptimizationHints` feature is disabled. Otherwise, it
+  // is guaranteed to outlive `this` since HistoryEmbeddingsServiceFactory
+  // depends on OptimizationGuideKeyedServiceFactory.
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
 
   // The controller used to interact with the PassageEmbeddingsService.
+  // It is a singleton and guaranteed not to be nullptr.
   raw_ptr<passage_embeddings::PassageEmbeddingsServiceController>
       service_controller_;
 
