@@ -54,13 +54,13 @@ void TestVotesUploader::UploadVote(
 }
 
 bool TestVotesUploader::MaybeStartVoteUploadProcess(
-    std::unique_ptr<FormStructure> form_structure,
+    std::unique_ptr<FormStructure> form,
     bool observed_submission,
     LanguageCode current_page_language,
     base::TimeTicks initial_interaction_timestamp,
     ukm::SourceId ukm_source_id) {
   if (VotesUploader::MaybeStartVoteUploadProcess(
-          std::move(form_structure), observed_submission, current_page_language,
+          std::move(form), observed_submission, current_page_language,
           initial_interaction_timestamp, ukm_source_id)) {
     // The purpose of this runloop is to ensure that the field type
     // determination finishes.

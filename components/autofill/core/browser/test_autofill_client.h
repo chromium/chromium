@@ -116,7 +116,12 @@ class TestAutofillClientTemplate : public T {
     return *crowdsourcing_manager_;
   }
 
-  TestVotesUploader& GetVotesUploader() override { return votes_uploader_; }
+  TestVotesUploader& GetVotesUploader() override {
+    if (!votes_uploader_) {
+      votes_uploader_ = std::make_unique<TestVotesUploader>(this);
+    }
+    return *votes_uploader_;
+  }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
@@ -618,7 +623,7 @@ class TestAutofillClientTemplate : public T {
       this};
 
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  TestVotesUploader votes_uploader_{this};
+  std::unique_ptr<TestVotesUploader> votes_uploader_;
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
