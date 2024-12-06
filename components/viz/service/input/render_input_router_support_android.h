@@ -32,7 +32,10 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
 
   ~RenderInputRouterSupportAndroid() override;
 
-  bool OnTouchEvent(const ui::MotionEventAndroid& event);
+  // |emit_histograms|: Whether to emit tool type and OS touch latency
+  // histograms, for the events forwarded from Browser we wouldn't want to emit
+  // histograms for them since Browser code would have already emitted them.
+  bool OnTouchEvent(const ui::MotionEventAndroid& event, bool emit_histograms);
   bool ShouldRouteEvents() const;
 
   // ui::GestureProviderClient implementation.

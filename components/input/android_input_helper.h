@@ -6,6 +6,7 @@
 #define COMPONENTS_INPUT_ANDROID_INPUT_HELPER_H_
 
 #include "components/input/render_widget_host_view_input.h"
+#include "ui/events/android/motion_event_android.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
 namespace input {
@@ -29,6 +30,9 @@ class COMPONENT_EXPORT(INPUT) AndroidInputHelper {
 
   ~AndroidInputHelper();
 
+  void RouteOrForwardTouchEvent(blink::WebTouchEvent& web_event);
+  void RouteOrForwardGestureEvent(const blink::WebGestureEvent& event);
+
   bool ShouldRouteEvents() const;
 
   void OnGestureEvent(const ui::GestureEventData& gesture);
@@ -40,6 +44,9 @@ class COMPONENT_EXPORT(INPUT) AndroidInputHelper {
       const gfx::PointF& point,
       input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point);
+
+  void RecordToolTypeForActionDown(const ui::MotionEventAndroid& event);
+  void ComputeEventLatencyOSTouchHistograms(const ui::MotionEvent& event);
 
  private:
   // |view_| is supposed to outlive |this|.

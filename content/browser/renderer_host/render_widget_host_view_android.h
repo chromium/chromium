@@ -582,8 +582,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool Animate(base::TimeTicks frame_time);
   void RequestDisallowInterceptTouchEvent();
 
-  void ComputeEventLatencyOSTouchHistograms(const ui::MotionEvent& event);
-
   void CreateOverscrollControllerIfPossible();
 
   void UpdateMouseState(int action_button,

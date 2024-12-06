@@ -154,18 +154,6 @@ gfx::RectF GetSelectionRect(const ui::TouchSelectionController& controller) {
   return rect;
 }
 
-void RecordToolTypeForActionDown(const ui::MotionEventAndroid& event) {
-  ui::MotionEventAndroid::Action action = event.GetAction();
-  if (action == ui::MotionEventAndroid::Action::DOWN ||
-      action == ui::MotionEventAndroid::Action::POINTER_DOWN ||
-      action == ui::MotionEventAndroid::Action::BUTTON_PRESS) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Event.AndroidActionDown.ToolType",
-        static_cast<int>(event.GetToolType(0)),
-        static_cast<int>(ui::MotionEventAndroid::ToolType::LAST) + 1);
-  }
-}
-
 void WakeUpGpu(GpuProcessHost* host) {
   if (host)
     host->gpu_service()->WakeUpGpu();
@@ -1397,7 +1385,7 @@ bool RenderWidgetHostViewAndroid::OnGestureEvent(
 
 bool RenderWidgetHostViewAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
-  RecordToolTypeForActionDown(event);
+  input_helper_->RecordToolTypeForActionDown(event);
 
   if (event.GetAction() == ui::MotionEventAndroid::Action::DOWN) {
     if (base::FeatureList::IsEnabled(
@@ -1419,7 +1407,7 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
   if (!host() || !host()->delegate())
     return false;
 
-  ComputeEventLatencyOSTouchHistograms(event);
+  input_helper_->ComputeEventLatencyOSTouchHistograms(event);
 
   // Receiving any other touch event before the double-tap timeout expires
   // cancels opening the spellcheck menu.
@@ -1458,15 +1446,7 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
     return true;
   }
 
-  ui::LatencyInfo latency_info;
-  latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
-  if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
-                                                               latency_info);
-  } else {
-    host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
-        web_event, latency_info);
-  }
+  input_helper_->RouteOrForwardTouchEvent(web_event);
 
   // Send a proactive BeginFrame for this vsync to reduce scroll latency for
   // scroll-inducing touch events. Note that Android's Choreographer ensures
@@ -2368,7 +2348,6 @@ void RenderWidgetHostViewAndroid::SendGestureEvent(
     return;
   }
 
-  ui::LatencyInfo latency_info;
   if (event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) {
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
       // If there is a current scroll going on and a new scroll that isn't
@@ -2390,14 +2369,7 @@ void RenderWidgetHostViewAndroid::SendGestureEvent(
     // kPhaseEnded before a GFS.
     mouse_wheel_phase_handler_.IgnorePendingWheelEndEvent();
   }
-  if (ShouldRouteEvents()) {
-    blink::WebGestureEvent gesture_event(event);
-    host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
-        this, &gesture_event, latency_info);
-  } else {
-    host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
-        event, latency_info);
-  }
+  input_helper_->RouteOrForwardGestureEvent(event);
 }
 
 ui::FilteredGestureProvider& RenderWidgetHostViewAndroid::GetGestureProvider() {
@@ -2568,7 +2540,7 @@ void RenderWidgetHostViewAndroid::OnRendererWidgetCreated() {
 
 bool RenderWidgetHostViewAndroid::OnMouseEvent(
     const ui::MotionEventAndroid& event) {
-  RecordToolTypeForActionDown(event);
+  input_helper_->RecordToolTypeForActionDown(event);
 
   blink::WebInputEvent::Type webMouseEventType =
       ui::ToWebMouseEventType(event.GetAction());
@@ -2779,29 +2751,6 @@ void RenderWidgetHostViewAndroid::OnStylusSelectTap(base::TimeTicks time,
   blink::WebGestureEvent long_press = input::WebGestureEventBuilder::Build(
       blink::WebInputEvent::Type::kGestureLongPress, time, x, y);
   SendGestureEvent(long_press);
-}
-
-void RenderWidgetHostViewAndroid::ComputeEventLatencyOSTouchHistograms(
-      const ui::MotionEvent& event) {
-  base::TimeTicks event_time = event.GetEventTime();
-  base::TimeTicks current_time = base::TimeTicks::Now();
-  ui::EventType event_type;
-  switch (event.GetAction()) {
-    case ui::MotionEvent::Action::DOWN:
-    case ui::MotionEvent::Action::POINTER_DOWN:
-      event_type = ui::EventType::kTouchPressed;
-      break;
-    case ui::MotionEvent::Action::MOVE:
-      event_type = ui::EventType::kTouchMoved;
-      break;
-    case ui::MotionEvent::Action::UP:
-    case ui::MotionEvent::Action::POINTER_UP:
-      event_type = ui::EventType::kTouchReleased;
-      break;
-    default:
-      return;
-  }
-  ui::ComputeEventLatencyOS(event_type, event_time, current_time);
 }
 
 void RenderWidgetHostViewAndroid::CreateOverscrollControllerIfPossible() {
