@@ -34,9 +34,6 @@ void RWLock::WriteLock() {
   int32_t expected = 0;
   int32_t desired = -1;
   while (!std::atomic_compare_exchange_weak(&state_, &expected, desired)) {
-    if (expected == -1) {
-      // Another thread has the write lock.
-    }
     expected = 0;
   }
 }
