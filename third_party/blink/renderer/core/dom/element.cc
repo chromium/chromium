@@ -8321,7 +8321,9 @@ PseudoElement* Element::UpdatePseudoElement(
         // cache, so that when attribute value changes it will force style
         // invalidation.
         if (element->GetComputedStyle() &&
-            element->GetComputedStyle()->HasAttrFunction()) {
+            element->GetComputedStyle()->HasAttrFunction() &&
+            !GetComputedStyle()->GetCachedPseudoElementStyle(pseudo_id,
+                                                             g_null_atom)) {
           GetComputedStyle()->AddCachedPseudoElementStyle(
               element->GetComputedStyle(), pseudo_id, g_null_atom);
         }
@@ -8363,7 +8365,9 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     // If the content property is relying on attr() we should add the
     // originating element's ComputedStyle to the pseudo element style cache, so
     // that when attribute value changes it will force style invalidation.
-    if (pseudo_style && pseudo_style->HasAttrFunction()) {
+    if (pseudo_style && pseudo_style->HasAttrFunction() &&
+        !GetComputedStyle()->GetCachedPseudoElementStyle(pseudo_id,
+                                                         g_null_atom)) {
       GetComputedStyle()->AddCachedPseudoElementStyle(pseudo_style, pseudo_id,
                                                       g_null_atom);
     }
