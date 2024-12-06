@@ -69,6 +69,9 @@ class MediaCodecBridge {
     private Queue<DequeueInputResult> mPendingInputBuffers;
     private Queue<DequeueOutputResult> mPendingOutputBuffers;
 
+    // Cache for codec name array that is passed to LinearBlock.obtain().
+    private String[] mObtainBlockNames;
+
     // Set by tests which don't have a Java MessagePump to ensure the MediaCodec
     // callbacks are actually delivered. Always null in production.
     private static HandlerThread sCallbackHandlerThread;
@@ -598,10 +601,11 @@ class MediaCodecBridge {
         MediaCodec.LinearBlock block = null;
         ByteBuffer buffer = null;
         try {
-            // TODO(crbug.com/327625558): Store as member to avoid frequent allocations.
-            String[] names = new String[1];
-            names[0] = mMediaCodecName;
-            block = MediaCodec.LinearBlock.obtain(capacity < 16 ? 16 : capacity, names);
+            if (mObtainBlockNames == null) {
+                mObtainBlockNames = new String[1];
+                mObtainBlockNames[0] = mMediaCodecName;
+            }
+            block = MediaCodec.LinearBlock.obtain(capacity < 16 ? 16 : capacity, mObtainBlockNames);
             if (block != null) {
                 buffer = block.map();
             }
