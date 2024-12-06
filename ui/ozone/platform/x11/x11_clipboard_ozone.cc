@@ -41,10 +41,10 @@ void X11ClipboardOzone::RequestClipboardData(
     const std::string& mime_type,
     PlatformClipboard::RequestDataClosure callback) {
   DCHECK(!callback.is_null());
-  auto atoms =
-      mime_type == kMimeTypeText
-          ? helper_->GetTextAtoms()
-          : helper_->GetAtomsForFormat(ClipboardFormatType::GetType(mime_type));
+  auto atoms = mime_type == kMimeTypeText
+                   ? helper_->GetTextAtoms()
+                   : helper_->GetAtomsForFormat(
+                         ClipboardFormatType::CustomPlatformType(mime_type));
   auto selection_data = helper_->Read(buffer, atoms);
   std::move(callback).Run(selection_data.TakeBytes());
 }

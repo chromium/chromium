@@ -702,7 +702,7 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
 
 TYPED_TEST(ClipboardTest, PickleTest) {
   const ClipboardFormatType kFormat =
-      ClipboardFormatType::GetType("chromium/x-test-format");
+      ClipboardFormatType::CustomPlatformType("chromium/x-test-format");
   std::string payload("test string");
   base::Pickle write_pickle;
   write_pickle.WriteString(payload);
@@ -727,13 +727,13 @@ TYPED_TEST(ClipboardTest, PickleTest) {
 
 TYPED_TEST(ClipboardTest, MultiplePickleTest) {
   const ClipboardFormatType kFormat1 =
-      ClipboardFormatType::GetType("chromium/x-test-format1");
+      ClipboardFormatType::CustomPlatformType("chromium/x-test-format1");
   std::string payload1("test string1");
   base::Pickle write_pickle1;
   write_pickle1.WriteString(payload1);
 
   const ClipboardFormatType kFormat2 =
-      ClipboardFormatType::GetType("chromium/x-test-format2");
+      ClipboardFormatType::CustomPlatformType("chromium/x-test-format2");
   std::string payload2("test string2");
   base::Pickle write_pickle2;
   write_pickle2.WriteString(payload2);

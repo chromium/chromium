@@ -814,7 +814,7 @@ WaylandDataDragController::GetOfferedExchangeDataProvider() const {
 bool WaylandDataDragController::IsWindowDraggingSession(
     const ui::OSExchangeData& data) const {
   auto custom_format =
-      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag);
+      ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag);
   return data.provider().HasCustomFormat(custom_format);
 }
 
