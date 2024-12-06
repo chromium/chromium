@@ -39,33 +39,33 @@ void fct() {
   // struct TestCases {
   //   int val;
   // };
-  // const auto kTestCases = std::to_array<TestCases, 4>({{1}, {2}, {3}, {4}});
+  // const std::array<TestCases, 4> kTestCases = {{{1}, {2}, {3}, {4}}};
   struct TestCases {
     int val;
   };
-  const auto kTestCases = std::to_array<TestCases, 4>({{1}, {2}, {3}, {4}});
+  const std::array<TestCases, 4> kTestCases = {{{1}, {2}, {3}, {4}}};
   std::ignore = kTestCases[2].val;  // Unsafe access to trigger spanification.
 
   // Expected rewrite:
   // struct GTestCases {
   //   int val;
   // };
-  // const auto gTestCases = std::to_array<GTestCases, 4>({{1}, {2}, {3}, {4}});
+  // const std::array<GTestCases, 4> gTestCases = {{{1}, {2}, {3}, {4}}};
   struct GTestCases {
     int val;
   };
-  const auto gTestCases = std::to_array<GTestCases, 4>({{1}, {2}, {3}, {4}});
+  const std::array<GTestCases, 4> gTestCases = {{{1}, {2}, {3}, {4}}};
   std::ignore = gTestCases[2].val;  // Unsafe access to trigger spanification.
 
   // Expected rewrite:
   // struct Knights {
   //   int val;
   // };
-  // const auto knights = std::to_array<Knights, 4>({{1}, {2}, {3}, {4}});
+  // const std::array<Knights, 4> knights = {{{1}, {2}, {3}, {4}}};
   struct Knights {
     int val;
   };
-  const auto knights = std::to_array<Knights, 4>({{1}, {2}, {3}, {4}});
+  const std::array<Knights, 4> knights = {{{1}, {2}, {3}, {4}}};
   std::ignore = knights[2].val;  // Unsafe access to trigger spanification.
 
   // Expected rewrite:

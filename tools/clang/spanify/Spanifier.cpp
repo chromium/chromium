@@ -636,8 +636,6 @@ std::string GenerateClassName(std::string var_name) {
   // Now we need to remove the '_'s from the string, recall std::remove moves
   // everything to the end and then returns the first '_' (or end()). We then
   // call erase from there to the end to actually remove.
-  // var_name.erase(std::remove(var_name.begin(), var_name.end(), '_'),
-  // var_name.end());
   llvm::erase(var_name, '_');
   return var_name;
 }
@@ -884,6 +882,88 @@ void InsertTrailingComma(const clang::InitListExpr* init_list_expr,
   rewriter.InsertTextAfterToken(last_element->getEndLoc(), ",");
 }
 
+// Return if braces can be elided when initializing an std::array of type
+// `element_type` from an `init_list_expr`.
+//
+// This is also known as avoiding the "double braces" std::array initialization.
+//
+// Explanation:
+// ============
+// `std::array` is a struct that encapsulates a fixed-size array as its only
+// member variable. It's an aggregate type, meaning it can be initialized using
+// aggregate initialization (like plain arrays and structs). Unlike
+// `std::vector` or other containers, `std::array` doesn't have constructors
+// that explicitly take initializer lists.
+//
+// For instance, the following code initializes an `std::array` of one
+// `Aggregate`.
+// > std::array<Aggregate, 1> buffer =
+// > {      // Initialization of std::array<Aggregate,1>
+// >   {    // Initialization of std::array<Aggregate,1>::inner_ C-style array.
+// >     {  // Initialization of Aggregate
+// >        1,2,3
+// >     }
+// >   }
+// > }
+//
+// Thanks to: https://cplusplus.github.io/CWG/issues/1270.html
+// the extra braces can be elided under certain conditions. The rules are
+// complexes, but they can be conservatively summarized by the need for extra
+// braces when the elements themselves are initialized with braces.
+bool CanElideBracesForStdArrayInitialization(
+    clang::QualType element_type,
+    const clang::InitListExpr* init_list_expr) {
+  for (unsigned int index = 0; index < init_list_expr->getNumInits(); ++index) {
+    const clang::Expr* expr = init_list_expr->getInit(index);
+    if (clang::dyn_cast_or_null<clang::InitListExpr>(expr)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Rewrites a C-style array with an initializer list to a std::array.
+std::string RewriteStdArrayWithInitList(
+    const clang::ArrayType* array_type,
+    const std::string& type,
+    const std::string& var,
+    const std::string& size,
+    const clang::InitListExpr* init_list_expr,
+    clang::SourceManager& source_manager,
+    const clang::ASTContext& ast_context) {
+  clang::Rewriter rewriter(source_manager, ast_context.getLangOpts());
+  InsertTrailingComma(init_list_expr, rewriter, source_manager);
+  const std::string init_list_string =
+      rewriter.getRewrittenText(init_list_expr->getSourceRange());
+
+  // Implicitly sized arrays are rewritten to std::to_array. This is because the
+  // std::array constructor does not allow the size to be omitted.
+  if (size.empty()) {
+    return llvm::formatv("auto {0} = std::to_array<{1}>({2})", var, type,
+                         init_list_string);
+  }
+
+  // Warn for array and initializer list size mismatch, except for empty lists.
+  if (const auto* constant_array_type =
+          llvm::dyn_cast<clang::ConstantArrayType>(array_type)) {
+    if (init_list_expr->getNumInits() != 0 &&
+        constant_array_type->getSize().getZExtValue() !=
+            init_list_expr->getNumInits()) {
+      const clang::SourceLocation& location = init_list_expr->getBeginLoc();
+      llvm::errs() << "Array and initializer list size mismatch in file "
+                   << source_manager.getFilename(location) << ":"
+                   << source_manager.getSpellingLineNumber(location) << "\n";
+    }
+  }
+
+  const bool elide_braces = CanElideBracesForStdArrayInitialization(
+      array_type->getElementType(), init_list_expr);
+
+  return llvm::formatv(elide_braces ? "std::array<{0}, {1}> {2} = {3}"
+                                    : "std::array<{0}, {1}> {2} = {{{3}}",
+                       type, size, var, init_list_string);
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
@@ -998,20 +1078,9 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
         array_variable_as_string);
     include_path = kStringViewIncludePath;
   } else if (init_list_expr) {
-    clang::Rewriter rw(source_manager, ast_context.getLangOpts());
-    InsertTrailingComma(init_list_expr, rw, source_manager);
-    std::string init_expr_as_string =
-        rw.getRewrittenText(init_list_expr->getSourceRange());
-
-    if (array_size_as_string.empty()) {
-      replacement_text = llvm::formatv(
-          "auto {0} = std::to_array<{1}>({2})", array_variable_as_string,
-          element_type_as_string, init_expr_as_string);
-    } else {
-      replacement_text = llvm::formatv(
-          "auto {0} = std::to_array<{1}, {2}>({3})", array_variable_as_string,
-          element_type_as_string, array_size_as_string, init_expr_as_string);
-    }
+    replacement_text = RewriteStdArrayWithInitList(
+        array_type, element_type_as_string, array_variable_as_string,
+        array_size_as_string, init_list_expr, source_manager, ast_context);
   } else {
     replacement_text =
         llvm::formatv("std::array<{0}, {1}> {2}", element_type_as_string,
