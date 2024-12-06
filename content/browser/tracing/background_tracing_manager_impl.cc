@@ -55,17 +55,19 @@ namespace content {
 
 namespace {
 // The time to live of a trace report is currently 14 days.
-const base::TimeDelta kTraceReportTimeToLive = base::Days(14);
+constexpr base::TimeDelta kTraceReportTimeToLive = base::Days(14);
+// The time to live of uploaded trace content is 2 days.
+constexpr base::TimeDelta kUploadedTraceContentTimeToLive = base::Days(2);
 // We limit the overall number of traces.
-const size_t kMaxTraceContent = 200;
+constexpr size_t kMaxTraceContent = 200;
 // We limit uploads of 1 trace per scenario over a period of 7 days. Since
 // traces live in the database for longer than 7 days, their TTL doesn't affect
 // this unless the database is manually cleared.
-const base::TimeDelta kMinTimeUntilNextUpload = base::Days(7);
+constexpr base::TimeDelta kMinTimeUntilNextUpload = base::Days(7);
 // We limit the overall number of traces per scenario saved to the database at
 // 100 per day.
-const size_t kMaxTracesPerScenario = 100;
-const base::TimeDelta kMaxTracesPerScenarioDuration = base::Days(1);
+constexpr size_t kMaxTracesPerScenario = 100;
+constexpr base::TimeDelta kMaxTracesPerScenarioDuration = base::Days(1);
 
 // |g_background_tracing_manager| is intentionally leaked on shutdown.
 BackgroundTracingManager* g_background_tracing_manager = nullptr;
@@ -1011,6 +1013,8 @@ void BackgroundTracingManagerImpl::CleanDatabase() {
             // The reports entries are kept (without the payload) for longer to
             // track upload quotas.
             trace_database->DeleteTraceReportsOlderThan(kTraceReportTimeToLive);
+            trace_database->DeleteUploadedTraceContentOlderThan(
+                kUploadedTraceContentTimeToLive);
             return trace_database->GetScenarioCountsSince(
                 base::Time::Now() - kMaxTracesPerScenarioDuration);
           },
