@@ -208,26 +208,23 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  key_distribution_info_observation_.Observe(
-      IwaKeyDistributionInfoProvider::GetInstance());
-
-  pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kIsolatedWebAppInstallForceList,
-      base::BindRepeating(&IsolatedWebAppPolicyManager::ProcessPolicy,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          /*finished_closure=*/base::DoNothing()));
-
   const int pending_inits_count = GetPendingInitCount();
   SetPendingInitCount(pending_inits_count + 1);
   if (pending_inits_count <= kIsolatedWebAppForceInstallMaxRetryTreshold) {
+    ConfigureObserversOnSessionStart();
     CleanupAndProcessPolicyOnSessionStart();
   } else {
+    auto configure_observers = base::BindOnce(
+        &IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart,
+        weak_ptr_factory_.GetWeakPtr());
+    auto cleanup_and_process_policy = base::BindOnce(
+        &IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart,
+        weak_ptr_factory_.GetWeakPtr());
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart,
-            weak_ptr_factory_.GetWeakPtr()),
+        std::move(configure_observers)
+            .Then(std::move(cleanup_and_process_policy)),
         kIsolatedWebAppForceInstallEmergencyDelay);
   }
 
@@ -250,8 +247,7 @@ base::Value IsolatedWebAppPolicyManager::GetDebugValue() const {
           .Set("process_logs", process_logs_.ToDebugValue()));
 }
 
-void IsolatedWebAppPolicyManager::ProcessPolicy(
-    base::OnceClosure finished_closure) {
+void IsolatedWebAppPolicyManager::ProcessPolicy() {
   CHECK(provider_);
   base::Value::Dict process_log;
   process_log.Set("start_time",
@@ -264,7 +260,6 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
                     "policy is already being processed - waiting for "
                     "processing to finish.");
     process_logs_.AppendCompletedStep(std::move(process_log));
-    std::move(finished_closure).Run();
     return;
   }
 
@@ -276,7 +271,20 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
       base::BindOnce(&IsolatedWebAppPolicyManager::DoProcessPolicy,
                      weak_ptr_factory_.GetWeakPtr()),
       /*on_complete=*/
-      std::move(finished_closure));
+      initial_policy_processing_finished_cb_
+          ? std::move(initial_policy_processing_finished_cb_)
+          : base::DoNothing());
+}
+
+void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
+  key_distribution_info_observation_.Observe(
+      IwaKeyDistributionInfoProvider::GetInstance());
+
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::BindRepeating(&IsolatedWebAppPolicyManager::ProcessPolicy,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart() {
@@ -286,8 +294,9 @@ void IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart() {
                      weak_ptr_factory_.GetWeakPtr(),
                      /*pending_count=*/0));
 
+  initial_policy_processing_finished_cb_ = finished_barrier;
   CleanupOrphanedBundles(/*finished_closure=*/finished_barrier);
-  ProcessPolicy(/*finished_closure=*/finished_barrier);
+  ProcessPolicy();
 }
 
 int IsolatedWebAppPolicyManager::GetPendingInitCount() {
@@ -538,8 +547,7 @@ void IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IsolatedWebAppPolicyManager::ProcessPolicy,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*finished_closure=*/base::DoNothing()),
+                     weak_ptr_factory_.GetWeakPtr()),
       install_retry_backoff_entry_.GetTimeUntilRelease());
 }
 
@@ -557,10 +565,8 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
 
   if (reprocess_policy_needed_) {
     reprocess_policy_needed_ = false;
-    ProcessPolicy(/*finished_closure=*/base::DoNothing());
+    ProcessPolicy();
   }
-  // TODO (peletskyi): Check policy compliance here as in theory
-  // more race conditions are possible.
 }
 
 void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
@@ -578,7 +584,7 @@ void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
   if (is_preloaded) {
     return;
   }
-  ProcessPolicy(/*finished_closure=*/base::DoNothing());
+  ProcessPolicy();
 }
 
 IsolatedWebAppPolicyManager::ProcessLogs::ProcessLogs() = default;

@@ -45,10 +45,11 @@ class IsolatedWebAppPolicyManager
   base::Value GetDebugValue() const;
 
  private:
+  void ConfigureObserversOnSessionStart();
   void CleanupAndProcessPolicyOnSessionStart();
   int GetPendingInitCount();
   void SetPendingInitCount(int pending_count);
-  void ProcessPolicy(base::OnceClosure finished_closure);
+  void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
 
@@ -102,6 +103,8 @@ class IsolatedWebAppPolicyManager
   base::Value::Dict current_process_log_;
 
   net::BackoffEntry install_retry_backoff_entry_;
+
+  base::OnceClosure initial_policy_processing_finished_cb_;
 
   // We must execute install tasks in a queue, because each task uses a
   // `WebContents`, and installing an unbound number of apps in parallel would
