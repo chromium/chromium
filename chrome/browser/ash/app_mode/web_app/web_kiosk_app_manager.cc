@@ -197,7 +197,7 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
     KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);
   }
 
-  std::vector<KioskAppDataBase*> old_apps_to_remove;
+  std::vector<const KioskAppDataBase*> old_apps_to_remove;
   for (auto& entry : old_apps) {
     old_apps_to_remove.emplace_back(entry.second.get());
   }

@@ -153,7 +153,7 @@ void KioskAppDataBase::SaveIcon(const SkBitmap& icon,
   icon_path_ = icon_path;
 }
 
-void KioskAppDataBase::ClearCache() {
+void KioskAppDataBase::ClearCache() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PrefService* local_state = g_browser_process->local_state();
 

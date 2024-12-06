@@ -89,7 +89,8 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   virtual void UpdateAppsFromPolicy() = 0;
 
   // Performs removal of the removed apps's cryptohomes.
-  void ClearRemovedApps(const std::vector<KioskAppDataBase*>& old_apps) const;
+  void ClearRemovedApps(
+      const std::vector<const KioskAppDataBase*>& old_apps) const;
 
   bool auto_launched_with_zero_delay_ = false;
 

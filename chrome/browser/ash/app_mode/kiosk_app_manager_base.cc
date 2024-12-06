@@ -114,10 +114,10 @@ void KioskAppManagerBase::RemoveObserver(KioskAppManagerObserver* observer) {
 }
 
 void KioskAppManagerBase::ClearRemovedApps(
-    const std::vector<KioskAppDataBase*>& old_apps) const {
+    const std::vector<const KioskAppDataBase*>& old_apps) const {
   std::vector<AccountId> account_ids_to_remove;
   account_ids_to_remove.reserve(old_apps.size());
-  for (KioskAppDataBase* entry : old_apps) {
+  for (const KioskAppDataBase* entry : old_apps) {
     entry->ClearCache();
     account_ids_to_remove.push_back(entry->account_id());
   }

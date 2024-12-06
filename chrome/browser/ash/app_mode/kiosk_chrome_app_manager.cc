@@ -589,7 +589,7 @@ void KioskChromeAppManager::UpdateAppsFromPolicy() {
     KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);
   }
 
-  std::vector<KioskAppDataBase*> apps_to_remove;
+  std::vector<const KioskAppDataBase*> apps_to_remove;
   std::vector<std::string> app_ids_to_remove;
   for (auto& entry : old_apps) {
     apps_to_remove.emplace_back(entry.second.get());

@@ -186,7 +186,7 @@ void KioskIwaManager::CancelCryptohomeRemovalsForCurrentApps() {
 }
 
 void KioskIwaManager::RemoveApps(const KioskIwaDataMap& previous_apps) const {
-  std::vector<KioskAppDataBase*> apps_to_remove;
+  std::vector<const KioskAppDataBase*> apps_to_remove;
   base::ranges::transform(previous_apps, std::back_inserter(apps_to_remove),
                           [](const auto& kv) { return kv.second.get(); });
   ClearRemovedApps(apps_to_remove);
