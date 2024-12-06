@@ -224,7 +224,7 @@ TEST_F(UserEducationConfigurationProviderTest, ProvidesSnoozeConfiguration) {
 
   EXPECT_TRUE(config.event_configs.empty());
 
-  EXPECT_EQ(kAny, config.session_rate);
+  EXPECT_EQ(kEqualsZero, config.session_rate);
 
   EXPECT_EQ(kSessionRateImpactAll, config.session_rate_impact);
 
