@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_capabilities/media_capabilities_identifiability_metrics.h"
 
+#include "base/bit_cast.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -54,13 +55,19 @@ IdentifiableToken ComputeToken(const VideoConfiguration* configuration) {
   if (!configuration)
     return IdentifiableToken();
 
+  // `IdentifiableTokenBuilder::AddValue()` requires
+  // `std::has_unique_object_representations_v<>`, which doesn't hold for
+  // floating-point values. Work around by reinterpreting as an integral type of
+  // the same size, without changing the underlying bit pattern.
+  static_assert(sizeof(decltype(configuration->framerate())) ==
+                sizeof(int64_t));
   IdentifiableTokenBuilder builder;
   builder
       .AddToken(IdentifiabilityBenignStringToken(configuration->contentType()))
       .AddValue(configuration->width())
       .AddValue(configuration->height())
       .AddValue(configuration->bitrate())
-      .AddValue(configuration->framerate());
+      .AddValue(base::bit_cast<int64_t>(configuration->framerate()));
 
   // While the above are always present, we need to check the other properties'
   // presence explicitly.

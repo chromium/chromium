@@ -2305,6 +2305,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/common/privacy_budget/identifiable_token.h',
+        ],
+        'allowed': [
+            'internal::DigestOfObjectRepresentation',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/public/common/tokens/',
         ],
         'allowed': [

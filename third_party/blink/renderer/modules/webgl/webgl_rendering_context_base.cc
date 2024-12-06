@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bit_cast.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -7457,9 +7458,14 @@ ScriptValue WebGLRenderingContextBase::GetWebGLFloatArrayParameter(
       NOTIMPLEMENTED();
   }
   if (ShouldMeasureGLParam(pname)) {
+    // `IdentifiableTokenBuilder::AddValue()` requires
+    // `std::has_unique_object_representations_v<>`, which doesn't hold for
+    // floating-point values. Work around by reinterpreting as an integral type
+    // of the same size, without changing the underlying bit pattern.
+    static_assert(sizeof(decltype(value)::value_type) == sizeof(int32_t));
     blink::IdentifiableTokenBuilder builder;
     for (unsigned i = 0; i < length; i++) {
-      builder.AddValue(value[i]);
+      builder.AddValue(base::bit_cast<int32_t>(value[i]));
     }
     RecordIdentifiableGLParameterDigest(pname, builder.GetToken());
   }
