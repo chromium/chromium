@@ -217,74 +217,28 @@ void RecordContextualSearchboxSessionEndMetrics(
 
   // UKM contextual searchbox focused in session.
   ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession(source_id)
-      .SetAllPageContentTypes(contextual_searchbox_focused_in_session)
+      .SetFocusedInSession(contextual_searchbox_focused_in_session)
+      .SetPageContentType(static_cast<int64_t>(page_content_type))
       .Record(ukm::UkmRecorder::Get());
 
   // UKM contextual zps shown in session.
   ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession(source_id)
-      .SetAllPageContentTypes(contextual_zps_shown_in_session)
+      .SetShownInSession(contextual_zps_shown_in_session)
+      .SetPageContentType(static_cast<int64_t>(page_content_type))
       .Record(ukm::UkmRecorder::Get());
 
   // UKM contextual zps used in session.
   ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession(
       source_id)
-      .SetAllPageContentTypes(contextual_zps_used_in_session)
+      .SetSuggestionUsedInSession(contextual_zps_used_in_session)
+      .SetPageContentType(static_cast<int64_t>(page_content_type))
       .Record(ukm::UkmRecorder::Get());
 
   // UKM contextual query issued in session.
   ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession(source_id)
-      .SetAllPageContentTypes(contextual_query_issued_in_session)
+      .SetQueryIssuedInSession(contextual_query_issued_in_session)
+      .SetPageContentType(static_cast<int64_t>(page_content_type))
       .Record(ukm::UkmRecorder::Get());
-
-  // UKM metrics sliced by document type:
-  // -Contextual searchbox focused in session.
-  // -Contextual zps shown in session.
-  // -Contextual zps used in session.
-  // -Contextual query issued used in session.
-  ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession
-      focused_in_session_event(source_id);
-  ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession
-      zps_shown_in_session_event(source_id);
-  ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession
-      zps_used_in_session_event(source_id);
-  ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession
-      contextual_query_issued_in_session_event(source_id);
-  switch (page_content_type) {
-    case lens::MimeType::kPdf:
-      focused_in_session_event.SetPdf(contextual_searchbox_focused_in_session);
-      zps_shown_in_session_event.SetPdf(contextual_zps_shown_in_session);
-      zps_used_in_session_event.SetPdf(contextual_zps_used_in_session);
-      contextual_query_issued_in_session_event.SetPdf(
-          contextual_query_issued_in_session);
-      break;
-    case lens::MimeType::kHtml:
-      focused_in_session_event.SetHtml(contextual_searchbox_focused_in_session);
-      zps_shown_in_session_event.SetHtml(contextual_zps_shown_in_session);
-      zps_used_in_session_event.SetHtml(contextual_zps_used_in_session);
-      contextual_query_issued_in_session_event.SetHtml(
-          contextual_query_issued_in_session);
-      break;
-    case lens::MimeType::kPlainText:
-      focused_in_session_event.SetPlainText(
-          contextual_searchbox_focused_in_session);
-      zps_shown_in_session_event.SetPlainText(contextual_zps_shown_in_session);
-      zps_used_in_session_event.SetPlainText(contextual_zps_used_in_session);
-      contextual_query_issued_in_session_event.SetPlainText(
-          contextual_query_issued_in_session);
-      break;
-    case lens::MimeType::kUnknown:
-      focused_in_session_event.SetUnknown(
-          contextual_searchbox_focused_in_session);
-      zps_shown_in_session_event.SetUnknown(contextual_zps_shown_in_session);
-      zps_used_in_session_event.SetUnknown(contextual_zps_used_in_session);
-      contextual_query_issued_in_session_event.SetUnknown(
-          contextual_query_issued_in_session);
-      break;
-  }
-  focused_in_session_event.Record(ukm::UkmRecorder::Get());
-  zps_shown_in_session_event.Record(ukm::UkmRecorder::Get());
-  zps_used_in_session_event.Record(ukm::UkmRecorder::Get());
-  contextual_query_issued_in_session_event.Record(ukm::UkmRecorder::Get());
 }
 
 void RecordSessionForegroundDuration(

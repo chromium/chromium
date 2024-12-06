@@ -5065,17 +5065,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
           kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
-          kAllPageContentTypesName,
+          kFocusedInSessionName,
       true);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
-          kPlainTextName,
-      true);
+          kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -5122,17 +5123,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
           kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
-          kAllPageContentTypesName,
+          kFocusedInSessionName,
       false);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession::
-          kPlainTextName,
-      false);
+          kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -5193,17 +5195,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
           kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
-          kAllPageContentTypesName,
+          kShownInSessionName,
       true);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
-          kPlainTextName,
-      true);
+          kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 
   // Assert zps used in session metrics get recorded.
   histogram_tester.ExpectTotalCount(
@@ -5224,19 +5227,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       ukm::builders::
           Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
               kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::
           Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
-              kAllPageContentTypesName,
+              kSuggestionUsedInSessionName,
       true);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::
           Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
-              kPlainTextName,
-      true);
+              kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 
   // Assert query issued in session metrics get recorded.
   histogram_tester.ExpectTotalCount(
@@ -5256,17 +5260,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
           kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kAllPageContentTypesName,
+          kQueryIssuedInSessionName,
       true);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kPlainTextName,
-      true);
+          kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -5329,19 +5334,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       ukm::builders::
           Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
               kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::
           Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
-              kAllPageContentTypesName,
+              kSuggestionUsedInSessionName,
       false);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::
           Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
-              kPlainTextName,
-      false);
+              kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 
   // Assert query issued in session metrics get recorded.
   histogram_tester.ExpectTotalCount(
@@ -5361,17 +5367,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
           kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kAllPageContentTypesName,
+          kQueryIssuedInSessionName,
       true);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kPlainTextName,
-      true);
+          kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -5418,17 +5425,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
           kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
-          kAllPageContentTypesName,
+          kShownInSessionName,
       false);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
-          kPlainTextName,
-      false);
+          kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 
   // Assert query issued in session metrics get recorded.
   histogram_tester.ExpectTotalCount(
@@ -5448,17 +5456,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
           kEntryName);
-  EXPECT_EQ(2u, entries.size());
+  EXPECT_EQ(1u, entries.size());
+  entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
-      entries[0],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kAllPageContentTypesName,
+          kQueryIssuedInSessionName,
       false);
   test_ukm_recorder.ExpectEntryMetric(
-      entries[1],
+      entry,
       ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kPlainTextName,
-      false);
+          kPageContentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
