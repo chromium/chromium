@@ -116,8 +116,6 @@ source_set("device_info_sync_service_factory") {
     ":data_type_store_service_factory",
     ":sync_invalidations_service_factory",
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/send_tab_to_self",
     "//components/signin/public/base",
     "//components/sync/invalidations",
@@ -128,6 +126,7 @@ source_set("device_info_sync_service_factory") {
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
   ]
