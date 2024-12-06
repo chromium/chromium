@@ -104,10 +104,12 @@
       </template>
     </div>
     <div class="buttons-container">
-      <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+      <cr-button id="settingsButton"
+          class$="[[getSettingsButtonsClass_(shouldShowV2_)]]"
+          on-click="onNoticeOpenSettings">
         $i18n{m1NoticeEeaSettingsButton}
       </cr-button>
-      <cr-button id="ackButton" class="action-button"
+      <cr-button id="ackButton" class$="[[getAckButtonsClass_(shouldShowV2_)]]"
           on-click="onNoticeAcknowledge">
         $i18n{m1NoticeEeaAckButton}
       </cr-button>

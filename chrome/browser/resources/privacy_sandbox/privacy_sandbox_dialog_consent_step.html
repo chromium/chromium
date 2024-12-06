@@ -82,10 +82,12 @@
       </div>
     </template>
     <div class="buttons-container">
-      <cr-button id="declineButton" on-click="onConsentDeclined_">
+      <cr-button id="declineButton" class$="[[getButtonsClass_(shouldShowV2_)]]"
+          on-click="onConsentDeclined_">
         $i18n{m1ConsentDeclineButton}
       </cr-button>
-      <cr-button id="confirmButton" on-click="onConsentAccepted_">
+      <cr-button id="confirmButton" class$="[[getButtonsClass_(shouldShowV2_)]]"
+          on-click="onConsentAccepted_">
         $i18n{m1ConsentAcceptButton}
       </cr-button>
     </div>
