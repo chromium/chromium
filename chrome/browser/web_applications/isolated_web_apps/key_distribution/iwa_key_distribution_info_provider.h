@@ -92,6 +92,8 @@ class IwaKeyDistributionInfoProvider {
 
   base::Value AsDebugValue() const;
 
+  bool Ready() const;
+
  private:
   struct ComponentData {
     ComponentData(base::Version version,

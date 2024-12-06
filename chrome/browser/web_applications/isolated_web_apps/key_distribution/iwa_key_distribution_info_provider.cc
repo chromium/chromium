@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/containers/map_util.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,8 +15,10 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+#include "chrome/common/chrome_switches.h"
 
 namespace web_app {
 
@@ -186,6 +189,17 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
   GetDevModeKeyRotationData().insert_or_assign(web_bundle_id,
                                                KeyRotationInfo(rotated_key));
   DispatchComponentUpdateSuccess(base::Version(), /*is_preloaded=*/false);
+}
+
+bool IwaKeyDistributionInfoProvider::Ready() const {
+  if (!base::FeatureList::IsEnabled(
+          component_updater::kIwaKeyDistributionComponent) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableComponentUpdate)) {
+    // `switches::kDisableComponentUpdate` is set by default in browsertests.
+    return true;
+  }
+  return data_.has_value();
 }
 
 base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {

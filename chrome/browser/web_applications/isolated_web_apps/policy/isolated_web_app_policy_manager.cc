@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -252,6 +253,14 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
   base::Value::Dict process_log;
   process_log.Set("start_time",
                   base::TimeFormatFriendlyDateAndTime(base::Time::Now()));
+
+  auto* key_provider = IwaKeyDistributionInfoProvider::GetInstance();
+  if (!key_provider->Ready()) {
+    // Will be signalled via `OnComponentUpdateSuccess()`.
+    process_log.Set("info", "Iwa Key Distribution component is not ready");
+    process_logs_.AppendCompletedStep(std::move(process_log));
+    return;
+  }
 
   // Ensure that only one policy resolution can happen at one time.
   if (policy_is_being_processed_) {
@@ -581,9 +590,6 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
     const base::Version& version,
     bool is_preloaded) {
-  if (is_preloaded) {
-    return;
-  }
   ProcessPolicy();
 }
 
