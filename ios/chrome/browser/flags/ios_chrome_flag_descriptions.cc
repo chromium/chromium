@@ -533,6 +533,12 @@ const char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
+const char kIOSInterruptibleChromeStoppedSynchronouslyName[] =
+    "Stop interruptible coordinators synchronously";
+const char kIOSInterruptibleChromeStoppedSynchronouslyDescription[] =
+    "When enabled, the interruptible coordinator’s completion method are "
+    "called synchronously during interrupt.";
+
 const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";

@@ -12469,6 +12469,21 @@
             ]
         }
     ],
+    "InterruptibleChromeStoppedSynchronously": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "InterruptibleChromeStoppedSynchronously",
+                    "enable_features": [
+                        "InterruptibleChromeStoppedSynchronously"
+                    ]
+                }
+            ]
+        }
+    ],
     "InvalidationsWithDirectMessagesPerPlatform": [
         {
             "platforms": [

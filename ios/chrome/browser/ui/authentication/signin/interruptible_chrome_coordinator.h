@@ -5,9 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_INTERRUPTIBLE_CHROME_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_INTERRUPTIBLE_CHROME_COORDINATOR_H_
 
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+
+// Feature flag to enable a synchronous sync of signin coordinators.
+BASE_DECLARE_FEATURE(kIOSInterruptibleChromeStoppedSynchronously);
 
 // Interface for a ChromeCoordinator that can be interrupted without following
 // the conventional flow.

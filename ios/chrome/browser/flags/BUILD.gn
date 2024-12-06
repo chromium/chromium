@@ -96,6 +96,7 @@ source_set("flags") {
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/text_selection/model:model_utils",
+    "//ios/chrome/browser/ui/authentication/signin:interruptible_chrome_coordinator",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/web/model:feature_flags",

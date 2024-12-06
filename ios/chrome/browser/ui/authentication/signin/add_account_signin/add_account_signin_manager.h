@@ -56,7 +56,12 @@ class PrefService;
 // `signinIntent`: intent for the add account sign-in flow.
 - (void)showSigninWithIntent:(AddAccountSigninIntent)signinIntent;
 
-// Interrupts the add account view.
+// Interrupts the add account view. `action` controls
+// whether the dimissal is done and whether it is animated.
+// If the flag kIOSInterruptibleChromeStoppedSynchronously is enabled,
+// `completion` is invoked directly. If
+// kIOSInterruptibleChromeStoppedSynchronously is disabled, `completion` will be
+// invoked asynchronously.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 
