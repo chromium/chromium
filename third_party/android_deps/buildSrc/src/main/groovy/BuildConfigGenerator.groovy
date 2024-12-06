@@ -121,17 +121,17 @@ class BuildConfigGenerator extends DefaultTask {
      * than fix the underlying issue (which is we should always use the snapshot
      * versions of androidx deps when possible). A better solution could be to
      * add it in //third_party/androidx/build.gradle.template
+     *
+     * If running fetch_all.py, you must first run fetch_all_androidx.py for
+     * changes to its build.gradle.template to take effect.
      */
     static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
       'androidx_compose_material_material_icons_core_android',
       'androidx_constraintlayout',
-      'androidx_credentials_credentials',
-      'androidx_documentfile',
       'androidx_legacy',
       'androidx_localbroadcastmanager_localbroadcastmanager',
       'androidx_media3_media3',
       'androidx_multidex_multidex',
-      'androidx_print',
       'androidx_privacysandbox_ads_ads_adservices',
       'androidx_test',
     ]
