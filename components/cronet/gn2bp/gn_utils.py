@@ -554,8 +554,8 @@ class GnParser(object):
       # See https://source.chromium.org/chromium/chromium/src/+/main:third_party/jni_zero/jni_zero.gni;l=421;drc=78e8e27142ed3fddf04fbcd122507517a87cb9ad
       # for more details
       target.transitive_jni_java_sources.update(
-          metadata.get("jni_source_files_abs", set()))
-      self.jni_java_sources.update(metadata.get("jni_source_files_abs", set()))
+          metadata.get("jni_source_files", set()))
+      self.jni_java_sources.update(metadata.get("jni_source_files", set()))
     elif target.type == 'copy':
       # TODO: copy rules are not currently implemented.
       pass
