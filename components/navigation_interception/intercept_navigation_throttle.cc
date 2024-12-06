@@ -64,12 +64,6 @@ const char* InterceptNavigationThrottle::GetNameForLogging() {
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation() {
   if (ShouldCheckAsynchronously()) {
-    if (pending_checks_ > 0) {
-      // TODO(https://crbug.com/381535042): I believe this is impossible to
-      // hit, and if it is possible to hit I'd like to know how, and if not
-      // simplify the logic.
-      base::debug::DumpWithoutCrashing();
-    }
     pending_checks_++;
     ui_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&InterceptNavigationThrottle::RunCheckAsync,
