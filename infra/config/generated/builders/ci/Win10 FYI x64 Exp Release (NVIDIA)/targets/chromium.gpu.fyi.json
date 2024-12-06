@@ -576,7 +576,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
