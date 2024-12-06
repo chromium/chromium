@@ -27,7 +27,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -88,15 +87,12 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
      */
     private static final String SHOW_GAIA_SERVICE_TYPE_EXTRA = "ShowGAIAServiceType";
 
-    private static final String PREF_IDENTITY_ERROR_CARD_PREFERENCE = "identity_error_card";
     private static final String PREF_ACCOUNTS_CATEGORY = "accounts_category";
     private static final String PREF_PARENT_ACCOUNT_CATEGORY = "parent_account_category";
     private static final String PREF_SIGN_OUT = "sign_out";
     private static final String PREF_SIGN_OUT_DIVIDER = "sign_out_divider";
 
     private @GAIAServiceType int mGaiaServiceType = GAIAServiceType.GAIA_SERVICE_TYPE_NONE;
-
-    private IdentityErrorCardPreference mIdentityErrorCardPreference;
 
     private CoreAccountInfo mSignedInCoreAccountInfo;
     private ProfileDataCache mProfileDataCache;
@@ -195,15 +191,6 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         AccountManagerFacadeProvider.getInstance()
                 .getCoreAccountInfos()
                 .then(this::updateAccountsList);
-
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            // TODO(crbug.com/40944114): Figure out the behaviour for child accounts.
-            mIdentityErrorCardPreference =
-                    (IdentityErrorCardPreference)
-                            findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
-            mIdentityErrorCardPreference.initialize(getProfile(), this);
-        }
     }
 
     /**
@@ -244,45 +231,15 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                         if (!isVisible() || !isResumed() || mSignedInCoreAccountInfo == null) {
                             return false;
                         }
-
-                        if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                            SignOutCoordinator.startSignOutFlow(
-                                    requireContext(),
-                                    getProfile(),
-                                    getActivity().getSupportFragmentManager(),
-                                    ((ModalDialogManagerHolder) getActivity())
-                                            .getModalDialogManager(),
-                                    mSnackbarManagerSupplier.get(),
-                                    SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                                    /* showConfirmDialog= */ false,
-                                    CallbackUtils.emptyRunnable());
-                            return true;
-                        }
-
-                        if (IdentityServicesProvider.get()
-                                        .getIdentityManager(getProfile())
-                                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
-                                != null) {
-                            // Only show the sign-out dialog if the user has given sync consent.
-                            SignOutCoordinator.startSignOutFlow(
-                                    requireContext(),
-                                    getProfile(),
-                                    getActivity().getSupportFragmentManager(),
-                                    ((ModalDialogManagerHolder) getActivity())
-                                            .getModalDialogManager(),
-                                    mSnackbarManagerSupplier.get(),
-                                    SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                                    /* showConfirmDialog= */ false,
-                                    CallbackUtils.emptyRunnable());
-                        } else {
-                            IdentityServicesProvider.get()
-                                    .getSigninManager(getProfile())
-                                    .signOut(
-                                            SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                                            null,
-                                            false);
-                        }
+                        SignOutCoordinator.startSignOutFlow(
+                                requireContext(),
+                                getProfile(),
+                                getActivity().getSupportFragmentManager(),
+                                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                                mSnackbarManagerSupplier.get(),
+                                SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                                /* showConfirmDialog= */ false,
+                                CallbackUtils.emptyRunnable());
                         return true;
                     });
         }
