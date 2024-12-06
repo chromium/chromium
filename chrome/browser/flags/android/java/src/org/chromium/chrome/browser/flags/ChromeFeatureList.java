@@ -433,6 +433,8 @@ public abstract class ChromeFeatureList {
             "PrivacySandboxRelatedWebsiteSetsUi";
     public static final String PRIVACY_SANDBOX_SETTINGS_4 = "PrivacySandboxSettings4";
     public static final String PRIVACY_SANDBOX_SENTIMENT_SURVEY = "PrivacySandboxSentimentSurvey";
+    public static final String PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY =
+            "PrivacySandboxCctAdsNoticeSurvey";
     public static final String PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS =
             "PrivacySandboxPrivacyGuideAdTopics";
     public static final String PRIVACY_SANDBOX_PRIVACY_POLICY = "PrivacySandboxPrivacyPolicy";

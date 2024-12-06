@@ -267,6 +267,40 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<std::string>
     kPrivacySandboxSentimentSurveyTriggerId;
 
+// Enables the Ads notice survey on CCT.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxCctAdsNoticeSurvey);
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string>
+    kPrivacySandboxCctAdsNoticeSurveyControlEeaTriggerId;
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string>
+    kPrivacySandboxCctAdsNoticeSurveyAcceptedEeaTriggerId;
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string>
+    kPrivacySandboxCctAdsNoticeSurveyDeclinedEeaTriggerId;
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string>
+    kPrivacySandboxCctAdsNoticeSurveyControlRowTriggerId;
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string>
+    kPrivacySandboxCctAdsNoticeSurveyAcknowledgedRowTriggerId;
+
+// Used to set the probability rate for the `AcceptedEea` survey.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<double>
+    kPrivacySandboxCctAdsNoticeSurveyAcceptedConsentTriggerRate;
+
+// Used to set the probability rate for the `DeclinedEea` survey.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<double>
+    kPrivacySandboxCctAdsNoticeSurveyDeclineConsentTriggerRate;
+
 // If true, displays the Ads APIs UX Enancements.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
