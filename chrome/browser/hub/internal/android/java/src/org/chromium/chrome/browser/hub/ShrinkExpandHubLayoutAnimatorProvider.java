@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.chrome.browser.hub.HubLayoutConstants.FADE_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -210,11 +210,11 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         if (mAnimationType == HubLayoutAnimationType.SHRINK_TAB) {
             mAnimatorSupplier.set(
                     FadeHubLayoutAnimationFactory.createFadeInAnimator(
-                            mHubContainerView, FADE_DURATION_MS, mOnAlphaChange));
+                            mHubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnAlphaChange));
         } else if (mAnimationType == HubLayoutAnimationType.EXPAND_TAB) {
             mAnimatorSupplier.set(
                     FadeHubLayoutAnimationFactory.createFadeOutAnimator(
-                            mHubContainerView, FADE_DURATION_MS, mOnAlphaChange));
+                            mHubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnAlphaChange));
         } else {
             assert false : "Not reached.";
             // If in production we somehow get here just skip animating entirely.

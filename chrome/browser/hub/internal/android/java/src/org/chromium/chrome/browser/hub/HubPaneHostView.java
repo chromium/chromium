@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -32,8 +34,6 @@ import java.util.Objects;
 
 /** Holds the current pane's {@link View}. */
 public class HubPaneHostView extends FrameLayout {
-    // Chosen to exactly match the default add/remove animation duration of RecyclerView.
-    private static final int FADE_ANIMATION_DURATION_MILLIS = 120;
 
     // Listens for layout of the snackbar container. Triggers an animation on the floating
     // action button to keep it from overlapping the snackbar.
@@ -138,10 +138,10 @@ public class HubPaneHostView extends FrameLayout {
             tryAddViewToFrame(newRootView);
 
             Animator fadeOut = ObjectAnimator.ofFloat(oldRootView, View.ALPHA, 1, 0);
-            fadeOut.setDuration(FADE_ANIMATION_DURATION_MILLIS);
+            fadeOut.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
 
             Animator fadeIn = ObjectAnimator.ofFloat(newRootView, View.ALPHA, 0, 1);
-            fadeIn.setDuration(FADE_ANIMATION_DURATION_MILLIS);
+            fadeIn.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
 
             AnimatorSet animatorSet = new AnimatorSet();
             animatorSet.playSequentially(fadeOut, fadeIn);
