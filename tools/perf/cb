@@ -3,14 +3,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import pathlib
+import subprocess
 import sys
 
 from core import path_util
-path_util.AddCrossBenchToPath()
 
-from crossbench.cli import cli
-
+cb_dir = pathlib.Path(path_util.GetCrossBenchDir())
+cb_path = cb_dir / "cb.py"
 
 if __name__ == '__main__':
   argv = sys.argv
-  cli.CrossBenchCLI().run(argv[1:])
+  cmd = (cb_path, *argv[1:])
+  subprocess.run(cmd)
