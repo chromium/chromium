@@ -9,32 +9,6 @@ namespace ash {
 namespace device_sync {
 
 namespace prefs {
-
-// (CryptAuth v1) Whether the system is scheduling enrollments more aggressively
-// to recover from the previous enrollment failure.
-const char kCryptAuthEnrollmentIsRecoveringFromFailure[] =
-    "cryptauth.enrollment.is_recovering_from_failure";
-
-// (CryptAuth v1) The timestamp of the last successful CryptAuth enrollment in
-// seconds.
-const char kCryptAuthEnrollmentLastEnrollmentTimeSeconds[] =
-    "cryptauth.enrollment.last_enrollment_time_seconds";
-
-// (CryptAuth v1) The reason that the next enrollment is performed. This should
-// be one of the enum values of cryptauth::InvocationReason in
-// chromeos/ash/services/device_sync/proto/cryptauth_api.proto.
-const char kCryptAuthEnrollmentReason[] = "cryptauth.enrollment.reason";
-
-// (CryptAuth v1 and during migration to v2) The public key of the user and
-// device enrolled with CryptAuth.
-const char kCryptAuthEnrollmentUserPublicKey[] =
-    "cryptauth.enrollment.user_public_key";
-
-// (CryptAuth v1 and during migration to v2) The private key of the user and
-// device enrolled with CryptAuth.
-const char kCryptAuthEnrollmentUserPrivateKey[] =
-    "cryptauth.enrollment.user_private_key";
-
 // (CryptAuth v1 and v2) The GCM registration id used for receiving push
 // messages from CryptAuth.
 const char kCryptAuthGCMRegistrationId[] = "cryptauth.gcm_registration_id";

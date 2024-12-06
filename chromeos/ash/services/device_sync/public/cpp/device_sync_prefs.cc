@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry_impl.h"
-#include "chromeos/ash/services/device_sync/cryptauth_enrollment_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_registry_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_metadata_syncer_impl.h"

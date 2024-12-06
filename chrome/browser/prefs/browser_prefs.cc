@@ -1158,6 +1158,15 @@ const char kCryptAuthDeviceSyncLastSyncTimeSeconds[] =
 const char kCryptAuthDeviceSyncReason[] = "cryptauth.device_sync.reason";
 const char kCryptAuthDeviceSyncUnlockKeys[] =
     "cryptauth.device_sync.unlock_keys";
+const char kCryptAuthEnrollmentIsRecoveringFromFailure[] =
+    "cryptauth.enrollment.is_recovering_from_failure";
+const char kCryptAuthEnrollmentLastEnrollmentTimeSeconds[] =
+    "cryptauth.enrollment.last_enrollment_time_seconds";
+const char kCryptAuthEnrollmentReason[] = "cryptauth.enrollment.reason";
+const char kCryptAuthEnrollmentUserPublicKey[] =
+    "cryptauth.enrollment.user_public_key";
+const char kCryptAuthEnrollmentUserPrivateKey[] =
+    "cryptauth.enrollment.user_private_key";
 #endif
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1640,6 +1649,16 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kCryptAuthDeviceSyncReason,
                                 cryptauth::INVOCATION_REASON_UNKNOWN);
   registry->RegisterListPref(kCryptAuthDeviceSyncUnlockKeys);
+  registry->RegisterBooleanPref(kCryptAuthEnrollmentIsRecoveringFromFailure,
+                                false);
+  registry->RegisterDoublePref(kCryptAuthEnrollmentLastEnrollmentTimeSeconds,
+                               0.0);
+  registry->RegisterIntegerPref(kCryptAuthEnrollmentReason,
+                                cryptauth::INVOCATION_REASON_UNKNOWN);
+  registry->RegisterStringPref(kCryptAuthEnrollmentUserPublicKey,
+                               std::string());
+  registry->RegisterStringPref(kCryptAuthEnrollmentUserPrivateKey,
+                               std::string());
 #endif
 }
 
@@ -2967,6 +2986,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kCryptAuthDeviceSyncIsRecoveringFromFailure);
   profile_prefs->ClearPref(kCryptAuthDeviceSyncReason);
   profile_prefs->ClearPref(kCryptAuthDeviceSyncUnlockKeys);
+  profile_prefs->ClearPref(kCryptAuthEnrollmentIsRecoveringFromFailure);
+  profile_prefs->ClearPref(kCryptAuthEnrollmentLastEnrollmentTimeSeconds);
+  profile_prefs->ClearPref(kCryptAuthEnrollmentReason);
+  profile_prefs->ClearPref(kCryptAuthEnrollmentUserPublicKey);
+  profile_prefs->ClearPref(kCryptAuthEnrollmentUserPrivateKey);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

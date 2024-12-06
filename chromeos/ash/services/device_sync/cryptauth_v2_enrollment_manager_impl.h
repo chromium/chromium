@@ -134,12 +134,6 @@ class CryptAuthV2EnrollmentManagerImpl
   void OnEnrollmentFinished(const CryptAuthEnrollmentResult& enrollment_result);
 
   std::string GetClientAppMetadataHash() const;
-  std::string GetV1UserPublicKey() const;
-  std::string GetV1UserPrivateKey() const;
-
-  // If a v1 user key-pair exists, add it to the registry as the active key in
-  // the kUserKeyPair key bundle.
-  void AddV1UserKeyPairToRegistryIfNecessary();
 
   cryptauthv2::ClientAppMetadata client_app_metadata_;
   raw_ptr<CryptAuthKeyRegistry> key_registry_;

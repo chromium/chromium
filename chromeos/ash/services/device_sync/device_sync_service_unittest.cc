@@ -29,7 +29,6 @@
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enroller.h"
-#include "chromeos/ash/services/device_sync/cryptauth_enrollment_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_registry_impl.h"
@@ -698,7 +697,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
     CryptAuthGCMManagerImpl::Factory::SetFactoryForTesting(nullptr);
     CryptAuthKeyRegistryImpl::Factory::SetFactoryForTesting(nullptr);
     CryptAuthV2EnrollmentManagerImpl::Factory::SetFactoryForTesting(nullptr);
-    CryptAuthEnrollmentManagerImpl::Factory::SetFactoryForTesting(nullptr);
     RemoteDeviceProviderImpl::Factory::SetFactoryForTesting(nullptr);
     SoftwareFeatureManagerImpl::Factory::SetFactoryForTesting(nullptr);
     DeviceSyncImpl::Factory::SetCustomFactory(nullptr);

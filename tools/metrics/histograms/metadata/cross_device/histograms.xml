@@ -860,17 +860,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CryptAuth.EnrollmentV2.UserKeyPairState"
-    enum="CryptAuthV2EnrollmentUserKeyPairState" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The state--at system start time--of persisted user key pairs, generated
-    during CryptAuth v1 and/or v2 Enrollment: whether they exist and if they
-    agree. Recorded on CryptAuth v2 Enrollment manager construction.
-  </summary>
-</histogram>
-
 <histogram name="CryptAuth.Gcm.Message.FeatureType" enum="CryptAuthFeatureType"
     expires_after="2025-05-05">
   <owner>hansberry@chromium.org</owner>

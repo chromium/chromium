@@ -45,8 +45,6 @@ namespace device_sync {
 
 namespace {
 
-const char kFakeV1PublicKey[] = "public_key_v1";
-const char kFakeV1PrivateKey[] = "private_key_v1";
 const char kFakeV2PublicKey[] = "public_key_v2";
 const char kFakeV2PrivateKey[] = "private_key_v2";
 const char kFakeSessionId[] = "session_id";
@@ -156,25 +154,13 @@ class DeviceSyncCryptAuthV2EnrollmentManagerImplTest
     observer_enrollment_finished_success_list_.push_back(success);
   }
 
-  void AddV1UserKeyPairToV1Prefs(const std::string& public_key,
-                                 const std::string& private_key) {
-    test_pref_service_.Set(prefs::kCryptAuthEnrollmentUserPublicKey,
-                           util::EncodeAsValueString(public_key));
-    test_pref_service_.Set(prefs::kCryptAuthEnrollmentUserPrivateKey,
-                           util::EncodeAsValueString(private_key));
-  }
-
   void CreateEnrollmentManager(
       const cryptauthv2::ClientAppMetadata& client_app_metadata) {
-    VerifyUserKeyPairStateHistogram(num_manager_creations_ /* total_count */);
-
     enrollment_manager_ = CryptAuthV2EnrollmentManagerImpl::Factory::Create(
         client_app_metadata, key_registry_.get(), &mock_client_factory_,
         &fake_gcm_manager_, &fake_enrollment_scheduler_, &test_pref_service_,
         &test_clock_);
     ++num_manager_creations_;
-
-    VerifyUserKeyPairStateHistogram(num_manager_creations_ /* total_count */);
 
     enrollment_manager_->AddObserver(this);
   }
@@ -240,11 +226,6 @@ class DeviceSyncCryptAuthV2EnrollmentManagerImplTest
 
     histogram_tester_.ExpectTotalCount(
         "CryptAuth.EnrollmentV2.InvocationReason", total_count);
-  }
-
-  void VerifyUserKeyPairStateHistogram(size_t total_count) {
-    histogram_tester_.ExpectTotalCount(
-        "CryptAuth.EnrollmentV2.UserKeyPairState", total_count);
   }
 
   CryptAuthKeyRegistry* key_registry() { return key_registry_.get(); }
@@ -551,102 +532,6 @@ TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest,
   VerifyEnrollmentResults({expected_enrollment_result});
 }
 
-TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest,
-       V1UserKeyPairAddedToRegistryOnConstruction) {
-  AddV1UserKeyPairToV1Prefs(kFakeV1PublicKey, kFakeV1PrivateKey);
-  CryptAuthKey expected_user_key_pair_v1(
-      kFakeV1PublicKey, kFakeV1PrivateKey, CryptAuthKey::Status::kActive,
-      cryptauthv2::KeyType::P256, kCryptAuthFixedUserKeyPairHandle);
-
-  EXPECT_FALSE(
-      key_registry()->GetActiveKey(CryptAuthKeyBundle::Name::kUserKeyPair));
-
-  CreateEnrollmentManager(cryptauthv2::GetClientAppMetadataForTest());
-  histogram_tester()->ExpectBucketCount(
-      "CryptAuth.EnrollmentV2.UserKeyPairState",
-      1 /* UserKeyPairState::kYesV1KeyNoV2Key */, 1 /* count */);
-
-  EXPECT_EQ(
-      expected_user_key_pair_v1,
-      *key_registry()->GetActiveKey(CryptAuthKeyBundle::Name::kUserKeyPair));
-  EXPECT_EQ(expected_user_key_pair_v1.public_key(),
-            enrollment_manager()->GetUserPublicKey());
-  EXPECT_EQ(expected_user_key_pair_v1.private_key(),
-            enrollment_manager()->GetUserPrivateKey());
-}
-
-TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest,
-       V1UserKeyPairOverwritesV2UserKeyPairOnConstruction) {
-  AddV1UserKeyPairToV1Prefs(kFakeV1PublicKey, kFakeV1PrivateKey);
-  CryptAuthKey expected_user_key_pair_v1(
-      kFakeV1PublicKey, kFakeV1PrivateKey, CryptAuthKey::Status::kActive,
-      cryptauthv2::KeyType::P256, kCryptAuthFixedUserKeyPairHandle);
-
-  // Add v2 user key pair to registry.
-  CryptAuthKey user_key_pair_v2(
-      kFakeV2PublicKey, kFakeV2PrivateKey, CryptAuthKey::Status::kActive,
-      cryptauthv2::KeyType::P256, kCryptAuthFixedUserKeyPairHandle);
-  key_registry()->AddKey(CryptAuthKeyBundle::Name::kUserKeyPair,
-                         user_key_pair_v2);
-  EXPECT_EQ(user_key_pair_v2, *key_registry()->GetActiveKey(
-                                  CryptAuthKeyBundle::Name::kUserKeyPair));
-
-  // A legacy v1 user key pair should overwrite any existing v2 user key pair
-  // when the enrollment manager is constructed.
-  CreateEnrollmentManager(cryptauthv2::GetClientAppMetadataForTest());
-  histogram_tester()->ExpectBucketCount(
-      "CryptAuth.EnrollmentV2.UserKeyPairState",
-      4 /* UserKeyPairState::kYesV1KeyYesV2KeyDisagree */, 1 /* count */);
-
-  EXPECT_EQ(
-      expected_user_key_pair_v1,
-      *key_registry()->GetActiveKey(CryptAuthKeyBundle::Name::kUserKeyPair));
-  EXPECT_EQ(expected_user_key_pair_v1.public_key(),
-            enrollment_manager()->GetUserPublicKey());
-  EXPECT_EQ(expected_user_key_pair_v1.private_key(),
-            enrollment_manager()->GetUserPrivateKey());
-
-  // Expect re-enrollment using newly added v1 key.
-  enrollment_manager()->Start();
-  cryptauthv2::ClientMetadata expected_client_metadata =
-      cryptauthv2::BuildClientMetadata(
-          0 /* retry_count */, cryptauthv2::ClientMetadata::INITIALIZATION,
-          std::nullopt /* session_id */);
-  CryptAuthEnrollmentResult expected_enrollment_result(
-      CryptAuthEnrollmentResult::ResultCode::kSuccessNewKeysEnrolled,
-      std::nullopt /* client_directive */);
-  FinishEnrollmentAttempt(
-      0u /* expected_enroller_instance_index */, expected_client_metadata,
-      cryptauthv2::GetClientAppMetadataForTest(), expected_enrollment_result);
-
-  VerifyInvocationReasonHistogram(
-      {expected_client_metadata.invocation_reason()});
-  VerifyEnrollmentResults({expected_enrollment_result});
-}
-
-TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest,
-       V1AndV2UserKeyPairsAgree) {
-  AddV1UserKeyPairToV1Prefs(kFakeV1PublicKey, kFakeV1PrivateKey);
-  CryptAuthKey user_key_pair_v1(
-      kFakeV1PublicKey, kFakeV1PrivateKey, CryptAuthKey::Status::kActive,
-      cryptauthv2::KeyType::P256, kCryptAuthFixedUserKeyPairHandle);
-
-  key_registry()->AddKey(CryptAuthKeyBundle::Name::kUserKeyPair,
-                         user_key_pair_v1);
-
-  CreateEnrollmentManager(cryptauthv2::GetClientAppMetadataForTest());
-  histogram_tester()->ExpectBucketCount(
-      "CryptAuth.EnrollmentV2.UserKeyPairState",
-      3 /* UserKeyPairState::kYesV1KeyYesV2KeyAgree */, 1 /* count */);
-
-  EXPECT_EQ(user_key_pair_v1, *key_registry()->GetActiveKey(
-                                  CryptAuthKeyBundle::Name::kUserKeyPair));
-  EXPECT_EQ(user_key_pair_v1.public_key(),
-            enrollment_manager()->GetUserPublicKey());
-  EXPECT_EQ(user_key_pair_v1.private_key(),
-            enrollment_manager()->GetUserPrivateKey());
-}
-
 TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest, V2KeyButNoV1Key) {
   CryptAuthKey user_key_pair_v2(
       kFakeV2PublicKey, kFakeV2PrivateKey, CryptAuthKey::Status::kActive,
@@ -656,9 +541,6 @@ TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest, V2KeyButNoV1Key) {
                          user_key_pair_v2);
 
   CreateEnrollmentManager(cryptauthv2::GetClientAppMetadataForTest());
-  histogram_tester()->ExpectBucketCount(
-      "CryptAuth.EnrollmentV2.UserKeyPairState",
-      2 /* UserKeyPairState::kNoV1KeyYesV2Key */, 1 /* count */);
 
   EXPECT_EQ(user_key_pair_v2, *key_registry()->GetActiveKey(
                                   CryptAuthKeyBundle::Name::kUserKeyPair));
@@ -668,9 +550,6 @@ TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest, V2KeyButNoV1Key) {
 
 TEST_F(DeviceSyncCryptAuthV2EnrollmentManagerImplTest, GetUserKeyPair) {
   CreateEnrollmentManager(cryptauthv2::GetClientAppMetadataForTest());
-  histogram_tester()->ExpectBucketCount(
-      "CryptAuth.EnrollmentV2.UserKeyPairState",
-      0 /* UserKeyPairState::kNoV1KeyNoV2Key */, 1 /* count */);
 
   EXPECT_TRUE(enrollment_manager()->GetUserPublicKey().empty());
   EXPECT_TRUE(enrollment_manager()->GetUserPrivateKey().empty());
