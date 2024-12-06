@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
@@ -72,6 +73,7 @@ public class NotificationProxyUtils {
 
     public static void setNotificationEnabledForTest(Boolean enabled) {
         sAreNotificationsEnabledForTest = enabled;
+        ResettersForTesting.register(() -> sAreNotificationsEnabledForTest = null);
     }
 
     private static boolean getNotificationsEnabled() {
