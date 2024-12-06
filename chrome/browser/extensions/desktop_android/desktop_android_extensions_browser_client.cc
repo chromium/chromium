@@ -25,6 +25,7 @@
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
@@ -149,7 +150,7 @@ bool DesktopAndroidExtensionsBrowserClient::IsExtensionIncognitoEnabled(
 bool DesktopAndroidExtensionsBrowserClient::CanExtensionCrossIncognito(
     const Extension* extension,
     content::BrowserContext* context) const {
-  return false;
+  return IsGuestSession(context) || util::CanCrossIncognito(extension, context);
 }
 
 base::FilePath DesktopAndroidExtensionsBrowserClient::GetBundleResourcePath(
