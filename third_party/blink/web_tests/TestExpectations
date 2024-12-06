@@ -268,8 +268,7 @@ crbug.com/379143306 wpt_internal/html/canvas/placeElement/placeElement-backface-
 crbug.com/379125943 wpt_internal/html/canvas/placeElement/placeElement-3d-transform.html [ Failure ]
 crbug.com/379125943 wpt_internal/html/canvas/placeElement/placeElement-css-transform-animation.html [ Failure ]
 crbug.com/379125943 wpt_internal/html/canvas/placeElement/placeElement-perspective-transform.html [ Failure ]
-# Mac flakiness
-crbug.com/380039243 [ Mac ] wpt_internal/html/canvas/placeElement/placeElement-draw-twice.html [ Failure ]
+crbug.com/380039243 crbug.com/382294240 wpt_internal/html/canvas/placeElement/placeElement-draw-twice.html [ Failure ]
 
 # --- END canvasRenderingContext.placeElement() implementation
 

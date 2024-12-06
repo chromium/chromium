@@ -144,6 +144,12 @@ class TestRenderingContext2D final
   Color GetCurrentColor() const override { return Color::kBlack; }
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() override {
+    // Context child classes uses `GetOrCreatePaintCanvas` to check for context
+    // loss.
+    if (isContextLost()) [[unlikely]] {
+      return nullptr;
+    }
+
     return &recorder_.getRecordingCanvas();
   }
   using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
@@ -3065,6 +3071,23 @@ TEST(BaseRenderingContextPlaceElementTests, PlaceElementThrowsForChildCanvas) {
 
   EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
             ESErrorType::kTypeError);
+  EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
+}
+
+TEST(BaseRenderingContextPlaceElementTests, PlaceElementAbortsIfContextLost) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  NonThrowableExceptionState exception_state;
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
+  context->SetHostHTMLCanvas(host);
+  host->appendChild(img);
+
+  context->SetContextLost(true);
+  context->placeElement(img, /*x=*/12, /*y=*/34, exception_state);
+
   EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
 }
 
