@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.DisallowActivationReason"
-    enum="InactiveFrameDisallowActivationReason" expires_after="2024-07-07">
+    enum="InactiveFrameDisallowActivationReason" expires_after="2025-07-07">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -418,7 +418,8 @@ chromium-metrics-reviews@google.com.
     of navigations which where not cached
 
     This is recorded for all websites regardless whether back-forward cache is
-    enabled or not.
+    enabled or not. Warning: this histogram was expired from 2024-07-07 to
+    2024-12-04; data may be missing.
   </summary>
 </histogram>
 
