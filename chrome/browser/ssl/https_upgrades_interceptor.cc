@@ -613,6 +613,14 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     return;
   }
 
+  if (state &&
+      state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
+                                   storage_partition) &&
+      !MustDisableSiteEngagementHeuristic(profile)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kHttpsEnforcedOnHostname);
+  }
+
   // If the request URL is in the set of URLs that HttpsUpgradesInterceptor has
   // already processed, skip upgrading and trigger fallback to HTTP to avoid a
   // redirect loop.
