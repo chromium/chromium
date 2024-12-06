@@ -42,7 +42,10 @@ source_set("service") {
   ]
 
   if (build_with_mediapipe_lib) {
-    deps += [ "//third_party/mediapipe" ]
+    deps += [
+      "//services/video_effects/calculators:inference",
+      "//third_party/mediapipe",
+    ]
   }
 }
 

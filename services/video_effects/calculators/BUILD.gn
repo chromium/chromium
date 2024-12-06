@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/mediapipe/features.gni")
+
+assert(build_with_mediapipe_lib)
+
+source_set("graph_config") {
+  sources = [
+    "video_effects_graph_config.cc",
+    "video_effects_graph_config.h",
+  ]
+}
+
+source_set("inference") {
+  sources = [
+    "inference_calculator_webgpu.cc",
+    "inference_calculator_webgpu.h",
+  ]
+
+  deps = [
+    ":graph_config",
+    "//services/on_device_model/ml:ml_holder",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/dawn/src/dawn:proc",
+    "//third_party/mediapipe",
+  ]
+}

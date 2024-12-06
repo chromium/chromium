@@ -1,0 +1,15 @@
+include_rules = [
+  "+services/on_device_model/ml",
+]
+
+specific_include_rules = {
+  # We don't want the mediapipe includes to leak from our headers:
+  ".*\.cc": [
+    "+third_party/mediapipe/src/mediapipe",
+  ],
+  # Our calculators are fine to include mediapipe, as they in turn can only be
+  # included by our graph:
+  ".*calculator_webgpu\.h": [
+    "+third_party/mediapipe/src/mediapipe",
+  ]
+}
