@@ -245,16 +245,8 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest, MemorySaverPrefChanged) {
       CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled));
 }
 
-// TODO(crbug.com/382452166): Re-enable this test.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_MemorySaverLearnMoreLinkNavigates \
-  DISABLED_MemorySaverLearnMoreLinkNavigates
-#else
-#define MAYBE_MemorySaverLearnMoreLinkNavigates \
-  MemorySaverLearnMoreLinkNavigates
-#endif
 IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
-                       MAYBE_MemorySaverLearnMoreLinkNavigates) {
+                       MemorySaverLearnMoreLinkNavigates) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLearnMorePage);
   const DeepQuery memory_saver_learn_more = {
       "settings-ui",          "settings-main",          "settings-basic-page",

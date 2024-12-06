@@ -6,6 +6,7 @@
  * @fileoverview
  * `settings-toggle-button` is a toggle that controls a supplied preference.
  */
+import '//resources/cr_elements/cr_actionable_row_style.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/action_link.css.js';
