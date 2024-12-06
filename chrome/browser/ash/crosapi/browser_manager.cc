@@ -56,7 +56,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/browser_action.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -206,13 +205,6 @@ BrowserManager::~BrowserManager() {
   g_instance = nullptr;
 }
 
-void BrowserManager::SwitchToTab(const GURL& url,
-                                 NavigateParams::PathBehavior path_behavior) {
-  PerformOrEnqueue(BrowserAction::OpenUrl(
-      url, crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab,
-      crosapi::mojom::OpenUrlFrom::kUnspecified, path_behavior));
-}
-
 void BrowserManager::InitializeAndStartIfNeeded() {
   DCHECK_EQ(state_, State::NOT_INITIALIZED);
 
@@ -240,7 +232,6 @@ void BrowserManager::RemoveObserver(BrowserManagerObserver* observer) {
 
 void BrowserManager::Shutdown() {
   shutdown_requested_ = true;
-  pending_actions_.Clear();
 }
 
 void BrowserManager::SetState(State state) {
@@ -420,38 +411,6 @@ void BrowserManager::RecordLacrosLaunchMode() {
   if (!daily_event_timer_.IsRunning()) {
     daily_event_timer_.Start(FROM_HERE, kDailyLaunchModeTimeDelta, this,
                              &BrowserManager::OnDailyLaunchModeTimer);
-  }
-}
-
-void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
-  if (shutdown_requested_) {
-    LOG(WARNING) << "lacros-chrome is preparing for system shutdown";
-    // The whole system is shutting down, so there is no point in queueing the
-    // request for later.
-    action->Cancel(mojom::CreationResult::kBrowserNotRunning);
-    return;
-  }
-
-  switch (state_) {
-    case State::UNAVAILABLE:
-      LOG(ERROR) << "lacros unavailable";
-      // We cannot recover from this, so there is no point in queueing the
-      // request for later.
-      action->Cancel(mojom::CreationResult::kBrowserNotRunning);
-      return;
-
-    case State::NOT_INITIALIZED:
-      LOG(WARNING) << "lacros component image not yet available";
-      pending_actions_.PushOrCancel(std::move(action),
-                                    mojom::CreationResult::kBrowserNotRunning);
-      return;
-  }
-}
-
-void BrowserManager::OnActionPerformed(std::unique_ptr<BrowserAction> action,
-                                       bool retry) {
-  if (retry) {
-    PerformOrEnqueue(std::move(action));
   }
 }
 
