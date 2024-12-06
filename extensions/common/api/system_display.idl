@@ -144,15 +144,15 @@ namespace system.display {
     // The user-friendly name (e.g. "HP LCD monitor").
     DOMString name;
 
-    // NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
+    // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
     Edid? edid;
 
-    // Chrome OS only. Identifier of the display that is being mirrored if
+    // ChromeOS only. Identifier of the display that is being mirrored if
     // mirroring is enabled, otherwise empty. This will be set for all displays
     // (including the display being mirrored).
     DOMString mirroringSourceId;
 
-    // Chrome OS only. Identifiers of the displays to which the source display
+    // ChromeOS only. Identifiers of the displays to which the source display
     // is being mirrored. Empty if no displays are being mirrored. This will be
     // set to the same value for all displays. This must not include
     // |mirroringSourceId|.
@@ -207,7 +207,7 @@ namespace system.display {
     Bounds workArea;
 
     // The list of available display modes. The current mode will have
-    // isSelected=true. Only available on Chrome OS. Will be set to an empty
+    // isSelected=true. Only available on ChromeOS. Will be set to an empty
     // array on other platforms.
     DisplayMode[] modes;
 
@@ -229,14 +229,14 @@ namespace system.display {
   };
 
   dictionary DisplayProperties {
-    // Chrome OS only. If set to true, changes the display mode to unified
+    // ChromeOS only. If set to true, changes the display mode to unified
     // desktop (see $(ref:enableUnifiedDesktop) for details). If set to false,
     // unified desktop mode will be disabled. This is only valid for the
     // primary display. If provided, mirroringSourceId must not be provided and
     // other properties will be ignored. This is has no effect if not provided.
     boolean? isUnified;
 
-    // Chrome OS only. If set and not empty, enables mirroring for this display
+    // ChromeOS only. If set and not empty, enables mirroring for this display
     // only. Otherwise disables mirroring for all displays. This value should
     // indicate the id of the source display to mirror, which must not be the
     // same as the id passed to setDisplayProperties. If set, no other property
@@ -334,7 +334,7 @@ namespace system.display {
         DisplayInfoCallback callback);
 
     // Requests the layout info for all displays.
-    // NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
+    // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
     // |callback|: The callback to invoke with the results.
     static void getDisplayLayout(
         DisplayLayoutCallback callback);
@@ -342,7 +342,7 @@ namespace system.display {
     // Updates the properties for the display specified by |id|, according to
     // the information provided in |info|. On failure, $(ref:runtime.lastError)
     // will be set.
-    // NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
+    // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
     // |id|: The display's unique identifier.
     // |info|: The information about display properties that should be changed.
     //     A property will be changed only if a new value for it is specified in
@@ -359,7 +359,7 @@ namespace system.display {
     // default layout. If a layout would overlap or be otherwise invalid it
     // will be adjusted to a valid layout. After layout is resolved, an
     // onDisplayChanged event will be triggered.
-    // NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
+    // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
     // |layouts|: The layout information, required for all displays except
     //     the primary display.
     // |callback|: Empty function called when the function finishes. To find out
@@ -372,7 +372,7 @@ namespace system.display {
     // Enables/disables the unified desktop feature. If enabled while mirroring
     // is active, the desktop mode will not change until mirroring is turned
     // off. Otherwise, the desktop mode will switch to unified immediately.
-    // NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
+    // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
     // |enabled|: True if unified desktop should be enabled.
     static void enableUnifiedDesktop(boolean enabled);
 
@@ -439,7 +439,7 @@ namespace system.display {
     // Sets the display mode to the specified mirror mode. Each call resets the
     // state from previous calls. Calling setDisplayProperties() will fail for
     // the mirroring destination displays.
-    // NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
+    // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
     // |info|: The information of the mirror mode that should be applied to the
     //     display mode.
     // |callback|: Empty function called when the function finishes. To find out
