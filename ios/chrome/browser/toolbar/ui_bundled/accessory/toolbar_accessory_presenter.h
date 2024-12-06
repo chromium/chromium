@@ -26,8 +26,11 @@
 // The main presented view.
 @property(nonatomic, strong, readonly) UIView* backgroundView;
 
-// The layout guide representing the primary toolbar.
-@property(nonatomic, strong) UILayoutGuide* toolbarLayoutGuide;
+// The layout guide representing the top toolbar.
+@property(nonatomic, strong) UILayoutGuide* topToolbarLayoutGuide;
+
+// The layout guide representing the bottom toolbar.
+@property(nonatomic, strong) UILayoutGuide* bottomToolbarLayoutGuide;
 
 @end
 

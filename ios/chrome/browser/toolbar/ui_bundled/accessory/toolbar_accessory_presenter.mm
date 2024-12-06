@@ -159,9 +159,13 @@ const CGFloat kAnimationDuration = 0.15;
 #pragma mark - Private Helpers
 
 // Positions the view into its initial, pre-animation position on iPhone.
-// Specifically, the final position will be on top of the toolbar. The
-// pre-animation position is that, but slid upwards so the view is offscreen.
 - (void)prepareForPresentationOnIPhone {
+  [self prepareForPresentationOnIPhoneTopToolbar];
+}
+
+// Prepare the view to be presented over the top toolbar on iPhone. The
+// pre-animation position the view offscreen above the `baseViewController`.
+- (void)prepareForPresentationOnIPhoneTopToolbar {
   self.animationConstraint = [self.backgroundView.bottomAnchor
       constraintEqualToAnchor:self.baseViewController.view.topAnchor];
 
@@ -181,7 +185,37 @@ const CGFloat kAnimationDuration = 0.15;
         constraintGreaterThanOrEqualToAnchor:self.backgroundView
                                                  .safeAreaLayoutGuide
                                                  .topAnchor],
+    [self.centeringGuide.bottomAnchor
+        constraintEqualToAnchor:self.backgroundView.bottomAnchor],
     centeringGuideTopConstraint,
+    self.animationConstraint,
+  ]];
+}
+
+// Prepare the view to be presented above the bottom toolbar on iPhone. The
+// pre-animation position the view offscreen below the `baseViewController`.
+- (void)prepareForPresentationOnIPhoneBottomToolbar {
+  self.animationConstraint = [self.backgroundView.topAnchor
+      constraintEqualToAnchor:self.baseViewController.view.bottomAnchor];
+
+  // Use this constraint to force the greater than or equal constraint below to
+  // be as small as possible.
+  NSLayoutConstraint* centeringGuideBottomConstraint =
+      [self.centeringGuide.bottomAnchor
+          constraintEqualToAnchor:self.backgroundView.bottomAnchor];
+  centeringGuideBottomConstraint.priority = UILayoutPriorityDefaultLow;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.backgroundView.leadingAnchor
+        constraintEqualToAnchor:self.baseViewController.view.leadingAnchor],
+    [self.backgroundView.trailingAnchor
+        constraintEqualToAnchor:self.baseViewController.view.trailingAnchor],
+    [self.backgroundView.topAnchor
+        constraintEqualToAnchor:self.centeringGuide.topAnchor],
+    // Position the presented view above the safe area.
+    [self.backgroundView.safeAreaLayoutGuide.bottomAnchor
+        constraintGreaterThanOrEqualToAnchor:self.centeringGuide.bottomAnchor],
+    centeringGuideBottomConstraint,
     self.animationConstraint,
   ]];
 }
@@ -210,11 +244,11 @@ const CGFloat kAnimationDuration = 0.15;
   self.animationConstraint = [self.backgroundView.leadingAnchor
       constraintEqualToAnchor:self.baseViewController.view.trailingAnchor];
 
-  [self.baseViewController.view addLayoutGuide:_toolbarLayoutGuide];
+  [self.baseViewController.view addLayoutGuide:_topToolbarLayoutGuide];
   [NSLayoutConstraint activateConstraints:@[
     // Anchors accessory below the the toolbar.
     [self.backgroundView.topAnchor
-        constraintEqualToAnchor:_toolbarLayoutGuide.bottomAnchor],
+        constraintEqualToAnchor:_topToolbarLayoutGuide.bottomAnchor],
     self.animationConstraint,
     widthConstraint,
     [self.backgroundView.widthAnchor
@@ -223,6 +257,8 @@ const CGFloat kAnimationDuration = 0.15;
                                  constant:-2 * kRegularRegularHorizontalMargin],
     [self.backgroundView.heightAnchor
         constraintEqualToConstant:kPrimaryToolbarWithOmniboxHeight],
+    [self.centeringGuide.bottomAnchor
+        constraintEqualToAnchor:self.backgroundView.bottomAnchor],
   ]];
   // Layouts `shadow` around `self.backgroundView`.
   AddSameConstraintsToSidesWithInsets(
@@ -235,6 +271,11 @@ const CGFloat kAnimationDuration = 0.15;
 // Sets up the constraints on iPhone such that the view is ready to be animated
 // to its final position.
 - (void)setupFinalConstraintsOnIPhone {
+  [self setupFinalConstraintsOnIPhoneTopToolbar];
+}
+
+// Sets up the final constraints on iPhone over the top toolbar.
+- (void)setupFinalConstraintsOnIPhoneTopToolbar {
   self.animationConstraint.active = NO;
   [self.backgroundView.topAnchor
       constraintEqualToAnchor:self.baseViewController.view.topAnchor]
@@ -242,10 +283,28 @@ const CGFloat kAnimationDuration = 0.15;
 
   // Make sure the background doesn't shrink when the toolbar goes to fullscreen
   // mode.
-  [self.baseViewController.view addLayoutGuide:_toolbarLayoutGuide];
+  [self.baseViewController.view addLayoutGuide:_topToolbarLayoutGuide];
   [self.backgroundView.bottomAnchor
-      constraintGreaterThanOrEqualToAnchor:_toolbarLayoutGuide.bottomAnchor]
+      constraintGreaterThanOrEqualToAnchor:_topToolbarLayoutGuide.bottomAnchor]
       .active = YES;
+}
+
+// Sets up the final constraints on iPhone above the bottom toolbar.
+- (void)setupFinalConstraintsOnIPhoneBottomToolbar {
+  self.animationConstraint.active = NO;
+
+  [self.baseViewController.view addLayoutGuide:_bottomToolbarLayoutGuide];
+  [NSLayoutConstraint activateConstraints:@[
+    // Position the presented view above the bottom toolbar.
+    [self.backgroundView.bottomAnchor
+        constraintEqualToAnchor:_bottomToolbarLayoutGuide.topAnchor],
+
+    // Position the presented view above the keyboard safe area. This uses the
+    // `baseViewController` keyboard layout guide as it's updated sooner than
+    // the `backgroundView` rendering a smoother animation.
+    [self.baseViewController.view.keyboardLayoutGuide.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.centeringGuide.bottomAnchor],
+  ]];
 }
 
 // Sets up the constraints on iPhone such that the view is ready to be animated
@@ -280,8 +339,6 @@ const CGFloat kAnimationDuration = 0.15;
         constraintEqualToAnchor:backgroundView.trailingAnchor],
     [self.centeringGuide.leadingAnchor
         constraintEqualToAnchor:backgroundView.leadingAnchor],
-    [self.centeringGuide.bottomAnchor
-        constraintEqualToAnchor:backgroundView.bottomAnchor],
     [self.centeringGuide.heightAnchor
         constraintGreaterThanOrEqualToAnchor:self.presentedViewController.view
                                                  .heightAnchor],

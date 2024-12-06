@@ -1056,8 +1056,10 @@ enum class ToolbarKind {
 
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
       initWithIsIncognito:profile->IsOffTheRecord()];
-  _toolbarAccessoryPresenter.toolbarLayoutGuide =
+  _toolbarAccessoryPresenter.topToolbarLayoutGuide =
       [_layoutGuideCenter makeLayoutGuideNamed:kPrimaryToolbarGuide];
+  _toolbarAccessoryPresenter.bottomToolbarLayoutGuide =
+      [_layoutGuideCenter makeLayoutGuideNamed:kSecondaryToolbarGuide];
 
   _sideSwipeMediator = [[SideSwipeMediator alloc]
       initWithFullscreenController:_fullscreenController
