@@ -11,13 +11,16 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "components/custom_handlers/protocol_handler.h"
@@ -33,7 +36,8 @@ namespace {
 base::Value::List GetHandlersAsListValue(
     const custom_handlers::ProtocolHandlerRegistry* registry,
     const custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList&
-        handlers) {
+        handlers,
+    const web_app::WebAppProvider* web_app_provider) {
   base::Value::List handler_list;
   for (const auto& handler : handlers) {
     base::Value::Dict handler_value;
@@ -44,8 +48,17 @@ base::Value::List GetHandlersAsListValue(
     handler_value.Set("host", handler.url().host());
     if (registry)
       handler_value.Set("is_default", registry->IsDefault(handler));
-    if (handler.web_app_id().has_value())
-      handler_value.Set("app_id", handler.web_app_id().value());
+
+    if (handler.web_app_id().has_value()) {
+      const auto& web_app_id = handler.web_app_id().value();
+      handler_value.Set("app_id", web_app_id);
+      if (web_app_provider) {
+        const auto app_name = base::CollapseWhitespaceASCII(
+            web_app_provider->registrar_unsafe().GetAppShortName(web_app_id),
+            false);
+        handler_value.Set("app_name", app_name);
+      }
+    }
     handler_list.Append(std::move(handler_value));
   }
   return handler_list;
@@ -149,8 +162,8 @@ base::Value::Dict ProtocolHandlersHandler::GetHandlersForProtocol(
       custom_handlers::ProtocolHandler::GetProtocolDisplayName(protocol));
   handlers_value.Set("protocol", protocol);
 
-  base::Value::List handlers_list =
-      GetHandlersAsListValue(registry, registry->GetHandlersFor(protocol));
+  base::Value::List handlers_list = GetHandlersAsListValue(
+      registry, registry->GetHandlersFor(protocol), web_app_provider_);
   handlers_value.Set("handlers", std::move(handlers_list));
   return handlers_value;
 }
@@ -160,7 +173,7 @@ base::Value::List ProtocolHandlersHandler::GetIgnoredHandlers() {
       GetProtocolHandlerRegistry();
   custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList
       ignored_handlers = registry->GetIgnoredHandlers();
-  return GetHandlersAsListValue(registry, ignored_handlers);
+  return GetHandlersAsListValue(registry, ignored_handlers, web_app_provider_);
 }
 
 void ProtocolHandlersHandler::UpdateHandlerList() {
@@ -253,7 +266,8 @@ base::Value::Dict ProtocolHandlersHandler::GetAppHandlersForProtocol(
         "protocol_display_name",
         custom_handlers::ProtocolHandler::GetProtocolDisplayName(protocol));
     handlers_value.Set("protocol", protocol);
-    handlers_value.Set("handlers", GetHandlersAsListValue(nullptr, handlers));
+    handlers_value.Set("handlers", GetHandlersAsListValue(nullptr, handlers,
+                                                          web_app_provider_));
   }
   return handlers_value;
 }
