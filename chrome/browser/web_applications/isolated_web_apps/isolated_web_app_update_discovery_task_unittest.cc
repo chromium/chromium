@@ -501,6 +501,46 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
       << task.AsDebugValue();
 }
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
+       SucceedsWithNoUpdateFoundWhenDowngradingToCurrentVersion) {
+  InstallIwa(kDefaultVersionEntry.version);
+  CreateUpdateManifest(
+      {kDefaultVersionEntry,
+       {.src = kFakeBundleSrc, .version = base::Version("5.0.0")}});
+
+  CreateBundle(kDefaultVersionEntry);
+
+  Task task = CreateDefaultIwaUpdateDiscoveryTask(
+      UpdateChannel::default_channel(), kDefaultVersionEntry.version,
+      /*allow_downgrades=*/true);
+
+  base::test::TestFuture<Task::CompletionStatus> future;
+  task.Start(future.GetCallback());
+  EXPECT_THAT(future.Take(), ValueIs(Task::Success::kNoUpdateFound))
+      << task.AsDebugValue();
+}
+
+TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
+       SucceedsWithDowngrade) {
+  base::Version kLatestVersion = base::Version("5.0.0");
+  InstallIwa(kLatestVersion);
+
+  CreateUpdateManifest(
+      {kDefaultVersionEntry,
+       {.src = kFakeBundleSrc, .version = base::Version("5.0.0")}});
+
+  CreateBundle(kDefaultVersionEntry);
+
+  Task task = CreateDefaultIwaUpdateDiscoveryTask(
+      UpdateChannel::default_channel(), kDefaultVersionEntry.version,
+      /*allow_downgrades=*/true);
+
+  base::test::TestFuture<Task::CompletionStatus> future;
+  task.Start(future.GetCallback());
+  EXPECT_THAT(future.Take(),
+              ValueIs(Task::Success::kUpdateFoundAndSavedInDatabase))
+      << task.AsDebugValue();
+}
+TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
        SucceedsWithUpdateToPinnedVersion) {
   InstallIwa(base::Version("1.0.0"));
 

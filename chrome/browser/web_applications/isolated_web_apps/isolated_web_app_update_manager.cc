@@ -171,28 +171,32 @@ GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(Profile* profile) {
   return id_to_update_options_map;
 }
 
-bool ShouldProceedWithUpdateUnderVersionPinning(
+bool ShouldProceedWithVersionChange(
     const base::Version& pinned_version,
+    bool allow_downgrades,
     const web_package::SignedWebBundleId& web_bundle_id,
     const IsolationData& isolation_data) {
-  if (pinned_version < isolation_data.version()) {
-    return false;
+  if ((pinned_version > isolation_data.version()) ||
+      (pinned_version < isolation_data.version() && allow_downgrades)) {
+    return true;
   }
 
-  switch (LookupRotatedKey(web_bundle_id)) {
-    case KeyRotationLookupResult::kNoKeyRotation:
-      return pinned_version > isolation_data.version();
-    case KeyRotationLookupResult::kKeyFound: {
-      KeyRotationData data = GetKeyRotationData(web_bundle_id, isolation_data);
-      return pinned_version > isolation_data.version() ||
-             (pinned_version == isolation_data.version() &&
-              !data.current_installation_has_rk);
-    };
-    case KeyRotationLookupResult::kKeyBlocked:
-      return false;
+  if (pinned_version == isolation_data.version()) {
+    switch (LookupRotatedKey(web_bundle_id)) {
+      case KeyRotationLookupResult::kNoKeyRotation:
+        return false;
+      case KeyRotationLookupResult::kKeyFound: {
+        KeyRotationData data =
+            GetKeyRotationData(web_bundle_id, isolation_data);
+        if (!data.current_installation_has_rk) {
+          return true;
+        }
+      } break;
+      case KeyRotationLookupResult::kKeyBlocked:
+        return false;
+    }
   }
-
-  return true;
+  return false;
 }
 
 IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
@@ -549,9 +553,10 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
   }
 
   if (update_options->pinned_version &&
-      !ShouldProceedWithUpdateUnderVersionPinning(
-          update_options->pinned_version.value(), url_info.web_bundle_id(),
-          isolation_data.value())) {
+      !ShouldProceedWithVersionChange(update_options->pinned_version.value(),
+                                      update_options->allow_downgrades,
+                                      url_info.web_bundle_id(),
+                                      isolation_data.value())) {
     // By default, pinning an app to a lower version than the current one is
     // impossible.
     // The same version updates can only be performed when allowed by key

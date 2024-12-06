@@ -170,9 +170,10 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
       return;
   }
 
-  if (expected_version_ && (*expected_version_ < *installed_version_ ||
-                            (*expected_version_ == *installed_version_ &&
-                             !same_version_update_allowed_by_key_rotation_))) {
+  if (expected_version_ &&
+      ShouldPreventVersionChange(
+          *expected_version_, *installed_version_, allow_downgrades_,
+          same_version_update_allowed_by_key_rotation_)) {
     ReportFailure(base::StrCat({"Installed app is already on version ",
                                 installed_version_->GetString(),
                                 ". Cannot update to version ",
@@ -275,9 +276,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::SetPendingUpdateInfo(
                              install_info.isolated_web_app_version.GetString());
   GetMutableDebugValue().Set("app_title", install_info.title);
 
-  if (install_info.isolated_web_app_version < *installed_version_ ||
-      (install_info.isolated_web_app_version == *installed_version_ &&
-       !same_version_update_allowed_by_key_rotation_)) {
+  if (ShouldPreventVersionChange(
+          install_info.isolated_web_app_version, *installed_version_,
+          allow_downgrades_, same_version_update_allowed_by_key_rotation_)) {
     ReportFailure(base::StrCat(
         {"Installed app is already on version ",
          installed_version_->GetString(), ". Cannot update to version ",

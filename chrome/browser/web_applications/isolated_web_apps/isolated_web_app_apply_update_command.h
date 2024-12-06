@@ -100,7 +100,8 @@ class IsolatedWebAppApplyUpdateCommand
   void OnTrustAndSignaturesChecked(base::OnceClosure next_step_callback,
                                    TrustCheckResult trust_check_result);
 
-  void HandleKeyRotationIfNecessary(base::OnceClosure next_step_callback);
+  void HandleKeyRotationOrDowngradeIfNecessary(
+      base::OnceClosure next_step_callback);
 
   void CreateStoragePartition(base::OnceClosure next_step_callback);
 

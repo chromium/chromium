@@ -86,9 +86,11 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  std::unique_ptr<BundledIsolatedWebApp> WriteUpdateBundleToDisk() {
+  std::unique_ptr<BundledIsolatedWebApp> WriteUpdateBundleToDisk(
+      std::optional<base::Version> version = std::nullopt) {
     return IsolatedWebAppBuilder(
-               ManifestBuilder().SetVersion(update_version_.GetString()))
+               ManifestBuilder().SetVersion(
+                   version.value_or(update_version_).GetString()))
         .BuildBundle(test::GetDefaultEd25519KeyPair());
   }
 
@@ -114,7 +116,8 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
 
   IsolatedWebAppUpdatePrepareAndStoreCommandResult PrepareAndStoreUpdateInfo(
       const IsolatedWebAppUrlInfo& url_info,
-      const BundledIsolatedWebApp& update_bundle) {
+      const BundledIsolatedWebApp& update_bundle,
+      bool allow_downgrades = false) {
     base::test::TestFuture<IsolatedWebAppUpdatePrepareAndStoreCommandResult>
         future;
     provider()->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
@@ -122,7 +125,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
             IwaSourceBundleWithModeAndFileOp(
                 update_bundle.path(),
                 IwaSourceBundleModeAndFileOp::kProdModeMove),
-            update_version_),
+            update_bundle.version(), allow_downgrades),
         url_info, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
@@ -169,6 +172,8 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
   base::Version installed_version_ = base::Version("1.0.0");
   base::Version update_version_ = base::Version("2.0.0");
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::Version downgrade_version_ = base::Version("0.7.0");
 };
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, Succeeds) {
@@ -196,6 +201,36 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, Succeeds) {
                               /*controlled_frame_partitions=*/_,
                               test::PendingUpdateInfoIs(
                                   Eq(pending_location), Eq(update_version_),
+                                  /*integrity_block_data=*/_),
+                              /*integrity_block_data=*/_)));
+}
+
+TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
+       SucceedsWithLoweringTheVersionWhenDowngradesAreAllowed) {
+  auto url_info = InstallIwa();
+  auto downgrade_bundle = WriteUpdateBundleToDisk(downgrade_version_);
+  downgrade_bundle->FakeInstallPageState(profile());
+  downgrade_bundle->TrustSigningKey();
+
+  ASSERT_OK_AND_ASSIGN(auto result,
+                       PrepareAndStoreUpdateInfo(url_info, *downgrade_bundle,
+                                                 /*allow_downgrades=*/true));
+  EXPECT_THAT(
+      result,
+      Field("update_version",
+            &IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
+            Eq(downgrade_version_)));
+  IsolatedWebAppStorageLocation pending_location = result.location;
+
+  const WebApp* web_app =
+      provider()->registrar_unsafe().GetAppById(url_info.app_id());
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("Test App"),
+                          test::IsolationDataIs(
+                              /*installed_location=*/_, Eq(installed_version_),
+                              /*controlled_frame_partitions=*/_,
+                              test::PendingUpdateInfoIs(
+                                  Eq(pending_location), Eq(downgrade_version_),
                                   /*integrity_block_data=*/_),
                               /*integrity_block_data=*/_)));
 }

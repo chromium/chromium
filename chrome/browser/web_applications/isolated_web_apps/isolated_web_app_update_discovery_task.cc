@@ -298,11 +298,11 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   // now and when we schedule the
   // `IsolatedWebAppUpdatePrepareAndStoreCommand`. This is not an issue, as
   // `IsolatedWebAppUpdatePrepareAndStoreCommand` will re-check that the new
-  // version is indeed newer than the currently installed version.
-  if (currently_installed_version > version_entry->version() ||
-      (currently_installed_version == version_entry->version() &&
-       !same_version_update_allowed_by_key_rotation)) {
-    // Never downgrade apps for now.
+  // version can be applied.
+  if (ShouldPreventVersionChange(version_entry->version(),
+                                 currently_installed_version,
+                                 task_params_.allow_downgrades(),
+                                 same_version_update_allowed_by_key_rotation)) {
     SucceedWith(Success::kNoUpdateFound);
     return;
   }

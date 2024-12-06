@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -54,6 +55,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
@@ -62,7 +64,6 @@
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -210,10 +211,10 @@ class IsolatedWebAppUpdateManagerBrowserTest
     scoped_feature_list_.InitAndEnableFeature(
         features::kIsolatedWebAppAutomaticUpdates);
   }
-  void AddUpdate(std::string_view app_name,
-                 std::string_view app_version,
-                 std::optional<std::vector<UpdateChannel>> update_channels =
-                     std::nullopt) {
+  void AddNewBundleToUpdateServer(std::string_view app_name,
+                                  std::string_view app_version,
+                                  std::optional<std::vector<UpdateChannel>>
+                                      update_channels = std::nullopt) {
     update_server_mixin_.AddBundle(
         IsolatedWebAppBuilder(
             ManifestBuilder().SetName(app_name).SetVersion(app_version))
@@ -268,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
   web_app::WebAppTestInstallObserver(browser()->profile())
       .BeginListeningAndWait({GetAppId()});
 
-  AddUpdate("app-7.0.6", "7.0.6");
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
   WebAppTestManifestUpdatedObserver manifest_updated_observer(
       &provider().install_manager());
@@ -317,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   EXPECT_THAT(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
               base::Version("3.0.4"));
 
-  AddUpdate("app-7.0.6", "7.0.6");
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
   WebAppTestManifestUpdatedObserver manifest_updated_observer(
       &provider().install_manager());
@@ -345,6 +346,209 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       NoUpdatesToIwaDowngradingToCurrentVersion) {
+  base::HistogramTester histogram_tester;
+
+  {
+    profile()->GetPrefs()->SetList(
+        prefs::kIsolatedWebAppInstallForceList,
+        base::Value::List().Append(
+            update_server_mixin_.CreateForceInstallPolicyEntry(
+                /*web_bundle_id=*/GetWebBundleId(),
+                /*update_channel=*/std::nullopt,
+                /*pinned_version=*/base::Version("3.0.4"),
+                /*allow_downgrades=*/true)));
+
+    web_app::WebAppTestInstallObserver(browser()->profile())
+        .BeginListeningAndWait({GetAppId()});
+  }
+
+  EXPECT_THAT(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
+              base::Version("3.0.4"));
+
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
+
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({GetAppId()});
+
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
+
+  EXPECT_THAT(GetIsolatedWebApp(GetAppId()),
+              test::IwaIs(Eq("app-3.0.4"),
+                          test::IsolationDataIs(
+                              Property("variant",
+                                       &IsolatedWebAppStorageLocation::variant,
+                                       VariantWith<IwaStorageOwnedBundle>(_)),
+                              Eq(base::Version("3.0.4")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/false, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
+                                    /*expected_count=*/0);
+}
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       SucceedsWithDowngrade) {
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({GetAppId()});
+
+  EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
+            base::Version("3.0.4"));
+
+  // Pin IWA to version 1.0.0 and allow downgrading.
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              /*web_bundle_id=*/GetWebBundleId(),
+              /*update_channel=*/std::nullopt,
+              /*pinned_version=*/base::Version("1.0.0"),
+              /*allow_downgrades=*/true)));
+
+  AddNewBundleToUpdateServer("app-1.0.0", "1.0.0");
+
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({GetAppId()});
+
+  content::BrowsingDataRemover* browsing_data_remover =
+      profile()->GetBrowsingDataRemover();
+  base::test::TestFuture<void> future;
+  browsing_data_remover->SetWouldCompleteCallbackForTesting(
+      base::BindLambdaForTesting([&](base::OnceClosure callback) {
+        if (browsing_data_remover->GetPendingTaskCountForTesting() == 1) {
+          future.SetValue();
+        }
+        std::move(callback).Run();
+      }));
+
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+
+  manifest_updated_observer.Wait();
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_THAT(GetIsolatedWebApp(GetAppId()),
+              test::IwaIs(Eq("app-1.0.0"),
+                          test::IsolationDataIs(
+                              Property("variant",
+                                       &IsolatedWebAppStorageLocation::variant,
+                                       VariantWith<IwaStorageOwnedBundle>(_)),
+                              Eq(base::Version("1.0.0")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       FailToDowngradeToNotExistentVersion) {
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({GetAppId()});
+
+  EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
+            base::Version("3.0.4"));
+
+  // Pin IWA to version 1.0.0 and allow downgrading.
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              /*web_bundle_id=*/GetWebBundleId(),
+              /*update_channel=*/kBetaChannel,
+              /*pinned_version=*/base::Version("1.0.0"),
+              /*allow_downgrades=*/true)));
+
+  AddNewBundleToUpdateServer("app-1.0.0", "1.0.0");
+
+  UpdateDiscoveryTaskFuture initial_update_future;
+  UpdateDiscoveryTaskResultWaiter initial_update_waiter(
+      provider(), GetAppId(), initial_update_future.GetCallback());
+
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(initial_update_future.Take(),
+              ErrorIs(IsolatedWebAppUpdateDiscoveryTask::Error::
+                          kUpdateManifestNoApplicableVersion));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       DoNotUpdateDowngradedApp) {
+  base::HistogramTester histogram_tester;
+
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({GetAppId()});
+
+  EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
+            base::Version("3.0.4"));
+
+  // Pin IWA to version 5.0.5 and allow downgrading.
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              /*web_bundle_id=*/GetWebBundleId(),
+              /*update_channel=*/std::nullopt,
+              /*pinned_version=*/base::Version("1.0.5"),
+              /*allow_downgrades=*/true)));
+
+  AddNewBundleToUpdateServer("app-1.0.5", "1.0.5");
+
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({GetAppId()});
+
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+
+  manifest_updated_observer.Wait();
+
+  EXPECT_THAT(GetIsolatedWebApp(GetAppId()),
+              test::IwaIs(Eq("app-1.0.5"),
+                          test::IsolationDataIs(
+                              Property("variant",
+                                       &IsolatedWebAppStorageLocation::variant,
+                                       VariantWith<IwaStorageOwnedBundle>(_)),
+                              Eq(base::Version("1.0.5")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+
+  // Add new version 7.0.6
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
+
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
+
+  EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
+            base::Version("1.0.5"));
+
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/false, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
+                                    /*expected_count=*/0);
+}
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        UpdateToPinnedVersionInstallsWhenAvailable) {
   // Install IWA at version 3.0.4.
   {
@@ -370,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Add an update to 5.0.5, which should be ignored because the IWA is pinned
   // to 7.0.6.
   {
-    AddUpdate("app-5.0.5", "5.0.5");
+    AddNewBundleToUpdateServer("app-5.0.5", "5.0.5");
 
     UpdateDiscoveryTaskFuture initial_update_future;
     UpdateDiscoveryTaskResultWaiter initial_update_waiter(
@@ -393,10 +597,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
 
-  // The IWA was successfully updated to the new version because it was
+  // The IWA successfully updates to the new version because it was
   // previously pinned to that version.
   {
-    AddUpdate("app-7.0.6", "7.0.6");
+    AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
     WebAppTestManifestUpdatedObserver manifest_updated_observer(
         &provider().install_manager());
@@ -441,8 +645,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   web_app::WebAppTestInstallObserver(browser()->profile())
       .BeginListeningAndWait({GetAppId()});
 
-  AddUpdate("app-5.0.5", "5.0.5");
-  AddUpdate("app-7.0.6", "7.0.6");
+  AddNewBundleToUpdateServer("app-5.0.5", "5.0.5");
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
   WebAppTestManifestUpdatedObserver manifest_updated_observer(
       &provider().install_manager());
@@ -495,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Unpinning) {
   // IWA does not update to newer version that becomes available due to being
   // pinned.
   {
-    AddUpdate("app-7.0.6", "7.0.6");
+    AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
     EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
   }
 
@@ -543,9 +747,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   web_app::WebAppTestInstallObserver(browser()->profile())
       .BeginListeningAndWait({GetAppId()});
 
-  AddUpdate("app-5.0.5", "5.0.5", {{kBetaChannel}});
-  AddUpdate("app-6.0.0", "6.0.0", {{kRandomChannel}});
-  AddUpdate("app-7.0.6", "7.0.6");
+  AddNewBundleToUpdateServer("app-5.0.5", "5.0.5", {{kBetaChannel}});
+  AddNewBundleToUpdateServer("app-6.0.0", "6.0.0", {{kRandomChannel}});
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
@@ -623,9 +827,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
         &provider().install_manager());
     manifest_updated_observer.BeginListening({GetAppId()});
 
-    AddUpdate("app-5.0.5", "5.0.5", {{kBetaChannel}});
-    AddUpdate("app-6.0.0", "6.0.0", {{kBetaChannel}});
-    AddUpdate("app-7.0.6", "7.0.6");
+    AddNewBundleToUpdateServer("app-5.0.5", "5.0.5", {{kBetaChannel}});
+    AddNewBundleToUpdateServer("app-6.0.0", "6.0.0", {{kBetaChannel}});
+    AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
     EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
 
@@ -658,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   // Updates initial app version with channels.
   {
-    AddUpdate("app-3.0.4", "3.0.4", {{kBetaChannel}});
+    AddNewBundleToUpdateServer("app-3.0.4", "3.0.4", {{kBetaChannel}});
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
@@ -674,8 +878,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   UpdateDiscoveryTaskResultWaiter waiter(provider(), GetAppId(),
                                          future.GetCallback());
 
-  AddUpdate("app-7.0.6", "7.0.6",
-            std::vector<UpdateChannel>{kBetaChannel, kRandomChannel});
+  AddNewBundleToUpdateServer(
+      "app-7.0.6", "7.0.6",
+      std::vector<UpdateChannel>{kBetaChannel, kRandomChannel});
 
   WebAppTestManifestUpdatedObserver manifest_updated_observer(
       &provider().install_manager());
@@ -710,8 +915,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        NoUpdatesOnCurrentChannel) {
   base::HistogramTester histogram_tester;
 
-  AddUpdate("app-7.0.6", "7.0.6",
-            std::vector<UpdateChannel>{kRandomChannel, kBetaChannel});
+  AddNewBundleToUpdateServer(
+      "app-7.0.6", "7.0.6",
+      std::vector<UpdateChannel>{kRandomChannel, kBetaChannel});
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
@@ -765,8 +971,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   web_app::WebAppTestInstallObserver(browser()->profile())
       .BeginListeningAndWait({GetAppId()});
 
-  AddUpdate("app-7.0.6", "7.0.6",
-            std::vector<UpdateChannel>{kBetaChannel, kRandomChannel});
+  AddNewBundleToUpdateServer(
+      "app-7.0.6", "7.0.6",
+      std::vector<UpdateChannel>{kBetaChannel, kRandomChannel});
   WebAppTestManifestUpdatedObserver manifest_updated_observer(
       &provider().install_manager());
   manifest_updated_observer.BeginListening({GetAppId()});
@@ -834,7 +1041,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   web_app::WebAppTestInstallObserver(browser()->profile())
       .BeginListeningAndWait({GetAppId()});
-  AddUpdate("app-7.0.6", "7.0.6");
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
   WebAppTestManifestUpdatedObserver manifest_updated_observer(
       &provider().install_manager());
@@ -901,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   OpenApp(GetAppId());
   EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(1ul));
 
-  AddUpdate("app-7.0.6", "7.0.6");
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
   EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
 
   ASSERT_TRUE(base::test::RunUntil([this]() {
@@ -964,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   OpenApp(GetAppId());
   EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(1ul));
 
-  AddUpdate("app-7.0.6", "7.0.6");
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
   EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
 
   ASSERT_TRUE(base::test::RunUntil([this]() {

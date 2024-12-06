@@ -106,6 +106,13 @@ KeyRotationData GetKeyRotationData(
     const web_package::SignedWebBundleId& web_bundle_id,
     const IsolationData& isolation_data);
 
+// Checks if update should not be finished due to incorrect expected_version.
+bool ShouldPreventVersionChange(
+    const base::Version& expected_version,
+    const base::Version& installed_version,
+    bool allow_downgrades,
+    bool same_version_update_allowed_by_key_rotation);
+
 // This is a helper class that contains methods which are shared between both
 // install and update commands.
 class IsolatedWebAppInstallCommandHelper {

@@ -469,7 +469,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
     for (auto& entry : entries) {
       policy_generator.AddForceInstalledIwa(
           entry.url_info.web_bundle_id(), entry.update_manifest_url,
-          entry.update_channel, entry.pinned_version);
+          entry.update_channel, entry.pinned_version, entry.allow_downgrades);
     }
 
     profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
@@ -858,6 +858,50 @@ TEST_F(
                   base::Value("Error::kUpdateManifestNoApplicableVersion")))));
   EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
+       DiscoverDowngradeOfPolicyInstalledApps) {
+  AddDummyIsolatedAppToRegistry(
+      profile(), iwa_info2_->url_info.origin().GetURL(), "latest iwa 2",
+      IsolationData::Builder(iwa_info2_->installed_location,
+                             base::Version("10.0.0"))
+          .Build(),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+
+  // Pin IWA to lower version than the current one
+  SetIwaForceInstallPolicy(
+      {{/*url_info=*/iwa_info2_->url_info,
+        /*update_manifest_url=*/iwa_info2_->update_manifest_url,
+        /*update_channel=*/std::nullopt,
+        /*pinned_version=*/iwa_info2_->update_version,
+        /*allow_downgrades=*/true}});
+
+  EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
+                  iwa_info2_->url_info.app_id()),
+              IsTrue());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info2_->url_info.app_id()),
+              test::IwaIs(Eq("updated app 2"),
+                          test::IsolationDataIs(
+                              UpdateLocationMatcher(profile()),
+                              Eq(iwa_info2_->update_version, ),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+
+  EXPECT_THAT(
+      UpdateDiscoveryLog(),
+      UnorderedElementsAre(IsDict(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+  EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
+  EXPECT_THAT(UpdateApplyLog(), SizeIs(1));
 
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
