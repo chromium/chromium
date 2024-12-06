@@ -5505,11 +5505,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lacros-extension-printing",
-    "owners": [ "xiangdongkong@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lacros-only",
     "owners": [ "hidehiko@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this

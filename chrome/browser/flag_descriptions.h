@@ -1367,9 +1367,6 @@ extern const char kJumpStartOmniboxDescription[];
 extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseName[];
 extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[];
 
-extern const char kLacrosExtensionPrintingName[];
-extern const char kLacrosExtensionPrintingDescription[];
-
 extern const char kLanguageDetectionAPIName[];
 extern const char kLanguageDetectionAPIDescription[];
 

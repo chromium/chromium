@@ -2410,12 +2410,6 @@ const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[] =
     "Enables page annotation logic to source related searches data from "
     "prefetched ZPS responses";
 
-const char kLacrosExtensionPrintingName[] =
-    "Enable lacros extension printing on ash";
-const char kLacrosExtensionPrintingDescription[] =
-    "When enabled, lacros's extension printers will be used on ash when lacros "
-    "is enabled.";
-
 const char kLanguageDetectionAPIName[] = "Language detection web platform API";
 const char kLanguageDetectionAPIDescription[] =
     "When enabled, JS can use the web platform's language detection API";

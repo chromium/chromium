@@ -1686,11 +1686,6 @@ BASE_FEATURE(kLanguagePacksInSettings,
              "LanguagePacksInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using lacros's extension printers from ash when lacros is enabled.
-BASE_FEATURE(kLacrosExtensionPrinting,
-             "LacrosExtensionPrinting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, launcher continue section will suggest drive files based on
 // recency, instead of fetching them using drive's ItemSuggest API.
 BASE_FEATURE(kLauncherContinueSectionWithRecents,
@@ -3936,10 +3931,6 @@ bool IsKeyboardRewriterFixEnabled() {
 
 bool IsLanguagePacksInOobeEnabled() {
   return base::FeatureList::IsEnabled(kLanguagePacksInOobe);
-}
-
-bool IsLacrosExtensionPrintingEnabled() {
-  return base::FeatureList::IsEnabled(kLacrosExtensionPrinting);
 }
 
 bool IsLauncherContinueSectionWithRecentsEnabled() {
