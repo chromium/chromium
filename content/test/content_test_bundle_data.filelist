@@ -5612,6 +5612,8 @@ data/accessibility/mac/methods/accessibility-selected-text-and-range.html
 data/accessibility/mac/methods/accessibility-selected.html
 data/accessibility/mac/methods/accessibility-sort-direction-expected.txt
 data/accessibility/mac/methods/accessibility-sort-direction.html
+data/accessibility/mac/methods/accessibility-tabs-expected.txt
+data/accessibility/mac/methods/accessibility-tabs.html
 data/accessibility/mac/methods/accessibility-title-expected.txt
 data/accessibility/mac/methods/accessibility-title-ui-element-expected.txt
 data/accessibility/mac/methods/accessibility-title-ui-element.html

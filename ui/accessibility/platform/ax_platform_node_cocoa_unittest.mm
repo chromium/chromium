@@ -651,6 +651,21 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowIndexRange) {
   EXPECT_EQ(range.length, 1UL);    // Only one row in this simple setup
 }
 
+// accessibilityTabs.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityTabs) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTabList
+    ++++2 kTab
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* tab_list = GetCocoaNode(1);
+  TestUIElements([tab_list accessibilityTabs], { 2 });
+
+  AXPlatformNodeCocoa* tab = GetCocoaNode(2);
+  TestUIElements([tab accessibilityTabs], { 2 });
+}
+
 // accessibilityVisibleColumns on a table.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleColumns) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(

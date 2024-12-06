@@ -287,6 +287,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
           NSAccessibilityRowHeaderUIElementsAttribute,
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
       @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
+      @"accessibilityTabs" : NSAccessibilityTabsAttribute,
       @"accessibilityVisibleColumns" : NSAccessibilityVisibleColumnsAttribute,
       @"accessibilityVisibleCells" : NSAccessibilityVisibleCellsAttribute,
       @"accessibilityVisibleRows" : NSAccessibilityVisibleRowsAttribute,
@@ -3126,6 +3127,27 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   return [NSURL URLWithString:(base::SysUTF8ToNSString(url))];
 }
+
+// LINT.IfChange(accessibilityTabs)
+- (id)accessibilityTabs {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  NSMutableArray* tabSubtree = [[NSMutableArray alloc] init];
+  if ([self internalRole] == ax::mojom::Role::kTab) {
+    [tabSubtree addObject:self];
+  }
+
+  for (AXPlatformNodeCocoa* child in [self accessibilityChildren]) {
+    NSArray* tabChildren = [child accessibilityTabs];
+    if ([tabChildren count] > 0) {
+      [tabSubtree addObjectsFromArray:tabChildren];
+    }
+  }
+  return tabSubtree;
+}
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityTabs)
 
 // NSAccessibility: configuring linkage elements.
 - (id)accessibilityTitleUIElement {

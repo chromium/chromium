@@ -1444,6 +1444,7 @@ bool ui::IsNSRange(id value) {
 }
 
 // Returns all tabs in this subtree.
+// LINT.IfChange(accessibilityTabs)
 - (NSArray*)tabs {
   if (![self instanceActive])
     return nil;
@@ -1460,6 +1461,7 @@ bool ui::IsNSRange(id value) {
 
   return tabSubtree;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityTabs)
 
 - (id)AXValue {
   return [self value];
