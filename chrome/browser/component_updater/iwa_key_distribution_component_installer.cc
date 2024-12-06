@@ -17,11 +17,15 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "components/update_client/update_client.h"
 
 namespace {
@@ -35,6 +39,13 @@ constexpr std::array<uint8_t, 32> kIwaKeyDistributionPublicKeySHA256 = {
 
 constexpr std::string_view kPreloadedKey = "is_preloaded";
 
+void OnDemandUpdateCompleted(update_client::Error err) {
+  VLOG(1) << "On-demand update for the "
+             "Iwa Key Distribution Component "
+             "finished with result "
+          << base::to_underlying(err);
+}
+
 }  // namespace
 
 namespace component_updater {
@@ -47,6 +58,24 @@ IwaKeyDistributionComponentInstallerPolicy::
     IwaKeyDistributionComponentInstallerPolicy() = default;
 IwaKeyDistributionComponentInstallerPolicy::
     ~IwaKeyDistributionComponentInstallerPolicy() = default;
+
+// static
+bool IwaKeyDistributionComponentInstallerPolicy::QueueOnDemandUpdate(
+    base::PassKey<web_app::IwaKeyDistributionInfoProvider>) {
+  // static
+  if (!g_browser_process ||
+      !base::FeatureList::IsEnabled(kIwaKeyDistributionComponent)) {
+    return false;
+  }
+
+  VLOG(1) << "Queueing on-demand update for the Iwa Key Distribution Component";
+  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+      crx_file::id_util::GenerateIdFromHash(kIwaKeyDistributionPublicKeySHA256),
+      OnDemandUpdater::Priority::BACKGROUND,
+      base::BindOnce(&OnDemandUpdateCompleted));
+
+  return true;
+}
 
 bool IwaKeyDistributionComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,

@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -62,6 +63,11 @@
 namespace web_app {
 
 namespace {
+
+constexpr base::FeatureParam<base::TimeDelta>
+    kComponentUpdatePolicyProcessingDelay{
+        &kIwaPolicyManagerOnDemandComponentUpdate,
+        "component_update_policy_processing_delay", base::Seconds(15)};
 
 constexpr net::BackoffEntry::Policy kInstallRetryBackoffPolicy = {
     .num_errors_to_ignore = 0,
@@ -172,6 +178,10 @@ GetOnInstallTaskCompletedCallbackForTesting() {
 
 }  // namespace
 
+BASE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate,
+             "IwaPolicyManagerOnDemandComponentUpdate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // static
 void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -259,6 +269,47 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
     // Will be signalled via `OnComponentUpdateSuccess()`.
     process_log.Set("info", "Iwa Key Distribution component is not ready");
     process_logs_.AppendCompletedStep(std::move(process_log));
+    return;
+  }
+
+  if (process_policy_fallback_timer_.IsRunning()) {
+    process_log.Set(
+        "info",
+        "running an on-demand update for the IWA Distribution component");
+    process_logs_.AppendCompletedStep(std::move(process_log));
+    return;
+  }
+
+  // This branch will be called at most once during the lifetime of the
+  // browser process. We delay the initial processing of the policy by 15
+  // seconds to give the system a chance to pull the latest component data (this
+  // only makes sense if the policy is not empty). If the component gets updated
+  // quicker, then the policy processor will be called from
+  // `OnComponentUpdateSuccess()`.
+  if (base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate) &&
+      !profile_->GetPrefs()
+           ->GetList(prefs::kIsolatedWebAppInstallForceList)
+           .empty() &&
+      key_provider->MaybeQueueComponentUpdateOnce(
+          base::PassKey<IsolatedWebAppPolicyManager>())) {
+    CHECK(key_distribution_info_observation_.IsObserving());
+
+    process_log.Set(
+        "info",
+        base::StringPrintf(
+            "running an on-demand update for the IWA Distribution "
+            "component; ProcessPolicy() will be delayed by %lld seconds",
+            kComponentUpdatePolicyProcessingDelay.Get().InSeconds()));
+    process_logs_.AppendCompletedStep(std::move(process_log));
+
+    // More specifically, if the currently used component data comes from the
+    // bundled (preloaded) component, then we request an on-demand update once
+    // on session startup (this branch will be called at most once during the
+    // lifetime of the browser process).
+    CHECK(!process_policy_fallback_timer_.IsRunning());
+    process_policy_fallback_timer_.Start(
+        FROM_HERE, kComponentUpdatePolicyProcessingDelay.Get(), this,
+        &IsolatedWebAppPolicyManager::ProcessPolicy);
     return;
   }
 
@@ -590,6 +641,7 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
     const base::Version& version,
     bool is_preloaded) {
+  process_policy_fallback_timer_.Stop();
   ProcessPolicy();
 }
 

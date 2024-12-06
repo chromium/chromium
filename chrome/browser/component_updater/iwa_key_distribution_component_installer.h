@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/update_client/update_client.h"
@@ -19,6 +20,10 @@ namespace base {
 class FilePath;
 class Version;
 }  // namespace base
+
+namespace web_app {
+class IwaKeyDistributionInfoProvider;
+}  // namespace web_app
 
 namespace component_updater {
 
@@ -42,6 +47,13 @@ class IwaKeyDistributionComponentInstallerPolicy
       const IwaKeyDistributionComponentInstallerPolicy&) = delete;
   IwaKeyDistributionComponentInstallerPolicy operator=(
       const IwaKeyDistributionComponentInstallerPolicy&) = delete;
+
+  // Triggers an on-demand update for the component. Returns whether the update
+  // has been queued.
+  // This function is supposed to be used by `IwaKeyDistributionInfoProvider`.
+  // Takes no effect if called before the component registration completes.
+  static bool QueueOnDemandUpdate(
+      base::PassKey<web_app::IwaKeyDistributionInfoProvider>);
 
  private:
   // ComponentInstallerPolicy:

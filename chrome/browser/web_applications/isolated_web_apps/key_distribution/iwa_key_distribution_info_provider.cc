@@ -24,6 +24,8 @@ namespace web_app {
 
 namespace {
 
+bool g_component_update_on_session_start_requested = false;
+
 IwaKeyDistributionInfoProvider::KeyRotations& GetDevModeKeyRotationData() {
   static base::NoDestructor<IwaKeyDistributionInfoProvider::KeyRotations>
       dev_mode_kr_data;
@@ -105,6 +107,9 @@ IwaKeyDistributionInfoProvider* IwaKeyDistributionInfoProvider::GetInstance() {
 
 void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
   GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
+
+  // This allows new on-demand updates in subsequent tests.
+  g_component_update_on_session_start_requested = false;
 }
 
 const IwaKeyDistributionInfoProvider::KeyRotationInfo*
@@ -126,6 +131,21 @@ IwaKeyDistributionInfoProvider::GetKeyRotationInfo(
   base::UmaHistogramEnumeration(kIwaKeyRotationInfoSource,
                                 KeyRotationInfoSource::kNone);
   return nullptr;
+}
+
+bool IwaKeyDistributionInfoProvider::MaybeQueueComponentUpdateOnce(
+    base::PassKey<IsolatedWebAppPolicyManager>) {
+  if (g_component_update_on_session_start_requested) {
+    return false;
+  }
+  g_component_update_on_session_start_requested = true;
+
+  if (data_ && !data_->is_preloaded) {
+    return false;
+  }
+
+  return component_updater::IwaKeyDistributionComponentInstallerPolicy::
+      QueueOnDemandUpdate(base::PassKey<IwaKeyDistributionInfoProvider>());
 }
 
 void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(

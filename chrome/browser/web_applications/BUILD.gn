@@ -948,6 +948,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//components/component_updater:test_support",
     "//components/os_crypt/sync:test_support",
     "//components/services/app_service",
     "//components/user_manager",

@@ -28,6 +28,7 @@ class FilePath;
 
 namespace web_app {
 
+class IsolatedWebAppPolicyManager;
 class IwaInternalsHandler;
 
 // Enables the key distribution dev mode UI on chrome://web-app-internals.
@@ -71,6 +72,14 @@ class IwaKeyDistributionInfoProvider {
 
   const KeyRotationInfo* GetKeyRotationInfo(
       const std::string& web_bundle_id) const;
+
+  // Attempts to fetch the latest version of the Iwa Key Distribution component
+  // from Omaha on session startup if the currently available version is
+  // preloaded. Returns `true` if the fetch task has been queued, and `false`
+  // otherwise.
+  // Note that `true` can only be returned once.
+  bool MaybeQueueComponentUpdateOnce(
+      base::PassKey<IsolatedWebAppPolicyManager>);
 
   // Asynchronously loads new component data and replaces the current `data_`
   // upon success and if `component_version` is greater than the stored one, and
