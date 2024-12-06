@@ -983,6 +983,9 @@ bool HTMLInputElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
 }
 
 LayoutObject* HTMLInputElement::CreateLayoutObject(const ComputedStyle& style) {
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
   return input_type_view_->CreateLayoutObject(style);
 }
 

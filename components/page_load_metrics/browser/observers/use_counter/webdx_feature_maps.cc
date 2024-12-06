@@ -277,6 +277,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kPreservesPitch, WebDXFeature::kPreservesPitch},
           {WebFeature::kV8HTMLMediaElement_Remote_AttributeGetter,
            WebDXFeature::kRemotePlayback},
+          {WebFeature::kVerticalFormControls,
+           WebDXFeature::kVerticalFormControls},
       }};
 
   return *kMap;

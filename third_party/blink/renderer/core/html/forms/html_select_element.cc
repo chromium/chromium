@@ -683,6 +683,10 @@ bool HTMLSelectElement::CanSelectAll() const {
 
 LayoutObject* HTMLSelectElement::CreateLayoutObject(
     const ComputedStyle& style) {
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
+
   if (UsesMenuList()) {
     return MakeGarbageCollected<LayoutFlexibleBox>(this);
   }

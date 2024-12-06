@@ -10917,6 +10917,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5210" label="SharedStorageAPI_BatchUpdate_Method"/>
   <int value="5211" label="PreservesPitch"/>
   <int value="5212" label="SelectionCustomProperty"/>
+  <int value="5213" label="VerticalFormControls"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -34167,6 +34168,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="253" label="StringWellformed"/>
   <int value="254" label="WeakReferences"/>
   <int value="255" label="RemotePlayback"/>
+  <int value="256" label="VerticalFormControls"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
