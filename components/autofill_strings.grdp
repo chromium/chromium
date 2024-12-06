@@ -557,6 +557,12 @@
     <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND" desc="On the autofill popup for paswords, the label to be used when no passwords matching user's request were found.">
       No passwords found
     </message>
+    <message name="IDS_AUTOFILL_SIGNIN_PROMO_TITLE_ADDRESS" desc="This is the body text of a confirmation message and means that the address was only saved locally to the user's device (not in their Google Account). It appears after an address save if the user is not signed in to Chrome or their sign-in credentials have expired. If the user wants to save this data to their Google Account, they can click the button at the bottom of this message. The tone should be motivating.">
+    Address saved to this device
+    </message>
+    <message name="IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_ADDRESS" desc="This is the body text of a confirmation message and means that the address was only saved locally to the user's device (not in their Google Account). It appears when the user was signed in to Chrome but their sign-in credentials have expired; now, they need to sign back in to Chrome. The string is after the 'Address saved to this device' string. If the user wants to save this data to their Google Account, they can click the 'Verify it's you' button at the bottom of this message. The tone should be motivating.">
+    To save and use this address on all your devices, verify it's you
+    </message>
   </if>
 
   <!-- Autofill Address Edit Dialog -->
