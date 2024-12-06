@@ -107,7 +107,7 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str],
     animation_text_dict = {}
     for animation_text_string in serialized_animation_texts:
         animations_text = json.loads(animation_text_string)
-        animation_text_dict[animations_text['key']] = animations_text['value']
+        animation_text_dict[animations_text['key'].strip()] = StripWhitespacesAndEmptyLines(animations_text['value'])
     new_entry = {
         'Type': feature_type,
         'Title': feature_dict['Title'],
@@ -294,7 +294,7 @@ def UploadScreenshots(feature_dict: dict[str, str],
     feature_screenshot = feature_dict['Feature screenshot']
     titles.extend(StripWhitespacesAndEmptyLines(feature_dict['Instructions']))
     animation_texts_string = feature_dict['Animation texts'].splitlines()
-    titles.extend(json.loads(a)['value'] for a in animation_texts_string)
+    titles.extend("".join(StripWhitespacesAndEmptyLines(json.loads(a)['value'])) for a in animation_texts_string)
     screenshot_dir = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings',
         milestone + '_strings_grdp')
