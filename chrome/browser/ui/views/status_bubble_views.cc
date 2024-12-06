@@ -446,7 +446,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   float scale = canvas->UndoDeviceScaleFactor();
   const float radius = kBubbleCornerRadius * scale;
 
-  std::array<SkScalar, 8> rad;
+  std::array<SkScalar, 8> rad{};
   auto round_corner = [&rad, radius](gfx::RRectF::Corner c) {
     int index = base::to_underlying(c);
     rad[2 * index] = radius;
