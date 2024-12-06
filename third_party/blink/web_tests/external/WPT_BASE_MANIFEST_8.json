@@ -6918,6 +6918,13 @@
      ]
     },
     "other": {
+     "delete-selection-with-null-range-crash.html": [
+      "4d814eab807facfa13a11084b2d5f1ecda712c18",
+      [
+       null,
+       {}
+      ]
+     ],
      "design-mode-textarea-crash.html": [
       "d9f01e41653bc07d3e939a968485f0c9c60417d9",
       [
@@ -383105,7 +383112,7 @@
         []
        ],
        "getter-tests.js": [
-        "d3eca406fd867ca47df10ec9852be7203ffc0138",
+        "d9b5b063732fa3d0dfdd3e29fdbf93145292771f",
         []
        ],
        "innertext-setter-tests.js": [
@@ -697189,13 +697196,6 @@
     ],
     "Element-insertAdjacentHTML.html": [
      "6a9329b3fbf2fdfb4f00ce2acde7c38d6843d92f",
-     [
-      null,
-      {}
-     ]
-    ],
-    "Element-insertAdjacentText.html": [
-     "f6221362c17d6231e0921d866b1cdc642fea9d39",
      [
       null,
       {}
