@@ -57,6 +57,7 @@ constexpr char kToSiteBTargetBlankNoOpener[] = "id-LINK-A_TO_B-BLANK-NO_OPENER";
 constexpr char kToSiteBTargetBlankWithOpener[] = "id-LINK-A_TO_B-BLANK-OPENER";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kStartPageId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewPageId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAppPageId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDestinationPageId);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LatestDomMessageObserver,
@@ -439,6 +440,37 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       InSameContext(CheckPromoIsActive(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
           NavigationCapturingV2Enabled())));
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
+                       IPHForAppInTabDisappearsOnNewTabOpen) {
+  webapps::AppId app_id = test::InstallWebApp(
+      browser()->profile(),
+      WebAppInstallInfo::CreateForTesting(
+          GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,
+          mojom::UserDisplayMode::kBrowser,
+          blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting));
+  RunTestSequence(
+      OpenStartPage(),
+      TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
+                       ui_controls::kNoAccelerator,
+                       /* expect_new_browser= */ false),
+      TriggerNavigateExisting(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
+                              ui_controls::kNoAccelerator),
+      WaitForWebContentsReady(kDestinationPageId),
+      If([this]() { return NavigationCapturingV2Enabled(); },
+         InSameContext(WaitForPromo(
+             feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab))),
+      InSameContext(CheckPromoIsActive(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
+          NavigationCapturingV2Enabled())),
+      AddInstrumentedTab(kNewPageId, GURL("https://www.example.com")),
+      WaitForWebContentsReady(kNewPageId),
+      InSameContextAs(
+          kDestinationPageId,
+          CheckPromoIsActive(
+              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
+              false)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
