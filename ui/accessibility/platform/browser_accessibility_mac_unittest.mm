@@ -895,4 +895,20 @@ TEST_F(BrowserAccessibilityMacTest,
   EXPECT_EQ([accessibility_ accessibilityNumberOfCharacters], 11);
 }
 
+// `accessibilityVisibleCharacterRange` on a text field.
+TEST_F(BrowserAccessibilityMacTest,
+       AccessibilityVisibleCharacterRangeOnTextField) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kTextField;
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  accessibility_ =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  SetRootValue("hello world");
+  NSRange visibleRange = [accessibility_ accessibilityVisibleCharacterRange];
+  EXPECT_EQ(visibleRange.location, 0U);
+  EXPECT_EQ(visibleRange.length, 11U);
+}
+
 }  // namespace ui

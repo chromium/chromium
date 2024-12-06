@@ -2183,9 +2183,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 // LINT.ThenChange(accessibilityNumberOfCharacters)
 
+// LINT.IfChange
 - (NSValue*)AXVisibleCharacterRange {
   return [NSValue valueWithRange:{0, [[self getAXValueAsString] length]}];
 }
+// LINT.ThenChange(accessibilityVisibleCharacterRange)
 
 - (NSNumber*)AXInsertionPointLineNumber {
   // TODO: multiline is not supported on views.
@@ -3049,12 +3051,15 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return @[ [self AXSelectedTextRange] ];
 }
 
+// LINT.IfChange
 - (NSRange)accessibilityVisibleCharacterRange {
-  if (!_node)
+  if (![self instanceActive]) {
     return NSMakeRange(0, 0);
+  }
 
-  return [[self AXVisibleCharacterRange] rangeValue];
+  return NSMakeRange(0, [[self getAXValueAsString] length]);
 }
+// LINT.ThenChange(AXVisibleCharacterRange)
 
 - (NSString*)accessibilityStringForRange:(NSRange)range {
   if (!_node)

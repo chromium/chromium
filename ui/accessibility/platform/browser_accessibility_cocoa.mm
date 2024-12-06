@@ -562,7 +562,6 @@ bool ui::IsNSRange(id value) {
       // Not currently supported by Chrome -- mismatch of types supported:
       // {NSAccessibilityValueAutofillTypeAttribute, @"valueAutofillType"},
       {NSAccessibilityValueDescriptionAttribute, @"valueDescription"},
-      {NSAccessibilityVisibleCharacterRangeAttribute, @"visibleCharacterRange"},
       {NSAccessibilityVisibleCellsAttribute, @"visibleCells"},
       {NSAccessibilityVisibleChildrenAttribute, @"visibleChildren"},
       {NSAccessibilityVisibleColumnsAttribute, @"visibleColumns"},
@@ -1570,20 +1569,34 @@ bool ui::IsNSRange(id value) {
       _owner->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
-- (NSValue*)AXVisibleCharacterRange {
-  return [self visibleCharacterRange];
-}
+// LINT.IfChange
+- (NSRange)accessibilityVisibleCharacterRange {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (!_owner->IsTextField() || _owner->IsPasswordField()) {
+    return NSMakeRange(0, 0);
+  }
 
-- (NSValue*)visibleCharacterRange {
+  return NSMakeRange(
+      0, static_cast<NSUInteger>(_owner->GetValueForControl().size()));
+}
+// LINT.ThenChange(AXVisibleCharacterRange)
+
+// LINT.IfChange
+- (NSValue*)AXVisibleCharacterRange {
   if ([self instanceActive] && _owner->IsTextField() &&
       !_owner->IsPasswordField()) {
     return [NSValue
         valueWithRange:NSMakeRange(0,
-                                   static_cast<int>(
+                                   static_cast<NSUInteger>(
                                        _owner->GetValueForControl().size()))];
   }
   return nil;
 }
+// LINT.ThenChange(accessibilityVisibleCharacterRange)
 
 // LINT.IfChange(accessibilityVisibleCells)
 - (NSArray*)visibleCells {

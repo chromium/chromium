@@ -1066,4 +1066,17 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilitySelectedTextAndRangeOnTextField) {
   EXPECT_EQ(selectedRange.length, 5U);
 }
 
+// `accessibilityVisibleCharacterRange` on a text field.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleCharacterRangeOnTextField) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue, "hello world");
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  NSRange visibleRange = [node accessibilityVisibleCharacterRange];
+  EXPECT_EQ(visibleRange.location, 0U);
+  EXPECT_EQ(visibleRange.length, 11U);
+}
+
 }  // namespace ui

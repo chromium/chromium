@@ -127,7 +127,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 @property(nonatomic, readonly) NSArray* tabs;
 @property(nonatomic, readonly) NSString* value;
 @property(nonatomic, readonly) NSString* valueDescription;
-@property(nonatomic, readonly) NSValue* visibleCharacterRange;
 @property(nonatomic, readonly) NSArray* visibleCells;
 @property(nonatomic, readonly) NSArray* visibleChildren;
 @property(nonatomic, readonly) NSArray* visibleColumns;
