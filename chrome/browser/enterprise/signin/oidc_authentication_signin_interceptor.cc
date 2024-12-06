@@ -135,7 +135,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   for (const auto* entry : g_browser_process->profile_manager()
                                ->GetProfileAttributesStorage()
                                .GetAllProfilesAttributes()) {
-    if (!entry->GetProfileManagementOidcTokens().auth_token.empty() &&
+    if (!entry->GetProfileManagementOidcTokens().id_token.empty() &&
         entry->GetProfileManagementId() == unique_user_identifier_) {
       switch_to_entry_ = entry;
       break;
