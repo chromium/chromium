@@ -74,9 +74,13 @@ class FakeFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
 
 class MockEwalletManager : public EwalletManager {
  public:
-  MockEwalletManager(FacilitatedPaymentsClient* client,
-                     FacilitatedPaymentsApiClientCreator api_client_creator)
-      : EwalletManager(client, std::move(api_client_creator)) {}
+  MockEwalletManager(
+      FacilitatedPaymentsClient* client,
+      FacilitatedPaymentsApiClientCreator api_client_creator,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
+      : EwalletManager(client,
+                       std::move(api_client_creator),
+                       optimization_guide_decider) {}
   ~MockEwalletManager() override = default;
 
   MOCK_METHOD(void,
@@ -126,8 +130,10 @@ class ContentFacilitatedPaymentsDriverTest
 
     std::unique_ptr<MockEwalletManager> em =
         std::make_unique<testing::NiceMock<MockEwalletManager>>(
-            client_.get(), GetFacilitatedPaymentsApiClientCreator(
-                               render_frame_host->GetGlobalId()));
+            client_.get(),
+            GetFacilitatedPaymentsApiClientCreator(
+                render_frame_host->GetGlobalId()),
+            decider_.get());
     ewallet_manager_ = em.get();
     driver_->SetEwalletManagerForTesting(std::move(em));
   }

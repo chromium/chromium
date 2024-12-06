@@ -18,6 +18,10 @@
 
 class GURL;
 
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}
+
 namespace autofill {
 class Ewallet;
 }
@@ -31,8 +35,10 @@ class FacilitatedPaymentsInitiatePaymentResponseDetails;
 // owned by `FacilitatedPaymentsDriver`.
 class EwalletManager {
  public:
-  EwalletManager(FacilitatedPaymentsClient* client,
-                 FacilitatedPaymentsApiClientCreator api_client_creator);
+  EwalletManager(
+      FacilitatedPaymentsClient* client,
+      FacilitatedPaymentsApiClientCreator api_client_creator,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   EwalletManager(const EwalletManager&) = delete;
   EwalletManager& operator=(const EwalletManager&) = delete;
   virtual ~EwalletManager();
@@ -114,6 +120,11 @@ class EwalletManager {
 
   // The client for the facilitated payment API.
   std::unique_ptr<FacilitatedPaymentsApiClient> api_client_;
+
+  // The optimization guide decider to help determine whether the current URL
+  // is eligible for eWallet push payments.
+  const raw_ref<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_;
 
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server. Its ownership is transferred to
