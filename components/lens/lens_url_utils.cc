@@ -45,7 +45,6 @@ constexpr char kOneLensDesktopWebFullscreen[] = "df";
 constexpr char kOneLensAmbientVisualSearchWebFullscreen[] = "avsf";
 constexpr char kViewportWidthQueryParameter[] = "vpw";
 constexpr char kViewportHeightQueryParameter[] = "vph";
-constexpr char kLensRequestQueryParameter[] = "vsrid";
 constexpr char kLensSurfaceQueryParameter[] = "lns_surface";
 
 void AppendQueryParam(std::string* query_string,

@@ -12,6 +12,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/lens/lens_url_utils.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_error_handler.h"
@@ -71,6 +72,12 @@ BOOL URLIsShopping(const GURL& URL) {
   return URLHostIsGoogle(URL) && queryMatchesShoppingParam;
 }
 
+BOOL URLHasLensRequestQueryParam(const GURL& URL) {
+  std::string request_id;
+  return net::GetValueForKeyInQuery(URL, lens::kLensRequestQueryParameter,
+                                    &request_id);
+}
+
 /// Currently some websites don't render properly in the bottom sheet. Filter
 /// them out explicitly.
 GURL URLByRemovingLensSurfaceParamIfNecessary(const GURL& URL) {
@@ -91,6 +98,10 @@ std::pair<BOOL, std::optional<GURL>> IsValidURLToOpenInResultsPage(
   GURL URL = URLByRemovingLensSurfaceParamIfNecessary(originalURL);
   if (!URLHostIsGoogle(URL)) {
     return std::pair(NO, std::nullopt);
+  }
+
+  if (URLHasLensRequestQueryParam(URL)) {
+    return std::pair(YES, URL);
   }
 
   return std::pair(URL.spec().find("lns_surface=4") != std::string::npos, URL);

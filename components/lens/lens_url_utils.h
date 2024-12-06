@@ -25,6 +25,7 @@ constexpr char kTranslateTargetQueryParameter[] = "targetlang";
 // Query parameter for the filter type.
 constexpr char kFilterTypeQueryParameter[] = "filtertype";
 constexpr char kTranslateFilterTypeQueryParameterValue[] = "tr";
+constexpr char kLensRequestQueryParameter[] = "vsrid";
 
 // Appends logs to query param as a string
 extern void AppendLogsQueryParam(
