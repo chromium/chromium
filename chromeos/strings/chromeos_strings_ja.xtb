@@ -194,7 +194,7 @@
 <translation id="1788485524395674731">このアプリは管理者によって管理されています</translation>
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1801418420130173017">ダークモードを無効にする</translation>
-<translation id="1807246157184219062">明</translation>
+<translation id="1807246157184219062">ライト</translation>
 <translation id="1808803439260407870">クラシック アート</translation>
 <translation id="1815850098929213707">選択したキーは <ph name="KEYS" /> です。コントロールを編集するにはボタンをタップします</translation>
 <translation id="1823120442877418684">キャラクター</translation>
@@ -322,7 +322,7 @@
 <translation id="2407209115954268704">SIM ロック ステータス</translation>
 <translation id="241419523391571119">テストするにはディスプレイをもう一度開きます</translation>
 <translation id="2414660853550118611">壁紙について</translation>
-<translation id="2414886740292270097">暗</translation>
+<translation id="2414886740292270097">ダーク</translation>
 <translation id="2418150275289244458">設定で開く</translation>
 <translation id="2421798028054665193">画像 <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="242825218556404975">会話は検出されませんでした</translation>
@@ -990,7 +990,7 @@
 <translation id="5856267793478861942"><ph name="ATTACH" />（<ph name="IA" />）</translation>
 <translation id="5859603669299126575">アート ギャラリーのアルバム</translation>
 <translation id="5859969039821714932">このショートカットは使用できません。<ph name="KEY" /> を使用しない新しいショートカットを押してください。</translation>
-<translation id="5860033963881614850">OFF</translation>
+<translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5876385649737594562">オプションを選択するにはオンにしてください</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> を一時停止</translation>
@@ -1004,7 +1004,7 @@
 <translation id="590746845088109442">ネコ</translation>
 <translation id="5907649332524363701">キーの色</translation>
 <translation id="5916084858004523819">禁止</translation>
-<translation id="5916664084637901428">ON</translation>
+<translation id="5916664084637901428">オン</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
 <translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> の削除ボタン。</translation>
 <translation id="5930669310554144537">ドリームスケープ</translation>
@@ -1079,7 +1079,7 @@
 <translation id="6250316632541035980">ベーコンと卵</translation>
 <translation id="6265268291107409527">選択したキーは <ph name="KEYS" /> です。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">右矢印</translation>
-<translation id="6278428485366576908">テーマ</translation>
+<translation id="6278428485366576908">モード</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">「<ph name="QUERY" />」を定義</translation>
 <translation id="6283581480003247988">青色と紫色</translation>

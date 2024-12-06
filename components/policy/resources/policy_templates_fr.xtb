@@ -2176,7 +2176,7 @@ Si cette règle est définie sur "False", la fonctionnalité d'ensembles de site
 <translation id="2563373001850981577">Autoriser l'envoi de fichiers à la corbeille (sur les systèmes de fichiers compatibles) dans l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="256597156026041241">Désactiver les touches rémanentes sur l'écran de connexion</translation>
 <translation id="2568488785376704318">Cette règle est obsolète. Veuillez utiliser la règle <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> à la place.</translation>
-<translation id="2570059561924004903">Désactiver les commentaires audio</translation>
+<translation id="2570059561924004903">Désactiver la lecture vocale</translation>
 <translation id="2570181623957732921">Activer <ph name="DESK_API_NAME" /> pour une liste de domaines tiers</translation>
 <translation id="2575198840408498393">Désactiver la création de profils itinérants</translation>
 <translation id="25765864042030871">Les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> seront bientôt obsolètes. Leur déclenchement dépend de la règle <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Actuellement, ils sont autorisés par la règle par défaut. À l'avenir, ils seront progressivement interdits par défaut et les sites devront explicitement les activer à l'aide des en-têtes <ph name="PERMISSIONS_POLICY_NAME" />. Cette règle d'entreprise peut être utilisée pour refuser cet abandon progressif en forçant la valeur par défaut à rester activée.
@@ -2260,7 +2260,7 @@ Si vous désactivez cette règle, l'appareil ne peut pas utiliser l'attestation 
 Si la règle n'est pas configurée, le comportement par défaut est défini sur 0 pour les utilisateurs standards et sur 2 pour les utilisateurs gérés sur <ph name="PRODUCT_OS_NAME" />.
 
 Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="2633084400146331575">Activer les commentaires audio</translation>
+<translation id="2633084400146331575">Activer la lecture vocale</translation>
 <translation id="2633907568797306353">Autoriser l'activation des notifications Phone Hub</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> peut diriger les requêtes de création de clé d'accès/WebAuthn directement vers le trousseau iCloud sous macOS 13.5 ou version ultérieure. Si la synchronisation du trousseau iCloud n'a pas encore été activée, l'utilisateur sera invité à se connecter avec iCloud ou, peut-être, à activer la synchronisation du trousseau iCloud.
 
@@ -3096,7 +3096,7 @@ Si la règle est définie sur "True" ou n'est pas configurée, les applis Web so
 
           Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="3273221114520206906">Paramètre JavaScript par défaut</translation>
-<translation id="3278042410658310805">Désactiver les commentaires audio sur l'écran de connexion et autoriser l'utilisateur à les activer temporairement</translation>
+<translation id="3278042410658310805">Désactiver la lecture vocale sur l'écran de connexion et permettre à l'utilisateur à l'activer temporairement</translation>
 <translation id="328347261792478720">Par défaut, le navigateur propose à l'utilisateur des recommandations personnalisées de contenus multimédias. Si cette règle est désactivée, l'utilisateur ne bénéficie pas de ces recommandations. Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut voir ces recommandations.</translation>
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
 <translation id="3286159327013237833">Activer les clics automatiques sur l'écran de connexion</translation>
@@ -3946,7 +3946,7 @@ Si cette règle est désactivée, la fonctionnalité d'encodage de contenu <ph n
 
 Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="3935592079035695061">Millisecondes depuis minuit.</translation>
-<translation id="3941289958028934630">Désactiver les commentaires audio sur l'écran de connexion</translation>
+<translation id="3941289958028934630">Désactiver la lecture vocale sur l'écran de connexion</translation>
 <translation id="3943930334592166130">Cette règle détermine si l'utilisateur est invité ou non à sélectionner un certificat client quand la règle <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> établit une correspondance avec plus d'un certificat.
       Si cette règle est activée, l'utilisateur est invité à sélectionner un certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.
       Si cette règle est désactivée ou n'est pas configurée, l'utilisateur ne peut être invité que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
@@ -4208,15 +4208,15 @@ Si la règle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (1), les extens
 <translation id="416817811987180750">Les utilisateurs auront accès à la fonctionnalité Liste d'achats.</translation>
 <translation id="4168880975307014079">Activer le clavier virtuel tactile</translation>
 <translation id="4169094969938998854">Ne pas autoriser le verrouillage de l'écran</translation>
-<translation id="4169692397912242417">Permet d'activer la fonctionnalité d'accessibilité de commentaires audio sur l'écran de connexion.
+<translation id="4169692397912242417">Activer la fonctionnalité d'accessibilité de lecture vocale sur l'écran de connexion.
 
-          Si cette règle est définie sur "True", les commentaires audio sont toujours activés sur l'écran de connexion.
+          Si cette règle est définie sur "True", la lecture vocale est toujours activée sur l'écran de connexion.
 
-          Si cette règle est définie sur "False", les commentaires audio sont toujours désactivés sur l'écran de connexion.
+          Si cette règle est définie sur "False", la lecture vocale est toujours désactivée sur l'écran de connexion.
 
           Si vous configurez cette règle, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.
 
-          Si cette règle n'est pas configurée, les commentaires audio sont initialement désactivés sur l'écran de connexion, mais les utilisateurs peuvent les activer à tout moment.</translation>
+          Si cette règle n'est pas configurée, la lecture vocale est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4173974507809462880">Afficher l'écran de direction du défilement sur le pavé tactile lors de la connexion</translation>
 <translation id="417956245902013347">Permet d'activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie sur l'écran de connexion.
 
@@ -5227,11 +5227,11 @@ Cette règle permet de contrôler la présentation de contenus promotionnels, y 
 <translation id="4933780993367313536">Autoriser les connexions d'accès à distance des administrateurs d'entreprise à cet ordinateur</translation>
 <translation id="4937423591320233496">Désactiver le contenu suggéré</translation>
 <translation id="4942096314850617489">Désactiver l'attestation à distance pour l'utilisateur</translation>
-<translation id="4942681160308347946">Définissez cette règle sur "True" pour activer les commentaires audio sur l'écran de connexion. Définissez-la sur "False" pour désactiver les commentaires audio sur l'écran de connexion.
+<translation id="4942681160308347946">Définissez cette règle sur "True" pour activer la lecture vocale sur l'écran de connexion. Définissez-la sur "False" pour désactiver la lecture vocale sur l'écran de connexion.
 
-      Si vous définissez cette règle, les utilisateurs peuvent temporairement activer ou désactiver les commentaires audio. Lorsque l'écran de connexion s'actualise ou qu'il reste inactif pendant une minute, il revient à son état d'origine.
+      Si vous définissez cette règle, les utilisateurs peuvent temporairement activer ou désactiver la lecture vocale. Lorsque l'écran de connexion s'actualise ou qu'il reste inactif pendant une minute, l'option revient à son état d'origine.
 
-      Si cette règle n'est pas définie, les commentaires audio sont désactivés sur l'écran de connexion, mais les utilisateurs peuvent les activer à tout moment. Dans ce cas, ils restent activés d'un utilisateur à l'autre.
+      Si cette règle n'est pas définie, la lecture vocale est désactivée sur l'écran de connexion. Les utilisateurs peuvent l'activer à tout moment, et l'état de l'option sur l'écran de connexion persiste d'un utilisateur à l'autre.
 
           Remarque : <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> remplace cette règle si l'ancienne est définie.</translation>
 <translation id="4945419595339133946">Indiquer si les informations système (par exemple, la version de Chrome OS ou le numéro de série de l'appareil) sont toujours affichées (ou masquées) sur l'écran de connexion.
@@ -5776,7 +5776,7 @@ Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/
 <translation id="5321624917465764266">Si cette règle est activée ou n'est pas configurée, les historiques de navigation et de téléchargements peuvent être supprimés dans Chrome, sans que les utilisateurs puissent modifier ce paramètre.
 
 Si cette règle est désactivée, ces deux historiques ne peuvent pas être supprimés. Même si cette règle est désactivée, cela ne garantit pas que ces historiques soient conservés. En effet, les utilisateurs peuvent modifier ou supprimer directement les fichiers de ces historiques. De même, le navigateur peut arriver à expiration ou archiver l'historique partiellement ou intégralement à tout moment.</translation>
-<translation id="5323200200131319468">Activer les commentaires audio sur l'écran de connexion</translation>
+<translation id="5323200200131319468">Activer la lecture vocale sur l'écran de connexion</translation>
 <translation id="5323271643727095577">Ne pas afficher de boîte de dialogue d'annulation quand event.preventDefault() est appelé pour l'événement beforeunload. Afficher la boîte de dialogue d'annulation quand beforeunload event.returnValue est la chaîne vide de l'événement beforeunload.</translation>
 <translation id="5324430722441910403">Paramètres de recherche sur site</translation>
 <translation id="5326431956495937408">Si cette règle est activée, l'utilisateur peut envoyer ses mots de passe à des membres de sa famille et en recevoir de leur part (selon les services destinés aux familles).
@@ -6473,7 +6473,7 @@ Vous pouvez ajouter une autre restriction de compte avec la règle <ph name="MIC
 
       Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="5812539307212402176">Masquer tous les badges d'entreprise</translation>
-<translation id="5814301096961727113">Définir l'état par défaut des commentaires audio sur l'écran de connexion</translation>
+<translation id="5814301096961727113">Définir l'état par défaut de la lecture vocale sur l'écran de connexion</translation>
 <translation id="5815129011704381141">Redémarrer automatiquement après une mise à jour</translation>
 <translation id="5815990343032461023">Ancien comportement : les applis Chrome Kiosk sont mises à jour par le système d'extension en utilisant l'URL de mise à jour issue du fichier manifeste d'extension, et en mettant en cache le gestionnaire au moyen de l'URL de mise à jour provenant de la règle</translation>
 <translation id="5816688024515869030">Désactiver le fournisseur <ph name="UIA_NAME" />.</translation>
@@ -6762,7 +6762,7 @@ Cette règle a été abandonnée dans la version M124.</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
 <translation id="6048690591359317353">Ne pas autoriser l'utilisateur à déconnecter ni modifier manuellement un VPN</translation>
 <translation id="6049117606554031363">Activer les rapports sur l'état de la carte d'appareil</translation>
-<translation id="6050796253724099706">Activer les commentaires audio sur l'écran de connexion</translation>
+<translation id="6050796253724099706">Activer la lecture vocale sur l'écran de connexion</translation>
 <translation id="605132676434455096">Interdire l'ajout de nouveaux profils</translation>
 <translation id="6053260874233331700">Interdire l'accès à la géolocalisation sur l'écran de connexion</translation>
 <translation id="6053681087509103368">Autoriser WebRTC à utiliser des versions obsolètes du protocole TLD/DTLS</translation>
@@ -9620,7 +9620,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 <translation id="8171924760436219650">Définir le bouton droit de la souris comme bouton principal sur l'écran de connexion</translation>
 <translation id="81724933026241365">Autoriser les utilisateurs à éteindre l'appareil avec l'icône d'arrêt ou le bouton Marche/Arrêt physique</translation>
 <translation id="8173864651667424191">L'option "Imprimer en tant qu'image" par défaut permettant de générer un aperçu avant impression d'un PDF, lorsque cette option est disponible, est proposée.</translation>
-<translation id="8175922758834816585">Activer les commentaires audio sur l'écran de connexion et permettre à l'utilisateur de les désactiver temporairement</translation>
+<translation id="8175922758834816585">Activer la lecture vocale sur l'écran de connexion et permettre à l'utilisateur de la désactiver temporairement</translation>
 <translation id="8176035528522326671">Autoriser l'utilisateur d'entreprise à participer aux sessions à plusieurs profils en tant qu'utilisateur principal seulement (comportement par défaut pour les utilisateurs gérés par une entreprise)</translation>
 <translation id="817717947404114735">Activer la mise en mémoire tampon adaptative Web Audio.</translation>
 <translation id="8179082421668183060">Si cette règle est définie sur une liste de chaînes, celles-ci sont reliées par des espaces avant d'être transmises entre <ph name="IE_PRODUCT_NAME" /> et <ph name="PRODUCT_NAME" /> comme paramètres de ligne de commande. Si un paramètre contient <ph name="URL_PLACEHOLDER" />, l'URL <ph name="URL_PLACEHOLDER" /> est remplacée par l'URL de la page à ouvrir. Si aucun paramètre ne contient l'URL <ph name="URL_PLACEHOLDER" />, celle-ci est ajoutée à la fin de la ligne de commande.
@@ -10246,9 +10246,9 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8650974590712548439">Emplacement du registre Windows pour les clients Windows :</translation>
 <translation id="8653085952260859632">Transmettre les informations concernant la mémoire</translation>
 <translation id="8653212052128283886">Affiche une vue de l'historique Chrome avec des groupes d'onglets.</translation>
-<translation id="8653561013005884087">Définissez la règle sur "True" pour maintenir les commentaires audio activés. Définissez la règle sur "False" pour les maintenir désactivés.
+<translation id="8653561013005884087">Définissez la règle sur "True" pour garder la lecture vocale activée. Définissez la règle sur "False" pour garder la lecture vocale désactivée.
 
-       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si elle n'est pas définie, les commentaires audio sont désactivés par défaut, mais les utilisateurs peuvent les activer à tout moment.</translation>
+       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si elle n'est pas définie, la lecture vocale est désactivée par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="8656110680728938054">Activer Sélectionner pour écouter</translation>
 <translation id="8657026983981036230">Cette règle définit le répertoire utilisé par Chrome pour le téléchargement de fichiers. Ce répertoire sera utilisé même si l'utilisateur en indique un autre ou s'il a activé l'option permettant de choisir un emplacement cible à chaque téléchargement.
 
