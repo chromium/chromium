@@ -10,7 +10,7 @@ import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyGuide
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacyGuideBrowserProxy} from './test_privacy_guide_browser_proxy.js';
@@ -79,7 +79,10 @@ suite('CompletionFragment', function() {
   test('backToSettingsNavigation', async function() {
     const closeEventPromise = eventToPromise('close', fragment);
 
-    fragment.shadowRoot!.querySelector<HTMLElement>('#leaveButton')!.click();
+    const leaveButton =
+        fragment.shadowRoot!.querySelector<HTMLElement>('#leaveButton');
+    assertTrue(!!leaveButton);
+    leaveButton.click();
 
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideNextNavigationHistogram');
@@ -96,8 +99,10 @@ suite('CompletionFragment', function() {
   test('SWAALinkClick', async function() {
     setSignInState(true);
 
-    assertTrue(isChildVisible(fragment, '#waaRow'));
-    fragment.shadowRoot!.querySelector<HTMLElement>('#waaRow')!.click();
+    const waaRow = fragment.shadowRoot!.querySelector<HTMLElement>('#waaRow');
+    assertTrue(!!waaRow);
+    assertTrue(isVisible(waaRow));
+    waaRow.click();
     flush();
 
     assertEquals(
@@ -120,7 +125,7 @@ suite('CompletionFragment', function() {
     assertEquals(
         fragment.i18n('privacyGuideCompletionCardPrivacySandboxSubLabel'),
         privacySandboxRow.subLabel);
-    privacySandboxRow!.click();
+    privacySandboxRow.click();
     flush();
 
     assertEquals(
@@ -129,6 +134,21 @@ suite('CompletionFragment', function() {
             'recordPrivacyGuideEntryExitHistogram'));
     assertEquals(
         'Settings.PrivacyGuide.CompletionPSClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+  });
+
+  test('aiSettingsLink', async function() {
+    const aiRow = fragment.shadowRoot!.querySelector<HTMLElement>('#aiRow');
+    assertTrue(!!aiRow);
+    assertTrue(isVisible(aiRow));
+    aiRow.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(PrivacyGuideInteractions.AI_SETTINGS_COMPLETION_LINK, result);
+    assertEquals(
+        'Settings.PrivacyGuide.CompletionAiSettingsClick',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 

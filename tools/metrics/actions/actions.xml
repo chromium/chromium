@@ -34864,6 +34864,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacyGuide.CompletionAiSettingsClick">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the AI settings link on the completion step of Privacy guide.
+  </description>
+</action>
+
 <action name="Settings.PrivacyGuide.CompletionPSClick">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>

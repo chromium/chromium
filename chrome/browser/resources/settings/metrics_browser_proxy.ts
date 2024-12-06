@@ -194,8 +194,9 @@ export enum PrivacyGuideInteractions {
   SEARCH_SUGGESTIONS_NEXT_BUTTON = 10,
   TRACKING_PROTECTION_COMPLETION_LINK = 11,
   AD_TOPICS_NEXT_BUTTON = 12,
+  AI_SETTINGS_COMPLETION_LINK = 13,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 13,
+  MAX_VALUE = 14,
 }
 
 /**

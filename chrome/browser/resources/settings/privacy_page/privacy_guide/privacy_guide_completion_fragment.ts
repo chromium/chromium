@@ -167,7 +167,10 @@ export class PrivacyGuideCompletionFragmentElement extends
   }
 
   private onAiRowClick_() {
-    // TODO(crbug.com/362225975): Record click metrics.
+    this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
+        PrivacyGuideInteractions.AI_SETTINGS_COMPLETION_LINK);
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.CompletionAiSettingsClick');
     // TODO(crbug.com/40162029): Replace this with an ordinary OpenWindowProxy
     // call.
     this.shadowRoot!.querySelector<HTMLAnchorElement>(
