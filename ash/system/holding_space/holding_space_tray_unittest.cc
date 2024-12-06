@@ -2209,13 +2209,16 @@ TEST_F(HoldingSpaceTrayTest, CheckTrayTooltipText) {
 
 TEST_F(HoldingSpaceTrayTest, AccessibleNames) {
   StartSession();
+
+  const std::u16string expected_accessible_name = l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_A11Y_NAME,
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
+
   {
     ui::AXNodeData node_data;
     GetTray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
     EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-              l10n_util::GetStringFUTF16(
-                  IDS_ASH_HOLDING_SPACE_A11Y_NAME,
-                  l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE)));
+              expected_accessible_name);
   }
 
   test_api()->Show();
@@ -2226,7 +2229,7 @@ TEST_F(HoldingSpaceTrayTest, AccessibleNames) {
     ui::AXNodeData node_data;
     bubble->GetViewAccessibility().GetAccessibleNodeData(&node_data);
     EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-              test_api()->GetAccessibleNameForBubble());
+              expected_accessible_name);
   }
 }
 

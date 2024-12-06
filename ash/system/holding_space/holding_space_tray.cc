@@ -228,6 +228,9 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
   }
   SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
 
+  // Accessibility.
+  GetViewAccessibility().SetName(GetAccessibleNameForBubble());
+
   // Default icon.
   default_tray_icon_ =
       tray_container()->AddChildView(CreateDefaultTrayIcon(this));
@@ -273,10 +276,6 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
 
   // Enable context menu, which supports an action to toggle item previews.
   SetContextMenuEnabled(true);
-
-  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-      IDS_ASH_HOLDING_SPACE_A11Y_NAME,
-      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE)));
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
