@@ -1009,7 +1009,8 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_Parsed) {
         "priority": 1,
         "condition" : {"urlFilter" : "google"},
         "action" : {"type" : "block" }
-      }
+      },
+      []
     ]
   )";
   SetRules(*base::JSONReader::Read(kRules));
@@ -1027,7 +1028,7 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_Parsed) {
   if (GetParam() != ExtensionLoadType::PACKED) {
     std::vector<InstallWarning> install_warnings =
         GetFilteredInstallWarnings(*extension());
-    ASSERT_EQ(2u, install_warnings.size());
+    ASSERT_EQ(3u, install_warnings.size());
     std::vector<InstallWarning> expected_warnings;
 
     expected_warnings.emplace_back(
@@ -1040,6 +1041,12 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_Parsed) {
         ErrorUtils::FormatErrorMessage(
             GetErrorWithFilename(kRuleNotParsedWarning), "index 4",
             "'id': expected id, got string"),
+        dnr_api::ManifestKeys::kDeclarativeNetRequest,
+        dnr_api::DNRInfo::kRuleResources);
+    expected_warnings.emplace_back(
+        ErrorUtils::FormatErrorMessage(
+            GetErrorWithFilename(kRuleNotParsedWarning), "index 5",
+            "expected dictionary, got list"),
         dnr_api::ManifestKeys::kDeclarativeNetRequest,
         dnr_api::DNRInfo::kRuleResources);
     EXPECT_EQ(expected_warnings, install_warnings);

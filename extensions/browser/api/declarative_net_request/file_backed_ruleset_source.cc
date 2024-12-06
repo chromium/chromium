@@ -126,15 +126,13 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
       continue;
     }
 
-    std::string rule_location;
-
-    // If possible use the rule ID in the install warning.
-    if (auto id = rules_list[i].GetDict().FindInt(kIDKey)) {
-      rule_location = base::StringPrintf("id %d", *id);
-    } else {
-      // Use one-based indices.
-      rule_location = base::StringPrintf("index %zu", i + 1);
-    }
+    // If possible use the rule ID in the install warning. Otherwise, use a one
+    // based index.
+    auto id = rules_list[i].is_dict() ? rules_list[i].GetDict().FindInt(kIDKey)
+                                      : std::nullopt;
+    std::string rule_location = id.has_value()
+                                    ? base::StringPrintf("id %d", *id)
+                                    : base::StringPrintf("index %zu", i + 1);
 
     result.rule_parse_warnings.push_back(CreateInstallWarning(
         json_path, ErrorUtils::FormatErrorMessage(
