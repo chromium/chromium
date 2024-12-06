@@ -46,6 +46,7 @@ jobs:
         with:
           name: Cargo.lock
           path: Cargo.lock
+        continue-on-error: true
 
   build:
     name: Rust ${{matrix.rust}}

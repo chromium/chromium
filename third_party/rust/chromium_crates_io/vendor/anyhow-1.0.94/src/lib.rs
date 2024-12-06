@@ -206,7 +206,7 @@
 //! function that returns Anyhow's error type, as the trait that `?`-based error
 //! conversions are defined by is only available in std in those old versions.
 
-#![doc(html_root_url = "https://docs.rs/anyhow/1.0.93")]
+#![doc(html_root_url = "https://docs.rs/anyhow/1.0.94")]
 #![cfg_attr(error_generic_member_access, feature(error_generic_member_access))]
 #![no_std]
 #![deny(dead_code, unused_imports, unused_mut)]
@@ -627,11 +627,11 @@ pub trait Context<T, E>: context::private::Sealed {
         F: FnOnce() -> C;
 }
 
-/// Equivalent to Ok::<_, anyhow::Error>(value).
+/// Equivalent to `Ok::<_, anyhow::Error>(value)`.
 ///
-/// This simplifies creation of an anyhow::Result in places where type inference
-/// cannot deduce the `E` type of the result &mdash; without needing to write
-/// `Ok::<_, anyhow::Error>(value)`.
+/// This simplifies creation of an `anyhow::Result` in places where type
+/// inference cannot deduce the `E` type of the result &mdash; without needing
+/// to write`Ok::<_, anyhow::Error>(value)`.
 ///
 /// One might think that `anyhow::Result::Ok(value)` would work in such cases
 /// but it does not.
@@ -646,8 +646,8 @@ pub trait Context<T, E>: context::private::Sealed {
 ///    |         consider giving this pattern the explicit type `std::result::Result<i32, E>`, where the type parameter `E` is specified
 /// ```
 #[allow(non_snake_case)]
-pub fn Ok<T>(t: T) -> Result<T> {
-    Result::Ok(t)
+pub fn Ok<T>(value: T) -> Result<T> {
+    Result::Ok(value)
 }
 
 // Not public API. Referenced by macro-generated code.

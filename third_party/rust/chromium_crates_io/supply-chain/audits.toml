@@ -217,6 +217,12 @@ notes = """
 https://github.com/rust-lang/rfcs/blob/master/text/2582-raw-reference-mir-operator.md
 """
 
+[[audits.anyhow]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.93 -> 1.0.94"
+notes = "No behavioral changes"
+
 [[audits.autocfg]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
