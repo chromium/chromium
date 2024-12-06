@@ -192,3 +192,25 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
 
   delegate->RemoveObserver(&observer);
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
+  GURL main_url("https://example.com/");
+
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
+                                                 WebContents());
+  // Activate tab with password change to simplify testing.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  PasswordsNavigationObserver observer(WebContents());
+  EXPECT_TRUE(observer.Wait());
+  WaitForElementValue("password", "pa$$word");
+
+  // Verify generated password is pre-saved.
+  WaitForPasswordStore();
+  CheckThatCredentialsStored(
+      /*username=*/"", GetElementValue(/*iframe_id=*/"null", "new_password_1"));
+}

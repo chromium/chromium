@@ -80,6 +80,8 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
   if (new_tab) {
     executor_ = new_tab->GetWeakPtr();
     GetFormCache(new_tab).SetObserver(weak_ptr_factory_.GetWeakPtr());
+
+    Observe(new_tab);
   }
 }
 
@@ -109,10 +111,19 @@ void PasswordChangeDelegateImpl::OnPasswordFormParsed(
       form->new_password_element_renderer_id,
       form->confirmation_password_element_renderer_id, original_password_,
       generated_password_,
-      // TODO(crbug.com/375565171): Add handling for completion.
-      base::DoNothing());
+      base::BindOnce(&PasswordChangeDelegateImpl::ChangePasswordFormFilled,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  form_manager_ = form_manager->Clone();
+  form_manager_->PresaveGeneratedPassword(form->form_data, generated_password_);
 
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+}
+
+void PasswordChangeDelegateImpl::WebContentsDestroyed() {
+  // PasswordFormManager keeps raw pointers to PasswordManagerClient reset it
+  // immediately to avoid keeping dangling pointer.
+  form_manager_.reset();
 }
 
 bool PasswordChangeDelegateImpl::IsPasswordChangeOngoing(
@@ -143,4 +154,13 @@ void PasswordChangeDelegateImpl::UpdateState(
     observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
                       current_state_);
   }
+}
+
+void PasswordChangeDelegateImpl::ChangePasswordFormFilled(
+    const autofill::FormData& submitted_form) {
+  form_manager_->ProvisionallySave(
+      submitted_form, form_manager_->GetDriver().get(),
+      base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
+                     password_manager::PossibleUsernameData>(
+          password_manager::kMaxSingleUsernameFieldsToStore));
 }

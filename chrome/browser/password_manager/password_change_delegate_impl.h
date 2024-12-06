@@ -11,7 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -22,7 +24,8 @@ class WebContents;
 // immediately after creating the object.
 class PasswordChangeDelegateImpl
     : public password_manager::PasswordFormManagerObserver,
-      public PasswordChangeDelegate {
+      public PasswordChangeDelegate,
+      public content::WebContentsObserver {
  public:
   PasswordChangeDelegateImpl(
       GURL change_password_url,
@@ -49,8 +52,13 @@ class PasswordChangeDelegateImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
+  // content::WebContentsObserver Impl
+  void WebContentsDestroyed() override;
+
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);
+
+  void ChangePasswordFormFilled(const autofill::FormData& submitted_form);
 
   const GURL change_password_url_;
   const std::u16string username_;
@@ -62,6 +70,9 @@ class PasswordChangeDelegateImpl
   base::WeakPtr<content::WebContents> executor_;
 
   State current_state_ = State::kWaitingForChangePasswordForm;
+
+  // Form manager for displayed change password form.
+  std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
