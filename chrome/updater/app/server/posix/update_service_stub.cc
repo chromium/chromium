@@ -56,6 +56,9 @@ namespace {
   if (mojom->ap_key) {
     request.ap_key = *mojom->ap_key;
   }
+  if (mojom->install_id) {
+    request.install_id = *mojom->install_id;
+  }
   return request;
 }
 

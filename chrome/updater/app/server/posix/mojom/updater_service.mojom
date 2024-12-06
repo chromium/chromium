@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 
 // Struct containing the information required to register an application with
 // the updater. Passed from client to server during RegisterApp and Install.
-// Next version: 2
+// Next version: 3
 [Stable] struct RegistrationRequest {
   // Application ID of the app.
   string app_id;
@@ -51,6 +51,9 @@ import "mojo/public/mojom/base/file_path.mojom";
 
   // The name of they key in the file for the product version value.
   [MinVersion=1] string? version_key;
+
+  // A unique identifier for the installer responsible for registering this app.
+  [MinVersion=2] string? install_id;
 };
 
 // Struct containing details on the state of an update. It is passed
