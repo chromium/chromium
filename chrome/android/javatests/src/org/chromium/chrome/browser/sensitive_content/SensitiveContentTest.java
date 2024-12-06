@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.base.test.util.CriteriaHelper.pollUiThreadNested;
 
 import android.content.Context;
 import android.os.Build;
@@ -80,11 +81,14 @@ import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.sensitive_content.SensitiveContentClient;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewAndroidDelegate;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -200,6 +204,42 @@ public class SensitiveContentTest {
                 mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
         waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
         assertFalse(observer.getContentSensitivity());
+    }
+
+    @Test
+    @MediumTest
+    public void testSwapViewAndroidDelegate() {
+        mPage.loadPageProgrammatically(
+                mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        pollUiThread(
+                () ->
+                        getContentViewOfCurrentTab().getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_SENSITIVE);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContents webContents = mActivityTestRule.getWebContents();
+                    ContentView newContainerView =
+                            ContentView.createContentView(
+                                    mActivityTestRule.getActivity(), webContents);
+                    ViewAndroidDelegate newViewAndroidDelegate =
+                            ViewAndroidDelegate.createBasicDelegate(newContainerView);
+                    assertEquals(
+                            "Initially, the content view does not have sensitive content",
+                            newContainerView.getContentSensitivity(),
+                            View.CONTENT_SENSITIVITY_AUTO);
+
+                    webContents.setDelegates(
+                            "",
+                            newViewAndroidDelegate,
+                            newContainerView,
+                            null,
+                            WebContents.createDefaultInternalsHolder());
+                    pollUiThreadNested(
+                            () ->
+                                    newContainerView.getContentSensitivity()
+                                            == View.CONTENT_SENSITIVITY_SENSITIVE);
+                });
     }
 
     @Test

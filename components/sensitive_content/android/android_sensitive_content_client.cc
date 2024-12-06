@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/notreached.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/view_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/sensitive_content/jni_headers/SensitiveContentClient_jni.h"
@@ -25,6 +26,9 @@ AndroidSensitiveContentClient::AndroidSensitiveContentClient(
   JNIEnv* env = base::android::AttachCurrentThread();
   java_sensitive_content_client_ = Java_SensitiveContentClient_Constructor(
       env, web_contents->GetJavaWebContents());
+  if (web_contents->GetNativeView()) {
+    web_contents->GetNativeView()->AddObserver(this);
+  }
 }
 
 AndroidSensitiveContentClient::~AndroidSensitiveContentClient() {
@@ -46,6 +50,12 @@ void AndroidSensitiveContentClient::SetContentSensitivity(
 
 std::string_view AndroidSensitiveContentClient::GetHistogramPrefix() {
   return histogram_prefix_;
+}
+
+void AndroidSensitiveContentClient::OnDelegateSet() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_SensitiveContentClient_onViewAndroidDelegateSet(
+      env, java_sensitive_content_client_);
 }
 
 static ScopedJavaLocalRef<jobject>

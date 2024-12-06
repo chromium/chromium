@@ -126,8 +126,12 @@ public interface WebContents extends Parcelable {
     void setTopLevelNativeWindow(WindowAndroid windowAndroid);
 
     /**
-     * @return The {@link ViewAndroidDelegate} from which to get the container view.
-     *         This can be null.
+     * If called too early, the {@link ViewAndroidDelegate} might not be yet available. One can
+     * subscribe to `ViewAndroidObserver::OnDelegateSet` to be notified when the {@link
+     * ViewAndroidDelegate} becomes available/changes.
+     *
+     * @return The {@link ViewAndroidDelegate} from which to get the container view. This can be
+     *     null.
      */
     @Nullable
     ViewAndroidDelegate getViewAndroidDelegate();

@@ -73,7 +73,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
      * reference to the {@link ViewAndroidDelegate}. Therefore, the reference is weak, to allow
      * garbage collection.
      */
-    private WeakReference<ViewAndroidDelegate> mLastViewAndroidDelegate;
+    private WeakReference<ViewAndroidDelegate> mViewAndroidDelegate;
 
     /**
      * Sets the provided content sensitivity on the provided view, in production. In tests, it is
@@ -119,10 +119,10 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     SensitiveContentClient(
             WebContents webContents, ContentSensitivitySetter contentSensitivitySetter) {
         mWebContents = webContents;
-        mLastViewAndroidDelegate =
+        mViewAndroidDelegate =
                 new WeakReference<ViewAndroidDelegate>(mWebContents.getViewAndroidDelegate());
-        if (mLastViewAndroidDelegate.get() != null) {
-            mLastViewAndroidDelegate.get().addObserver(this);
+        if (mViewAndroidDelegate.get() != null) {
+            mViewAndroidDelegate.get().addObserver(this);
         }
         mContentSensitivitySetter = contentSensitivitySetter;
         mObservers = new ObserverList<Observer>();
@@ -130,8 +130,8 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
 
     @CalledByNative
     private void destroy() {
-        if (mLastViewAndroidDelegate.get() != null) {
-            mLastViewAndroidDelegate.get().removeObserver(this);
+        if (mViewAndroidDelegate.get() != null) {
+            mViewAndroidDelegate.get().removeObserver(this);
         }
         mObservers.clear();
     }
@@ -164,7 +164,25 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
      */
     @Override
     public void onUpdateContainerView(ViewGroup view) {
-        assert view == mWebContents.getViewAndroidDelegate().getContainerView();
+        assert view == mViewAndroidDelegate.get().getContainerView();
+        setContentSensitivity(mContentIsSensitive);
+    }
+
+    /**
+     * A new {@link ViewAndroidDelegate} is associated with the new {@link WebContents}. The new
+     * {@link ViewAndroidDelegate} must be now observed.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    void onViewAndroidDelegateSet() {
+        if (mViewAndroidDelegate.get() != null) {
+            mViewAndroidDelegate.get().removeObserver(this);
+        }
+        mViewAndroidDelegate =
+                new WeakReference<ViewAndroidDelegate>(mWebContents.getViewAndroidDelegate());
+        if (mViewAndroidDelegate.get() != null) {
+            mViewAndroidDelegate.get().addObserver(this);
+        }
         setContentSensitivity(mContentIsSensitive);
     }
 
@@ -177,21 +195,13 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     @CalledByNative
     @VisibleForTesting
     void setContentSensitivity(boolean contentIsSensitive) {
-        final ViewAndroidDelegate viewAndroidDelegate = mWebContents.getViewAndroidDelegate();
-        if (mLastViewAndroidDelegate.get() != viewAndroidDelegate) {
-            if (mLastViewAndroidDelegate.get() != null) {
-                mLastViewAndroidDelegate.get().removeObserver(this);
-            }
-            if (viewAndroidDelegate != null) {
-                viewAndroidDelegate.addObserver(this);
-            }
-            mLastViewAndroidDelegate = new WeakReference<ViewAndroidDelegate>(viewAndroidDelegate);
-        }
-
-        if (viewAndroidDelegate == null) {
+        // If {@link WebContents} is being destroyed, then `mWebContents.getViewAndroidDelegate()`
+        // might be null, while `mViewAndroidDelegate.get()` might not be null.
+        if (mWebContents.getViewAndroidDelegate() == null) {
             return;
         }
-        View containerView = viewAndroidDelegate.getContainerView();
+        assert mWebContents.getViewAndroidDelegate() == mViewAndroidDelegate.get();
+        View containerView = mViewAndroidDelegate.get().getContainerView();
         if (containerView == null) {
             return;
         }
