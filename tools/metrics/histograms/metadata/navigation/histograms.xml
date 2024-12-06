@@ -2378,6 +2378,7 @@ chromium-metrics-reviews@google.com.
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from the speculative RFH previously created for the navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram
@@ -2396,6 +2397,7 @@ chromium-metrics-reviews@google.com.
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from a speculative RFH previously created for the navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram
@@ -2415,6 +2417,7 @@ chromium-metrics-reviews@google.com.
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from the speculative RFH previously created for the navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram
@@ -2434,6 +2437,7 @@ chromium-metrics-reviews@google.com.
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from the speculative RFH previously created for the navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram name="Navigation.{InitiatorType}.WastedSpeculativeRFHCase"
@@ -2449,6 +2453,7 @@ chromium-metrics-reviews@google.com.
     RenderFrameHostManager::GetFrameHostNavigation(). Note that this can be
     called multiple times for each navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram name="Navigation.{Stage}.{FrameType}" units="ms"
