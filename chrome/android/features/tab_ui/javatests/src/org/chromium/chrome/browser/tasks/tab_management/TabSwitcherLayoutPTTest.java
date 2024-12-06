@@ -324,6 +324,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @EnableAnimations
+    @RequiresRestart("Flaky on desktop (crbug.com/381679686), affects flake rate of other tests")
     public void testTabToGridAndBack_SoftCleanup_Ntp() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         RegularNewTabPageStation ntp = firstPage.openNewTabFast();
