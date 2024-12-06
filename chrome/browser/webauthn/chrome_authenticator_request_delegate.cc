@@ -968,7 +968,6 @@ void ChromeAuthenticatorRequestDelegate::ShowUI(
 
   if (dialog_model_->step() !=
       AuthenticatorRequestDialogModel::Step::kNotStarted) {
-    dialog_controller_->OnTransportAvailabilityChanged(std::move(tai));
     return;
   }
 

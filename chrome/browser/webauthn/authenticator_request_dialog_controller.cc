@@ -611,17 +611,6 @@ void AuthenticatorRequestDialogController::OnUserConfirmedPriorityMechanism() {
 
 void AuthenticatorRequestDialogController::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {
-  if (model_->step() != Step::kPasskeyAutofill) {
-    // Updating an in flight request is only supported for conditional UI.
-    return;
-  }
-
-  // If the user just opted in to sync, it is likely the hybrid discovery needs
-  // to be reconfigured for a newly synced down phone. Start the request over to
-  // give the request delegate a chance to do this.
-  for (auto& observer : model_->observers) {
-    observer.OnStartOver();
-  }
 }
 
 void AuthenticatorRequestDialogController::OnPasskeyModelShuttingDown() {
@@ -985,21 +974,6 @@ void AuthenticatorRequestDialogController::
   }
 
   DispatchRequestAsync(&*platform_authenticator_it);
-}
-
-void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
-    TransportAvailabilityInfo transport_availability) {
-  if (model_->step() != Step::kPasskeyAutofill) {
-    // Updating an in flight request is only supported for conditional UI.
-    return;
-  }
-  transport_availability_ = std::move(transport_availability);
-  UpdateModelForTransportAvailability();
-  SortRecognizedCredentials();
-  model_->mechanisms.clear();
-  PopulateMechanisms();
-  model_->priority_mechanism_index = IndexOfPriorityMechanism();
-  StartAutofillRequest();
 }
 
 void AuthenticatorRequestDialogController::OnPhoneContactFailed(
