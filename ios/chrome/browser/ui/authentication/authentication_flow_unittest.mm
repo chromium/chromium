@@ -185,11 +185,12 @@ class AuthenticationFlowTest : public PlatformTest {
     if (hosted_domain.length) {
       [[[performer_ stub] andDo:^(NSInvocation*) {
         managed_confirmation_dialog_shown_count_++;
-        [authentication_flow_ didAcceptManagedConfirmation];
+        [authentication_flow_ didAcceptManagedConfirmation:YES];
       }] showManagedConfirmationForHostedDomain:hosted_domain
                                       userEmail:user_email
                                  viewController:view_controller_
-                                        browser:browser_.get()];
+                                        browser:browser_.get()
+                      skipBrowsingDataMigration:NO];
 
       [[[performer_ expect] andDo:^(NSInvocation*) {
         [authentication_flow_

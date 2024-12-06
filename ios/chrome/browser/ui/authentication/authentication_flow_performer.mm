@@ -177,7 +177,8 @@ NSString* const kAuthenticationSnackbarCategory =
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                      userEmail:(NSString*)userEmail
                                 viewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser {
+                                       browser:(Browser*)browser
+                     skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration {
   DCHECK(!_managedConfirmationScreenCoordinator);
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
@@ -192,7 +193,8 @@ NSString* const kAuthenticationSnackbarCategory =
             initWithBaseViewController:viewController
                              userEmail:userEmail
                           hostedDomain:hostedDomain
-                               browser:browser];
+                               browser:browser
+             skipBrowsingDataMigration:skipBrowsingDataMigration];
     _managedConfirmationScreenCoordinator.delegate = self;
     [_managedConfirmationScreenCoordinator start];
     return;
@@ -517,12 +519,16 @@ NSString* const kAuthenticationSnackbarCategory =
   Browser* browser = _managedConfirmationAlertCoordinator.browser;
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
-  [self managedConfirmationDidAccept:accepted browser:browser];
+  [self managedConfirmationDidAccept:accepted
+                             browser:browser
+            keepBrowsingDataSeparate:NO];
 }
 
 // Called when the user accepted to continue to sign-in with a managed account.
 // `accepted` is YES when the user confirmed or NO if the user canceled.
-- (void)managedConfirmationDidAccept:(BOOL)accepted browser:(Browser*)browser {
+- (void)managedConfirmationDidAccept:(BOOL)accepted
+                             browser:(Browser*)browser
+            keepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
   if (!accepted) {
     base::RecordAction(
         base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
@@ -544,21 +550,24 @@ NSString* const kAuthenticationSnackbarCategory =
     // notification isn't needed anymore.
     [self updateUserPolicyNotificationStatusIfNeeded:prefService];
   }
-  [self.delegate didAcceptManagedConfirmation];
+  [self.delegate didAcceptManagedConfirmation:keepBrowsingDataSeparate];
 }
 
 #pragma mark - ManagedProfileCreationCoordinatorDelegate
 
 - (void)managedProfileCreationCoordinator:
             (ManagedProfileCreationCoordinator*)coordinator
-                                didAccept:(BOOL)accepted {
+                                didAccept:(BOOL)accepted
+                 keepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
   CHECK(!_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
   CHECK(!_errorAlertCoordinator, base::NotFatalUntil::M136);
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
   Browser* browser = _managedConfirmationScreenCoordinator.browser;
   [_managedConfirmationScreenCoordinator stop];
   _managedConfirmationScreenCoordinator = nil;
-  [self managedConfirmationDidAccept:accepted browser:browser];
+  [self managedConfirmationDidAccept:accepted
+                             browser:browser
+            keepBrowsingDataSeparate:keepBrowsingDataSeparate];
 }
 
 @end

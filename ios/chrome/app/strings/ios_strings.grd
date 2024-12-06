@@ -1816,6 +1816,21 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
         Your organization limits what you can sync.
       </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA" desc="Message displayed on the managed profile creation screen asking the user how they want to treat their existing browsing data when creating a managed profile.">
+       Choose what to do with the existing browsing data on this device, like passwords, history and more.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION" desc="Message displayed on the managed profile creation screen in a table view item asking the user if they want to keep their existing browsing data separate from the managed profile they will create.">
+       Choose what to do with the existing browsing data on this device, like passwords, history and more.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_LABEL" desc="Message displayed on the managed profile creation screen in a table view item asking the user if they want to keep their existing browsing data separate from the managed profile they will create.">
+       Keep data separate?
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_NO" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will bring their existing browsing data separate in the managed profile they will create.">
+       No
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_YES" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will be keeping their existing browsing data separate from the managed profile they will create.">
+       Yes
+      </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MANAGEMENT_DISCLAIMER" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
        The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which can view some information.
       </message>

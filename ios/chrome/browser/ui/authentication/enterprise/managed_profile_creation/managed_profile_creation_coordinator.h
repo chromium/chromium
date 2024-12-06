@@ -6,15 +6,18 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_ENTERPRISE_MANAGED_PROFILE_CREATION_MANAGED_PROFILE_CREATION_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class ManagedProfileCreationCoordinator;
+@class ManagedProfileCreationMediator;
 
 @protocol ManagedProfileCreationCoordinatorDelegate <NSObject>
 
 - (void)managedProfileCreationCoordinator:
             (ManagedProfileCreationCoordinator*)coordinator
-                                didAccept:(BOOL)didAccept;
+                                didAccept:(BOOL)didAccept
+                 keepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate;
 
 @end
 
@@ -29,6 +32,7 @@
                                  userEmail:(NSString*)userEmail
                               hostedDomain:(NSString*)hostedDomain
                                    browser:(Browser*)browser
+                 skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
