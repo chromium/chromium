@@ -177,11 +177,11 @@ void VotesUploader::OnFieldTypesDetermined(
     bool observed_submission,
     ukm::SourceId ukm_source_id,
     std::unique_ptr<FormStructure> form) {
+  WipeQueuedVotesForForm(form->form_signature());
   if (observed_submission) {
     UploadVote(std::move(form), initial_interaction_timestamp,
                submission_timestamp, observed_submission, ukm_source_id);
   } else {
-    WipeQueuedVotesForForm(form->form_signature());
     TruncateQueueIfNecessary();
     queued_votes_.push_front(
         {.form_signature = form->form_signature(),
@@ -252,9 +252,6 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
 
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.
-  if (observed_submission) {
-    WipeQueuedVotesForForm(submitted_form->form_signature());
-  }
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFields() ||
       submitted_form->ShouldBeQueried()) {
@@ -264,15 +261,9 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
         initial_interaction_timestamp, submission_timestamp,
         owner_->client().GetFormInteractionsUkmLogger(), ukm_source_id,
         observed_submission);
-    if (observed_submission) {
-      // Ensure that callbacks for blur votes get sent as well here because
-      // we are not sure whether a full navigation with a Reset() call follows.
-      FlushQueuedVotes();
-    }
   }
-  if (!submitted_form->ShouldBeUploaded()) {
-    return;
-  }
+  // TODO(crbug.com/40100455): Remove the CHECK in M134.
+  CHECK(submitted_form->ShouldBeUploaded(), base::NotFatalUntil::M134);
   if (autofill_metrics::ShouldRecordUkm() &&
       submitted_form->ShouldUploadUkm(
           /*require_classified_field=*/true)) {
