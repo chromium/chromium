@@ -531,9 +531,11 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
         'rendering.desktop.notracing',
     ], 2).Repeat([
         'speedometer3',
-    ], 6)
+    ], 6).Repeat([
+        'jetstream2',
+    ], 11)
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('jetstream2', pageset_repeat=11),
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3', pageset_repeat=22),
     _GetBenchmarkConfig('rendering.desktop.notracing'),

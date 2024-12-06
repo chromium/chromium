@@ -253,17 +253,17 @@ TARGET_DEVICES = {
     },
     'mac-m1_mini_2020-perf': {
         'jetstream2': {
-            'JetStream2': 5,
+            'JetStream2': 6,
         },
         'jetstream2-minorms': {
             'JetStream2': 5,
         },
         'jetstream2.crossbench': 5,
         'speedometer2': {
-            'Speedometer2': 28,
+            'Speedometer2': 20,
         },
         'speedometer2-minorms': {
-            'Speedometer2': 28,
+            'Speedometer2': 20,
         },
         'speedometer3': {
             'Speedometer3': 28,
@@ -277,11 +277,11 @@ TARGET_DEVICES = {
     },
     'mac-m1_mini_2020-perf-pgo': {
         'jetstream2': {
-            'JetStream2': 4,
+            'JetStream2': 6,
         },
         'jetstream2.crossbench': 4,
         'speedometer2': {
-            'Speedometer2': 7,
+            'Speedometer2': 5,
         },
         'speedometer3': {
             'Speedometer3': 7,
