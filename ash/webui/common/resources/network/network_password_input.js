@@ -221,6 +221,8 @@ class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
   }
 
   /**
+   * If the fake password is showing, delete the password and focus the input
+   * when clicked so the user can enter a new password.
    * @param {!Event} event
    * @private
    */
@@ -229,17 +231,10 @@ class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
       return;
     }
 
+    this.value = '';
     if (document.activeElement !== event.target) {
-      // Focus the field and select the placeholder text if not already focused.
+      // Focus the field if not already focused.
       this.focus();
-    }
-
-    // Prevent using the mouse or touchscreen to move the cursor or change the
-    // selection when the placeholder password is displayed.  This prevents
-    // the user from modifying the placeholder, only allows it to be left alone
-    // or completely removed.
-    if (event.cancelable) {
-      event.preventDefault();
     }
   }
 }

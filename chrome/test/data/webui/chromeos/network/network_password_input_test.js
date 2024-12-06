@@ -5,6 +5,7 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/network_password_input.js';
 
+import {FAKE_CREDENTIAL} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -62,5 +63,25 @@ suite('CrComponentsNetworkPasswordInputTest', function() {
     assertTrue(!!passwordInput);
 
     assertEquals('test_aria_label', passwordInput.ariaLabel);
+  });
+
+  test('Clear placeholder password on click', function() {
+    const passwordInput = networkPassword.$$('#input');
+    assertTrue(!!passwordInput);
+
+    passwordInput.value = FAKE_CREDENTIAL;
+    passwordInput.dispatchEvent(new MouseEvent('mousedown'));
+    assertEquals('', passwordInput.value);
+
+    passwordInput.value = FAKE_CREDENTIAL;
+    passwordInput.dispatchEvent(new MouseEvent('touchstart'));
+    assertEquals('', passwordInput.value);
+
+    // Verify that clicking the input while not showing the placeholder does not
+    // delete the password.
+    const newPassword = 'new password'
+    passwordInput.value = newPassword;
+    passwordInput.dispatchEvent(new MouseEvent('mousedown'));
+    assertEquals(newPassword, passwordInput.value);
   });
 });
