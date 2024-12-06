@@ -30,4 +30,6 @@
 <DataView> = new DataView(<ArrayBuffer>)
 <Internals> = internals
 <Navigator> = window.navigator
+<Document> = document
+<Window> = window
 <null> = null
