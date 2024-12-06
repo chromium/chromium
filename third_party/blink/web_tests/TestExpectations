@@ -2690,6 +2690,7 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] wpt_internal/css/css-images/img-view-box-contents-opaque.html [ Failure ]
 crbug.com/382547589 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?1-2 [ Crash ]
 crbug.com/382521329 [ Linux ] external/wpt/pointerlock/pointerlock_without_gesture.html [ Crash Failure ]
 crbug.com/382302596 [ Mac14 ] external/wpt/webrtc/protocol/pt-no-bundle.html [ Timeout ]

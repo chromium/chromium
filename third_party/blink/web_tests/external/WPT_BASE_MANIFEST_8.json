@@ -24501,6 +24501,19 @@
        {}
       ]
      ],
+     "huge-font-crash-print.html": [
+      "6d58321b5678821cf3a0d67384aeed4e04ba2115",
+      [
+       null,
+       [
+        [
+         "/css/reference/nothing.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "input-file-print.html": [
       "a0700244632712c2453d62fd79e49344b7c73f0f",
       [
@@ -190485,6 +190498,32 @@
       ],
       "positioned-replaced-1.html": [
        "60b817933d33301c755be3785fd7cf56607c4539",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "positioned-replaced-2.html": [
+       "9a991d236ef2ddd7b8df1d4bff43578e5e741a68",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "positioned-replaced-3.html": [
+       "c11fcfd9521fc212929524e63f02a4ea218052c2",
        [
         null,
         [
@@ -360804,6 +360843,10 @@
       []
      ],
      "forms": {
+      "WEB_FEATURES.yml": [
+       "32d30b522e666eb6d4c7dae3a5bacc7f9ecfa382",
+       []
+      ],
       "checkbox-appearance-native-vertical-lr-baseline.optional-ref.html": [
        "a43403ccf17d6539253aa76877843a53b47f0234",
        []
@@ -396404,6 +396447,10 @@
      "e096044c2bcf966a72324af6157d59b62d862338",
      []
     ],
+    "gpc.idl": [
+     "9a16904ce1e978a98fbd126810bee77ba5f02404",
+     []
+    ],
     "gyroscope.idl": [
      "fd80669bfc27bf32607dd02d37732cda6a359638",
      []
@@ -396546,6 +396593,10 @@
     ],
     "mediacapture-streams.idl": [
      "f6c8e2b82da6b617a44ed5d5aec31720d7c54740",
+     []
+    ],
+    "mediacapture-surface-control.idl": [
+     "b0bbd22304fd7add21b5910a3377a5100ecb02ec",
      []
     ],
     "mediacapture-transform.idl": [
@@ -396741,7 +396792,7 @@
      []
     ],
     "sanitizer-api.idl": [
-     "8f5c667973a359ed576c143b0a5aa639c0a89b94",
+     "47c6d12fab02b5a27953a49b7230ff9b3f24feac",
      []
     ],
     "sanitizer-api.tentative.idl": [
@@ -396873,7 +396924,7 @@
      []
     ],
     "vibration.idl": [
-     "22ab1c47df0193cca84ce1a6e99368e5d80bca3e",
+     "175d240d10d7042c54674fd2ccd807c7f46cc128",
      []
     ],
     "video-rvfc.idl": [
@@ -397009,7 +397060,7 @@
      []
     ],
     "webnn.idl": [
-     "9f17b6ceb716ce6eaa9ff169fb803a079cf7a93e",
+     "132280b05f8d3fa6074955a1be2cb8e40706d500",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -405703,7 +405754,7 @@
      []
     ],
     "testharness.js": [
-     "04c65eb2e9dde8ae8c94a2d4a469971b0da710c3",
+     "81cf6175588edd3c282d187480b5dc59c5213889",
      []
     ],
     "testharness.js.headers": [
@@ -414396,6 +414447,38 @@
        "7577c4c3f5ac42053abc59a9c9b350dea5e138f9",
        []
       ],
+      "to-fixed-length-buffer-shared.any-expected.txt": [
+       "242d52ca0c8b1839747c4c250e24dc139d3b9454",
+       []
+      ],
+      "to-fixed-length-buffer-shared.any.worker-expected.txt": [
+       "242d52ca0c8b1839747c4c250e24dc139d3b9454",
+       []
+      ],
+      "to-fixed-length-buffer.any-expected.txt": [
+       "2ba00bc52db994dbd2d3444855b002bbfa8b2c98",
+       []
+      ],
+      "to-fixed-length-buffer.any.worker-expected.txt": [
+       "2ba00bc52db994dbd2d3444855b002bbfa8b2c98",
+       []
+      ],
+      "to-resizable-buffer-shared.any-expected.txt": [
+       "811c4599ca1a7353b967a24d030c0d3f398e6532",
+       []
+      ],
+      "to-resizable-buffer-shared.any.worker-expected.txt": [
+       "811c4599ca1a7353b967a24d030c0d3f398e6532",
+       []
+      ],
+      "to-resizable-buffer.any-expected.txt": [
+       "631048190cd5cb7faf3c89f270fdb7a16db114e9",
+       []
+      ],
+      "to-resizable-buffer.any.worker-expected.txt": [
+       "631048190cd5cb7faf3c89f270fdb7a16db114e9",
+       []
+      ],
       "type.tentative.any-expected.txt": [
        "71d7f0674f5c1eb49374fd1b72bc9c4bedbf9e4b",
        []
@@ -414442,7 +414525,7 @@
       ]
      },
      "wasm-module-builder.js": [
-      "7fa196c58c17fd5e2bafe336b0182b754de09d6c",
+      "e8c65ed8c1210059618744568e895d2f318ee76c",
       []
      ]
     },
@@ -495848,7 +495931,7 @@
       ]
      ],
      "transition-behavior.html": [
-      "fa24509a37386126f0a1de5098dad2d9056a2814",
+      "4c2ddb3c63baa3e146af1427293c7dedd8b8564c",
       [
        null,
        {}
@@ -629930,6 +630013,15 @@
       {}
      ]
     ],
+    "inert-form-control.html": [
+     "b8d17d2b0d0bb52490f341cfb5f6912556a403e2",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "inert-iframe-hittest.html": [
      "d6c3551e996e4ae727096f1bef82b5706fd5bc97",
      [
@@ -642092,7 +642184,7 @@
       ]
      ],
      "entries-after-blob-navigation.html": [
-      "67611f4d446cc25895058c18007190c957ea458a",
+      "0ad2b059697f9a8278353881273057c0f19b36b0",
       [
        null,
        {}
@@ -693245,6 +693337,13 @@
          ]
         }
        ]
+      ],
+      "script.window.js": [
+       "df855954c4b7e74ccf364d4a92459e9f83471930",
+       [
+        "subresource-integrity/signatures/tentative/script.window.html",
+        {}
+       ]
       ]
      }
     },
@@ -708049,6 +708148,202 @@
           [
            "script",
            "/wasm/jsapi/memory/assertions.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "to-fixed-length-buffer-shared.any.js": [
+       "ddaab236f41d8d2c8544ba9fe366d8a562f33d8b",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/memory/to-fixed-length-buffer-shared.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/memory/to-fixed-length-buffer-shared.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "to-fixed-length-buffer.any.js": [
+       "196324960eca0670a1957c04dbd70cee39b73644",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/memory/to-fixed-length-buffer.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/memory/to-fixed-length-buffer.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "to-resizable-buffer-shared.any.js": [
+       "3ef0e80995751a7caf503a9a903d9da05cfccf14",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/memory/to-resizable-buffer-shared.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/memory/to-resizable-buffer-shared.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "to-resizable-buffer.any.js": [
+       "270151460eb9235ef067864ed15320a6f6fc62f1",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/memory/to-resizable-buffer.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/memory/to-resizable-buffer.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
           ]
          ]
         }
