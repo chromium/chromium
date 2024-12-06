@@ -469,8 +469,7 @@ int main(int argc, char** argv) {
 
   std::string json_string;
   bool ok = base::JSONWriter::WriteWithOptions(
-      overall_dump, base::JSONWriter::Options::OPTIONS_PRETTY_PRINT,
-      &json_string);
+      overall_dump, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);
 
   if (ok) {
     base::FilePath json_filename = command_line->GetSwitchValuePath("json");
