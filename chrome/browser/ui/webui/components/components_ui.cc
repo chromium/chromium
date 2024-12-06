@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/components/components_handler.h"
@@ -32,7 +31,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -55,17 +54,12 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
     {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
     {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
     {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
-#if BUILDFLAG(IS_CHROMEOS)
-    {"os-components-text1", IDS_COMPONENTS_OS_TEXT1_LABEL},
-    {"os-components-text2", IDS_COMPONENTS_OS_TEXT2_LABEL},
-    {"os-components-link", IDS_COMPONENTS_OS_LINK},
-#endif
   };
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
       "isGuest",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()
 #else
