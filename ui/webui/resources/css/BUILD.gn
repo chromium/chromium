@@ -40,9 +40,6 @@ preprocess_if_expr("preprocess") {
   }
 
   if (is_chromeos) {
-    in_files += [
-      "os_header.css",
-      "overlay.css",
-    ]
+    in_files += [ "os_header.css" ]
   }
 }
