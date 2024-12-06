@@ -43,9 +43,6 @@ class TestVotesUploader : public VotesUploader {
       base::TimeTicks initial_interaction_timestamp,
       ukm::SourceId ukm_source_id) override;
 
-  void QueueVote(FormSignature form_signature,
-                 base::OnceClosure callback) override;
-
   void UploadVote(std::unique_ptr<FormStructure> submitted_form,
                   base::TimeTicks initial_interaction_timestamp,
                   base::TimeTicks submission_timestamp,
@@ -68,7 +65,6 @@ class TestVotesUploader : public VotesUploader {
  private:
   friend class TestBrowserAutofillManager;
 
-  std::unique_ptr<base::RunLoop> run_loop_;
   std::string submitted_form_signature_;
   std::optional<bool> expected_observed_submission_;
   std::vector<FieldTypeSet> expected_submitted_field_types_;

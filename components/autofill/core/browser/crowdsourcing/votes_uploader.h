@@ -45,14 +45,18 @@ class BrowserAutofillManager;
 //       ▼
 //   DeterminePossibleFieldTypesForUpload()
 //       │
+//       │async
+//       │
 //       │       if submission
 //       ├──────►────────────────────────────────┐
 //       │else                                   │
 //       │                                       │
 //       ▼                                       │
-//   QueueVote()                                 │
-//   - Runs oldest callbacks if buffer is full.  │
-//   - Stores a vote callback.                   │
+//   Store QueuedVote, which is uploaded when    │
+//   - a submission happens in the frame         │
+//   - the frame is reset;                       │
+//   - the frame is deleted;                     │
+//   - the queue becomes too large.              │
 //                                               │
 //   QueuedVote::upload_vote                     │
 //       │                                       │
@@ -99,13 +103,6 @@ class VotesUploader {
   std::u16string last_unlocked_credit_card_cvc_;
 
  protected:
-  // Stores a `callback` for `form_signature`, possibly overriding an older
-  // callback for `form_signature` or triggering a pending callback in case too
-  // many callbacks are stored to create space.
-  // Virtual and protected for testing.
-  virtual void QueueVote(FormSignature form_signature,
-                         base::OnceClosure callback);
-
   // Logs quality metrics for the |submitted_form| and uploads votes for the
   // field types to the crowdsourcing server, if appropriate.
   // |observed_submission| indicates whether the upload is a result of an
@@ -122,6 +119,14 @@ class VotesUploader {
 
   struct QueuedVote;
 
+  // The reply for DeterminePossibleFieldTypesForUpload().
+  // TODO(crbug.com/374086145): Rename the function.
+  void Reply(base::TimeTicks initial_interaction_timestamp,
+             base::TimeTicks submission_timestamp,
+             bool observed_submission,
+             ukm::SourceId ukm_source_id,
+             std::unique_ptr<FormStructure> submitted_form);
+
   // Called after the values present on submitted fields were associated with
   // Autofill field types. It is used to route calls to
   // `UploadVotesAndLogQuality()` and
@@ -136,7 +141,12 @@ class VotesUploader {
   // Removes the callbacks for the given `form_signature` without calling them.
   void WipeQueuedVotesForForm(FormSignature form_signature);
 
+  // Wipes the oldest callbacks if the queue size exceeds a threshold.
+  void TruncateQueueIfNecessary();
+
   AutofillClient& client();
+
+  base::SequencedTaskRunner& vote_upload_task_runner();
 
   // List of callbacks to be called for sending blur votes. Only one callback is
   // stored per FormSignature. We rely on FormSignatures rather than

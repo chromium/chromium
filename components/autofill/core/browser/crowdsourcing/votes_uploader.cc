@@ -74,6 +74,17 @@ AutofillClient& VotesUploader::client() {
   return owner_->client();
 }
 
+base::SequencedTaskRunner& VotesUploader::vote_upload_task_runner() {
+  if (!vote_upload_task_runner_) {
+    // If the priority is BEST_EFFORT, the task can be preempted, which is
+    // thought to cause high memory usage (as memory is retained by the task
+    // while it is preempted), https://crbug.com/974249
+    vote_upload_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  }
+  return *vote_upload_task_runner_;
+}
+
 void VotesUploader::WipeQueuedVotesForForm(FormSignature form_signature) {
   std::erase_if(queued_votes_, [form_signature](const QueuedVote& vote) {
     return vote.form_signature == form_signature;
@@ -134,53 +145,55 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
   PreProcessStateMatchingTypes(client(), copied_profiles, *form);
 
-  // Ownership of |form| is passed to the OnFieldTypesDetermined() call.
-  FormStructure* raw_form = form.get();
-
-  base::OnceClosure call_after_determine_field_types = base::BindOnce(
-      &VotesUploader::OnFieldTypesDetermined, weak_ptr_factory_.GetWeakPtr(),
-      std::move(form), initial_interaction_timestamp, base::TimeTicks::Now(),
-      observed_submission, ukm_source_id);
-
-  // If the form was not submitted (e.g. the user just removed the focus from
-  // the form), it's possible that later modifications lead to more accurate
-  // votes. In this case we just want to cache the upload and have a chance to
-  // override it with better data.
-  if (!observed_submission) {
-    call_after_determine_field_types = base::BindOnce(
-        &VotesUploader::QueueVote, weak_ptr_factory_.GetWeakPtr(),
-        raw_form->form_signature(),
-        std::move(call_after_determine_field_types));
-  }
-
-  if (!vote_upload_task_runner_) {
-    // If the priority is BEST_EFFORT, the task can be preempted, which is
-    // thought to cause high memory usage (as memory is retained by the task
-    // while it is preempted), https://crbug.com/974249
-    vote_upload_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  }
-
   // TODO(crbug.com/368306576): Bound the size of `copied_profiles` and
   // `copied_credit_cards` by `kMaxDataConsideredForPossibleTypes` and make
-  // the call to DeterminePossibleFieldTypesForUpload synchronous.
-  vote_upload_task_runner_->PostTaskAndReply(
+  // the call to DeterminePossibleFieldTypesForUpload() synchronous.
+  vote_upload_task_runner().PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DeterminePossibleFieldTypesForUpload,
-                     std::move(copied_profiles), std::move(copied_credit_cards),
-                     last_unlocked_credit_card_cvc_, client().GetAppLocale(),
-                     raw_form),
-      std::move(call_after_determine_field_types));
-
+      base::BindOnce(
+          [](const std::vector<AutofillProfile>& profiles,
+             const std::vector<CreditCard>& credit_cards,
+             const std::u16string& last_unlocked_credit_card_cvc,
+             const std::string& app_locale,
+             std::unique_ptr<FormStructure> form) {
+            DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
+                                                 last_unlocked_credit_card_cvc,
+                                                 app_locale, form.get());
+            return form;
+          },
+          std::move(copied_profiles), std::move(copied_credit_cards),
+          last_unlocked_credit_card_cvc_, client().GetAppLocale(),
+          std::move(form)),
+      base::BindOnce(&VotesUploader::Reply, weak_ptr_factory_.GetWeakPtr(),
+                     initial_interaction_timestamp, base::TimeTicks::Now(),
+                     observed_submission, ukm_source_id));
   return true;
 }
 
-void VotesUploader::QueueVote(FormSignature form_signature,
-                              base::OnceClosure callback) {
-  // Remove entries with the same FormSignature to replace them.
-  WipeQueuedVotesForForm(form_signature);
+void VotesUploader::Reply(base::TimeTicks initial_interaction_timestamp,
+                          base::TimeTicks submission_timestamp,
+                          bool observed_submission,
+                          ukm::SourceId ukm_source_id,
+                          std::unique_ptr<FormStructure> form) {
+  if (observed_submission) {
+    OnFieldTypesDetermined(std::move(form), initial_interaction_timestamp,
+                           submission_timestamp, observed_submission,
+                           ukm_source_id);
+  } else {
+    WipeQueuedVotesForForm(form->form_signature());
+    TruncateQueueIfNecessary();
+    queued_votes_.push_front(
+        {.form_signature = form->form_signature(),
+         .upload_vote =
+             base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(form),
+                            initial_interaction_timestamp, submission_timestamp,
+                            observed_submission, ukm_source_id)});
+  }
+}
 
-  // Entries in queued_vote_uploads_ are submitted after navigations or form
+void VotesUploader::TruncateQueueIfNecessary() {
+  // Entries in queued_votes_ are submitted after navigations or form
   // submissions. To reduce the risk of collecting too much data that is not
   // send, we allow only `kMaxEntriesInQueue` entries. Anything in excess will
   // be sent when the queue becomes to long.
@@ -191,8 +204,6 @@ void VotesUploader::QueueVote(FormSignature form_signature,
     queued_votes_.pop_back();
     std::move(oldest_callback).Run();
   }
-
-  queued_votes_.emplace_front(form_signature, std::move(callback));
 }
 
 // We explicitly pass in all the time stamps of interest, as the cached ones
