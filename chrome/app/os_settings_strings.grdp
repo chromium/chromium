@@ -1180,7 +1180,7 @@
   <message name="IDS_SETTINGS_DOWNLOADS_SMB_SHARES" desc="In Downloads Settings, the title of the SMB shares setting section.">
     Network file shares
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_DOWNLOADS_SMB_SHARES_DESCRIPTION" desc="In Files Settings, the description of the SMB shares setting section.">
+  <message name="IDS_OS_SETTINGS_DOWNLOADS_SMB_SHARES_DESCRIPTION" desc="In Files Settings, the description of the SMB shares setting section.">
     Access shared files, folders, or drives on a local network. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_DOWNLOADS_SMB_SHARES_LEARN_MORE_LABEL" desc="Label for the link that teaches users how to setup SMB shares.">

@@ -9,7 +9,6 @@
  */
 
 import '/strings.m.js';
-
 /** Subpages */
 import './date_time_page/timezone_subpage.js';
 import './device_page/customize_mouse_buttons_subpage.js';
@@ -289,7 +288,6 @@ export {FilesSettingsCardElement} from './os_files_page/files_settings_card.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
 export {OneDriveConnectionState, SettingsOneDriveSubpageElement} from './os_files_page/one_drive_subpage.js';
-export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {SettingsSmbSharesPageElement} from './os_files_page/smb_shares_page.js';
 export {OsSettingsAddItemsDialogElement} from './os_languages_page/add_items_dialog.js';
 export {OsSettingsAppLanguagesPageElement} from './os_languages_page/app_languages_page.js';

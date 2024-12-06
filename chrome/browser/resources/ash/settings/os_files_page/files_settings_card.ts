@@ -25,7 +25,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {assertExhaustive} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../router.js';
@@ -78,14 +77,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         readOnly: true,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
       /**
        * Indicates whether the user is connected to OneDrive or not.
        */
@@ -93,27 +84,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         type: String,
         value: () => {
           return OneDriveConnectionState.LOADING;
-        },
-      },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              googleDrive: 'os-settings:google-drive-revamp',
-              ms365: 'os-settings:ms365',
-              oneDrive: 'settings20:onedrive',
-              smbShares: 'os-settings:folder-shared',
-            };
-          }
-
-          return {
-            googleDrive: 'os-settings:google-drive',
-            ms365: '',
-            oneDrive: 'settings20:onedrive',
-            smbShares: '',
-          };
         },
       },
 
@@ -162,11 +132,9 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   private driveDisabled_: boolean;
   private isBulkPinningEnabled_: boolean;
   private isMirrorSyncEnabled_: boolean;
-  private readonly isRevampWayfindingEnabled_: boolean;
   private oneDriveBrowserProxy_: OneDriveBrowserProxy|undefined;
   private oneDriveConnectionState_: OneDriveConnectionState;
   private oneDriveEmailAddress_: string|null;
-  private rowIcons_: Record<string, string>;
   private smbBrowserProxy_: SmbBrowserProxy;
   private shouldShowAddSmbButton_: boolean;
   private shouldShowAddSmbDialog_: boolean;
@@ -178,8 +146,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     super();
 
     /** RouteOriginMixin override */
-    this.route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
-                                                   routes.FILES;
+    this.route = routes.SYSTEM_PREFERENCES;
 
     this.smbBrowserProxy_ = SmbBrowserProxyImpl.getInstance();
 
@@ -270,10 +237,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   }
 
   private computeShowSmbLinkRow_(): boolean {
-    if (!this.isRevampWayfindingEnabled_) {
-      return true;
-    }
-
     return !this.shouldShowAddSmbButton_;
   }
 

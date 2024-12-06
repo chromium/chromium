@@ -276,14 +276,6 @@ const TestParam kTestParams[] = {
             {ash::features::kFeatureManagementDriveFsBulkPinning},
         .disabled_features = {},
     },
-
-    // OsSettingsRevampWayfinding feature test variations
-    {
-        .test_suffix = "BulkPinning_Revamp",
-        .enabled_features =
-            {ash::features::kFeatureManagementDriveFsBulkPinning},
-        .disabled_features = {},
-    },
 };
 
 INSTANTIATE_TEST_SUITE_P(,

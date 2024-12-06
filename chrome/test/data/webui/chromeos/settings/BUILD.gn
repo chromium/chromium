@@ -283,7 +283,6 @@ build_webui_tests("build") {
     "os_files_page/office_page_test.ts",
     "os_files_page/one_drive_page_test.ts",
     "os_files_page/one_drive_test_browser_proxy.ts",
-    "os_files_page/os_files_page_test.ts",
     "os_files_page/smb_shares_page_test.ts",
     "os_files_page/test_smb_browser_proxy.ts",
 

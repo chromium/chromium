@@ -184,7 +184,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   DISPLAY: Route;
   EXTERNAL_STORAGE_PREFERENCES: Route;
   FINGERPRINT: Route;
-  FILES: Route;
   GOOGLE_ASSISTANT: Route;
   GOOGLE_DRIVE: Route;
   GRAPHICS_TABLET: Route;
@@ -658,26 +657,6 @@ export function createRoutes(): OsSettingsRoutes {
     r.POWER =
         createSubpage(r.DEVICE, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
 
-    // Files section.
-    if (!isGuest()) {
-      r.FILES = createSection(
-          r.ADVANCED, routesMojom.FILES_SECTION_PATH, Section.kFiles);
-      r.GOOGLE_DRIVE = createSubpage(
-          r.FILES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH, Subpage.kGoogleDrive);
-      if (loadTimeData.getBoolean('showOneDriveSettings')) {
-        r.ONE_DRIVE = createSubpage(
-            r.FILES, routesMojom.ONE_DRIVE_SUBPAGE_PATH, Subpage.kOneDrive);
-      }
-      if (loadTimeData.getBoolean('showOfficeSettings')) {
-        r.OFFICE = createSubpage(
-            r.FILES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
-            Subpage.kOfficeFiles);
-      }
-      r.SMB_SHARES = createSubpage(
-          r.FILES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,
-          Subpage.kNetworkFileShares);
-    }
-
     // Languages and Input section.
     r.OS_LANGUAGES = createSection(
         r.ADVANCED, routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH,
@@ -754,10 +733,6 @@ const PATH_REDIRECT_PAIRS: Array<[string, string]> = [
   [
     routesMojom.MY_ACCOUNTS_SUBPAGE_PATH,
     routesMojom.PEOPLE_SECTION_PATH,
-  ],
-  [
-    routesMojom.FILES_SECTION_PATH,
-    routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
   ],
   // TODO(b/309808834) Remove this pair once the Bluetooth L1 page is revamped
   // with up-leveled content.
