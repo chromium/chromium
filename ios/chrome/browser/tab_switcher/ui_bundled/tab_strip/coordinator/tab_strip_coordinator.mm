@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/context_menu/tab_strip_context_menu_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -111,6 +112,7 @@
   self.mediator.browser = self.browser;
   self.mediator.tabStripHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabStripCommands);
+  self.mediator.URLLoader = UrlLoadingBrowserAgent::FromBrowser(self.browser);
 
   self.contextMenuHelper = [[TabStripContextMenuHelper alloc]
       initWithBrowserList:browserList
