@@ -111,10 +111,15 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
 TabStripComboButton::~TabStripComboButton() {}
 
 void TabStripComboButton::UpdateSeparatorVisibility() {
+  const views::Button::ButtonState new_tab_button_state =
+      new_tab_button_->GetState();
+  const views::Button::ButtonState tab_search_button_state =
+      tab_search_container_->tab_search_button()->GetState();
   separator_->SetVisible(
-      new_tab_button_->GetState() != views::Button::STATE_HOVERED &&
-      tab_search_container_->tab_search_button()->GetState() !=
-          views::Button::STATE_HOVERED);
+      new_tab_button_state != views::Button::STATE_HOVERED &&
+      new_tab_button_state != views::Button::STATE_PRESSED &&
+      tab_search_button_state != views::Button::STATE_HOVERED &&
+      tab_search_button_state != views::Button::STATE_PRESSED);
 }
 
 BEGIN_METADATA(TabStripComboButton)
