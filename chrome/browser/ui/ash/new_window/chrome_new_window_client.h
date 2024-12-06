@@ -50,6 +50,7 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void OpenPersonalizationHub() override;
   void OpenCaptivePortalSignin(const GURL& url) override;
   void OpenFile(const base::FilePath& file_path) override;
+  void ToggleGeminiApp() override;
 
   // arc::ControlCameraAppDelegate:
   void LaunchCameraApp(const std::string& queries,

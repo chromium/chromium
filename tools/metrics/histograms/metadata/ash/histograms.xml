@@ -160,6 +160,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ToggleFullscreen"/>
   <variant name="ToggleFullscreenMagnifier"/>
   <variant name="ToggleGameDashboard"/>
+  <variant name="ToggleGeminiApp"/>
   <variant name="ToggleHighContrast"/>
   <variant name="ToggleImeMenuBubble"/>
   <variant name="ToggleMaximized"/>

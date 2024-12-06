@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -163,6 +164,11 @@ bool OpenFilesSwa(Profile* const profile,
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
                                params);
   return true;
+}
+
+bool IsGeminiApp(Browser* browser) {
+  return web_app::GetAppIdFromApplicationName(browser->app_name()) ==
+         ash::kGeminiAppId;
 }
 
 }  // namespace
@@ -523,6 +529,32 @@ void ChromeNewWindowClient::OpenFile(const base::FilePath& file_path) {
   platform_util::OpenItem(profile, file_path,
                           platform_util::OpenItemType::OPEN_FILE,
                           platform_util::OpenOperationCallback());
+}
+
+void ChromeNewWindowClient::ToggleGeminiApp() {
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  const auto& browsers = BrowserList::GetInstance()->OrderedByActivation();
+
+  auto it = std::find_if(browsers.begin(), browsers.end(),
+                         [profile](Browser* browser) {
+                           return browser->profile() == profile &&
+                                  browser->type() == Browser::Type::TYPE_APP &&
+                                  IsGeminiApp(browser);
+                         });
+
+  Browser* active_browser = (it != browsers.end()) ? *it : nullptr;
+  if (!active_browser) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+        ash::kGeminiAppId, ui::EF_NONE, apps::LaunchSource::kFromKeyboard);
+    return;
+  }
+
+  BrowserWindow* app_window = active_browser->window();
+  if (app_window->IsActive()) {
+    app_window->Minimize();
+  } else {
+    app_window->Activate();
+  }
 }
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,

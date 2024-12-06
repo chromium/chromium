@@ -4306,6 +4306,9 @@ No devices connected.
        <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH" desc="Label for accelerator action - Open Crosh window.">
         Open Crosh window
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_GEMINI_APP" desc="Label for accelerator action - Toggle Gemini App.">
+        Toggle Gemini
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_DIAGNOSTICS" desc="Label for accelerator action - Open Diagnostics App.">
         Open Diagnostics app
       </message>

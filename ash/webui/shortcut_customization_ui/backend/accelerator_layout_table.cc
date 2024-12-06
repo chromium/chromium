@@ -664,6 +664,14 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
                                  /*locked=*/false,
                                  mojom::AcceleratorLayoutStyle::kDefault,
                                  mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kToggleGeminiApp,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kToggleGeminiApp,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_GEMINI_APP,
+            mojom::AcceleratorCategory::kGeneral,
+            mojom::AcceleratorSubcategory::kApps,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
 
        // Device
        {AcceleratorAction::kVolumeUp,

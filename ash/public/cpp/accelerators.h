@@ -451,6 +451,13 @@ ASH_PUBLIC_EXPORT inline constexpr size_t
     kTilingWindowResizeAcceleratorDataLength =
         std::size(kTilingWindowResizeAcceleratorData);
 
+ASH_PUBLIC_EXPORT inline constexpr AcceleratorData kGeminiAcceleratorData[] = {
+    {true, ui::VKEY_F23, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kToggleGeminiApp},
+};
+ASH_PUBLIC_EXPORT inline constexpr size_t kGeminiAcceleratorDataLength =
+    std::size(kGeminiAcceleratorData);
+
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.
 class ASH_PUBLIC_EXPORT AcceleratorController {
