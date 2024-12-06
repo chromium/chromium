@@ -78,6 +78,7 @@ struct IsolatedWebAppUpdateOptions {
   IsolatedWebAppUpdateOptions(
       const GURL& update_manifest_url,
       UpdateChannel update_channel,
+      bool allow_downgrades,
       const std::optional<base::Version>& pinned_version);
 
   IsolatedWebAppUpdateOptions(const IsolatedWebAppUpdateOptions& other);
@@ -86,6 +87,7 @@ struct IsolatedWebAppUpdateOptions {
 
   GURL update_manifest_url;
   UpdateChannel update_channel;
+  bool allow_downgrades;
   std::optional<base::Version> pinned_version;
 };
 
@@ -186,6 +188,7 @@ class IsolatedWebAppUpdateManager
   void DiscoverUpdatesForApp(const IsolatedWebAppUrlInfo& url_info,
                              const GURL& update_manifest_url,
                              const UpdateChannel& update_channel,
+                             bool allow_downgrades,
                              const std::optional<base::Version>& pinned_version,
                              bool dev_mode);
 

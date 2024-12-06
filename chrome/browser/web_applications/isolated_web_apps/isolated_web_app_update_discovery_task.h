@@ -30,6 +30,7 @@ class IwaUpdateDiscoveryTaskParams {
   IwaUpdateDiscoveryTaskParams(
       const GURL& update_manifest_url,
       const UpdateChannel& update_channel,
+      bool allow_downgrades,
       const std::optional<base::Version>& pinned_version,
       const IsolatedWebAppUrlInfo& url_info,
       bool dev_mode);
@@ -39,6 +40,7 @@ class IwaUpdateDiscoveryTaskParams {
 
   const GURL& update_manifest_url() const { return update_manifest_url_; }
   const UpdateChannel& update_channel() const { return update_channel_; }
+  bool allow_downgrades() const { return allow_downgrades_; }
   const std::optional<base::Version>& pinned_version() const {
     return pinned_version_;
   }
@@ -48,6 +50,7 @@ class IwaUpdateDiscoveryTaskParams {
  private:
   GURL update_manifest_url_;
   UpdateChannel update_channel_;
+  bool allow_downgrades_;
   std::optional<base::Version> pinned_version_;
   IsolatedWebAppUrlInfo url_info_;
   bool dev_mode_;

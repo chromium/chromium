@@ -96,6 +96,7 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
       command_helper_(std::move(command_helper)),
       url_info_(std::move(url_info)),
       expected_version_(update_info.expected_version()),
+      allow_downgrades_(update_info.allow_downgrades()),
       update_source_(update_info.source()),
       web_contents_(std::move(web_contents)),
       optional_keep_alive_(std::move(optional_keep_alive)),
@@ -114,6 +115,7 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
                              expected_version_.has_value()
                                  ? expected_version_->GetString()
                                  : "unknown");
+  GetMutableDebugValue().Set("allow_downgrades", allow_downgrades_);
 }
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::
@@ -337,9 +339,11 @@ Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::UpdateInfo(
     IwaSourceWithModeAndFileOp source,
-    std::optional<base::Version> expected_version)
+    std::optional<base::Version> expected_version,
+    bool allow_downgrades)
     : source_(std::move(source)),
-      expected_version_(std::move(expected_version)) {}
+      expected_version_(std::move(expected_version)),
+      allow_downgrades_(allow_downgrades) {}
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::~UpdateInfo() = default;
 
@@ -357,7 +361,8 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::AsDebugValue() const {
           .Set("source", source_.ToDebugValue())
           .Set("expected_version", expected_version_.has_value()
                                        ? expected_version_->GetString()
-                                       : "<any>"));
+                                       : "<any>")
+          .Set("allow_downgrades", allow_downgrades_));
 }
 
 }  // namespace web_app

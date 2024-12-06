@@ -66,9 +66,11 @@ namespace web_app {
 IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions(
     const GURL& update_manifest_url,
     UpdateChannel update_channel,
+    bool allow_downgrades,
     const std::optional<base::Version>& pinned_version)
     : update_manifest_url(update_manifest_url),
       update_channel(update_channel),
+      allow_downgrades(allow_downgrades),
       pinned_version(pinned_version) {}
 
 IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions(
@@ -160,9 +162,9 @@ GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(Profile* profile) {
 
     id_to_update_options_map.emplace(
         options->web_bundle_id(),
-        IsolatedWebAppUpdateOptions(options->update_manifest_url(),
-                                    options->update_channel(),
-                                    options->pinned_version()));
+        IsolatedWebAppUpdateOptions(
+            options->update_manifest_url(), options->update_channel(),
+            options->allow_downgrades(), options->pinned_version()));
   }
 #endif
 
@@ -408,11 +410,13 @@ void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     const IsolatedWebAppUrlInfo& url_info,
     const GURL& update_manifest_url,
     const UpdateChannel& update_channel,
+    bool allow_downgrades,
     const std::optional<base::Version>& pinned_version,
     bool dev_mode) {
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
       IwaUpdateDiscoveryTaskParams(update_manifest_url, update_channel,
-                                   pinned_version, url_info, dev_mode),
+                                   allow_downgrades, pinned_version, url_info,
+                                   dev_mode),
       provider_->scheduler(), provider_->registrar_unsafe(),
       profile_->GetURLLoaderFactory()));
 
@@ -559,6 +563,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
 
   DiscoverUpdatesForApp(url_info, update_options->update_manifest_url,
                         update_options->update_channel,
+                        update_options->allow_downgrades,
                         update_options->pinned_version, /*dev_mode=*/false);
 
   return true;

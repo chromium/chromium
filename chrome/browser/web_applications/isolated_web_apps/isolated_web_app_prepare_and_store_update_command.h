@@ -79,7 +79,8 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   class UpdateInfo {
    public:
     UpdateInfo(IwaSourceWithModeAndFileOp source,
-               std::optional<base::Version> expected_version);
+               std::optional<base::Version> expected_version,
+               bool allow_downgrades = false);
     ~UpdateInfo();
 
     UpdateInfo(const UpdateInfo&);
@@ -91,10 +92,12 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
     const std::optional<base::Version>& expected_version() const {
       return expected_version_;
     }
+    bool allow_downgrades() const { return allow_downgrades_; }
 
    private:
     IwaSourceWithModeAndFileOp source_;
     std::optional<base::Version> expected_version_;
+    bool allow_downgrades_;
   };
 
   // `update_info` specifies the location of the update for the IWA referred to
@@ -167,6 +170,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   const IsolatedWebAppUrlInfo url_info_;
   const std::optional<base::Version> expected_version_;
+  bool allow_downgrades_;
 
   // The inferred integrity block data of the update bundle being processed.
   std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
