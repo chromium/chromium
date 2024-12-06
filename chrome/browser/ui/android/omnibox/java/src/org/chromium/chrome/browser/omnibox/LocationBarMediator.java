@@ -298,7 +298,9 @@ class LocationBarMediator
         if (hasFocus) {
             if (mNativeInitialized) RecordUserAction.record("FocusLocation");
             boolean shouldRetainOmniboxOnFocus = OmniboxFeatures.shouldRetainOmniboxOnFocus();
-            if (!mUrlFocusedWithPastedText && !shouldRetainOmniboxOnFocus) {
+            if (!mUrlFocusedWithPastedText
+                    && !shouldRetainOmniboxOnFocus
+                    && mLocationBarLayout.shouldClearTextOnFocus()) {
                 setUrlBarText(
                         UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_END);
             } else if (shouldRetainOmniboxOnFocus) {
