@@ -4597,7 +4597,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDifferentFields) {
 
   // Simulate form submission.
   FormSubmitted(form);
-  EXPECT_EQ(signature, manager().votes_uploader().submitted_form_signature());
+  EXPECT_EQ(signature, client().GetVotesUploader().submitted_form_signature());
 }
 
 // Test that we do not save form data when submitted fields contain default
@@ -4766,7 +4766,8 @@ TEST_F(BrowserAutofillManagerTest,
     test_api(form).field(i).set_value(expected_values[i]);
   }
 
-  manager().votes_uploader().set_expected_submitted_field_types(expected_types);
+  client().GetVotesUploader().set_expected_submitted_field_types(
+      expected_types);
   FormSubmitted(form);
 }
 
@@ -4814,8 +4815,9 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
 
   // We will expect these types in the upload and no observed submission (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  manager().votes_uploader().set_expected_submitted_field_types(expected_types);
-  manager().votes_uploader().set_expected_observed_submission(false);
+  client().GetVotesUploader().set_expected_submitted_field_types(
+      expected_types);
+  client().GetVotesUploader().set_expected_observed_submission(false);
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
@@ -4864,8 +4866,9 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  manager().votes_uploader().set_expected_submitted_field_types(expected_types);
-  manager().votes_uploader().set_expected_observed_submission(false);
+  client().GetVotesUploader().set_expected_submitted_field_types(
+      expected_types);
+  client().GetVotesUploader().set_expected_observed_submission(false);
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
@@ -4915,8 +4918,9 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  manager().votes_uploader().set_expected_submitted_field_types(expected_types);
-  manager().votes_uploader().set_expected_observed_submission(false);
+  client().GetVotesUploader().set_expected_submitted_field_types(
+      expected_types);
+  client().GetVotesUploader().set_expected_observed_submission(false);
 
   // Form was autofilled with user data.
   test_api(form).field(0).set_value(u"Elvis");

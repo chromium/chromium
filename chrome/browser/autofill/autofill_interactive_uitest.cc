@@ -3106,7 +3106,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   ASSERT_TRUE(content::ExecJs(GetWebContents(),
                               "document.getElementById('testform').submit();"));
   ASSERT_TRUE(std::move(submission_waiter).Wait());
-  ASSERT_TRUE(test_api(test_api(autofill_manager).votes_uploader())
+  ASSERT_TRUE(test_api(ContentAutofillClient::FromWebContents(GetWebContents())
+                           ->GetVotesUploader())
                   .FlushPendingVotes());
   load_stop_observer.Wait();
 

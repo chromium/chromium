@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #import "components/autofill/core/browser/password_form_classification.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
@@ -74,6 +75,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() override;
+  VotesUploader& GetVotesUploader() override;
   PersonalDataManager& GetPersonalDataManager() override;
   FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() override;
@@ -155,6 +157,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   raw_ptr<PrefService> pref_service_;
   raw_ptr<syncer::SyncService> sync_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
+  std::unique_ptr<VotesUploader> votes_uploader_;
   raw_ptr<PersonalDataManager> personal_data_manager_;
   raw_ptr<AutocompleteHistoryManager> autocomplete_history_manager_;
   raw_ptr<ProfileIOS> profile_;

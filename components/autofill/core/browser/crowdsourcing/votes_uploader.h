@@ -75,11 +75,11 @@ class BrowserAutofillManager;
 // TODO(crbug.com/374086145): Investigate if vote flushing should be decoupled
 // from BrowserAutofillManager lifetime.
 //
-// Owned by BrowserAutofillManager.
-// TODO(crbug.com/374086145): Move ownership to AutofillClient.
+// Owned by AutofillClient. This is so votes can be determined and uploaded when
+// the frame's AutofillManager has been destroyed already.
 class VotesUploader {
  public:
-  explicit VotesUploader(BrowserAutofillManager* owner);
+  explicit VotesUploader(AutofillClient* owner);
   VotesUploader(const VotesUploader&) = delete;
   VotesUploader& operator=(const VotesUploader&) = delete;
   virtual ~VotesUploader();
@@ -136,8 +136,6 @@ class VotesUploader {
   // Wipes the oldest callbacks if the queue size exceeds a threshold.
   void TruncateQueueIfNecessary();
 
-  AutofillClient& client();
-
   base::SequencedTaskRunner& vote_upload_task_runner();
 
   // List of callbacks to be called for sending blur votes. Only one callback is
@@ -163,8 +161,7 @@ class VotesUploader {
   // submission can trigger the upload of blur votes.
   scoped_refptr<base::SequencedTaskRunner> vote_upload_task_runner_;
 
-  // TODO(crbug.com/374086145): Remove or change to AutofillClient.
-  raw_ref<BrowserAutofillManager> owner_;
+  raw_ref<AutofillClient> client_;
 
   base::WeakPtrFactory<VotesUploader> weak_ptr_factory_{this};
 };
