@@ -124,14 +124,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Renderer4.ImageDecodeTaskDurationUs"
+<histogram base="true"
+    name="Renderer4.ImageDecodeTaskDurationUs{ImageOrTaskType}.{DecodeType}"
     units="microseconds" expires_after="2025-04-13">
-<!-- Name completed by histogram_suffixes name="DecodedImageType" -->
-
-<!-- Name completed by histogram_suffixes name="OutOfRaster" -->
-
-<!-- Name completed by histogram_suffixes name="RasterTaskType" -->
-
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
@@ -147,6 +142,28 @@ chromium-metrics-reviews@google.com.
     |TimeTicks::IsHighResolution()|). Such reports will cause this metric to
     have an abnormal distribution.
   </summary>
+  <token key="ImageOrTaskType">
+<!-- Most variants below mimic the `cc::ScopedImageTask::ImageType` enum
+     but the empty variant and `OutOfRaster` mimic `cc::ScopedImageDecodeTask::TaskType`
+    -->
+
+    <variant name=""/>
+    <variant name=".Avif"/>
+    <variant name=".Bmp"/>
+    <variant name=".Gif"/>
+    <variant name=".Ico"/>
+    <variant name=".Jpeg"/>
+    <variant name=".Other"/>
+    <variant name=".OutOfRaster"/>
+    <variant name=".Png"/>
+    <variant name=".WebP"/>
+  </token>
+  <token key="DecodeType">
+<!-- Variants below mimic `cc::ScopedImageDecodeTask::DecodeType` -->
+
+    <variant name="Gpu"/>
+    <variant name="Software"/>
+  </token>
 </histogram>
 
 <histogram name="Renderer4.InvalidationRegionApproximateRectCount"

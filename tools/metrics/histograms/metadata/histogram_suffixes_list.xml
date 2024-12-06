@@ -1045,28 +1045,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="DataUse.TrafficSize.User"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DecodedImageType" separator=".">
-<!-- Name completed by histogram_suffixes name="RasterTaskType" -->
-
-  <suffix base="true" name="Avif"
-      label="This metric is for only Avif image types."/>
-  <suffix base="true" name="Bmp"
-      label="This metric is for only Bmp image types."/>
-  <suffix base="true" name="Gif"
-      label="This metric is for only Gif image types."/>
-  <suffix base="true" name="Ico"
-      label="This metric is for only Ico image types."/>
-  <suffix base="true" name="Jpeg"
-      label="This metric is for only Jpeg image types."/>
-  <suffix base="true" name="Other"
-      label="This metric is for non-codec-backed lazy images."/>
-  <suffix base="true" name="Png"
-      label="This metric is for only Png image types."/>
-  <suffix base="true" name="WebP"
-      label="This metric is for only WebP image types."/>
-  <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DetachedResourceRequestSource" separator=".">
   <suffix name="FromAga" label="Requests originating from AGA"/>
   <affected-histogram
@@ -2063,7 +2041,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="OutOfRaster"
       label="Task was not performed as part of a raster task."/>
   <affected-histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"/>
-  <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs"/>
   <affected-histogram
       name="Renderer4.SoftwareImageDecodeState.FirstLockWasted"/>
 </histogram_suffixes>
@@ -3594,19 +3571,6 @@ chromium-metrics-reviews@google.com.
       name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes"/>
   <affected-histogram
       name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RasterTaskType" separator=".">
-  <suffix base="true" name=""
-      label="This metric includes both gpu and software raster. Deprecated as
-             of 02/2018. Using suffix Gpu and Software instead."/>
-  <suffix name="Gpu" label="This metric is for only gpu raster."/>
-  <suffix name="Software" label="This metric is for only software raster."/>
-  <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs"/>
-  <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs.Jpeg"/>
-  <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs.Other"/>
-  <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs.OutOfRaster"/>
-  <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs.WebP"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RasterTaskTypeGpu" separator=".">
