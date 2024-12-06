@@ -2672,6 +2672,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="QUIC"/>
 </enum>
 
+<enum name="StorageAccessRedirectKind">
+  <int value="0" label="No Storage Access override"/>
+  <int value="1" label="Same-origin redirect with storage access override"/>
+  <int value="2"
+      label="Cross-origin, same-site redirect with storage access override"/>
+  <int value="3" label="Cross-site redirect with storage access override"/>
+</enum>
+
 <enum name="StreamCloseReason">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Close all connections"/>

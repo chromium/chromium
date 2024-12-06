@@ -130,6 +130,27 @@ constexpr size_t kDiscardBufferSize = 128 * 1024;
 
 constexpr char kActivateStorageAccessHeader[] = "activate-storage-access";
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class StorageAccessRedirectKind {
+  // The `kStorageAccessGrantEligible` override was missing from the request.
+  kNoAccess = 0,
+  // The request had the `kStorageAccessGrantEligible` override, and was a
+  // same-origin redirect.
+  kSameOrigin = 1,
+  // The request had the `kStorageAccessGrantEligible` override, and was a
+  // cross-origin, same-site redirect.
+  kCrossOriginSameSite = 2,
+  // The request had the `kStorageAccessGrantEligible` override, and was a
+  // cross-site redirect.
+  kCrossSite = 3,
+  kMaxValue = kCrossSite
+};
+
+void RecordStorageAccessRedirectMetric(StorageAccessRedirectKind kind) {
+  base::UmaHistogramEnumeration("Net.HttpJob.StorageAccessRedirect", kind);
+}
+
 // A subclass of net::UploadBytesElementReader which owns
 // ResourceRequestBody.
 class BytesElementReader : public net::UploadBytesElementReader {
@@ -1626,18 +1647,33 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   const url::Origin origin = url::Origin::Create(url_request_->url());
   const url::Origin pending_origin = url::Origin::Create(redirect_info.new_url);
+  const bool storage_access_eligible =
+      url_request_->cookie_setting_overrides().Has(
+          net::CookieSettingOverride::kStorageAccessGrantEligible);
+  using enum StorageAccessRedirectKind;
+  StorageAccessRedirectKind storage_access_redirect_kind =
+      storage_access_eligible ? kSameOrigin : kNoAccess;
   if (!origin.IsSameOriginWith(pending_origin)) {
+    storage_access_redirect_kind =
+        storage_access_eligible ? kCrossOriginSameSite : kNoAccess;
     url_request_->cookie_setting_overrides().Remove(
         net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
 
-    // TODO(https://crbug.com/379030052): the `CookieSettingOverride`s for
-    // Storage Access API and Storage Access Headers should be handled
-    // consistently during a same-site, cross-origin redirect.
-    if (net::SchemefulSite(origin) != net::SchemefulSite(pending_origin)) {
-      url_request_->cookie_setting_overrides().Remove(
-          net::CookieSettingOverride::kStorageAccessGrantEligible);
+    if (storage_access_eligible) {
+      // TODO(https://crbug.com/379030052): the `CookieSettingOverride`s for
+      // Storage Access API and Storage Access Headers should be handled
+      // consistently during a same-site, cross-origin redirect.
+      bool cross_site =
+          net::SchemefulSite(origin) != net::SchemefulSite(pending_origin);
+      storage_access_redirect_kind =
+          cross_site ? kCrossSite : kCrossOriginSameSite;
+      if (cross_site) {
+        url_request_->cookie_setting_overrides().Remove(
+            net::CookieSettingOverride::kStorageAccessGrantEligible);
+      }
     }
   }
+  RecordStorageAccessRedirectMetric(storage_access_redirect_kind);
 
   // Note: There are some ordering dependencies here.
   // `CalculateStorageAccessStatus` depends on
