@@ -1677,8 +1677,8 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest,
   // Set a max-age so that it's persisted on disk.
   std::string gaia_cookie = base::StrCat(
       {GaiaConstants::kGaiaSigninCookieName, "=foo; secure; max-age=1000"});
-  content::SetCookie(browser()->profile(), GURL("https://google.com/"),
-                     gaia_cookie);
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 GURL("https://google.com/"), gaia_cookie));
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(

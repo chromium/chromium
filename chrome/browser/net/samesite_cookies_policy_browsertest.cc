@@ -115,8 +115,8 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
   // on the base::Feature state.
 
   // Set a cookie that will only be sent with legacy behavior.
-  content::SetCookie(browser()->profile(), GetURL("a.test", false),
-                     "strictcookie=1;SameSite=Strict");
+  ASSERT_TRUE(content::SetCookie(browser()->profile(), GetURL("a.test", false),
+                                 "strictcookie=1;SameSite=Strict"));
 
   // Just go somewhere on http://a.test. Doesn't matter where.
   NavigateToHttpPageWithFrame("a.test");

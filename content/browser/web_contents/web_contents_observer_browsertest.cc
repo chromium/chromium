@@ -776,8 +776,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTestWithTPCD,
   GURL url_a(embedded_https_test_server().GetURL("a.test", "/"));
   GURL url_a_check_cookie(
       embedded_https_test_server().GetURL("a.test", "/title1.html"));
-  content::SetCookie(web_contents()->GetBrowserContext(), url_a,
-                     "foo=bar;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(web_contents()->GetBrowserContext(), url_a,
+                                 "foo=bar;SameSite=None;Secure"));
   EXPECT_TRUE(NavigateToURL(web_contents(), url_a_check_cookie));
   cookie_tracker.WaitForCookies(1);
   EXPECT_THAT(

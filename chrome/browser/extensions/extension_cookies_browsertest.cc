@@ -174,7 +174,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
                   const std::vector<std::string>& cookies) {
     GURL url = test_server()->GetURL(host, "/");
     for (const std::string& cookie : cookies) {
-      content::SetCookie(browser()->profile(), url, cookie);
+      ASSERT_TRUE(content::SetCookie(browser()->profile(), url, cookie));
     }
   }
 
