@@ -196,11 +196,10 @@ if (v8_enable_webassembly) {
     max_len = 500
   }
 
-  #  TODO(381816415): Reenable this fuzzer after the renaming to wasm_module_fuzzer.
-  # v8_fuzzer("wasm_fuzzer") {
-  #   max_len = 500
-  #   seed_corpus = "//testing/libfuzzer/fuzzers/wasm_corpus/"
-  # }
+  v8_fuzzer("wasm_module_fuzzer") {
+    max_len = 500
+    seed_corpus = "//testing/libfuzzer/fuzzers/wasm_corpus/"
+  }
 
   v8_fuzzer("wasm_async_fuzzer") {
     max_len = 500
