@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry_impl.h"
-#include "chromeos/ash/services/device_sync/cryptauth_enroller.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_registry_impl.h"
