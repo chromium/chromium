@@ -34,6 +34,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -451,10 +452,16 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
                              FocusGroup::kSettingsMenu,
                              FocusGroup::kSettingsClose},
       groups_for_region_{
-          FocusGroup::kNone,          FocusGroup::kTypeSource,
-          FocusGroup::kSelection,     FocusGroup::kCameraPreview,
-          FocusGroup::kCaptureButton, FocusGroup::kRecordingTypeMenu,
-          FocusGroup::kSettingsMenu,  FocusGroup::kSettingsClose},
+          FocusGroup::kNone,
+          FocusGroup::kTypeSource,
+          FocusGroup::kSelection,
+          FocusGroup::kCameraPreview,
+          FocusGroup::kCaptureButton,
+          FocusGroup::kActionButtons,
+          FocusGroup::kRecordingTypeMenu,
+          FocusGroup::kSettingsMenu,
+          FocusGroup::kSettingsClose,
+      },
       groups_for_window_{FocusGroup::kNone, FocusGroup::kTypeSource,
                          FocusGroup::kCaptureWindow, FocusGroup::kSettingsMenu,
                          FocusGroup::kSettingsClose},
@@ -801,6 +808,10 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
     }
     case FocusGroup::kRecordingTypeMenu:
       return !!GetRecordingTypeMenuWidget();
+    case FocusGroup::kActionButtons: {
+      return session_->action_container_view_ &&
+             !session_->action_container_view_->children().empty();
+    }
   }
 }
 
@@ -904,6 +915,19 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       session_->recording_type_menu_view_->AppendHighlightableItems(items);
       break;
     }
+    case FocusGroup::kActionButtons: {
+      auto* action_container_view = session_->action_container_view_.get();
+      if (action_container_view) {
+        for (views::View* action_button : action_container_view->children()) {
+          if (action_button && action_button->GetEnabled()) {
+            auto* highlight_helper = HighlightHelper::Get(action_button);
+            CHECK(highlight_helper);
+            items.push_back(highlight_helper);
+          }
+        }
+      }
+      break;
+    }
   }
   return items;
 }
@@ -936,6 +960,8 @@ aura::Window* CaptureModeSessionFocusCycler::GetA11yOverrideWindow() const {
       return GetCameraPreviewWidget()->GetNativeWindow();
     case FocusGroup::kRecordingTypeMenu:
       return GetRecordingTypeMenuWidget()->GetNativeWindow();
+    case FocusGroup::kActionButtons:
+      return session_->action_container_widget()->GetNativeWindow();
   }
 }
 

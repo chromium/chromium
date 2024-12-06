@@ -1408,6 +1408,8 @@ ActionButtonView* CaptureModeSession::AddActionButton(
   auto new_action_button =
       std::make_unique<ActionButtonView>(std::move(callback), text, icon, rank);
   new_action_button->SetID(id);
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(
+      new_action_button.get());
   ActionButtonView* new_action_button_ptr = new_action_button.get();
   action_buttons.push_back(std::move(new_action_button));
 

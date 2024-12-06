@@ -101,6 +101,9 @@ class ASH_EXPORT CaptureModeSession
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
   }
+  views::Widget* action_container_widget() {
+    return action_container_widget_.get();
+  }
   views::Widget* disclaimer_widget() { return disclaimer_.get(); }
   bool is_selecting_region() const { return is_selecting_region_; }
   CaptureModeToastController* capture_toast_controller() {

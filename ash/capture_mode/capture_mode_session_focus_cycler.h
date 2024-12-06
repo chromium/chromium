@@ -69,6 +69,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     kPendingRecordingType,
     // The menu items inside the recording type menu.
     kRecordingTypeMenu,
+    // The action buttons that may be available during region selection.
+    kActionButtons,
   };
 
   // If a focusable capture session item is part of a views hierarchy, it needs
