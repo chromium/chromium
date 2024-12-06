@@ -10,11 +10,12 @@
     UpgradeCode="$(var.MsiUpgradeCode)"
     Version="$(var.ProductVersion)"
     Manufacturer="$(var.CompanyFullName)"
-    InstallerVersion="150"
+    InstallerVersion="200"
     ProductCode="$(var.MsiProductId)"
     Scope="perMachine">
     <SummaryInformation
       Description="$(var.ProductName) Installer"
+      Comments='$(var.Copyright)'
       Manufacturer="$(var.CompanyFullName)"
     />
 
