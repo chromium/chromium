@@ -46,9 +46,8 @@ class WebClientImpl implements WebClientInterface {
     });
   }
 
-  async notifyPanelClosed(): Promise<{success: boolean}> {
+  async notifyPanelClosed(): Promise<void> {
     await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
-    return {success: true};
   }
 }
 
