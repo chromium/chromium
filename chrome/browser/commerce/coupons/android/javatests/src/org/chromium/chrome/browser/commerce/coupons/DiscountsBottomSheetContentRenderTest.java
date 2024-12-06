@@ -32,8 +32,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -45,6 +47,7 @@ import java.io.IOException;
 
 /** Render Tests for the discounts bottom sheet content. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Batch(Batch.UNIT_TESTS)
 public class DiscountsBottomSheetContentRenderTest {
     @ClassRule

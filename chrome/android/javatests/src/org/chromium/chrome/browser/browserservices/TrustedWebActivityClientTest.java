@@ -20,6 +20,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.rule.ServiceTestRule;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.browserservices.permissiondelegation.Installe
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.StandardNotificationBuilder;
 import org.chromium.chrome.test.R;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -130,6 +132,7 @@ public class TrustedWebActivityClientTest {
     public void setUp() throws TimeoutException, RemoteException {
         mTargetContext = ApplicationProvider.getApplicationContext();
         mBuilder = new StandardNotificationBuilder(mTargetContext);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
 
         // TestTrustedWebActivityService is in the test support apk.
         InstalledWebappPermissionManager.addDelegateApp(ORIGIN, TEST_SUPPORT_PACKAGE);
@@ -152,6 +155,11 @@ public class TrustedWebActivityClientTest {
         messenger.send(message);
 
         mResponseHandler.mResponderRegistered.waitForCallback(0);
+    }
+
+    @After
+    public void tearDown() {
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     /**

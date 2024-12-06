@@ -34,14 +34,6 @@ import java.util.function.Function;
     }
 
     @Override
-    public void areNotificationsEnabled(Callback<Boolean> callback) {
-        runAsyncAndReply(
-                "AsyncNotificationManagerProxyImpl.areNotificationsEnabled",
-                () -> mNotificationManager.areNotificationsEnabled(),
-                callback);
-    }
-
-    @Override
     public void cancel(int id) {
         runAsync(
                 "AsyncNotificationManagerProxyImpl.cancel(id)",

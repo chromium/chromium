@@ -30,7 +30,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -38,6 +40,7 @@ import org.chromium.components.sync.SyncService;
 
 /** Unit tests for {@link SyncErrorNotifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 public class SyncErrorNotifierTest {
     @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 

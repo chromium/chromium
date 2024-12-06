@@ -61,6 +61,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.CommerceSubscription;
@@ -87,6 +88,7 @@ public class PriceDropNotificationManagerTest {
 
     @Mock NotificationManagerProxyImpl mUnusedForR8KeepRules;
     @Mock NotificationManagerProxy mMockNotificationManager;
+
     private PriceDropNotificationManager mPriceDropNotificationManager;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -120,6 +122,7 @@ public class PriceDropNotificationManagerTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mPriceDropNotificationManager.deleteChannelForTesting();
         }
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     private void verifyClickIntent(Intent intent) {
@@ -145,7 +148,7 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testCanPostNotification_FeatureDisabled() {
-        doReturn(true).when(mMockNotificationManager).areNotificationsEnabled();
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
@@ -155,7 +158,7 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testCanPostNotification_NotificationDisabled() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        doReturn(false).when(mMockNotificationManager).areNotificationsEnabled();
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
         assertFalse(mPriceDropNotificationManager.areAppNotificationsEnabled());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
@@ -165,7 +168,7 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testCanPostNotificaton() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        doReturn(true).when(mMockNotificationManager).areNotificationsEnabled();
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -190,7 +193,7 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testGetNotificationSettingsIntent_NotificationDisabled() {
-        doReturn(false).when(mMockNotificationManager).areNotificationsEnabled();
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
@@ -212,7 +215,7 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testGetNotificationSettingsIntent_NotificationEnabled() {
-        doReturn(true).when(mMockNotificationManager).areNotificationsEnabled();
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());

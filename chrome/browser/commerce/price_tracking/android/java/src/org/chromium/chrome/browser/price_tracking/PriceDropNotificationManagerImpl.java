@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
@@ -370,7 +371,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public boolean areAppNotificationsEnabled() {
-        return NotificationManagerProxyImpl.getInstance().areNotificationsEnabled();
+        return NotificationProxyUtils.areNotificationsEnabled();
     }
 
     @Override

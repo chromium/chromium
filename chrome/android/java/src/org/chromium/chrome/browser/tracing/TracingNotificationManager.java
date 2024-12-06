@@ -17,6 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -49,7 +50,7 @@ public class TracingNotificationManager {
      *     user. True if the state can't be determined.
      */
     public static boolean browserNotificationsEnabled() {
-        if (!NotificationManagerProxyImpl.getInstance().areNotificationsEnabled()) {
+        if (!NotificationProxyUtils.areNotificationsEnabled()) {
             return false;
         }
 

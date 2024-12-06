@@ -70,6 +70,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//components/payments/content/android:java",

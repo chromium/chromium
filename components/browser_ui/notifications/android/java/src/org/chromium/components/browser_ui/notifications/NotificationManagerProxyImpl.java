@@ -55,19 +55,6 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     @Override
-    public boolean areNotificationsEnabled() {
-        return mNotificationManager.areNotificationsEnabled();
-    }
-
-    @Override
-    public void areNotificationsEnabled(Callback<Boolean> callback) {
-        runCallableAndReply(
-                TraceEvent.scoped("NotificationManagerProxyImpl.areNotificationsEnabled"),
-                () -> areNotificationsEnabled(),
-                callback);
-    }
-
-    @Override
     public void cancel(int id) {
         runRunnable(
                 TraceEvent.scoped("NotificationManagerProxyImpl.cancel(id)"),

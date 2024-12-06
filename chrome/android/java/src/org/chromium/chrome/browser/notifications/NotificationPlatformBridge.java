@@ -24,7 +24,6 @@ import android.text.style.StyleSpan;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.jni_zero.CalledByNative;
@@ -53,6 +52,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy.StatusBarNotificationProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -827,13 +827,11 @@ public class NotificationPlatformBridge {
         // should be revoked.
         // Notifications permission is not allowed for incognito profile.
         if (!identifyingAttributes.origin.isEmpty() && !identifyingAttributes.incognito) {
-            NotificationManagerCompat manager =
-                    NotificationManagerCompat.from(ContextUtils.getApplicationContext());
             PushMessagingServiceBridge.getInstance()
                     .verify(
                             identifyingAttributes.origin,
                             identifyingAttributes.profileId,
-                            manager.areNotificationsEnabled());
+                            NotificationProxyUtils.areNotificationsEnabled());
         }
     }
 

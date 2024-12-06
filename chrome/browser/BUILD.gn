@@ -3319,6 +3319,7 @@ static_library("browser") {
       "//components/browser_ui/contacts_picker/android",
       "//components/browser_ui/device_lock/android:android",
       "//components/browser_ui/modaldialog/android",
+      "//components/browser_ui/notifications/android",
       "//components/browser_ui/photo_picker/android",
       "//components/browser_ui/share/android",
       "//components/browser_ui/site_settings/android",

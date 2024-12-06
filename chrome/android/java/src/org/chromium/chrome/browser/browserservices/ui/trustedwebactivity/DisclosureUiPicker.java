@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /**
  * Determines which of the versions of the "Running in Chrome" UI is displayed to the user.
@@ -71,7 +72,7 @@ public class DisclosureUiPicker implements NativeInitObserver {
     }
 
     private boolean areHeadsUpNotificationsEnabled() {
-        if (!NotificationManagerProxyImpl.getInstance().areNotificationsEnabled()) return false;
+        if (!NotificationProxyUtils.areNotificationsEnabled()) return false;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
         // Android Automotive doesn't currently allow heads-up notifications.
         if (BuildInfo.getInstance().isAutomotive) return false;
