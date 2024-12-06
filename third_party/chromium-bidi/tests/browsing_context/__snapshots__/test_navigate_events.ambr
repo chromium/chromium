@@ -1,0 +1,115 @@
+# serializer version: 1
+# name: test_navigate_aboutBlank_checkEvents
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---
+# name: test_navigate_dataUrl_checkEvents
+  list([
+    dict({
+      'id': 'stable_0',
+      'result': dict({
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'success',
+    }),
+    dict({
+      'method': 'browsingContext.domContentLoaded',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.load',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'browsingContext.navigationStarted',
+      'params': dict({
+        'context': 'stable_3',
+        'navigation': 'stable_1',
+        'url': 'stable_2',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.beforeRequestSent',
+      'params': dict({
+        'context': 'stable_3',
+        'initiator': dict({
+          'type': 'other',
+        }),
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_5',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.responseCompleted',
+      'params': dict({
+        'context': 'stable_3',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_5',
+      }),
+      'type': 'event',
+    }),
+    dict({
+      'method': 'network.responseStarted',
+      'params': dict({
+        'context': 'stable_3',
+        'isBlocked': False,
+        'navigation': 'stable_1',
+        'redirectCount': 0,
+        'request': 'stable_5',
+      }),
+      'type': 'event',
+    }),
+  ])
+# ---

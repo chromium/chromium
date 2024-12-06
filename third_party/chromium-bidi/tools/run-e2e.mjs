@@ -40,6 +40,7 @@ const PYTEST_PREFIX = 'PyTest';
 
 const PYTEST_TOTAL_CHUNKS = argv['total-chunks'];
 const PYTEST_THIS_CHUNK = argv['this-chunk'];
+const UPDATE_SNAPSHOT = argv['update-snapshot'] === 'true';
 
 /**
  *
@@ -154,6 +155,7 @@ e2eArgs.push(
   '-vv',
   // Do not throw an error if there are unused snapshots.
   '--snapshot-warn-unused',
+  ...(UPDATE_SNAPSHOT ? ['--snapshot-update'] : []),
 );
 if (PYTEST_TOTAL_CHUNKS !== 1) {
   e2eArgs.push(

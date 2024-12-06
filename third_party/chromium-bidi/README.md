@@ -311,7 +311,7 @@ HEADLESS=new npm run e2e
 #### Updating snapshots
 
 ```sh
-npm run e2e -- --snapshot-update
+npm run e2e -- --snapshot-update true
 ```
 
 See https://github.com/tophat/syrupy for more information.
