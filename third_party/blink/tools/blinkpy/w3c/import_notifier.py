@@ -53,7 +53,7 @@ from blinkpy.w3c.common import (
 )
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.gerrit import GerritAPI, GerritCL, OutputOption
-from blinkpy.w3c.wpt_results_processor import TestType
+from blinkpy.w3c.wpt_manifest import TestType
 
 _log = logging.getLogger(__name__)
 

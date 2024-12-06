@@ -28,7 +28,6 @@ from typing import (
     FrozenSet,
     Iterator,
     List,
-    Literal,
     NamedTuple,
     Optional,
     Set,
@@ -45,6 +44,7 @@ from blinkpy.common.lru import LRUMapping
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
+from blinkpy.w3c.wpt_manifest import TestType
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port.driver import TestURIMapper
 from blinkpy.web_tests.models import test_failures
@@ -88,7 +88,6 @@ _WPT_BASE_FYI_URL: str = urlsplit(
     'https://wpt.fyi/results/?label=experimental&label=master&aligned')
 
 RunInfo = Dict[str, Any]
-TestType = Literal[tuple(wpttest.manifest_test_cls)]
 
 
 def wptrunner_to_chromium_status(status: str) -> str:
@@ -166,7 +165,7 @@ class WPTResult(Result):
         self._exp_line = exp_line or Expectation()
         self._baseline = baseline or []
         self.image_diff_stats = None
-        # TODO(crbug.com/1521922): Populate `self.failure_reason` like
+        # TODO(crbug.com/41494889): Populate `self.failure_reason` like
         # `run_web_tests.py` does to help LUCI cluster failures.
 
     @property
@@ -297,7 +296,7 @@ class WPTResult(Result):
         """
         if not self.is_regression:
             return None
-        # TODO(crbug.com/1521922): Unify result sink reporting with
+        # TODO(crbug.com/41494889): Unify result sink reporting with
         # `blinkpy.web_tests.*`.
         summary = textwrap.dedent(f"""\
             <p><strong>This WPT was run against <code>{product}</code> using

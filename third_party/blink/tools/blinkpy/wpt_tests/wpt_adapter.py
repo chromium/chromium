@@ -24,12 +24,12 @@ from blinkpy.common.host import Host
 from blinkpy.common.system import command_line
 from blinkpy.tool.blink_tool import BlinkTool
 from blinkpy.w3c.local_wpt import LocalWPT
-from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests import product
 from blinkpy.wpt_tests.test_loader import TestLoader, wpt_url_to_blink_test
+from blinkpy.wpt_tests.wpt_results_processor import WPTResultsProcessor
 
 path_finder.bootstrap_wpt_imports()
 import mozlog

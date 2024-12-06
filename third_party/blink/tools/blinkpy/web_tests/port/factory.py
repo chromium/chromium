@@ -35,9 +35,10 @@ import re
 import shlex
 import sys
 from copy import deepcopy
-from typing import List
+from typing import List, get_args
 
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.w3c.wpt_manifest import TestType
 
 
 class PortFactory:
@@ -679,14 +680,7 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                   'testharness test failures will be shown, even if the '
                   'failures are expected in *-expected.txt.'))
     else:
-        test_types = [
-            'testharness',
-            'reftest',
-            'wdspec',
-            'crashtest',
-            'print-reftest',
-            'manual',
-        ]
+        test_types = get_args(TestType)
         testing_group.add_argument(
             '--timeout-multiplier',
             type=float,
@@ -695,10 +689,7 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             '--test-types',
             nargs='*',
             choices=test_types,
-            default=[
-                'testharness', 'reftest', 'crashtest', 'print-reftest',
-                'wdspec'
-            ],
+            default=sorted(set(test_types) - {'manual'}),
             metavar='TYPE',
             help=f'Test types to run (choices: {", ".join(test_types)})')
         testing_group.add_argument('--no-virtual-tests',

@@ -13,17 +13,18 @@ from unittest import mock
 from blinkpy.common.host_mock import MockHost as BlinkMockHost
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_testing import LoggingTestCase
+from blinkpy.w3c.wpt_manifest import TestType
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
-from blinkpy.w3c.wpt_results_processor import (
+from blinkpy.wpt_tests.wpt_results_processor import (
     EventProcessingError,
     StreamShutdown,
-    TestType,
     WPTResultsProcessor,
 )
 
 
 class WPTResultsProcessorTest(LoggingTestCase):
+
     def setUp(self):
         super().setUp()
         self.host = BlinkMockHost()
