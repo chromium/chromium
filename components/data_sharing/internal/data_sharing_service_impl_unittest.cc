@@ -160,14 +160,15 @@ TEST_P(DataSharingServiceImplTest, ShouldDeleteGroup) {
 }
 
 TEST_P(DataSharingServiceImplTest, ShouldReadGroup) {
-  // TODO(crbug.com/301390275): add a version of this test for unhappy path.
+  // TODO(crbug.com/382036119): tested API is deprecated, removed this test once
+  // there are no callers.
   const std::string display_name = "display_name";
   const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId(display_name);
 
   DataSharingService::GroupDataOrFailureOutcome outcome;
   base::RunLoop run_loop;
-  data_sharing_service_->ReadGroup(
+  data_sharing_service_->ReadGroupDeprecated(
       group_id,
       base::BindLambdaForTesting(
           [&run_loop, &outcome](

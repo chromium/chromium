@@ -34,7 +34,12 @@ IN_PROC_BROWSER_TEST_F(DataSharingServiceBrowserTest, ReadGroup) {
   base::RunLoop run_loop;
   auto* service = data_sharing::DataSharingServiceFactory::GetForProfile(
       browser()->profile());
-  service->ReadGroup(
+  // TODO(crbug.com/338431049): This test should use synchronous ReadGroup()
+  // instead of ReadGroupDeprecated(). Note that this will require receiving a
+  // GroupId from the sync server first (as part of COLLABORATION_GROUP
+  // datatype) -> simplest way to achieve this is to derive test from SyncTest
+  // and inject COLLABORATION_GROUP into fake sync server.
+  service->ReadGroupDeprecated(
       data_sharing::GroupId("12345"),
       base::BindOnce(
           [](base::RunLoop* run_loop,

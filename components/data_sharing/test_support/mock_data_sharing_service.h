@@ -39,7 +39,7 @@ class MockDataSharingService : public DataSharingService {
                std::optional<GroupMemberPartialData>(const GroupId&,
                                                      const GaiaId&));
   MOCK_METHOD2(
-      ReadGroup,
+      ReadGroupDeprecated,
       void(const GroupId&,
            base::OnceCallback<void(const GroupDataOrFailureOutcome&)>));
   MOCK_METHOD2(

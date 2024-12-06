@@ -177,10 +177,10 @@ DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
                                                           member_gaia_id);
 }
 
-void DataSharingServiceImpl::ReadGroup(
+void DataSharingServiceImpl::ReadGroupDeprecated(
     const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
-  // TODO(crbug.com/370897286): this method should be deleted.
+  // TODO(crbug.com/382036119): this method should be deleted.
   if (!sdk_delegate_) {
     // Reply in a posted task to avoid reentrance on the calling side.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

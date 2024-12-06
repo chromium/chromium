@@ -51,7 +51,7 @@ EmptyDataSharingService::GetPossiblyRemovedGroupMember(
   return std::nullopt;
 }
 
-void EmptyDataSharingService::ReadGroup(
+void EmptyDataSharingService::ReadGroupDeprecated(
     const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
 
