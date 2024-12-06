@@ -816,3 +816,6 @@
 # TODO(crbug.com/382303507): This test has been failing since
 # https://crrev.com/c/5980534.
 -IndexedDBBrowserTest.SchedulingPriority
+
+# TODO(crbug.com/382316457): This test has been failing on the bot.
+-FormControlsBrowserTest.Meter
