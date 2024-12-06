@@ -6663,9 +6663,11 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledEarlyDiscard_20241031",
+                    "name": "EnabledEarlyDiscardConservative4h_20241205",
                     "params": {
                         "CompleteStallMs": "700",
+                        "MaxLastVisibleDurationSeconds": "14400",
+                        "MinLastVisibleDurationSeconds": "14400",
                         "PartialStallMs": "20",
                         "VmmmsReclaimProportion": "0"
                     },
