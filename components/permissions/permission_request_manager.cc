@@ -999,6 +999,10 @@ void PermissionRequestManager::ShowPrompt() {
   if (!ReprioritizeCurrentRequestIfNeeded())
     return;
 
+  if (requests_.empty()) {
+    return;
+  }
+
   if (!RecreateView())
     return;
 
