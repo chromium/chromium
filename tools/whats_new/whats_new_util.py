@@ -13,6 +13,26 @@ import subprocess
 import shutil
 
 BASE_DIR = Path(__file__).parents[1]
+CHROME_ICON_FILENAME = 'ios/chrome/browser/shared/ui/symbols/symbol_names.mm'
+DEFAULT_SF_SYMBOLS_PATH = '/Applications/SF Symbols.app/'
+
+
+class ValidIcons(object):
+    """Metadata about valid icon names.
+
+    Attributes:
+        valid_custom: Set of the valid custom icon names from Chrome constants.
+        valid_default: Set of the currently valid default icon names from Chrome
+            constants.
+        full_default: Set of all available default icon names from
+            SF Symbols.app, even ones that currently do not exist as constants
+            in Chrome.
+    """
+
+    def __init__(self, valid_custom, valid_default, full_default):
+        self.valid_custom = valid_custom
+        self.valid_default = valid_default
+        self.full_default = full_default
 
 
 def UpdateWhatsNewItemAndGetNewTypeValue(feature_dict: dict[str, str]) -> int:
@@ -117,7 +137,7 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str],
         'IconImageName': feature_dict['Icon name'],
         'IconBackgroundColor': feature_dict['Icon background color'],
         'IsSymbol': True,
-        'IsSystemSymbol': True,
+        'IsSystemSymbol': feature_dict['Icon Type'] == 'Default',
         'InstructionSteps': instruction_steps,
         'PrimaryAction': _GetPrimaryAction(feature_dict['Primary action']),
         'LearnMoreUrlString': feature_dict['Help url']
@@ -139,8 +159,7 @@ def UpdateWhatsNewUtils(feature_dict: dict[str, str]) -> None:
       feature_dict: Data for the new What's New feature.
   """
     feature_name = feature_dict['Feature name']
-    whats_new_util_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new/whats_new_util.mm')
+    whats_new_util_file = os.path.join(BASE_DIR, '..', CHROME_ICON_FILENAME)
     with open(whats_new_util_file, 'r+', encoding='utf-8', newline='') as file:
         read_data = file.read()
         whats_new_type_error_regex = r'case WhatsNewType::kError:'
@@ -416,11 +435,11 @@ def RemoveAnimationAssetsForMilestone(milestone: str) -> None:
         file.truncate()
 
 
-def LoadValidIconNames() -> tuple[set[str], set[str]]:
+def LoadValidIconNames() -> ValidIcons:
     """Loads the valid icon names from the src code.
 
       Returns:
-        Tuple of (valid custom icon names, valid default icon names) as sets.
+        ValidIcons instance representing all the different valid icon names
     """
     valid_custom_icons = set()
     valid_default_icons = set()
@@ -447,26 +466,45 @@ def LoadValidIconNames() -> tuple[set[str], set[str]]:
             else:
                 valid_custom_icons.add(icon_name)
 
-    return (valid_custom_icons, valid_default_icons)
+    # Open SF Symbols.app to find all possible icon names.
+    sf_symbols_path = os.path.join(
+        DEFAULT_SF_SYMBOLS_PATH,
+        'Contents/Resources/Metadata/name_availability.plist')
+
+    if os.path.exists(sf_symbols_path):
+        with open(sf_symbols_path, 'rb') as file:
+            sf_symbols_data = plistlib.load(file)
+        all_icons = set(sf_symbols_data['symbols'].keys())
+    else:
+        print('Missing SF Symbols.app in /Applications')
+        all_icons = set()
+
+    return ValidIcons(valid_custom_icons, valid_default_icons, all_icons)
 
 
-def ValidateWhatsNewData(feature_dict: dict[str, str]) -> str:
+def ValidateWhatsNewData(feature_dict: dict[str, str],
+                         valid_icons: ValidIcons) -> str:
     """Validates the provided data represents a valid What's New feature.
 
       Args:
         feature_dict: Data for the new What's New feature
+        valid_icons: A ValidIcons instance representing which icons are valid
       Returns:
         A string error message if the data is not valid, and an empty
         string if the data is valid.
     """
-    valid_custom_icons, valid_default_icons = LoadValidIconNames()
 
-    valid_icon_set = valid_custom_icons if feature_dict[
-        'Icon Type'] == 'Custom' else valid_default_icons
+    icon_name = feature_dict['Icon name']
 
-    if feature_dict['Icon name'] not in valid_icon_set:
-        return (f'Invalid {feature_dict["Icon Type"]} '
-                f'icon name: {feature_dict["Icon name"]}')
+    if (feature_dict['Icon Type'] == 'Custom'
+            and icon_name not in valid_icons.valid_custom):
+        return f'Invalid Custom icon name: {icon_name}'
+    elif icon_name not in valid_icons.valid_default:
+        if icon_name not in valid_icons.full_default:
+            return f'Invalid Default icon name: {icon_name}'
+        else:
+            return (f'Default icon {icon_name} not present '
+                    f'in //{CHROME_ICON_FILENAME}')
 
     return ""
 
