@@ -3563,6 +3563,7 @@ interface HTMLAnchorElement : HTMLElement
 interface HTMLAreaElement : HTMLElement
     attribute @@toStringTag
     getter alt
+    getter attributionSrc
     getter coords
     getter download
     getter hash
@@ -3588,6 +3589,7 @@ interface HTMLAreaElement : HTMLElement
     method constructor
     method toString
     setter alt
+    setter attributionSrc
     setter coords
     setter download
     setter hash
