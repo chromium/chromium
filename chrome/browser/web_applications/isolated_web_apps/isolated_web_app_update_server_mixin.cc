@@ -47,10 +47,11 @@ base::Value::Dict
 IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<UpdateChannel>& update_channel,
-    const std::optional<base::Version>& pinned_version) const {
+    const std::optional<base::Version>& pinned_version,
+    const bool allow_downgrades) const {
   return test::CreateForceInstallIwaPolicyEntry(
       web_bundle_id, GetUpdateManifestUrl(web_bundle_id), update_channel,
-      pinned_version);
+      pinned_version, allow_downgrades);
 }
 
 void IsolatedWebAppUpdateServerMixin::AddBundle(

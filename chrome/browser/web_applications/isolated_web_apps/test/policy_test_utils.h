@@ -30,7 +30,8 @@ base::Value::Dict CreateForceInstallIwaPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const GURL& update_manifest_url,
     const std::optional<UpdateChannel>& update_channel = std::nullopt,
-    const std::optional<base::Version>& pinned_version = std::nullopt);
+    const std::optional<base::Version>& pinned_version = std::nullopt,
+    bool allow_downgrades = false);
 
 // Generates a policy entry that can be appended to
 // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
@@ -40,7 +41,8 @@ base::Value::Dict CreateForceInstallIwaPolicyEntry(
     std::string_view web_bundle_id,
     std::string_view update_manifest_url,
     const std::optional<std::string>& update_channel = std::nullopt,
-    const std::optional<std::string>& pinned_version = std::nullopt);
+    const std::optional<std::string>& pinned_version = std::nullopt,
+    bool allow_downgrades = false);
 
 }  // namespace web_app::test
 

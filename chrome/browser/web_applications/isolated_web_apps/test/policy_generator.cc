@@ -16,10 +16,12 @@ void PolicyGenerator::AddForceInstalledIwa(
     const web_package::SignedWebBundleId& web_bundle_id,
     const GURL& update_manifest_url,
     const std::optional<UpdateChannel>& channel,
-    const std::optional<base::Version>& pinned_version) {
+    const std::optional<base::Version>& pinned_version,
+    bool allow_downgrades) {
   app_policies_.Append(test::CreateForceInstallIwaPolicyEntry(
       web_bundle_id, update_manifest_url,
-      channel.value_or(UpdateChannel::default_channel()), pinned_version));
+      channel.value_or(UpdateChannel::default_channel()), pinned_version,
+      allow_downgrades));
 }
 
 base::Value PolicyGenerator::Generate() {

@@ -259,7 +259,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
       base::Version pinned_version = kPinnedVersion) {
     SetIWAForceInstallPolicy(base::Value::List().Append(
         update_server_mixin_.CreateForceInstallPolicyEntry(
-            kWebBundleId1, /*update_channels=*/std::nullopt, pinned_version)));
+            kWebBundleId1, /*update_channel=*/std::nullopt, pinned_version)));
   }
 
   void SetPolicyWithBetaChannelApp(

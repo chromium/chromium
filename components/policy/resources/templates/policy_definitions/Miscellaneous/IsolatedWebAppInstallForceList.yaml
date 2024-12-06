@@ -6,13 +6,16 @@ desc: |-
 
         Each list item of the policy is an object which has two mandatory fields: the update manifest <ph name="URL_LABEL">URL</ph> and Web Bundle ID of the Isolated Web App.
 
-        Each item can also have optional fields: an IWA release/update channel name (update_channel) and a specific version to pin (pinned_version).
-        If the "update_channel" is not set, then the value of "default" will be used. When the pinned_version is specified, the system will attempt to install that specific version (if available on the current update channel).
-        By default, version pinning does not allow going back to older versions. Pinning an IWA to a specific version prevents it from being updated beyond that version. To unpin, remove this field.
+        Each item can also include these optional fields:
+
+          * <ph name="UPDATE_CHANNEL_OPTION">update_channel</ph>: The IWA release/update channel name. If not set, "default" is used.
+          * <ph name="PINNED_VERSION_OPTION">pinned_version</ph>:  A specific version to install. The system will attempt to install this version if available on the specified update channel. By default, pinning an IWA to a specific version prevents it from being updated beyond that version. To unpin, remove this field.
+          * <ph name="ALLOW_DOWNGRADES_OPTION">allow_downgrades</ph>:: Enables installing older versions of the IWA. This requires the `pinned_version` field to be set. If not provided or set to <ph name="FALSE">false</ph> downgrading is disabled for that IWA.
 example_value:
 - update_manifest_url: https://example.com/isolated_web_app/update_manifest.json
   web_bundle_id: aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic
   update_channel: beta
+  allow_downgrades: true
   pinned_version: 1.2.3
 features:
   dynamic_refresh: true
@@ -36,6 +39,12 @@ schema:
           The name of the IWA's update/release channel. This value can be any string;
           no restrictions are imposed. If no value is provided, the "default"
           channel will be used.
+      allow_downgrades:
+        type: boolean
+        description: >-
+          Enables the downgrading feature for IWAs. By default, only newer versions of IWAs are installed. When set to <ph name="TRUE">true</ph>, this allows you to install older versions as well.
+          To enable downgrading, the desired version value must be specified by using the `pinned_version` field.
+          If `allow_downgrades` is not provided or is set to <ph name="FALSE">false</ph>, downgrading is disabled for that IWA.
       pinned_version:
         type: string
         description: >-
