@@ -48,7 +48,8 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 TextOffsetMap::TextOffsetMap(const TextOffsetMap& map12,
-                             const TextOffsetMap& map23) {
+                             const TextOffsetMap& map23,
+                             bool fix_crash) {
   if (map12.IsEmpty()) {
     entries_ = map23.entries_;
     return;
@@ -91,7 +92,12 @@ TextOffsetMap::TextOffsetMap(const TextOffsetMap& map12,
       ++index12;
       ++index23;
     } else {
-      Append(entry23.source - offset_diff_12, entry23.target);
+      DCHECK_GT(entry12.target, entry23.source);
+      if (fix_crash && chunk_length_diff_12 > 0 && chunk_length_diff_23 < 0) {
+        // No need to append entry23 because it is included in entry12.
+      } else {
+        Append(entry23.source - offset_diff_12, entry23.target);
+      }
       offset_diff_23 = entry23.target - entry23.source;
       ++index23;
     }
@@ -107,8 +113,8 @@ TextOffsetMap::TextOffsetMap(const TextOffsetMap& map12,
 }
 
 void TextOffsetMap::Append(wtf_size_t source, wtf_size_t target) {
-  DCHECK(IsEmpty() ||
-         (source > entries_.back().source && target > entries_.back().target));
+  CHECK(IsEmpty() ||
+        (source > entries_.back().source && target > entries_.back().target));
   entries_.emplace_back(source, target);
 }
 
