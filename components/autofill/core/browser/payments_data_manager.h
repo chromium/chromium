@@ -246,7 +246,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // and ordered by frecency with the expired cards put at the end of the
   // vector. `should_use_legacy_algorithm` indicates if we should rank credit
   // cards using the legacy ranking algorithm.
-  std::vector<CreditCard*> GetCreditCardsToSuggest(
+  std::vector<const CreditCard*> GetCreditCardsToSuggest(
       bool should_use_legacy_algorithm = false) const;
 
   // Returns the unlinked buy-now-pay-later issuers. This is a list of BNPL

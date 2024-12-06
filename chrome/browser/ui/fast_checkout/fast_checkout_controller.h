@@ -24,7 +24,7 @@ class FastCheckoutController {
   // credit cards to the user.
   virtual void Show(
       const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
-      const std::vector<autofill::CreditCard*>& credit_cards) = 0;
+      const std::vector<const autofill::CreditCard*>& credit_cards) = 0;
 
   // Informs the controller that the user has made a selection.
   virtual void OnOptionsSelected(

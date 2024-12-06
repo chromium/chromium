@@ -32,9 +32,9 @@ FastCheckoutPersonalDataHelperImpl::GetProfilesToSuggest() const {
       .GetProfilesToSuggest();
 }
 
-std::vector<autofill::CreditCard*>
+std::vector<const autofill::CreditCard*>
 FastCheckoutPersonalDataHelperImpl::GetCreditCardsToSuggest() const {
-  std::vector<autofill::CreditCard*> cards_to_suggest =
+  std::vector<const autofill::CreditCard*> cards_to_suggest =
       GetPersonalDataManager()
           ->payments_data_manager()
           .GetCreditCardsToSuggest();
@@ -63,11 +63,12 @@ bool FastCheckoutPersonalDataHelperImpl::IsCompleteAddressProfile(
          profile->HasRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER);
 }
 
-std::vector<autofill::CreditCard*>
+std::vector<const autofill::CreditCard*>
 FastCheckoutPersonalDataHelperImpl::GetValidCreditCards() const {
-  std::vector<autofill::CreditCard*> cards = GetPersonalDataManager()
-                                                 ->payments_data_manager()
-                                                 .GetCreditCardsToSuggest();
+  std::vector<const autofill::CreditCard*> cards =
+      GetPersonalDataManager()
+          ->payments_data_manager()
+          .GetCreditCardsToSuggest();
   std::erase_if(cards, std::not_fn(&autofill::CreditCard::IsCompleteValidCard));
   return cards;
 }

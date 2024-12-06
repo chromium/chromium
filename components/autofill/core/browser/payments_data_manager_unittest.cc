@@ -1077,7 +1077,7 @@ TEST_F(PaymentsDataManagerTest, GetCreditCardsToSuggest_LocalCardsRanking) {
 
   // Sublabel is card number when filling name (exact format depends on
   // the platform, but the last 4 digits should appear).
-  std::vector<CreditCard*> card_to_suggest =
+  std::vector<const CreditCard*> card_to_suggest =
       payments_data_manager().GetCreditCardsToSuggest();
   ASSERT_EQ(3U, card_to_suggest.size());
 
@@ -1118,7 +1118,7 @@ TEST_F(PaymentsDataManagerTest,
   WaitForOnPaymentsDataChanged();
   EXPECT_EQ(5U, payments_data_manager().GetCreditCards().size());
 
-  std::vector<CreditCard*> card_to_suggest =
+  std::vector<const CreditCard*> card_to_suggest =
       payments_data_manager().GetCreditCardsToSuggest();
   ASSERT_EQ(5U, card_to_suggest.size());
 
@@ -1170,7 +1170,7 @@ TEST_F(PaymentsDataManagerTest,
   // Expect no autofilled values or suggestions.
   EXPECT_EQ(0U, payments_data_manager().GetCreditCardsToSuggest().size());
 
-  std::vector<CreditCard*> card_to_suggest =
+  std::vector<const CreditCard*> card_to_suggest =
       payments_data_manager().GetCreditCardsToSuggest();
   ASSERT_EQ(0U, card_to_suggest.size());
 }
@@ -1213,7 +1213,7 @@ TEST_F(PaymentsDataManagerTest,
   // Expect no credit card values or suggestions were loaded.
   EXPECT_EQ(0U, payments_data_manager().GetCreditCardsToSuggest().size());
 
-  std::vector<CreditCard*> card_to_suggest =
+  std::vector<const CreditCard*> card_to_suggest =
       payments_data_manager().GetCreditCardsToSuggest();
   ASSERT_EQ(0U, card_to_suggest.size());
 }

@@ -33,7 +33,7 @@ class FastCheckoutViewImpl : public FastCheckoutView {
   // FastCheckoutView:
   void Show(
       const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
-      const std::vector<autofill::CreditCard*>& credit_cards) override;
+      const std::vector<const autofill::CreditCard*>& credit_cards) override;
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized

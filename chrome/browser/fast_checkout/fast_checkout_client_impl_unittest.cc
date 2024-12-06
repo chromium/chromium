@@ -129,7 +129,7 @@ class MockFastCheckoutController : public FastCheckoutController {
   MOCK_METHOD(void,
               Show,
               (const std::vector<const AutofillProfile*>& autofill_profiles,
-               const std::vector<CreditCard*>& credit_cards),
+               const std::vector<const CreditCard*>& credit_cards),
               (override));
   MOCK_METHOD(void,
               OnOptionsSelected,

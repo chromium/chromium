@@ -1231,7 +1231,7 @@ PaymentsDataManager::GetVirtualCardUsageData() const {
   return autofill_virtual_card_usage_data_;
 }
 
-std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
+std::vector<const CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
     bool should_use_legacy_algorithm) const {
   if (!IsAutofillPaymentMethodsEnabled()) {
     return {};
@@ -1248,7 +1248,7 @@ std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
 
   DedupeCreditCardToSuggest(&cards_to_dedupe);
 
-  std::vector<CreditCard*> cards_to_suggest(
+  std::vector<const CreditCard*> cards_to_suggest(
       std::make_move_iterator(std::begin(cards_to_dedupe)),
       std::make_move_iterator(std::end(cards_to_dedupe)));
 

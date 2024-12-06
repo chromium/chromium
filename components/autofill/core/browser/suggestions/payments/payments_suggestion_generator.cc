@@ -184,7 +184,7 @@ Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
 // `cards`. The relative ordering of `cards` is maintained.
 void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
     base::Time min_last_used,
-    std::vector<CreditCard*>& cards) {
+    std::vector<const CreditCard*>& cards) {
   const size_t original_size = cards.size();
   std::erase_if(cards, [comparison_time = AutofillClock::Now(),
                         min_last_used](const CreditCard* card) {
@@ -734,7 +734,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
     bool require_non_empty_value_on_trigger_field,
     bool include_virtual_cards,
     bool use_legacy_algorithm = false) {
-  std::vector<CreditCard*> available_cards =
+  std::vector<const CreditCard*> available_cards =
       client.GetPersonalDataManager()
           .payments_data_manager()
           .GetCreditCardsToSuggest(use_legacy_algorithm);
