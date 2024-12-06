@@ -8877,3 +8877,6 @@ crbug.com/381999814 http/tests/inspector-protocol/debugger/debugger-script-parse
 # Gardener 2024-12-05
 crbug.com/382519579 [ Linux ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-window-attribution.html [ Failure Pass ]
 crbug.com/382506777 [ Linux ] external/wpt/scroll-animations/css/animation-inactive-outside-range-test.html [ Failure Pass ]
+
+# Gardener 2024-12-06
+crbug.com/382519579 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-script-window-attribution.html [ Failure Pass ]
