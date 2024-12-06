@@ -83,11 +83,11 @@ class VIEWS_EXPORT AnimationSequenceBlock {
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetColor(
       ui::Layer* target,
-      SkColor color,
+      SkColor4f color,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetColor(
       ui::LayerOwner* target,
-      SkColor color,
+      SkColor4f color,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetGrayscale(
       ui::Layer* target,
@@ -167,7 +167,7 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   using AnimationValue =
       absl::variant<gfx::Rect,
                     float,
-                    SkColor,
+                    SkColor4f,
                     gfx::RoundedCornersF,
                     gfx::LinearGradient,
                     bool,

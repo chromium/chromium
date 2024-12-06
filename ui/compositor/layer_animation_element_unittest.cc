@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
@@ -31,7 +32,7 @@ TEST(TargetValueTest, VerifyLayerAnimationDelegateConstructor) {
   const bool kVisibility = false;
   const float kBrightness = 2.358f;
   const float kGrayscale = 2.5813f;
-  const SkColor kColor = SK_ColorCYAN;
+  const SkColor4f kColor = SkColors::kCyan;
   const gfx::Rect kClipRect(2, 3, 4, 5);
   const gfx::RoundedCornersF kRoundedCorners(2.0f, 3.0f, 4.0f, 5.0f);
 
@@ -63,7 +64,7 @@ TEST(TargetValueTest, VerifyLayerAnimationDelegateConstructor) {
   EXPECT_EQ(kVisibility, target_value.visibility);
   EXPECT_FLOAT_EQ(kBrightness, target_value.brightness);
   EXPECT_FLOAT_EQ(kGrayscale, target_value.grayscale);
-  EXPECT_EQ(SK_ColorCYAN, target_value.color);
+  EXPECT_EQ(SkColors::kCyan, target_value.color);
   EXPECT_EQ(kClipRect, target_value.clip_rect);
   EXPECT_EQ(kRoundedCorners, target_value.rounded_corners);
 }

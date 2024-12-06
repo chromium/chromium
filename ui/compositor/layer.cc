@@ -33,6 +33,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer_animator.h"
@@ -1263,12 +1264,14 @@ void Layer::UpdateNinePatchOcclusion(const gfx::Rect& occlusion) {
   nine_patch_layer_->SetLayerOcclusion(occlusion);
 }
 
-void Layer::SetColor(SkColor color) { GetAnimator()->SetColor(color); }
+void Layer::SetColor(SkColor color) {
+  GetAnimator()->SetColor(SkColor4f::FromColor(color));
+}
 
 SkColor Layer::GetTargetColor() const {
   if (animator_ && animator_->IsAnimatingProperty(
       LayerAnimationElement::COLOR))
-    return animator_->GetTargetColor();
+    return animator_->GetTargetColor().toSkColor();
   // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   return cc_layer_->background_color().toSkColor();
 }
@@ -1682,12 +1685,12 @@ void Layer::SetGrayscaleFromAnimation(float grayscale,
   SetLayerFilters();
 }
 
-void Layer::SetColorFromAnimation(SkColor color, PropertyChangeReason reason) {
+void Layer::SetColorFromAnimation(SkColor4f color,
+                                  PropertyChangeReason reason) {
   DCHECK_EQ(type_, LAYER_SOLID_COLOR);
-  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
-  cc_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
-  cc_layer_->SetSafeOpaqueBackgroundColor(SkColor4f::FromColor(color));
-  SetFillsBoundsOpaquelyWithReason(SkColorGetA(color) == 0xFF, reason);
+  cc_layer_->SetBackgroundColor(color);
+  cc_layer_->SetSafeOpaqueBackgroundColor(color);
+  SetFillsBoundsOpaquelyWithReason(color.isOpaque(), reason);
 }
 
 void Layer::SetClipRectFromAnimation(const gfx::Rect& clip_rect,
@@ -1751,13 +1754,11 @@ float Layer::GetGrayscaleForAnimation() const {
   return layer_grayscale();
 }
 
-SkColor Layer::GetColorForAnimation() const {
+SkColor4f Layer::GetColorForAnimation() const {
   // The NULL check is here since this is invoked regardless of whether we have
   // been configured as LAYER_SOLID_COLOR.
-  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
-  return solid_color_layer_.get()
-             ? solid_color_layer_->background_color().toSkColor()
-             : SK_ColorBLACK;
+  return solid_color_layer_.get() ? solid_color_layer_->background_color()
+                                  : SkColors::kBlack;
 }
 
 gfx::Rect Layer::GetClipRectForAnimation() const {

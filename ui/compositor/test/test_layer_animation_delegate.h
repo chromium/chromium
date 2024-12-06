@@ -53,7 +53,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
                                   PropertyChangeReason reason) override;
   void SetGrayscaleFromAnimation(float grayscale,
                                  PropertyChangeReason reason) override;
-  void SetColorFromAnimation(SkColor color,
+  void SetColorFromAnimation(SkColor4f color,
                              PropertyChangeReason reason) override;
   void SetClipRectFromAnimation(const gfx::Rect& clip_rect,
                                 PropertyChangeReason reason) override;
@@ -69,7 +69,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   bool GetVisibilityForAnimation() const override;
   float GetBrightnessForAnimation() const override;
   float GetGrayscaleForAnimation() const override;
-  SkColor GetColorForAnimation() const override;
+  SkColor4f GetColorForAnimation() const override;
   gfx::Rect GetClipRectForAnimation() const override;
   gfx::RoundedCornersF GetRoundedCornersForAnimation() const override;
   const gfx::LinearGradient& GetGradientMaskForAnimation() const override;
@@ -95,7 +95,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   bool visibility_;
   float brightness_;
   float grayscale_;
-  SkColor color_;
+  SkColor4f color_;
   gfx::Rect clip_rect_;
   gfx::RoundedCornersF rounded_corners_;
   gfx::LinearGradient gradient_mask_;

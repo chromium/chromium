@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/keyframe_model.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/float_animation_curve_adapter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
@@ -243,11 +244,10 @@ class GrayscaleTransition : public LayerAnimationElement {
 
 class ColorTransition : public LayerAnimationElement {
  public:
-  ColorTransition(SkColor target, base::TimeDelta duration)
+  ColorTransition(SkColor4f target, base::TimeDelta duration)
       : LayerAnimationElement(COLOR, duration),
-        start_(SK_ColorBLACK),
-        target_(target) {
-  }
+        start_(SkColors::kBlack),
+        target_(target) {}
 
   ColorTransition(const ColorTransition&) = delete;
   ColorTransition& operator=(const ColorTransition&) = delete;
@@ -274,8 +274,8 @@ class ColorTransition : public LayerAnimationElement {
   void OnAbort(LayerAnimationDelegate* delegate) override {}
 
  private:
-  SkColor start_;
-  const SkColor target_;
+  SkColor4f start_;
+  const SkColor4f target_;
 };
 
 // ClipRectTransition ----------------------------------------------------------
@@ -639,7 +639,8 @@ LayerAnimationElement::TargetValue::TargetValue(
       visibility(delegate ? delegate->GetVisibilityForAnimation() : false),
       brightness(delegate ? delegate->GetBrightnessForAnimation() : 0.0f),
       grayscale(delegate ? delegate->GetGrayscaleForAnimation() : 0.0f),
-      color(delegate ? delegate->GetColorForAnimation() : SK_ColorTRANSPARENT),
+      color(delegate ? delegate->GetColorForAnimation()
+                     : SkColors::kTransparent),
       clip_rect(delegate ? delegate->GetClipRectForAnimation() : gfx::Rect()),
       rounded_corners(delegate ? delegate->GetRoundedCornersForAnimation()
                                : gfx::RoundedCornersF()),
@@ -918,7 +919,7 @@ LayerAnimationElement::CreatePauseElement(AnimatableProperties properties,
 
 // static
 std::unique_ptr<LayerAnimationElement>
-LayerAnimationElement::CreateColorElement(SkColor color,
+LayerAnimationElement::CreateColorElement(SkColor4f color,
                                           base::TimeDelta duration) {
   return std::make_unique<ColorTransition>(color, duration);
 }

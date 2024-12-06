@@ -2229,7 +2229,8 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
   if (GetWidget()) {
     builder.GetCurrentSequence().SetColor(
         background_layer,
-        GetColorProvider()->GetColor(GetBackgroundLayerColorId()),
+        SkColor4f::FromColor(
+            GetColorProvider()->GetColor(GetBackgroundLayerColorId())),
         animation_tween_type);
   }
 }
