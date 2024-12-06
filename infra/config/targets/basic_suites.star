@@ -1885,6 +1885,9 @@ targets.legacy_basic_suite(
                 "has_native_resultdb_integration",
                 "blink_tests_write_run_histories",
             ],
+            args = [
+                "--release",
+            ],
             mac_args = [
                 "--driver-name",
                 "Google Chrome",

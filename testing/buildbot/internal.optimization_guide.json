@@ -1515,6 +1515,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--release",
           "--driver-name",
           "Google Chrome",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
@@ -1741,6 +1742,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--release",
           "--driver-name",
           "Google Chrome",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
