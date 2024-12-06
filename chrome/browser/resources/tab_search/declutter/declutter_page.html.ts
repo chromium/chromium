@@ -26,12 +26,18 @@ export function getHtml(this: DeclutterPageElement) {
         </cr-icon-button>
       ` :
                             ''}
-      <div id="headerText">
+      ${
+      this.dedupeEnabled ? html`
         <div class="title">$i18n{declutterTitle}</div>
-        ${this.staleTabDatas_.length === 0 ? '' : html`
-          <div class="subheading">$i18n{declutterBody}</div>
-        `}
-      </div>
+      ` :
+                           html`
+        <div class="header-text">
+          <div class="title">$i18n{declutterInactiveTitleNoDedupe}</div>
+            ${this.staleTabDatas_.length === 0 ? '' : html`
+              <div class="subheading">$i18n{declutterInactiveBody}</div>
+            `}
+        </div>
+      `}
     </div>
     ${
       this.staleTabDatas_.length === 0 ?
@@ -43,20 +49,41 @@ export function getHtml(this: DeclutterPageElement) {
     ` :
           html`
       <div id="scrollable">
-        <div id="staleTabList" class="tabList">
-          ${
-              this.staleTabDatas_.map(
-                  (item) => getTabSearchItem.bind(this)(
-                      item, DeclutterType.STALE_TABS))}
-        </div>
         ${
-              this.dedupeEnabled_ ?
+              this.staleTabDatas_.length > 0 ?
                   html`
-          <div id="duplicateTabList" class="tabList">
+          <div class="card">
             ${
+                      this.dedupeEnabled ? html`
+              <div class="header-text">
+                <div class="title">$i18n{declutterInactiveTitle}</div>
+                <div class="subheading">$i18n{declutterInactiveBody}</div>
+              </div>
+            ` :
+                                           ''}
+            <div id="staleTabList" class="tab-list">
+              ${
+                      this.staleTabDatas_.map(
+                          (item) => getTabSearchItem.bind(this)(
+                              item, DeclutterType.STALE_TABS))}
+            </div>
+          </div>
+        ` :
+                  ''}
+        ${
+              this.dedupeEnabled && this.duplicateTabDatas_.length > 0 ?
+                  html`
+          <div class="card">
+            <div class="header-text">
+              <div class="title">$i18n{declutterDuplicateTitle}</div>
+              <div class="subheading">$i18n{declutterDuplicateBody}</div>
+            </div>
+            <div id="duplicateTabList" class="tab-list">
+              ${
                       this.duplicateTabDatas_.map(
                           (item) => getTabSearchItem.bind(this)(
                               item, DeclutterType.DUPLICATE_TABS))}
+            </div>
           </div>
         ` :
                   ''}

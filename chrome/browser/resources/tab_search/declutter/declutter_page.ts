@@ -37,16 +37,20 @@ export class DeclutterPageElement extends CrLitElement {
       showBackButton: {type: Boolean},
       staleTabDatas_: {type: Array},
       duplicateTabDatas_: {type: Array},
-      dedupeEnabled_: {type: Boolean},
+
+      dedupeEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   availableHeight: number = 0;
   showBackButton: boolean = false;
+  dedupeEnabled: boolean = loadTimeData.getBoolean('dedupeEnabled');
 
   protected staleTabDatas_: TabData[] = [];
   protected duplicateTabDatas_: TabData[] = [];
-  protected dedupeEnabled_: boolean = loadTimeData.getBoolean('dedupeEnabled');
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
@@ -160,7 +164,10 @@ export class DeclutterPageElement extends CrLitElement {
 
   protected getBackButtonAriaLabel_(): string {
     return loadTimeData.getStringF(
-        'backButtonAriaLabel', loadTimeData.getString('declutterTitle'));
+        'backButtonAriaLabel',
+        loadTimeData.getString(
+            this.dedupeEnabled ? 'declutterTitle' :
+                                 'declutterInactiveTitleNoDedupe'));
   }
 
   protected getCloseButtonAriaLabel_(tabData: TabData): string {

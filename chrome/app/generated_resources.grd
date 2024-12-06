@@ -9678,10 +9678,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Keep your tabs clutter-free
       </message>
       <message name="IDS_DECLUTTER_TITLE" desc="The header text for the declutter UI">
+        Clean up unused tabs
+      </message>
+      <message name="IDS_DECLUTTER_INACTIVE_TITLE_NO_DEDUPE" desc="The header text for the declutter inactive tab UI when dedupe is disabled">
         Review inactive tabs
       </message>
-      <message name="IDS_DECLUTTER_BODY" desc="The body text for the declutter UI">
+      <message name="IDS_DECLUTTER_INACTIVE_TITLE" desc="The header text for the declutter inactive tab UI">
+        Inactive tabs
+      </message>
+      <message name="IDS_DECLUTTER_INACTIVE_BODY" desc="The body text for the declutter inactive tab UI">
         Tabs you haven't used in <ph name="COUNT">$1<ex>7</ex></ph> or more days
+      </message>
+      <message name="IDS_DECLUTTER_DUPLICATE_TITLE" desc="The header text for the declutter duplicate tab UI">
+        Duplicate tabs
+      </message>
+      <message name="IDS_DECLUTTER_DUPLICATE_BODY" desc="The body text for the declutter duplicate tab UI">
+        Oldest copy kept when you close duplicates
       </message>
       <message name="IDS_DECLUTTER_EMPTY_TITLE" desc="The header text for the declutter empty state UI">
         Things look neat!

@@ -153,8 +153,13 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"closeTabs", IDS_DECLUTTER_CLOSE_TABS},
       {"declutterCloseTabAriaLabel", IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL},
       {"declutterCloseTabTooltip", IDS_DECLUTTER_CLOSE_TAB_TOOLTIP},
+      {"declutterDuplicateBody", IDS_DECLUTTER_DUPLICATE_BODY},
+      {"declutterDuplicateTitle", IDS_DECLUTTER_DUPLICATE_TITLE},
       {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
       {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},
+      {"declutterInactiveTitle", IDS_DECLUTTER_INACTIVE_TITLE},
+      {"declutterInactiveTitleNoDedupe",
+       IDS_DECLUTTER_INACTIVE_TITLE_NO_DEDUPE},
       {"declutterTimestamp", IDS_DECLUTTER_TIMESTAMP},
       {"declutterTitle", IDS_DECLUTTER_TITLE},
       // Selector UI strings
@@ -208,8 +213,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   // TODO(b/362269642): Once the stale threshold duration is Finch-
   // configurable, replace the hardcoded 7 below with the value of that
   // parameter.
-  source->AddString("declutterBody",
-                    l10n_util::GetStringFUTF16(IDS_DECLUTTER_BODY, u"7"));
+  source->AddString(
+      "declutterInactiveBody",
+      l10n_util::GetStringFUTF16(IDS_DECLUTTER_INACTIVE_BODY, u"7"));
 
   webui::SetupWebUIDataSource(source, kTabSearchResources,
                               IDR_TAB_SEARCH_TAB_SEARCH_HTML);
