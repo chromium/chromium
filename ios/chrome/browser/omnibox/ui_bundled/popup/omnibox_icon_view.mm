@@ -11,7 +11,15 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon.h"
 #import "ios/chrome/browser/shared/ui/symbols/colorful_background_symbol_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Scales the symbol dimensions proportionally relative to the parent.
+const CGFloat kSymbolInsetMultiplier = 0.7;
+
+}  // namespace
 
 @implementation OmniboxIconView {
   id<OmniboxIcon> _omniboxIcon;
@@ -55,17 +63,15 @@
   [self addSubview:_colorfulView];
   [self addSubview:_imageView];
 
+  AddSameCenterConstraints(_colorfulView, self);
   [NSLayoutConstraint activateConstraints:@[
-    [_colorfulView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [_colorfulView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [_colorfulView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [_colorfulView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-
-    [_imageView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [_imageView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [_imageView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [_imageView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+    [_colorfulView.widthAnchor constraintEqualToAnchor:self.widthAnchor
+                                            multiplier:kSymbolInsetMultiplier],
+    [_colorfulView.heightAnchor constraintEqualToAnchor:self.heightAnchor
+                                             multiplier:kSymbolInsetMultiplier],
   ]];
+
+  AddSameConstraints(_imageView, self);
 }
 
 - (void)setOmniboxIcon:(id<OmniboxIcon>)omniboxIcon {

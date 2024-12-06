@@ -31,10 +31,10 @@ const CGFloat kMultilineTextTopMargin = 12.0;
 const CGFloat kTextTrailingMargin = 0.0;
 const CGFloat kMultilineTextTrailingMargin = 4.0;
 const CGFloat kMultilineLineSpacing = 2.0;
-const CGFloat kTrailingButtonSize = 24;
-const CGFloat kTrailingButtonTrailingMargin = 14;
+const CGFloat kTrailingButtonSize = 16;
+const CGFloat kTrailingButtonTrailingMargin = 18;
 /// Trailing button trailing margin with popout omnibox.
-const CGFloat kTrailingButtonTrailingMarginPopout = 22.0;
+const CGFloat kTrailingButtonTrailingMarginPopout = 26.0;
 const CGFloat kTextSpacing = 2.0f;
 const CGFloat kLeadingIconViewSize = 30.0f;
 const CGFloat kLeadingSpace = 17.0f;
@@ -43,6 +43,18 @@ const CGFloat kLeadingSpacePopout = 23.0;
 const CGFloat kTextIconSpace = 14.0f;
 /// Top color opacity of the `_selectedBackgroundView`.
 const CGFloat kTopGradientColorOpacity = 0.85;
+
+// Multiplier values for supported content sizes.
+const double kContentSizeMultiplierXS = 0.8;
+const double kContentSizeMultiplierS = 0.9;
+const double kContentSizeMultiplierM = 1.0;
+const double kContentSizeMultiplierL = 1.2;
+const double kContentSizeMultiplierXL = 1.4;
+const double kContentSizeMultiplier2XL = 1.6;
+const double kContentSizeMultiplier3XL = 1.8;
+// Single maximum zoom level for accessibility. This value is only slightly
+// higher than the 3XL zoom avoid visually breaking the UI.
+const double kContentSizeMultiplierAccesibility = 2.0;
 
 }  // namespace
 
@@ -64,6 +76,10 @@ const CGFloat kTopGradientColorOpacity = 0.85;
   /// Constraints changes with popout omnibox.
   NSLayoutConstraint* _leadingConstraint;
   NSLayoutConstraint* _trailingButtonTrailingConstraint;
+
+  /// Constraint change for the leading icon and trailing button.
+  NSLayoutConstraint* _leadingIconViewWidthConstraint;
+  NSLayoutConstraint* _trailingButtonWidthConstraint;
 }
 
 - (instancetype)initWithConfiguration:
@@ -179,16 +195,20 @@ const CGFloat kTopGradientColorOpacity = 0.85;
         constraintEqualToAnchor:self.leadingAnchor
                        constant:kLeadingSpace];
 
+    _leadingIconViewWidthConstraint = [_leadingIconView.widthAnchor
+        constraintEqualToConstant:kLeadingIconViewSize];
+    _trailingButtonWidthConstraint = [_trailingButton.widthAnchor
+        constraintEqualToConstant:kTrailingButtonSize];
+
     [NSLayoutConstraint activateConstraints:@[
       // Row has a minimum height.
       [self.heightAnchor constraintGreaterThanOrEqualToConstant:
                              kOmniboxPopupCellMinimumHeight],
 
       // Position leadingIconView at the leading edge of the view.
-      [_leadingIconView.widthAnchor
-          constraintEqualToConstant:kLeadingIconViewSize],
+      _leadingIconViewWidthConstraint,
       [_leadingIconView.heightAnchor
-          constraintEqualToConstant:kLeadingIconViewSize],
+          constraintEqualToAnchor:_leadingIconView.widthAnchor],
       [_leadingIconView.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
       _leadingConstraint,
@@ -202,10 +222,10 @@ const CGFloat kTopGradientColorOpacity = 0.85;
                          constant:kTextIconSpace],
 
       // Trailing button constraints.
+      _trailingButtonWidthConstraint,
       [_trailingButton.heightAnchor
-          constraintEqualToConstant:kTrailingButtonSize],
-      [_trailingButton.widthAnchor
-          constraintEqualToConstant:kTrailingButtonSize],
+          constraintEqualToAnchor:_trailingButton.widthAnchor],
+
       [_trailingButton.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
       _trailingButtonTrailingConstraint,
@@ -219,9 +239,63 @@ const CGFloat kTopGradientColorOpacity = 0.85;
     [self addInteraction:[[ViewPointerInteraction alloc] init]];
 
     self.configuration = configuration;
+
+    [self adjustIconDimensionsForContentSize];
+    if (@available(iOS 17, *)) {
+      [self
+          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+                       withAction:@selector
+                       (adjustIconDimensionsForContentSize)];
+    }
   }
   return self;
 }
+
+- (void)adjustIconDimensionsForContentSize {
+  UIContentSizeCategory currentCategory =
+      self.traitCollection.preferredContentSizeCategory;
+
+  NSDictionary<NSString*, NSNumber*>* sizeMapping = @{
+    UIContentSizeCategoryExtraSmall : @(kContentSizeMultiplierXS),
+    UIContentSizeCategorySmall : @(kContentSizeMultiplierS),
+    UIContentSizeCategoryMedium : @(kContentSizeMultiplierM),
+    UIContentSizeCategoryLarge : @(kContentSizeMultiplierL),
+    UIContentSizeCategoryExtraLarge : @(kContentSizeMultiplierXL),
+    UIContentSizeCategoryExtraExtraLarge : @(kContentSizeMultiplier2XL),
+    UIContentSizeCategoryExtraExtraExtraLarge : @(kContentSizeMultiplier3XL),
+    UIContentSizeCategoryAccessibilityMedium :
+        @(kContentSizeMultiplierAccesibility),
+    UIContentSizeCategoryAccessibilityLarge :
+        @(kContentSizeMultiplierAccesibility),
+    UIContentSizeCategoryAccessibilityExtraLarge :
+        @(kContentSizeMultiplierAccesibility),
+    UIContentSizeCategoryAccessibilityExtraExtraLarge :
+        @(kContentSizeMultiplierAccesibility),
+    UIContentSizeCategoryAccessibilityExtraExtraExtraLarge :
+        @(kContentSizeMultiplierAccesibility),
+  };
+
+  CGFloat multiplier = [sizeMapping[currentCategory] doubleValue];
+  if (multiplier) {
+    _leadingIconViewWidthConstraint.constant =
+        kLeadingIconViewSize * multiplier;
+    _trailingButtonWidthConstraint.constant = kTrailingButtonSize * multiplier;
+  }
+}
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    [self setNeedsLayout];
+  }
+}
+#endif
 
 - (void)didMoveToWindow {
   if (self.window) {
@@ -328,6 +402,11 @@ const CGFloat kTopGradientColorOpacity = 0.85;
   if (configuration.trailingIcon) {
     [_trailingButton setImage:configuration.trailingIcon
                      forState:UIControlStateNormal];
+    _trailingButton.contentMode = UIViewContentModeScaleAspectFit;
+    _trailingButton.contentHorizontalAlignment =
+        UIControlContentHorizontalAlignmentFill;
+    _trailingButton.contentVerticalAlignment =
+        UIControlContentVerticalAlignmentFill;
     _trailingButton.hidden = NO;
     _trailingButton.tintColor = configuration.trailingIconTintColor;
     _trailingButton.accessibilityIdentifier =
