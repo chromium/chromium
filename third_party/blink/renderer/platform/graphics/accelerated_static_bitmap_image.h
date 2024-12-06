@@ -70,24 +70,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       bool supports_display_compositing,
       bool is_overlay_candidate);
 
-  // This temporary version of above that accepts is_origin_top_left.
-  // |is_origin_top_left| indicates whether the origin in texture space
-  // corresponds to the top-left content pixel.
-  static scoped_refptr<AcceleratedStaticBitmapImage>
-  CreateFromVideoFrameSharedImage(
-      scoped_refptr<gpu::ClientSharedImage>,
-      const gpu::SyncToken&,
-      GLuint shared_image_texture_id,
-      const SkImageInfo& sk_image_info,
-      GLenum texture_target,
-      bool is_origin_top_left,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::PlatformThreadRef context_thread_ref,
-      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      viz::ReleaseCallback release_callback,
-      bool supports_display_compositing,
-      bool is_overlay_candidate);
-
   // Creates an image wrapping an external shared image.
   // The shared image may come from a different context,
   // potentially from a different process.
