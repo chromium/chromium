@@ -30,8 +30,9 @@ class BrowserAutofillManager;
 // the `FieldSignature` and its `FieldType`, and further metadata. See
 // autofill_crowdsourcing_encoding.h for further details.
 //
-// In VotesUploader, "to vote" also includes "to emit quality metrics".
-// For brevity, function names don't mention the metrics explicitly.
+// In VotesUploader, "to vote" also includes "to emit quality metrics" and
+// "to potentially display an Autofill survey". For brevity, function names
+// don't mention this explicitly.
 //
 // VotesUploader enqueues votes that are cast before form submission are
 // enqueued. New votes for a form signature replace already-enqueued ones for
@@ -47,6 +48,8 @@ class BrowserAutofillManager;
 //       │
 //       │async
 //       │
+//   OnFieldTypesDetermined()
+//       │
 //       │       if submission
 //       ├──────►────────────────────────────────┐
 //       │else                                   │
@@ -60,14 +63,9 @@ class BrowserAutofillManager;
 //                                               │
 //   QueuedVote::upload_vote                     │
 //       │                                       │
-//       ├──────◄────────────────────────────────┘
-//       │
-//       ▼
-//   OnFieldTypesDetermined()
-//       │
-//       │
-//       ▼
-//   UploadVote()
+//       │                                       │
+//       ▼                                       │
+//   UploadVote()◄───────────────────────────────┘
 //       │
 //       │if submission
 //       │
@@ -103,10 +101,15 @@ class VotesUploader {
   std::u16string last_unlocked_credit_card_cvc_;
 
  protected:
-  // Logs quality metrics for the |submitted_form| and uploads votes for the
-  // field types to the crowdsourcing server, if appropriate.
-  // |observed_submission| indicates whether the upload is a result of an
-  // observed submission event.
+  // Logs quality metrics, perhaps displays an Autofill survey, and uploads the
+  // vote. All these three activities depend on the determined field types.
+  //
+  // `initial_interaction_timestamp` is the last interaction with the form
+  // passed to MaybeStartVoteUploadProcess(). `submission_timestamp` is the time
+  // MaybeStartVoteUploadProcess() was called. `observed_submission` indicates
+  // whether the upload is a result of an observed submission event.
+  // `ukm_source_id` is the form's page's UKM source ID.
+  //
   // Virtual and protected for testing.
   virtual void UploadVote(std::unique_ptr<FormStructure> submitted_form,
                           base::TimeTicks initial_interaction_timestamp,
@@ -119,24 +122,13 @@ class VotesUploader {
 
   struct QueuedVote;
 
-  // The reply for DeterminePossibleFieldTypesForUpload().
-  // TODO(crbug.com/374086145): Rename the function.
-  void Reply(base::TimeTicks initial_interaction_timestamp,
-             base::TimeTicks submission_timestamp,
-             bool observed_submission,
-             ukm::SourceId ukm_source_id,
-             std::unique_ptr<FormStructure> submitted_form);
-
-  // Called after the values present on submitted fields were associated with
-  // Autofill field types. It is used to route calls to
-  // `UploadVotesAndLogQuality()` and
-  // `AutofillClient::TriggerUserPerceptionOfAutofillSurvey()`, since both
-  // depend on the field types being determined.
-  void OnFieldTypesDetermined(std::unique_ptr<FormStructure> submitted_form,
-                              base::TimeTicks initial_interaction_timestamp,
+  // The reply of DeterminePossibleFieldTypesForUpload().
+  // Either calls UploadVote() or stores a QueuedVote.
+  void OnFieldTypesDetermined(base::TimeTicks initial_interaction_timestamp,
                               base::TimeTicks submission_timestamp,
                               bool observed_submission,
-                              ukm::SourceId ukm_source_id);
+                              ukm::SourceId ukm_source_id,
+                              std::unique_ptr<FormStructure> submitted_form);
 
   // Removes the callbacks for the given `form_signature` without calling them.
   void WipeQueuedVotesForForm(FormSignature form_signature);

@@ -164,31 +164,31 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
           std::move(copied_profiles), std::move(copied_credit_cards),
           last_unlocked_credit_card_cvc_, client().GetAppLocale(),
           std::move(form)),
-      base::BindOnce(&VotesUploader::Reply, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
+                     weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),
                      observed_submission, ukm_source_id));
   return true;
 }
 
-void VotesUploader::Reply(base::TimeTicks initial_interaction_timestamp,
-                          base::TimeTicks submission_timestamp,
-                          bool observed_submission,
-                          ukm::SourceId ukm_source_id,
-                          std::unique_ptr<FormStructure> form) {
+void VotesUploader::OnFieldTypesDetermined(
+    base::TimeTicks initial_interaction_timestamp,
+    base::TimeTicks submission_timestamp,
+    bool observed_submission,
+    ukm::SourceId ukm_source_id,
+    std::unique_ptr<FormStructure> form) {
   if (observed_submission) {
-    OnFieldTypesDetermined(std::move(form), initial_interaction_timestamp,
-                           submission_timestamp, observed_submission,
-                           ukm_source_id);
+    UploadVote(std::move(form), initial_interaction_timestamp,
+               submission_timestamp, observed_submission, ukm_source_id);
   } else {
     WipeQueuedVotesForForm(form->form_signature());
     TruncateQueueIfNecessary();
     queued_votes_.push_front(
         {.form_signature = form->form_signature(),
-         .upload_vote =
-             base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
-                            weak_ptr_factory_.GetWeakPtr(), std::move(form),
-                            initial_interaction_timestamp, submission_timestamp,
-                            observed_submission, ukm_source_id)});
+         .upload_vote = base::BindOnce(
+             &VotesUploader::UploadVote, weak_ptr_factory_.GetWeakPtr(),
+             std::move(form), initial_interaction_timestamp,
+             submission_timestamp, observed_submission, ukm_source_id)});
   }
 }
 
@@ -206,13 +206,50 @@ void VotesUploader::TruncateQueueIfNecessary() {
   }
 }
 
-// We explicitly pass in all the time stamps of interest, as the cached ones
-// might get reset before this method executes.
 void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
                                base::TimeTicks initial_interaction_timestamp,
                                base::TimeTicks submission_timestamp,
                                bool observed_submission,
                                ukm::SourceId ukm_source_id) {
+  auto count_types = [&submitted_form](FormType type) {
+    return base::ranges::count_if(
+        submitted_form->fields(),
+        [=](const std::unique_ptr<AutofillField>& field) {
+          return FieldTypeGroupToFormType(field->Type().group()) == type;
+        });
+  };
+
+  size_t address_fields_count = count_types(FormType::kAddressForm);
+  autofill_metrics::FormGroupFillingStats address_filling_stats =
+      autofill_metrics::GetFormFillingStatsForFormType(FormType::kAddressForm,
+                                                       *submitted_form);
+  const bool can_trigger_address_survey =
+      address_fields_count >=
+          kMinNumberAddressFieldsToTriggerAddressUserPerceptionSurvey &&
+      address_filling_stats.TotalFilled() > 0 &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillAddressUserPerceptionSurvey);
+
+  size_t credit_card_fields_count = count_types(FormType::kCreditCardForm);
+  autofill_metrics::FormGroupFillingStats credit_card_filling_stats =
+      autofill_metrics::GetFormFillingStatsForFormType(
+          FormType::kCreditCardForm, *submitted_form);
+  const bool can_trigger_credit_card_survey =
+      credit_card_fields_count > 0 &&
+      credit_card_filling_stats.TotalFilled() > 0;
+
+  if (can_trigger_address_survey) {
+    client().TriggerUserPerceptionOfAutofillSurvey(
+        FillingProduct::kAddress,
+        FormFillingStatsToSurveyStringData(address_filling_stats));
+  } else if (can_trigger_credit_card_survey &&
+             base::FeatureList::IsEnabled(
+                 features::kAutofillCreditCardUserPerceptionSurvey)) {
+    client().TriggerUserPerceptionOfAutofillSurvey(
+        FillingProduct::kCreditCard,
+        FormFillingStatsToSurveyStringData(credit_card_filling_stats));
+  }
+
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.
   if (observed_submission) {
@@ -263,54 +300,6 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
                                               observed_submission),
       submitted_form->submission_source(),
       /*is_password_manager_upload=*/false);
-}
-
-void VotesUploader::OnFieldTypesDetermined(
-    std::unique_ptr<FormStructure> submitted_form,
-    base::TimeTicks initial_interaction_timestamp,
-    base::TimeTicks submission_timestamp,
-    bool observed_submission,
-    ukm::SourceId ukm_source_id) {
-  auto count_types = [&submitted_form](FormType type) {
-    return base::ranges::count_if(
-        submitted_form->fields(),
-        [=](const std::unique_ptr<AutofillField>& field) {
-          return FieldTypeGroupToFormType(field->Type().group()) == type;
-        });
-  };
-
-  size_t address_fields_count = count_types(FormType::kAddressForm);
-  autofill_metrics::FormGroupFillingStats address_filling_stats =
-      autofill_metrics::GetFormFillingStatsForFormType(FormType::kAddressForm,
-                                                       *submitted_form);
-  const bool can_trigger_address_survey =
-      address_fields_count >=
-          kMinNumberAddressFieldsToTriggerAddressUserPerceptionSurvey &&
-      address_filling_stats.TotalFilled() > 0 &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillAddressUserPerceptionSurvey);
-
-  size_t credit_card_fields_count = count_types(FormType::kCreditCardForm);
-  autofill_metrics::FormGroupFillingStats credit_card_filling_stats =
-      autofill_metrics::GetFormFillingStatsForFormType(
-          FormType::kCreditCardForm, *submitted_form);
-  const bool can_trigger_credit_card_survey =
-      credit_card_fields_count > 0 &&
-      credit_card_filling_stats.TotalFilled() > 0;
-
-  if (can_trigger_address_survey) {
-    client().TriggerUserPerceptionOfAutofillSurvey(
-        FillingProduct::kAddress,
-        FormFillingStatsToSurveyStringData(address_filling_stats));
-  } else if (can_trigger_credit_card_survey &&
-             base::FeatureList::IsEnabled(
-                 features::kAutofillCreditCardUserPerceptionSurvey)) {
-    client().TriggerUserPerceptionOfAutofillSurvey(
-        FillingProduct::kCreditCard,
-        FormFillingStatsToSurveyStringData(credit_card_filling_stats));
-  }
-  UploadVote(std::move(submitted_form), initial_interaction_timestamp,
-             submission_timestamp, observed_submission, ukm_source_id);
 }
 
 }  // namespace autofill
