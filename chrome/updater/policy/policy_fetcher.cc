@@ -88,9 +88,9 @@ class InProcessPolicyFetcher : public PolicyFetcher {
                                        bool is_enrollment_mandatory,
                                        DMClient::RequestResult result);
 
-  void FetchPolicy(
-      base::OnceCallback<void(scoped_refptr<PolicyManagerInterface>)> callback);
-  scoped_refptr<PolicyManagerInterface> OnFetchPolicyRequestComplete(
+  void FetchPolicy(PolicyFetchCompleteCallback callback);
+  void OnFetchPolicyRequestComplete(
+      PolicyFetchCompleteCallback callback,
       DMClient::RequestResult result,
       const std::vector<PolicyValidationResult>& validation_results);
 
@@ -128,7 +128,8 @@ void InProcessPolicyFetcher::FetchPolicies(
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(
               &InProcessPolicyFetcher::OnRegisterDeviceRequestComplete,
-              base::Unretained(this), std::move(callback))));
+              base::Unretained(this),
+              base::BindPostTaskToCurrentDefault(std::move(callback)))));
 }
 
 void InProcessPolicyFetcher::RegisterDevice(
@@ -164,11 +165,8 @@ void InProcessPolicyFetcher::OnRegisterDeviceRequestComplete(
   if (result == DMClient::RequestResult::kSuccess ||
       result == DMClient::RequestResult::kAlreadyRegistered) {
     sequenced_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&InProcessPolicyFetcher::FetchPolicy,
-                       base::Unretained(this),
-                       base::BindPostTaskToCurrentDefault(
-                           base::BindOnce(std::move(callback), kErrorOk))));
+        FROM_HERE, base::BindOnce(&InProcessPolicyFetcher::FetchPolicy,
+                                  base::Unretained(this), std::move(callback)));
   } else {
     VLOG(1) << "Device registration failed, skip fetching policies.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -180,26 +178,26 @@ void InProcessPolicyFetcher::OnRegisterDeviceRequestComplete(
   }
 }
 
-void InProcessPolicyFetcher::FetchPolicy(
-    base::OnceCallback<void(scoped_refptr<PolicyManagerInterface>)> callback) {
+void InProcessPolicyFetcher::FetchPolicy(PolicyFetchCompleteCallback callback) {
   VLOG(1) << __func__;
   DMClient::FetchPolicy(
       DMClient::CreateDefaultConfigurator(server_url_,
                                           policy_service_proxy_configuration_),
       device_management_storage::GetDefaultDMStorage(),
       base::BindOnce(&InProcessPolicyFetcher::OnFetchPolicyRequestComplete,
-                     base::Unretained(this))
-          .Then(std::move(callback)));
+                     base::Unretained(this), std::move(callback)));
 }
 
-scoped_refptr<PolicyManagerInterface>
-InProcessPolicyFetcher::OnFetchPolicyRequestComplete(
+void InProcessPolicyFetcher::OnFetchPolicyRequestComplete(
+    PolicyFetchCompleteCallback callback,
     DMClient::RequestResult result,
     const std::vector<PolicyValidationResult>& validation_results) {
   VLOG(1) << __func__;
 
   if (result == DMClient::RequestResult::kSuccess) {
-    return CreateDMPolicyManager(override_is_managed_device_);
+    std::move(callback).Run(kErrorOk,
+                            CreateDMPolicyManager(override_is_managed_device_));
+    return;
   }
 
   for (const auto& validation_result : validation_results) {
@@ -221,8 +219,7 @@ InProcessPolicyFetcher::OnFetchPolicyRequestComplete(
               }
             })));
   }
-
-  return nullptr;
+  std::move(callback).Run(kErrorPolicyFetchFailed, nullptr);
 }
 
 // `OutOfProcessPolicyFetcher` launches the enterprise companion app and
