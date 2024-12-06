@@ -237,28 +237,6 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   enum TextLeafSearch { kFirst, kLast };
 
-  struct FingerprintSourceData {
-    STACK_ALLOCATED();
-
-   public:
-    FingerprintSourceData()
-        : parent_hash_(0),
-          qualified_name_hash_(0),
-          packed_style_properties_(0),
-          column_(0),
-          width_(0) {}
-
-    unsigned parent_hash_;
-    unsigned qualified_name_hash_;
-    // Style specific selection of signals
-    unsigned packed_style_properties_;
-    unsigned column_;
-    float width_;
-  };
-  // Ensures efficient hashing using StringHasher.
-  static_assert(!(sizeof(FingerprintSourceData) % sizeof(UChar)),
-                "sizeof(FingerprintSourceData) must be a multiple of UChar");
-
   typedef unsigned Fingerprint;
   typedef HeapVector<Member<Cluster>> ClusterStack;
 

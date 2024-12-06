@@ -23,7 +23,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
   static const WrapperTypeInfo wrapper_type_info_body_;
 
  public:
-  typedef T ValueType;
+  using ValueType = T;
 
   static ThisType* Create(DOMArrayBufferBase* buffer,
                           size_t byte_offset,
@@ -37,7 +37,9 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return Create(buffer, 0, length);
   }
 
-  static ThisType* Create(base::span<const ValueType> array) {
+  static ThisType* Create(base::span<const ValueType> array)
+    requires std::is_trivially_copyable_v<ValueType>
+  {
     DOMArrayBuffer* buffer = DOMArrayBuffer::Create(base::as_bytes(array));
     return Create(buffer, 0, array.size());
   }
@@ -48,7 +50,9 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return buffer ? Create(buffer, 0, length) : nullptr;
   }
 
-  static ThisType* CreateOrNull(base::span<const ValueType> array) {
+  static ThisType* CreateOrNull(base::span<const ValueType> array)
+    requires std::is_trivially_copyable_v<ValueType>
+  {
     DOMArrayBuffer* buffer =
         DOMArrayBuffer::CreateOrNull(base::as_bytes(array));
     return buffer ? Create(buffer, 0, array.size()) : nullptr;
