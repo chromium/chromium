@@ -314,7 +314,6 @@ public abstract class ChromeFeatureList {
     public static final String DISABLE_INSTANCE_LIMIT = "DisableInstanceLimit";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DOWNLOADS_MIGRATE_TO_JOBS_API = "DownloadsMigrateToJobsAPI";
-    public static final String DRAG_DROP_INTO_OMNIBOX = "DragDropIntoOmnibox";
     public static final String DRAG_DROP_TAB_TEARING = "DragDropTabTearing";
     public static final String DRAG_DROP_TAB_TEARING_ENABLE_OEM = "DragDropTabTearingEnableOEM";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
@@ -644,8 +643,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(DELAY_TEMP_STRIP_REMOVAL, false);
     public static final CachedFlag sDisableInstanceLimit =
             newCachedFlag(DISABLE_INSTANCE_LIMIT, false);
-    public static final CachedFlag sDragDropIntoOmnibox =
-            newCachedFlag(DRAG_DROP_INTO_OMNIBOX, false);
     public static final CachedFlag sDownloadsMigrateToJobsAPI =
             newCachedFlag(DOWNLOADS_MIGRATE_TO_JOBS_API, false);
     public static final CachedFlag sDrawKeyNativeEdgeToEdge =
@@ -810,7 +807,6 @@ public abstract class ChromeFeatureList {
                     sCrossDeviceTabPaneAndroid,
                     sDelayTempStripRemoval,
                     sDisableInstanceLimit,
-                    sDragDropIntoOmnibox,
                     sDownloadsMigrateToJobsAPI,
                     sDrawKeyNativeEdgeToEdge,
                     sDrawNativeEdgeToEdge,

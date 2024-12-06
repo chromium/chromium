@@ -601,9 +601,6 @@ public class TabStripTransitionCoordinatorUnitTest {
         doReturn(mSpyControlContainer.findToolbar)
                 .when(mSpyControlContainer)
                 .findViewById(R.id.find_toolbar);
-        doReturn(mSpyControlContainer.dropTargetView)
-                .when(mSpyControlContainer)
-                .findViewById(R.id.toolbar_drag_drop_target_view);
 
         setDeviceWidthDp(NARROW_NORMAL_WINDOW_WIDTH);
         doReturn(TEST_TOOLBAR_HEIGHT)
@@ -1018,10 +1015,6 @@ public class TabStripTransitionCoordinatorUnitTest {
                 tabStripHeight + TEST_TOOLBAR_HEIGHT,
                 mSpyControlContainer.findToolbar.getTopMargin());
         Assert.assertEquals(
-                "Top margin is wrong for dropTargetView.",
-                tabStripHeight,
-                mSpyControlContainer.dropTargetView.getTopMargin());
-        Assert.assertEquals(
                 "Top margin is wrong for toolbarHairline.",
                 tabStripHeight + TEST_TOOLBAR_HEIGHT,
                 mSpyControlContainer.toolbarHairline.getTopMargin());
@@ -1112,7 +1105,6 @@ public class TabStripTransitionCoordinatorUnitTest {
         public TestView toolbarLayout;
         public TestView toolbarHairline;
         public TestView findToolbar;
-        public TestView dropTargetView;
 
         @Nullable public View.OnLayoutChangeListener onLayoutChangeListener;
 
@@ -1129,9 +1121,6 @@ public class TabStripTransitionCoordinatorUnitTest {
             doReturn(controlContainer.findToolbar)
                     .when(controlContainer)
                     .findViewById(R.id.find_toolbar_tablet_stub);
-            doReturn(controlContainer.dropTargetView)
-                    .when(controlContainer)
-                    .findViewById(R.id.target_view_stub);
 
             doAnswer(args -> context.getResources().getDisplayMetrics().widthPixels)
                     .when(controlContainer)
@@ -1156,10 +1145,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
             toolbarLayout = Mockito.spy(new TestView(context, attrs));
             findToolbar = Mockito.spy(new TestView(context, attrs));
-            dropTargetView = Mockito.spy(new TestView(context, attrs));
             when(toolbarLayout.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
             when(findToolbar.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
-            when(dropTargetView.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
             toolbarHairline = new TestView(context, attrs);
 
             MarginLayoutParams sourceParams =
@@ -1173,7 +1160,6 @@ public class TabStripTransitionCoordinatorUnitTest {
             sourceParams.topMargin = TEST_TAB_STRIP_HEIGHT;
             sourceParams.height = TEST_TOOLBAR_HEIGHT;
             addView(toolbarLayout, new MarginLayoutParams(sourceParams));
-            addView(dropTargetView, new MarginLayoutParams(sourceParams));
         }
     }
 

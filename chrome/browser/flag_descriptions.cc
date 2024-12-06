@@ -4454,11 +4454,6 @@ const char kDeprecatedExternalPickerFunctionName[] =
 const char kDeprecatedExternalPickerFunctionDescription[] =
     "Use the old-style opening of an External Picker when uploading files";
 
-const char kDragDropIntoOmniboxName[] =
-    "Enable drag and drop into omnibox on Android";
-const char kDragDropIntoOmniboxDescription[] =
-    "Drag urls, text, and images into omnibox to start a search";
-
 const char kDragDropTabTearingName[] = "Drag and drop tab tearing";
 const char kDragDropTabTearingDescription[] =
     "Allow drag tab from tab strip to create new instances if the drag is not "

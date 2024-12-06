@@ -252,7 +252,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCrossDeviceTabPaneAndroid,
     &kDelayTempStripRemoval,
     &kDeviceAuthenticatorAndroidx,
-    &kDragDropIntoOmnibox,
     &kDragDropTabTearing,
     &kDragDropTabTearingEnableOEM,
     &kDrawKeyNativeEdgeToEdge,
@@ -735,10 +734,6 @@ BASE_FEATURE(kDeviceAuthenticatorAndroidx,
 BASE_FEATURE(kDownloadAutoResumptionThrottling,
              "DownloadAutoResumptionThrottling",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDragDropIntoOmnibox,
-             "DragDropIntoOmnibox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDragDropTabTearing,
              "DragDropTabTearing",
