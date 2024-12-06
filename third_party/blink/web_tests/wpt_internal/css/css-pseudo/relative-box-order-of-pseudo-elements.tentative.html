@@ -1,70 +1,63 @@
 <!doctype html>
-<html>
+<meta charset="utf-8">
+<title>CSS Test: relative box order of pseudo elements</title>
+<link rel="author" href="mailto:sakhapov@chromium.org">
+<link rel="match" href="relative-box-order-of-pseudo-elements-ref.tentative.html">
+<link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-marker">
+<style>
+  div {
+    overflow: auto;
+    scroll-marker-group: after;
+  }
 
-<head>
-    <meta charset="utf-8">
-    <title>CSS Test: relative box order of pseudo elements</title>
-    <link rel="author" href="mailto:sakhapov@chromium.org">
-    <link rel="match" href="relative-box-order-of-pseudo-elements-ref.tentative.html">
-    <link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-marker">
-    <style>
-        div {
-            overflow: auto;
-            scroll-marker-group: after;
-        }
+  div::scroll-button(up) {
+    background: red;
+    border: none;
+    content: "";
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
 
-        div::scroll-button(up) {
-            background: red;
-            content: "";
-            height: 20px;
-            width: 100px;
-            display: flex;
-        }
+  div::scroll-button(right) {
+    content: "";
+    border: none;
+    background: orange;
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
 
-        div::scroll-button(right) {
-            content: "";
-            background: orange;
-            height: 20px;
-            width: 100px;
-            display: flex;
-        }
+  div::before {
+    background: yellow;
+    content: "";
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
 
-        div::before {
-            background: yellow;
-            content: "";
-            height: 20px;
-            width: 100px;
-            display: flex;
-        }
+  div>li {
+    background: green;
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
 
-        div > li {
-            background: green;
-            height: 20px;
-            width: 100px;
-            display: flex;
-        }
+  div::after {
+    background: blue;
+    content: "";
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
 
-        div::after {
-            background: blue;
-            content: "";
-            height: 20px;
-            width: 100px;
-            display: flex;
-        }
-
-        div::scroll-marker-group {
-            background: purple;
-            height: 20px;
-            width: 100px;
-            display: flex;
-        }
-    </style>
-</head>
-
-<body>
-    <div>
-        <li></li>
-    </div>
-</body>
-
-</html>
+  div::scroll-marker-group {
+    background: purple;
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
+</style>
+<div>
+  <li></li>
+</div>

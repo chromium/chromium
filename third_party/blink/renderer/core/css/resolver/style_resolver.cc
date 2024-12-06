@@ -136,6 +136,19 @@ namespace blink {
 
 namespace {
 
+bool IsPseudoElementWithUAStyle(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdMarker:
+    case kPseudoIdScrollUpButton:
+    case kPseudoIdScrollDownButton:
+    case kPseudoIdScrollLeftButton:
+    case kPseudoIdScrollRightButton:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
                          StyleResolverState& state) {
   // Storing the old style is only relevant if we risk computing the style
@@ -1021,12 +1034,13 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
     return;
   }
 
-  auto* rule_set =
-      IsTransitionPseudoElement(pseudo_id)
-          ? GetDocument().GetStyleEngine().DefaultViewTransitionStyle()
-          : (pseudo_id == kPseudoIdMarker
-                 ? default_style_sheets.DefaultPseudoElementStyleOrNull()
-                 : nullptr);
+  RuleSet* rule_set = nullptr;
+  if (IsTransitionPseudoElement(pseudo_id)) {
+    rule_set = GetDocument().GetStyleEngine().DefaultViewTransitionStyle();
+  }
+  if (IsPseudoElementWithUAStyle(pseudo_id)) {
+    rule_set = default_style_sheets.DefaultPseudoElementStyleOrNull();
+  }
   if (rule_set) {
     func(rule_set);
   }
