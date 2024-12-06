@@ -16801,7 +16801,6 @@ from previous Chrome versions.
   <int value="-1430090822" label="EnableSharedImageForWebview:disabled"/>
   <int value="-1429211493" label="FeedSignedOutViewDemotion:enabled"/>
   <int value="-1428822216" label="TabSelectionEditorV2:disabled"/>
-  <int value="-1428589407" label="WebRTCPipeWireCapturer:disabled"/>
   <int value="-1426911497" label="CCTIncognitoAvailableToThirdParty:enabled"/>
   <int value="-1426817842" label="BlockTabUnders:enabled"/>
   <int value="-1426150007" label="ignore-previews-blacklist"/>
@@ -18776,7 +18775,6 @@ from previous Chrome versions.
       label="OmniboxUIExperimentUnboldSuggestionText:enabled"/>
   <int value="-633955136" label="ShowScrollableMVTOnNTPAndroid:disabled"/>
   <int value="-633425040" label="ClipboardHistoryReorder:disabled"/>
-  <int value="-633274640" label="WebRTCPipeWireCapturer:enabled"/>
   <int value="-632030508" label="NativeWindowNavButtons:disabled"/>
   <int value="-631740127" label="inert-visual-viewport"/>
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>

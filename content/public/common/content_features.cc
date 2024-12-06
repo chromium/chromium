@@ -1457,14 +1457,6 @@ BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
 
 #endif  // BUILDFLAG(IS_MAC)
 
-#if defined(WEBRTC_USE_PIPEWIRE)
-// Controls whether the PipeWire support for screen capturing is enabled on the
-// Wayland display server.
-BASE_FEATURE(kWebRtcPipeWireCapturer,
-             "WebRTCPipeWireCapturer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // defined(WEBRTC_USE_PIPEWIRE)
-
 // Default amount of days after which the global navigation capturing IPH
 // guardrails are cleared from storage.
 const base::FeatureParam<int> kNavigationCapturingIPHGuardrailStorageDuration{

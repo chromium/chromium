@@ -76,9 +76,7 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   }
 #endif
 #if defined(WEBRTC_USE_PIPEWIRE)
-  if (base::FeatureList::IsEnabled(features::kWebRtcPipeWireCapturer)) {
-    options.set_allow_pipewire(true);
-  }
+  options.set_allow_pipewire(true);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
   return options;
 }
@@ -133,8 +131,7 @@ bool CanUsePipeWire() {
     session_type = base::nix::GetSessionType(*env);
   }
 
-  return session_type == base::nix::SessionType::kWayland &&
-         base::FeatureList::IsEnabled(features::kWebRtcPipeWireCapturer);
+  return session_type == base::nix::SessionType::kWayland;
 #else
   return false;
 #endif

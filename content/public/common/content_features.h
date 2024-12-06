@@ -323,10 +323,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSyscallSandbox);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSonomaAccessibilityActivationRefinements);
 #endif  // BUILDFLAG(IS_MAC)
 
-#if defined(WEBRTC_USE_PIPEWIRE)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebRtcPipeWireCapturer);
-#endif  // defined(WEBRTC_USE_PIPEWIRE)
-
 // Number of days to "store" IPH guardrails for navigation captured app launches
 // till they are cleared.
 CONTENT_EXPORT extern const base::FeatureParam<int>
