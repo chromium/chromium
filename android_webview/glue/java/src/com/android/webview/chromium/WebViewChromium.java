@@ -704,7 +704,7 @@ class WebViewChromium
     public void init(
             final Map<String, Object> javaScriptInterfaces, final boolean privateBrowsing) {
         long startTime = SystemClock.uptimeMillis();
-        boolean isFirstWebViewInit = !mFactory.hasStarted();
+        boolean isFirstWebViewInit = !mFactory.isChromiumInitialized();
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
                 mFactory.startYourEngines(true);
@@ -813,7 +813,7 @@ class WebViewChromium
 
         // If initialization hasn't been deferred, record a startup time histogram entry
         // and trace event(s).
-        if (mFactory.hasStarted()) {
+        if (mFactory.isChromiumInitialized()) {
             if (isFirstWebViewInit) {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
