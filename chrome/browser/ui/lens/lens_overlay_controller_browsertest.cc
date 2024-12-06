@@ -5885,9 +5885,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   ASSERT_EQ(controller->get_preselection_widget_for_testing(), nullptr);
 }
 
-// TODO(crbug.com/351958199): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
-                       DISABLED_PreselectionToastOmniboxFocusState) {
+                       PreselectionToastOmniboxFocusState) {
   WaitForPaint();
 
   // State should start in off.
@@ -5919,12 +5918,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   // hidden when omnibox has focus.
   ASSERT_FALSE(controller->get_preselection_widget_for_testing()->IsVisible());
 
-  // Move focus back to contents view.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  browser_view->GetContentsView()->RequestFocus();
+  // Move focus away from omnibox to the overlay web view.
+  controller->GetOverlayWebViewForTesting()->RequestFocus();
 
-  // Widget should be visible when contents view receives focus and overlay is
-  // open.
+  // Widget should be visible when web view receives focus and overlay is open.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return controller->get_preselection_widget_for_testing()->IsVisible();
   }));
