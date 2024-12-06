@@ -46,6 +46,7 @@
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/icon_loader.h"
@@ -1542,7 +1543,9 @@ ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
   // to avoid showing the prompt.
   DownloadOpenPrompt* download_open_prompt =
       DownloadOpenPrompt::CreateDownloadOpenConfirmationDialog(
-          active_contents, extension()->name(), download_item->GetFullPath(),
+          active_contents,
+          util::GetFixupExtensionNameForUIDisplay(extension()->name()),
+          download_item->GetFullPath(),
           base::BindOnce(&DownloadsOpenFunction::OpenPromptDone, this,
                          params->download_id));
   if (on_prompt_created_cb_)

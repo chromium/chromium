@@ -23,7 +23,7 @@ class DownloadOpenConfirmationDialog : public DownloadOpenPrompt,
  public:
   DownloadOpenConfirmationDialog(
       content::WebContents* web_contents,
-      const std::string& extension_name,
+      const std::u16string& extension_name,
       const base::FilePath& file_path,
       DownloadOpenPrompt::OpenCallback open_callback);
 
@@ -46,14 +46,14 @@ class DownloadOpenConfirmationDialog : public DownloadOpenPrompt,
 
   DownloadOpenPrompt::OpenCallback open_callback_;
 
-  std::string extension_name_;
+  std::u16string extension_name_;
 
   base::FilePath file_path_;
 };
 
 DownloadOpenConfirmationDialog::DownloadOpenConfirmationDialog(
     content::WebContents* web_contents,
-    const std::string& extension_name,
+    const std::u16string& extension_name,
     const base::FilePath& file_path,
     DownloadOpenPrompt::OpenCallback open_callback)
     : TabModalConfirmDialogDelegate(web_contents),
@@ -69,8 +69,7 @@ std::u16string DownloadOpenConfirmationDialog::GetTitle() {
 
 std::u16string DownloadOpenConfirmationDialog::GetDialogMessage() {
   return l10n_util::GetStringFUTF16(
-      IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_MESSAGE,
-      base::UTF8ToUTF16(extension_name_),
+      IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_MESSAGE, extension_name_,
       file_path_.BaseName().AsUTF16Unsafe());
 }
 
@@ -102,7 +101,7 @@ DownloadOpenPrompt::~DownloadOpenPrompt() = default;
 
 DownloadOpenPrompt* DownloadOpenPrompt::CreateDownloadOpenConfirmationDialog(
     content::WebContents* web_contents,
-    const std::string& extension_name,
+    const std::u16string& extension_name,
     const base::FilePath& file_path,
     DownloadOpenPrompt::OpenCallback open_callback) {
   auto prompt = std::make_unique<DownloadOpenConfirmationDialog>(
