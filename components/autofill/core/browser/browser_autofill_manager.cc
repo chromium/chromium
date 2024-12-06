@@ -1671,33 +1671,6 @@ void BrowserAutofillManager::MixPlusAddressAndAddressSuggestions(
                           std::move(plus_address_suggestions), std::nullopt);
 }
 
-void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
-    const FormData& form,
-    const FieldGlobalId& field_id,
-    const CreditCard& credit_card,
-    AutofillTriggerSource trigger_source) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
-                             &autofill_field)) {
-    return;
-  }
-  metrics_->credit_card_form_event_logger.OnDidSelectCardSuggestion(
-      credit_card, *form_structure, metrics_->signin_state_for_metrics);
-  // If no authentication is needed, directly forward filling to FormFiller.
-  if (!ShouldFetchCreditCard(form, *form_structure, *autofill_field,
-                             credit_card)) {
-    form_filler_->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                    &credit_card, form_structure,
-                                    autofill_field, trigger_source);
-    return;
-  }
-  GetCreditCardAccessManager().FetchCreditCard(
-      &credit_card, base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
-                                   weak_ptr_factory_.GetWeakPtr(), form,
-                                   field_id, trigger_source));
-}
-
 void BrowserAutofillManager::FillOrPreviewProfileForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
@@ -1814,20 +1787,69 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     const FieldGlobalId& field_id,
     const CreditCard& credit_card,
     AutofillTriggerSource trigger_source) {
-  const FormFieldData* const field = form.FindFieldByGlobalId(field_id);
-  if (!IsValidFormData(form) || !field || !IsValidFormFieldData(*field)) {
-    return;
-  }
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
                              &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewForm(action_persistence, form, &credit_card,
-                                  form_structure, autofill_field,
-                                  trigger_source,
-                                  /*is_refill=*/false);
+  metrics_->credit_card_form_event_logger.OnDidSelectCardSuggestion(
+      credit_card, *form_structure, metrics_->signin_state_for_metrics);
+  bool require_card_fetching = [&] {
+    if (action_persistence == mojom::ActionPersistence::kPreview) {
+      return false;
+    }
+    switch (trigger_source) {
+      case AutofillTriggerSource::kPopup:
+      case AutofillTriggerSource::kKeyboardAccessory:
+      case AutofillTriggerSource::kTouchToFillCreditCard:
+        return ShouldFetchCreditCard(form, *form_structure, *autofill_field,
+                                     credit_card);
+      case AutofillTriggerSource::kScanCreditCard:
+      case AutofillTriggerSource::kDevtools:
+      case AutofillTriggerSource::kFastCheckout:
+        return false;
+      case AutofillTriggerSource::kFormsSeen:
+      case AutofillTriggerSource::kSelectOptionsChanged:
+      case AutofillTriggerSource::kJavaScriptChangedAutofilledValue:
+      case AutofillTriggerSource::kManualFallback:
+      case AutofillTriggerSource::kPredictionImprovements:
+      case AutofillTriggerSource::kNone:
+        NOTREACHED();
+    }
+  }();
+  FillOrPreviewCreditCardFormImpl(require_card_fetching, action_persistence,
+                                  form, field_id, credit_card, trigger_source);
+}
+
+void BrowserAutofillManager::FillOrPreviewCreditCardFormImpl(
+    bool require_card_fetching,
+    mojom::ActionPersistence action_persistence,
+    const FormData& form,
+    const FieldGlobalId& field_id,
+    const CreditCard& credit_card,
+    AutofillTriggerSource trigger_source) {
+  CHECK(action_persistence != mojom::ActionPersistence::kPreview ||
+        !require_card_fetching);
+  if (require_card_fetching) {
+    GetCreditCardAccessManager().FetchCreditCard(
+        &credit_card,
+        base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
+                       weak_ptr_factory_.GetWeakPtr(), form, field_id,
+                       trigger_source));
+  } else {
+    const FormFieldData* const field = form.FindFieldByGlobalId(field_id);
+    FormStructure* form_structure = nullptr;
+    AutofillField* autofill_field = nullptr;
+    if (!IsValidFormData(form) || !field || !IsValidFormFieldData(*field) ||
+        !GetCachedFormAndField(form.global_id(), field_id, &form_structure,
+                               &autofill_field)) {
+      return;
+    }
+    form_filler_->FillOrPreviewForm(action_persistence, form, &credit_card,
+                                    form_structure, autofill_field,
+                                    trigger_source, /*is_refill=*/false);
+  }
 }
 
 void BrowserAutofillManager::OnFocusOnNonFormFieldImpl() {
@@ -2133,8 +2155,9 @@ void BrowserAutofillManager::OnCreditCardFetched(
     AutofillTriggerSource fetched_credit_card_trigger_source,
     const CreditCard& credit_card) {
   OnCreditCardFetchedSuccessfully(credit_card);
-  FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill, form, field_id,
-                              credit_card, fetched_credit_card_trigger_source);
+  FillOrPreviewCreditCardFormImpl(
+      /*require_card_fetching=*/false, mojom::ActionPersistence::kFill, form,
+      field_id, credit_card, fetched_credit_card_trigger_source);
 }
 
 void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {

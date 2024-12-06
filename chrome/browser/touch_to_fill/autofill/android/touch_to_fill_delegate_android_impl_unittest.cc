@@ -143,12 +143,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                AutofillTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,
-              AuthenticateThenFillCreditCardForm,
-              (const FormData& form,
-               const FieldGlobalId& field,
-               const CreditCard& credit_card,
-               AutofillTriggerSource trigger_source));
-  MOCK_METHOD(void,
               DidShowSuggestions,
               (DenseSet<SuggestionType> shown_suggestion_types,
                const FormData& form,
@@ -955,7 +949,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*browser_autofill_manager_, AuthenticateThenFillCreditCardForm);
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
   touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
                                                         false);
 }
@@ -973,7 +967,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*browser_autofill_manager_, AuthenticateThenFillCreditCardForm);
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
   touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
                                                         true);
 }

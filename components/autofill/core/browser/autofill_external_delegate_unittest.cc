@@ -263,14 +263,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
 
-  MOCK_METHOD(void,
-              AuthenticateThenFillCreditCardForm,
-              (const FormData& form,
-               const FieldGlobalId& field_id,
-               const CreditCard& credit_card,
-               AutofillTriggerSource trigger_source),
-              (override));
-
   bool ShouldShowCardsFromAccountOption(
       const FormData& form,
       const FormFieldData& field,
@@ -1228,7 +1220,7 @@ TEST_F(AutofillExternalDelegateTest,
                                      Suggestion::Guid(enrolled_card.guid()));
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
   EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
-  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 
   external_delegate().DidSelectSuggestion(suggestion);
@@ -1252,7 +1244,8 @@ TEST_F(AutofillExternalDelegateTest,
       AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*update_datalist=*/false);
 
-  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
+                             mojom::ActionPersistence::kFill,
                              Property(&FormData::global_id, form.global_id()),
                              form.fields()[0].global_id(), _, _));
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
@@ -2621,7 +2614,8 @@ TEST_F(AutofillExternalDelegateTest, AcceptVirtualCardOptionItem) {
   FormData form;
   CreditCard card = test::GetMaskedServerCard();
   pdm().payments_data_manager().AddCreditCard(card);
-  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
+                             mojom::ActionPersistence::kFill,
                              HasQueriedFormId(), IsQueriedFieldId(), _, _));
   Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
   suggestion.payload = Suggestion::Guid(card.guid());

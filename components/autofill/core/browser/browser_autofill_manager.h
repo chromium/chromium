@@ -130,6 +130,11 @@ class BrowserAutofillManager : public AutofillManager {
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
                                           const FormFieldData& field);
 
+  // Fills or previews `form` with the information in `credit_card`. `field_id`
+  // is the ID of the field that triggered the filling operation.
+  // `trigger_source` is the reason for triggering the filling operation.
+  // `action_persistence` denotes whether the operation is a filling or preview
+  // operation.
   virtual void FillOrPreviewCreditCardForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
@@ -183,14 +188,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       const AutofillProfile& profile,
-      AutofillTriggerSource trigger_source);
-
-  // Asks for authentication via CVC before filling with server card data.
-  // TODO(crbug.com/40227071): Clean up the API.
-  virtual void AuthenticateThenFillCreditCardForm(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const CreditCard& credit_card,
       AutofillTriggerSource trigger_source);
 
   /////////////////
@@ -398,6 +395,17 @@ class BrowserAutofillManager : public AutofillManager {
   // Emits all metrics that should be recorded at submission time.
   void LogSubmissionMetrics(const FormStructure* submitted_form,
                             const base::TimeTicks& form_submitted_timestamp);
+
+  // See `BrowserAutofillManager::FillOrPreviewCreditCardForm()` for initial
+  // documentation. `require_card_fetching` denotes whether we need to fetch the
+  // full card represented by `credit_card`.
+  void FillOrPreviewCreditCardFormImpl(
+      bool require_card_fetching,
+      mojom::ActionPersistence action_persistence,
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const CreditCard& credit_card,
+      AutofillTriggerSource trigger_source);
 
   // When `AuthenticateThenFillCreditCardForm()` fetches a credit card, this
   // gets called once the fetching has finished. If successful, the

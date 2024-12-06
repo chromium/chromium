@@ -1174,19 +1174,15 @@ void AutofillExternalDelegate::FillAutofillFormData(
     }
     return;
   }
-
   if (const CreditCard* credit_card =
           pdm.payments_data_manager().GetCreditCardByGUID(
               absl::get<Suggestion::Guid>(payload).value())) {
-    is_preview ? manager_->FillOrPreviewCreditCardForm(
-                     mojom::ActionPersistence::kPreview, query_form_,
-                     query_field_.global_id(), *credit_card, trigger_source)
-               : manager_->AuthenticateThenFillCreditCardForm(
-                     query_form_, query_field_.global_id(),
-                     type == SuggestionType::kVirtualCreditCardEntry
-                         ? CreditCard::CreateVirtualCard(*credit_card)
-                         : *credit_card,
-                     trigger_source);
+    manager_->FillOrPreviewCreditCardForm(
+        action_persistence, query_form_, query_field_.global_id(),
+        !is_preview && type == SuggestionType::kVirtualCreditCardEntry
+            ? CreditCard::CreateVirtualCard(*credit_card)
+            : *credit_card,
+        trigger_source);
   }
 }
 

@@ -1131,8 +1131,9 @@ class BrowserAutofillManagerTest : public testing::Test {
     } else if (const CreditCard* card =
                    personal_data().payments_data_manager().GetCreditCardByGUID(
                        guid)) {
-      manager().AuthenticateThenFillCreditCardForm(form, field.global_id(),
-                                                   *card, trigger_source);
+      manager().FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill,
+                                            form, field.global_id(), *card,
+                                            trigger_source);
     }
   }
 
@@ -1223,9 +1224,9 @@ class BrowserAutofillManagerTest : public testing::Test {
     card.SetNetworkForMaskedCard(kVisaCard);
 
     EXPECT_CALL(driver(), ApplyFormAction).Times(AtLeast(1));
-    manager().AuthenticateThenFillCreditCardForm(
-        *form, form->fields()[0].global_id(), card,
-        AutofillTriggerSource::kPopup);
+    manager().FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill,
+                                          *form, form->fields()[0].global_id(),
+                                          card, AutofillTriggerSource::kPopup);
   }
 
   void OnDidGetRealPan(
