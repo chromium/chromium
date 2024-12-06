@@ -1488,11 +1488,8 @@ bool ui::IsNSRange(id value) {
   if ([self internalRole] == ax::mojom::Role::kTab)
     [tabSubtree addObject:self];
 
-  for (uint i = 0; i < [[self accessibilityChildren] count]; ++i) {
-    NSArray* tabChildren =
-        [[[self accessibilityChildren] objectAtIndex:i] tabs];
-    if ([tabChildren count] > 0)
-      [tabSubtree addObjectsFromArray:tabChildren];
+  for (id child in [self accessibilityChildren]) {
+    [tabSubtree addObjectsFromArray:[child tabs]];
   }
 
   return tabSubtree;
