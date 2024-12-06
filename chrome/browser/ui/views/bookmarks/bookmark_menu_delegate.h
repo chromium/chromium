@@ -188,20 +188,20 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   views::MenuItemView* CreateMenu(const bookmarks::BookmarkNode* parent,
                                   size_t start_child_index);
 
-  // Invokes BuildMenuForPermanentNode() for the permanent nodes (excluding
-  // 'other bookmarks' folder).
-  void BuildMenusForPermanentNodes(views::MenuItemView* menu);
+  // Builds menus for the 'other' and 'mobile' nodes if they're not empty,
+  // adding them to `parent_menu_item_`.
+  void BuildMenusForPermanentNodes();
 
-  // If |node| has children a new menu is created and added to |menu| to
-  // represent it. If |node| is not empty and |added_separator| is false, a
-  // separator is added before the new menu items and |added_separator| is set
-  // to true.
-  void BuildMenuForPermanentNode(const bookmarks::BookmarkNode* node,
-                                 const ui::ImageModel& icon,
-                                 views::MenuItemView* menu,
-                                 bool* added_separator);
+  // Builds a submenu item for the provided bookmark folder node, adding it to
+  // `parent_menu`.
+  void BuildMenuForFolder(const bookmarks::BookmarkNode* node,
+                          const ui::ImageModel& icon,
+                          views::MenuItemView* parent_menu);
 
-  void BuildMenuForManagedNode(views::MenuItemView* menu);
+  // Builds a menu item for the provided bookmark url, adding it to
+  // `parent_menu`.
+  void BuildMenuForURL(const bookmarks::BookmarkNode* node,
+                       views::MenuItemView* parent_menu);
 
   // Creates an entry in menu for each child node of |parent| starting at
   // |start_child_index|.

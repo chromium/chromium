@@ -87,6 +87,10 @@ ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                          : ui::ImageModel::FromImage(image);
 }
 
+bool ShouldBuildPermanentNode(const BookmarkNode* node) {
+  return node->IsVisible() && !node->children().empty();
+}
+
 BookmarkMergedSurfaceService* GetBookmarkMergedSurfaceService(
     Profile* profile) {
   return BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
@@ -238,13 +242,13 @@ void BookmarkMenuDelegate::BuildFullMenu(MenuItemView* parent) {
   menu_uses_mnemonics_ = parent_menu_item_->GetRootMenuItem()->has_mnemonics();
 
   BookmarkModel* model = GetBookmarkModel();
-  bookmarks::ManagedBookmarkService* managed = GetManagedBookmarkService();
-  const bool managed_node_has_children =
-      !managed->managed_node()->children().empty();
+  const BookmarkNode* managed_node =
+      GetManagedBookmarkService()->managed_node();
+  const bool should_build_managed_node = ShouldBuildPermanentNode(managed_node);
   const bool bookmark_bar_has_children =
       !model->bookmark_bar_node()->children().empty();
   const bool should_add_bookmarks_title =
-      (bookmark_bar_has_children || managed_node_has_children) &&
+      (bookmark_bar_has_children || should_build_managed_node) &&
       !parent_menu_item_->GetSubmenu()->GetMenuItems().empty();
   if (should_add_bookmarks_title) {
     parent->AppendSeparator();
@@ -252,11 +256,15 @@ void BookmarkMenuDelegate::BuildFullMenu(MenuItemView* parent) {
     parent->AppendTitle(l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
   }
 
-  if (managed_node_has_children) {
-    BuildMenuForManagedNode(parent);
+  if (should_build_managed_node) {
+    BuildMenuForFolder(
+        managed_node,
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
+                                      ui::kColorMenuIcon),
+        parent_menu_item_);
   }
   BuildMenu(model->bookmark_bar_node(), 0, parent);
-  BuildMenusForPermanentNodes(parent);
+  BuildMenusForPermanentNodes();
 }
 
 const BookmarkModel* BookmarkMenuDelegate::GetBookmarkModel() const {
@@ -733,49 +741,50 @@ MenuItemView* BookmarkMenuDelegate::CreateMenu(const BookmarkNode* parent,
   return menu;
 }
 
-void BookmarkMenuDelegate::BuildMenusForPermanentNodes(
-    views::MenuItemView* menu) {
+void BookmarkMenuDelegate::BuildMenusForPermanentNodes() {
+  CHECK(parent_menu_item_);
   BookmarkModel* model = GetBookmarkModel();
-  bool added_separator = false;
-  BuildMenuForPermanentNode(
-      model->other_node(),
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    ui::kColorMenuIcon),
-      menu, &added_separator);
-  BuildMenuForPermanentNode(
-      model->mobile_node(),
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    ui::kColorMenuIcon),
-      menu, &added_separator);
-}
+  const BookmarkNode* other_node = model->other_node();
+  const BookmarkNode* mobile_node = model->mobile_node();
+  const bool should_build_other_node = ShouldBuildPermanentNode(other_node);
+  const bool should_build_mobile_node = ShouldBuildPermanentNode(mobile_node);
 
-void BookmarkMenuDelegate::BuildMenuForPermanentNode(const BookmarkNode* node,
-                                                     const ui::ImageModel& icon,
-                                                     MenuItemView* menu,
-                                                     bool* added_separator) {
-  if (!node->IsVisible() || node->GetTotalNodeCount() == 1) {
-    return;  // No children, don't create a menu.
+  if (!should_build_other_node && !should_build_mobile_node) {
+    return;
   }
 
-  if (!*added_separator) {
-    *added_separator = true;
-    menu->AppendSeparator();
+  parent_menu_item_->AppendSeparator();
+
+  const ui::ImageModel& folder_icon = chrome::GetBookmarkFolderIcon(
+      chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
+  if (should_build_other_node) {
+    BuildMenuForFolder(other_node, folder_icon, parent_menu_item_);
   }
 
-  AddMenuToMaps(menu->AppendSubMenu(GetAndIncrementNextMenuID(),
-                                    MaybeEscapeLabel(node->GetTitle()), icon),
-                node);
+  if (should_build_mobile_node) {
+    BuildMenuForFolder(mobile_node, folder_icon, parent_menu_item_);
+  }
 }
 
-void BookmarkMenuDelegate::BuildMenuForManagedNode(MenuItemView* menu) {
-  // Don't add a separator for this menu.
-  bool added_separator = true;
-  const BookmarkNode* node = GetManagedBookmarkService()->managed_node();
-  BuildMenuForPermanentNode(
-      node,
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
-                                    ui::kColorMenuIcon),
-      menu, &added_separator);
+void BookmarkMenuDelegate::BuildMenuForFolder(const BookmarkNode* node,
+                                              const ui::ImageModel& icon,
+                                              MenuItemView* parent_menu) {
+  AddMenuToMaps(
+      parent_menu->AppendSubMenu(GetAndIncrementNextMenuID(),
+                                 MaybeEscapeLabel(node->GetTitle()), icon),
+      node);
+}
+
+void BookmarkMenuDelegate::BuildMenuForURL(const BookmarkNode* node,
+                                           MenuItemView* parent_menu) {
+  MenuItemView* child_menu_item = parent_menu->AppendMenuItem(
+      GetAndIncrementNextMenuID(), MaybeEscapeLabel(node->GetTitle()),
+      GetFaviconForNode(GetBookmarkModel(), node));
+  child_menu_item->GetViewAccessibility().SetDescription(
+      url_formatter::FormatUrl(
+          node->url(), url_formatter::kFormatUrlOmitDefaults,
+          base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+  AddMenuToMaps(child_menu_item, node);
 }
 
 void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
@@ -799,22 +808,12 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
   for (auto i = parent->children().cbegin() + start_child_index;
        i != parent->children().cend(); ++i) {
     const BookmarkNode* node = i->get();
-    const int id = GetAndIncrementNextMenuID();
-    MenuItemView* child_menu_item;
     if (node->is_url()) {
-      child_menu_item =
-          menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()),
-                               GetFaviconForNode(GetBookmarkModel(), node));
-      child_menu_item->GetViewAccessibility().SetDescription(
-          url_formatter::FormatUrl(
-              node->url(), url_formatter::kFormatUrlOmitDefaults,
-              base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+      BuildMenuForURL(node, menu);
     } else {
       DCHECK(node->is_folder());
-      child_menu_item = menu->AppendSubMenu(
-          id, MaybeEscapeLabel(node->GetTitle()), folder_icon);
+      BuildMenuForFolder(node, folder_icon, menu);
     }
-    AddMenuToMaps(child_menu_item, node);
   }
 }
 
