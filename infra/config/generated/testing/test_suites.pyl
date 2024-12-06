@@ -2524,9 +2524,6 @@
         'mixins': [
           'has_native_resultdb_integration',
         ],
-        'args': [
-          '--out_dir=.',
-        ],
         'linux_args': [
           '--no-xvfb',
         ],
@@ -2537,9 +2534,6 @@
       'ondevice_stability_tests': {
         'mixins': [
           'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--out_dir=.',
         ],
         'linux_args': [
           '--chromedriver',

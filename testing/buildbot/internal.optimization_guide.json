@@ -86,7 +86,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--no-xvfb",
           "--channel=beta"
         ],
@@ -113,7 +112,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--no-xvfb",
           "--channel=dev"
         ],
@@ -140,7 +138,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--no-xvfb",
           "--channel=stable"
         ],
@@ -246,7 +243,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=beta"
         ],
         "merge": {
@@ -271,7 +267,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=dev"
         ],
         "merge": {
@@ -296,7 +291,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=stable"
         ],
         "merge": {
@@ -400,7 +394,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=beta"
         ],
         "merge": {
@@ -425,7 +418,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=dev"
         ],
         "merge": {
@@ -450,7 +442,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=stable"
         ],
         "merge": {
@@ -557,7 +548,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=beta"
         ],
         "merge": {
@@ -583,7 +573,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=dev"
         ],
         "merge": {
@@ -609,7 +598,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=stable"
         ],
         "merge": {
@@ -714,7 +702,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=beta"
         ],
         "merge": {
@@ -739,7 +726,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=dev"
         ],
         "merge": {
@@ -764,7 +750,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=stable"
         ],
         "merge": {
@@ -868,7 +853,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=beta"
         ],
         "merge": {
@@ -893,7 +877,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=dev"
         ],
         "merge": {
@@ -918,7 +901,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--channel=stable"
         ],
         "merge": {
@@ -1361,7 +1343,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver",
           "--binary",
@@ -1596,7 +1577,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver",
           "--binary",
@@ -1823,7 +1803,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver",
           "--binary",
@@ -2026,7 +2005,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
@@ -2265,7 +2243,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
@@ -2294,7 +2271,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
@@ -2555,7 +2531,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
@@ -2583,7 +2558,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
@@ -2611,7 +2585,6 @@
       },
       {
         "args": [
-          "--out_dir=.",
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
