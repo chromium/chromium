@@ -122,8 +122,19 @@ bool IsUrlSyncable(
   }
 
   // Block the URL if only differs from the current one in fragment.
-  if (url_restriction->block_if_similar_to_last_synced_url() &&
+  if (url_restriction->block_if_only_fragment_differs() &&
       url.GetWithoutRef() == previous_url.GetWithoutRef()) {
+    return false;
+  }
+
+  if (url_restriction->block_if_path_is_same() &&
+      url.GetWithEmptyPath() == previous_url.GetWithEmptyPath() &&
+      url.path() == previous_url.path()) {
+    return false;
+  }
+
+  if (url_restriction->block_if_domain_is_same() &&
+      url.GetWithEmptyPath() == previous_url.GetWithEmptyPath()) {
     return false;
   }
 
