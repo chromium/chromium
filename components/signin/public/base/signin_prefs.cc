@@ -58,6 +58,9 @@ constexpr char kChromeSigninInterceptionDismissCount[] =
 // has been shown per account.
 constexpr char kPasswordSignInPromoShownCount[] =
     "PasswordSignInPromoShownCount";
+// Pref to store the number of times the address bubble signin promo
+// has been shown per account.
+constexpr char kAddressSignInPromoShownCount[] = "AddressSignInPromoShownCount";
 // Pref to store the number of times any autofill bubble signin promo
 // has been dismissed per account.
 constexpr char kAutofillSignInPromoDismissCount[] =
@@ -203,6 +206,16 @@ void SigninPrefs::IncrementPasswordSigninPromoImpressionCount(
 int SigninPrefs::GetPasswordSigninPromoImpressionCount(
     const GaiaId& gaia_id) const {
   return GetIntPrefForAccount(gaia_id, kPasswordSignInPromoShownCount);
+}
+
+void SigninPrefs::IncrementAddressSigninPromoImpressionCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kAddressSignInPromoShownCount);
+}
+
+int SigninPrefs::GetAddressSigninPromoImpressionCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kAddressSignInPromoShownCount);
 }
 
 void SigninPrefs::IncrementAutofillSigninPromoDismissCount(

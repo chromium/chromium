@@ -104,6 +104,9 @@ class SigninPrefs {
   void IncrementPasswordSigninPromoImpressionCount(const GaiaId& gaia_id);
   int GetPasswordSigninPromoImpressionCount(const GaiaId& gaia_id) const;
 
+  void IncrementAddressSigninPromoImpressionCount(const GaiaId& gaia_id);
+  int GetAddressSigninPromoImpressionCount(const GaiaId& gaia_id) const;
+
   void IncrementAutofillSigninPromoDismissCount(const GaiaId& gaia_id);
   int GetAutofillSigninPromoDismissCount(const GaiaId& gaia_id) const;
 
