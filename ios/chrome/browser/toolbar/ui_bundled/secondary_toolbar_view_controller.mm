@@ -56,6 +56,7 @@
 
 - (void)disconnect {
   _fullscreenController = nullptr;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - AdaptiveToolbarViewController
