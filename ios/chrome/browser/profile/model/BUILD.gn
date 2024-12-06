@@ -78,7 +78,6 @@ source_set("profile_ios_io_data") {
     ":ios_thread",
     "//base",
     "//components/content_settings/core/browser",
-    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/metrics:metrics_pref_names",
     "//components/net_log",
