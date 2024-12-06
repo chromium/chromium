@@ -4784,8 +4784,6 @@ static_library("browser") {
       "notifications/notifier_controller.h",
       "notifications/notifier_dataset.cc",
       "notifications/notifier_dataset.h",
-      "notifications/pwa_notifier_controller.cc",
-      "notifications/pwa_notifier_controller.h",
       "notifications/web_page_notifier_controller.cc",
       "notifications/web_page_notifier_controller.h",
       "page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.cc",

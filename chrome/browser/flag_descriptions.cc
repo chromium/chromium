@@ -6357,13 +6357,6 @@ const char kDoubleTapToZoomInTabletModeDescription[] =
     "If Enabled, double tapping in webpages while in tablet mode will zoom the "
     "page.";
 
-const char kQuickSettingsPWANotificationsName[] =
-    "Enable setting of PWA notification permissions in quick settings ";
-const char kQuickSettingsPWANotificationsDescription[] =
-    "Replace website notification permissions with PWA notification "
-    "permissions in the quick settings menu. Website notification permissions "
-    "settings will be migrated to the lacros - chrome browser.";
-
 const char kDriveFsMirroringName[] = "Enable local to Drive mirror sync";
 const char kDriveFsMirroringDescription[] =
     "Enable mirror sync between local files and Google Drive";

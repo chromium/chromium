@@ -171,14 +171,6 @@ BASE_FEATURE(kPromoBrowserCommands,
 // ui/webui/resources/js/browser_command/browser_command.mojom
 const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables reading and writing PWA notification permissions from quick settings
-// menu.
-BASE_FEATURE(kQuickSettingsPWANotifications,
-             "QuickSettingsPWA",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 // Keeps accessibility enabled for WebContents as ReadAnything observes changes
 // to the active WebContents. This is a holdback study to evaluate the impact of
