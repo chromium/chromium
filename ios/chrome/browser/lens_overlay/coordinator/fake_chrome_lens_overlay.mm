@@ -74,6 +74,10 @@
   // NO-OP
 }
 
+- (void)disableFlyoutMenu:(BOOL)disable {
+  // NO-OP
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {

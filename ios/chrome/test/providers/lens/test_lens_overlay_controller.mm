@@ -47,4 +47,8 @@
   // NO-OP
 }
 
+- (void)disableFlyoutMenu:(BOOL)disable {
+  // NO-OP
+}
+
 @end
