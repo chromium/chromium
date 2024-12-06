@@ -402,6 +402,10 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
+        // Make sure that prerendering navigation has the Sec-Purpose header.
+        HashMap<String, String> headers = mTestServer.getRequestHeadersForUrl(PRERENDER_URL);
+        Assert.assertEquals("prefetch;prerender", headers.get("Sec-Purpose"));
+
         activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
 
         // Wait until the navigation activates the prerendered page.
