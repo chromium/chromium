@@ -334,6 +334,12 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   navigate_params.tabstrip_index = index;
   navigate_params.user_gesture = false;
   navigate_params.tabstrip_add_types = add_types;
+  // Ensure that this navigation will not get 'captured' into PWA windows, as
+  // this means that `browser` could be ignored. It may be useful/desired in
+  // the future to allow this behavior, but this may require an API change, and
+  // likely a re-write of how this navigation is called to be compatible with
+  // the navigation capturing behavior.
+  navigate_params.pwa_navigation_capturing_force_off = true;
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&navigate_params);
   if (handle && params.bookmark_id) {
     ChromeNavigationUIData* ui_data =

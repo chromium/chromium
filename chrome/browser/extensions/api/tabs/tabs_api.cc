@@ -816,6 +816,12 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   for (const GURL& url : urls) {
     NavigateParams navigate_params(new_window, url, ui::PAGE_TRANSITION_LINK);
     navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    // Ensure that these navigations will not get 'captured' into PWA windows,
+    // as this means that `new_window` could be ignored. It may be
+    // useful/desired in the future to allow this behavior, but this may require
+    // an API change, or at least a re-write of how these navigations are called
+    // to be compatible with the navigation capturing behavior.
+    navigate_params.pwa_navigation_capturing_force_off = true;
 
     // Depending on the |setSelfAsOpener| option, we need to put the new
     // contents in the same BrowsingInstance as their opener.  See also
