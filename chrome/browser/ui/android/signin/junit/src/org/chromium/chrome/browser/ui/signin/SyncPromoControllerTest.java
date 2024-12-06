@@ -155,8 +155,8 @@ public class SyncPromoControllerTest {
 
     @Test
     public void shouldShowPromoForNtpWhenDefaultAccountCannotShowHistoryOptInWithoutRestrictions() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }
@@ -172,8 +172,8 @@ public class SyncPromoControllerTest {
     @Test
     public void
             shouldShowPromoForNtpWhenSecondaryAccountCannotShowHistoryOptInWithoutRestrictions() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }

@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 
 /**
@@ -58,17 +59,6 @@ public class TestAccounts {
                                     .build())
                     .build();
 
-    /* To be used in test cases that need to test managed account flows. */
-    public static final AccountInfo MANAGED_ACCOUNT =
-            new AccountInfo.Builder(
-                            "managed@example.com",
-                            FakeAccountManagerFacade.toGaiaId("managed@example.com"))
-                    .fullName("Managed Full")
-                    .givenName("Managed Given")
-                    .hostedDomain("example.com")
-                    .accountImage(createAvatar())
-                    .build();
-
     public static final AccountInfo TEST_ACCOUNT_NO_NAME =
             new AccountInfo.Builder(
                             "test.noname@gmail.com",
@@ -108,6 +98,44 @@ public class TestAccounts {
                                     .setIsSubjectToParentalControls(true)
                                     .build())
                     .build();
+
+    private static final AccountCapabilities MINOR_MODE_NOT_REQUIRED =
+            new AccountCapabilitiesBuilder()
+                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
+                    .build();
+
+    /** To be used in tests which need an account without AADC minor restrictions. */
+    public static final AccountInfo AADC_ADULT_ACCOUNT =
+            new AccountInfo.Builder(
+                            "aadc.adult.account@gmail.com",
+                            FakeAccountManagerFacade.toGaiaId("aadc.adult.account@gmail.com"))
+                    .fullName("AADC Adult")
+                    .givenName("AADC Adult Account")
+                    .accountImage(createAvatar())
+                    .accountCapabilities(MINOR_MODE_NOT_REQUIRED)
+                    .build();
+
+    public static final AccountCapabilities MINOR_MODE_REQUIRED =
+            new AccountCapabilitiesBuilder()
+                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
+                    .build();
+
+    /** To be used in tests which need an account with AADC minor restrictions. */
+    public static final AccountInfo AADC_MINOR_ACCOUNT =
+            new AccountInfo.Builder(
+                            "aadc.minor.account@gmail.com",
+                            FakeAccountManagerFacade.toGaiaId("aadc.minor.account@gmail.com"))
+                    .fullName("AADC Minor")
+                    .givenName("AADC Minor Account")
+                    .accountImage(createAvatar())
+                    .accountCapabilities(MINOR_MODE_REQUIRED)
+                    .build();
+
+    /**
+     * To be used in tests which explicitly need to test behavior before AADC restrictions have been
+     * determined
+     */
+    public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = ACCOUNT1;
 
     /**
      * Creates an email used to identify child accounts in tests. A child-specific prefix will be

@@ -51,12 +51,12 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.metrics.SyncButtonsType;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -104,7 +104,7 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testHistorySyncLayout() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.HistorySyncOptIn.Started", SIGNIN_ACCESS_POINT);
@@ -128,7 +128,7 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testFooterStringWithEmail() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         String expectedFooter =
                 mActivityTestRule
                         .getActivity()
@@ -157,7 +157,7 @@ public class HistorySyncTest {
                                 SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED)
                         .build();
 
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
 
         onView(withText(R.string.history_sync_primary_action)).perform(click());
@@ -185,7 +185,7 @@ public class HistorySyncTest {
                                 SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED)
                         .build();
 
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
 
         onView(withText(R.string.history_sync_secondary_action)).perform(click());
@@ -212,7 +212,7 @@ public class HistorySyncTest {
                                 SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator();
 
         onView(withText(R.string.history_sync_primary_action)).perform(click());
@@ -239,7 +239,7 @@ public class HistorySyncTest {
                                 SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator();
 
         onView(withText(R.string.history_sync_secondary_action)).perform(click());
@@ -256,7 +256,7 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testNegativeButton_shouldSignOutOnDecline() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ false, /* shouldSignOutOnDecline= */ true);
         HistogramWatcher histogramWatcher =
@@ -277,7 +277,7 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testOnSignedOut() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -297,7 +297,7 @@ public class HistorySyncTest {
         Activity historySyncActivity = mActivityTestRule.getActivity();
         ActivityTestUtils.rotateActivityToOrientation(
                 historySyncActivity, Configuration.ORIENTATION_PORTRAIT);
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
@@ -325,7 +325,7 @@ public class HistorySyncTest {
         Activity historySyncActivity = mActivityTestRule.getActivity();
         ActivityTestUtils.rotateActivityToOrientation(
                 historySyncActivity, Configuration.ORIENTATION_LANDSCAPE);
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
@@ -352,7 +352,7 @@ public class HistorySyncTest {
         Activity historySyncActivity = mActivityTestRule.getActivity();
         ActivityTestUtils.rotateActivityToOrientation(
                 historySyncActivity, Configuration.ORIENTATION_PORTRAIT);
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
@@ -379,7 +379,7 @@ public class HistorySyncTest {
         Activity historySyncActivity = mActivityTestRule.getActivity();
         ActivityTestUtils.rotateActivityToOrientation(
                 historySyncActivity, Configuration.ORIENTATION_LANDSCAPE);
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
@@ -406,7 +406,7 @@ public class HistorySyncTest {
         MinorModeHelper.disableTimeoutForTesting();
         Activity historySyncActivity = mActivityTestRule.getActivity();
         // Account Capabilities are intentionally empty.
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_UNRESOLVED_ACCOUNT);
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
@@ -427,7 +427,7 @@ public class HistorySyncTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSigninTestRule.resolveMinorModeToRestricted(
-                            AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT.getId());
+                            TestAccounts.AADC_UNRESOLVED_ACCOUNT.getId());
                 });
 
         onViewWaiting(withId(org.chromium.chrome.R.id.button_secondary));
@@ -458,7 +458,7 @@ public class HistorySyncTest {
                         .build();
 
         Activity historySyncActivity = mActivityTestRule.getActivity();
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_UNRESOLVED_ACCOUNT);
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
@@ -491,7 +491,7 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testOnClickListenersAttachedWithMinorModeAccount() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -543,7 +543,7 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testOnClickListenersAttachedWithNonMinorModeAccount() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -597,7 +597,7 @@ public class HistorySyncTest {
                                 SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator();
 
         ActivityTestUtils.rotateActivityToOrientation(
