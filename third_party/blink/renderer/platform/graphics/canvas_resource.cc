@@ -807,6 +807,7 @@ void CanvasResourceSharedImage::OnMemoryDump(
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     scoped_refptr<gpu::ClientSharedImage> client_si,
     const viz::TransferableResource& transferable_resource,
+    bool is_overlay_candidate,
     viz::ReleaseCallback release_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider) {
@@ -814,9 +815,9 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
   CHECK(client_si);
   CHECK(client_si->mailbox() == transferable_resource.mailbox());
   auto resource = AdoptRef(new ExternalCanvasResource(
-      std::move(client_si), transferable_resource,
-      transferable_resource.is_overlay_candidate, std::move(release_callback),
-      std::move(context_provider_wrapper), std::move(provider)));
+      std::move(client_si), transferable_resource, is_overlay_candidate,
+      std::move(release_callback), std::move(context_provider_wrapper),
+      std::move(provider)));
   return resource->IsValid() ? resource : nullptr;
 }
 

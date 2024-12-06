@@ -697,7 +697,8 @@ TEST_F(CanvasResourceProviderTest,
   tr.is_overlay_candidate = true;
 
   scoped_refptr<ExternalCanvasResource> resource =
-      ExternalCanvasResource::Create(client_si, tr, viz::ReleaseCallback(),
+      ExternalCanvasResource::Create(client_si, tr, tr.is_overlay_candidate,
+                                     viz::ReleaseCallback(),
                                      SharedGpuContext::ContextProviderWrapper(),
                                      provider->CreateWeakPtr());
 
