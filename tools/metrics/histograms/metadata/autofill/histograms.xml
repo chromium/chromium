@@ -849,6 +849,17 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.AddressSuggestionOnTypingAcceptance"
+    enum="BooleanAutofillAddressSuggestionOnTypingAcceptance"
+    expires_after="2025-06-13">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    During navigation, for each field where an autofill address suggestion on
+    typing is displayed, logs whether the user has accepted it or not.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.AddressTokenVerificationStatusAtProfileUsage.{AddressType}"
     enum="AufofillStructuredTokenVerificationStatus" expires_after="2025-04-13">

@@ -39,6 +39,7 @@ struct ProfilesToSuggestOptions {
 // use the top profile to generate suggestions.
 // TODO(crbug.com/381994105): Use more than one profile to build suggestions.
 // `field_contents` is the string contained in the triggering field.
+// TODO(crbug.com/381994105): Add "Manage addresses" footer suggestion.
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
     const AddressDataManager& adress_data_manager,
     const std::u16string& field_contents);

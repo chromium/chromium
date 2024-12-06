@@ -4526,6 +4526,11 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Declined after accepting"/>
 </enum>
 
+<enum name="BooleanAutofillAddressSuggestionOnTypingAcceptance">
+  <int value="0" label="Not accepted"/>
+  <int value="1" label="Accepted"/>
+</enum>
+
 <enum name="BooleanAutofillDeleteAddress">
   <int value="0" label="Canceled"/>
   <int value="1" label="Confirmed"/>

@@ -1780,6 +1780,11 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
       profile, *form_structure, *autofill_field, trigger_source);
 }
 
+void BrowserAutofillManager::OnDidFillAddressOnTypingSuggestion(
+    const FieldGlobalId& field_id) {
+  metrics_->address_form_event_logger.OnDidAcceptAutofillOnTyping(field_id);
+}
+
 void BrowserAutofillManager::UndoAutofill(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
@@ -1930,6 +1935,17 @@ void BrowserAutofillManager::DidShowSuggestions(
   if (!std::ranges::any_of(
           shown_suggestion_types,
           AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId)) {
+    return;
+  }
+
+  // `SuggestionType::kAddressEntryOnTyping` suggestions do not depend on
+  // Autofill types. Because they can be displayed on any fields and are never
+  // mixed with other suggestions, emit its possible logging first and return
+  // early.
+  if (std::ranges::any_of(shown_suggestion_types, [](SuggestionType type) {
+        return type == SuggestionType::kAddressEntryOnTyping;
+      })) {
+    metrics_->address_form_event_logger.OnDidShownAutofillOnTyping(field_id);
     return;
   }
 

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_ADDRESS_FORM_EVENT_LOGGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_ADDRESS_FORM_EVENT_LOGGER_H_
 
+#include <map>
 #include <string>
-#include <vector>
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill::autofill_metrics {
 
@@ -49,6 +50,10 @@ class AddressFormEventLogger : public FormEventLoggerBase {
 
   void OnDidUndoAutofill();
 
+  void OnDidShownAutofillOnTyping(FieldGlobalId field_global_id);
+
+  void OnDidAcceptAutofillOnTyping(FieldGlobalId field_global_id);
+
  protected:
   void RecordPollSuggestions() override;
   void RecordParseForm() override;
@@ -71,12 +76,20 @@ class AddressFormEventLogger : public FormEventLoggerBase {
       const FormStructure& form) const override;
 
  private:
+  enum class AutofillOnTypingSuggestionState {
+    kShown,
+    kAccepted,
+  };
+
   // All profile categories for which the user has at least one profile stored.
   DenseSet<AutofillProfileRecordTypeCategory> profile_categories_available_;
   // All profile categories for which the user has accepted at least one
   // suggestion.
   DenseSet<AutofillProfileRecordTypeCategory> profile_categories_filled_;
-
+  // For fields where `SuggestionType::kAddressEntryOnTyping`
+  // suggestions were shown, defined whether the user accepted the suggestion.
+  std::map<FieldGlobalId, AutofillOnTypingSuggestionState>
+      fields_where_autofill_on_typing_was_shown_;
   size_t record_type_count_ = 0;
 };
 

@@ -1136,12 +1136,14 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
         mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
         query_form_, query_field_, filling_value, suggestion.type,
         suggestion.field_by_field_filling_type_used);
-    if (suggestion.type != SuggestionType::kAddressEntryOnTyping) {
+    if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
       // Ensure that `SuggestionType::kAddressEntryOnTyping` do not (at least
       // yet) affect key metrics.
       manager_->OnDidFillAddressFormFillingSuggestion(
           profile, query_form_.global_id(), query_field_.global_id(),
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+    } else if (suggestion.type == SuggestionType::kAddressEntryOnTyping) {
+      manager_->OnDidFillAddressOnTypingSuggestion(query_field_.global_id());
     }
   }
 }
