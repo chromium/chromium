@@ -92,6 +92,7 @@ include_rules = [
   "+ios/chrome/browser/toolbar/ui_bundled",
   "+ios/chrome/browser/translate/model/chrome_ios_translate_client.h",
   "+ios/chrome/browser/ui",
+  "+ios/chrome/browser/page_info/ui_bundled",
   "+ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/view_source/model/view_source_browser_agent.h",

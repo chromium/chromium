@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/page_info/core",
-  "+components/page_info/page_info_action.h",
-  "+ios/chrome/browser/permissions/ui_bundled",
-  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
-]
