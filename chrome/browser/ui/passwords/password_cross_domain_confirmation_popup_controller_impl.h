@@ -52,7 +52,8 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
             base::i18n::TextDirection text_direction,
             const GURL& domain,
             std::u16string password_hostname,
-            base::OnceClosure confirmation_callback);
+            base::OnceClosure confirmation_callback,
+            bool show_warning_text);
 
   // autofill::AutofillPopupViewDelegate:
   void Hide(autofill::SuggestionHidingReason reason) override;
@@ -92,6 +93,11 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
   std::u16string password_hostname_;
   // The current website where filling is being triggered on.
   GURL domain_;
+  // If true, the text of the popup should be a warning since the cross domain
+  // filling suggestion is being pushed to the user.
+  // If false, the text of the popup should be informative since the cross
+  // domain filling suggestion is being pulled by the request of the user.
+  bool show_warning_text_ = false;
 
   base::WeakPtr<PasswordCrossDomainConfirmationPopupView> view_;
 

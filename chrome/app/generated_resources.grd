@@ -7122,6 +7122,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="The confirmation button label of the cross domain filling confirmation popup.">
         Use Password
       </message>
+      <message name="IDS_PASSWORD_CROSS_DOMAIN_FILLING_WARNING_DESCRIPTION"
+      desc="The description of the cross domain password filling warning popup.">
+        <ph name="PASSWORD_DOMAIN">$1<ex>example.com</ex></ph> and <ph name="DOMAIN">$2<ex>example.de</ex></ph> seem to be related. Make sure you trust <ph name="DOMAIN">$2<ex>example.de</ex></ph> before using your password.
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN" desc="In Title Case: The title of the Sign in button in the account chooser when there is one account.">
           Sign In

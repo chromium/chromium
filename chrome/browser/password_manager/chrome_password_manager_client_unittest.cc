@@ -1889,7 +1889,8 @@ TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
 
   GetClient()->ShowCrossDomainConfirmationPopup(
       gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
-      GURL("https://google.com"), u"google.de", accepted_callback.Get());
+      GURL("https://google.com"), u"google.de", /*show_warning_text=*/false,
+      accepted_callback.Get());
 
   EXPECT_CALL(accepted_callback, Run);
   view->Confirm();
@@ -1913,7 +1914,8 @@ TEST_F(ChromePasswordManagerClientTest,
       password_manager::PasswordCrossDomainConfirmationPopupController>
       controller = GetClient()->ShowCrossDomainConfirmationPopup(
           gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
-          GURL("https://google.com"), u"google.de", accepted_callback.Get());
+          GURL("https://google.com"), u"google.de", /*show_warning_text=*/true,
+          accepted_callback.Get());
   EXPECT_CALL(accepted_callback, Run);
   helper.DismissSheet(
       AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
@@ -1934,7 +1936,8 @@ TEST_F(ChromePasswordManagerClientTest,
       password_manager::PasswordCrossDomainConfirmationPopupController>
       controller = GetClient()->ShowCrossDomainConfirmationPopup(
           gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
-          GURL("https://google.com"), u"google.de", accepted_callback.Get());
+          GURL("https://google.com"), u"google.de", /*show_warning_text=*/true,
+          accepted_callback.Get());
   EXPECT_CALL(accepted_callback, Run).Times(0);
   helper.DismissSheet(
       AcknowledgeGroupedCredentialSheetBridge::DismissReason::kBack);

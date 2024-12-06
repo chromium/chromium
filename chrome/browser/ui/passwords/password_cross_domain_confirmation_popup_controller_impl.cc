@@ -29,7 +29,8 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
     base::i18n::TextDirection text_direction,
     const GURL& domain,
     std::u16string password_hostname,
-    base::OnceClosure confirmation_callback) {
+    base::OnceClosure confirmation_callback,
+    bool show_warning_text) {
   if (!web_contents()) {
     return;
   }
@@ -42,6 +43,7 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
   text_direction_ = text_direction;
   domain_ = domain;
   password_hostname_ = std::move(password_hostname);
+  show_warning_text_ = show_warning_text;
   confirmation_callback_ = std::move(confirmation_callback);
 
   auto on_view_confirm = base::BindOnce(
@@ -112,9 +114,13 @@ PasswordCrossDomainConfirmationPopupControllerImpl::GetElementTextDirection()
 
 std::u16string PasswordCrossDomainConfirmationPopupControllerImpl::GetBodyText()
     const {
-  return l10n_util::GetStringFUTF16(
-      IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_DESCRIPTION,
-      password_hostname_, base::UTF8ToUTF16(domain_.host()));
+  return show_warning_text_
+             ? l10n_util::GetStringFUTF16(
+                   IDS_PASSWORD_CROSS_DOMAIN_FILLING_WARNING_DESCRIPTION,
+                   password_hostname_, base::UTF8ToUTF16(domain_.host()))
+             : l10n_util::GetStringFUTF16(
+                   IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_DESCRIPTION,
+                   password_hostname_, base::UTF8ToUTF16(domain_.host()));
 }
 
 std::u16string

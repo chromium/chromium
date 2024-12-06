@@ -1337,6 +1337,7 @@ ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
     base::i18n::TextDirection text_direction,
     const GURL& domain,
     const std::u16string& password_hostname,
+    bool show_warning_text,
     base::OnceClosure confirmation_callback) {
 #if BUILDFLAG(IS_ANDROID)
   auto controller =
@@ -1371,7 +1372,8 @@ ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
                 web_contents());
 
   controller->Show(element_bounds_in_screen_space, text_direction, domain,
-                   password_hostname, std::move(confirmation_callback));
+                   password_hostname, std::move(confirmation_callback),
+                   show_warning_text);
 
   return controller;
 #endif  // BUILDFLAG(IS_ANDROID)

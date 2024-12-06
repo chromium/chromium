@@ -434,7 +434,8 @@ void PasswordManualFallbackFlow::EnsureCrossDomainPasswordUsageGetsConsent(
         password_client_->ShowCrossDomainConfirmationPopup(
             bounds_, text_direction_,
             password_manager_driver_->GetLastCommittedURL(),
-            payload.display_signon_realm, std::move(on_allowed));
+            payload.display_signon_realm, /*show_warning_text=*/false,
+            std::move(on_allowed));
     return;
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||

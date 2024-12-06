@@ -332,6 +332,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                 /*password_hostname=*/
                 password_manager_util::GetHumanReadableRealm(
                     password_credential->realm),
+                /*show_warning_text=*/true,
                 /*confirmation_callback=*/
                 base::BindOnce(&PasswordAutofillManager::
                                    OnPasswordCredentialSuggestionAccepted,
