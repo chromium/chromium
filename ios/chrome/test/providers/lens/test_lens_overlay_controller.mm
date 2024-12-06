@@ -51,8 +51,4 @@
   // NO-OP
 }
 
-- (void)setGuidanceRestHeight:(CGFloat)height {
-  // NO-OP
-}
-
 @end
