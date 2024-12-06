@@ -64,7 +64,7 @@ std::map<std::string, std::string> FormFillingStatsToSurveyStringData(
 
 struct VotesUploader::QueuedVote {
   FormSignature form_signature;
-  base::OnceClosure callback;
+  base::OnceClosure upload_vote;
 };
 
 VotesUploader::VotesUploader(BrowserAutofillManager* owner) : owner_(*owner) {}
@@ -74,22 +74,21 @@ AutofillClient& VotesUploader::client() {
   return owner_->client();
 }
 
-void VotesUploader::WipePendingVotesForForm(FormSignature form_signature) {
-  std::erase_if(queued_vote_uploads_, [form_signature](const QueuedVote& vote) {
+void VotesUploader::WipeQueuedVotesForForm(FormSignature form_signature) {
+  std::erase_if(queued_votes_, [form_signature](const QueuedVote& vote) {
     return vote.form_signature == form_signature;
   });
 }
 
-void VotesUploader::FlushPendingVotes() {
-  std::list<QueuedVote> queued_vote_uploads =
-      std::exchange(queued_vote_uploads_, {});
+void VotesUploader::FlushQueuedVotes() {
+  std::list<QueuedVote> queued_vote_uploads = std::exchange(queued_votes_, {});
   for (QueuedVote& vote : queued_vote_uploads) {
-    std::move(vote.callback).Run();
+    std::move(vote.upload_vote).Run();
   }
 }
 
 bool VotesUploader::MaybeStartVoteUploadProcess(
-    std::unique_ptr<FormStructure> form_structure,
+    std::unique_ptr<FormStructure> form,
     bool observed_submission,
     LanguageCode current_page_language,
     base::TimeTicks initial_interaction_timestamp,
@@ -98,7 +97,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
       client().GetPersonalDataManager().address_data_manager().GetProfiles();
-  if (observed_submission && form_structure->IsAutofillable()) {
+  if (observed_submission && form->IsAutofillable()) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
         profiles.size());
   }
@@ -112,7 +111,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     return false;
   }
 
-  if (form_structure->field_count() * (profiles.size() + credit_cards.size()) >=
+  if (form->field_count() * (profiles.size() + credit_cards.size()) >=
       kMaxTypeMatchingCalls) {
     return false;
   }
@@ -125,26 +124,23 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
       credit_cards, [](const CreditCard* card) { return *card; });
 
   // Annotate the form with the source language of the page.
-  form_structure->set_current_page_language(current_page_language);
+  form->set_current_page_language(current_page_language);
 
   // Attach the Randomized Encoder.
-  form_structure->set_randomized_encoder(
-      RandomizedEncoder::Create(client().GetPrefs()));
+  form->set_randomized_encoder(RandomizedEncoder::Create(client().GetPrefs()));
 
   // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
-  // |form_structure| with the help of |AlternativeStateNameMap|.
+  // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
-  PreProcessStateMatchingTypes(client(), copied_profiles, *form_structure);
+  PreProcessStateMatchingTypes(client(), copied_profiles, *form);
 
-  // Ownership of |form_structure| is passed to the
-  // BrowserAutofillManager::OnSubmissionFieldTypesDetermined() call.
-  FormStructure* raw_form = form_structure.get();
+  // Ownership of |form| is passed to the OnFieldTypesDetermined() call.
+  FormStructure* raw_form = form.get();
 
-  base::OnceClosure call_after_determine_field_types =
-      base::BindOnce(&VotesUploader::OnSubmissionFieldTypesDetermined,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
-                     initial_interaction_timestamp, base::TimeTicks::Now(),
-                     observed_submission, ukm_source_id);
+  base::OnceClosure call_after_determine_field_types = base::BindOnce(
+      &VotesUploader::OnFieldTypesDetermined, weak_ptr_factory_.GetWeakPtr(),
+      std::move(form), initial_interaction_timestamp, base::TimeTicks::Now(),
+      observed_submission, ukm_source_id);
 
   // If the form was not submitted (e.g. the user just removed the focus from
   // the form), it's possible that later modifications lead to more accurate
@@ -182,34 +178,34 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
 void VotesUploader::QueueVote(FormSignature form_signature,
                               base::OnceClosure callback) {
   // Remove entries with the same FormSignature to replace them.
-  WipePendingVotesForForm(form_signature);
+  WipeQueuedVotesForForm(form_signature);
 
   // Entries in queued_vote_uploads_ are submitted after navigations or form
   // submissions. To reduce the risk of collecting too much data that is not
   // send, we allow only `kMaxEntriesInQueue` entries. Anything in excess will
   // be sent when the queue becomes to long.
   constexpr int kMaxEntriesInQueue = 10;
-  while (queued_vote_uploads_.size() >= kMaxEntriesInQueue) {
+  while (queued_votes_.size() >= kMaxEntriesInQueue) {
     base::OnceCallback oldest_callback =
-        std::move(queued_vote_uploads_.back().callback);
-    queued_vote_uploads_.pop_back();
+        std::move(queued_votes_.back().upload_vote);
+    queued_votes_.pop_back();
     std::move(oldest_callback).Run();
   }
 
-  queued_vote_uploads_.emplace_front(form_signature, std::move(callback));
+  queued_votes_.emplace_front(form_signature, std::move(callback));
 }
 
 // We explicitly pass in all the time stamps of interest, as the cached ones
 // might get reset before this method executes.
 void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
-                               base::TimeTicks interaction_time,
-                               base::TimeTicks submission_time,
+                               base::TimeTicks initial_interaction_timestamp,
+                               base::TimeTicks submission_timestamp,
                                bool observed_submission,
-                               ukm::SourceId source_id) {
+                               ukm::SourceId ukm_source_id) {
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.
   if (observed_submission) {
-    WipePendingVotesForForm(submitted_form->form_signature());
+    WipeQueuedVotesForForm(submitted_form->form_signature());
   }
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFields() ||
@@ -217,13 +213,13 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
     // TODO(crbug.com/374086145): Eliminate reference to `owner_`.
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),
-        interaction_time, submission_time,
-        owner_->client().GetFormInteractionsUkmLogger(), source_id,
+        initial_interaction_timestamp, submission_timestamp,
+        owner_->client().GetFormInteractionsUkmLogger(), ukm_source_id,
         observed_submission);
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
       // we are not sure whether a full navigation with a Reset() call follows.
-      FlushPendingVotes();
+      FlushQueuedVotes();
     }
   }
   if (!submitted_form->ShouldBeUploaded()) {
@@ -233,7 +229,8 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
       submitted_form->ShouldUploadUkm(
           /*require_classified_field=*/true)) {
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
-        client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
+        client().GetUkmRecorder(), ukm_source_id, *submitted_form,
+        submission_timestamp);
   }
   const PersonalDataManager& pdm = client().GetPersonalDataManager();
   FieldTypeSet non_empty_types;
@@ -257,12 +254,12 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
       /*is_password_manager_upload=*/false);
 }
 
-void VotesUploader::OnSubmissionFieldTypesDetermined(
+void VotesUploader::OnFieldTypesDetermined(
     std::unique_ptr<FormStructure> submitted_form,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
+    base::TimeTicks initial_interaction_timestamp,
+    base::TimeTicks submission_timestamp,
     bool observed_submission,
-    ukm::SourceId source_id) {
+    ukm::SourceId ukm_source_id) {
   auto count_types = [&submitted_form](FormType type) {
     return base::ranges::count_if(
         submitted_form->fields(),
@@ -301,8 +298,8 @@ void VotesUploader::OnSubmissionFieldTypesDetermined(
         FillingProduct::kCreditCard,
         FormFillingStatsToSurveyStringData(credit_card_filling_stats));
   }
-  UploadVote(std::move(submitted_form), interaction_time, submission_time,
-             observed_submission, source_id);
+  UploadVote(std::move(submitted_form), initial_interaction_timestamp,
+             submission_timestamp, observed_submission, ukm_source_id);
 }
 
 }  // namespace autofill

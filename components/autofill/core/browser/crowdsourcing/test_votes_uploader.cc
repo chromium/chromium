@@ -16,8 +16,8 @@ TestVotesUploader::~TestVotesUploader() = default;
 
 void TestVotesUploader::UploadVote(
     std::unique_ptr<FormStructure> submitted_form,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
+    base::TimeTicks initial_interaction_timestamp,
+    base::TimeTicks submission_timestamp,
     bool observed_submission,
     const ukm::SourceId source_id) {
   submitted_form_signature_ = submitted_form->FormSignatureAsStr();
@@ -53,8 +53,9 @@ void TestVotesUploader::UploadVote(
     }
   }
 
-  VotesUploader::UploadVote(std::move(submitted_form), interaction_time,
-                            submission_time, observed_submission, source_id);
+  VotesUploader::UploadVote(std::move(submitted_form),
+                            initial_interaction_timestamp, submission_timestamp,
+                            observed_submission, source_id);
 }
 
 void TestVotesUploader::QueueVote(FormSignature form_signature,

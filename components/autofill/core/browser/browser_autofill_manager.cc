@@ -622,7 +622,7 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
   }
-  votes_uploader_->FlushPendingVotes();
+  votes_uploader_->FlushQueuedVotes();
 
   client().GetSingleFieldFillRouter().CancelPendingQueries();
 }
@@ -2192,7 +2192,7 @@ void BrowserAutofillManager::Reset() {
     ProcessFieldLogEventsInForm(*form_structure);
   }
   ProcessPendingFormForUpload();
-  votes_uploader_->FlushPendingVotes();
+  votes_uploader_->FlushQueuedVotes();
   DCHECK(!pending_form_data_);
 
   four_digit_combinations_in_dom_.clear();

@@ -47,8 +47,8 @@ class TestVotesUploader : public VotesUploader {
                  base::OnceClosure callback) override;
 
   void UploadVote(std::unique_ptr<FormStructure> submitted_form,
-                  base::TimeTicks interaction_time,
-                  base::TimeTicks submission_time,
+                  base::TimeTicks initial_interaction_timestamp,
+                  base::TimeTicks submission_timestamp,
                   bool observed_submission,
                   const ukm::SourceId source_id) override;
 

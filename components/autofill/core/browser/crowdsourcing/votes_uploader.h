@@ -48,18 +48,18 @@ class BrowserAutofillManager;
 //       │       if submission
 //       ├──────►────────────────────────────────┐
 //       │else                                   │
-//       │
+//       │                                       │
 //       ▼                                       │
 //   QueueVote()                                 │
 //   - Runs oldest callbacks if buffer is full.  │
 //   - Stores a vote callback.                   │
 //                                               │
-//   QueuedVote::callback                        │
+//   QueuedVote::upload_vote                     │
 //       │                                       │
 //       ├──────◄────────────────────────────────┘
 //       │
 //       ▼
-//   OnSubmissionFieldTypesDetermined()
+//   OnFieldTypesDetermined()
 //       │
 //       │
 //       ▼
@@ -68,7 +68,7 @@ class BrowserAutofillManager;
 //       │if submission
 //       │
 //       ▼
-//   FlushPendingVotes()◄────────────────BrowserAutofillManager
+//   FlushQueuedVotes()◄────────────────────BrowserAutofillManager
 //
 // TODO(crbug.com/374086145): Investigate if vote flushing should be decoupled
 // from BrowserAutofillManager lifetime.
@@ -82,19 +82,18 @@ class VotesUploader {
   VotesUploader& operator=(const VotesUploader&) = delete;
   virtual ~VotesUploader();
 
-  // Will send an upload based on the |form_structure| data and the local
-  // Autofill profile data. |observed_submission| is specified if the upload
-  // follows an observed submission event. Returns false if the upload couldn't
-  // start.
+  // Will send an upload based on the |form| data and the local Autofill profile
+  // data. |observed_submission| is specified if the upload follows an observed
+  // submission event. Returns false if the upload couldn't start.
   virtual bool MaybeStartVoteUploadProcess(
-      std::unique_ptr<FormStructure> form_structure,
+      std::unique_ptr<FormStructure> form,
       bool observed_submission,
       LanguageCode current_page_language,
       base::TimeTicks initial_interaction_timestamp,
       ukm::SourceId ukm_source_id);
 
   // Triggers and wipes all pending votes.
-  void FlushPendingVotes();
+  void FlushQueuedVotes();
 
   // TODO(crbug.com/374086145): Remove public member.
   std::u16string last_unlocked_credit_card_cvc_;
@@ -113,30 +112,29 @@ class VotesUploader {
   // observed submission event.
   // Virtual and protected for testing.
   virtual void UploadVote(std::unique_ptr<FormStructure> submitted_form,
-                          base::TimeTicks interaction_time,
-                          base::TimeTicks submission_time,
+                          base::TimeTicks initial_interaction_timestamp,
+                          base::TimeTicks submission_timestamp,
                           bool observed_submission,
-                          ukm::SourceId source_id);
+                          ukm::SourceId ukm_source_id);
 
  private:
   friend class VotesUploaderTestApi;
 
   struct QueuedVote;
 
-  // Method called after the values present on submitted fields were associated
-  // with Autofill field types. It is used to route calls to
+  // Called after the values present on submitted fields were associated with
+  // Autofill field types. It is used to route calls to
   // `UploadVotesAndLogQuality()` and
   // `AutofillClient::TriggerUserPerceptionOfAutofillSurvey()`, since both
   // depend on the field types being determined.
-  void OnSubmissionFieldTypesDetermined(
-      std::unique_ptr<FormStructure> submitted_form,
-      base::TimeTicks interaction_time,
-      base::TimeTicks submission_time,
-      bool observed_submission,
-      ukm::SourceId source_id);
+  void OnFieldTypesDetermined(std::unique_ptr<FormStructure> submitted_form,
+                              base::TimeTicks initial_interaction_timestamp,
+                              base::TimeTicks submission_timestamp,
+                              bool observed_submission,
+                              ukm::SourceId ukm_source_id);
 
-  // Removes a callback for the given `form_signature` without calling it.
-  void WipePendingVotesForForm(FormSignature form_signature);
+  // Removes the callbacks for the given `form_signature` without calling them.
+  void WipeQueuedVotesForForm(FormSignature form_signature);
 
   AutofillClient& client();
 
@@ -145,7 +143,7 @@ class VotesUploader {
   // FormGlobalId to send votes for the various signatures of a form while it
   // evolves (when fields are added or removed). The list of callbacks is
   // ordered by time of creation: newest elements first. If the list becomes too
-  // long, the oldest pending callbacks are just called and popped removed the
+  // long, the oldest queued callbacks are just called and popped removed the
   // list.
   //
   // Callbacks are triggered in the following situations:
@@ -155,7 +153,7 @@ class VotesUploader {
   // Callbacks are wiped in the following situations:
   // - A form is submitted.
   // - A callback is overridden by a more recent version.
-  std::list<QueuedVote> queued_vote_uploads_;
+  std::list<QueuedVote> queued_votes_;
 
   // This task runner sequentializes calls to
   // DeterminePossibleFieldTypesForUpload to ensure that blur votes are
