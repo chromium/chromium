@@ -31,6 +31,9 @@ class GlicWindowManager {
   // Create a Glic window for profile, if there is any.
   void ShowGlicWindowForProfile(Profile* profile);
 
+  // Show the Glic window for the pinned profile, if there is one.
+  void ShowGlicWindowForPinnedProfile();
+
   // Close the Glic window, if one exists.
   void CloseGlicWindow();
 
