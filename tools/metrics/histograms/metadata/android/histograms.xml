@@ -7163,7 +7163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.StartChromiumLocked"
-    units="ms" expires_after="2024-12-31">
+    units="ms" expires_after="2025-12-06">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>How long it takes to run startChromiumLocked.</summary>
