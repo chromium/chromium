@@ -2151,7 +2151,7 @@ IN_PROC_BROWSER_TEST_F(
   int original_tab_count = browser()->tab_strip_model()->count();
 
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+  enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
   // Start the interception.
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());

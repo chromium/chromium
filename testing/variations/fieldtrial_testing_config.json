@@ -9241,6 +9241,23 @@
             ]
         }
     ],
+    "EnterpriseUpdatedProfileCreationScreen": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseUpdatedProfileCreationScreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "EsbAiStringUpdate": [
         {
             "platforms": [
@@ -13551,6 +13568,23 @@
                     "name": "Enabled_20230817",
                     "enable_features": [
                         "MainThreadCompositingPriority"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ManagedProfileRequiredInterstitial": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ManagedProfileRequiredInterstitial"
                     ]
                 }
             ]
