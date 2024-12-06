@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
+#include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -199,6 +200,12 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool AllowWasmCodeGeneration(ReportingDisposition,
                                ExceptionStatus,
                                const String& script_content);
+
+  HashSet<HashAlgorithm> HashesToReport() const;
+  void AddHashReportIfNeeded(
+      LocalFrame* frame,
+      const String& url,
+      const HashMap<HashAlgorithm, String>& integrity_hashes) const;
 
   // AllowFromSource() wrappers.
   bool AllowBaseURI(const KURL&);

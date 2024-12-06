@@ -70,6 +70,8 @@
 -external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.https.window.html*
 -external/wpt/console/console-log-large-array.any.html
 -external/wpt/content-security-policy/reporting-api/*
+-external/wpt/content-security-policy/report-hash/*
+-virtual/verify-minimal-resource-request-kill-switch/external/wpt/content-security-policy/report-hash/*
 -external/wpt/content-security-policy/securitypolicyviolation/securitypolicyviolation-block-cross-origin-image-from-script.sub.html
 # https://github.com/web-platform-tests/wpt/issues/48078
 -external/wpt/cookie-store/*

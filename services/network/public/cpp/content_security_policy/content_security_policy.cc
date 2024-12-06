@@ -595,6 +595,15 @@ bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
   return false;
 }
 
+mojom::IntegrityAlgorithm StrongestHashAlgorithm(
+    std::optional<mojom::IntegrityAlgorithm> previous,
+    mojom::IntegrityAlgorithm current) {
+  if (previous) {
+    return std::max(previous.value(), current);
+  }
+  return current;
+}
+
 // Parse source-list grammar.
 // https://www.w3.org/TR/CSP3/#grammardef-serialized-source-list
 // Append parsing errors to |parsing_errors|.
@@ -701,6 +710,23 @@ mojom::CSPSourceListPtr ParseSourceList(
 
     if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-hashes'")) {
       directive->allow_unsafe_hashes = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha256'")) {
+      directive->report_hash_algorithm = StrongestHashAlgorithm(
+          directive->report_hash_algorithm, mojom::IntegrityAlgorithm::kSha256);
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha384'")) {
+      directive->report_hash_algorithm = StrongestHashAlgorithm(
+          directive->report_hash_algorithm, mojom::IntegrityAlgorithm::kSha384);
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha512'")) {
+      directive->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha512;
       continue;
     }
 

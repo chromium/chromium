@@ -127,6 +127,18 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
       std::move(reached_callback_).Run();
   }
 
+  void QueueCSPHashReport(const KURL& url,
+                          const String& endpoint,
+                          const String& subresource_url,
+                          const String& integrity_hash,
+                          const String& type,
+                          const String& destination) override {
+    last_message_ = "";
+    if (reached_callback_) {
+      std::move(reached_callback_).Run();
+    }
+  }
+
   const BrowserInterfaceBrokerProxy& broker_;
   mojo::ReceiverSet<ReportingServiceProxy> receivers_;
   base::OnceClosure reached_callback_;

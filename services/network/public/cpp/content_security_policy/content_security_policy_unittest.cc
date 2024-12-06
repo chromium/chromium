@@ -1308,6 +1308,33 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "otherwise it is ignored.",
       },
       {
+          "'none' 'report-sha256'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha256;
+            return csp;
+          }),
+          "",
+      },
+      {
+          "'none' 'report-sha384'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha384;
+            return csp;
+          }),
+          "",
+      },
+      {
+          "'none' 'report-sha512'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha512;
+            return csp;
+          }),
+          "",
+      },
+      {
           "'self'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();

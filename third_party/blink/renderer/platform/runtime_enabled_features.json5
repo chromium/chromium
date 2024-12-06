@@ -933,6 +933,10 @@
       status: "experimental",
     },
     {
+      name: "CSPReportHash",
+      status: "experimental",
+    },
+    {
       // The AccentColor And AccentColorText CSS system color keywords
       name: "CSSAccentColorKeyword",
       status: "experimental",

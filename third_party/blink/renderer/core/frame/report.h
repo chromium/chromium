@@ -17,6 +17,7 @@ class ScriptObject;
 // address and not violate ODR.
 struct CORE_EXPORT ReportType {
   static constexpr const char kCSPViolation[] = "csp-violation";
+  static constexpr const char kCSPHash[] = "csp-hash";
   static constexpr const char kCoopAccessViolation[] = "coop-access-violation";
   static constexpr const char kDeprecation[] = "deprecation";
   static constexpr const char kDocumentPolicyViolation[] =

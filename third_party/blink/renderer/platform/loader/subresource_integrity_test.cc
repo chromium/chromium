@@ -223,7 +223,7 @@ class SubresourceIntegrityTest : public testing::Test {
                   metadata_set, &buffer, test.url,
                   *CreateTestResource(test.url, test.request_mode,
                                       test.response_type),
-                  integrity_report));
+                  integrity_report, nullptr));
   }
 
   Resource* CreateTestResource(
@@ -795,7 +795,8 @@ TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
-      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report))
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
+      nullptr))
       << "Resource variant";
 }
 
@@ -818,7 +819,7 @@ TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
   EXPECT_EQ(!SignaturesEnabled(),
             SubresourceIntegrity::CheckSubresourceIntegrity(
                 metadata_set, /*buffer=*/nullptr, sec_url, *resource,
-                integrity_report))
+                integrity_report, nullptr))
       << "Resource variant";
 }
 
@@ -865,7 +866,8 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   response.SetHttpHeaderField(http_names::kSignature,
                               AtomicString(kValidSignatureHeader));
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
-      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report))
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
+      nullptr))
       << "Resource variant";
 }
 

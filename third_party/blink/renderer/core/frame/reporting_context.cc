@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/csp_hash_report_body.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation_report_body.h"
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
@@ -44,6 +45,10 @@ class DictionaryValueReportBody final : public ReportBody {
  private:
   const mojom::blink::ReportBodyPtr body_;
 };
+
+bool ShouldReportBeVisibleToObservers(Report* report) {
+  return report->type() != ReportType::kCSPHash;
+}
 
 }  // namespace
 
@@ -154,6 +159,10 @@ ReportingContext::GetReportingService() const {
 }
 
 void ReportingContext::NotifyInternal(Report* report) {
+  if (!ShouldReportBeVisibleToObservers(report)) {
+    return;
+  }
+
   // Buffer the report.
   if (!report_buffer_.Contains(report->type())) {
     report_buffer_.insert(
@@ -175,7 +184,8 @@ void ReportingContext::NotifyInternal(Report* report) {
 void ReportingContext::SendToReportingAPI(Report* report,
                                           const String& endpoint) const {
   const String& type = report->type();
-  if (!(type == ReportType::kCSPViolation || type == ReportType::kDeprecation ||
+  if (!(type == ReportType::kCSPViolation || type == ReportType::kCSPHash ||
+        type == ReportType::kDeprecation ||
         type == ReportType::kPermissionsPolicyViolation ||
         type == ReportType::kIntervention ||
         type == ReportType::kDocumentPolicyViolation)) {
@@ -199,6 +209,12 @@ void ReportingContext::SendToReportingAPI(Report* report,
         body->originalPolicy() ? body->originalPolicy() : "",
         body->sourceFile(), body->sample(), body->disposition().AsString(),
         body->statusCode(), line_number, column_number);
+  } else if (type == ReportType::kCSPHash) {
+    const CSPHashReportBody* body =
+        static_cast<CSPHashReportBody*>(report->body());
+    GetReportingService()->QueueCSPHashReport(
+        url, endpoint, body->subresourceURL(), body->hash(), body->type(),
+        body->destination());
   } else if (type == ReportType::kDeprecation) {
     // Send the deprecation report.
     const DeprecationReportBody* body =

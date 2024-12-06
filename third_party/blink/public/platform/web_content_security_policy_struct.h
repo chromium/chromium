@@ -68,6 +68,7 @@ struct WebCSPSourceList {
   bool allow_dynamic;
   bool allow_unsafe_hashes;
   bool report_sample;
+  std::optional<network::mojom::IntegrityAlgorithm> report_hash_algorithm;
 };
 
 struct WebContentSecurityPolicyDirective {

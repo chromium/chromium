@@ -6,13 +6,6 @@
 
 namespace blink {
 
-constexpr const char ReportType::kCSPViolation[];
-constexpr const char ReportType::kCoopAccessViolation[];
-constexpr const char ReportType::kDeprecation[];
-constexpr const char ReportType::kDocumentPolicyViolation[];
-constexpr const char ReportType::kPermissionsPolicyViolation[];
-constexpr const char ReportType::kIntervention[];
-
 ScriptObject Report::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.AddString("type", type());

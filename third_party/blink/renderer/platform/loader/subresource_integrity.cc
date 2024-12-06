@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -55,7 +56,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const Resource& resource,
-    IntegrityReport& integrity_report) {
+    IntegrityReport& integrity_report,
+    HashMap<HashAlgorithm, String>* computed_hashes) {
   // FetchResponseType::kError never arrives because it is a loading error.
   DCHECK_NE(resource.GetResponse().GetType(),
             network::mojom::FetchResponseType::kError);
@@ -75,7 +77,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
   String raw_headers = response.HttpHeaderFields().GetAsRawString(
       response.HttpStatusCode(), response.HttpStatusText());
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       raw_headers, integrity_report);
+                                       raw_headers, integrity_report,
+                                       computed_hashes);
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
@@ -98,7 +101,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
   }
 
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       raw_headers, integrity_report);
+                                       raw_headers, integrity_report, nullptr);
 }
 
 String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
@@ -121,7 +124,20 @@ String IntegrityAlgorithmsForConsole() {
              : "'sha256', 'sha384', or 'sha512'";
 }
 
-blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
+String HashAlgorithmToString(HashAlgorithm algorithm) {
+  switch (algorithm) {
+    case kHashAlgorithmSha1:
+      NOTREACHED();
+    case kHashAlgorithmSha256:
+      return "sha256-";
+    case kHashAlgorithmSha384:
+      return "sha384-";
+    case kHashAlgorithmSha512:
+      return "sha512-";
+  }
+}
+
+HashAlgorithm SubresourceIntegrity::IntegrityAlgorithmToHashAlgorithm(
     IntegrityAlgorithm algorithm) {
   switch (algorithm) {
     case IntegrityAlgorithm::kSha256:
@@ -138,12 +154,31 @@ blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
   }
 }
 
+String GetIntegrityStringFromDigest(const DigestValue& digest,
+                                    HashAlgorithm algorithm) {
+  StringBuilder reported_hash;
+  reported_hash.Append(HashAlgorithmToString(algorithm));
+  reported_hash.Append(Base64Encode(digest));
+  return reported_hash.ReleaseString();
+}
+
+std::optional<String> SubresourceIntegrity::GetSubresourceIntegrityHash(
+    const SegmentedBuffer* buffer,
+    HashAlgorithm algorithm) {
+  DigestValue digest;
+  if (!ComputeDigest(algorithm, buffer, digest)) {
+    return std::nullopt;
+  }
+  return GetIntegrityStringFromDigest(digest, algorithm);
+}
+
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const IntegrityMetadataSet& parsed_metadata,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const String& raw_headers,
-    IntegrityReport& integrity_report) {
+    IntegrityReport& integrity_report,
+    HashMap<HashAlgorithm, String>* computed_hashes) {
   // Implements https://wicg.github.io/signature-based-sri/#matching.
   //
   // 1.  Let |parsedMetadata| be the result of executing [Parse Metadata] on
@@ -170,7 +205,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   // Verify the hash-based integrity constraints:
   //
   if (!CheckHashesImpl(parsed_metadata.hashes, buffer, resource_url,
-                       integrity_report)) {
+                       integrity_report, computed_hashes)) {
     return false;
   }
 
@@ -190,7 +225,8 @@ bool SubresourceIntegrity::CheckHashesImpl(
     const WTF::HashSet<IntegrityMetadataPair>& hashes,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
-    IntegrityReport& integrity_report) {
+    IntegrityReport& integrity_report,
+    HashMap<HashAlgorithm, String>* computed_hashes) {
   // This implements steps 3, 5, and 7 of
   // https://wicg.github.io/signature-based-sri/#matching.
 
@@ -238,6 +274,10 @@ bool SubresourceIntegrity::CheckHashesImpl(
     if (actual_value == expected_value) {
       integrity_report.AddUseCount(
           WebFeature::kSRIElementWithMatchingIntegrityAttribute);
+      if (computed_hashes) {
+        computed_hashes->insert(
+            hash_algo, GetIntegrityStringFromDigest(actual_value, hash_algo));
+      }
       return true;
     }
   }
