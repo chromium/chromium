@@ -84,7 +84,8 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
 
  protected:
   bool ShouldCloseOnRemove(const bookmarks::BookmarkNode* node) const {
-    return bookmark_menu_delegate_->ShouldCloseOnRemove(node);
+    const auto folder_or_url = BookmarkMenuDelegate::BookmarkFolderOrURL(node);
+    return bookmark_menu_delegate_->ShouldCloseOnRemove(&folder_or_url);
   }
 
   // Destroys the delegate. Do this rather than directly deleting
