@@ -198,7 +198,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
   delegate->RemoveObserver(&observer);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
+// TODO(crbug.com/382703186): Fix flakiness and re-enable.
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       DISABLED_GeneratedPasswordIsPreSaved) {
   GURL main_url("https://example.com/");
 
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
