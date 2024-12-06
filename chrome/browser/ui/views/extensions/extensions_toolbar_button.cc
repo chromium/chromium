@@ -102,6 +102,8 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
     // accessibility mode.
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
   }
+
+  UpdateCachedTooltipText();
 }
 
 ExtensionsToolbarButton::~ExtensionsToolbarButton() {
@@ -155,6 +157,7 @@ void ExtensionsToolbarButton::UpdateState(State state) {
   state_ = state;
   SetVectorIcon(GetIcon(state_));
   GetViewAccessibility().SetName(GetAccessibleText(state_));
+  UpdateCachedTooltipText();
 }
 
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
@@ -209,8 +212,7 @@ int ExtensionsToolbarButton::GetIconSize() const {
   return kDefaultIconSizeChromeRefresh;
 }
 
-std::u16string ExtensionsToolbarButton::GetTooltipText(
-    const gfx::Point& p) const {
+void ExtensionsToolbarButton::UpdateCachedTooltipText() {
   int message_id;
   switch (state_) {
     case ExtensionsToolbarButton::State::kDefault:
@@ -223,7 +225,7 @@ std::u16string ExtensionsToolbarButton::GetTooltipText(
       message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
       break;
   }
-  return l10n_util::GetStringUTF16(message_id);
+  SetCachedTooltipText(l10n_util::GetStringUTF16(message_id));
 }
 
 BEGIN_METADATA(ExtensionsToolbarButton)

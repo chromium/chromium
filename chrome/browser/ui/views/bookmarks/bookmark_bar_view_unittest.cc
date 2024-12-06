@@ -623,6 +623,17 @@ TEST_F(BookmarkBarViewTest, BookmarkFolderButtonAccessibleProperties) {
           IDS_ACCNAME_BOOKMARK_FOLDER_BUTTON_ROLE_DESCRIPTION));
 }
 
+TEST_F(BookmarkBarViewTest, BookmarkFolderButtonTooltipText) {
+  auto* folder_button = test_helper_->managed_bookmarks_button();
+  folder_button->SetText(u"Managed Bookmarks");
+
+  EXPECT_EQ(u"Managed Bookmarks", folder_button->GetTooltipText(gfx::Point()));
+
+  folder_button->SetText(std::u16string());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER),
+            folder_button->GetTooltipText(gfx::Point()));
+}
+
 TEST_F(BookmarkBarViewTest, ButtonSeparatorViewAccessibleProperties) {
   auto* seperator_view = test_helper_->saved_tab_groups_separator_view_();
   ui::AXNodeData data;

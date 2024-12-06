@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 
 #include "base/run_loop.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/button_test_api.h"
@@ -181,4 +183,62 @@ TEST_F(ReloadButtonTest, AccessibleHasPopup) {
   reload()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
   EXPECT_TRUE(reload()->GetMenuEnabled());
   EXPECT_EQ(ax::mojom::HasPopup::kMenu, button_data.GetHasPopup());
+}
+
+TEST_F(ReloadButtonTest, TooltipText) {
+  reload()->SetVisibleMode(ReloadButton::Mode::kReload);
+  EXPECT_FALSE(reload()->GetMenuEnabled());
+  EXPECT_EQ(reload()->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
+  reload()->SetVisibleMode(ReloadButton::Mode::kStop);
+  EXPECT_EQ(reload()->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_STOP));
+
+  reload()->SetMenuEnabled(true);
+  reload()->SetVisibleMode(ReloadButton::Mode::kReload);
+  EXPECT_TRUE(reload()->GetMenuEnabled());
+  EXPECT_EQ(reload()->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD_WITH_MENU));
+  reload()->SetVisibleMode(ReloadButton::Mode::kStop);
+  EXPECT_EQ(reload()->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_STOP));
+}
+
+TEST_F(ReloadButtonTest, TooltipTextAccessibility) {
+  ui::AXNodeData button_data;
+  reload()->SetVisibleMode(ReloadButton::Mode::kReload);
+  reload()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_FALSE(reload()->GetMenuEnabled());
+  EXPECT_EQ(reload()->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
+  EXPECT_EQ(button_data.GetString16Attribute(
+                ax::mojom::StringAttribute::kDescription),
+            reload()->GetTooltipText(gfx::Point()));
+  button_data = ui::AXNodeData();
+  reload()->SetVisibleMode(ReloadButton::Mode::kStop);
+  reload()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_EQ(reload()->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_STOP));
+  EXPECT_EQ(button_data.GetString16Attribute(
+                ax::mojom::StringAttribute::kDescription),
+            reload()->GetTooltipText(gfx::Point()));
+  button_data = ui::AXNodeData();
+
+  reload()->SetMenuEnabled(true);
+  reload()->SetVisibleMode(ReloadButton::Mode::kReload);
+  reload()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_TRUE(reload()->GetMenuEnabled());
+  EXPECT_EQ(reload()->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD_WITH_MENU));
+  EXPECT_EQ(button_data.GetString16Attribute(
+                ax::mojom::StringAttribute::kDescription),
+            reload()->GetTooltipText(gfx::Point()));
+  button_data = ui::AXNodeData();
+  reload()->SetVisibleMode(ReloadButton::Mode::kStop);
+  reload()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_EQ(reload()->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_STOP));
+  EXPECT_EQ(button_data.GetString16Attribute(
+                ax::mojom::StringAttribute::kDescription),
+            reload()->GetTooltipText(gfx::Point()));
 }

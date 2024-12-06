@@ -55,6 +55,8 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
   UpdateAccessibleHasPopup();
   SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
   SetID(VIEW_ID_RELOAD_BUTTON);
+
+  UpdateCachedTooltipText();
 }
 
 ReloadButton::~ReloadButton() = default;
@@ -115,6 +117,7 @@ bool ReloadButton::GetMenuEnabled() const {
 void ReloadButton::SetMenuEnabled(bool enable) {
   menu_enabled_ = enable;
   UpdateAccessibleHasPopup();
+  UpdateCachedTooltipText();
 }
 
 void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -123,11 +126,11 @@ void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
     ChangeMode(intended_mode_, true);
 }
 
-std::u16string ReloadButton::GetTooltipText(const gfx::Point& p) const {
+void ReloadButton::UpdateCachedTooltipText() {
   int reload_tooltip = menu_enabled_ ?
       IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
-  return l10n_util::GetStringUTF16(
-      visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP);
+  SetCachedTooltipText(l10n_util::GetStringUTF16(
+      visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP));
 }
 
 bool ReloadButton::ShouldShowMenu() {
@@ -182,6 +185,8 @@ void ReloadButton::SetVisibleMode(Mode mode) {
       SetVectorIcons(*stop_icon_, *stop_touch_icon_);
       break;
   }
+
+  UpdateCachedTooltipText();
 }
 
 void ReloadButton::ButtonPressed(const ui::Event& event) {
