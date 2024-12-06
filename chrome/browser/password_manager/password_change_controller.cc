@@ -68,17 +68,15 @@ PasswordChangeController::PasswordChangeController(
     GURL change_password_url,
     std::u16string username,
     std::u16string password,
-    content::WebContents* originator)
+    content::WebContents* originator,
+    base::RepeatingCallback<
+        content::WebContents*(const GURL&, content::WebContents*)> callback)
     : change_password_url_(std::move(change_password_url)),
       username_(std::move(username)),
       original_password_(std::move(password)),
       originator_(originator->GetWeakPtr()) {
-  content::WebContents* new_tab = originator_->OpenURL(
-      content::OpenURLParams(change_password_url_, content::Referrer(),
-                             WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK,
-                             /*is_renderer_initiated=*/false),
-      base::DoNothing());
+  content::WebContents* new_tab =
+      std::move(callback).Run(change_password_url_, originator);
   if (new_tab) {
     executor_ = new_tab->GetWeakPtr();
     GetFormCache(new_tab).SetObserver(weak_ptr_factory_.GetWeakPtr());

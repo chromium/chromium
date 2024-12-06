@@ -29,6 +29,22 @@ std::unique_ptr<KeyedService> CreateTestAffiliationService(
   return std::make_unique<testing::NiceMock<MockAffiliationService>>();
 }
 
+content::WebContents* OpenNewTabInBackground(base::WeakPtr<Browser> browser,
+                                             const GURL& url,
+                                             content::WebContents*) {
+  if (!browser) {
+    return nullptr;
+  }
+  int preexisting_tab = browser->tab_strip_model()->active_index();
+  content::WebContents* contents = PasswordManagerBrowserTestBase::GetNewTab(
+      browser.get(), /*open_new_tab=*/true);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser.get(), url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
+  browser->tab_strip_model()->ActivateTabAt(preexisting_tab);
+  return contents;
+}
+
 }  // namespace
 
 class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
@@ -45,6 +61,10 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                 }));
   }
 
+  void SetUpOnMainThread() override {
+    PasswordManagerBrowserTestBase::SetUpOnMainThread();
+  }
+
   MockAffiliationService* affiliation_service() {
     return static_cast<MockAffiliationService*>(
         AffiliationServiceFactory::GetForProfile(browser()->profile()));
@@ -52,10 +72,16 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
 
   ChromePasswordChangeService* password_change_service() {
     return PasswordChangeServiceFactory::GetForProfile(browser()->profile());
+    ;
   }
 
-  content::WebContents* WebContents() const override {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+  // This allows to attach a custom ManagePasswordsUIController to intercept UI
+  // interactions.
+  void InterceptNewTabsOpening() {
+    // TODO(crbug.com/382652112): find a way to observe bubbles without
+    // intercepting new tab creation.
+    password_change_service()->SetCustomTabOpening(
+        base::BindRepeating(&OpenNewTabInBackground, browser()->AsWeakPtr()));
   }
 
  private:
@@ -104,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   password_change_service()->StartPasswordChange(main_url, u"test", u"pa$$word",
                                                  WebContents());
   // Activate tab with password change to simplify testing.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
 
   PasswordsNavigationObserver observer(WebContents());
   EXPECT_TRUE(observer.Wait());

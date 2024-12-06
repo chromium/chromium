@@ -22,10 +22,13 @@ class WebContents;
 class PasswordChangeController
     : public password_manager::PasswordFormManagerObserver {
  public:
-  PasswordChangeController(GURL change_password_url,
-                           std::u16string username,
-                           std::u16string password,
-                           content::WebContents* originator);
+  PasswordChangeController(
+      GURL change_password_url,
+      std::u16string username,
+      std::u16string password,
+      content::WebContents* originator,
+      base::RepeatingCallback<
+          content::WebContents*(const GURL&, content::WebContents*)> callback);
   ~PasswordChangeController() override;
 
   PasswordChangeController(const PasswordChangeController&) = delete;

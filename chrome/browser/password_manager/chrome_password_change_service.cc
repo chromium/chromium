@@ -7,11 +7,28 @@
 #include "chrome/browser/password_manager/password_change_controller.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+namespace {
+
+content::WebContents* OpenNewTab(const GURL& url,
+                                 content::WebContents* original_tab) {
+  CHECK(original_tab);
+  return original_tab->OpenURL(
+      content::OpenURLParams(url, content::Referrer(),
+                             WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK,
+                             /*is_renderer_initiated=*/false),
+      base::DoNothing());
+}
+
+}  // namespace
 
 ChromePasswordChangeService::ChromePasswordChangeService(
     affiliations::AffiliationService* affiliation_service)
-    : affiliation_service_(affiliation_service) {}
+    : affiliation_service_(affiliation_service),
+      new_tab_callback_(base::BindRepeating(&OpenNewTab)) {}
 
 ChromePasswordChangeService::~ChromePasswordChangeService() = default;
 
@@ -33,7 +50,8 @@ void ChromePasswordChangeService::StartPasswordChange(
   CHECK(change_pwd_url.is_valid());
 
   auto controller = std::make_unique<PasswordChangeController>(
-      std::move(change_pwd_url), username, password, web_contents);
+      std::move(change_pwd_url), username, password, web_contents,
+      new_tab_callback_);
   password_change_controllers_.push_back(std::move(controller));
 }
 

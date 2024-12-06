@@ -132,7 +132,9 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // Creates a new tab with all the password manager test hooks and returns it.
-  static content::WebContents* GetNewTab(Browser* browser);
+  // Closes previously active tab when `open_new_tab` is false.
+  static content::WebContents* GetNewTab(Browser* browser,
+                                         bool open_new_tab = false);
 
   // Make sure that the password store associated with the given browser
   // processed all the previous calls, calls executed on another thread.
@@ -199,10 +201,11 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
 
   // Accessors
   // Return the first created tab with a custom ManagePasswordsUIController.
-  virtual content::WebContents* WebContents() const;
+  content::WebContents* WebContents() const;
   content::RenderFrameHost* RenderFrameHost() const;
   net::EmbeddedTestServer& https_test_server() { return https_test_server_; }
 
+  void SetWebContents(content::WebContents* web_content);
   void ClearWebContentsPtr();
 
  private:

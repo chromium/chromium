@@ -28,6 +28,12 @@ class ChromePasswordChangeService
     : public KeyedService,
       public password_manager::PasswordChangeServiceInterface {
  public:
+  // Callback which allows to open a new tab for password change. Useful for
+  // testing UI interactions in browser tests.
+  using OpenNewTabCallback =
+      base::RepeatingCallback<content::WebContents*(const GURL&,
+                                                    content::WebContents*)>;
+
   explicit ChromePasswordChangeService(
       affiliations::AffiliationService* affiliation_service);
   ~ChromePasswordChangeService() override;
@@ -47,8 +53,16 @@ class ChromePasswordChangeService
   // PasswordChangeServiceInterface implementation.
   bool IsPasswordChangeSupported(const GURL& url) override;
 
+  // For testing only.
+  void SetCustomTabOpening(OpenNewTabCallback callback) {
+    new_tab_callback_ = std::move(callback);
+  }
+
  private:
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
+
+  // TODO(crbug.com/382652112): Remove once testing is simplified.
+  OpenNewTabCallback new_tab_callback_;
 
   std::vector<std::unique_ptr<PasswordChangeController>>
       password_change_controllers_;
