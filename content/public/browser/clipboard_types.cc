@@ -110,7 +110,7 @@ const ui::ClipboardFormatType& SourceRFHTokenType() {
   constexpr char kTypeName[] = "chromium/x-internal-source-rfh-token";
 #endif
   static base::NoDestructor<ui::ClipboardFormatType> type(
-      ui::ClipboardFormatType::GetType(kTypeName));
+      ui::ClipboardFormatType::CustomPlatformType(kTypeName));
   return *type;
 }
 
