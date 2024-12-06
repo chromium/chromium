@@ -5493,6 +5493,63 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithError) {
   EXPECT_EQ(pool().TotalActiveStreamCount(), 0u);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithErrorPendingJobs) {
+  constexpr size_t kNumPausedJobs = 3;
+  const HttpStreamKey stream_key = StreamKeyBuilder().Build();
+
+  // (Preparation) The first request fails. The group enters the failing mode.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+  SequencedSocketData failed_data;
+  failed_data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  socket_factory()->AddSocketDataProvider(&failed_data);
+
+  StreamRequester failing_requester(stream_key);
+  failing_requester.RequestStream(pool());
+  failing_requester.WaitForResult();
+  EXPECT_THAT(failing_requester.result(),
+              Optional(IsError(ERR_CONNECTION_REFUSED)));
+  EXPECT_TRUE(pool()
+                  .GetGroupForTesting(stream_key)
+                  ->GetAttemptManagerForTesting()
+                  ->is_failing());
+
+  // Subsequent requests (jobs) are paused until the first request is destroyed.
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  for (size_t i = 0; i < kNumPausedJobs; ++i) {
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    StreamRequester* raw_requester = requester.get();
+    requesters.emplace_back(std::move(requester));
+    raw_requester->RequestStream(pool());
+    ASSERT_FALSE(raw_requester->result().has_value());
+  }
+  EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(),
+            kNumPausedJobs);
+
+  pool().FlushWithError(ERR_ABORTED,
+                        HttpStreamPool::StreamCloseReason::kUnspecified,
+                        "for testing");
+  for (auto& requester : requesters) {
+    requester->WaitForResult();
+    EXPECT_THAT(requester->result(), Optional(IsError(ERR_ABORTED)));
+  }
+
+  // Destroy the first request. This should result in attempting to delete the
+  // group. The group should be still alive since we don't destroy all requests
+  // yet.
+  failing_requester.ResetRequest();
+  EXPECT_TRUE(pool().GetGroupForTesting(stream_key));
+
+  // Destroy all requests. The group should be deleted.
+  for (auto& requester : requesters) {
+    requester->ResetRequest();
+  }
+  EXPECT_FALSE(pool().GetGroupForTesting(stream_key));
+  EXPECT_EQ(pool().TotalActiveStreamCount(), 0u);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, UnsafePort) {
   StreamRequester requester;
   requester.set_destination("http://www.example.org:7");

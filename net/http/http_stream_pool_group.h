@@ -225,6 +225,13 @@ class HttpStreamPool::Group {
   // Resumes a paused job. Schedules another task if more paused jobs exist.
   void ResumePausedJob();
 
+  // Cancels a paused job. Schedules another task if more paused jobs exist.
+  void CancelPausedJob(int error);
+
+  // Extracts a paused job from `paused_jobs_`. The ownership of the raw_ptr of
+  // the job is moved to `notified_paused_jobs_`.
+  HttpStreamPool::Job* ExtractOnePausedJob();
+
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
 
@@ -234,6 +241,9 @@ class HttpStreamPool::Group {
   bool CanComplete() const;
 
   void MaybeComplete();
+
+  // Posts a task to call MaybeComplete() later.
+  void MaybeCompleteLater();
 
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
@@ -255,6 +265,9 @@ class HttpStreamPool::Group {
   // are called "pending". Pending jobs are associated with an AttemptManager
   // but haven't attempted connections yet.
   PausedJobSet paused_jobs_;
+  // Keeps jobs that are previously paused and already notified results. We
+  // need to keep them to avoid dangling pointers.
+  PausedJobSet notified_paused_jobs_;
 
   base::WeakPtrFactory<Group> weak_ptr_factory_{this};
 };

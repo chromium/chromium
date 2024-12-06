@@ -135,7 +135,7 @@ bool HttpStreamPool::Group::CanStartJob(Job* job) {
 }
 
 void HttpStreamPool::Group::OnJobComplete(Job* job) {
-  paused_jobs_.erase(job);
+  notified_paused_jobs_.erase(job);
 
   if (attempt_manager_) {
     attempt_manager_->OnJobComplete(job);
@@ -285,13 +285,9 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
                             kExceededSocketLimits);
   idle_stream_sockets_.pop_front();
   pool_->DecrementTotalIdleStreamCount();
-  if (CanComplete()) {
-    // Use PostTask since MaybeComplete() may delete `this`, and this method
-    // could be called while iterating all groups.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Use MaybeCompeleteLater since MaybeComplete() may delete `this`, and this
+  // method could be called while iterating all groups.
+  MaybeCompleteLater();
   return true;
 }
 
@@ -346,18 +342,17 @@ void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
 void HttpStreamPool::Group::CloseIdleStreams(
     std::string_view net_log_close_reason_utf8) {
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
-  if (CanComplete()) {
-    // Use PostTask since MaybeComplete() may delete `this`, and this method
-    // could be called while iterating all groups.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Use MaybeCompleteLater since MaybeComplete() may delete `this`, and this
+  // method could be called while iterating all groups.
+  MaybeCompleteLater();
 }
 
 void HttpStreamPool::Group::CancelJobs(int error) {
-  // TODO(crbug.com/381742472): Cancel jobs in `paused_jobs_`. Also cancel
-  // paused preconnects when we support paused preconnects.
+  if (!paused_jobs_.empty()) {
+    CancelPausedJob(error);
+  }
+  // TODO(crbug.com/381742472): Cancel paused preconnects when we support paused
+  // preconnects.
   if (attempt_manager_) {
     attempt_manager_->CancelJobs(error);
   }
@@ -397,6 +392,8 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
   dict.Set("handed_out_socket_count",
            static_cast<int>(HandedOutStreamSocketCount()));
   dict.Set("paused_job_count", static_cast<int>(PausedJobCount()));
+  dict.Set("notified_paused_job_count",
+           static_cast<int>(notified_paused_jobs_.size()));
   dict.Set("attempt_manager_alive", !!attempt_manager_);
   if (attempt_manager_) {
     dict.Set("attempt_state", attempt_manager_->GetInfoAsValue());
@@ -448,6 +445,35 @@ void HttpStreamPool::Group::ResumePausedJob() {
   job->Resume();
 }
 
+void HttpStreamPool::Group::CancelPausedJob(int error) {
+  Job* job = ExtractOnePausedJob();
+  if (!job) {
+    // Try to complete asynchronously because this method can be called in the
+    // middle of CancelJobs() and `this` must be alive until CancelJobs()
+    // completes.
+    MaybeCompleteLater();
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Group::CancelPausedJob,
+                                weak_ptr_factory_.GetWeakPtr(), error));
+
+  job->OnStreamFailed(error, NetErrorDetails(), ResolveErrorInfo());
+}
+
+HttpStreamPool::Job* HttpStreamPool::Group::ExtractOnePausedJob() {
+  if (paused_jobs_.empty()) {
+    return nullptr;
+  }
+
+  raw_ptr<Job> job =
+      std::move(paused_jobs_.extract(paused_jobs_.begin())).value();
+  Job* job_raw_ptr = job.get();
+  notified_paused_jobs_.emplace(std::move(job));
+  return job_raw_ptr;
+}
+
 void HttpStreamPool::Group::CleanupIdleStreamSockets(
     CleanupMode mode,
     std::string_view net_log_close_reason_utf8) {
@@ -482,8 +508,8 @@ void HttpStreamPool::Group::EnsureAttemptManager() {
 bool HttpStreamPool::Group::CanComplete() const {
   // TODO(crbug.com/381742472): Check paused preconnects once we support
   // paused preconnects.
-  return ActiveStreamSocketCount() == 0 && PausedJobCount() == 0 &&
-         !attempt_manager_;
+  return ActiveStreamSocketCount() == 0 && paused_jobs_.empty() &&
+         notified_paused_jobs_.empty() && !attempt_manager_;
 }
 
 void HttpStreamPool::Group::MaybeComplete() {
@@ -493,6 +519,14 @@ void HttpStreamPool::Group::MaybeComplete() {
 
   pool_->OnGroupComplete(this);
   // `this` is deleted.
+}
+
+void HttpStreamPool::Group::MaybeCompleteLater() {
+  if (CanComplete()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace net
