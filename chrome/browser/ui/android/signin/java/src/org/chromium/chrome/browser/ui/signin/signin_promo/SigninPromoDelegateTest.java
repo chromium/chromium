@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -60,6 +61,7 @@ public class SigninPromoDelegateTest {
     private @Mock IdentityManager mIdentityManager;
     private @Mock SigninManager mSigninManager;
     private @Mock SyncService mSyncService;
+    private @Mock HistorySyncHelper mHistorySyncHelper;
 
     private SigninPromoDelegate mDelegate;
 
@@ -218,6 +220,43 @@ public class SigninPromoDelegateTest {
         createDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO);
 
         assertFalse(mDelegate.canShowPromo(TestAccounts.ACCOUNT1));
+    }
+
+    @Test
+    public void testRecentTabsPromoShown_signinAllowed() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        createDelegate(SigninAccessPoint.RECENT_TABS);
+
+        assertTrue(mDelegate.canShowPromo(/* visibleAccount= */ null));
+    }
+
+    @Test
+    public void testRecentTabsPromoShown_hasPrimaryAccount() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        createDelegate(SigninAccessPoint.RECENT_TABS);
+
+        assertTrue(mDelegate.canShowPromo(TestAccounts.ACCOUNT1));
+    }
+
+    @Test
+    public void testRecentTabsPromoHidden_signinNotAllowed() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        createDelegate(SigninAccessPoint.RECENT_TABS);
+
+        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
+    }
+
+    @Test
+    public void testRecentTabsPromoHidden_suppressed() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(true).when(mHistorySyncHelper).shouldSuppressHistorySync();
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        createDelegate(SigninAccessPoint.RECENT_TABS);
+
+        assertFalse(mDelegate.canShowPromo(/* visibleAccount= */ null));
     }
 
     private void createDelegate(@SigninAccessPoint int accessPoint) {
