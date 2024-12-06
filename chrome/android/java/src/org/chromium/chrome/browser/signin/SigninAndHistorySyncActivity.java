@@ -33,21 +33,17 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
-import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -68,25 +64,13 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         implements BottomSheetSigninAndHistorySyncCoordinator.Delegate,
                 FullscreenSigninAndHistorySyncCoordinator.Delegate {
-    private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE =
-            "SigninAndHistorySyncActivity.BottomSheetStringsTitle";
-    private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE =
-            "SigninAndHistorySyncActivity.BottomSheetStringsSubtitle";
-    private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS =
-            "SigninAndHistorySyncActivity.BottomSheetStringsDismiss";
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
-    private static final String ARGUMENT_NO_ACCOUNT_SIGNIN_MODE =
-            "SigninAndHistorySyncActivity.NoAccountSigninMode";
-    private static final String ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE =
-            "SigninAndHistorySyncActivity.WithAccountSigninMode";
-    private static final String ARGUMENT_HISTORY_OPT_IN_MODE =
-            "SigninAndHistorySyncActivity.HistoryOptInMode";
     private static final String ARGUMENT_IS_FULLSCREEN_SIGNIN =
             "SigninAndHistorySyncActivity.IsFullscreenSignin";
-    private static final String ARGUMENT_SELECTED_CORE_ACCOUNT_ID =
-            "SigninAndHistorySyncActivity.SelectedCoreAccountId";
     private static final String ARGUMENT_FULLSCREEN_SIGNIN_CONFIG =
             "SigninAndHistoryOptInActivity.FullscreenSigninAndHistorySyncConfig";
+    private static final String ARGUMENT_BOTTOM_SHEET_SIGNIN_CONFIG =
+            "SigninAndHistoryOptInActivity.BottomSheetSigninAndHistorySyncConfig";
 
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
@@ -139,30 +123,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         }
 
         setStatusBarColor(Color.TRANSPARENT);
-        int titleStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE, 0);
-        int subtitleStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE, 0);
-        int dismissStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS, 0);
-        AccountPickerBottomSheetStrings bottomSheetStrings =
-                new AccountPickerBottomSheetStrings.Builder(titleStringId)
-                        .setSubtitleStringId(subtitleStringId)
-                        .setDismissButtonStringId(dismissStringId)
-                        .build();
-
-        @NoAccountSigninMode
-        int noAccountSigninMode =
-                intent.getIntExtra(
-                        ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, NoAccountSigninMode.BOTTOM_SHEET);
-        @WithAccountSigninMode
-        int withAccountSigninMode =
-                intent.getIntExtra(
-                        ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE,
-                        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
-        @HistorySyncConfig.OptInMode
-        int historyOptInMode =
-                intent.getIntExtra(
-                        ARGUMENT_HISTORY_OPT_IN_MODE, HistorySyncConfig.OptInMode.OPTIONAL);
-        @Nullable String accountId = intent.getStringExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID);
-
+        BottomSheetSigninAndHistorySyncConfig config =
+                intent.getParcelableExtra(ARGUMENT_BOTTOM_SHEET_SIGNIN_CONFIG);
         mCoordinator =
                 new BottomSheetSigninAndHistorySyncCoordinator(
                         getWindowAndroid(),
@@ -171,12 +133,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         DeviceLockActivityLauncherImpl.get(),
                         mProfileSupplier,
                         getModalDialogManagerSupplier(),
-                        bottomSheetStrings,
-                        noAccountSigninMode,
-                        withAccountSigninMode,
-                        historyOptInMode,
-                        signinAccessPoint,
-                        accountId == null ? null : new CoreAccountId(accountId));
+                        config,
+                        signinAccessPoint);
 
         setInitialContentView(mCoordinator.getView());
         onInitialLayoutInflationComplete();
@@ -306,27 +264,11 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
 
     public static @NonNull Intent createIntent(
             @NonNull Context context,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @NoAccountSigninMode int noAccountSigninMode,
-            @WithAccountSigninMode int withAccountSigninMode,
-            @HistorySyncConfig.OptInMode int historyOptInMode,
-            @SigninAccessPoint int signinAccessPoint,
-            @Nullable CoreAccountId selectedCoreAccountId) {
-        assert bottomSheetStrings != null;
-
+            @NonNull BottomSheetSigninAndHistorySyncConfig config,
+            @SigninAccessPoint int signinAccessPoint) {
         Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
-        intent.putExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE, bottomSheetStrings.titleStringId);
-        intent.putExtra(
-                ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE, bottomSheetStrings.subtitleStringId);
-        intent.putExtra(
-                ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS, bottomSheetStrings.dismissButtonStringId);
-        intent.putExtra(ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, noAccountSigninMode);
-        intent.putExtra(ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE, withAccountSigninMode);
-        intent.putExtra(ARGUMENT_HISTORY_OPT_IN_MODE, historyOptInMode);
+        intent.putExtra(ARGUMENT_BOTTOM_SHEET_SIGNIN_CONFIG, config);
         intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
-        if (selectedCoreAccountId != null) {
-            intent.putExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID, selectedCoreAccountId.getId());
-        }
         return intent;
     }
 

@@ -41,8 +41,9 @@ public interface SigninAndHistorySyncActivityLauncher {
     @interface AccessPoint {}
 
     /**
-     * Create {@Intent} for the {@link SigninAndHistorySyncActivity} from an eligible access point,
-     * Show an error if the intent can't be created.
+     * TODO(crbug.com/373334210): Delete this method once all implementations are updated. Create
+     * {@Intent} for the {@link SigninAndHistorySyncActivity} from an eligible access point, Show an
+     * error if the intent can't be created.
      *
      * @param profile the current profile.
      * @param bottomSheetStrings the strings shown in the sign-in bottom sheet.
@@ -56,6 +57,10 @@ public interface SigninAndHistorySyncActivityLauncher {
      * @param selectedCoreAccountId The account that should be displayed in the sign-in bottom
      *     sheet. If null, the default account will be displayed.
      */
+    @Deprecated(
+            since =
+                    "Use the overloaded version accepting BottomSheetSigninAndHistorySyncConfig"
+                            + " instead.")
     @MainThread
     @Nullable
     Intent createBottomSheetSigninIntentOrShowError(
@@ -68,6 +73,22 @@ public interface SigninAndHistorySyncActivityLauncher {
             @HistorySyncConfig.OptInMode int historyOptInMode,
             @AccessPoint int accessPoint,
             @Nullable CoreAccountId selectedCoreAccountId);
+
+    /**
+     * Create {@Intent} for the {@link SigninAndHistorySyncActivity} from an eligible access point,
+     * Show an error if the intent can't be created.
+     *
+     * @param profile the current profile.
+     * @param config The object containing configurations for the sign-in & history sync views.
+     * @param accessPoint The access point from which the sign-in was triggered.
+     */
+    @MainThread
+    @Nullable
+    Intent createBottomSheetSigninIntentOrShowError(
+            Context context,
+            Profile profile,
+            @NonNull BottomSheetSigninAndHistorySyncConfig config,
+            @AccessPoint int accessPoint);
 
     /**
      * Create {@Intent} for the fullscreen flavor of the {@link SigninAndHistorySyncActivity} if

@@ -55,6 +55,7 @@ android_library("java") {
     "//ui/android:ui_utils_java",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncConfig.java",
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmImportSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogCoordinator.java",

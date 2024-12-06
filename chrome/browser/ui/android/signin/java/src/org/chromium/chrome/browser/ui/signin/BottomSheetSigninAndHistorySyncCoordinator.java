@@ -14,7 +14,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
@@ -34,7 +32,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -66,12 +63,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private final OneshotSupplier<Profile> mProfileSupplier;
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-
-    private final AccountPickerBottomSheetStrings mBottomSheetStrings;
-    private final @NoAccountSigninMode int mNoAccountSigninMode;
-    private final @WithAccountSigninMode int mWithAccountSigninMode;
-    private final @HistorySyncConfig.OptInMode int mHistoryOptInMode;
-    private final @Nullable CoreAccountId mCoreAccountId;
+    private final BottomSheetSigninAndHistorySyncConfig mConfig;
 
     private SigninAccountPickerCoordinator mAccountPickerCoordinator;
     private HistorySyncCoordinator mHistorySyncCoordinator;
@@ -150,12 +142,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
             @NonNull OneshotSupplier<Profile> profileSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @NoAccountSigninMode int noAccountSigninMode,
-            @WithAccountSigninMode int withAccountSigninMode,
-            @HistorySyncConfig.OptInMode int historyOptInMode,
-            @SigninAccessPoint int signinAccessPoint,
-            @Nullable CoreAccountId accountId) {
+            @NonNull BottomSheetSigninAndHistorySyncConfig config,
+            @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
         mDelegate = delegate;
@@ -163,12 +151,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         mProfileSupplier = profileSupplier;
         mProfileSupplier.onAvailable(this::onProfileAvailable);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mBottomSheetStrings = bottomSheetStrings;
-        mNoAccountSigninMode = noAccountSigninMode;
-        mWithAccountSigninMode = withAccountSigninMode;
-        mHistoryOptInMode = historyOptInMode;
+        mConfig = config;
         mSigninAccessPoint = signinAccessPoint;
-        mCoreAccountId = accountId;
         mContainerView =
                 (ViewGroup)
                         LayoutInflater.from(mActivity)
@@ -209,7 +193,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             return;
         }
         final boolean isBottomSheetShown = mAccountPickerCoordinator != null;
-        if (!isBottomSheetShown && mNoAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
+        if (!isBottomSheetShown && mConfig.noAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
             onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
         }
     }
@@ -226,7 +210,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             // TODO(crbug.com/41493767): Select added account or sign in once done loading.
         }
         if (mAccountPickerCoordinator == null
-                && mNoAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
+                && mConfig.noAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
             // Show the bottom sheet to sign-in & show the sign-in spinner bottom sheet.
             showSigninBottomSheet();
         }
@@ -363,7 +347,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             return;
         }
 
-        switch (mNoAccountSigninMode) {
+        switch (mConfig.noAccountSigninMode) {
             case NoAccountSigninMode.BOTTOM_SHEET:
                 showSigninBottomSheet();
                 SigninMetricsUtils.logSigninStarted(mSigninAccessPoint);
@@ -384,7 +368,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
         @AccountPickerLaunchMode int accountPickerMode = AccountPickerLaunchMode.DEFAULT;
-        switch (mWithAccountSigninMode) {
+        switch (mConfig.withAccountSigninMode) {
             case WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET:
                 accountPickerMode = AccountPickerLaunchMode.DEFAULT;
                 break;
@@ -400,17 +384,18 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                         this,
                         mDeviceLockActivityLauncher,
                         signinManager,
-                        mBottomSheetStrings,
+                        mConfig.bottomSheetStrings,
                         accountPickerMode,
                         mSigninAccessPoint,
-                        mCoreAccountId);
+                        mConfig.selectedCoreAccountId);
         mDidShowSigninStep = true;
     }
 
     private void maybeShowHistoryOptInDialog() {
         Profile profile = mProfileSupplier.get();
         assert profile != null;
-        if (!SigninAndHistorySyncCoordinator.shouldShowHistorySync(profile, mHistoryOptInMode)) {
+        if (!SigninAndHistorySyncCoordinator.shouldShowHistorySync(
+                profile, mConfig.historyOptInMode)) {
             HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
             historySyncHelper.recordHistorySyncNotShown(mSigninAccessPoint);
             // TODO(crbug.com/376469696): Differentiate the failure & completion case here.
@@ -470,7 +455,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private void createHistorySyncCoordinator(Profile profile) {
         assert mHistorySyncCoordinator == null;
         boolean shouldSignOutOnDecline =
-                mDidShowSigninStep && mHistoryOptInMode == HistorySyncConfig.OptInMode.REQUIRED;
+                mDidShowSigninStep
+                        && mConfig.historyOptInMode == HistorySyncConfig.OptInMode.REQUIRED;
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
                         mActivity,
