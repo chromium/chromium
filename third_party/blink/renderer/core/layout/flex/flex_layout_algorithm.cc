@@ -942,7 +942,6 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
       FlexBreakTokenData::kNotBreakBeforeRow;
   ClearCollectionScope<HeapVector<NGFlexLine>> scope(&flex_line_outputs);
 
-  bool use_empty_line_block_size;
   if (IsBreakInside(GetBreakToken())) {
     const auto* flex_data =
         To<FlexBreakTokenData>(GetBreakToken()->TokenData());
@@ -951,15 +950,10 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
     row_break_between_outputs = flex_data->row_break_between;
     break_before_row = flex_data->break_before_row;
     oof_children = flex_data->oof_children;
-
-    use_empty_line_block_size =
-        flex_line_outputs.empty() && Node().HasLineIfEmpty();
   } else {
     PlaceFlexItems(&flex_line_outputs, &oof_children);
-
-    use_empty_line_block_size =
-        flex_line_outputs.empty() && Node().HasLineIfEmpty();
-    CalculateTotalIntrinsicBlockSize(use_empty_line_block_size);
+    total_intrinsic_block_size_ =
+        CalculateTotalIntrinsicBlockSize(flex_line_outputs);
   }
 
   total_block_size_ = ComputeBlockSizeForFragment(
@@ -983,6 +977,8 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   intrinsic_block_size_ = BorderScrollbarPadding().block_start;
   LayoutUnit block_size;
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
+    const bool use_empty_line_block_size =
+        flex_line_outputs.empty() && Node().HasLineIfEmpty();
     if (use_empty_line_block_size) {
       intrinsic_block_size_ =
           (total_intrinsic_block_size_ - BorderScrollbarPadding().block_end -
@@ -1157,24 +1153,39 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     line->ComputeLineItemsPosition();
     flex_line_outputs->back().main_axis_free_space =
         line->remaining_free_space_;
+    flex_line_outputs->back().sum_hypothetical_main_size =
+        line->sum_hypothetical_main_size_;
     flex_line_outputs->back().line_cross_size = line->cross_axis_extent_;
     flex_line_outputs->back().major_baseline = line->max_major_ascent_;
     flex_line_outputs->back().minor_baseline = line->max_minor_ascent_;
   }
 }
 
-void FlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
-    bool use_empty_line_block_size) {
-  total_intrinsic_block_size_ = BorderScrollbarPadding().block_start;
+LayoutUnit FlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
+    const HeapVector<NGFlexLine>& flex_lines) {
+  LayoutUnit size = BorderScrollbarPadding().BlockSum();
 
-  if (use_empty_line_block_size)
-    total_intrinsic_block_size_ += Node().EmptyLineBlockSize(GetBreakToken());
-  else
-    total_intrinsic_block_size_ += algorithm_.IntrinsicContentBlockSize();
+  if (!flex_lines.empty()) {
+    if (is_column_) {
+      // Take the largest hypothetical main-size.
+      LayoutUnit max_size;
+      for (const auto& flex_line : flex_lines) {
+        max_size = std::max(max_size, flex_line.sum_hypothetical_main_size);
+      }
+      size += max_size;
+    } else {
+      // Add all the line cross-sizes, and the gaps between them.
+      for (const auto& flex_line : flex_lines) {
+        size += flex_line.line_cross_size;
+      }
+      size += (flex_lines.size() - 1) * algorithm_.gap_between_lines_;
+    }
+  } else if (Node().HasLineIfEmpty()) {
+    size += Node().EmptyLineBlockSize(GetBreakToken());
+  }
 
-  total_intrinsic_block_size_ = ClampIntrinsicBlockSize(
-      GetConstraintSpace(), Node(), GetBreakToken(), BorderScrollbarPadding(),
-      total_intrinsic_block_size_ + BorderScrollbarPadding().block_end);
+  return ClampIntrinsicBlockSize(GetConstraintSpace(), Node(), GetBreakToken(),
+                                 BorderScrollbarPadding(), size);
 }
 
 void FlexLayoutAlgorithm::ApplyReversals(

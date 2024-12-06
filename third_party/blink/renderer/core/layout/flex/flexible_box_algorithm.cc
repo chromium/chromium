@@ -717,25 +717,6 @@ bool FlexibleBoxAlgorithm::ShouldApplyMinSizeAutoForChild(
   return min.HasAuto();
 }
 
-LayoutUnit FlexibleBoxAlgorithm::IntrinsicContentBlockSize() const {
-  if (flex_lines_.empty())
-    return LayoutUnit();
-
-  if (IsColumnFlow()) {
-    LayoutUnit max_size;
-    for (const auto& line : flex_lines_) {
-      max_size = std::max(max_size, line.sum_hypothetical_main_size_);
-    }
-    return max_size;
-  }
-
-  LayoutUnit size;
-  for (const auto& line : flex_lines_) {
-    size += line.cross_axis_extent_;
-  }
-  return size + (flex_lines_.size() - 1) * gap_between_lines_;
-}
-
 PhysicalDirection FlexibleBoxAlgorithm::MainAxisDirection() const {
   const WritingDirectionMode writing_direction = style_->GetWritingDirection();
   return style_->ResolvedIsColumnFlexDirection()

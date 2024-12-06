@@ -328,11 +328,8 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   const ComputedStyle* Style() const { return style_.Get(); }
   const ComputedStyle& StyleRef() const { return *style_; }
 
-  const Vector<FlexLine>& FlexLines() const { return flex_lines_; }
-  Vector<FlexLine>& FlexLines() { return flex_lines_; }
-
-  // Computes the next flex line, stores it in FlexLines(), and returns a
-  // pointer to it. Returns nullptr if there are no more lines.
+  // Computes the next flex line, and returns a pointer to it.
+  // Returns nullptr if there are no more lines.
   FlexLine* ComputeNextFlexLine();
 
   bool IsHorizontalFlow() const;
@@ -351,15 +348,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   PhysicalDirection CrossAxisDirection() const;
 
   bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
-
-  // Returns the intrinsic size of this box in the block direction. Call this
-  // after all flex lines have been created and processed (ie. after the
-  // ComputeLineItemsPosition stage).
-  // For a column flexbox, this will return the max across all flex lines of
-  // the length of the line, minus any added spacing due to justification.
-  // For row flexboxes, this returns the bottom (block axis) of the last flex
-  // line. In both cases, border/padding is not included.
-  LayoutUnit IntrinsicContentBlockSize() const;
 
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
   static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);
