@@ -53,6 +53,7 @@
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
@@ -722,7 +723,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     // Shutdown the selection widget so its ownership is not passed as well.
     base::ranges::for_each(
         birch_bar_view_->chips(), [](BirchChipButtonBase* chip) {
-          if (auto* chip_button = views::AsViewClass<BirchChipButton>(chip)) {
+          if (auto* chip_button = views::AsViewClass<CoralChipButton>(chip)) {
             chip_button->ShutdownSelectionWidget();
           }
         });

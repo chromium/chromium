@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/birch/birch_chip_button.h"
 
-#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -13,21 +12,17 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/toast_manager_impl.h"
-#include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/overview/birch/birch_animation_utils.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_util.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
-#include "ash/wm/overview/birch/resources/grit/coral_resources.h"
-#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -53,7 +48,6 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -91,8 +85,6 @@ constexpr TypographyToken kTitleFont = TypographyToken::kCrosButton1;
 constexpr ui::ColorId kTitleColorId = cros_tokens::kCrosSysOnSurface;
 constexpr TypographyToken kSubtitleFont = TypographyToken::kCrosAnnotation1;
 constexpr ui::ColorId kSubtitleColorId = cros_tokens::kCrosSysOnSurfaceVariant;
-
-constexpr gfx::Size kLoadingAnimationSize = gfx::Size(100, 20);
 
 constexpr char kMaxSavedGroupsToastId[] = "coral_max_saved_groups_toast";
 
@@ -262,8 +254,8 @@ BirchChipButton::BirchChipButton()
               .SetPreferredSize(
                   gfx::Size(kParentIconViewSize, kParentIconViewSize))
               .SetProperty(views::kMarginsKey, kIconMargins),
+          // Titles container.
           views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&titles_container_)
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification(
                                views::MinimumFlexSizeRule::kScaleToZero,
@@ -293,79 +285,13 @@ BirchChipButton::BirchChipButton()
 
 BirchChipButton::~BirchChipButton() = default;
 
-void BirchChipButton::OnSelectionWidgetVisibilityChanged() {
-  CHECK(tab_app_selection_widget_);
-  UpdateRoundedCorners(tab_app_selection_widget_->IsVisible());
-
-  CHECK(addon_view_);
-  views::AsViewClass<IconButton>(addon_view_)
-      ->SetTooltipText(l10n_util::GetStringUTF16(
-          tab_app_selection_widget_->IsVisible()
-              ? IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN
-              : IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
-}
-
-void BirchChipButton::ShutdownSelectionWidget() {
-  tab_app_selection_widget_.reset();
-}
-
-void BirchChipButton::ReloadIcon() {
-  item_->LoadIcon(base::BindOnce(&BirchChipButton::SetIconImage,
-                                 weak_factory_.GetWeakPtr()));
-}
-
-void BirchChipButton::UpdateTitle() {
+void BirchChipButton::Init(BirchItem* item) {
+  item_ = item;
   title_->SetText(item_->title());
   subtitle_->SetText(item_->subtitle());
 
-  if (item_->GetType() != BirchItemType::kCoral) {
-    return;
-  }
-
-  // Coral chip gets the real title from the group.
-  auto* coral_provider = BirchCoralProvider::Get();
-  const std::optional<std::string>& group_title =
-      coral_provider
-          ? coral_provider
-                ->GetGroupById(static_cast<BirchCoralItem*>(item_)->group_id())
-                ->title
-          : std::string();
-  if (group_title) {
-    // If the title is not empty, reset the `title_` with the real title.
-    if (!group_title->empty()) {
-      title_->SetText(base::UTF8ToUTF16(*group_title));
-    }
-    // Show title and delete the loading animation.
-    title_->SetVisible(true);
-    if (title_loading_animated_image_) {
-      title_loading_animated_image_->Stop();
-      titles_container_->RemoveChildViewT(
-          std::exchange(title_loading_animated_image_, nullptr));
-    }
-  } else {
-    // If the title is null, show the animation to wait for title loading.
-    title_->SetVisible(false);
-
-    BuildTitleLoadingAnimation();
-    title_loading_animated_image_->Play(
-        birch_animation_utils::GetLottiePlaybackConfig(
-            *title_loading_animated_image_->animated_image()->skottie(),
-            IDR_CORAL_LOADING_TITLE_ANIMATION));
-  }
-}
-
-void BirchChipButton::Init(BirchItem* item) {
-  item_ = item;
-  UpdateTitle();
-  if (item_->GetType() == BirchItemType::kCoral) {
-    SetCallback(base::BindRepeating(
-        &BirchCoralItem::LaunchGroup,
-        base::Unretained(static_cast<BirchCoralItem*>(item_)),
-        base::Unretained(this)));
-  } else {
-    SetCallback(base::BindRepeating(&BirchItem::PerformAction,
-                                    base::Unretained(item_)));
-  }
+  SetCallback(
+      base::BindRepeating(&BirchItem::PerformAction, base::Unretained(item_)));
 
   const BirchAddonType addon_type = item_->GetAddonType();
   // Add add-ons according to the add-on type.
@@ -379,18 +305,9 @@ void BirchChipButton::Init(BirchItem* item) {
       SetAddon(std::move(button));
       break;
     }
-    case BirchAddonType::kCoralButton: {
-      // Coral item works different since it triggers a new overview view.
-      base::RepeatingClosure callback = base::BindRepeating(
-          &BirchChipButton::OnCoralAddonClicked, base::Unretained(this));
-      // Coral chip's addon button contains no text.
-      auto button = birch_bar_util::CreateCoralAddonButton(
-          std::move(callback), vector_icons::kCaretUpIcon);
-      button->SetTooltipText(
-          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
-      SetAddon(std::move(button));
+    case BirchAddonType::kCoralButton:
+      // Coral chip addon is implemented in `CoralChipButton`.
       break;
-    }
     case BirchAddonType::kWeatherTempLabelC:
     case BirchAddonType::kWeatherTempLabelF:
       SetAddon(birch_bar_util::CreateWeatherTemperatureView(
@@ -516,39 +433,6 @@ void BirchChipButton::SetIconImage(PrimaryIconType primary_icon_type,
     icon_parent_view_->AddChildView(
         CreateSecondaryImageView(secondary_icon_type));
   }
-}
-
-void BirchChipButton::OnCoralAddonClicked() {
-  CHECK_EQ(BirchItemType::kCoral, item_->GetType());
-
-  if (!tab_app_selection_widget_) {
-    tab_app_selection_widget_ = std::make_unique<TabAppSelectionHost>(this);
-    tab_app_selection_widget_->Show();
-    return;
-  }
-
-  if (!tab_app_selection_widget_->IsVisible()) {
-    tab_app_selection_widget_->Show();
-  } else {
-    tab_app_selection_widget_->SlideOut();
-  }
-}
-
-void BirchChipButton::BuildTitleLoadingAnimation() {
-  // Build `title_loading_animated_image_` and insert into the
-  // front of `titles_container_`.
-  std::unique_ptr<views::AnimatedImageView> title_loading_animated_image =
-      views::Builder<views::AnimatedImageView>()
-          .SetAnimatedImage(birch_animation_utils::GetLottieAnimationData(
-              IDR_CORAL_LOADING_TITLE_ANIMATION))
-          .SetImageSize(kLoadingAnimationSize)
-          .SetVisible(true)
-          .SetHorizontalAlignment(views::ImageViewBase::Alignment::kLeading)
-          .Build();
-  // Setup rounder corners for `title_loading_animated_image_`.
-  title_loading_animated_image_ =
-      titles_container_->AddChildViewAt(std::move(title_loading_animated_image),
-                                        /*index=*/0);
 }
 
 BEGIN_METADATA(BirchChipButton)

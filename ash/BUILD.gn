@@ -3012,6 +3012,8 @@ component("ash") {
     "wm/overview/birch/birch_chip_loader_view.h",
     "wm/overview/birch/birch_privacy_nudge_controller.cc",
     "wm/overview/birch/birch_privacy_nudge_controller.h",
+    "wm/overview/birch/coral_chip_button.cc",
+    "wm/overview/birch/coral_chip_button.h",
     "wm/overview/birch/tab_app_selection_host.cc",
     "wm/overview/birch/tab_app_selection_host.h",
     "wm/overview/birch/tab_app_selection_view.cc",

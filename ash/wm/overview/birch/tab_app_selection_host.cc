@@ -9,8 +9,8 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
-#include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/window_properties.h"
 #include "base/metrics/histogram_functions.h"
@@ -72,7 +72,7 @@ class TabAppSelectionHost::SelectionHostHider : public ui::EventHandler {
   const raw_ptr<TabAppSelectionHost> owner_;
 };
 
-TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
+TabAppSelectionHost::TabAppSelectionHost(CoralChipButton* coral_chip)
     : hider_(std::make_unique<SelectionHostHider>(this)),
       owner_(coral_chip),
       scoped_a11y_overrider_(

@@ -16,6 +16,7 @@
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -340,13 +341,12 @@ void BirchBarController::OnCoralEntityRemoved(const base::Token& group_id,
                                               std::string_view identifier) {
   for (auto& bar_view : bar_views_) {
     for (const auto& chip : bar_view->chips()) {
-      auto* coral_chip = views::AsViewClass<BirchChipButton>(chip);
+      auto* coral_chip = views::AsViewClass<CoralChipButton>(chip);
       if (!coral_chip) {
         continue;
       }
       const auto* item = chip->GetItem();
-      if (item->GetType() == BirchItemType::kCoral &&
-          static_cast<const BirchCoralItem*>(item)->group_id() == group_id) {
+      if (static_cast<const BirchCoralItem*>(item)->group_id() == group_id) {
         if (auto* tab_app_selector_widget =
                 coral_chip->tab_app_selection_widget()) {
           tab_app_selector_widget->RemoveItem(identifier);
@@ -359,19 +359,18 @@ void BirchBarController::OnCoralEntityRemoved(const base::Token& group_id,
 }
 
 void BirchBarController::OnCoralGroupTitleUpdated(const base::Token& group_id) {
-  auto iter =
-      std::find_if(items_.begin(), items_.end(), [&group_id](const auto& item) {
-        if (item->GetType() != BirchItemType::kCoral) {
-          return false;
-        }
-        return static_cast<BirchCoralItem*>(item.get())->group_id() == group_id;
-      });
-  if (iter == items_.end()) {
-    return;
-  }
+  for (auto& bar_view : bar_views_) {
+    for (const auto& chip : bar_view->chips()) {
+      auto* coral_chip = views::AsViewClass<CoralChipButton>(chip);
+      if (!coral_chip) {
+        continue;
+      }
 
-  for (auto bar_view : bar_views_) {
-    bar_view->UpdateChipTitle(iter->get());
+      if (static_cast<const BirchCoralItem*>(coral_chip->GetItem())
+              ->group_id() == group_id) {
+        coral_chip->UpdateTitle();
+      }
+    }
   }
 }
 

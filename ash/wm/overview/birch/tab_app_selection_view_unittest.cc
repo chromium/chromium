@@ -12,7 +12,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/coral/coral_test_util.h"
-#include "ash/wm/overview/birch/birch_chip_button.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/overview/overview_utils.h"

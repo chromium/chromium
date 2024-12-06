@@ -15,8 +15,6 @@
 #include "ui/views/metadata/view_factory.h"
 
 namespace views {
-class AnimatedImageView;
-class BoxLayoutView;
 class FlexLayout;
 class Label;
 }  // namespace views
@@ -25,7 +23,6 @@ namespace ash {
 
 class BirchItem;
 class PillButton;
-class TabAppSelectionHost;
 
 // A compact view of an app, displaying its icon, name, a brief description, and
 // an optional call to action.
@@ -42,22 +39,6 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   views::View* addon_view() { return addon_view_; }
   const views::View* addon_view() const { return addon_view_; }
 
-  TabAppSelectionHost* tab_app_selection_widget() {
-    return tab_app_selection_widget_.get();
-  }
-
-  void OnSelectionWidgetVisibilityChanged();
-
-  void ShutdownSelectionWidget();
-
-  // Called when the coral selection view has an item removed, then we need to
-  // update the `CoralGroupedIconImage`.
-  void ReloadIcon();
-
-  // Called during `Init()` and for a coral chip, when the title gets updated.
-  // Handles the title loading animation for a coral chip.
-  void UpdateTitle();
-
   // BirchChipButtonBase:
   void Init(BirchItem* item) override;
   const BirchItem* GetItem() const override;
@@ -67,27 +48,20 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
-  FRIEND_TEST_ALL_PREFIXES(BirchBarTest, UpdateLostMediaChip);
-  FRIEND_TEST_ALL_PREFIXES(CoralBrowserTest, AsyncGroupTitle);
-  FRIEND_TEST_ALL_PREFIXES(CoralBrowserTest, GroupTitleLoadingFail);
-
-  class ChipMenuController;
+ protected:
+  views::Label* title() const { return title_; }
 
   void SetAddon(std::unique_ptr<views::View> addon_view);
 
-  // Sets the item icon.
   void SetIconImage(PrimaryIconType primary_icon_type,
                     SecondaryIconType secondary_icon_type,
                     const ui::ImageModel& icon_image);
 
-  // Callback for the coral addon button. Should only be clicked for a coral
-  // item.
-  void OnCoralAddonClicked();
+ private:
+  FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
+  FRIEND_TEST_ALL_PREFIXES(BirchBarTest, UpdateLostMediaChip);
 
-  // Builds `title_loading_animated_image_`.
-  void BuildTitleLoadingAnimation();
+  class ChipMenuController;
 
   // The chip context menu controller.
   std::unique_ptr<ChipMenuController> chip_menu_controller_;
@@ -98,15 +72,9 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   // The components owned by the chip view.
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
   raw_ptr<views::View> icon_parent_view_ = nullptr;
-  raw_ptr<views::BoxLayoutView> titles_container_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
-  raw_ptr<views::AnimatedImageView> title_loading_animated_image_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
   raw_ptr<views::View> addon_view_ = nullptr;
-
-  // The selection menu to select tabs and apps for coral launching. Created
-  // once the coral add on button is clicked.
-  std::unique_ptr<TabAppSelectionHost> tab_app_selection_widget_;
 
   base::WeakPtrFactory<BirchChipButton> weak_factory_{this};
 };

@@ -8,14 +8,15 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-class BirchChipButton;
+
+class CoralChipButton;
 class ScopedA11yOverrideWindowSetter;
 
 // The host which contains the TabAppSelectionView. This widget slides in when
 // shown.
 class TabAppSelectionHost : public views::Widget {
  public:
-  explicit TabAppSelectionHost(BirchChipButton* coral_chip);
+  explicit TabAppSelectionHost(CoralChipButton* coral_chip);
   TabAppSelectionHost(const TabAppSelectionHost&) = delete;
   TabAppSelectionHost& operator=(const TabAppSelectionHost&) = delete;
   ~TabAppSelectionHost() override;
@@ -35,7 +36,7 @@ class TabAppSelectionHost : public views::Widget {
   // views::Widget:
   void OnNativeWidgetVisibilityChanged(bool visible) override;
 
-  const BirchChipButton* owner_for_testing() const { return owner_; }
+  const CoralChipButton* owner_for_testing() const { return owner_; }
 
  private:
   class SelectionHostHider;
@@ -43,7 +44,7 @@ class TabAppSelectionHost : public views::Widget {
   gfx::Rect GetDesiredBoundsInScreen();
 
   std::unique_ptr<SelectionHostHider> hider_;
-  const raw_ptr<BirchChipButton> owner_;
+  const raw_ptr<CoralChipButton> owner_;
 
   // This widget isn't activatable so this is a way to force accessibility
   // features to focus on the underlying window.
