@@ -49,6 +49,7 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
   void CreateVisibilitySelectionContainer();
   void CreateYourDevicesRow();
   void CreateContactsRow();
+  void CreateHiddenRow();
   void CreateVisibilityRow(HoverHighlightView* visibility_row,
                            const gfx::VectorIcon& vector_icon,
                            const std::u16string& label,
@@ -59,6 +60,7 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
   void OnQuickShareToggleClicked();
   void OnYourDevicesSelected();
   void OnContactsSelected();
+  void OnHiddenSelected();
   void OnEveryoneToggleClicked();
 
   raw_ptr<views::Button> settings_button_ = nullptr;
@@ -70,6 +72,7 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
   raw_ptr<RoundedContainer> visibility_selection_container_ = nullptr;
   raw_ptr<HoverHighlightView> your_devices_row_ = nullptr;
   raw_ptr<HoverHighlightView> contacts_row_ = nullptr;
+  raw_ptr<HoverHighlightView> hidden_row_ = nullptr;
   raw_ptr<HoverHighlightView> everyone_row_ = nullptr;
   raw_ptr<Switch> everyone_toggle_ = nullptr;
 

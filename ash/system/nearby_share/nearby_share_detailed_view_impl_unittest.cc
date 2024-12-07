@@ -53,6 +53,11 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
     return detailed_view_->contacts_row_;
   }
 
+  HoverHighlightView* GetHiddenRow() const {
+    CHECK(detailed_view_);
+    return detailed_view_->hidden_row_;
+  }
+
   Switch* GetEveryoneToggle() const {
     CHECK(detailed_view_);
     return detailed_view_->everyone_toggle_;
@@ -154,6 +159,20 @@ TEST_F(NearbyShareDetailedViewImplTest, QuickShareV2_ToggleContacts) {
   HoverHighlightView* contacts_row = GetContactsRow();
   LeftClickOn(contacts_row);
   EXPECT_EQ(::nearby_share::mojom::Visibility::kAllContacts,
+            test_delegate_->GetVisibility());
+}
+
+TEST_F(NearbyShareDetailedViewImplTest, QuickShareV2_ToggleHidden) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->SetVisibility(
+      ::nearby_share::mojom::Visibility::kYourDevices);
+  SetUpDetailedView();
+  EXPECT_EQ(::nearby_share::mojom::Visibility::kYourDevices,
+            test_delegate_->GetVisibility());
+
+  HoverHighlightView* hidden_row = GetHiddenRow();
+  LeftClickOn(hidden_row);
+  EXPECT_EQ(::nearby_share::mojom::Visibility::kNoOne,
             test_delegate_->GetVisibility());
 }
 

@@ -81,6 +81,11 @@ void NearbyShareDetailedViewImpl::HandleViewClicked(views::View* view) {
     OnContactsSelected();
     return;
   }
+
+  if (view == hidden_row_) {
+    OnHiddenSelected();
+    return;
+  }
 }
 
 void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
@@ -133,6 +138,7 @@ void NearbyShareDetailedViewImpl::CreateVisibilitySelectionContainer() {
 
   CreateYourDevicesRow();
   CreateContactsRow();
+  CreateHiddenRow();
   CreateEveryoneRow();
 }
 
@@ -142,7 +148,6 @@ void NearbyShareDetailedViewImpl::CreateYourDevicesRow() {
 
   your_devices_row_ = visibility_selection_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
-
   // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
   // strings.
   CreateVisibilityRow(your_devices_row_,
@@ -157,12 +162,24 @@ void NearbyShareDetailedViewImpl::CreateContactsRow() {
 
   contacts_row_ = visibility_selection_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
-
   // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
   // strings.
   CreateVisibilityRow(contacts_row_, kQuickSettingsQuickShareContactsIcon,
                       /*label=*/u"Contacts",
                       /*sublabel=*/u"Only your contacts with a Google Account");
+}
+
+void NearbyShareDetailedViewImpl::CreateHiddenRow() {
+  DCHECK(!hidden_row_);
+  DCHECK(visibility_selection_container_);
+
+  hidden_row_ = visibility_selection_container_->AddChildView(
+      std::make_unique<HoverHighlightView>(/*listener=*/this));
+  // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
+  // strings.
+  CreateVisibilityRow(hidden_row_, kQuickSettingsQuickShareHiddenIcon,
+                      /*label=*/u"Hidden",
+                      /*sublabel=*/u"No one can share with you");
 }
 
 void NearbyShareDetailedViewImpl::CreateVisibilityRow(
@@ -171,6 +188,8 @@ void NearbyShareDetailedViewImpl::CreateVisibilityRow(
     const std::u16string& label,
     const std::u16string& sublabel) {
   DCHECK(visibility_row);
+  DCHECK(visibility_selection_container_);
+
   visibility_row->AddIconAndLabel(
       ui::ImageModel::FromVectorIcon(
           vector_icon, /*color_id=*/cros_tokens::kCrosSysOnSurface),
@@ -242,6 +261,12 @@ void NearbyShareDetailedViewImpl::OnContactsSelected() {
   CHECK(nearby_share_delegate_);
   nearby_share_delegate_->SetVisibility(
       ::nearby_share::mojom::Visibility::kAllContacts);
+}
+
+void NearbyShareDetailedViewImpl::OnHiddenSelected() {
+  CHECK(nearby_share_delegate_);
+  nearby_share_delegate_->SetVisibility(
+      ::nearby_share::mojom::Visibility::kNoOne);
 }
 
 void NearbyShareDetailedViewImpl::OnEveryoneToggleClicked() {
