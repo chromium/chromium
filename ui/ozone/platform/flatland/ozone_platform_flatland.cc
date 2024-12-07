@@ -40,6 +40,7 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
+#include "ui/ozone/public/stub_input_controller.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/fuchsia/view_ref_pair.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -161,7 +162,7 @@ class OzonePlatformFlatland : public OzonePlatform,
 
     window_manager_ = std::make_unique<FlatlandWindowManager>();
     overlay_manager_ = std::make_unique<StubOverlayManager>();
-    input_controller_ = CreateStubInputController();
+    input_controller_ = std::make_unique<StubInputController>();
     cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 
     flatland_gpu_host_ =

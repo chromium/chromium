@@ -55,6 +55,7 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_menu_utils.h"
+#include "ui/ozone/public/stub_input_controller.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -296,7 +297,7 @@ class OzonePlatformWayland : public OzonePlatform,
 #else
     cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 #endif
-    input_controller_ = CreateStubInputController();
+    input_controller_ = std::make_unique<StubInputController>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
 
     supported_buffer_formats_ =

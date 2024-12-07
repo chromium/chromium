@@ -47,6 +47,7 @@
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/stub_input_controller.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -248,7 +249,7 @@ class OzonePlatformX11 : public OzonePlatform,
     InitializeCommon(params);
     CreatePlatformEventSource();
     overlay_manager_ = std::make_unique<StubOverlayManager>();
-    input_controller_ = CreateStubInputController();
+    input_controller_ = std::make_unique<StubInputController>();
     clipboard_ = std::make_unique<X11ClipboardOzone>();
     cursor_factory_ = std::make_unique<X11CursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());

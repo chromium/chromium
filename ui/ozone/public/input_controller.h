@@ -218,10 +218,6 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual void DisableKeyboardImposterCheck() = 0;
 };
 
-// Create an input controller that does nothing.
-COMPONENT_EXPORT(OZONE_BASE)
-std::unique_ptr<InputController> CreateStubInputController();
-
 }  // namespace ui
 
 #endif  // UI_OZONE_PUBLIC_INPUT_CONTROLLER_H_
