@@ -603,6 +603,27 @@ HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTestWithExposeGC,
                              GetDOMCountersForLeakDetection,
                              "sanity/get-dom-counters-for-leak-detection.js")
 
+class HeadlessProtocolBrowserTestSitePerProcess
+    : public HeadlessProtocolBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool ShouldEnableSitePerProcess() override { return GetParam(); }
+
+  base::Value::Dict GetPageUrlExtraParams() override {
+    base::Value::Dict params;
+    params.Set("sitePerProcessEnabled", ShouldEnableSitePerProcess());
+    return params;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         HeadlessProtocolBrowserTestSitePerProcess,
+                         ::testing::Bool());
+
+HEADLESS_PROTOCOL_TEST_P(HeadlessProtocolBrowserTestSitePerProcess,
+                         SitePerProcess,
+                         "sanity/site-per-process.js")
+
 #define HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(              \
     TEST_NAME, SCRIPT_NAME, COMMAND_LINE_EXTRAS)                      \
                                                                       \
