@@ -98,8 +98,6 @@ chromium-metrics-reviews@google.com.
       summary="GetGroupedMatchingLoginsAsync()"/>
   <variant name="GetLoginsAsync" summary="GetLoginsAsync()"/>
   <variant name="RemoveLoginAsync" summary="RemoveLoginAsync()"/>
-  <variant name="RemoveLoginsByURLAndTimeAsync"
-      summary="RemoveLoginsByURLAndTimeAsync()"/>
   <variant name="RemoveLoginsCreatedBetweenAsync"
       summary="RemoveLoginsCreatedBetweenAsync()"/>
   <variant name="UpdateLoginAsync" summary="UpdateLoginAsync()"/>

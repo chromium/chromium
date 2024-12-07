@@ -241,22 +241,6 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginAsync(
                       std::move(callback));
 }
 
-void PasswordStoreAndroidAccountBackend::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service_)) {
-    ReplyWithEmptyList<PasswordStoreChangeList>(std::move(callback));
-    return;
-  }
-  RemoveLoginsByURLAndTimeInternal(GetSyncingAccount(sync_service_), url_filter,
-                                   delete_begin, delete_end,
-                                   std::move(callback));
-}
-
 void PasswordStoreAndroidAccountBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,

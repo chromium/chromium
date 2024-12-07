@@ -68,7 +68,10 @@ enum class PasswordStoreOperation {
   // kRemoveLoginForAccount = 6,
 
   kRemoveLoginAsync = 7,
-  kRemoveLoginsByURLAndTimeAsync = 8,
+
+  // Obsolete
+  // kRemoveLoginsByURLAndTimeAsync = 8,
+
   kRemoveLoginsCreatedBetweenAsync = 9,
   kDisableAutoSignInForOriginsAsync = 10,
   // Deprecated
@@ -138,12 +141,6 @@ class PasswordStoreAndroidBackend
   void GetGroupedMatchingLoginsInternal(std::string account,
                                         const PasswordFormDigest& form_digest,
                                         LoginsOrErrorReply callback);
-  void RemoveLoginsByURLAndTimeInternal(
-      std::string account,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      PasswordChangesOrErrorReply callback);
   void RemoveLoginsCreatedBetweenInternal(std::string account,
                                           base::Time delete_begin,
                                           base::Time delete_end,

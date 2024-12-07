@@ -138,15 +138,6 @@ class PasswordStoreBackend {
   virtual void RemoveLoginAsync(const base::Location& location,
                                 const PasswordForm& form,
                                 PasswordChangesOrErrorReply callback) = 0;
-  // TODO(crbug.com/327164204): We don't support clear password by |url_filter|
-  // anymore, obsolete and pending remove.
-  virtual void RemoveLoginsByURLAndTimeAsync(
-      const base::Location& location,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceCallback<void(bool)> sync_completion,
-      PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginsCreatedBetweenAsync(
       const base::Location& location,
       base::Time delete_begin,
