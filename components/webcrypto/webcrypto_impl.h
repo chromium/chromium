@@ -114,8 +114,7 @@ class WebCryptoImpl : public blink::WebCrypto {
                               blink::WebCryptoKeyType type,
                               bool extractable,
                               blink::WebCryptoKeyUsageMask usages,
-                              const unsigned char* key_data,
-                              unsigned key_data_size,
+                              base::span<const unsigned char> key_data,
                               blink::WebCryptoKey& key) override;
 
   bool SerializeKeyForClone(const blink::WebCryptoKey& key,
