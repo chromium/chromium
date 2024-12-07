@@ -81,7 +81,9 @@ void SystemMetricsSampler::OnStop(const StopArgs&) {
 SystemMetricsSampler::SystemSampler::SystemSampler(
     base::TimeDelta sampling_interval)
     : cpu_probe_{system_cpu::CpuProbe::Create()} {
-  cpu_probe_->StartSampling();
+  if (cpu_probe_) {
+    cpu_probe_->StartSampling();
+  }
   sample_timer_.Start(FROM_HERE, sampling_interval, this,
                       &SystemSampler::SampleSystemMetrics);
 }
@@ -89,8 +91,10 @@ SystemMetricsSampler::SystemSampler::SystemSampler(
 SystemMetricsSampler::SystemSampler::~SystemSampler() = default;
 
 void SystemMetricsSampler::SystemSampler::SampleSystemMetrics() {
-  cpu_probe_->RequestSample(
-      base::BindOnce(&SystemSampler::OnCpuProbeResult, base::Unretained(this)));
+  if (cpu_probe_) {
+    cpu_probe_->RequestSample(base::BindOnce(&SystemSampler::OnCpuProbeResult,
+                                             base::Unretained(this)));
+  }
   std::optional<base::CpuThroughputEstimationResult> cpu_throughput =
       base::EstimateCpuThroughput();
   if (cpu_throughput) {
