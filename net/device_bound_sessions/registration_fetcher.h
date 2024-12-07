@@ -37,11 +37,9 @@ class RegistrationRequestParam;
 class NET_EXPORT RegistrationFetcher {
  public:
   struct NET_EXPORT RegistrationCompleteParams {
-    RegistrationCompleteParams(
-        SessionParams params,
-        unexportable_keys::UnexportableKeyId key_id,
-        const GURL& url,
-        std::optional<std::string> referral_session_identifier);
+    RegistrationCompleteParams(SessionParams params,
+                               unexportable_keys::UnexportableKeyId key_id,
+                               const GURL& url);
     RegistrationCompleteParams(RegistrationCompleteParams&& other) noexcept;
     RegistrationCompleteParams& operator=(
         RegistrationCompleteParams&& other) noexcept;
@@ -51,11 +49,9 @@ class NET_EXPORT RegistrationFetcher {
     SessionParams params;
     unexportable_keys::UnexportableKeyId key_id;
     GURL url;
-    // The session identifier which initiated the registration request.
-    // It is `std::nullopt` for first time registration.
-    std::optional<std::string> referral_session_identifier;
   };
 
+  // Returning std::nullopt indicates that the fetch failed.
   using RegistrationCompleteCallback =
       base::OnceCallback<void(std::optional<RegistrationCompleteParams>)>;
 

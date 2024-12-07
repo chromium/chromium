@@ -30,6 +30,22 @@ void NotifySessionAccess(SessionService::OnAccessCallback callback,
 
 }  // namespace
 
+DeferredURLRequest::DeferredURLRequest(
+    const URLRequest* request,
+    SessionService::RefreshCompleteCallback restart_callback,
+    SessionService::RefreshCompleteCallback continue_callback)
+    : request(request),
+      restart_callback(std::move(restart_callback)),
+      continue_callback(std::move(continue_callback)) {}
+
+DeferredURLRequest::DeferredURLRequest(DeferredURLRequest&& other) noexcept =
+    default;
+
+DeferredURLRequest& DeferredURLRequest::operator=(
+    DeferredURLRequest&& other) noexcept = default;
+
+DeferredURLRequest::~DeferredURLRequest() = default;
+
 SessionServiceImpl::SessionServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     const URLRequestContext* request_context,
@@ -91,11 +107,6 @@ void SessionServiceImpl::OnRegistrationComplete(
   const SchemefulSite site(url::Origin::Create(params->url));
   NotifySessionAccess(on_access_callback, site, *session);
 
-  // Clear the existing session which initiated the registration.
-  if (params->referral_session_identifier) {
-    DeleteSession(site,
-                  Session::Id(std::move(*params->referral_session_identifier)));
-  }
   AddSession(site, std::move(session));
 }
 
@@ -131,8 +142,8 @@ std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
   return std::nullopt;
 }
 
-// TODO(kristianm): Actually send the refresh request, for now continue
-// with sending the deferred request right away.
+// Actually send the refresh request, for now continue with sending the deferred
+// request right away.
 void SessionServiceImpl::DeferRequestForRefresh(
     URLRequest* request,
     Session::Id session_id,
@@ -140,7 +151,100 @@ void SessionServiceImpl::DeferRequestForRefresh(
     RefreshCompleteCallback continue_callback) {
   CHECK(restart_callback);
   CHECK(continue_callback);
-  std::move(continue_callback).Run();
+  CHECK(request);
+  bool needs_refresh = false;
+  // For the first deferring request, create a new vector and add the request.
+  auto [it, inserted] = deferred_requests_.try_emplace(session_id);
+  if (inserted) {
+    needs_refresh = true;
+  }
+  // Add the request to the deferred list.
+  it->second.emplace_back(request, std::move(restart_callback),
+                          std::move(continue_callback));
+
+  SchemefulSite site(request->url());
+  auto* session = GetSession(site, session_id);
+  if (!session) {
+    // If we can't find the session, clear the session_id key in the map and
+    // continue all related requests.
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+    return;
+  }
+  // Notify the request that it has been deferred for refreshed cookies.
+  NotifySessionAccess(request->device_bound_session_access_callback(), site,
+                      *session);
+  // Do refresh the session.
+  if (needs_refresh) {
+    const Session::KeyIdOrError& key_id = session->unexportable_key_id();
+    if (!key_id.has_value()) {
+      UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+      return;
+    }
+    auto callback =
+        base::BindOnce(&SessionServiceImpl::OnRefreshRequestCompletion,
+                       weak_factory_.GetWeakPtr(), std::move(site), session_id);
+    RegistrationFetcher::StartFetchWithExistingKey(
+        RegistrationRequestParam::Create(*session), key_service_.get(),
+        context_.get(), request->isolation_info(), std::move(callback),
+        *key_id);
+  }
+}
+
+void SessionServiceImpl::OnRefreshRequestCompletion(
+    SchemefulSite site,
+    Session::Id session_id,
+    std::optional<RegistrationFetcher::RegistrationCompleteParams>
+        refresh_result) {
+  // Refresh succeeded:
+  // 1. update the session by adding a new session and deleting the old one
+  // 2. restart the deferred requests.
+  // TODO(crbug.com/353766139): check if add/delete update will cause some race,
+  // for example, if the the old session_id is still in use while deleting it.
+  // Is it service's responsibility to keep the session_id same with the one in
+  // received JSON which parsed as result_result->params?
+  if (refresh_result) {
+    auto new_session = Session::CreateIfValid(std::move(refresh_result->params),
+                                              refresh_result->url);
+    if (new_session) {
+      new_session->set_unexportable_key_id(std::move(refresh_result->key_id));
+      // Delete old session.
+      DeleteSession(site, session_id);
+      // Add the new session.
+      AddSession(SchemefulSite(url::Origin::Create(refresh_result->url)),
+                 std::move(new_session));
+      // The session has been refreshed, restart the request.
+      UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/true);
+      return;
+    }
+  }
+
+  // Refresh failed:
+  // 1. Clear the existing session which initiated the refresh flow.
+  // 2. continue all deferred requests.
+  // TODO(crbug.com/353766139): Do we need a retry mechanism?
+  DeleteSession(site, session_id);
+  UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+}
+
+// Continue or restart all deferred requests for the session and remove the
+// session_id key in the map.
+void SessionServiceImpl::UnblockDeferredRequests(const Session::Id& session_id,
+                                                 bool is_cookie_refreshed) {
+  auto it = deferred_requests_.find(session_id);
+  if (it == deferred_requests_.end()) {
+    return;
+  }
+
+  auto requests = std::move(it->second);
+  deferred_requests_.erase(it);
+
+  for (auto& request : requests) {
+    if (is_cookie_refreshed) {
+      std::move(request.restart_callback).Run();
+    } else {
+      std::move(request.continue_callback).Run();
+    }
+  }
 }
 
 void SessionServiceImpl::SetChallengeForBoundSession(
@@ -181,14 +285,13 @@ void SessionServiceImpl::GetAllSessionsAsync(
   }
 }
 
-Session* SessionServiceImpl::GetSessionForTesting(
-    const SchemefulSite& site,
-    const std::string& session_id) const {
+Session* SessionServiceImpl::GetSession(const SchemefulSite& site,
+                                        const Session::Id& session_id) const {
   // Intentionally do not use `GetSessionsForSite` here so we do not
   // modify the session during testing.
   auto range = unpartitioned_sessions_.equal_range(site);
   for (auto it = range.first; it != range.second; ++it) {
-    if (it->second->id().value() == session_id) {
+    if (it->second->id() == session_id) {
       return it->second.get();
     }
   }
@@ -226,24 +329,6 @@ SessionServiceImpl::DeleteSessionInternal(
 
   // TODO(crbug.com/353774923): Clear BFCache entries for this session.
   return unpartitioned_sessions_.erase(it);
-}
-
-void SessionServiceImpl::StartSessionRefresh(
-    const Session& session,
-    const IsolationInfo& isolation_info,
-    OnAccessCallback on_access_callback) {
-  const Session::KeyIdOrError& key_id = session.unexportable_key_id();
-  if (!key_id.has_value()) {
-    return;
-  }
-
-  auto request_params = RegistrationRequestParam::Create(session);
-  RegistrationFetcher::StartFetchWithExistingKey(
-      std::move(request_params), key_service_.get(), context_.get(),
-      isolation_info,
-      base::BindOnce(&SessionServiceImpl::OnRegistrationComplete,
-                     weak_factory_.GetWeakPtr(), std::move(on_access_callback)),
-      *key_id);
 }
 
 }  // namespace net::device_bound_sessions

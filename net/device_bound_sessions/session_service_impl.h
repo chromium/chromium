@@ -9,6 +9,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
@@ -31,6 +33,21 @@ class UnexportableKeyService;
 namespace net::device_bound_sessions {
 
 class SessionStore;
+
+struct DeferredURLRequest {
+  DeferredURLRequest(const URLRequest* request,
+                     SessionService::RefreshCompleteCallback restart_callback,
+                     SessionService::RefreshCompleteCallback continue_callback);
+  DeferredURLRequest(DeferredURLRequest&& other) noexcept;
+
+  DeferredURLRequest& operator=(DeferredURLRequest&& other) noexcept;
+
+  ~DeferredURLRequest();
+
+  raw_ptr<const URLRequest> request = nullptr;
+  SessionService::RefreshCompleteCallback restart_callback;
+  SessionService::RefreshCompleteCallback continue_callback;
+};
 
 class NET_EXPORT SessionServiceImpl : public SessionService {
  public:
@@ -64,28 +81,31 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
       override;
   void DeleteSession(const SchemefulSite& site, const Session::Id& id) override;
-
-  Session* GetSessionForTesting(const SchemefulSite& site,
-                                const std::string& session_id) const;
+  Session* GetSession(const SchemefulSite& site,
+                      const Session::Id& session_id) const;
 
  private:
   friend class SessionServiceImplWithStoreTest;
 
   // The key is the site (eTLD+1) of the session's origin.
   using SessionsMap = std::multimap<SchemefulSite, std::unique_ptr<Session>>;
+  using DeferredRequestsMap =
+      std::unordered_map<Session::Id,
+                         absl::InlinedVector<DeferredURLRequest, 1>>;
 
   void OnLoadSessionsComplete(SessionsMap sessions);
 
   void OnRegistrationComplete(
       OnAccessCallback on_access_callback,
       std::optional<RegistrationFetcher::RegistrationCompleteParams> params);
+  void OnRefreshRequestCompletion(
+      SchemefulSite site,
+      Session::Id session_id,
+      std::optional<RegistrationFetcher::RegistrationCompleteParams> result);
 
-  void StartSessionRefresh(
-      const Session& session,
-      const IsolationInfo& isolation_info,
-      // TODO(crbug.com/353764893): Replace this callback placeholder.
-      OnAccessCallback on_access_callback);
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
+  void UnblockDeferredRequests(const Session::Id& session_id,
+                               bool is_cookie_refreshed);
 
   // Get all the unexpired sessions for a given site. This also removes
   // expired sessions for the site and extends the TTL of used sessions.
@@ -107,6 +127,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;
   raw_ptr<SessionStore> session_store_ = nullptr;
+
+  // Deferred requests are stored by session ID.
+  DeferredRequestsMap deferred_requests_;
 
   // Storage is similar to how CookieMonster stores its cookies.
   SessionsMap unpartitioned_sessions_;
