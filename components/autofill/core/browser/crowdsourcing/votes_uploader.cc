@@ -67,11 +67,15 @@ std::map<std::string, std::string> FormFillingStatsToSurveyStringData(
 }  // namespace
 
 struct VotesUploader::QueuedVote {
+  LocalFrameToken frame_of_form;
   FormSignature form_signature;
   base::OnceClosure upload_vote;
 };
 
-VotesUploader::VotesUploader(AutofillClient* client) : client_(*client) {}
+VotesUploader::VotesUploader(AutofillClient* client) : client_(*client) {
+  driver_observer_.Observe(&client_->GetAutofillDriverFactory());
+}
+
 VotesUploader::~VotesUploader() = default;
 
 base::SequencedTaskRunner& VotesUploader::vote_upload_task_runner() {
@@ -91,10 +95,94 @@ void VotesUploader::WipeQueuedVotesForForm(FormSignature form_signature) {
   });
 }
 
-void VotesUploader::FlushQueuedVotes() {
-  std::list<QueuedVote> queued_vote_uploads = std::exchange(queued_votes_, {});
-  for (QueuedVote& vote : queued_vote_uploads) {
+void VotesUploader::FlushQueuedVotesForFrame(const LocalFrameToken& frame) {
+  // Removes from `list` all elements that satisfy `pred` and returns them
+  // in a separate list.
+  auto extract_if = []<typename T>(std::list<T>& list, auto pred) {
+    // stable_partition() returns the range of elements that *satisfy* `pred`.
+    auto r = std::ranges::stable_partition(list, std::not_fn(pred));
+    std::list<T> removed;
+    // splice() moves the elements that satisfy `pred` to `removed`.
+    removed.splice(removed.end(), list, r.begin(), r.end());
+    return removed;
+  };
+
+  // We remove the callbacks from `queued_votes_` *before* invoking them.
+  // The motivation is that we don't want to loop over `queued_votes_`
+  // and call member functions in the loop's body for memory safety reasons.
+  auto is_from_frame = [&](const QueuedVote& vote) {
+    return vote.frame_of_form == frame;
+  };
+  size_t num_old_queued_votes = queued_votes_.size();
+  std::list<QueuedVote> votes_of_frame =
+      extract_if(queued_votes_, is_from_frame);
+  DCHECK_EQ(queued_votes_.size() + votes_of_frame.size(), num_old_queued_votes);
+  DCHECK(std::ranges::all_of(votes_of_frame, is_from_frame));
+  DCHECK(std::ranges::none_of(queued_votes_, is_from_frame));
+  for (QueuedVote& vote : votes_of_frame) {
     std::move(vote.upload_vote).Run();
+  }
+}
+
+void VotesUploader::OnAutofillDriverFactoryDestroyed(
+    AutofillDriverFactory& factory) {
+  driver_observer_.Reset();
+}
+
+// We want to flush votes in three cases:
+// (1) The frame goes into BFcache.
+// (2) The frame will be deleted. If there are no pending votes, this is the
+//     time to flush. Otherwise, we want to wait for the pending votes and
+//     then flush.
+// (3) The frame *was* (not: will be) reset. The difference between "was" and
+//     "will be" is important because BrowserAutofillManager::Reset() may add
+//     new votes that should be flushed.
+void VotesUploader::OnAutofillDriverStateChanged(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver,
+    AutofillDriver::LifecycleState old_state,
+    AutofillDriver::LifecycleState new_state) {
+  // Calls FlushQueuedVotes() after the currently pending
+  // DeterminePossibleFieldTypesForUpload() / OnFieldTypesDetermined() tasks are
+  // finished.
+  auto delayed_flush_queued_votes_for_frame =
+      [this](const LocalFrameToken& frame) {
+        // Since vote_upload_task_runner() is a sequenced task runner,
+        // FlushQueuedVotes() will be called after any pending tasks and their
+        // replies.
+        vote_upload_task_runner().PostTaskAndReply(
+            FROM_HERE, base::DoNothing(),
+            base::BindOnce(&VotesUploader::FlushQueuedVotesForFrame,
+                           weak_ptr_factory_.GetWeakPtr(), frame));
+      };
+
+  using enum AutofillDriver::LifecycleState;
+  switch (new_state) {
+    case kInactive:
+      if (old_state == kActive) {
+        // Case (1): The frame has become inactive (i.e., entered bfcache).
+        if (base::FeatureList::IsEnabled(features::kAutofillVoteWhenInactive)) {
+          delayed_flush_queued_votes_for_frame(driver.GetFrameToken());
+        }
+      }
+      break;
+    case kActive:
+      break;
+    case kPendingReset:
+      // Don't do anything yet. We wait for the transition *out* of the
+      // kPendingReset state (i.e., `old_state == kPendingReset`) because new
+      // votes may be cast in the kPendingReset state (specifically by
+      // BrowserAutofillManager::Reset()).
+      break;
+    case kPendingDeletion:
+      // Case (2): The frame will be deleted.
+      delayed_flush_queued_votes_for_frame(driver.GetFrameToken());
+      break;
+  }
+
+  if (old_state == kPendingReset) {
+    // Case (3): The was reset.
+    FlushQueuedVotesForFrame(driver.GetFrameToken());
   }
 }
 
@@ -177,14 +265,17 @@ void VotesUploader::OnFieldTypesDetermined(
     bool observed_submission,
     ukm::SourceId ukm_source_id,
     std::unique_ptr<FormStructure> form) {
+  LocalFrameToken frame = form->global_id().frame_token;
   WipeQueuedVotesForForm(form->form_signature());
   if (observed_submission) {
     UploadVote(std::move(form), initial_interaction_timestamp,
                submission_timestamp, observed_submission, ukm_source_id);
+    FlushQueuedVotesForFrame(frame);
   } else {
     TruncateQueueIfNecessary();
     queued_votes_.push_front(
-        {.form_signature = form->form_signature(),
+        {.frame_of_form = frame,
+         .form_signature = form->form_signature(),
          .upload_vote = base::BindOnce(
              &VotesUploader::UploadVote, weak_ptr_factory_.GetWeakPtr(),
              std::move(form), initial_interaction_timestamp,
@@ -260,6 +351,9 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
         initial_interaction_timestamp, submission_timestamp,
         client_->GetFormInteractionsUkmLogger(), ukm_source_id,
         observed_submission);
+  }
+  if (!submitted_form->ShouldBeUploaded()) {
+    return;
   }
   // TODO(crbug.com/40100455): Remove the CHECK in M134.
   CHECK(submitted_form->ShouldBeUploaded(), base::NotFatalUntil::M134);

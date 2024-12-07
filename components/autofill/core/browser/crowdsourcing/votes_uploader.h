@@ -12,8 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_driver_factory.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/signatures.h"
@@ -48,6 +50,7 @@ class BrowserAutofillManager;
 //       │
 //       │async
 //       │
+//       ▼
 //   OnFieldTypesDetermined()
 //       │
 //       │       if submission
@@ -56,7 +59,9 @@ class BrowserAutofillManager;
 //       │                                       │
 //       ▼                                       │
 //   Store QueuedVote, which is uploaded when    │
-//   - a submission happens in the frame         │
+//   - a submission happens in the frame;        │
+//   - the frame becomes inactive                │
+//     kAutofillVoteWhenInactive is enabled;     │
 //   - the frame is reset;                       │
 //   - the frame is deleted;                     │
 //   - the queue becomes too large.              │
@@ -66,23 +71,18 @@ class BrowserAutofillManager;
 //       │                                       │
 //       ▼                                       │
 //   UploadVote()◄───────────────────────────────┘
-//       │
-//       │if submission
-//       │
-//       ▼
-//   FlushQueuedVotes()◄────────────────────BrowserAutofillManager
-//
-// TODO(crbug.com/374086145): Investigate if vote flushing should be decoupled
-// from BrowserAutofillManager lifetime.
 //
 // Owned by AutofillClient. This is so votes can be determined and uploaded when
-// the frame's AutofillManager has been destroyed already.
-class VotesUploader {
+// the frame's AutofillDriver and AutofillManager have been destroyed already.
+// Since the AutofillCrowdsourcingManager is also owned by AutofillClient and
+// since uploading votes is asynchronous, this implies that voting cannot happen
+// when the tab is closed.
+class VotesUploader : public AutofillDriverFactory::Observer {
  public:
   explicit VotesUploader(AutofillClient* owner);
   VotesUploader(const VotesUploader&) = delete;
   VotesUploader& operator=(const VotesUploader&) = delete;
-  virtual ~VotesUploader();
+  ~VotesUploader() override;
 
   // Will send an upload based on the |form| data and the local Autofill profile
   // data. |observed_submission| is specified if the upload follows an observed
@@ -93,9 +93,6 @@ class VotesUploader {
       LanguageCode current_page_language,
       base::TimeTicks initial_interaction_timestamp,
       ukm::SourceId ukm_source_id);
-
-  // Triggers and wipes all pending votes.
-  void FlushQueuedVotes();
 
   // TODO(crbug.com/374086145): Remove public member.
   std::u16string last_unlocked_credit_card_cvc_;
@@ -130,13 +127,25 @@ class VotesUploader {
                               ukm::SourceId ukm_source_id,
                               std::unique_ptr<FormStructure> submitted_form);
 
+  void FlushQueuedVotesForFrame(const LocalFrameToken& frame);
+
   // Removes the callbacks for the given `form_signature` without calling them.
   void WipeQueuedVotesForForm(FormSignature form_signature);
 
-  // Wipes the oldest callbacks if the queue size exceeds a threshold.
   void TruncateQueueIfNecessary();
 
+  // AutofillDriverFactory::Observer:
+  void OnAutofillDriverFactoryDestroyed(
+      AutofillDriverFactory& factory) override;
+  void OnAutofillDriverStateChanged(
+      AutofillDriverFactory& factory,
+      AutofillDriver& driver,
+      AutofillDriver::LifecycleState old_state,
+      AutofillDriver::LifecycleState new_state) override;
+
   base::SequencedTaskRunner& vote_upload_task_runner();
+
+  const raw_ref<AutofillClient> client_;
 
   // List of callbacks to be called for sending blur votes. Only one callback is
   // stored per FormSignature. We rely on FormSignatures rather than
@@ -149,19 +158,21 @@ class VotesUploader {
   // Callbacks are triggered in the following situations:
   // - We observe a form submission.
   // - The list becomes to large.
-
+  //
   // Callbacks are wiped in the following situations:
   // - A form is submitted.
   // - A callback is overridden by a more recent version.
   std::list<QueuedVote> queued_votes_;
 
   // This task runner sequentializes calls to
-  // DeterminePossibleFieldTypesForUpload to ensure that blur votes are
+  // DeterminePossibleFieldTypesForUpload() to ensure that blur votes are
   // processed before form submission votes. This is important so that a
   // submission can trigger the upload of blur votes.
   scoped_refptr<base::SequencedTaskRunner> vote_upload_task_runner_;
 
-  raw_ref<AutofillClient> client_;
+  base::ScopedObservation<AutofillDriverFactory,
+                          AutofillDriverFactory::Observer>
+      driver_observer_{this};
 
   base::WeakPtrFactory<VotesUploader> weak_ptr_factory_{this};
 };
