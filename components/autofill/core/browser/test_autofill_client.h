@@ -28,7 +28,6 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
-#include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -115,8 +114,6 @@ class TestAutofillClientTemplate : public T {
     }
     return *crowdsourcing_manager_;
   }
-
-  TestVotesUploader& GetVotesUploader() override { return votes_uploader_; }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
@@ -618,7 +615,6 @@ class TestAutofillClientTemplate : public T {
       this};
 
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  TestVotesUploader votes_uploader_{this};
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };

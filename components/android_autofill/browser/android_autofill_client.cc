@@ -84,10 +84,6 @@ AndroidAutofillClient::GetCrowdsourcingManager() {
   return *crowdsourcing_manager_;
 }
 
-autofill::VotesUploader& AndroidAutofillClient::GetVotesUploader() {
-  return votes_uploader_;
-}
-
 autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
   NOTREACHED();
 }

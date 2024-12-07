@@ -11,8 +11,8 @@
 
 namespace autofill {
 
-TestVotesUploader::TestVotesUploader(AutofillClient* client)
-    : VotesUploader(client) {}
+TestVotesUploader::TestVotesUploader(BrowserAutofillManager* owner)
+    : VotesUploader(owner) {}
 TestVotesUploader::~TestVotesUploader() = default;
 
 void TestVotesUploader::UploadVote(

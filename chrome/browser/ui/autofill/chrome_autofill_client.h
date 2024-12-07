@@ -26,7 +26,6 @@
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
-#include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
@@ -106,7 +105,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool IsOffTheRecord() const final;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
-  VotesUploader& GetVotesUploader() final;
   AutofillOptimizationGuide* GetAutofillOptimizationGuide() const final;
   FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       final;
@@ -255,7 +253,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  VotesUploader votes_uploader_{this};
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
   payments::ChromePaymentsAutofillClient payments_autofill_client_{this};

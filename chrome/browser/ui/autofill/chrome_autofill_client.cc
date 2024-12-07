@@ -335,10 +335,6 @@ AutofillCrowdsourcingManager& ChromeAutofillClient::GetCrowdsourcingManager() {
   return *crowdsourcing_manager_;
 }
 
-VotesUploader& ChromeAutofillClient::GetVotesUploader() {
-  return votes_uploader_;
-}
-
 AutofillOptimizationGuide* ChromeAutofillClient::GetAutofillOptimizationGuide()
     const {
   Profile* profile =

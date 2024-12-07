@@ -65,6 +65,7 @@
 namespace autofill {
 
 class AutofillField;
+class AutofillClient;
 class AutofillProfile;
 class CreditCard;
 class CreditCardAccessManager;
@@ -694,6 +695,10 @@ class BrowserAutofillManager : public AutofillManager {
   // form_filler() instead, because tests inject test objects.
   std::unique_ptr<FormFiller> form_filler_ =
       std::make_unique<FormFiller>(*this, log_manager());
+
+  // TODO(crbug.com/374086145): Move ownership to AutofillClient.
+  std::unique_ptr<VotesUploader> votes_uploader_ =
+      std::make_unique<VotesUploader>(this);
 
   // Contains a list of four digit combinations that were found in the webpage
   // DOM. Populated after a standalone cvc field is processed on a form. Used to

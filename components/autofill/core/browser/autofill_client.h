@@ -90,7 +90,6 @@ class LogManager;
 class PersonalDataManager;
 class SingleFieldFillRouter;
 class StrikeDatabase;
-class VotesUploader;
 struct Suggestion;
 enum class WebauthnDialogState;
 
@@ -239,9 +238,6 @@ class AutofillClient {
 
   // Returns the AutofillDriverFactory.
   virtual AutofillDriverFactory& GetAutofillDriverFactory() = 0;
-
-  // Returns the VotesUploader.
-  virtual VotesUploader& GetVotesUploader() = 0;
 
   // Returns the AutofillCrowdsourcingManager for communication with the
   // Autofill server.

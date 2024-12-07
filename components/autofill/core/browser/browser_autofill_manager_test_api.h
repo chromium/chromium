@@ -107,6 +107,12 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         trigger_source, std::move(plus_address_override));
   }
 
+  void set_votes_uploader(std::unique_ptr<VotesUploader> votes_uploader) {
+    manager_->votes_uploader_ = std::move(votes_uploader);
+  }
+
+  VotesUploader& votes_uploader() { return *manager_->votes_uploader_; }
+
  private:
   raw_ref<BrowserAutofillManager> manager_;
 };

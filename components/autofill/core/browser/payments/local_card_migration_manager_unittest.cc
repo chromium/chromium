@@ -103,7 +103,8 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
     browser_autofill_manager_ =
         std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
-    autofill_client_.GetVotesUploader().set_expected_observed_submission(true);
+    browser_autofill_manager_->votes_uploader()
+        .set_expected_observed_submission(true);
   }
 
   void TearDown() override {

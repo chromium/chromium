@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/language_code.h"
@@ -25,11 +24,13 @@
 
 namespace autofill {
 
+class BrowserAutofillManager;
+
 // Turns the asynchronous VotesUploader operations into synchronous ones and
 // validates expectations.
 class TestVotesUploader : public VotesUploader {
  public:
-  explicit TestVotesUploader(AutofillClient* client);
+  explicit TestVotesUploader(BrowserAutofillManager* owner);
   TestVotesUploader(const TestVotesUploader&) = delete;
   TestVotesUploader& operator=(const TestVotesUploader&) = delete;
   ~TestVotesUploader() override;

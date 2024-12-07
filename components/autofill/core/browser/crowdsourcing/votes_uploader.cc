@@ -6,11 +6,9 @@
 
 #include "base/containers/to_vector.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
-#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -18,9 +16,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
-#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
 
@@ -71,8 +67,12 @@ struct VotesUploader::QueuedVote {
   base::OnceClosure upload_vote;
 };
 
-VotesUploader::VotesUploader(AutofillClient* client) : client_(*client) {}
+VotesUploader::VotesUploader(BrowserAutofillManager* owner) : owner_(*owner) {}
 VotesUploader::~VotesUploader() = default;
+
+AutofillClient& VotesUploader::client() {
+  return owner_->client();
+}
 
 base::SequencedTaskRunner& VotesUploader::vote_upload_task_runner() {
   if (!vote_upload_task_runner_) {
@@ -107,16 +107,16 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
-      client_->GetPersonalDataManager().address_data_manager().GetProfiles();
+      client().GetPersonalDataManager().address_data_manager().GetProfiles();
   if (observed_submission && form->IsAutofillable()) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
         profiles.size());
   }
 
-  const std::vector<CreditCard*>& credit_cards =
-      client_->GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCards();
+  const std::vector<CreditCard*>& credit_cards = client()
+                                                     .GetPersonalDataManager()
+                                                     .payments_data_manager()
+                                                     .GetCreditCards();
 
   if (profiles.empty() && credit_cards.empty()) {
     return false;
@@ -138,12 +138,12 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   form->set_current_page_language(current_page_language);
 
   // Attach the Randomized Encoder.
-  form->set_randomized_encoder(RandomizedEncoder::Create(client_->GetPrefs()));
+  form->set_randomized_encoder(RandomizedEncoder::Create(client().GetPrefs()));
 
   // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
   // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
-  PreProcessStateMatchingTypes(*client_, copied_profiles, *form);
+  PreProcessStateMatchingTypes(client(), copied_profiles, *form);
 
   // TODO(crbug.com/368306576): Bound the size of `copied_profiles` and
   // `copied_credit_cards` by `kMaxDataConsideredForPossibleTypes` and make
@@ -162,7 +162,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             return form;
           },
           std::move(copied_profiles), std::move(copied_credit_cards),
-          last_unlocked_credit_card_cvc_, client_->GetAppLocale(),
+          last_unlocked_credit_card_cvc_, client().GetAppLocale(),
           std::move(form)),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -239,13 +239,13 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
       credit_card_filling_stats.TotalFilled() > 0;
 
   if (can_trigger_address_survey) {
-    client_->TriggerUserPerceptionOfAutofillSurvey(
+    client().TriggerUserPerceptionOfAutofillSurvey(
         FillingProduct::kAddress,
         FormFillingStatsToSurveyStringData(address_filling_stats));
   } else if (can_trigger_credit_card_survey &&
              base::FeatureList::IsEnabled(
                  features::kAutofillCreditCardUserPerceptionSurvey)) {
-    client_->TriggerUserPerceptionOfAutofillSurvey(
+    client().TriggerUserPerceptionOfAutofillSurvey(
         FillingProduct::kCreditCard,
         FormFillingStatsToSurveyStringData(credit_card_filling_stats));
   }
@@ -255,10 +255,11 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFields() ||
       submitted_form->ShouldBeQueried()) {
+    // TODO(crbug.com/374086145): Eliminate reference to `owner_`.
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),
         initial_interaction_timestamp, submission_timestamp,
-        client_->GetFormInteractionsUkmLogger(), ukm_source_id,
+        owner_->client().GetFormInteractionsUkmLogger(), ukm_source_id,
         observed_submission);
   }
   // TODO(crbug.com/40100455): Remove the CHECK in M134.
@@ -267,24 +268,24 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
       submitted_form->ShouldUploadUkm(
           /*require_classified_field=*/true)) {
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
-        client_->GetUkmRecorder(), ukm_source_id, *submitted_form,
+        client().GetUkmRecorder(), ukm_source_id, *submitted_form,
         submission_timestamp);
   }
-  const PersonalDataManager& pdm = client_->GetPersonalDataManager();
+  const PersonalDataManager& pdm = client().GetPersonalDataManager();
   FieldTypeSet non_empty_types;
   for (const AutofillProfile* profile :
        pdm.address_data_manager().GetProfiles()) {
-    profile->GetNonEmptyTypes(client_->GetAppLocale(), &non_empty_types);
+    profile->GetNonEmptyTypes(client().GetAppLocale(), &non_empty_types);
   }
   for (const CreditCard* card : pdm.payments_data_manager().GetCreditCards()) {
-    card->GetNonEmptyTypes(client_->GetAppLocale(), &non_empty_types);
+    card->GetNonEmptyTypes(client().GetAppLocale(), &non_empty_types);
   }
   // As CVC is not stored, treat it separately.
   if (!last_unlocked_credit_card_cvc_.empty() ||
       non_empty_types.contains(CREDIT_CARD_NUMBER)) {
     non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }
-  client_->GetCrowdsourcingManager().StartUploadRequest(
+  client().GetCrowdsourcingManager().StartUploadRequest(
       /*upload_contents=*/EncodeUploadRequest(*submitted_form, non_empty_types,
                                               /*login_form_signature=*/{},
                                               observed_submission),
