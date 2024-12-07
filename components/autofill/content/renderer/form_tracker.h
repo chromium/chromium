@@ -148,6 +148,8 @@ class FormTracker : public content::RenderFrameObserver,
     return last_interacted_.saved_state;
   }
 
+  bool IsTracking() const;
+
  private:
   friend class FormTrackerTestApi;
 

@@ -1848,12 +1848,6 @@ void AutofillAgent::OnProvisionallySaveForm(
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
       update_submission_data_on_user_edit();
-      if (submitted_forms_[form_util::GetFormRendererId(form_element)].contains(
-              mojom::SubmissionSource::FORM_SUBMISSION)) {
-        // Save an extraction call since the submission will be ignored
-        // anyways by the duplicate submission filtering logic.
-        break;
-      }
       // Fire the form submission event to avoid missing submissions where
       // websites handle the onsubmit event. This also gets the form before
       // Javascript's submit event handler could change it. We don't clear
@@ -1889,18 +1883,12 @@ void AutofillAgent::OnProbablyFormSubmitted() {
   }
   if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
     ResetLastInteractedElements();
-    OnFormNoLongerSubmittable();
   }
+  OnFormNoLongerSubmittable();
 }
 
 void AutofillAgent::OnFormSubmitted(const WebFormElement& form_element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(form_element, unsafe_render_frame()));
-  if (submitted_forms_[form_util::GetFormRendererId(form_element)].contains(
-          mojom::SubmissionSource::FORM_SUBMISSION)) {
-    // Save an extraction call since the submission will be ignored anyways
-    // by the duplicate submission filtering logic.
-    return;
-  }
   // Fire the submission event here because WILL_SEND_SUBMIT_EVENT is skipped
   // if javascript calls submit() directly.
   if (std::optional<FormData> form_data =
@@ -2000,12 +1988,27 @@ void AutofillAgent::UpdateStateForTextChange(
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm(
     std::optional<WebFormElement> form_element) const {
+  // Behavior when `AutofillReplaceFormElementObserver` is enabled:
+  // - Never try to extract and unconditionally look at the provisionally saved
+  //   form. The reason is that some form extraction could happen during style
+  //   recalc, meaning that querying field focusability would crash.
   if (base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)) {
     return provisionally_saved_form();
   }
+
+  // Behavior when `AutofillPreferSavedFormAsSubmittedForm` is enabled
+  // (and the feature above is disabled):
+  // - Return null if there was no interaction so far and no `form_element` is
+  //   provided.
+  // - Primarily look at the provisionally saved form.
+  // - In case there isn't one try extracting the form (either
+  //   `last_interacted_form()` or `form_element` if provided).
   if (base::FeatureList::IsEnabled(
           features::kAutofillPreferSavedFormAsSubmittedForm)) {
+    if (!form_tracker_->IsTracking() && !form_element.has_value()) {
+      return std::nullopt;
+    }
     if (std::optional<FormData> form = provisionally_saved_form();
         form &&
         (!form_element.has_value() ||
@@ -2023,13 +2026,30 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
     }
     return std::nullopt;
   }
+
+  // Behavior when `AutofillUseSubmittedFormInHtmlSubmission` is enabled
+  // (and the features above are disabled):
+  // - If `form_element` isn't provided, fallback to the default behavior.
+  // - Primarily try to extract the form represented by `form_element`.
+  // - In case of failure, fallback to the provisionally saved form, only if it
+  //   has the same FormRendererId as `form_element`.
+  if (form_element.has_value() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillUseSubmittedFormInHtmlSubmission)) {
+    if (std::optional<FormData> form = form_util::ExtractFormData(
+            form_element->GetDocument(), *form_element, field_data_manager(),
+            GetCallTimerState(kGetSubmittedForm))) {
+      return form;
+    }
+    if (std::optional<FormData> form = provisionally_saved_form();
+        form &&
+        form->renderer_id() == form_util::GetFormRendererId(*form_element)) {
+      return *form;
+    }
+    return std::nullopt;
+  }
   auto has_been_user_edited = [this](const FormFieldData& field) {
     return formless_elements_user_edited_.contains(field.renderer_id());
-  };
-  auto know_expected_submitted_form = [&] {
-    return form_element.has_value() &&
-           base::FeatureList::IsEnabled(
-               features::kAutofillUseSubmittedFormInHtmlSubmission);
   };
   // The three cases handled by this function:
   bool user_autofilled_or_edited_owned_form = !!last_interacted_form().GetId();
@@ -2039,35 +2059,22 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
                                   !formless_elements_user_edited_.empty();
   WebDocument document = GetDocument();
   if ((!user_autofilled_or_edited_owned_form && !user_autofilled_unowned_form &&
-       !user_edited_unowned_form && !know_expected_submitted_form()) ||
+       !user_edited_unowned_form) ||
       !document) {
     return std::nullopt;
   }
 
   // Try extracting the corresponding form.
   if (std::optional<FormData> form = form_util::ExtractFormData(
-          document,
-          form_element.has_value() &&
-                  base::FeatureList::IsEnabled(
-                      features::kAutofillUseSubmittedFormInHtmlSubmission)
-              ? *form_element
-              : last_interacted_form().GetForm(),
-          field_data_manager(), GetCallTimerState(kGetSubmittedForm));
+          document, last_interacted_form().GetForm(), field_data_manager(),
+          GetCallTimerState(kGetSubmittedForm));
       form && (!user_edited_unowned_form ||
-               !std::ranges::none_of(form->fields(), has_been_user_edited) ||
-               know_expected_submitted_form())) {
+               !std::ranges::none_of(form->fields(), has_been_user_edited))) {
     return form;
   }
 
-  // If extraction fails, fallback to the provisionally saved form. If
-  // `form_element` is provided, make sure the saved form corresponds to the
-  // passed `form_element`.
-  if (std::optional<FormData> form = provisionally_saved_form();
-      form &&
-      (!form_element.has_value() ||
-       form->renderer_id() == form_util::GetFormRendererId(*form_element) ||
-       !base::FeatureList::IsEnabled(
-           features::kAutofillUseSubmittedFormInHtmlSubmission))) {
+  // If extraction fails, fallback to the provisionally saved form.
+  if (std::optional<FormData> form = provisionally_saved_form()) {
     return *form;
   }
   return std::nullopt;

@@ -328,6 +328,8 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
     CHECK(form);
+    // TODO(crbug.com/40281981): Figure out if this is still needed, and
+    // document the reason, otherwise remove.
     UpdateLastInteractedElement(form_util::GetFormRendererId(form));
   }
   for (auto& observer : observers_) {
@@ -474,6 +476,12 @@ void FormTracker::ResetLastInteractedElements() {
     form_element_observer_->Disconnect();
     form_element_observer_ = nullptr;
   }
+}
+
+bool FormTracker::IsTracking() const {
+  return last_interacted_.form.GetId() ||
+         last_interacted_.formless_element.GetId() ||
+         last_interacted_.saved_state;
 }
 
 void FormTracker::ElementWasHiddenOrRemoved(mojom::SubmissionSource source) {

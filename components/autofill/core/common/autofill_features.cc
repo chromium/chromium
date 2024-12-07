@@ -310,6 +310,7 @@ BASE_FEATURE(kAutofillFixFormTracking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Uses AutofillAgent::GetSubmittedForm() in HTML submissions.
+// See `AutofillAgent::GetSubmittedForm()` for more documentation.
 // TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission,
              "AutofillUseSubmittedFormInHtmlSubmission",
@@ -317,7 +318,8 @@ BASE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission,
 
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
-// triggering events.
+// triggering events. See `AutofillAgent::GetSubmittedForm()` for more
+// documentation.
 // TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillPreferSavedFormAsSubmittedForm,
              "AutofillPreferSavedFormAsSubmittedForm",
