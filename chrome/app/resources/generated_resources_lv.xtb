@@ -344,6 +344,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1223853788495130632">Jūsu administrators šim iestatījumam iesaka konkrētu vērtību.</translation>
 <translation id="1225177025209879837">Notiek pieprasījuma apstrāde...</translation>
 <translation id="1227107020813934021">Dokumentu skeneru atrašana</translation>
+<translation id="1227113644794103810">Neaktīvas cilnes</translation>
 <translation id="1227260640693522019">Pils</translation>
 <translation id="1227660082540388410">Piekļuves atslēgas rediģēšana</translation>
 <translation id="1227993798763400520">Apraide neizdevās. Lūdzu, mēģiniet vēlreiz!</translation>
@@ -4004,6 +4005,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3794792524918736965">Tehnoloģijas Windows Hello ieslēgšana</translation>
 <translation id="379509625511193653">Izslēgts</translation>
 <translation id="3796215473395753611">Alt + augšupvērstā bultiņa</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, lai priekšskatītu balsi, izmantojiet labās bultiņas taustiņu</translation>
 <translation id="3796648294839530037">Izlases tīkli:</translation>
 <translation id="3797739167230984533">Jūsu <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> pārvalda<ph name="END_LINK" /> jūsu organizācija</translation>
 <translation id="3797900183766075808">&amp;Meklēt “<ph name="SEARCH_TERMS" />” meklētājprogrammā <ph name="SEARCH_ENGINE" /></translation>

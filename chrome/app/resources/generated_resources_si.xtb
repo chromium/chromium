@@ -343,6 +343,7 @@
 <translation id="1223853788495130632">ඔබේ පරිපාලක මෙම සැකසුම සඳහා නිශ්චිත අගයක් නිර්දේශ කරයි.</translation>
 <translation id="1225177025209879837">සැකසුම් ඉල්ලීම...</translation>
 <translation id="1227107020813934021">ලේඛන ස්කෑනර් සොයා ගන්න</translation>
+<translation id="1227113644794103810">අක්‍රිය පටිති</translation>
 <translation id="1227260640693522019">බලකොටුව</translation>
 <translation id="1227660082540388410">මුරයතුර සංස්කරණය කරන්න</translation>
 <translation id="1227993798763400520">විකාශය කිරීමට අසමත් විය. නැවත උත්සාහ කරන්න.</translation>
@@ -4004,6 +4005,7 @@
 <translation id="3794792524918736965">Windows Hello ක්‍රියාත්මක කරන්න</translation>
 <translation id="379509625511193653">අක්‍රිය</translation>
 <translation id="3796215473395753611">alt + ඉහළට ඊතලය</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, හඬ පෙරදසුන් කිරීමට දකුණු ඊතල යතුර භාවිතා කරන්න</translation>
 <translation id="3796648294839530037">ප්‍රියතම ජාල:</translation>
 <translation id="3797739167230984533">ඔබේ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> කළමනා කෙරෙන්නේ<ph name="END_LINK" /> ඔබේ ආයතනය විසිනි</translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” සඳහා <ph name="SEARCH_ENGINE" /> සොයන්න</translation>

@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">ከታች ባለው ዝርዝር ውስጥ <ph name="SUGGESTIONS_COUNT" /> በአስተያየት የተጠቆሙ ንጥሎች።</translation>
 <translation id="1598163867407640634">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት <ph name="SITE_ETLD_PLUS_ONE" />ን ይጠቀሙ</translation>
 <translation id="160275202205869636">ሲበራ፣ በGoogle መለያዎ ውስጥ ውሂብ ይጠቀማል እና ያስቀምጣል። ሲጠፋ፣ ውሂብ ወደዚህ መሣሪያ ብቻ ይቀመጣል።</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ይህን ትር አስወግደዋል</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 የተመረጠ ንጥልን አስወግድ}one{# የተመረጡ ንጥሎችን አስወግድ}other{# የተመረጡ ንጥሎችን አስወግድ}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 ዕልባት እና ሌሎች ንጥሎች በዚህ መሣሪያ ላይ ብቻ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያስቀምጧቸው።}one{# ዕልባት እና ሌሎች ንጥሎች በዚህ መሣሪያ ላይ ብቻ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያስቀምጧቸው።}other{# ዕልባቶች እና ሌሎች ንጥሎች በዚህ መሣሪያ ላይ ብቻ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያስቀምጧቸው።}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ቡድኑን ተቀላቅለዋል</translation>
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> ላይ የነበረ የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ ነዎት</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">ይዘት በGoogle ለወጣት አእምሮዎች</translation>
 <translation id="2579297619530305344">በሙሉ እርዝማኔ የተከፈቱ በሁሉም መሥሪያዎችዎ ላይ ያሉ የይለፍ ቃላት</translation>
 <translation id="2581165646603367611">ይሄ Chrome አስፈላጊ ናቸው ብሎ የማያስባቸውን ኩኪዎች፣ መሸጎጫ እና ሌሎች ጣቢያዎች ያጸዳል።</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ትር አክለዋል</translation>
 <translation id="2587052924345400782">አዲስ ስሪት ይገኛል</translation>
 <translation id="2593272815202181319">ሞኖስፔስ</translation>
 <translation id="2603212228005142861">ምርጫዎችዎን ለማስተዳደር በመለያ ይግቡ</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">1 ሰከንድ ይቀራል</translation>
 <translation id="2789486458103222910">እሺ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ሊያሻሽሉት የሚችሉት ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አግኝቷል}one{Chrome ሊያሻሽሉት የሚችሉት # ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አግኝቷል}other{Chrome ሊያሻሽሏቸው የሚችሏቸው # ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላትን አግኝቷል}}</translation>
+<translation id="2796651346651857052">ቦታውን ለመቀየር የአድራሻ አሞሌውን ይንኩ እና ይያዙ።</translation>
 <translation id="2800066122460699237">ትር <ph name="TAB_TITLE" /> ይዘጋል</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="281504910091592009">የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ውስጥ ይመልከቱ እና ያስተዳድሩ</translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">እንደ <ph name="EMAIL" /> ሆነው በመለያ ገብተዋል። በማንኛውም ጊዜ በቅንብሮች ውስጥ ማስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ ተመስርቶ ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="5304593522240415983">ይህ መስክ ባዶ ሊሆን አይችልም</translation>
 <translation id="5306014156308790439">ወደ ስብስብ አክል ተሰናክሏል</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> የቡድን ቀለሙን ለውጠዋል</translation>
 <translation id="5308380583665731573">ይገናኙ</translation>
 <translation id="5310963254742922113">የይለፍ ቃል ጥቅም ላይ ውሏል።</translation>
 <translation id="5316947901395241499">የይለፍ ቃል ማስቀመጥ በእርስዎ አስተዳዳሪ ጠፍቷል</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507">በ<ph name="TIME_PERIOD" /> ውስጥ ምንም ጣቢያዎች የሉም</translation>
 <translation id="5355191726083956201">የተሻሻለ ጥበቃ በርቷል</translation>
 <translation id="5364112109233799727">ግብረመልስ የሚሠጡበት ገጽ ዩአርኤል ወደ Google ይላካል፣ እና ይህንን ባህሪ ለማሻሻል በሰዎች ሊገመገም ይችላል</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ትር ለውጠዋል</translation>
 <translation id="5375374982898812658">ለ«<ph name="GROUP_NAME" />» የት ቡድን ያለዎትን መዳረሻ ወዲያንውኑ ያጣሉ እና ከሁሉም መሣሪያዎችዎ ላይ ይሰረዛል</translation>
 <translation id="5375577065097716013">በ Google ሌንስ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ምስል ይፈልጉ</translation>
 <translation id="5394331612381306435">ማንነት ከማያሳውቅ ቀይረው ይውጡ</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378"><ph name="HOURS" /> ሰዓቶች ይቀራሉ</translation>
 <translation id="6095578583683628124">Google እንዲሁ የእርስዎ ነባሪ የፍለጋ ፕሮግራምዎ ከሆነ፣ የተሻለ፣ ከአውድ ጋር ተዛማጅነት ያላቸውን አስተያየቶች ያያሉ።</translation>
 <translation id="610630277578876674">በመልዕክቶች ውስጥ አገናኞችን በፍጥነት ይክፈቱ እና ሌሎችንም ያድርጉ</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> የቡድኑን ስም ለውጠዋል</translation>
 <translation id="6108923351542677676">ማዋቀር በሂደት ላይ…</translation>
 <translation id="6112702117600201073">ገፅ በማደስ ላይ</translation>
 <translation id="6122831415929794347">የጥንቃቄ አሰሳ ይጥፋ?</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ትር}one{<ph name="NUMBER_OF_TABS" /> ትር}other{<ph name="NUMBER_OF_TABS" /> ትሮች}}</translation>
 <translation id="6929224077895306814">በመሣሪያዎ ላይ እና በእርስዎ Google መለያ ውስጥ የተቀመጡ ሁሉም የደህንነት ኮዶች ይሰረዛሉ</translation>
 <translation id="6937524809504266803">ግላዊነት ማላበስ እና ማገናኘት</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ቅጽል ስም (ከተፈለገ)</translation>
 <translation id="6942665639005891494">የቅንብሮች ምናሌ አማራጩን በመጠቀም ነባሪውን የማውረጃ ቦታ ይጠቀሙ</translation>
 <translation id="694267552845942083">በአሁኑ ጊዜ የስንረት ቅንብሮችዎን እያበጁ ነው። ስምረትን ማብራቱን ለመጨረስ ከማያ ገጹ ታችኛው ክፍል አጠገብ ያለውን የአረጋግጥ አዝራር መታ ያድርጉ። ወደ ላይ ያስሱ</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">ምንም ጣቢያዎች የሉም</translation>
 <translation id="7656862631699126784">ማንነት የማያሳውቅ ቁልፍን አብራ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ቡድኑን ለቅቀው ወጥተዋል</translation>
 <translation id="7663320421139257046">ለመቀጠል፣ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን <ph name="FIELDS_STRING" /> ከዚህ ጣቢያ ጋር ያጋራል። የዚህን ጣቢያ <ph name="BEGIN_LINK1" />የግላዊነት መመሪያ<ph name="END_LINK1" /> ይመልከቱ።</translation>
 <translation id="7665369617277396874">መለያ ያክሉ</translation>
 <translation id="766587987807204883">እርስዎ ከመስመር ውጭ ሆነውም እንኳ ሊያነብቧቸው የሚችሏቸውን ጽሑፎች እዚህ ይመጣሉ</translation>

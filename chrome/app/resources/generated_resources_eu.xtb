@@ -342,6 +342,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1223853788495130632">Administratzaileak ezarpen honetarako balio zehatz bat gomendatzen du.</translation>
 <translation id="1225177025209879837">Eskaera prozesatzen…</translation>
 <translation id="1227107020813934021">Aurkitu dokumentu-eskanerrak</translation>
+<translation id="1227113644794103810">Fitxa inaktiboak</translation>
 <translation id="1227260640693522019">Gaztelua</translation>
 <translation id="1227660082540388410">Editatu sarbide-gakoa</translation>
 <translation id="1227993798763400520">Ezin izan da igorri. Saiatu berriro.</translation>
@@ -4002,6 +4003,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3794792524918736965">Aktibatu Windows Hello</translation>
 <translation id="379509625511193653">Desaktibatuta</translation>
 <translation id="3796215473395753611">Alt + gora egiteko gezi-tekla</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, erabili eskuinera egiteko gezi-tekla ahotsa aurreikusteko</translation>
 <translation id="3796648294839530037">Gogoko sareak:</translation>
 <translation id="3797739167230984533">Zure erakundeak <ph name="BEGIN_LINK" />kudeatzen du <ph name="DEVICE_TYPE" /> gailua<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;Bilatu "<ph name="SEARCH_TERMS" />" <ph name="SEARCH_ENGINE" /> bilatzailean</translation>

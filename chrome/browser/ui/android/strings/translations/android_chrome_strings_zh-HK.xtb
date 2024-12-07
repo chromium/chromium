@@ -1501,7 +1501,7 @@
 <translation id="7656721520530864426">未瀏覽任何網站</translation>
 <translation id="7656862631699126784">開啟無痕式鎖定</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />已退出群組</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />已離開群組</translation>
 <translation id="7663320421139257046">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />，詳情請參閱此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》。</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>

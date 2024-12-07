@@ -146,8 +146,10 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> föreslagna objekt i listan nedan.</translation>
 <translation id="1598163867407640634">Använd <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Använd och spara data i Google-kontot när inställningen är aktiverad. När inställningen är inaktiverad sparas data endast på den här enheten.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> tog bort en flik</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ta bort 1 markerat objekt}other{Ta bort # markerade objekt}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bokmärke och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}other{# bokmärken och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> gick med i gruppen</translation>
 <translation id="1641113438599504367">Säker webbsökning</translation>
 <translation id="164269334534774161">Det som visas är en offlinekopia av den här sidan från <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -347,6 +349,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2578337197553672982">Innehåll från Google för unga</translation>
 <translation id="2579297619530305344">Lösenorden på alla dina enheter har öppnats över hela skärmen</translation>
 <translation id="2581165646603367611">Det här alternativet rensar cookies, cacheminnet och annan data från webbplatser som bedöms vara oviktiga.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> lade till en flik</translation>
 <translation id="2587052924345400782">Det finns en nyare version</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Logga in för att hantera inställningarna.</translation>
@@ -392,6 +395,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2781151931089541271">1 sekund kvar</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome har hittat ett återanvänt lösenord som du kan förbättra}other{Chrome har hittat # återanvända lösenord som du kan förbättra}}</translation>
+<translation id="2796651346651857052">Tryck länge på adressfältet om du vill ändra dess placering.</translation>
 <translation id="2800066122460699237">Fliken <ph name="TAB_TITLE" /> stängs</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="281504910091592009">Visa och hantera sparade lösenord i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /></translation>
@@ -938,6 +942,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5301876394151419436">Du är inloggad som <ph name="EMAIL" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="5304593522240415983">Fältet får inte vara tomt</translation>
 <translation id="5306014156308790439">Lägg till i samling har inaktiverats</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ändrade gruppfärgen</translation>
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5310963254742922113">Lösenordet har använts.</translation>
 <translation id="5316947901395241499">Funktionen för att spara lösenord har inaktiverats av administratören</translation>
@@ -949,6 +954,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="534580735623577507">Inga webbplatser från <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
 <translation id="5364112109233799727">Webbadressen till sidan du ger feedback om skickas till Google och kan granskas av människor för att förbättra den här funktionen</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ändrade en flik</translation>
 <translation id="5375374982898812658">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla dina enheter</translation>
 <translation id="5375577065097716013">Bildsökning med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Avsluta inkognito</translation>
@@ -1112,6 +1118,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="60923314841986378"><ph name="HOURS" /> timmar kvar</translation>
 <translation id="6095578583683628124">Om du även använder Google som standardsökmotor får du bättre förslag som är relevanta i sammanhanget</translation>
 <translation id="610630277578876674">Öppna snabbt länkar i meddelanden och annat</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ändrade gruppnamnet</translation>
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
 <translation id="6112702117600201073">Uppdaterar sidan</translation>
 <translation id="6122831415929794347">Vill du inaktivera Säker webbsökning?</translation>
@@ -1326,6 +1333,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 flik}other{<ph name="NUMBER_OF_TABS" /> flikar}}</translation>
 <translation id="6929224077895306814">Alla säkerhetskoder som sparas på enheten och i Google-kontot raderas</translation>
 <translation id="6937524809504266803">Anpassning och länkning</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Namn (valfritt)</translation>
 <translation id="6942665639005891494">Ändra standardplats för nedladdningar när som helst via alternativet i inställningsmenyn</translation>
 <translation id="694267552845942083">Du anpassar synkroniseringsinställningarna. Aktivera synkroniseringen genom att trycka på Bekräfta längst ned på skärmen. Navigera uppåt</translation>
@@ -1494,6 +1502,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7656721520530864426">Inga sidor</translation>
 <translation id="7656862631699126784">Aktivera inkognitolås</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> lämnade gruppen</translation>
 <translation id="7663320421139257046"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />integritetspolicy<ph name="END_LINK1" />.</translation>
 <translation id="7665369617277396874">Lägg till konto</translation>
 <translation id="766587987807204883">Artiklar som du kan läsa även när du är offline visas här</translation>

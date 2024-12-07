@@ -342,6 +342,7 @@
 <translation id="1223853788495130632">管理員為這項設定推薦特定的值。</translation>
 <translation id="1225177025209879837">正在處理要求…</translation>
 <translation id="1227107020813934021">尋找文件掃瞄器</translation>
+<translation id="1227113644794103810">閒置分頁</translation>
 <translation id="1227260640693522019">城堡</translation>
 <translation id="1227660082540388410">編輯密鑰</translation>
 <translation id="1227993798763400520">無法投放，請再試一次。</translation>
@@ -4014,7 +4015,7 @@
 <translation id="3794792524918736965">開啟 Windows Hello</translation>
 <translation id="379509625511193653">關閉</translation>
 <translation id="3796215473395753611">Alt 鍵 + 向上箭咀鍵</translation>
-<translation id="3796421550129770366"><ph name="LANGUAGE" />，點選播放按鈕可試聽語音</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />，用向右箭咀鍵預覽語音</translation>
 <translation id="3796648294839530037">常用的網絡：</translation>
 <translation id="3797739167230984533">您的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 由機構管理<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">在 <ph name="SEARCH_ENGINE" /> 上搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>

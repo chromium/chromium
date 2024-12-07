@@ -146,8 +146,10 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> éléments suggérés dans la liste ci-dessous.</translation>
 <translation id="1598163867407640634">Utiliser <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Activée : utilisez et enregistrez des données dans votre compte Google. Désactivée : les données sont enregistrées uniquement sur cet appareil.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> a retiré un onglet</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Supprimer 1 élément sélectionné}one{Supprimer # élément sélectionné}other{Supprimer # éléments sélectionnés}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, <ph name="ACCOUNT_EMAIL" />.}one{# favori et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, <ph name="ACCOUNT_EMAIL" />.}other{# favoris et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> s'est joint au groupe</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="164269334534774161">Vous consultez une copie hors ligne de cette page qui a été créée le <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historique</translation>
@@ -347,6 +349,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2578337197553672982">Contenu de Google pour les jeunes esprits</translation>
 <translation id="2579297619530305344">Mots de passe sur tous vos appareils ouverts à pleine hauteur</translation>
 <translation id="2581165646603367611">Cette action entraînera la suppression de tous les témoins, caches et autres données provenant de sites que Chrome estime ne pas être importants.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> a ajouté un onglet</translation>
 <translation id="2587052924345400782">Version plus récente dispo</translation>
 <translation id="2593272815202181319">Espace simple</translation>
 <translation id="2603212228005142861">Connectez-vous pour gérer vos préférences</translation>
@@ -392,6 +395,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2781151931089541271">Il reste 1 s</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome a trouvé un mot de passe réutilisé que vous pourriez améliorer}one{Chrome a trouvé # mot de passe réutilisé que vous pourriez améliorer}other{Chrome a trouvé # mots de passe réutilisés que vous pourriez améliorer}}</translation>
+<translation id="2796651346651857052">Maintenez le doigt sur la barre d'adresse pour modifier sa position.</translation>
 <translation id="2800066122460699237">L'onglet <ph name="TAB_TITLE" /> sera fermé</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="281504910091592009">Affichez et gérez les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte google<ph name="END_LINK" /></translation>
@@ -937,6 +941,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5301876394151419436">Vous êtes connecté en tant que <ph name="EMAIL" />. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5304593522240415983">Ce champ ne peut être vide</translation>
 <translation id="5306014156308790439">Option Ajouter à la collection désactivée</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> a modifié la couleur du groupe</translation>
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5310963254742922113">Mot de passe utilisé.</translation>
 <translation id="5316947901395241499">L'enregistrement des mots de passe est désactivé par votre administrateur</translation>
@@ -948,6 +953,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="534580735623577507">Aucun site à partir du <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="5364112109233799727">L'URL de la page pour laquelle vous envoyez des commentaires sera envoyée à Google et pourra être examinée par des humains pour améliorer cette fonctionnalité</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> a modifié un onglet</translation>
 <translation id="5375374982898812658">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils.</translation>
 <translation id="5375577065097716013">Rechercher l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Quitter le mode Navigation privée</translation>
@@ -1111,6 +1117,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="60923314841986378">Il reste <ph name="HOURS" /> heures</translation>
 <translation id="6095578583683628124">Si Google est également votre moteur de recherche par défaut, vous verrez de meilleures suggestions pertinentes selon le contexte</translation>
 <translation id="610630277578876674">Ouvrez rapidement les liens dans les messages et plus</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> a modifié le nom du groupe</translation>
 <translation id="6108923351542677676">Configuration en cours...</translation>
 <translation id="6112702117600201073">Actualisation de la page en cours</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée?</translation>
@@ -1325,6 +1332,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>
 <translation id="6929224077895306814">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
 <translation id="6937524809504266803">Personnalisation, association</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Pseudo (facultatif)</translation>
 <translation id="6942665639005891494">Vous pouvez changer le dossier de téléchargement par défaut en tout temps grâce à l'option de menu Paramètres.</translation>
 <translation id="694267552845942083">Vous êtes en train de personnaliser vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir en haut</translation>
@@ -1493,6 +1501,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7656721520530864426">Aucun site</translation>
 <translation id="7656862631699126784">Activer le verrouillage en navigation privée</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> a quitté le groupe</translation>
 <translation id="7663320421139257046">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre <ph name="FIELDS_STRING" /> avec ce site. Consultez la <ph name="BEGIN_LINK1" />politique de confidentialité<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="766587987807204883">Les articles s'affichent ici, et vous pouvez les lire même lorsque vous êtes hors ligne</translation>

@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">નીચે આપેલી સૂચિમાં સૂચવેલી <ph name="SUGGESTIONS_COUNT" /> આઇટમ છે.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> સાથે <ph name="SITE_ETLD_PLUS_ONE" />નો ઉપયોગ કરો</translation>
 <translation id="160275202205869636">ચાલુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં ડેટાનો ઉપયોગ કરે છે અને તેને સાચવે છે. બંધ હોય ત્યારે, ડેટા ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબ કાઢી નાખ્યું</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{પસંદ કરેલ 1 આઇટમ દૂર કરો}one{પસંદ કરેલ # આઇટમ દૂર કરો}other{પસંદ કરેલ # આઇટમ દૂર કરો}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}one{# બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}other{# બુકમાર્ક અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ગ્રૂપમાં જોડાયા</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
 <translation id="164269334534774161">તમે <ph name="CREATION_TIME" />માંથી આ પેજની ઑફલાઇન કૉપિ જોઈ રહ્યા છો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">બાળકો માટે Googleનું કન્ટેન્ટ</translation>
 <translation id="2579297619530305344">'તમારા બધા ડિવાઇસ પર પાસવર્ડ' શીટ પૂરી ઊંચાઈ સુધી ખોલી</translation>
 <translation id="2581165646603367611">આ કુકી, કૅશ અને Chromeને લાગતું હોય કે આ મહત્વનું નથી એવા સાઇટના બીજા ડેટાને સાફ કરશે.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબ ઉમેર્યું</translation>
 <translation id="2587052924345400782">નવું વર્ઝન ઉપલબ્ધ છે</translation>
 <translation id="2593272815202181319">મોનોસ્પેસ</translation>
 <translation id="2603212228005142861">તમારી પસંદગીઓ મેનેજ કરવા માટે, સાઇન ઇન કરો</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
 <translation id="2789486458103222910">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chromeને ફરીથી ઉપયોગમાં લેવાયેલો કોઈ પાસવર્ડ મળી આવ્યો છે જેને તમે બહેતર બનાવી શકો છો}one{Chromeને ફરીથી ઉપયોગમાં લેવાયેલો એવો # પાસવર્ડ મળી આવ્યો છે જેને તમે બહેતર બનાવી શકો છો}other{Chromeને ફરીથી ઉપયોગમાં લેવાયેલા એવા # પાસવર્ડ મળી આવ્યા છે જેમને તમે બહેતર બનાવી શકો છો}}</translation>
+<translation id="2796651346651857052">ઍડ્રેસ બારની સ્થિતિ બદલવા માટે તેને ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ટૅબ બંધ કરવામાં આવશે</translation>
 <translation id="2805756323405976993">ઍપ</translation>
 <translation id="281504910091592009">સાચવેલા પાસવર્ડ તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માં જુઓ અને મેનેજ કરો</translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">તમે <ph name="EMAIL" /> તરીકે સાઇન ઇન કર્યું છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="5304593522240415983">આ ફીલ્ડ ખાલી હોઈ શકતું નથી</translation>
 <translation id="5306014156308790439">'સંગ્રહમાં ઉમેરો' બટન બંધ કર્યું છે</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપના રંગમાં ફેરફાર કર્યો</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
 <translation id="5310963254742922113">પાસવર્ડનો ઉપયોગ કરવામાં આવ્યો.</translation>
 <translation id="5316947901395241499">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ સાચવવાની સુવિધા બંધ કરવામાં આવી છે</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />માં કોઈપણ સાઇટની મુલાકાત લેવામાં આવી નથી</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="5364112109233799727">તમે જે પેજ માટે પ્રતિસાદ આપી રહ્યાં છો તેનું URL Googleને મોકલવામાં આવશે અને આ સુવિધાને બહેતર બનાવવા માટે માનવો દ્વારા તેનો રિવ્યૂ કરવામાં આવી શકે છે</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબમાં ફેરફાર કર્યો</translation>
 <translation id="5375374982898812658">તમે તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને તમારા બધા ડિવાઇસમાંથી તે ડિલીટ કરવામાં આવશે</translation>
 <translation id="5375577065097716013">Google Lens વડે છબી શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">છૂપા મોડમાંથી સ્વિચ આઉટ કરો</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378"><ph name="HOURS" /> કલાક બાકી</translation>
 <translation id="6095578583683628124">જો Google તમારું ડિફૉલ્ટ શોધ એન્જિન પણ હોય, તો તમને બહેતર અને સંદર્ભ સાથે સંબંધિત સૂચનો જોવા મળશે</translation>
 <translation id="610630277578876674">મેસેજમાં ઝડપથી લિંક ખોલો અને અન્ય ઘણી સુવિધાઓ મેળવો</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપના નામમાં ફેરફાર કર્યો</translation>
 <translation id="6108923351542677676">સેટઅપની પ્રક્રિયા ચાલુ છે...</translation>
 <translation id="6112702117600201073">પેજ રિફ્રેશ કરી રહ્યાં છીએ</translation>
 <translation id="6122831415929794347">Safe Browsing બંધ કરીએ?</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ટૅબ}one{<ph name="NUMBER_OF_TABS" /> ટૅબ}other{<ph name="NUMBER_OF_TABS" /> ટૅબ}}</translation>
 <translation id="6929224077895306814">તમારા ડિવાઇસ અને તમારા Google એકાઉન્ટમાં સાચવવામાં આવેલા બધા સુરક્ષા કોડ ડિલીટ કરવામાં આવશે</translation>
 <translation id="6937524809504266803">મનગમતું બનાવવું અને લિંક કરવું</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ઉપનામ (વૈકલ્પિક)</translation>
 <translation id="6942665639005891494">સેટિંગ મેનૂ વિકલ્પનો ઉપયોગ કરીને ડિફૉલ્ટ ડાઉનલોડ સ્થાનને કોઈપણ સમયે બદલો</translation>
 <translation id="694267552845942083">તમે હાલમાં તમારા સિંક સેટિંગને કસ્ટમાઇઝ કરી રહ્યાં છો. સિંક ચાલુ કરવાનું પૂર્ણ કરવા માટે, સ્ક્રીનની નીચેની બાજુએ કન્ફર્મ કરો બટન પર ટૅપ કરો. ઉપર નૅવિગેટ કરો</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">કોઈ સાઇટ નથી</translation>
 <translation id="7656862631699126784">છૂપી ટૅબને લૉક કરવાનો મોડ ચાલુ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" />એ ગ્રૂપ છોડી દીધું</translation>
 <translation id="7663320421139257046">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું <ph name="FIELDS_STRING" /> આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> જુઓ.</translation>
 <translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
 <translation id="766587987807204883">લેખો અહીં દેખાય છે, જે તમે ઑફલાઇન હો ત્યારે પણ વાંચી શકો છો</translation>

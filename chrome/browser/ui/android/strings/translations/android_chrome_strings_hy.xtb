@@ -146,8 +146,10 @@
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> առաջարկվող տարր ներքևի ցուցակում։</translation>
 <translation id="1598163867407640634">Օգտագործեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքը <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="160275202205869636">Երբ պարամետրը միացված է, կարող եք օգտագործել և պահել տվյալները ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում։</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> օգտատերը ներդիր է հեռացրել</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Հեռացնել ընտրված 1 տարրը}one{Հեռացնել ընտրված # տարրը}other{Հեռացնել ընտրված # տարրերը}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Էջանիշը և տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}one{# էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Էջանիշը և տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}other{# էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Էջանինշները և տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում (<ph name="ACCOUNT_EMAIL" />)։}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> օգտատերը միացել է խմբին</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="164269334534774161">Դուք դիտում եք տվյալ էջի <ph name="CREATION_TIME" />-ի անցանց պատճենը</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">Բովանդակություն Google-ի կողմից երեխաների համար</translation>
 <translation id="2579297619530305344">«Գաղտնաբառերը ձեր բոլոր սարքերում» պատուհանը բացված է ամբողջությամբ</translation>
 <translation id="2581165646603367611">Բոլոր քուքիները, քեշը և այլ տվյալները, որոնք Chrome-ին անհրաժեշտ չեն, կջնջվեն:</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> օգտատերը ներդիր է ավելացրել</translation>
 <translation id="2587052924345400782">Հասանելի է նոր տարբերակ</translation>
 <translation id="2593272815202181319">Միալայն</translation>
 <translation id="2603212228005142861">Մտեք հաշիվ՝ ձեր կարգավորումները կառավարելու համար</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">Մնացել է 1 վրկ</translation>
 <translation id="2789486458103222910">Եղավ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome-ը կրկնվող գաղտնաբառ է գտել, որը կարող եք ավելի հուսալի դարձնել}one{Chrome-ը # կրկնվող գաղտնաբառ է գտել, որը կարող եք ավելի հուսալի դարձնել}other{Chrome-ը # կրկնվող գաղտնաբառ է գտել, որոնք կարող եք ավելի հուսալի դարձնել}}</translation>
+<translation id="2796651346651857052">Հպեք հասցեագոտուն և պահեք՝ դիրքեը փոխելու համար։</translation>
 <translation id="2800066122460699237">«<ph name="TAB_TITLE" />» ներդիրը կփակվի</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="281504910091592009">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">Դուք մուտք եք գործել որպես <ph name="EMAIL" />։ Ցանկացած ժամանակ կարգավորումներում կարող եք կանգնեցնել համաժամացումը։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
 <translation id="5304593522240415983">Այս դաշտը չի կարող դատարկ լինել</translation>
 <translation id="5306014156308790439">Հավաքածուին ավելացնելու գործառույթն անջատված է</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոխել է խմբի գույնը</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
 <translation id="5310963254742922113">Գաղտնաբառն օգտագործվել է։</translation>
 <translation id="5316947901395241499">Ձեր ադմինիստրատորն անջատել է գաղտնաբառերի պահումը</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507">Կայքեր չկան նշված ժամանակահատվածից (<ph name="TIME_PERIOD" />)</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5364112109233799727">Էջի URL-ը, որի մասին կարծիք եք հայտնում, կուղարկվի Google-ին և կարող է ստուգվել մասնագետների կողմից՝ այս գործառույթը բարելավելու համար</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոփոխել է ներդիր</translation>
 <translation id="5375374982898812658">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378">Մնացել է <ph name="HOURS" /> ժամ</translation>
 <translation id="6095578583683628124">Եթե Google-ը նաև ձեր կանխադրված որոնողական համակարգն է, դուք կտեսնեք ավելի լավ և համապատասխան առաջարկներ</translation>
 <translation id="610630277578876674">Արագ բացեք հղումները հաղորդագրություններում և ավելին</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոխել է խմբի անվանումը</translation>
 <translation id="6108923351542677676">Կարգավորումն ընթացքի մեջ է…</translation>
 <translation id="6112702117600201073">Էջի թարմացում</translation>
 <translation id="6122831415929794347">Անջատե՞լ ապահով դիտարկումը</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ներդիր}one{<ph name="NUMBER_OF_TABS" /> ներդիր}other{<ph name="NUMBER_OF_TABS" /> ներդիր}}</translation>
 <translation id="6929224077895306814">Անվտանգության բոլոր կոդերը, որոնք պահված են ձեր սարքում և Google հաշվում, կջնջվեն</translation>
 <translation id="6937524809504266803">Անհատականացում և կապում</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Կեղծանուն (պարտադիր չէ)</translation>
 <translation id="6942665639005891494">Դուք ցանկացած ժամանակ կարող եք փոխել ներբեռնումների կանխադրված պանակը կարգավորումներում</translation>
 <translation id="694267552845942083">Այս պահին դուք համաժամացման կարգավորումների էջում եք։ Համաժամացումը միացնելու համար սեղմեք «Հաստատել» կոճակը էկրանի ներքևի հատվածում: Անցնել վերև</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">Կայքեր չկան</translation>
 <translation id="7656862631699126784">Միացնել ինկոգնիտո ներդիրների կողպումը</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> օգտատերը հեռացել է խմբից</translation>
 <translation id="7663320421139257046">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" />։</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="766587987807204883">Հոդվածները ցուցադրվում են այստեղ։ Դրանք կարող եք կարդալ նույնիսկ անցանց ռեժիմում։</translation>

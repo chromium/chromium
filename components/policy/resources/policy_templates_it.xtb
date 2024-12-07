@@ -9267,15 +9267,6 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita nella schermata di accesso.</translation>
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
 <translation id="7781452670568828399">Modifica la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
-<translation id="7782770795171480507">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
-      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
-      Finora questo criterio funziona solo per la sessione Ospite gestita.
-
-      Ogni elemento nell'elenco del criterio è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata.
-
-      Ogni elemento può anche avere campi facoltativi: un nome del canale di rilascio/aggiornamento dell'IWA (update_channel) e una versione specifica da bloccare (pinned_version).
-      Se il criterio "update_channel" non viene configurato, verrà utilizzato il valore "default". Quando viene specificato pinned_version, il sistema tenta di installare quella versione specifica (se disponibile sul canale di aggiornamento corrente).
-      Per impostazione predefinita, il blocco della versione non consente di tornare alle versioni precedenti. Se blocchi un'IWA a una versione specifica, non può essere aggiornato oltre quella versione. Per sbloccare la versione, rimuovi questo campo.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7785199109546027763">Un criterio per controllare se la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
 

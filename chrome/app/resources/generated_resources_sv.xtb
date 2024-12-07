@@ -342,6 +342,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1223853788495130632">Administratören rekommenderar ett specifikt värde för den här inställningen.</translation>
 <translation id="1225177025209879837">Begäran bearbetas ...</translation>
 <translation id="1227107020813934021">Hitta dokumentskannrar</translation>
+<translation id="1227113644794103810">Inaktiva flikar</translation>
 <translation id="1227260640693522019">Slott</translation>
 <translation id="1227660082540388410">Redigera nyckel</translation>
 <translation id="1227993798763400520">Det gick inte att casta. Försök igen.</translation>
@@ -4017,6 +4018,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3794792524918736965">Aktivera Windows Hello</translation>
 <translation id="379509625511193653">Av</translation>
 <translation id="3796215473395753611">alt + uppåtpil</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, använd högerpilen för att förhandsgranska rösten</translation>
 <translation id="3796648294839530037">Favoritnätverk:</translation>
 <translation id="3797739167230984533">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> hanteras<ph name="END_LINK" /> av organisationen</translation>
 <translation id="3797900183766075808">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter ”<ph name="SEARCH_TERMS" />”</translation>

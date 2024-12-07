@@ -124,6 +124,7 @@
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="2910701580606108292">Preguntar antes de permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
+<translation id="2927133898344569563">Accede rápidamente a las pestañas sugeridas desde la lista de apps de tu dispositivo y en los resultados de la búsqueda del dispositivo. Puedes activar o desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2932883381142163287">Informar sobre abusos</translation>
 <translation id="2939338015096024043">Cuando esta opción está activada, los sitios pueden solicitar permiso para rastrear la posición de la cámara y obtener información sobre tu entorno. Cuando está desactivada, los sitios no pueden rastrear la posición de la cámara ni obtener información sobre tu entorno.</translation>
 <translation id="2968755619301702150">Visualizador de certificados</translation>
@@ -226,7 +227,7 @@
 <translation id="443552056913301231">Esta acción borrará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Silenciar un sitio específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
-<translation id="4478158430052450698">Facilitar la personalización del zoom para diferentes sitios</translation>
+<translation id="4478158430052450698">Facilita la personalización del zoom para diferentes sitios</translation>
 <translation id="4479647676395637221">Preguntar primero antes de permitir que los sitios usen tu cámara (recomendado)</translation>
 <translation id="4505788138578415521">URL expandida</translation>
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda a tu micrófono, actívalo también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
@@ -306,8 +307,8 @@
 <translation id="560980142378233747">Esto significa que las funciones de los sitios deberían poder usarse como se espera, pero es posible que tengas menos protección de navegación. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Cómo hacerlo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
-<translation id="5668404140385795438">Anular la solicitud de inhabilitación del zoom de un sitio web</translation>
-<translation id="5677928146339483299">Bloqueadas</translation>
+<translation id="5668404140385795438">Anula la solicitud de un sitio web para inhabilitar los acercamientos</translation>
+<translation id="5677928146339483299">Bloqueados</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en la configuración de Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> puede usar tu información mientras navegas</translation>
@@ -500,7 +501,7 @@
 <translation id="83792324527827022">Un sitio está utilizando la cámara y el micrófono</translation>
 <translation id="8380167699614421159">Este sitio muestra anuncios intrusivos o engañosos</translation>
 <translation id="8394832520002899662">Presiona para volver al sitio</translation>
-<translation id="8409345997656833551">Notificarme cada vez que se pueda mostrar la vista simplificada de un artículo</translation>
+<translation id="8409345997656833551">Recibe una notificación cada vez que se pueda mostrar la vista simplificada de un artículo</translation>
 <translation id="8423565414844018592">Se estableció el escalamiento de texto al <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8441146129660941386">Buscar más atrás</translation>

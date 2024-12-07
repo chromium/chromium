@@ -342,6 +342,7 @@
 <translation id="1223853788495130632">Администраторуңуз бул параметр үчүн өзгөчө маани сунуштайт.</translation>
 <translation id="1225177025209879837">Сурам иштелүүдө…</translation>
 <translation id="1227107020813934021">Документ сканерлерин табуу</translation>
+<translation id="1227113644794103810">Жигерсиз өтмөктөр</translation>
 <translation id="1227260640693522019">Сепил</translation>
 <translation id="1227660082540388410">Мүмкүндүк алуу ачкычын түзөтүү</translation>
 <translation id="1227993798763400520">Тышкы экранга чыгарылбай калды. Кайталап көрүңүз.</translation>
@@ -4017,6 +4018,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3794792524918736965">Windows Hello функциясын күйгүзүү</translation>
 <translation id="379509625511193653">Өчүк</translation>
 <translation id="3796215473395753611">alt + өйдө жебе</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, үндү угуп көрүү үчүн oңго жебе баскычын колдонуңуз</translation>
 <translation id="3796648294839530037">Сүйүктүү тармактар:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> түзмөгүңүз уюмуңуз тарабынан башкарылат<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;'<ph name="SEARCH_TERMS" />' дегенди <ph name="SEARCH_ENGINE" /> дегенден издөө</translation>

@@ -9098,15 +9098,6 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
           Als dit beleid niet is ingesteld, staan snelkoppelingen voor toegankelijkheidsfuncties standaard aan op het inlogscherm.</translation>
 <translation id="7777535871204167559">Externe opslagapparaten behandelen als alleen-lezen</translation>
 <translation id="7781452670568828399">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie wijzigen.</translation>
-<translation id="7782770795171480507">Als je het beleid instelt, geef je een lijst op met geïsoleerde web-apps (GWA's) die op de achtergrond worden geïnstalleerd.
-      GWA's zijn apps met nuttige beveiligingseigenschappen die niet beschikbaar zijn op normale webpagina's. Ze worden verpakt in een ondertekende webbundel. De openbare sleutel van de ondertekende webbundel wordt gebruikt om de webbundel-ID te maken waarmee de GWA wordt geïdentificeerd.
-      Dit beleid werkt tot nu toe alleen voor beheerde gastsessies.
-
-      Elk lijstitem van het beleid is een object met 2 verplichte velden: het updatemanifest <ph name="URL_LABEL" /> en de webbundel-ID van de geïsoleerde web-app.
-
-Elk item kan ook optionele velden hebben: een naam van het GWA-release-/updatekanaal (update_channel) en een specifieke versie om vast te zetten (pinned_version).
-      Als 'update_channel' niet is ingesteld, wordt de waarde 'default' gebruikt. Als de pinned_version is aangegeven, probeert het systeem die specifieke versie te installeren (als deze beschikbaar is op het huidige updatekanaal).
-      Als je een versie vastzet, kun je standaard niet teruggaan naar oudere versies. Als je een GWA vastzet op een specifieke versie, wordt voorkomen dat deze wordt geüpdatet naar een hogere versie dan die versie. Verwijder dit veld om de versie los te maken.</translation>
 <translation id="7784062550705119230">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID overeenkomt met de waarden in dit beleid, zijn beschikbaar voor gebruikers. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7785199109546027763">Beleid om te bepalen of de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.
 

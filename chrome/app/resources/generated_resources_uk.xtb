@@ -345,6 +345,7 @@
 <translation id="1223853788495130632">Адміністратор рекомендує конкретне значення для цього налаштування.</translation>
 <translation id="1225177025209879837">Обробка запиту…</translation>
 <translation id="1227107020813934021">Знайти сканери документів</translation>
+<translation id="1227113644794103810">Неактивні вкладки</translation>
 <translation id="1227260640693522019">Замок</translation>
 <translation id="1227660082540388410">Змінити ключ доступу</translation>
 <translation id="1227993798763400520">Не вдалося транслювати. Повторіть спробу.</translation>
@@ -4020,6 +4021,7 @@
 <translation id="3794792524918736965">Увімкніть Windows Hello</translation>
 <translation id="379509625511193653">Вимкнено</translation>
 <translation id="3796215473395753611">alt + стрілка вгору</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />. Щоб послухати голос, натисніть клавішу зі стрілкою вправо.</translation>
 <translation id="3796648294839530037">Улюблені мережі:</translation>
 <translation id="3797739167230984533">Пристроєм <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> керує<ph name="END_LINK" /> адміністратор вашої організації</translation>
 <translation id="3797900183766075808">&amp;Шукати "<ph name="SEARCH_TERMS" />" у <ph name="SEARCH_ENGINE" />.</translation>

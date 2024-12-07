@@ -146,8 +146,10 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> forslag på listen nedenfor.</translation>
 <translation id="1598163867407640634">Brug <ph name="SITE_ETLD_PLUS_ONE" /> hos <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Når denne indstilling er aktiveret, kan du bruge og gemme data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> har fjernet en fane</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}one{Fjern # valgt element}other{Fjern # valgte elementer}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 bogmærke og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# bogmærke og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# bogmærker og andre elementer er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> deltager nu i gruppen</translation>
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="164269334534774161">Du ser en offlinekopi af denne side fra <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -347,6 +349,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2578337197553672982">Google-indhold til børn og unge</translation>
 <translation id="2579297619530305344">Adgangskoder på alle dine enheder er åbnet i fuld højde</translation>
 <translation id="2581165646603367611">Dette rydder cookies, cache og andre data fra websites, som ikke er vigtige ifølge Chrome.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> har tilføjet en fane</translation>
 <translation id="2587052924345400782">Der findes en nyere version</translation>
 <translation id="2593272815202181319">Enkelt tegnafstand</translation>
 <translation id="2603212228005142861">Log ind for at administrere dine præferencer</translation>
@@ -392,6 +395,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2781151931089541271">1 sekund tilbage</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome har fundet en genbrugt adgangskode, som du kan forbedre}one{Chrome har fundet # genbrugt adgangskode, som du kan forbedre}other{Chrome har fundet # genbrugte adgangskoder, som du kan forbedre}}</translation>
+<translation id="2796651346651857052">Hold fingeren nede på adresselinjen for at ændre dens placering.</translation>
 <translation id="2800066122460699237">Fanen <ph name="TAB_TITLE" /> lukkes</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Se og administrer gemte adgangskoder på din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
@@ -937,6 +941,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5301876394151419436">Du er logget ind som <ph name="EMAIL" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester til dig personligt baseret på din historik.</translation>
 <translation id="5304593522240415983">Dette felt må ikke være tomt</translation>
 <translation id="5306014156308790439">Føj til samling er deaktiveret</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> har ændret gruppefarven</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="5310963254742922113">Adgangskoden blev brugt.</translation>
 <translation id="5316947901395241499">Din administrator har deaktiveret lagring af adgangskoder</translation>
@@ -948,6 +953,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="534580735623577507">Ingen websites fra <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Forbedret beskyttelse er aktiveret</translation>
 <translation id="5364112109233799727">Webadressen for den side, du giver feedback om, sendes til Google og gennemgås muligvis af mennesker med henblik på at forbedre denne funktion</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> har ændret en fane</translation>
 <translation id="5375374982898812658">Du mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle dine enheder</translation>
 <translation id="5375577065097716013">Søg efter billedet med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Skift væk fra inkognito</translation>
@@ -1111,6 +1117,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="60923314841986378"><ph name="HOURS" /> timer tilbage</translation>
 <translation id="6095578583683628124">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
 <translation id="610630277578876674">Åbn hurtigt links i beskeder og meget mere</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> har ændret gruppenavnet</translation>
 <translation id="6108923351542677676">Konfigurationen er i gang...</translation>
 <translation id="6112702117600201073">Opdaterer siden</translation>
 <translation id="6122831415929794347">Vil du deaktivere Beskyttet browsing?</translation>
@@ -1325,6 +1332,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 fane}one{<ph name="NUMBER_OF_TABS" /> fane}other{<ph name="NUMBER_OF_TABS" /> faner}}</translation>
 <translation id="6929224077895306814">Alle sikkerhedskoder, der er gemt på din enhed og på din Google-konto, slettes</translation>
 <translation id="6937524809504266803">Personlig tilpasning og tilknytning</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Kaldenavn (valgfrit)</translation>
 <translation id="6942665639005891494">Du kan til enhver tid ændre standardplaceringen for downloads via menuen Indstillinger</translation>
 <translation id="694267552845942083">Du er i øjeblikket ved at tilpasse dine indstillinger for Synkronisering. Afslut aktiveringen af Synkronisering ved at trykke på knappen Bekræft nederst på skærmen. Gå op</translation>
@@ -1493,6 +1501,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7656721520530864426">Ingen websites</translation>
 <translation id="7656862631699126784">Aktivér låsning af inkognitofaner</translation>
 <translation id="7658239707568436148">Annuller</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> har forladt gruppen</translation>
 <translation id="7663320421139257046">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> med dette website. Se <ph name="BEGIN_LINK1" />privatlivspolitikken<ph name="END_LINK1" /> for dette website.</translation>
 <translation id="7665369617277396874">Tilføj konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan læse, selv når du er offline</translation>

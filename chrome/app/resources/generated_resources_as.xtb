@@ -343,6 +343,7 @@
 <translation id="1223853788495130632">আপোনাৰ প্ৰশাসকে এই ছেটিঙৰ বাবে এটা বিশেষ মানৰ চুপাৰিছ কৰিছে।</translation>
 <translation id="1225177025209879837">অনুৰোধৰ ওপৰত প্ৰক্ৰিয়া চলি আছে…</translation>
 <translation id="1227107020813934021">নথিৰ স্কেনাৰ বিচাৰক</translation>
+<translation id="1227113644794103810">নিষ্ক্ৰিয় টেব</translation>
 <translation id="1227260640693522019">দুৰ্গ</translation>
 <translation id="1227660082540388410">পাছকী সম্পাদনা কৰক</translation>
 <translation id="1227993798763400520">কাষ্ট কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।</translation>
@@ -4015,6 +4016,7 @@
 <translation id="3794792524918736965">Windows Hello অন কৰক</translation>
 <translation id="379509625511193653">অফ আছে</translation>
 <translation id="3796215473395753611">alt + উপৰমুৱা কাঁড়</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, কণ্ঠধ্বনি পূৰ্বদৰ্শন কৰিবলৈ সোঁমুৱা কাঁড়চিহ্ন ব্যৱহাৰ কৰক</translation>
 <translation id="3796648294839530037">প্ৰিয় নেটৱর্ক:</translation>
 <translation id="3797739167230984533">আপোনাৰ প্ৰতিষ্ঠানৰ দ্বাৰা আপোনাৰ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> পৰিচালিত<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />”ৰ বাবে <ph name="SEARCH_ENGINE" />ত &amp;সন্ধান কৰক</translation>

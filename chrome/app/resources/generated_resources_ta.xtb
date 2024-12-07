@@ -342,6 +342,7 @@
 <translation id="1223853788495130632">இந்த அமைப்பிற்கான குறிப்பிட்ட மதிப்பை உங்கள் நிர்வாகி பரிந்துரைக்கிறார்.</translation>
 <translation id="1225177025209879837">கோரிக்கை செயலாக்கப்படுகிறது...</translation>
 <translation id="1227107020813934021">ஆவண ஸ்கேனர்களைக் கண்டறிதல்</translation>
+<translation id="1227113644794103810">செயலில் இல்லாத பக்கங்கள்</translation>
 <translation id="1227260640693522019">கோட்டை</translation>
 <translation id="1227660082540388410">கடவுக்குறியீட்டைத் திருத்துதல்</translation>
 <translation id="1227993798763400520">அலைபரப்ப முடியவில்லை. மீண்டும் முயலவும்.</translation>
@@ -4017,6 +4018,7 @@
 <translation id="3794792524918736965">Windows Hello அம்சத்தை இயக்குதல்</translation>
 <translation id="379509625511193653">ஆஃப்</translation>
 <translation id="3796215473395753611">Alt + மேல்நோக்கிய அம்புக்குறி</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, குரலைக் கேட்டுப்பார்க்க வலது அம்புக்குறி பட்டனைப் பயன்படுத்தவும்</translation>
 <translation id="3796648294839530037">பிடித்த நெட்வொர்க்குகள்:</translation>
 <translation id="3797739167230984533">உங்கள் நிறுவனம் உங்களுடைய <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> சாதனத்தை நிர்வகிக்கிறது<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> இல் “<ph name="SEARCH_TERMS" />” எனத் &amp;தேடு</translation>

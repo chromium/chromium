@@ -344,6 +344,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1223853788495130632">Administrator preporučuje određenu vrijednost za tu postavku.</translation>
 <translation id="1225177025209879837">Obrada zahtjeva...</translation>
 <translation id="1227107020813934021">Pronalaženje skenera dokumenata</translation>
+<translation id="1227113644794103810">Neaktivne kartice</translation>
 <translation id="1227260640693522019">Dvorac</translation>
 <translation id="1227660082540388410">Uređivanje pristupnog ključa</translation>
 <translation id="1227993798763400520">Emitiranje nije uspjelo. Pokušajte ponovo.</translation>
@@ -1495,6 +1496,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="202352106777823113">Preuzimanje je trajalo predugo pa ga je mreža zaustavila.</translation>
 <translation id="2024195579772565064">Brisanje tražilice</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Precizni klik</translation>
 <translation id="2025632980034333559">Aplikacija <ph name="APP_NAME" /> srušila se. Kliknite ovaj balon za ponovno učitavanje ekstenzije.</translation>
 <translation id="2026377162111110983">Glas u prostoru</translation>
 <translation id="2028449514182362831">Značajke kojima su potrebni senzori kretanja neće raditi</translation>
@@ -4751,6 +4753,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4324577459193912240">Nepotpuna datoteka</translation>
 <translation id="4325237902968425115">Deinstaliranje aplikacije <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">Pohrana i napajanje</translation>
+<translation id="4325515113816851466">Postavke koje je odabrao tvoj roditelj neće se primjenjivati nakon što se odjaviš</translation>
 <translation id="4326146840124313313">Chromeova najjača zaštita čini više toga kako bi vas zaštitila od opasnih web-lokacija, preuzimanja i proširenja</translation>
 <translation id="4327380114687339519">Izbornik proširenja</translation>
 <translation id="4330191372652740264">Ledena voda</translation>
@@ -4873,6 +4876,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4412992751769744546">Dopusti kolačiće trećih strana</translation>
 <translation id="4413087696295876280">Čitaj informacije uređaja s Chrome OS-om Flex i podatke o uređaju</translation>
 <translation id="44137799675104237">Slušanje teksta izgovorenog prirodnim glasom</translation>
+<translation id="4414051792721275732">Kad izvedete pokret za klik, brzina miša smanjit će se kako bi se pružila veća kontrola. Ponovo izvedite pokret da biste dovršili klik.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Dopustiti aplikaciji "<ph name="APP_NAME" />" pristup popisu vaših spojenih USB uređaja?</translation>
 <translation id="4414232939543644979">&amp;Novi anoniman prozor</translation>
@@ -6199,6 +6203,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5389224261615877010">Duga</translation>
 <translation id="5389626883706033615">Web-lokacije od vas ne smiju tražiti da odobrite korištenje podataka koje je spremila o vama</translation>
 <translation id="5389794555912875905">Prikaži upozorenja prije prelaska na nesigurne web-lokacije (preporučeno)</translation>
+<translation id="5389943529251318913">Smanji brzinu miša za</translation>
 <translation id="5390112241331447203">Uključi system_logs.txt datoteku koja se šalje u izvješćima s povratnim informacijama.</translation>
 <translation id="5390677308841849479">Tamnocrvena i narančasta</translation>
 <translation id="5392192690789334093">Dopušteno je slanje obavijesti</translation>

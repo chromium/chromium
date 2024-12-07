@@ -342,6 +342,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1223853788495130632">El administrador recomienda un valor específico para esta configuración.</translation>
 <translation id="1225177025209879837">Procesando la solicitud...</translation>
 <translation id="1227107020813934021">Encuentra escáneres de documentos</translation>
+<translation id="1227113644794103810">Pestañas inactivas</translation>
 <translation id="1227260640693522019">Castillo</translation>
 <translation id="1227660082540388410">Edita la llave de acceso</translation>
 <translation id="1227993798763400520">No se pudo transmitir el contenido, vuelve a intentarlo</translation>
@@ -4001,6 +4002,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3794792524918736965">Activa Windows Hello</translation>
 <translation id="379509625511193653">No</translation>
 <translation id="3796215473395753611">Alt + flecha hacia arriba</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, usa la tecla de flecha hacia la derecha para obtener una vista previa de la voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
 <translation id="3797739167230984533">Tu organización <ph name="BEGIN_LINK" />administra tu <ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;Buscar "<ph name="SEARCH_TERMS" />" en <ph name="SEARCH_ENGINE" /></translation>
@@ -5498,7 +5500,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4871568871368204250">Desactivar la sincronización</translation>
 <translation id="4871719318659334896">Cerrar grupo</translation>
 <translation id="4872192066608821120">Para importar contraseñas, selecciona un archivo CSV.</translation>
-<translation id="4872212987539553601">Configura la encriptación integrada en el dispositivo</translation>
+<translation id="4872212987539553601">Configurar la encriptación integrada en el dispositivo</translation>
 <translation id="4873312501243535625">Comprobador de archivos multimedia</translation>
 <translation id="4875690134140862902">Pestaña</translation>
 <translation id="4876273079589074638">¡Ayuda a que nuestros ingenieros investiguen y solucionen este fallo! Enumera los pasos exactos si es posible. No omitas ningún detalle.</translation>
@@ -6595,7 +6597,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="567587836466137939">Este dispositivo recibirá actualizaciones automáticas de software y seguridad hasta <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="567740581294087470">¿Qué tipo de comentarios envías?</translation>
 <translation id="5677503058916217575">Idioma de la página:</translation>
-<translation id="5677928146339483299">Bloqueadas</translation>
+<translation id="5677928146339483299">Bloqueados</translation>
 <translation id="5678550637669481956">Se concedió acceso de lectura y escritura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Se está enviando a <ph name="WEB_DRIVE" />.</translation>
 <translation id="5678955352098267522">Leer los datos en <ph name="WEBSITE_1" /></translation>

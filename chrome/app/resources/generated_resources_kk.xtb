@@ -342,6 +342,7 @@
 <translation id="1223853788495130632">Әкімшіңіз бұл параметр үшін арнайы мәнді ұсынады.</translation>
 <translation id="1225177025209879837">Сұрау өңделуде…</translation>
 <translation id="1227107020813934021">Құжат сканерлерін табу</translation>
+<translation id="1227113644794103810">Белсенді емес қойындылар</translation>
 <translation id="1227260640693522019">Қамал</translation>
 <translation id="1227660082540388410">Кіру кілтін өзгерту</translation>
 <translation id="1227993798763400520">Трансляцияланбады. Қайталап көріңіз.</translation>
@@ -3999,6 +4000,7 @@
 <translation id="3794792524918736965">Windows Hello-ды қосу</translation>
 <translation id="379509625511193653">Өшірулі</translation>
 <translation id="3796215473395753611">alt + жоғары бағыт пернесі</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />. Дауысты алдын ала тыңдап көру үшін оң бағыт пернесін басыңыз</translation>
 <translation id="3796648294839530037">Таңдаулы желілер:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="END_LINK" /> ұйым басқарады.</translation>
 <translation id="3797900183766075808">"<ph name="SEARCH_TERMS" />" сөзін <ph name="SEARCH_ENGINE" /> бойынша &amp;іздеу</translation>

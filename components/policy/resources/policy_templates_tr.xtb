@@ -9313,15 +9313,6 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
           Bu politika ayarlanmadan bırakılırsa giriş ekranında erişilebilirlik özellikleri kısayolları varsayılan olarak etkinleştirilir.</translation>
 <translation id="7777535871204167559">Harici depolama cihazlarını salt okunur olarak ele al</translation>
 <translation id="7781452670568828399">Önerilen <ph name="PRODUCT_OS_NAME" /> yapılandırmasını değiştir.</translation>
-<translation id="7782770795171480507">Politika ayarlanırsa sessiz bir şekilde yüklenen izole web uygulamalarının (IWA) listesi belirtilir.
-      IWA'lar, normal web sayfalarında mevcut olmayan yararlı güvenlik özelliklerine sahip uygulamalardır. Bunlar, imzalanmış Web Bundle'da yer alır. İmzalanmış Web Bundle'ın ortak anahtarı, IWA'yı tanımlayan Web Bundle kimliğini oluşturmak için kullanılır.
-      Bu politika şimdilik yalnızca yönetilen misafir oturumunda geçerlidir.
-
-      Politikanın her liste öğesi, iki zorunlu alan içeren bir nesnedir: <ph name="URL_LABEL" /> güncelleme manifesti ve yalıtılmış web uygulamasının web paketi kimliği.
-
-      Her öğede ayrıca isteğe bağlı alanlar da bulunabilir: bir IWA sürüm/güncelleme kanalının adı (update_channel) ve sabitlenecek belirli bir sürüm (pinned_version).
-      "update_channel" ayarlanmazsa "default" değeri kullanılır. pinned_version belirtildiğinde sistem, mevcut güncelleme kanalında varsa söz konusu sürümü yüklemeyi dener.
-      Sürüm sabitleme özelliği varsayılan olarak eski sürümlere geri dönmenize izin vermez. IWA'yı belirli bir sürüme sabitlerseniz bu sürümden sonraki sürümlere güncellenmesi engellenir. Sabitlemeyi kaldırmak için bu alanı kaldırın.</translation>
 <translation id="7784062550705119230"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> için <ph name="PRINTERS_ALLOWLIST" /> seçiliyken <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> politikası ayarlanırsa kullanıcıların hangi yazıcıları kullanabileceği belirlenir. Kullanıcılar yalnızca bu politikadaki değerlerle eşleşen kimliklere sahip yazıcıları kullanabilir. Kimliklerin, <ph name="DEVICE_PRINTERS_POLICY_NAME" /> politikasında belirtilen dosyadaki <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarına karşılık gelmesi gerekir.</translation>
 <translation id="7785199109546027763"><ph name="PRIVACY_SANDBOX_NAME" /> IP koruması özelliğinin etkinleştirilip etkinleştirilmeyeceğini kontrol eden bir politika.
 

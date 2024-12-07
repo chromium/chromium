@@ -210,7 +210,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1139923033416533844">Utilisation de la mémoire</translation>
 <translation id="1140317858355046628">Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> » et il sera supprimé de tous les appareils.</translation>
 <translation id="1140351953533677694">Accéder à vos appareils connectés par Bluetooth et en série</translation>
-<translation id="114036956334641753">Audio et sous-titres</translation>
+<translation id="114036956334641753">Son et sous-titres</translation>
 <translation id="1142002900084379065">Photos récentes</translation>
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1143142264369994168">Signataire du certificat</translation>
@@ -343,6 +343,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1223853788495130632">Votre administrateur recommande une valeur particulière pour ce paramètre.</translation>
 <translation id="1225177025209879837">Traitement de la demande en cours…</translation>
 <translation id="1227107020813934021">Trouver des numériseurs de documents</translation>
+<translation id="1227113644794103810">Onglets inactifs</translation>
 <translation id="1227260640693522019">Château</translation>
 <translation id="1227660082540388410">Modifier la clé d'accès</translation>
 <translation id="1227993798763400520">Échec de la diffusion. Veuillez réessayer.</translation>
@@ -4007,6 +4008,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3794792524918736965">Activer Windows Hello</translation>
 <translation id="379509625511193653">Désactivé</translation>
 <translation id="3796215473395753611">alt+flèche vers le haut</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, utilisez la flèche vers la droite pour entendre un aperçu de la voix</translation>
 <translation id="3796648294839530037">Réseaux favoris :</translation>
 <translation id="3797739167230984533">Votre <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> est géré par votre organisation</translation>
 <translation id="3797900183766075808">Rechercher <ph name="SEARCH_TERMS" /> avec <ph name="SEARCH_ENGINE" /></translation>

@@ -342,6 +342,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1223853788495130632">O gestor recomenda um valor específico para esta definição.</translation>
 <translation id="1225177025209879837">A processar o pedido...</translation>
 <translation id="1227107020813934021">Encontre leitores de documentos</translation>
+<translation id="1227113644794103810">Separadores inativos</translation>
 <translation id="1227260640693522019">Castelo</translation>
 <translation id="1227660082540388410">Edite o token de acesso</translation>
 <translation id="1227993798763400520">Falha ao transmitir o conteúdo. Tente novamente.</translation>
@@ -1493,6 +1494,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="202352106777823113">A transferência estava a demorar demasiado tempo e foi interrompida pela rede.</translation>
 <translation id="2024195579772565064">Elimine o motor de pesquisa</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Clique de precisão</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> falhou. Clique neste balão para recarregar a extensão.</translation>
 <translation id="2026377162111110983">Voz da área</translation>
 <translation id="2028449514182362831">As funcionalidades que precisam de sensores de movimentos não funcionam</translation>
@@ -4750,6 +4752,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4324577459193912240">Ficheiro incompleto</translation>
 <translation id="4325237902968425115">A desinstalar <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Armazenamento e alimentação</translation>
+<translation id="4325515113816851466">As escolhas dos teus pais deixam de ser aplicadas depois de terminares sessão</translation>
 <translation id="4326146840124313313">A segurança mais avançada do Chrome faz mais para proteger contra Websites, transferências e extensões perigosos</translation>
 <translation id="4327380114687339519">Menu de extensões</translation>
 <translation id="4330191372652740264">Água gelada</translation>
@@ -4872,6 +4875,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4413087696295876280">Ler dados e informações de dispositivos com ChromeOS Flex</translation>
 <translation id="44137799675104237">Ouvir o texto com voz natural</translation>
+<translation id="4414051792721275732">Quando faz um gesto para clicar, a velocidade do rato diminui para proporcionar mais controlo. Execute o gesto novamente para concluir o clique.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Permitir que o "<ph name="APP_NAME" />" obtenha a lista dos seus dispositivos USB associados?</translation>
 <translation id="4414232939543644979">Nova Janela de Navegação Anón&amp;ima</translation>
@@ -6200,6 +6204,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5389224261615877010">Arco-íris</translation>
 <translation id="5389626883706033615">Os sites estão impedidos de pedir para usar informações que guardaram sobre si</translation>
 <translation id="5389794555912875905">Ver avisos antes de aceder a sites inseguros (recomendado)</translation>
+<translation id="5389943529251318913">Reduzir a velocidade do rato em</translation>
 <translation id="5390112241331447203">Inclua o ficheiro system_logs.txt enviado nos relatórios de feedback.</translation>
 <translation id="5390677308841849479">Vermelho escuro e laranja</translation>
 <translation id="5392192690789334093">Com autorização para enviar notificações</translation>

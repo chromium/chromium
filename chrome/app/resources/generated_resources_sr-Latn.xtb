@@ -344,6 +344,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1223853788495130632">Administrator preporučuje određenu vrednost za ovo podešavanje.</translation>
 <translation id="1225177025209879837">Obrada zahteva...</translation>
 <translation id="1227107020813934021">Pronađite skenere dokumenata</translation>
+<translation id="1227113644794103810">Neaktivne kartice</translation>
 <translation id="1227260640693522019">Zamak</translation>
 <translation id="1227660082540388410">Izmenite pristupni kôd</translation>
 <translation id="1227993798763400520">Prebacivanje nije uspelo. Probajte ponovo.</translation>
@@ -1491,6 +1492,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="202352106777823113">Preuzimanje je trajalo predugo pa ga je mreža zaustavila.</translation>
 <translation id="2024195579772565064">Izbrišite pretraživač</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Precizni klik</translation>
 <translation id="2025632980034333559">Dodatak <ph name="APP_NAME" /> je otkazao. Kliknite na ovaj oblačić da biste ga ponovo učitali.</translation>
 <translation id="2026377162111110983">Glas u prostoru</translation>
 <translation id="2028449514182362831">Funkcije kojima su potrebni senzori pokreta neće raditi</translation>
@@ -4747,6 +4749,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4324577459193912240">Datoteka je nepotpuna</translation>
 <translation id="4325237902968425115">Deinstalira se <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">Memorijski prostor i napajanje</translation>
+<translation id="4325515113816851466">Izabrane opcije roditelja neće važiti kada se odjaviš</translation>
 <translation id="4326146840124313313">Najjača Chrome zaštita vam pruža dodatnu zaštitu od opasnih veb-sajtova, preuzimanja i dodataka</translation>
 <translation id="4327380114687339519">Meni Dodaci</translation>
 <translation id="4330191372652740264">Voda sa ledom</translation>
@@ -4869,6 +4872,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4412992751769744546">Dozvoli kolačiće treće strane</translation>
 <translation id="4413087696295876280">Čitanje informacija o ChromeOS Flex uređajima i podataka sa uređaja</translation>
 <translation id="44137799675104237">Slušajte tekst sa prirodnim glasom</translation>
+<translation id="4414051792721275732">Kada obavite pokret za klik, brzina miša će se smanjiti da biste imali veću kontrolu. Ponovite pokret da biste dovršili klik.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Želite li da dozvolite da „<ph name="APP_NAME" />“ dobije listu priključenih USB uređaja?</translation>
 <translation id="4414232939543644979">Novi &amp;prozor bez arhiviranja</translation>
@@ -6196,6 +6200,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5389224261615877010">Duga</translation>
 <translation id="5389626883706033615">Sajtovima je onemogućeno da traže da koriste informacije koje su sačuvali o vama</translation>
 <translation id="5389794555912875905">Prikaži upozorenja pre odlaska na nebezbedne sajtove (preporučeno)</translation>
+<translation id="5389943529251318913">Smanjite brzinu miša za</translation>
 <translation id="5390112241331447203">Uvrsti datoteku system_logs.txt koja se šalje u izveštajima sa povratnim informacijama.</translation>
 <translation id="5390677308841849479">Tamnocrvena i narandžasta</translation>
 <translation id="5392192690789334093">Dozvoljeno je slanje obaveštenja</translation>

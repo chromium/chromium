@@ -342,6 +342,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1223853788495130632">Rendszergazdája egy meghatározott értéket javasol ehhez a beállításhoz.</translation>
 <translation id="1225177025209879837">A kérelem feldolgozása folyamatban van...</translation>
 <translation id="1227107020813934021">Dokumentumszkennelők keresése</translation>
+<translation id="1227113644794103810">Inaktív lapok</translation>
 <translation id="1227260640693522019">Kastély</translation>
 <translation id="1227660082540388410">Azonosítókulcs szerkesztése</translation>
 <translation id="1227993798763400520">Az átküldés nem sikerült. Próbálja újra.</translation>
@@ -4016,6 +4017,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3794792524918736965">A Windows Hello bekapcsolása</translation>
 <translation id="379509625511193653">Ki</translation>
 <translation id="3796215473395753611">alt + felfelé mutató nyíl</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, a jobbra nyíl billentyűvel meghallgathatja ezt a hangot</translation>
 <translation id="3796648294839530037">Kedvenc hálózatok:</translation>
 <translation id="3797739167230984533">A(z) <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> kezelését<ph name="END_LINK" /> az Ön szervezete végzi</translation>
 <translation id="3797900183766075808">&amp;Keresés a(z) <ph name="SEARCH_ENGINE" /> keresőmotorral a következőre: <ph name="SEARCH_TERMS" /></translation>

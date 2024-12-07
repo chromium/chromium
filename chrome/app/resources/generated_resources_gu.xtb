@@ -343,6 +343,7 @@
 <translation id="1223853788495130632">તમારા એડમિનિસ્ટ્રેટર આ સેટિંગ માટે વિશિષ્ટ મૂલ્યની ભલામણ કરે છે.</translation>
 <translation id="1225177025209879837">વિનંતી પર પ્રક્રિયા થઈ રહી છે...</translation>
 <translation id="1227107020813934021">ડૉક્યુમેન્ટ સ્કૅનર શોધો</translation>
+<translation id="1227113644794103810">નિષ્ક્રિય ટૅબ</translation>
 <translation id="1227260640693522019">કિલ્લો</translation>
 <translation id="1227660082540388410">પાસકીમાં ફેરફાર કરો</translation>
 <translation id="1227993798763400520">કાસ્ટ કરવામાં નિષ્ફળ થયાં. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
@@ -4002,6 +4003,7 @@
 <translation id="3794792524918736965">Windows Hello ચાલુ કરો</translation>
 <translation id="379509625511193653">બંધ</translation>
 <translation id="3796215473395753611">alt + ઉપરની ઍરો કી</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, વૉઇસનો પ્રીવ્યૂ કરવા માટે જમણી ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="3796648294839530037">મનપસંદ નેટવર્ક્સ:</translation>
 <translation id="3797739167230984533">તમારી લિંક તમારી સંસ્થા દ્વારા <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> મેનેજ કરવામાં આવે છે<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” માટે <ph name="SEARCH_ENGINE" /> માં &amp;શોધ કરો</translation>

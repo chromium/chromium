@@ -343,6 +343,7 @@
 <translation id="1223853788495130632">Ադմինիստրատորը խորհուրդ է տալիս այս կարգավորման համար որոշակի արժեք ընտրել:</translation>
 <translation id="1225177025209879837">Հարցումը մշակվում է…</translation>
 <translation id="1227107020813934021">Գտեք փաստաթղթերի սկաներներ</translation>
+<translation id="1227113644794103810">Ոչ ակտիվ ներդիրներ</translation>
 <translation id="1227260640693522019">Դղյակ</translation>
 <translation id="1227660082540388410">Մուտքի բանալու փոփոխում</translation>
 <translation id="1227993798763400520">Չհաջողվեց հեռարձակել։ Նորից փորձեք։</translation>
@@ -4002,6 +4003,7 @@
 <translation id="3794792524918736965">Միացրեք Windows Hello-ն</translation>
 <translation id="379509625511193653">Անջատված է</translation>
 <translation id="3796215473395753611">alt + վերև սլաք</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, աջ սլաքի միջոցով լսեք ձայնը</translation>
 <translation id="3796648294839530037">Ընտրյալ ցանցեր՝</translation>
 <translation id="3797739167230984533">Ձեր <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> սարքը կառավարվում է<ph name="END_LINK" /> ձեր կազմակերպության կողմից</translation>
 <translation id="3797900183766075808">&amp;Որոնել «<ph name="SEARCH_TERMS" />»-ը <ph name="SEARCH_ENGINE" />-ում</translation>

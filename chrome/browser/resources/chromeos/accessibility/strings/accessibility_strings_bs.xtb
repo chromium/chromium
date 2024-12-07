@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">kol</translation>
 <translation id="6387719785439924554">na strani</translation>
 <translation id="6393014464788431702">Onemogući sve filtere događaja</translation>
+<translation id="6406989068857078334">Brzina miša smanjena, <ph name="GESTURE" /> ponovo za klik</translation>
 <translation id="6411569524720229058">Jesen</translation>
 <translation id="6417265370957905582">Google Asistent</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dvotačka}one{# dvotačka}few{# dvotačke}other{# dvotački}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Otvara stranicu sa zapisnikom programera</translation>
 <translation id="8212109599554677485">Promijeni stil prikaza na uporedni prikaz</translation>
 <translation id="8215202828671303819">Višestruki odabir</translation>
+<translation id="822316432305106615">Pokreni precizni klik</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, neprozirnost od <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="826825447994856889">Uvod</translation>

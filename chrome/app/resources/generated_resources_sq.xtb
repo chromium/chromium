@@ -342,6 +342,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1223853788495130632">Administratori yt rekomandon një vlerë specifike për këtë cilësim.</translation>
 <translation id="1225177025209879837">Po përpunon kërkesën...</translation>
 <translation id="1227107020813934021">Gjej skanerë të dokumenteve</translation>
+<translation id="1227113644794103810">Skedat joaktive</translation>
 <translation id="1227260640693522019">Kështjellë</translation>
 <translation id="1227660082540388410">Modifiko çelësin e kalimit</translation>
 <translation id="1227993798763400520">Transmetimi dështoi. Provo përsëri.</translation>
@@ -4000,6 +4001,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3794792524918736965">Aktivizo Windows Hello</translation>
 <translation id="379509625511193653">Joaktiv</translation>
 <translation id="3796215473395753611">alt + shigjeta lart</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, përdor tastin e shigjetës djathtas për të dëgjuar paraprakisht zërin</translation>
 <translation id="3796648294839530037">Rrjetet e preferuara:</translation>
 <translation id="3797739167230984533">Pajisja jote <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> menaxhohet<ph name="END_LINK" /> nga organizata jote</translation>
 <translation id="3797900183766075808">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për "<ph name="SEARCH_TERMS" />"</translation>

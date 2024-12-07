@@ -9134,15 +9134,6 @@ werden abgelehnt.</translation>
           Wird sie nicht konfiguriert, werden die Tastenkombinationen für Bedienungshilfen auf dem Anmeldebildschirm standardmäßig aktiviert.</translation>
 <translation id="7777535871204167559">Externe Speichergeräte nur schreibgeschützt verwenden</translation>
 <translation id="7781452670568828399">Dadurch wird die empfohlene <ph name="PRODUCT_OS_NAME" />-Konfiguration geändert.</translation>
-<translation id="7782770795171480507">Wenn diese Richtlinie konfiguriert ist, wird eine Liste isolierter Web-Apps (IWAs) angegeben, die automatisch installiert werden.
-      IWAs sind Anwendungen mit hilfreichen Sicherheitsfunktionen, die normalen Webseiten nicht zur Verfügung stehen. Sie sind in einem signierten Webpaket gepackt. Der öffentliche Schlüssel des signierten Webpakets wird verwendet, um eine Webpaket‑ID zu erstellen, mit der die IWA identifiziert wird.
-      Bisher funktioniert diese Richtlinie nur bei verwalteten Gastsitzungen.
-
-      Jedes Listenelement der Richtlinie ist ein Objekt, das zwei Pflichtfelder hat: das Update-Manifest <ph name="URL_LABEL" /> und die Webpaket‑ID der isolierten Web-App.
-
-      Jedes Element kann auch optionale Felder haben: einen Namen für den Release-/Updatekanal der IWA (update_channel) und eine bestimmte Version zum Anpinnen (pinned_version).
-      Wenn „update_channel“ nicht festgelegt ist, wird der Standardwert „default“ verwendet. Ist „pinned_version“ angegeben, versucht das System, diese Version zu installieren, sofern sie im aktuellen Updatekanal verfügbar ist.
-      Standardmäßig ist es beim Anpinnen von Versionen nicht möglich, auf ältere Versionen umzustellen. Wenn eine IWA in einer bestimmten Version angepinnt wird, verhindert das, dass sie über diese Version hinaus aktualisiert wird. Zum Loslösen muss dieses Feld entfernt werden.</translation>
 <translation id="7784062550705119230">Wenn <ph name="PRINTERS_ALLOWLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="7785199109546027763">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „IP-Schutz“ aktiviert werden soll.
 

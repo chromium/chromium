@@ -37,7 +37,7 @@
 <translation id="1017280919048282932">&amp;Dodaj do słownika</translation>
 <translation id="1018656279737460067">Anulowano</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
-<translation id="1022669824195822609">Twoim urządzeniem zarządza <ph name="DOMAIN" />. Dostęp do danych każdego profilu na nim mają administratorzy.</translation>
+<translation id="1022669824195822609">Twoim urządzeniem zarządza <ph name="DOMAIN" />. Administratorzy mają dostęp do danych każdego profilu na urządzeniu.</translation>
 <translation id="1022719295563085177">Domyślne ustawienie sieci</translation>
 <translation id="1026196234862089732">Klucz dostępu został zaktualizowany</translation>
 <translation id="1026655690966755180">Dodaj port</translation>
@@ -344,6 +344,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1223853788495130632">Administrator zaleca konkretną wartość dla tego ustawienia.</translation>
 <translation id="1225177025209879837">Przetwarzam żądanie...</translation>
 <translation id="1227107020813934021">Znajdź skanery dokumentów</translation>
+<translation id="1227113644794103810">Nieaktywne karty</translation>
 <translation id="1227260640693522019">Zamek</translation>
 <translation id="1227660082540388410">Edytuj klucz</translation>
 <translation id="1227993798763400520">Nie udało się przesłać. Spróbuj ponownie.</translation>
@@ -3984,6 +3985,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3794792524918736965">Włącz Windows Hello</translation>
 <translation id="379509625511193653">Wyłączono</translation>
 <translation id="3796215473395753611">Alt + strzałka w górę</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />; aby odsłuchać głos, użyj klawisza strzałki w prawo</translation>
 <translation id="3796648294839530037">Ulubione sieci:</translation>
 <translation id="3797739167230984533">Urządzenie <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> jest zarządzane<ph name="END_LINK" /> przez Twoją organizację</translation>
 <translation id="3797900183766075808">Wy&amp;szukaj „<ph name="SEARCH_TERMS" />” w <ph name="SEARCH_ENGINE" /></translation>
@@ -4291,7 +4293,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Więcej informacji o ustawieniu Dokładność lokalizacji<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Zaimportowane</translation>
 <translation id="3992008114154328194">Pobieram <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Utwórz kopię zapasową danych</translation>
+<translation id="3993259701827857030">Kopia zapasowa danych</translation>
 <translation id="3993887353483242788">Zsynchronizuj to urządzenie (<ph name="DEVICE_TYPE" />), aby Twoje preferencje były dostępne wszędzie tam, gdzie logujesz się na konto Google. Preferencje obejmują m.in. aplikacje, ustawienia, hasła Wi-Fi, języki, tapety i skróty klawiszowe.</translation>
 <translation id="3994318741694670028">Twój komputer jest skonfigurowany przy użyciu błędnie sformatowanego identyfikatora sprzętu. Uniemożliwia to zaktualizowanie ChromeOS Flex za pomocą najnowszych poprawek zabezpieczeń, a komputer <ph name="BEGIN_BOLD" />może być narażony na szkodliwe ataki<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Aby odblokować system, <ph name="DEVICE_TYPE" /> i odblokowany telefon muszą być bliżej siebie.</translation>

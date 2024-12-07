@@ -343,6 +343,7 @@
 <translation id="1223853788495130632">आपका व्‍यवस्‍थापक इस सेटिंग के लिए किसी विशिष्ट मान की अनुशंसा करता है.</translation>
 <translation id="1225177025209879837">अनुरोध पूरा करने की प्रक्रिया जारी है...</translation>
 <translation id="1227107020813934021">दस्तावेज़ स्कैन करने वाले ऐप्लिकेशन ढूंढें</translation>
+<translation id="1227113644794103810">इस्तेमाल नहीं किए जा रहे टैब</translation>
 <translation id="1227260640693522019">किला</translation>
 <translation id="1227660082540388410">पासकी में बदलाव करें</translation>
 <translation id="1227993798763400520">कास्ट नहीं किया जा सका. कृपया फिर से कोशिश करें.</translation>
@@ -4018,6 +4019,7 @@
 <translation id="3794792524918736965">Windows Hello चालू करें</translation>
 <translation id="379509625511193653">बंद है</translation>
 <translation id="3796215473395753611">alt + अप ऐरो</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, आवाज़ सुनने के लिए, दाईं ओर ऐरो बटन का इस्तेमाल करें</translation>
 <translation id="3796648294839530037">पसंदीदा नेटवर्क:</translation>
 <translation id="3797739167230984533">आपका संगठन, आपके <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> को प्रबंधित करता<ph name="END_LINK" /> है</translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” को खोजने के लिए <ph name="SEARCH_ENGINE" /> पर &amp;खोजें</translation>

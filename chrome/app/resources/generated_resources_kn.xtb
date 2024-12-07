@@ -343,6 +343,7 @@
 <translation id="1223853788495130632">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ದಿಷ್ಟ ಮೌಲ್ಯವನ್ನು ಶಿಫಾರಸು ಮಾಡುತ್ತಾರೆ.</translation>
 <translation id="1225177025209879837">ವಿನಂತಿ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1227107020813934021">ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನರ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
+<translation id="1227113644794103810">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1227260640693522019">ಕೋಟೆ</translation>
 <translation id="1227660082540388410">ಪಾಸ್‌ಕೀಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1227993798763400520">ಬಿತ್ತರಿಸುವಿಕೆ ವಿಫಲವಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -4009,6 +4010,7 @@
 <translation id="3794792524918736965">Windows Hello ಆನ್ ಮಾಡಿ</translation>
 <translation id="379509625511193653">ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="3796215473395753611">alt + ಅಪ್ ಆ್ಯರೋ</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, ಧ್ವನಿಯನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಲು ರೈಟ್‌ ಆ್ಯರೋ ಕೀಯನ್ನು ಬಳಸಿ</translation>
 <translation id="3796648294839530037">ಮೆಚ್ಚಿನ ನೆಟ್‌ವರ್ಕ್‌ಗಳು:</translation>
 <translation id="3797739167230984533">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> ಗಾಗಿ '<ph name="SEARCH_TERMS" />' &amp;ಹುಡುಕಿ</translation>

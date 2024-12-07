@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">ಕೆಳಗಿನ ಪಟ್ಟಿಯಲ್ಲಿ <ph name="SUGGESTIONS_COUNT" /> ಸಲಹೆ ಮಾಡಿರುವ ಐಟಂಗಳಿವೆ.</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> ಅನ್ನು <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆ ಬಳಸಿ</translation>
 <translation id="160275202205869636">ಆನ್ ಆಗಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಡೇಟಾವನ್ನು ಬಳಸಿ ಮತ್ತು ಸೇವ್ ಮಾಡಿ. ಆಫ್ ಆಗಿರುವಾಗ, ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ಆಯ್ಕೆಮಾಡಲಾದ 1 ಐಟಂ ತೆಗೆದುಹಾಕಿ}one{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}other{ಆಯ್ಕೆಮಾಡಲಾದ # ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 ಬುಕ್‌ಮಾರ್ಕ್ ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಾದ <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ.}one{# ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಾದ <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ.}other{# ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಾದ <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಗುಂಪಿಗೆ ಸೇರಿಕೊಂಡಿದ್ದಾರೆ</translation>
 <translation id="1641113438599504367">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್</translation>
 <translation id="164269334534774161">ನೀವು <ph name="CREATION_TIME" /> ದಿನಾಂಕದಿಂದ ಈ ಪುಟದ ಆಫ್‌ಲೈನ್‌ ನಕಲನ್ನು ವೀಕ್ಷಿಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">ಮಕ್ಕಳಿಗಾಗಿ Google ಪ್ರಸ್ತುತಪಡಿಸುವ ಕಂಟೆಂಟ್</translation>
 <translation id="2579297619530305344">ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="2581165646603367611">ಇದು ಕುಕೀಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಪ್ರಮುಖವಲ್ಲವೆಂದು Chrome ಭಾವಿಸುವ ಸೈಟ್‌ಗಳ ಇತರ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿದ್ದಾರೆ</translation>
 <translation id="2587052924345400782">ಹೊಸ ಆವೃತ್ತಿಯು ಲಭ್ಯವಿದೆ</translation>
 <translation id="2593272815202181319">ಮೊನೋಸ್ಪೇಸ್</translation>
 <translation id="2603212228005142861">ನಿಮ್ಮ ಆದ್ಯತೆಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">1 ಸೆಕೆಂಡು ಉಳಿದಿದೆ</translation>
 <translation id="2789486458103222910">ಸರಿ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}one{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ # ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}other{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ # ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}}</translation>
+<translation id="2796651346651857052">ಅದರ ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಲು ವಿಳಾಸ ಪಟ್ಟಿಯನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="281504910091592009">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಯಲ್ಲಿ<ph name="END_LINK" /> ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
@@ -936,6 +940,7 @@
 <translation id="5301876394151419436">ನೀವು <ph name="EMAIL" /> ಎಂಬುದಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿರುವಿರಿ ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು.</translation>
 <translation id="5304593522240415983">ಈ ಕ್ಷೇತ್ರವು ಖಾಲಿಯಾಗಿರುವಂತಿಲ್ಲ</translation>
 <translation id="5306014156308790439">ಸಂಗ್ರಹಣೆಗೆ ಸೇರಿಸುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಗುಂಪಿನ ಬಣ್ಣವನ್ನು ಬದಲಾಯಿಸಿದ್ದಾರೆ</translation>
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5310963254742922113">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಲಾಗಿದೆ.</translation>
 <translation id="5316947901395241499">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಪಾಸ್‌ವರ್ಡ್ ಸೇವ್ ಮಾಡುವಿಕೆಯನ್ನು ಆಫ್ ಮಾಡಿದ್ದಾರೆ</translation>
@@ -947,6 +952,7 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> ಅವಧಿಯ ಯಾವುದೇ ಸೈಟ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5355191726083956201">ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5364112109233799727">ನೀವು ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಒದಗಿಸುತ್ತಿರುವ ಪುಟದ URL ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು ಮಾನವರು ಪರಿಶೀಲಿಸಬಹುದು</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಟ್ಯಾಬ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದಾರೆ</translation>
 <translation id="5375374982898812658">ನೀವು ತಕ್ಷಣವೇ <ph name="GROUP_NAME" /> ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5375577065097716013">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">ಅಜ್ಞಾತ ಮೋಡ್‌ನಿಂದ ಹೊರಬನ್ನಿ</translation>
@@ -1110,6 +1116,7 @@
 <translation id="60923314841986378"><ph name="HOURS" /> ಗಂಟೆಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="6095578583683628124">Google ಸಹ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಆಗಿದ್ದರೆ, ನಿಮಗೆ ಉತ್ತಮವಾದ, ಸಾಂದರ್ಭಿಕವಾಗಿ ಸೂಕ್ತವಾದ ಸಲಹೆಗಳು ಕಾಣಿಸುತ್ತವೆ</translation>
 <translation id="610630277578876674">ಸಂದೇಶಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ತ್ವರಿತವಾಗಿ ತೆರೆಯಿರಿ ಮತ್ತು ಇತ್ಯಾದಿ</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಗುಂಪಿನ ಹೆಸರನ್ನು ಬದಲಾಯಿಸಿದ್ದಾರೆ</translation>
 <translation id="6108923351542677676">ಸೆಟಪ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ...</translation>
 <translation id="6112702117600201073">ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6122831415929794347">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
@@ -1324,6 +1331,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{<ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="6929224077895306814">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಎಲ್ಲಾ ಭದ್ರತಾ ಕೋಡ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6937524809504266803">ವೈಯಕ್ತೀಕರಣ ಹಾಗೂ ಲಿಂಕ್ ಮಾಡುವಿಕೆ</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ಅಡ್ಡ ಹೆಸರು (ಐಚ್ಛಿಕ)</translation>
 <translation id="6942665639005891494">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನು ಆಯ್ಕೆಯನ್ನು ಬಳಸಿ, ಡಿಫಾಲ್ಟ್ ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳವನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಿ</translation>
 <translation id="694267552845942083">ನೀವು ಪ್ರಸ್ತುತ ನಿಮ್ಮ ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡುತ್ತಿದ್ದೀರಿ. ಸಿಂಕ್ ಆನ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು, ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದ ಸಮೀಪದಲ್ಲಿರುವ 'ದೃಢೀಕರಿಸಿ' ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ. ಮೇಲಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
@@ -1492,6 +1500,7 @@
 <translation id="7656721520530864426">ಯಾವುದೇ ಸೈಟ್‌ಗಳಿಲ್ಲ.</translation>
 <translation id="7656862631699126784">ಅಜ್ಞಾತ ಲಾಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ಅವರು ಗುಂಪನ್ನು ತೊರೆದಿದ್ದಾರೆ</translation>
 <translation id="7663320421139257046">ಮುಂದುವರಿಸಲು, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ ನಿಮ್ಮ <ph name="FIELDS_STRING" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಈ ಸೈಟ್‌ನ <ph name="BEGIN_LINK1" />ಗೌಪ್ಯತೆ ನೀತಿಯನ್ನು<ph name="END_LINK1" /> ನೋಡಿ.</translation>
 <translation id="7665369617277396874">ಖಾತೆಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="766587987807204883">ಲೇಖನಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ, ಅವುಗಳನ್ನು ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗಲೂ ಸಹ ಓದಬಹುದಾಗಿದೆ</translation>

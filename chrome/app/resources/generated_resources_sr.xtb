@@ -344,6 +344,7 @@
 <translation id="1223853788495130632">Администратор препоручује одређену вредност за ово подешавање.</translation>
 <translation id="1225177025209879837">Обрада захтева...</translation>
 <translation id="1227107020813934021">Пронађите скенере докумената</translation>
+<translation id="1227113644794103810">Неактивне картице</translation>
 <translation id="1227260640693522019">Замак</translation>
 <translation id="1227660082540388410">Измените приступни кôд</translation>
 <translation id="1227993798763400520">Пребацивање није успело. Пробајте поново.</translation>
@@ -1491,6 +1492,7 @@
 <translation id="202352106777823113">Преузимање је трајало предуго па га је мрежа зауставила.</translation>
 <translation id="2024195579772565064">Избришите претраживач</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Прецизни клик</translation>
 <translation id="2025632980034333559">Додатак <ph name="APP_NAME" /> је отказао. Кликните на овај облачић да бисте га поново учитали.</translation>
 <translation id="2026377162111110983">Глас у простору</translation>
 <translation id="2028449514182362831">Функције којима су потребни сензори покрета неће радити</translation>
@@ -4747,6 +4749,7 @@
 <translation id="4324577459193912240">Датотека је непотпуна</translation>
 <translation id="4325237902968425115">Деинсталира се <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">Меморијски простор и напајање</translation>
+<translation id="4325515113816851466">Изабране опције родитеља неће важити када се одјавиш</translation>
 <translation id="4326146840124313313">Најјача Chrome заштита вам пружа додатну заштиту од опасних веб-сајтова, преузимања и додатака</translation>
 <translation id="4327380114687339519">Мени Додаци</translation>
 <translation id="4330191372652740264">Вода са ледом</translation>
@@ -4869,6 +4872,7 @@
 <translation id="4412992751769744546">Дозволи колачиће треће стране</translation>
 <translation id="4413087696295876280">Читање информација о ChromeOS Flex уређајима и података са уређаја</translation>
 <translation id="44137799675104237">Слушајте текст са природним гласом</translation>
+<translation id="4414051792721275732">Када обавите покрет за клик, брзина миша ће се смањити да бисте имали већу контролу. Поновите покрет да бисте довршили клик.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Желите ли да дозволите да „<ph name="APP_NAME" />“ добије листу прикључених USB уређаја?</translation>
 <translation id="4414232939543644979">Нови &amp;прозор без архивирања</translation>
@@ -6196,6 +6200,7 @@
 <translation id="5389224261615877010">Дуга</translation>
 <translation id="5389626883706033615">Сајтовима је онемогућено да траже да користе информације које су сачували о вама</translation>
 <translation id="5389794555912875905">Прикажи упозорења пре одласка на небезбедне сајтове (препоручено)</translation>
+<translation id="5389943529251318913">Смањите брзину миша за</translation>
 <translation id="5390112241331447203">Уврсти датотеку system_logs.txt која се шаље у извештајима са повратним информацијама.</translation>
 <translation id="5390677308841849479">Тамноцрвена и наранџаста</translation>
 <translation id="5392192690789334093">Дозвољено је слање обавештења</translation>

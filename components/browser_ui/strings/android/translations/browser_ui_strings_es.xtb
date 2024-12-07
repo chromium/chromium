@@ -124,6 +124,7 @@
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="2910701580606108292">Preguntar antes de permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
+<translation id="2927133898344569563">Accede rápidamente a las pestañas sugeridas desde la lista de aplicaciones de tu dispositivo y en los resultados de búsqueda del dispositivo. Puedes activar o desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Cuando esta opción está activada, los sitios pueden solicitar permiso para monitorizar la posición de tu cámara y obtener información sobre tu entorno. Si está desactivada, los sitios no pueden monitorizar la posición de tu cámara ni obtener información sobre tu entorno.</translation>
 <translation id="2968755619301702150">Visor de certificados</translation>
@@ -213,7 +214,7 @@
 <translation id="4200726100658658164">Abrir Ajustes de ubicación</translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan que el dispositivo vibre</translation>
 <translation id="4259722352634471385">Se ha bloqueado la navegación: <ph name="URL" /></translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Concedido</translation>
 <translation id="429312253194641664">Un sitio web está reproduciendo elementos multimedia</translation>
 <translation id="42981349822642051">Mostrar</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Caduca mañana}other{Caduca dentro de # días}}</translation>
@@ -306,7 +307,7 @@
 <translation id="560980142378233747">Esto significa que las opciones del sitio deberían funcionar según lo previsto, pero es posible que tengas menos protección al navegar. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Muéstrame cómo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
-<translation id="5668404140385795438">Ignorar la solicitud de un sitio web para no ampliar la imagen</translation>
+<translation id="5668404140385795438">Ignora la solicitud de un sitio web para no ampliar la imagen</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en los ajustes de Android</translation>
@@ -500,7 +501,7 @@
 <translation id="83792324527827022">Un sitio web está usando tu cámara y tu micrófono</translation>
 <translation id="8380167699614421159">El sitio web muestra anuncios invasivos o engañosos</translation>
 <translation id="8394832520002899662">Toca para volver al sitio web</translation>
-<translation id="8409345997656833551">Recibir una notificación cuando un artículo pueda mostrarse en vista simplificada</translation>
+<translation id="8409345997656833551">Recibe una notificación cuando un artículo pueda mostrarse en vista simplificada</translation>
 <translation id="8423565414844018592">Ajuste de texto establecido en <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8441146129660941386">Buscar hacia atrás</translation>

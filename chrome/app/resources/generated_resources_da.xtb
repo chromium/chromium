@@ -343,6 +343,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1223853788495130632">Din administrator anbefaler en bestemt værdi for denne indstilling.</translation>
 <translation id="1225177025209879837">Behandler anmodning...</translation>
 <translation id="1227107020813934021">Find dokumentscannere</translation>
+<translation id="1227113644794103810">Inaktive faner</translation>
 <translation id="1227260640693522019">Slot</translation>
 <translation id="1227660082540388410">Rediger adgangsnøgle</translation>
 <translation id="1227993798763400520">Det lykkedes ikke at caste – prøv igen</translation>
@@ -4018,6 +4019,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3794792524918736965">Aktivér Windows Hello</translation>
 <translation id="379509625511193653">Fra</translation>
 <translation id="3796215473395753611">Alt + pil op</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, brug højrepil til at høre et eksempel på stemmen</translation>
 <translation id="3796648294839530037">Favoritter netværk:</translation>
 <translation id="3797739167230984533">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> administreres<ph name="END_LINK" /> af din organisation</translation>
 <translation id="3797900183766075808">&amp;Søg på <ph name="SEARCH_ENGINE" /> efter "<ph name="SEARCH_TERMS" />"</translation>

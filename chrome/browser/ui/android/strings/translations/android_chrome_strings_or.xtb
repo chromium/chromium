@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">ନିମ୍ନୋକ୍ତ ତାଲିକାରେ <ph name="SUGGESTIONS_COUNT" />ଟି ପ୍ରସ୍ତାବିତ ଆଇଟମ।</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" /> ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="160275202205869636">ଚାଲୁ ଥିବା ସମୟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରନ୍ତୁ। ବନ୍ଦ ଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ଡାଟା ସେଭ କରାଯାଏ।</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ଏକ ଟାବକୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}other{#ଟି ଚୟନ କରାଯାଇଥିବା ଆଇଟମ୍‌ କାଢ଼ନ୍ତୁ}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମଗୁଡ଼ିକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}other{# ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> ଗୋଷ୍ଠୀରେ ଯୋଗ ଦେଇଛନ୍ତି</translation>
 <translation id="1641113438599504367">ସେଫ୍ ବ୍ରାଉଜିଂ</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />ରୁ ଆପଣ ଏହି ପୃଷ୍ଠାର ଏକ ଅଫ୍‍ଲାଇନ୍‍ କପି ଦେଖୁଛନ୍ତି</translation>
 <translation id="1644574205037202324">ଇତିହାସ</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">ଛୋଟ ପିଲାମାନଙ୍କ ପାଇଁ Googleର ବିଷୟବସ୍ତୁ</translation>
 <translation id="2579297619530305344">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂର୍ଣ୍ଣ ଉଚ୍ଚତାରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="2581165646603367611">ଏହାଦ୍ୱାରା Chrome ମହତ୍ୱପୂର୍ଣ୍ଣ ବୋଲି ଭାବୁନଥିବା, କୁକିସ୍, କ୍ୟାଶ୍ ଏବଂ ସାଇଟ୍‌ର ଅନ୍ୟାନ୍ୟ ଡାଟାଗୁଡ଼ିକ ଖାଲି ହୋଇଯିବ।</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ଏକ ଟାବ ଯୋଗ କରିଛନ୍ତି</translation>
 <translation id="2587052924345400782">ନୂତନତର ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="2593272815202181319">ମୋନୋସ୍ପେସ୍</translation>
 <translation id="2603212228005142861">ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">1 ସେକେଣ୍ଡ ବାକି ଅଛି</translation>
 <translation id="2789486458103222910">ଠିକ୍ ଅଛି</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ଏକ ପୁଣି ବ୍ୟବହାର କରାଯାଇଥିବା ପାସୱାର୍ଡ ପାଇଛି ଯାହାକୁ ଆପଣ ଉନ୍ନତ କରିପାରିବେ}other{Chrome # ପୁଣି ବ୍ୟବହାର କରାଯାଇଥିବା ପାସୱାର୍ଡ ପାଇଛି ଯାହାକୁ ଆପଣ ଉନ୍ନତ କରିପାରିବେ}}</translation>
+<translation id="2796651346651857052">ଠିକଣା ବାରର ପୋଜିସନକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଏହାକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ଟାବଟି ବନ୍ଦ ହୋଇଯିବ</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="281504910091592009">ଆପଣଙ୍କର <ph name="BEGIN_LINK" />Google ଆକାଉଣ୍ଟ<ph name="END_LINK" />ରେ ସେଭ୍ ହୋ‍ଇଥିବା ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ ଓ ପରିଚାଳନା କରନ୍ତୁ।</translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">ଆପଣ <ph name="EMAIL" /> ଭାବରେ ସାଇନ ଇନ କରିଛନ୍ତି। ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ସିଙ୍କ କରିବା ବନ୍ଦ କରିପାରିବେ। Google ଆପଣଙ୍କ ଇତିହାସ ଆଧାରରେ Search ଏବଂ ଅନ୍ୟ ସେବାଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିପାରେ।</translation>
 <translation id="5304593522240415983">ଏହି କ୍ଷେତ୍ରକୁ ଖାଲି ଛଡ଼ାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5306014156308790439">'ସଂଗ୍ରହରେ ଯୋଗ କରନ୍ତୁ'କୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ଗୋଷ୍ଠୀର ରଙ୍ଗକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="5308380583665731573">ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5310963254742922113">ପାସୱାର୍ଡ ବ୍ୟବହାର କରାଯାଇଛି।</translation>
 <translation id="5316947901395241499">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପାସୱାର୍ଡ ସେଭ କରିବା ବନ୍ଦ କରାଯାଇଛି</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />ରେ କୌଣସି ସାଇଟକୁ ଭିଜିଟ କରାଯାଇନାହିଁ</translation>
 <translation id="5355191726083956201">ଉନ୍ନତ ସୁରକ୍ଷା ଚାଲୁ ଅଛି</translation>
 <translation id="5364112109233799727">ଆପଣ ଯେଉଁ ପୃଷ୍ଠା ପାଇଁ ମତାମତ ପ୍ରଦାନ କରୁଛନ୍ତି ତାହାର URLକୁ Googleକୁ ପଠାଯିବ ଏବଂ ଏହି ଫିଚରକୁ ଉନ୍ନତ କରିବାକୁ ମନୁଷ୍ୟଙ୍କ ଦ୍ୱାରା ସମୀକ୍ଷା କରାଯାଇପାରେ</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ଏକ ଟାବକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="5375374982898812658">ଆପଣ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="5375577065097716013">Google Lens ସହ ଛବି ଖୋଜନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">ଇନକଗ୍ନିଟୋରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378"><ph name="HOURS" /> ଘଣ୍ଟା ବାକି ଅଛି</translation>
 <translation id="6095578583683628124">ଯଦି Google ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ମଧ୍ୟ ହୋଇଥାଏ, ତେବେ ଆପଣ ଆହୁରି ଭଲ, ପ୍ରାସଙ୍ଗିକ ପରାମର୍ଶ ଦେଖିବେ</translation>
 <translation id="610630277578876674">ମେସେଜ ଏବଂ ଆହୁରି ଅନେକ କିଛିରେ ଶୀଘ୍ର ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ଗୋଷ୍ଠୀର ନାମକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="6108923351542677676">ସେଟ୍ ଅପ୍ ପ୍ରକ୍ରିୟା ଚାଲିଛି…</translation>
 <translation id="6112702117600201073">ପୃଷ୍ଠା ରିଫ୍ରେସ୍ ହେଉଛି</translation>
 <translation id="6122831415929794347">ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ କରିବେ?</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ଟାବ}other{<ph name="NUMBER_OF_TABS" /> ଟାବ}}</translation>
 <translation id="6929224077895306814">ଆପଣଙ୍କ ଡିଭାଇସ ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଥିବା ସମସ୍ତ ସୁରକ୍ଷା କୋଡକୁ ଡିଲିଟ କରାଯିବ</translation>
 <translation id="6937524809504266803">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଲିଙ୍କ କରିବା</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ଡାକନାମ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="6942665639005891494">ସେଟିଂସ୍‌ ମେନୁ ବିକଳ୍ପ ବ୍ୟବହାର କରି ଯେକୌଣସି ସମୟରେ ଡାଉନ୍‌ଲୋଡ୍‌ କରିବାର ଡିଫଲ୍ଟ ଲୋକେସନ୍‌କୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="694267552845942083">ବର୍ତ୍ତମାନ ଆପଣ ଆପଣଙ୍କ ସିଙ୍କ ସେଟିଂସକୁ କଷ୍ଟମାଇଜ୍ କରୁଛନ୍ତି। ସିଙ୍କ ଚାଲୁ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ସ୍କ୍ରିନର ତଳ ପାର୍ଶ୍ୱରେ ଥିବା 'ସୁନିଶ୍ଚିତ କରନ୍ତୁ' ବଟନରେ ଟାପ୍ କରନ୍ତୁ। ଉପରକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">କୌଣସି ସାଇଟ ନାହିଁ</translation>
 <translation id="7656862631699126784">ଇନକଗ୍ନିଟୋ ଲକ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="7658239707568436148">ବାତିଲ</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ଗୋଷ୍ଠୀରୁ ବାହାରି ଯାଇଛନ୍ତି</translation>
 <translation id="7663320421139257046">ଜାରି ରଖିବା ପାଇଁ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ଏହି ସାଇଟ ସହ ଆପଣଙ୍କ <ph name="FIELDS_STRING" />କୁ ସେୟାର କରିବ। ଏହି ସାଇଟର <ph name="BEGIN_LINK1" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK1" />କୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="7665369617277396874">ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="766587987807204883">ଅନୁଚ୍ଛେଦଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯାଏ, ଯାହା ଆପଣ ଅଫ୍‌ଲାଇନ୍ ଥିଲେ ମଧ୍ୟ ପଢ଼ିପାରିବେ</translation>

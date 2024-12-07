@@ -146,8 +146,10 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1594635596540195766">Seznam níže obsahuje navrhované položky (<ph name="SUGGESTIONS_COUNT" />).</translation>
 <translation id="1598163867407640634">Používejte web <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Když je tato možnost zapnutá, používají a ukládají se data ve vašem účtu Google. Když je vypnutá, ukládají se data pouze do tohoto zařízení.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> odstranil(a) kartu</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranit jednu vybranou položku}few{Odstranit # vybrané položky}many{Odstranit # vybrané položky}other{Odstranit # vybraných položek}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 záložka a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# záložky a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# záložky a dalších položek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}other{# záložek a dalších položek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> se připojil(a) ke skupině</translation>
 <translation id="1641113438599504367">Bezpečné prohlížení</translation>
 <translation id="164269334534774161">Prohlížíte si offline kopii této stránky z <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historie</translation>
@@ -347,6 +349,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2578337197553672982">Obsah od Googlu pro mladé mysli</translation>
 <translation id="2579297619530305344">Panel Hesla ve všech vašich zařízeních je otevřený v celé výšce</translation>
 <translation id="2581165646603367611">Tímto vymažete soubory cookie, mezipaměť a další data webů, která Chrome považuje za nedůležitá.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> přidal(a) kartu</translation>
 <translation id="2587052924345400782">Je dostupná novější verze</translation>
 <translation id="2593272815202181319">Neproporcionální</translation>
 <translation id="2603212228005142861">Pokud chcete spravovat své předvolby, přihlaste se</translation>
@@ -392,6 +395,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome našel opakovaně použité heslo, které byste mohli vylepšit}few{Chrome našel # opakovaně použitá hesla, která byste mohli vylepšit}many{Chrome našel # opakovaně použitého hesla, které byste mohli vylepšit}other{Chrome našel # opakovaně použitých hesel, která byste mohli vylepšit}}</translation>
+<translation id="2796651346651857052">Podržením adresního řádku můžete změnit jeho pozici.</translation>
 <translation id="2800066122460699237">Zavře se karta <ph name="TAB_TITLE" /></translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="281504910091592009">Zobrazit a spravovat uložená hesla v <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>
@@ -937,6 +941,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5301876394151419436">Jste přihlášeni jako <ph name="EMAIL" />. Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="5304593522240415983">Toto pole nesmí být prázdné</translation>
 <translation id="5306014156308790439">Zakázané tlačítko Přidat do sbírky</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> změnil(a) barvu skupiny</translation>
 <translation id="5308380583665731573">Připojení</translation>
 <translation id="5310963254742922113">Heslo bylo použito.</translation>
 <translation id="5316947901395241499">Administrátor ukládání hesel vypnul</translation>
@@ -948,6 +953,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="534580735623577507">Žádné weby z <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Je zapnutá vylepšená ochrana</translation>
 <translation id="5364112109233799727">Adresa URL stránky, ke které poskytujete zpětnou vazbu, se odešle do Googlu a mohou ji za účelem vylepšení této funkce zkontrolovat lidé</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> změnil(a) kartu</translation>
 <translation id="5375374982898812658">Ke skupině karet „<ph name="GROUP_NAME" />“ okamžitě ztratíte přístup a bude smazána ze všech vašich zařízení</translation>
 <translation id="5375577065097716013">Vyhledat obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Vypnout anonymní režim</translation>
@@ -1111,6 +1117,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="60923314841986378">Zbývá: <ph name="HOURS" /> h</translation>
 <translation id="6095578583683628124">Pokud je Google zároveň váš výchozí vyhledávač, budou se zobrazovat lepší, kontextově relevantní návrhy</translation>
 <translation id="610630277578876674">Rychle otevírejte odkazy ve zprávách a podobně</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> změnil(a) název skupiny</translation>
 <translation id="6108923351542677676">Probíhá nastavování…</translation>
 <translation id="6112702117600201073">Obnovování stránky</translation>
 <translation id="6122831415929794347">Vypnout Bezpečné prohlížení?</translation>
@@ -1325,6 +1332,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 karta}few{<ph name="NUMBER_OF_TABS" /> karty}many{<ph name="NUMBER_OF_TABS" /> karty}other{<ph name="NUMBER_OF_TABS" /> karet}}</translation>
 <translation id="6929224077895306814">Všechny bezpečnostní kódy uložené v zařízení a v účtu Google budou smazány</translation>
 <translation id="6937524809504266803">Personalizace a propojení</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Přezdívka (volitelné)</translation>
 <translation id="6942665639005891494">Výchozí umístění pro stažené soubory můžete kdykoliv změnit pomocí možnosti v nabídce Nastavení.</translation>
 <translation id="694267552845942083">Momentálně upravujete nastavení synchronizace. Zapnutí synchronizace dokončíte klepnutím na tlačítko Potvrdit, které se nachází u dolního okraje obrazovky. Přejít nahoru</translation>
@@ -1493,6 +1501,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7656721520530864426">Žádné weby</translation>
 <translation id="7656862631699126784">Zapnout zámek anonymního režimu</translation>
 <translation id="7658239707568436148">Zrušit</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> opustil(a) skupinu</translation>
 <translation id="7663320421139257046">Aby bylo možné pokračovat, bude <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> s tímto webem sdílet tyto vaše údaje: <ph name="FIELDS_STRING" />. Přečtěte si <ph name="BEGIN_LINK1" />zásady ochrany soukromí<ph name="END_LINK1" /> tohoto webu.</translation>
 <translation id="7665369617277396874">Přidat účet</translation>
 <translation id="766587987807204883">Zde se zobrazují články, které si můžete číst i offline</translation>

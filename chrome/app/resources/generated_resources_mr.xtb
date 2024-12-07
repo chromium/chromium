@@ -342,6 +342,7 @@
 <translation id="1223853788495130632">या सेटिंगसाठी तुमचा ॲडमिनिस्ट्रेटर विशिष्‍ट मूल्याची शिफारस करतो.</translation>
 <translation id="1225177025209879837">विनंतीवर प्रक्रिया करत आहे...</translation>
 <translation id="1227107020813934021">डॉक्युमेंट स्कॅनर शोधा</translation>
+<translation id="1227113644794103810">इनॅक्टिव्ह टॅब</translation>
 <translation id="1227260640693522019">किल्ला</translation>
 <translation id="1227660082540388410">पासकी संपादित करा</translation>
 <translation id="1227993798763400520">कास्ट करता आले नाही. कृपया पुन्हा प्रयत्न करा.</translation>
@@ -4016,6 +4017,7 @@
 <translation id="3794792524918736965">Windows Hello सुरू करा</translation>
 <translation id="379509625511193653">बंद</translation>
 <translation id="3796215473395753611">alt + up arrow</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, आवाजाचे पूर्वावलोकन करण्यासाठी राइट अ‍ॅरो की वापरा</translation>
 <translation id="3796648294839530037">आवडीचे नेटवर्क:</translation>
 <translation id="3797739167230984533">तुमच्या संस्थेद्वारे तुमचे <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> व्यवस्थापित केले आहे</translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” साठी <ph name="SEARCH_ENGINE" /> &amp;शोधा</translation>

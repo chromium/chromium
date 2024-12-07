@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">مندرجہ ذیل کی فہرست میں تجویز کردہ <ph name="SUGGESTIONS_COUNT" /> آئٹمز۔</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> کا استعمال کریں</translation>
 <translation id="160275202205869636">‏آن ہونے پر، اپنے Google اکاؤنٹ میں ڈیٹا کا استعمال اور اسے محفوظ کریں۔ آف ہونے پر، ڈیٹا صرف اس آلے میں محفوظ ہوتا ہے۔</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب کو ہٹا دیا</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 منتخب آئٹم کو ہٹائیں}other{# منتخب آئٹمز کو ہٹائیں}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{‏‫1 بُک مارک اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}other{‏‫# پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> گروپ میں شامل ہوا</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="164269334534774161">آپ <ph name="CREATION_TIME" /> سے اس صفحہ کی ایک آف لائن کاپی دیکھ رہے ہیں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">‏نوجوان ذہنوں کے لیے Google کا مواد</translation>
 <translation id="2579297619530305344">'آپ کے تمام آلات پر پاس ورڈز' کی شیٹ پوری طرح کھلتی ہے</translation>
 <translation id="2581165646603367611">‏یہ سائٹس کی کوکیز، کیش اور اس دیگر ڈیٹا کو صاف کر دے گی جسے Chrome اہم نہیں خیال کرتا ہے۔</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب شامل کیا</translation>
 <translation id="2587052924345400782">جدید تر ورژن دستیاب ہے</translation>
 <translation id="2593272815202181319">مونو اسپیس</translation>
 <translation id="2603212228005142861">اپنی ترجیحات کا نظم کرنے کے لیے سائن ان کریں</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">1 سیکنڈ باقی</translation>
 <translation id="2789486458103222910">ٹھیک ہے</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{‏‫Chrome کو دوبارہ استعمال کردہ پاس ورڈ ملا ہے جسے آپ بہتر بنا سکتے ہیں}other{‏‫Chrome کو دوبارہ استعمال کردہ # پاس ورڈ ملے ہیں جنہیں آپ بہتر بنا سکتے ہیں}}</translation>
+<translation id="2796651346651857052">ایڈریس بار کی پوزیشن تبدیل کرنے کے لیے ایڈریس بار کو ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ٹیب کو بند کر دیا جائے گا</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="281504910091592009">‏اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">‏آپ <ph name="EMAIL" /> کے طور پر سائن ان ہیں۔ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو روک سکتے ہیں۔ ‫Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="5304593522240415983">یہ فیلڈ خالی نہیں رہ سکتی ہے</translation>
 <translation id="5306014156308790439">مجموعے میں شامل کریں کا بٹن غیر فعال ہے</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> نے گروپ کا رنگ تبدیل کر دیا</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5310963254742922113">استعمال کردہ پاس ورڈ۔</translation>
 <translation id="5316947901395241499">آپ کے منتظم نے پاس ورڈ محفوظ کرنے کی سہولت کو آف کر دیا ہے</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> سے کوئی سائٹ نہیں</translation>
 <translation id="5355191726083956201">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="5364112109233799727">‏آپ جس صفحہ کے لیے تاثرات فراہم کر رہے ہیں اس کا URL ‏Google کو بھیجا جائے گا۔ ساتھ ہی اس خصوصیت کو بہتر بنانے کے لیے انسانوں کے ذریعے اس کا جائزہ بھی لیا جا سکتا ہے</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب کو تبدیل کیا</translation>
 <translation id="5375374982898812658">آپ فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائیں گے، اور اسے آپ کے تمام آلات سے حذف کر دیا جائے گا</translation>
 <translation id="5375577065097716013">‏Google لینز سے تصویر تلاش کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">پوشیدگی سے باہر سوئچ کریں</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378"><ph name="HOURS" /> گھنٹے باقی</translation>
 <translation id="6095578583683628124">‏اگر Google بھی آپ کا ڈیفالٹ سرچ انجن ہے تو آپ کو بہتر، سیاق و سباق کے لحاظ سے متعلقہ تجاویز دکھائی دیں گی</translation>
 <translation id="610630277578876674">پیغامات اور بہت کچھ میں لنکس کو جلدی سے کھولیں</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> نے گروپ کا نام تبدیل کر دیا</translation>
 <translation id="6108923351542677676">سیٹ اپ جاری ہے…</translation>
 <translation id="6112702117600201073">صفحہ کو ریفریش کرنا</translation>
 <translation id="6122831415929794347">محفوظ براؤزنگ آن کریں؟</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{‫1 ٹیب}other{‫<ph name="NUMBER_OF_TABS" /> ٹیبز}}</translation>
 <translation id="6929224077895306814">‏آپ کے آلے اور آپ کے Google اکاؤنٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
 <translation id="6937524809504266803">ذاتی نوعیت سازی اور لنک کرنا</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> ‎\u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">عرفی نام (اختیاری)</translation>
 <translation id="6942665639005891494">ترتیبات کا مینیو اختیار استعمال کر کے ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
 <translation id="694267552845942083">آپ فی الحال اپنی مطابقت پذیری کی ترتیبات کو حسب ضرورت بنا رہے ہیں۔ مطابقت پذیری آن کرنے کا عمل مکمل کرنے کیلئے، اسکرین کے نچلے حصے کے پاس موجود 'تصدیق کریں' بٹن پر تھپتھپائیں۔ اوپر نیویگیٹ کریں</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">کوئی سائٹس نہیں ہیں</translation>
 <translation id="7656862631699126784">پوشیدگی لاک کو آن کریں</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> نے گروپ چھوڑ دیا</translation>
 <translation id="7663320421139257046">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے <ph name="FIELDS_STRING" /> کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />رازداری کی پالیسی<ph name="END_LINK1" /> دیکھیں۔</translation>
 <translation id="7665369617277396874">اکاؤنٹ شامل کریں</translation>
 <translation id="766587987807204883">مضامین یہاں دکھائی دیتے ہیں جنہیں آپ آف لائن ہونے پر بھی پڑھ سکتے ہیں</translation>

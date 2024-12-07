@@ -146,8 +146,10 @@
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> предложени ставки во списокот долу.</translation>
 <translation id="1598163867407640634">Користете <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Кога е вклучено, користењето и податоците се зачувуваат на сметката на Google. Кога е исклучено, податоците се зачувуваат само на овој уред.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> отстрани картичка</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Отстрани 1 избрана ставка}one{Отстрани # избрана ставка}other{Отстрани # избрани ставки}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 обележувач и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, <ph name="ACCOUNT_EMAIL" />.}one{# обележувач и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, <ph name="ACCOUNT_EMAIL" />.}other{# обележувачи и други ставки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> се придружи во групата</translation>
 <translation id="1641113438599504367">Безбедно прелистување</translation>
 <translation id="164269334534774161">Гледате офлајн копија на страницата од <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Историја</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">Содржини од Google за млади умови</translation>
 <translation id="2579297619530305344">Лозинките на сите ваши уреди се отворени на цел екран</translation>
 <translation id="2581165646603367611">Ова ќе ги избрише колачињата, кешот и другите податоци од сајтовите за коишто Chrome смета дека не се важни.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> додаде картичка</translation>
 <translation id="2587052924345400782">Достапна е понова верзија</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">Најавете се за да управувате со вашите поставки</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">Остана 1 секунда</translation>
 <translation id="2789486458103222910">Во ред</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome најде повторно употребена лозинка што би можеле да ја подобрите}one{Chrome најде # повторно употребена лозинка што би можеле да ги подобрите}other{Chrome најде # повторно употребени лозинки што би можеле да ги подобрите}}</translation>
+<translation id="2796651346651857052">Допрете и задржите ја лентата за адреса за да ѝ ја промените позицијата.</translation>
 <translation id="2800066122460699237">Картичката <ph name="TAB_TITLE" /> ќе се затвори</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="281504910091592009">Прегледајте ги и управувајте со зачуваните лозинки во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /></translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">Најавени сте како <ph name="EMAIL" />. Може да ја сопрете синхронизацијата кога сакате во поставките. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
 <translation id="5304593522240415983">Ова поле не може да биде празно</translation>
 <translation id="5306014156308790439">Оневозможено копче „Додај во обележувачите“</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ја промени бојата на групата</translation>
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5310963254742922113">Лозинката е искористена.</translation>
 <translation id="5316947901395241499">Администраторот го исклучил зачувувањето лозинки</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507">Нема сајтови од <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
 <translation id="5364112109233799727">URL-адресата на страницата за којашто наведувате повратни информации ќе се испрати до Google. Повратните информации може и да ги прегледуваат луѓе за подобрување на функцијава.</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> промени картичка</translation>
 <translation id="5375374982898812658">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите ваши уреди</translation>
 <translation id="5375577065097716013">Пребарај слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Излези од „Инкогнито“</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378">Останаа <ph name="HOURS" /> часа</translation>
 <translation id="6095578583683628124">Ако го користите Google како стандарден пребарувач исто така, ќе добивате подобри и контекстуално значајни предлози</translation>
 <translation id="610630277578876674">Брзо отворајте линкови во пораки и друго</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> го промени името на групата</translation>
 <translation id="6108923351542677676">Поставувањето е во тек…</translation>
 <translation id="6112702117600201073">Страницата се освежува</translation>
 <translation id="6122831415929794347">Да се исклучи „Безбедно прелистување“?</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 картичка}one{<ph name="NUMBER_OF_TABS" /> картичка}other{<ph name="NUMBER_OF_TABS" /> картички}}</translation>
 <translation id="6929224077895306814">Ќе се избришат сите безбедносни кодови што се зачувани на уредот и во сметката на Google</translation>
 <translation id="6937524809504266803">Персонализација и поврзување</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> • <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Прекар (незадолжително)</translation>
 <translation id="6942665639005891494">Променете ја стандардната локација за преземање во секое време со помош на опцијата „Поставки“ од менито</translation>
 <translation id="694267552845942083">Во моментов ги приспособувате „Поставките за синхронизација“. За да го завршите вклучувањето на синхронизацијата, допрете на копчето „Потврди“ на долниот дел од екранот. Движете се нагоре</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">Нема сајтови</translation>
 <translation id="7656862631699126784">Вклучи заклучување „Инкогнито“</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ја напушти групата</translation>
 <translation id="7663320421139257046">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето <ph name="FIELDS_STRING" /> со сајтов. Погледнете ја <ph name="BEGIN_LINK1" />Политиката за приватност<ph name="END_LINK1" /> на сајтов.</translation>
 <translation id="7665369617277396874">Додајте сметка</translation>
 <translation id="766587987807204883">Статиите се појавуваат тука, а може да се читаат кога сте офлајн</translation>

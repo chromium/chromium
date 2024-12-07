@@ -345,6 +345,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1223853788495130632">Administratorius rekomenduoja naudoti konkrečią šio nustatymo vertę.</translation>
 <translation id="1225177025209879837">Užklausa apdorojama…</translation>
 <translation id="1227107020813934021">Raskite dokumentų skaitytuvus</translation>
+<translation id="1227113644794103810">Neaktyvūs skirtukai</translation>
 <translation id="1227260640693522019">Pilis</translation>
 <translation id="1227660082540388410">„Passkey“ redagavimas</translation>
 <translation id="1227993798763400520">Nepavyko perduoti. Bandykite dar kartą.</translation>
@@ -4020,6 +4021,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3794792524918736965">„Windows Hello“ įjungimas</translation>
 <translation id="379509625511193653">Išjungta</translation>
 <translation id="3796215473395753611">„Alt“ + rodyklė aukštyn</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, naudokite rodyklės dešinėn klavišą, kad peržiūrėtumėte balsą</translation>
 <translation id="3796648294839530037">Mėgstamiausi tinklai:</translation>
 <translation id="3797739167230984533">Jūsų <ph name="BEGIN_LINK" />„<ph name="DEVICE_TYPE" />“ tvarko<ph name="END_LINK" /> jūsų organizacija</translation>
 <translation id="3797900183766075808">&amp;Ieškoti pagal užklausą „<ph name="SEARCH_TERMS" />“ naudojant „<ph name="SEARCH_ENGINE" />“</translation>

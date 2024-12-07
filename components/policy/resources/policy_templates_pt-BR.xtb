@@ -9516,15 +9516,6 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
           Se esta política não for definida, os atalhos de recursos de acessibilidade serão ativados por padrão na tela de login.</translation>
 <translation id="7777535871204167559">Tratar dispositivos de armazenamento externo como somente leitura</translation>
 <translation id="7781452670568828399">Mudar a configuração recomendada do <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="7782770795171480507">A definição da política especifica uma lista de Apps Isolados da Web (AIWs) que são instalados sem interação do usuário.
-      AIWs são aplicativos que têm propriedades de segurança úteis indisponíveis para páginas da Web normais. Eles são incluídos em um Pacote assinado da Web. A chave pública do Pacote assinado da Web é usada para criar o ID do pacote que identifica o AIW.
-      Até agora, essa política funciona apenas para a Sessão de visitante gerenciada.
-
-      Cada item da lista da política é um objeto com dois campos obrigatórios: o manifesto de atualização <ph name="URL_LABEL" /> e o ID do pacote do App Isolado da Web.
-
-      Cada item também pode ter campos opcionais: o nome do canal de atualização/lançamento do AIW (update_channel) e uma versão específica para fixar (pinned_version).
-      Se o "update_channel" não for definido, o valor padrão será usado. Quando a pinned_version é especificada, o sistema tenta instalar essa versão específica, caso ela esteja disponível no canal de atualização atual.
-      Por padrão, a fixação de versões não permite voltar para versões mais antigas. Fixar um AIW em uma versão específica impede a atualização para versões mais recentes. Para liberar a versão, remova este campo.</translation>
 <translation id="7784062550705119230">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7785199109546027763">Uma política para controlar se o recurso de proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" /> precisa ser ativado.
 

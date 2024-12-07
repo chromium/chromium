@@ -340,6 +340,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1223853788495130632">Administratorunuz bu ayar üçün xüsusi dəyər tövsiyə edir.</translation>
 <translation id="1225177025209879837">Sorğu icra olunur...</translation>
 <translation id="1227107020813934021">Sənəd skanerlərinin tapılması</translation>
+<translation id="1227113644794103810">Deaktiv tablar</translation>
 <translation id="1227260640693522019">Qəsr</translation>
 <translation id="1227660082540388410">Giriş açarına düzəliş edin</translation>
 <translation id="1227993798763400520">Yayımlamaq mümkün olmadı. Yenidən cəhd edin.</translation>
@@ -4003,6 +4004,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3794792524918736965">Windows Hello-nu aktiv edin</translation>
 <translation id="379509625511193653">Deaktiv</translation>
 <translation id="3796215473395753611">alt + yuxarı ox</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, səsi önizləmək üçün sağ ox düyməsini istifadə edin</translation>
 <translation id="3796648294839530037">Sevimli Şəbəkələr:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> təşkilatınız tərəfindən idarə olunur<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” üçün <ph name="SEARCH_ENGINE" /> axtarın</translation>

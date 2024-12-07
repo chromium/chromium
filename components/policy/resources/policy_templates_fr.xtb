@@ -9150,15 +9150,6 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
           Si elle n'est pas configurée, les raccourcis des fonctionnalités d'accessibilité sont activés par défaut sur l'écran de connexion.</translation>
 <translation id="7777535871204167559">Traiter les appareils de stockage externe en lecture seule</translation>
 <translation id="7781452670568828399">Modifier la configuration <ph name="PRODUCT_OS_NAME" /> recommandée.</translation>
-<translation id="7782770795171480507">Cette règle permet d'établir la liste des applis Web isolées (AWI) qui s'installent de manière autonome.
-      Les AWI sont des applis avec des propriétés de sécurité utiles qui ne sont pas disponibles pour les pages Web normales. Elles sont empaquetées dans un bundle Web signé. La clé publique de ce bundle sert à créer l'ID du bundle Web qui identifie l'AWI.
-      Pour l'instant, cette règle ne fonctionne que pour les sessions Invité gérées.
-
-      Chaque élément de la règle correspond à un objet avec deux champs obligatoires : l'<ph name="URL_LABEL" /> du fichier manifeste de mise à jour et l'ID de bundle Web de l'AWI.
-
-      Chaque élément peut également comporter des champs facultatifs : le nom du canal de version/mise à jour de l'AWI (update_channel) et une version spécifique à épingler (pinned_version).
-      Si "update_channel" n'est pas défini, la valeur "default" est utilisée. Lorsque la version pinned_version est spécifiée, le système tente d'installer cette version spécifique (si elle est disponible sur le canal de mise à jour actuel).
-      Par défaut, l'épinglage des versions n'autorise pas de revenir à des versions antérieures. Épingler une AWI sur une version spécifique empêche sa mise à jour au-delà de cette version. Pour retirer l'épingle, supprimez ce champ.</translation>
 <translation id="7784062550705119230">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7785199109546027763">Règle permettant de contrôler si la fonctionnalité IP Protection de <ph name="PRIVACY_SANDBOX_NAME" /> doit être activée.
 

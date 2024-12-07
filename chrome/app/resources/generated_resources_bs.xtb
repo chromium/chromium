@@ -344,6 +344,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1223853788495130632">Vaš administrator preporučuje posebnu vrijednost za ovu postavku.</translation>
 <translation id="1225177025209879837">Zahtjev se obrađuje…</translation>
 <translation id="1227107020813934021">Pronađite skenere dokumenata</translation>
+<translation id="1227113644794103810">Neaktivne kartice</translation>
 <translation id="1227260640693522019">Dvorac</translation>
 <translation id="1227660082540388410">Uredite pristupni ključ</translation>
 <translation id="1227993798763400520">Emitiranje nije uspjelo. Pokušajte ponovo.</translation>
@@ -1502,6 +1503,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="202352106777823113">Preuzimanje je trajalo predugo i mreža ga je zaustavila.</translation>
 <translation id="2024195579772565064">Brisanje pretraživača</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Precizni klik</translation>
 <translation id="2025632980034333559">Došlo je do pada aplikacije <ph name="APP_NAME" />. Kliknite ovaj balončić da ponovo učitate ekstenziju.</translation>
 <translation id="2026377162111110983">Glas područja</translation>
 <translation id="2028449514182362831">Funkcije za koje je potreban senzor kretanja neće funkcionirati</translation>
@@ -4761,6 +4763,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4324577459193912240">Fajl je nekompletan</translation>
 <translation id="4325237902968425115">Deinstaliranje aplikacije <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">Pohrana i napajanje</translation>
+<translation id="4325515113816851466">Postavke koje je odabrao tvoj roditelj neće se primjenjivati nakon što se odjaviš</translation>
 <translation id="4326146840124313313">Chromeova najjača sigurnost vas bolje štiti od opasnih web lokacija, preuzimanja i ekstenzija</translation>
 <translation id="4327380114687339519">Meni ekstenzija</translation>
 <translation id="4330191372652740264">Ledena voda</translation>
@@ -4883,6 +4886,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4412992751769744546">Dopusti kolačiće trećih strana</translation>
 <translation id="4413087696295876280">Čitaj informacije i podatke s ChromeOS Flex uređaja</translation>
 <translation id="44137799675104237">Slušanje poruke s prirodnim glasom</translation>
+<translation id="4414051792721275732">Kad izvedete pokret za klik, brzina miša smanjit će se kako bi se pružila veća kontrola. Ponovo izvedite pokret da biste dovršili klik.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Dozvoliti aplikaciji "<ph name="APP_NAME" />" da preuzme listu vaših priključenih USB uređaja?</translation>
 <translation id="4414232939543644979">Novi &amp;anonimni prozor</translation>
@@ -6211,6 +6215,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5389224261615877010">Duga</translation>
 <translation id="5389626883706033615">Web lokacije su blokirane tako da vas ne pitaju za korištenje sačuvanih informacija o vama</translation>
 <translation id="5389794555912875905">Prikazuj upozorenja prije odlaska na nesigurne web lokacije (preporučeno)</translation>
+<translation id="5389943529251318913">Smanji brzinu miša za</translation>
 <translation id="5390112241331447203">Uključi fajl system_logs.txt koji je poslan u izvještajima s povratnim informacijama.</translation>
 <translation id="5390677308841849479">Tamnocrvena i narandžasta</translation>
 <translation id="5392192690789334093">Dozvoljeno slanje obavještenja</translation>

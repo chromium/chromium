@@ -9197,15 +9197,6 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
           Si no se le asigna ningún valor, las combinaciones de teclas para las funciones de accesibilidad estarán habilitadas de forma predeterminada en la pantalla de inicio de sesión.</translation>
 <translation id="7777535871204167559">Usar los dispositivos de almacenamiento externo como dispositivos de solo lectura</translation>
 <translation id="7781452670568828399">Cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="7782770795171480507">Si se establece esta política, se especificará una lista de aplicaciones web aisladas (IWAs) que se instalarán de forma silenciosa.
-      Las IWAs son aplicaciones que tienen propiedades de seguridad útiles que no están disponibles en las páginas web normales. Cada IWA está empaquetada en un paquete web firmado. La clave pública de cada paquete web firmado se usa para crear el ID del paquete web que identifica a la IWA correspondiente.
-      De momento, esta política solo se puede aplicar a las sesiones de invitado gestionadas.
-
-      Cada elemento de la lista de esta política es un objeto con dos campos obligatorios: el archivo de manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la aplicación web aislada.
-
-      Cada elemento también puede tener campos opcionales: un nombre de canal de actualización o lanzamiento de la IWA ("update_channel") y una versión específica para fijar ("pinned_version").
-      Si no se define "update_channel", se usará el valor "default". Si se especifica el campo "pinned_version", el sistema intentará instalar esa versión específica (si está disponible en el canal de actualización actual).
-      De forma predeterminada, al fijar una versión, no se permite volver a versiones anteriores. Si fijas una IWA a una versión específica, no se podrá actualizar a una versión posterior. Para desfijarla, quita este campo.</translation>
 <translation id="7784062550705119230">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para los usuarios. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7785199109546027763">Política para controlar si se habilitará la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" />.
 

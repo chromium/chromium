@@ -15,7 +15,7 @@
 <translation id="1024913885641459127">Critiques de produits et comparaisons de prix</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030706264415084469"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre appareil</translation>
-<translation id="1030949145805074938">{COUNT,plural, =0{Aucun}=1{De 1 site. Cette action vous déconnectera de la plupart des sites. }one{De # site. Cette action vous déconnectera de la plupart des sites. }other{De # sites. Cette action vous déconnectera de la plupart des sites. }}</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{Aucun}=1{Issus de 1 site. Cette action vous déconnectera de la plupart des sites. }one{Issus de # site. Cette action vous déconnectera de la plupart des sites. }other{Issus de # sites. Cette action vous déconnectera de la plupart des sites. }}</translation>
 <translation id="1035709686865413354">Purificateurs et filtres à eau</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1036881361735705143">Enveloppe C4</translation>
@@ -1497,7 +1497,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3665100783276035932">La plupart des sites devraient fonctionner comme prévu</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />En savoir plus<ph name="LINK_END1" /></translation>
 <translation id="3670229581627177274">Activer le Bluetooth</translation>
-<translation id="3671117652518853176">Lorsque cette option est désactivée, vous pouvez parfois être invité à procéder à une validation pour des raisons de sécurité</translation>
+<translation id="3671117652518853176">Même si cette option est désactivée, vous devrez parfois procéder à une validation pour des raisons de sécurité</translation>
 <translation id="3671540257457995106">Autoriser le redimensionnement ?</translation>
 <translation id="3672568546897166916">Erreur au niveau de <ph name="ERROR_PATH" /> : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Équipement réseau</translation>
@@ -4408,7 +4408,7 @@ Informations supplémentaires :
 <translation id="8968766641738584599">Enregistrer la carte</translation>
 <translation id="8970887620466824814">Un problème est survenu</translation>
 <translation id="8971063699422889582">Le certificat du serveur a expiré.</translation>
-<translation id="8975012916872825179">Y compris les numéros de téléphone, les adresses e-mail et les adresses de livraison</translation>
+<translation id="8975012916872825179">Y compris des informations comme les numéros de téléphone, les adresses e-mail et les adresses de livraison</translation>
 <translation id="8975263830901772334">Noms des fichiers que vous imprimez</translation>
 <translation id="8982884016487650216">Chargement du PDF terminé</translation>
 <translation id="8983369100812962543">Vous pouvez désormais redimensionner l'appli</translation>

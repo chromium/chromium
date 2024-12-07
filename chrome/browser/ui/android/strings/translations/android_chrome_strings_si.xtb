@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">පහත ලැයිස්තුවේ අයිතම <ph name="SUGGESTIONS_COUNT" />කි.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> සමග <ph name="SITE_ETLD_PLUS_ONE" /> භාවිතා කරන්න</translation>
 <translation id="160275202205869636">ක්‍රියාත්මක විට, ඔබේ Google ගිණුමේ දත්ත භාවිත කර සුරකින්න. ක්‍රියාවිරහිත වූ විට, දත්ත සුරැකෙන්නේ මෙම උපාංගයට පමණි.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> පටිත්ත ඉවත් කරන ලදි</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{තෝරාගත් අයිතම 1ක් ඉවත් කරන්න}one{තෝරාගත් අයිතම #ක් ඉවත් කරන්න}other{තෝරාගත් අයිතම #ක් ඉවත් කරන්න}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 පිටුසනක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ, <ph name="ACCOUNT_EMAIL" /> සුරකින්න.}one{පිටුසන් #ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ, <ph name="ACCOUNT_EMAIL" /> සුරකින්න.}other{පිටුසන් #ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ, <ph name="ACCOUNT_EMAIL" /> සුරකින්න.}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> සමූහයට එක් විය</translation>
 <translation id="1641113438599504367">ආරක්ෂිත බ්‍රවුස් කිරීම</translation>
 <translation id="164269334534774161">ඔබ <ph name="CREATION_TIME" /> වෙතින් මෙම පිටුසනෙහි නොබැඳි පිටපතක් බලමින්</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">තරුණ මනස සඳහා Google විසින් අන්තර්ගතය</translation>
 <translation id="2579297619530305344">ඔබේ සියලුම උපාංග මත මුරපද පූර්ණ මට්ටමින් විවිෘත විය</translation>
 <translation id="2581165646603367611">මෙය Chrome වැදගත් යැයි නොසිතන කුකීස්, හැඹිලිය, සහ අඩවිවල අනෙකුත් දත්ත හිස් කරනු ඇත.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> පටිත්තක් එක් කරන ලදි</translation>
 <translation id="2587052924345400782">වඩා අලුත් අනුවාදයක් තිබේ</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">ඔබේ මනාප කළමනාකරණය කිරීමට පුරන්න</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">තත්පර 1ක් ඉතිරියි</translation>
 <translation id="2789486458103222910">හරි</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{ඔබට වැඩි දියුණු කළ හැකි යළි භාවිත කළ මුරපදයක් Chrome සොයා ගත්තේ ය}one{ඔබට වැඩි දියුණු කළ හැකි යළි භාවිත කළ මුරපද # Chrome සොයා ගත්තේ ය}other{ඔබට වැඩි දියුණු කළ හැකි යළි භාවිත කළ මුරපද # Chrome සොයා ගත්තේ ය}}</translation>
+<translation id="2796651346651857052">එහි පිහිටීම වෙනස් කිරීමට ලිපින තීරුව ස්පර්ශ කරගෙන සිටින්න.</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ටැබය වසනු ඇත</translation>
 <translation id="2805756323405976993">යෙදුම්</translation>
 <translation id="281504910091592009">ඔබේ <ph name="BEGIN_LINK" />Google ගිණුම<ph name="END_LINK" /> තුළ සුරකින ලද මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">ඔබ <ph name="EMAIL" /> ලෙස පුරනය වී ඇත. ඔබට සැකසීම් තුළ ඕනෑම වේලාවකට සමමුහූර්ත කිරීම නැවැත්විය හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
 <translation id="5304593522240415983">මෙම ඉඩ හිස්ව තැබිය නොහැක</translation>
 <translation id="5306014156308790439">එකතුවට එක් කිරීම අබල කෙරේ</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> සමූහයේ වර්ණය වෙනස් කරන ලදි</translation>
 <translation id="5308380583665731573">සම්බන්ධ කරන්න</translation>
 <translation id="5310963254742922113">මුරපදය භාවිතා කර ඇත.</translation>
 <translation id="5316947901395241499">මුරපද සුරැකීම ඔබේ පරිපාලක විසින් ක්‍රියා විරහිත කර ඇත</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> වෙතින් අඩවි නැත</translation>
 <translation id="5355191726083956201">වැඩිදියුණු කළ ආරක්ෂාව සක්‍රීයයි</translation>
 <translation id="5364112109233799727">ඔබ ප්‍රතිපෝෂණ සපයන පිටුවේ URL එක Google වෙත යවනු ලබන අතර මෙම විශේෂාංගය දියුණු කිරීමට පුද්ගලයින් විසින් එය සමාලෝචනය කරනු ලැබේවි</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> පටිත්තක් වෙනස් කරන ලදි</translation>
 <translation id="5375374982898812658">ඔබට වහාම “<ph name="GROUP_NAME" />” පටිති සමූහයට ප්‍රවේශය අහිමි වනු ඇති අතර, එය ඔබේ සියලු උපාංගවලින් මකනු ඇත</translation>
 <translation id="5375577065097716013">Google Lens සමග රූපය සොයන්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">අප්‍රසිද්ධ වෙතින් මාරු වන්න</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378">පැය <ph name="HOURS" />ක් ඉතිරියි</translation>
 <translation id="6095578583683628124">Google ඔබගේ පෙරනිමි සෙවුම් යන්ත්‍රයද වන්නේ නම්, ඔබ වඩා හොඳ, සන්දර්භානුකූලව අදාළ යෝජනා දකිනු ඇත</translation>
 <translation id="610630277578876674">පණිවිඩ සහ තවත් දේවල්වල සබැඳි ඉක්මනින් විවෘත කරන්න</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> සමූහයේ නම වෙනස් කරන ලදි</translation>
 <translation id="6108923351542677676">පිහිටුවීම දැනට සිදුවෙමින් පවතී...</translation>
 <translation id="6112702117600201073">පිටුව නැවුම් කරමින්</translation>
 <translation id="6122831415929794347">ආරක්‍ෂිත බ්‍රවුස් කිරීම අක්‍රිය කරන්නේද?</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 පටිත්තක්}one{පටිති <ph name="NUMBER_OF_TABS" />ක්}other{පටිති <ph name="NUMBER_OF_TABS" />ක්}}</translation>
 <translation id="6929224077895306814">ඔබේ උපාංගයේ සහ ඔබේ Google ගිණුමේ සුරකින ලද සියලු ආරක්ෂක කේත මකනු ඇත</translation>
 <translation id="6937524809504266803">පුද්ගලායනය සහ සම්බන්‍ධ කිරීම</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">අපනාමය (වෛකල්පික)</translation>
 <translation id="6942665639005891494">සැකසීමේ මෙනු විකල්පය භාවිතයෙන් ඕනැම වේලාවක පෙරනිමි බාගැනීමේ ස්ථානය වෙනස් කරන්න</translation>
 <translation id="694267552845942083">ඔබ දැනට ඔබගේ සමමුහුර්ත සැකසීම් අභිරුචිකරණය කරමින් සිටී. සමමුහුර්තය ක්‍රියාත්මක කිරීම අවසන් කිරීමට, තිරයේ පහළම ළඟ ඇති තහවුරු කිරීමේ බොත්තම තට්ටු කරන්න. ඉහළට සංචාලනය කරන්න</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">අඩවි නැත</translation>
 <translation id="7656862631699126784">අප්‍රසිද්ධ අගුල ක්‍රියාත්මක කරන්න</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> සමූහය හැර යන ලදි</translation>
 <translation id="7663320421139257046">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබේ <ph name="FIELDS_STRING" /> මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියෙහි <ph name="BEGIN_LINK1" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK1" /> බලන්න.</translation>
 <translation id="7665369617277396874">ගිණුම එක් කරන්න</translation>
 <translation id="766587987807204883">ඔබ නොබැඳිව සිටින විට පවා ඔබට කියවිය හැකි ලිපි මෙහි දිස් වෙති</translation>
