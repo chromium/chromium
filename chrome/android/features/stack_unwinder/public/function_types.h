@@ -5,10 +5,24 @@
 #ifndef CHROME_ANDROID_FEATURES_STACK_UNWINDER_PUBLIC_FUNCTION_TYPES_H_
 #define CHROME_ANDROID_FEATURES_STACK_UNWINDER_PUBLIC_FUNCTION_TYPES_H_
 
+#include <memory>
+
+namespace base {
+class Unwinder;
+class NativeUnwinderAndroidMapDelegate;
+class NativeUnwinderAndroidMemoryRegionsMap;
+}
+
 namespace stack_unwinder {
 
 // Type declarations for C++ functions exported by the module.
-using DoNothingFunction = void (*)();
+using CreateMemoryRegionsMapFunction =
+    std::unique_ptr<base::NativeUnwinderAndroidMemoryRegionsMap> (*)();
+using CreateNativeUnwinderFunction =
+    std::unique_ptr<base::Unwinder> (*)(base::NativeUnwinderAndroidMapDelegate*,
+                                        uintptr_t);
+using CreateLibunwindstackUnwinderFunction =
+    std::unique_ptr<base::Unwinder> (*)();
 
 }  // namespace stack_unwinder
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/DexFiles.h"
@@ -23,7 +22,7 @@ class NativeUnwinderAndroidMemoryRegionsMapImpl;
 // Implementation of unwindstack::Memory that restricts memory access to a stack
 // buffer, used by NativeUnwinderAndroid. While unwinding, only memory accesses
 // within the stack should be performed to restore registers.
-class BASE_EXPORT UnwindStackMemoryAndroid : public unwindstack::Memory {
+class UnwindStackMemoryAndroid : public unwindstack::Memory {
  public:
   UnwindStackMemoryAndroid(uintptr_t stack_ptr, uintptr_t stack_top);
   ~UnwindStackMemoryAndroid() override;
@@ -36,9 +35,8 @@ class BASE_EXPORT UnwindStackMemoryAndroid : public unwindstack::Memory {
 };
 
 // Native unwinder implementation for Android, using libunwindstack.
-class BASE_EXPORT NativeUnwinderAndroid
-    : public Unwinder,
-      public ModuleCache::AuxiliaryModuleProvider {
+class NativeUnwinderAndroid : public Unwinder,
+                              public ModuleCache::AuxiliaryModuleProvider {
  public:
   // Creates maps object from /proc/self/maps for use by NativeUnwinderAndroid.
   // Since this is an expensive call, the maps object should be re-used across
