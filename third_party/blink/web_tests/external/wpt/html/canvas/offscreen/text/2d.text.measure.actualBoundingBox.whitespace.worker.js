@@ -22,10 +22,15 @@ promise_test(async t => {
   // Values that are nominally expected to be zero might actually vary by a
   // pixel or so if the UA accounts for antialiasing at glyph edges, so we
   // allow a slight deviation.
-  _assert(Math.abs(ctx.measureText('A ').actualBoundingBoxLeft) <= 1, "Math.abs(ctx.measureText('A ').actualBoundingBoxLeft) <= 1");
-  _assert(ctx.measureText('A ').actualBoundingBoxRight >= 50, "ctx.measureText('A ').actualBoundingBoxRight >= 50");
+  var whitespaces = [0x9, 0xa, 0xc, 0xd, 0x20, 0x3000];
+  for (var codepoint of whitespaces) {
+    let whitespace = String.fromCharCode(codepoint);
 
-  _assert(Math.abs(ctx.measureText(' A').actualBoundingBoxLeft) >= 49, "Math.abs(ctx.measureText(' A').actualBoundingBoxLeft) >= 49");
-  _assert(ctx.measureText(' A').actualBoundingBoxRight <= 101, "ctx.measureText(' A').actualBoundingBoxRight <= 101");
+    _assert(Math.abs(ctx.measureText('A' + whitespace).actualBoundingBoxLeft) <= 1, "Math.abs(ctx.measureText('A' + whitespace).actualBoundingBoxLeft) <= 1");
+    _assert(ctx.measureText('A' + whitespace).actualBoundingBoxRight >= 50, "ctx.measureText('A' + whitespace).actualBoundingBoxRight >= 50");
+
+    _assert(Math.abs(ctx.measureText(whitespace + 'A').actualBoundingBoxLeft) >= 49, "Math.abs(ctx.measureText(whitespace + 'A').actualBoundingBoxLeft) >= 49");
+    _assert(ctx.measureText(whitespace + 'A').actualBoundingBoxRight <= 101, "ctx.measureText(whitespace + 'A').actualBoundingBoxRight <= 101");
+  }
 }, "Testing actualBoundingBox with leading/trailing whitespace");
 done();

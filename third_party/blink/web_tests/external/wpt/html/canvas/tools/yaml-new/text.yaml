@@ -1097,11 +1097,16 @@
     // Values that are nominally expected to be zero might actually vary by a
     // pixel or so if the UA accounts for antialiasing at glyph edges, so we
     // allow a slight deviation.
-    @assert Math.abs(ctx.measureText('A ').actualBoundingBoxLeft) <= 1;
-    @assert ctx.measureText('A ').actualBoundingBoxRight >= 50;
+    var whitespaces = [0x9, 0xa, 0xc, 0xd, 0x20, 0x3000];
+    for (var codepoint of whitespaces) {
+      let whitespace = String.fromCharCode(codepoint);
 
-    @assert Math.abs(ctx.measureText(' A').actualBoundingBoxLeft) >= 49;
-    @assert ctx.measureText(' A').actualBoundingBoxRight <= 101;
+      @assert Math.abs(ctx.measureText('A' + whitespace).actualBoundingBoxLeft) <= 1;
+      @assert ctx.measureText('A' + whitespace).actualBoundingBoxRight >= 50;
+
+      @assert Math.abs(ctx.measureText(whitespace + 'A').actualBoundingBoxLeft) >= 49;
+      @assert ctx.measureText(whitespace + 'A').actualBoundingBoxRight <= 101;
+    }
   variants:
   - *load-font-variant-definition
 

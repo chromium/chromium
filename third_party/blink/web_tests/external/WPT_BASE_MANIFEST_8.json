@@ -308102,7 +308102,7 @@
       []
      ],
      "helpers.js": [
-      "56e2a2812b65a7978242654cf9cd82ff756a9fa9",
+      "a62e13026c673b3d9b1f85c0cd372275a7369140",
       []
      ],
      "reporting_origin.py": [
@@ -311319,6 +311319,50 @@
     "plugin-types": {
      "plugin-types-ignored.html.sub.headers": [
       "5508935fff4bf3c2d15f0de35a0efb43da595910",
+      []
+     ]
+    },
+    "report-hash": {
+     "default-src.https.window.js.sub.headers": [
+      "3566b037308b70e9b708adc30af639bb6dfecbbe",
+      []
+     ],
+     "multiple-policies.https.sub.html.sub.headers": [
+      "17c313da488b4a5ff2c6f4ecdea31172839752b1",
+      []
+     ],
+     "reportonly-default-src.https.window.js.sub.headers": [
+      "0490f22ed47e0a2241562112fdb473c359cf7151",
+      []
+     ],
+     "reportonly-script-src-elem.https.window.js.sub.headers": [
+      "b7929547a090840dee82e0501f26ff7f8400b291",
+      []
+     ],
+     "reportonly-script-src-none.https.window.js.sub.headers": [
+      "9c6d3efd27489abb00f8955bb3f57d4baf85ad89",
+      []
+     ],
+     "reportonly-script-src.https.window.js.sub.headers": [
+      "ee7eb6f7f53b429b9e598eb5b81679b82774314b",
+      []
+     ],
+     "resources": {
+      "report-hash-test-runner.sub.js": [
+       "f336cf14bfb586043ad7e9f97e038c08fda7a70e",
+       []
+      ]
+     },
+     "script-src-elem.https.window.js.sub.headers": [
+      "d9c04180310c85121c25c45d482c1e3e3eac59de",
+      []
+     ],
+     "script-src-sha512.https.window.js.sub.headers": [
+      "eaa0873582b78a0adb8b0ca490ef9a715e7766e6",
+      []
+     ],
+     "script-src.https.window.js.sub.headers": [
+      "bd92f728c858fbce1fb2b28aa44971cc1049d39b",
       []
      ]
     },
@@ -365245,7 +365289,7 @@
      },
      "invalidation": {
       "WEB_FEATURES.yml": [
-       "33e80ad651e8a8fe9f51c48cd39fdd42a335a9a3",
+       "860591654ac5e4691fce62ecb0089c4a943686cd",
        []
       ],
       "any-link-attribute-removal-ref.html": [
@@ -365605,7 +365649,7 @@
      },
      "parsing": {
       "WEB_FEATURES.yml": [
-       "261019c003df1d48ce35e3edb41fbba270f2be0d",
+       "f3453b29162aab65363b2caf0ba076c8ccb58de1",
        []
       ],
       "invalid-pseudos-expected.txt": [
@@ -366119,6 +366163,10 @@
      ],
      "README.md": [
       "4104881e0392bf7947f5ae710d577e9de6b45314",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "939658bfb16666172ce8062b24085b0c0b1ced85",
       []
      ]
     },
@@ -374287,7 +374335,7 @@
        []
       ],
       "fledge-util.sub.js": [
-       "8e387588aa92e3adc7b16a46e3205d8742b03c77",
+       "a209adbf2f332a8090301dc9923c464198d1d26b",
        []
       ],
       "fledge_http_server_util.py": [
@@ -381608,7 +381656,7 @@
         []
        ],
        "text.yaml": [
-        "db2d5380dd81f244d0612a7aef658da5e38713fd",
+        "38630509bf2f79eda68ae6c5de82c1050b98f7c4",
         []
        ],
        "the-canvas-state.yaml": [
@@ -404931,6 +404979,14 @@
       "b77d1f96b7d6b5886f1d43b2b44aea76afd56df6",
       []
      ],
+     "comment.js": [
+      "7fa15a06da77980aaab8023ec34fd8394f97c98b",
+      []
+     ],
+     "comment.js.headers": [
+      "cb762eff806849df46dc758ef7b98b63f27f54c9",
+      []
+     ],
      "csp-error.https.sub.html": [
       "c8830519452083108696b7b263b514a3a74ac651",
       []
@@ -404972,7 +405028,7 @@
       []
      ],
      "report-helper.js": [
-      "4d3c3fbdee800c5ed20d297384364004602738fd",
+      "5b5438903de11c346ac3901a9de81a96e4446386",
       []
      ],
      "report.py": [
@@ -407558,7 +407614,7 @@
       []
      ],
      "about-blank-replacement.https-expected.txt": [
-      "329f457fa2222f17c030be4aa02bb826a36f49a7",
+      "dff712091d7e4d2a7eea6cbd1f354fad1db29871",
       []
      ],
      "clients-matchall-client-types.https-expected.txt": [
@@ -440837,10 +440893,10 @@
      ]
     },
     "translator": {
-     "ai_translator_bad_input.tentative.https.window.js": [
-      "8a9e4ff5377a00793eb806b4a62c85ad9fa14f8e",
+     "ai_translator_bad_input.tentative.https.any.js": [
+      "adc7043849bda370ac4e654ca8546abd684547d0",
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.window.html",
+       "ai/translator/ai_translator_bad_input.tentative.https.any.html",
        {
         "script_metadata": [
          [
@@ -440848,23 +440904,68 @@
           "translator.create without options do not crash"
          ],
          [
+          "global",
+          "window,worker"
+         ],
+         [
           "timeout",
           "long"
          ]
         ],
         "timeout": "long"
        }
-      ]
-     ],
-     "ai_translator_translate.tentative.https.window.js": [
-      "fe0f2d245eb371ec7c79082e8a31dea3372bd45f",
+      ],
       [
-       "ai/translator/ai_translator_translate.tentative.https.window.html",
+       "ai/translator/ai_translator_bad_input.tentative.https.any.serviceworker.html",
        {
         "script_metadata": [
          [
           "title",
-          "Translate from English to Japanese"
+          "translator.create without options do not crash"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "ai/translator/ai_translator_bad_input.tentative.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "translator.create without options do not crash"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "ai/translator/ai_translator_bad_input.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "translator.create without options do not crash"
+         ],
+         [
+          "global",
+          "window,worker"
          ],
          [
           "timeout",
@@ -440875,15 +440976,162 @@
        }
       ]
      ],
-     "translator_translate.tentative.window.js": [
-      "cfa6654e8ce5973364b8b43f512ee80f2dee0405",
+     "ai_translator_translate.tentative.https.any.js": [
+      "896fee9259911dfe5fb188728c405a6cbddca98b",
       [
-       "ai/translator/translator_translate.tentative.window.html",
+       "ai/translator/ai_translator_translate.tentative.https.any.html",
        {
         "script_metadata": [
          [
           "title",
           "Translate from English to Japanese"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "ai/translator/ai_translator_translate.tentative.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "ai/translator/ai_translator_translate.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "translator_translate.tentative.any.js": [
+      "c0fc2f657cc3ff6916b16e1b126f4959c405a620",
+      [
+       "ai/translator/translator_translate.tentative.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "ai/translator/translator_translate.tentative.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "ai/translator/translator_translate.tentative.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "ai/translator/translator_translate.tentative.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "global",
+          "window,worker"
          ],
          [
           "timeout",
@@ -441291,9 +441539,16 @@
      ]
     ],
     "request-format.sub.https.html": [
-     "5965f53299af7d5512b0024b1692591ef1ba77a1",
+     "d97bd8630b6b7d23caf5af8e0499fce3d35eca51",
      [
       "attribution-reporting/request-format.sub.https.html?method=a&expected-eligible=navigation-source",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "attribution-reporting/request-format.sub.https.html?method=area&expected-eligible=navigation-source",
       {
        "testdriver": true,
        "timeout": "long"
@@ -459374,6 +459629,161 @@
       [
        null,
        {}
+      ]
+     ]
+    },
+    "report-hash": {
+     "default-src.https.window.js": [
+      "c8edc03fd3fe61587061a680307c4455f7446fdd",
+      [
+       "content-security-policy/report-hash/default-src.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "resources/report-hash-test-runner.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "multiple-policies.https.sub.html": [
+      "ae4f88864d8266980918783d9ae6bd49494bdadc",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reportonly-default-src.https.window.js": [
+      "c8edc03fd3fe61587061a680307c4455f7446fdd",
+      [
+       "content-security-policy/report-hash/reportonly-default-src.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "resources/report-hash-test-runner.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "reportonly-script-src-elem.https.window.js": [
+      "c8edc03fd3fe61587061a680307c4455f7446fdd",
+      [
+       "content-security-policy/report-hash/reportonly-script-src-elem.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "resources/report-hash-test-runner.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "reportonly-script-src-none.https.window.js": [
+      "d708e989b70c5a9e04b8486bf3045dfc10947cef",
+      [
+       "content-security-policy/report-hash/reportonly-script-src-none.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "resources/report-hash-test-runner.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "reportonly-script-src.https.window.js": [
+      "c8edc03fd3fe61587061a680307c4455f7446fdd",
+      [
+       "content-security-policy/report-hash/reportonly-script-src.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "resources/report-hash-test-runner.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "script-src-elem.https.window.js": [
+      "c8edc03fd3fe61587061a680307c4455f7446fdd",
+      [
+       "content-security-policy/report-hash/script-src-elem.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "resources/report-hash-test-runner.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "script-src-sha512.https.window.js": [
+      "c8edc03fd3fe61587061a680307c4455f7446fdd",
+      [
+       "content-security-policy/report-hash/script-src-sha512.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "resources/report-hash-test-runner.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "script-src.https.window.js": [
+      "c8edc03fd3fe61587061a680307c4455f7446fdd",
+      [
+       "content-security-policy/report-hash/script-src.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "resources/report-hash-test-runner.sub.js"
+         ]
+        ]
+       }
       ]
      ]
     },
@@ -485985,15 +486395,15 @@
         {}
        ]
       ],
-      "the-check-pseudo-element.tentative.html": [
-       "f220e29bcd0f956d54f720217dbda6aebe851263",
+      "the-checkmark-pseudo-element.tentative.html": [
+       "f50794a5128020361ccc4de5ff15731240e05844",
        [
         null,
         {}
        ]
       ],
-      "the-select-arrow-pseudo-element.tentative.html": [
-       "69e1d1e11dd403f58675de5ee9c284c319cba4c8",
+      "the-picker-icon-pseudo-element.tentative.html": [
+       "79a5e10e93bc0097c175d4dc3f3f5c573700c2c0",
        [
         null,
         {}
@@ -502800,6 +503210,20 @@
      ],
      "getComputedStyle-property-order.html": [
       "f52700eb9434111f7d4460493dd7c586fc321780",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getComputedStyle-pseudo-checkmark.html": [
+      "f3918dc82a4feb7df43939b3f5b73a88f2ce3470",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getComputedStyle-pseudo-picker-icon.html": [
+      "dede199652c3b288d50b0066ade2661c4b1eb4d0",
       [
        null,
        {}
@@ -559984,6 +560408,217 @@
        }
       ]
      ],
+     "private-aggregation.https.window.js": [
+      "4386610abb34bc2b0b5316724a9282dbfa57ad17",
+      [
+       "fledge/tentative/private-aggregation.https.window.html?1-5",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/private-aggregation.https.window.html?11-15",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/private-aggregation.https.window.html?16-20",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/private-aggregation.https.window.html?6-10",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "real-time-reporting.https.window.js": [
       "c2af09744c50d3c48be10fa0bf098236962b364e",
       [
@@ -584384,7 +585019,7 @@
         ]
        ],
        "2d.text.measure.actualBoundingBox.whitespace.html": [
-        "29f25f502d7d808659d85184ef51a5000eced053",
+        "1e389a19264b63d741c1ca49bbb672f30689519e",
         [
          null,
          {}
@@ -597982,14 +598617,14 @@
         ]
        ],
        "2d.text.measure.actualBoundingBox.whitespace.html": [
-        "e9bed7dcefd3bf4f7ba8241dfba271acf3b7af6e",
+        "5895e6360a0725c61c9f5611342cbb90df630581",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.actualBoundingBox.whitespace.worker.js": [
-        "b588b6e68f85d147db06f85f7f58cde24a2863f0",
+        "e3b74443e42fcebcc3e1e03615242852fe152b2f",
         [
          "html/canvas/offscreen/text/2d.text.measure.actualBoundingBox.whitespace.worker.html",
          {}
