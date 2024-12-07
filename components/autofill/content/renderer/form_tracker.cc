@@ -312,7 +312,8 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
     return;
   }
   if (detach_reason == blink::DetachReason::kFrameDeletion &&
-      !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
+      !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() &&
+      IsTracking()) {
     // Exclude cases where the previous RenderFrame gets deleted only to be
     // replaced by a new RenderFrame, which happens on navigations. This is so
     // that we only trigger inferred form submission if the actual frame
