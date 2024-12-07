@@ -75,16 +75,6 @@ void HeadlessProtocolBrowserTest::SetUpCommandLine(
   command_line->AppendSwitchASCII(::network::switches::kHostResolverRules,
                                   "MAP *.test 127.0.0.1");
   HeadlessDevTooledBrowserTest::SetUpCommandLine(command_line);
-
-  if (RequiresSitePerProcess()) {
-    // Make sure the navigations spawn new processes. We run test harness
-    // in one process (harness.test) and tests in another.
-    command_line->AppendSwitch(::switches::kSitePerProcess);
-  }
-}
-
-bool HeadlessProtocolBrowserTest::RequiresSitePerProcess() {
-  return true;
 }
 
 base::Value::Dict HeadlessProtocolBrowserTest::GetPageUrlExtraParams() {
@@ -561,7 +551,7 @@ class HeadlessProtocolBrowserTestWithoutSiteIsolation
   HeadlessProtocolBrowserTestWithoutSiteIsolation() = default;
 
  protected:
-  bool RequiresSitePerProcess() override { return false; }
+  bool ShouldEnableSitePerProcess() override { return false; }
 };
 
 HEADLESS_PROTOCOL_TEST_CLASS(
