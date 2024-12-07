@@ -431,7 +431,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   //    of autofill's tracking.
   // When `known_submitted_form_element` is provided the function makes sure
   // that the returned form corresponds to that DOM element.
+  // `source` is the type of submission requesting the submitted form.
   std::optional<FormData> GetSubmittedForm(
+      mojom::SubmissionSource source,
       std::optional<blink::WebFormElement> known_submitted_form_element) const;
 
   void ResetLastInteractedElements();

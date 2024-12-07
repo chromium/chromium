@@ -27,7 +27,6 @@ struct CallTimerState {
     kHandleCaretMovedInFormField,
     kJavaScriptChangedValue,
     kNotifyPasswordManagerAboutClearedForm,
-    kOnFormSubmitted,
     kOnProvisionallySaveForm,
     kOnTextFieldDidChange,
     kQueryAutofillSuggestions,

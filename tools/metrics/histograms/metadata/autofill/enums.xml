@@ -4376,6 +4376,30 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Has valid expiration date, but invalid card number"/>
 </enum>
 
+<enum name="AutofillSubmittedFormTypeBySource">
+  <int value="0" label="(Error) NONE: Null"/>
+  <int value="1" label="(Error) NONE: Extracted"/>
+  <int value="2" label="(Error) NONE: Cached"/>
+  <int value="3" label="SAME_DOCUMENT_NAVIGATION: Null"/>
+  <int value="4" label="SAME_DOCUMENT_NAVIGATION: Extracted"/>
+  <int value="5" label="SAME_DOCUMENT_NAVIGATION: Cached"/>
+  <int value="6" label="XHR_SUCCEEDED: Null"/>
+  <int value="7" label="XHR_SUCCEEDED: Extracted"/>
+  <int value="8" label="XHR_SUCCEEDED: Cached"/>
+  <int value="9" label="FRAME_DETACHED: Null"/>
+  <int value="10" label="FRAME_DETACHED: Extracted"/>
+  <int value="11" label="FRAME_DETACHED: Cached"/>
+  <int value="12" label="PROBABLE_FORM_SUBMISSION: Null"/>
+  <int value="13" label="PROBABLE_FORM_SUBMISSION: Extracted"/>
+  <int value="14" label="PROBABLE_FORM_SUBMISSION: Cached"/>
+  <int value="15" label="FORM_SUBMISSION: Null"/>
+  <int value="16" label="FORM_SUBMISSION: Extracted"/>
+  <int value="17" label="FORM_SUBMISSION: Cached"/>
+  <int value="18" label="DOM_MUTATION_AFTER_AUTOFILL: Null"/>
+  <int value="19" label="DOM_MUTATION_AFTER_AUTOFILL: Extracted"/>
+  <int value="20" label="DOM_MUTATION_AFTER_AUTOFILL: Cached"/>
+</enum>
+
 <enum name="AutofillSubmittedServerCardExpirationStatus">
   <int value="0"
       label="(Deprecated) Expiration date matched, full server card"/>

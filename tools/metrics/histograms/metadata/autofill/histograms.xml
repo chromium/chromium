@@ -5746,6 +5746,17 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.SubmissionDetection.SubmittedFormType"
+    enum="AutofillSubmittedFormTypeBySource" expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Metric to measure how many times querying the submitted form returned a
+    null, extracted or cached form, for every submission source separately. This
+    metric is emitted each time the submitted form is requested.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SubmissionDetectionSource.{SubmissionComponent}"
     enum="AutofillSubmissionSource2" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
