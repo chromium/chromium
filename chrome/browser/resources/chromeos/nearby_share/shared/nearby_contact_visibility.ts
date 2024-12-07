@@ -399,6 +399,7 @@ export class NearbyContactVisibilityElement extends
     }
 
     return selectedVisibility === 'none' ||
+        selectedVisibility === 'yourDevices' ||
         contactsState === ContactsState.HAS_CONTACTS;
   }
 
