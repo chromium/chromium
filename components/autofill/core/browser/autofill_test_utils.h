@@ -48,7 +48,6 @@ class FormFieldData;
 struct FormDataPredictions;
 struct FormFieldDataPredictions;
 class PaymentsAutofillTable;
-class TestAutofillClient;
 class TestPersonalDataManager;
 
 // Defined by pair-wise equality of all members.

@@ -619,19 +619,27 @@ class TestAutofillClientTemplate : public T {
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
 
-// A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as
-// an alternative for tests where the content layer is visible.
-//
-// Consider using TestAutofillClientInjector, especially in browser tests.
-class TestAutofillClient : public TestAutofillClientTemplate<AutofillClient> {
+// Base class for TestAutofillClientTemplate to derive from so that the
+// AutofillDriverFactory is initialized before the members of
+// TestAutofillClientTemplate. This initialization order mimics that of
+// ContentAutofillClient and AndroidAutofillClient / ChromeAutofillClient.
+class TestAutofillClientBase : public AutofillClient {
  public:
-  using TestAutofillClientTemplate<AutofillClient>::TestAutofillClientTemplate;
-
   AutofillDriverFactory& GetAutofillDriverFactory() override;
+
+ protected:
+  // Instantiation should only happen through TestAutofillClient.
+  TestAutofillClientBase();
 
  private:
   AutofillDriverFactory autofill_driver_factory_;
 };
+
+// A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as
+// an alternative for tests where the content layer is visible.
+//
+// Consider using TestAutofillClientInjector, especially in browser tests.
+using TestAutofillClient = TestAutofillClientTemplate<TestAutofillClientBase>;
 
 }  // namespace autofill
 

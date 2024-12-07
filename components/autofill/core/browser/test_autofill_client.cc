@@ -6,7 +6,9 @@
 
 namespace autofill {
 
-AutofillDriverFactory& TestAutofillClient::GetAutofillDriverFactory() {
+TestAutofillClientBase::TestAutofillClientBase() = default;
+
+AutofillDriverFactory& TestAutofillClientBase::GetAutofillDriverFactory() {
   return autofill_driver_factory_;
 }
 
