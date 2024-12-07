@@ -94,7 +94,7 @@
 <translation id="314782365035065913">‏از جایگاه صفحه اصلی سریع‌تر به Chrome دسترسی داشته باشید</translation>
 <translation id="3167189358072330585">‏حساب شما در Google Chrome کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
 <translation id="322254490661677575">‏برای استفاده از داده‌های Chrome و ذخیره کردن این داده‌ها در «حساب Google»، گذرعبارت خود را وارد کنید.</translation>
-<translation id="3282568296779691940">‏ورود به Chrome</translation>
+<translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3303503998967553377">‏استفاده از کنش‌های Chrome در iOS</translation>
 <translation id="3348862487678490430">‏افزودن مورد «فهرست خواندن» به Chrome</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}one{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}other{‏این اتفاق زمانی رخ می‌دهد که از Chrome به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}}</translation>
@@ -302,7 +302,7 @@
 <translation id="8673726683583791503">‏خرید کردن با «لنز Google»</translation>
 <translation id="8727043961453758442">‏بیشترین بهره را از Chrome ببرید</translation>
 <translation id="8765470054473112089">‏وقتی در نوار نشانی یا چارگوش جستجو تایپ می‌کنید، Chrome آنچه تایپ می‌کنید را به موتور جستجوی پیش‌فرض شما ارسال می‌کند تا پیشنهادهای بهتری دریافت کند. این ویژگی در «حالت ناشناس» خاموش است.</translation>
-<translation id="8772179140489533211">‏برای ورود به سیستم Chrome درخواست نشان می‌دهد.</translation>
+<translation id="8772179140489533211">‏درخواست‌های ورود به سیستم Chrome را نشان می‌دهد.</translation>
 <translation id="8788269841521769222">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد</translation>
 <translation id="880967149107462122">‏به تنظیمات Chrome بروید</translation>
 <translation id="8842132678697187091">‏می‌توانید «لنز Google» را از اینجا باز کنید.</translation>

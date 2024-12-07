@@ -1262,7 +1262,7 @@
 <translation id="1865769994591826607">仅限同一网站的连接</translation>
 <translation id="186594096341696655">降低采样率</translation>
 <translation id="186612162884103683">“<ph name="EXTENSION" />”对于选中位置中的图片、视频及声音文件具有读取和写入权限。</translation>
-<translation id="1867780286110144690"><ph name="PRODUCT_NAME" />已准备就绪，可以进行安装。</translation>
+<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> 已准备就绪，可以完成安装了</translation>
 <translation id="1868553836791672080">此版 Chromium 无法检查密码</translation>
 <translation id="1868617395637139709">允许 Android 应用和服务使用位置信息。</translation>
 <translation id="1869433484041798909">书签按钮</translation>
@@ -2134,7 +2134,7 @@
 <translation id="2458591546854598341">设备管理令牌无效。</translation>
 <translation id="2459703812219683497">检测到激活码</translation>
 <translation id="2459706890611560967">继续将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
-<translation id="2460356425461033301">备份您的浏览器资料，以便在任意设备上使用</translation>
+<translation id="2460356425461033301">备份您的浏览器资料，在任何设备上使用</translation>
 <translation id="2460482211073772897">在其他文件夹中</translation>
 <translation id="2460826998961521840">使用您 Google 账号中保存的通行密钥</translation>
 <translation id="2461045498706592033">“<ph name="LOCAL_FOLDER" />”仅会保存到此设备上。如果您将此书签移至“<ph name="LOCAL_FOLDER" />”，您将无法再在其他设备上获取它。</translation>
@@ -3132,7 +3132,7 @@
 <translation id="3177909033752230686">网页语言：</translation>
 <translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 账号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 账号。</translation>
 <translation id="3179982752812949580">文本字体</translation>
-<translation id="3180284704187420717">借助同步功能保存您的书签、密码等数据</translation>
+<translation id="3180284704187420717">通过同步功能保存书签、密码等数据</translation>
 <translation id="3180990259147710757">将下巴向左移动</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3182749001423093222">拼写检查</translation>
@@ -3761,7 +3761,7 @@
 <translation id="3637203148990213388">其他账号</translation>
 <translation id="3640347231390550691">保护您的密码，防范钓鱼式攻击</translation>
 <translation id="3640613767643722554">训练 Google 助理识别您的声音</translation>
-<translation id="364100968401221170">若要删除您的所有已同步设备以及您的 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
+<translation id="364100968401221170">若要从所有同步的设备和您的 Google 账号中删除浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
 <translation id="3641070112313110357">需要更新 Chromebook 版 Steam（Beta 版）。请重启 Chromebook，然后重试。</translation>
 <translation id="3641299252000913351">正在更新调制解调器固件。请勿关闭设备。</translation>
 <translation id="3641456520301071208">网站可以请求取得您的位置信息</translation>
@@ -3987,7 +3987,7 @@
 <translation id="3776508619697147021">网站可以请求自动下载多个文件</translation>
 <translation id="3776796446459804932">此扩展程序违反了 Chrome 应用商店政策。</translation>
 <translation id="3777483481409781352">无法激活移动网络设备</translation>
-<translation id="3777796259512476958">会致使您从大多数网站退出账号</translation>
+<translation id="3777796259512476958">若删除此类数据，您会从大多数网站退出账号</translation>
 <translation id="3778208826288864398">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。您需要重置此安全密钥。</translation>
 <translation id="3778740492972734840">开发者工具(&amp;D)</translation>
 <translation id="3778868487658107119">您可以向它询问各种问题，指示它处理各种事务。它是专门为您配置的 Google 助手，随时为您提供帮助。</translation>
@@ -4588,7 +4588,7 @@
 <translation id="4200609364258658652">复制视频帧(&amp;Y)</translation>
 <translation id="4200689466366162458">自定义字词</translation>
 <translation id="4200983522494130825">打开新的标签页(&amp;T)</translation>
-<translation id="4201546031411513170">您始终可在设置中选择要同步的内容。</translation>
+<translation id="4201546031411513170">您随时可在设置中选择要同步的内容。</translation>
 <translation id="4203065553461038553">文件名或路径太长</translation>
 <translation id="4203769790323223880">已拒绝授予摄像头使用权限</translation>
 <translation id="4204415812590935863">目前无法创建主题。</translation>
@@ -5666,7 +5666,7 @@
 <translation id="4979510648199782334">Microsoft 365 设置完毕</translation>
 <translation id="4980805016576257426">此扩展程序包含恶意软件。</translation>
 <translation id="4983159853748980742">未能分享密码。请检查互联网连接，确保您已登录 Chrome。然后，再试一次。</translation>
-<translation id="4986706507552097681">您始终可在“设置”中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索和其他服务中为您提供个性化的体验。</translation>
+<translation id="4986706507552097681">您随时可在“设置”中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索和其他服务中为您提供个性化的体验。</translation>
 <translation id="4986728572522335985">安全密钥上的所有数据（包括它的 PIN 码）都会被删除</translation>
 <translation id="4987944280765486504">下载完成后，您的 Chromebook 将重启，您可以继续进行设置。</translation>
 <translation id="4988526792673242964">页面</translation>
@@ -9879,7 +9879,7 @@
 <translation id="8024161440284949905">继续使用这些标签页</translation>
 <translation id="8025151549289123443">锁定屏幕和登录</translation>
 <translation id="8025291188699172126">更新简介</translation>
-<translation id="8026471514777758216">使您的所有设备保持同步</translation>
+<translation id="8026471514777758216">在您的所有设备上保持同步</translation>
 <translation id="8026784703228858744">借助同步功能保存书签和其他数据</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 天前访问过}=1{1 天前访问过}other{# 天前访问过}}</translation>
 <translation id="8028060951694135607">Microsoft 密钥恢复</translation>
@@ -9912,7 +9912,7 @@
 <translation id="8045923671629973368">输入应用 ID 或网上应用店网址</translation>
 <translation id="804786196054284061">最终用户许可协议</translation>
 <translation id="8048596485169033655">正在下载主要节点标注文件…，进度为 <ph name="PERCENT" />%</translation>
-<translation id="8048728378294435881">备份您的资料，以便在任意设备上使用</translation>
+<translation id="8048728378294435881">备份您的资料，在任何设备上使用</translation>
 <translation id="8048977114738515028">在设备上创建桌面快捷方式，以便直接访问此个人资料</translation>
 <translation id="8049029041626250638">您可以连接一个键盘或鼠标。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="8049122382261047457">使用 Google 智能镜头搜索任意图片</translation>
@@ -11144,7 +11144,7 @@
 <translation id="8915370057835397490">正在加载建议</translation>
 <translation id="8915916167043355778">全部关闭</translation>
 <translation id="8916476537757519021">隐身辅助框架：<ph name="SUBFRAME_SITE" /></translation>
-<translation id="8917490105272468696">我同意</translation>
+<translation id="8917490105272468696">立即开启</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安装应用…</translation>
 <translation id="891931289445130855">删除数据和权限</translation>

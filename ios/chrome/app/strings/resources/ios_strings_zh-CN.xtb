@@ -251,7 +251,7 @@
 <translation id="20638360198452347">单位类型选择器</translation>
 <translation id="2067852168641682340">每次都保存到此账号</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 个标签页}other{{count} 个标签页}}</translation>
-<translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
+<translation id="2074131957428911366">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2078437078822043850">向右滚动即可在无痕模式下浏览内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2082906935540894275">在不同时间为您提供最相关的功能。</translation>
@@ -1238,7 +1238,7 @@
 <translation id="6617761071025228250">清除文字</translation>
 <translation id="6620279676667515405">取消</translation>
 <translation id="6624219055418309072">在无痕模式下阻止</translation>
-<translation id="6625830436658400045">系统将根据上次备份来恢复您的同步设置。您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
+<translation id="6625830436658400045">系统将根据上次备份来恢复您的同步设置。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6634432609054530164">贵单位关闭了无痕模式</translation>
 <translation id="6638511529934826365">缩放文字…</translation>
@@ -1613,7 +1613,7 @@
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
 <translation id="8307481894409578819">无法上传此文件</translation>
 <translation id="8319076807703933069">新搜索</translation>
-<translation id="8343993175958086504">备份您的资料，以便在任意设备上使用。</translation>
+<translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
 <translation id="8366466717204352506">从未检查过</translation>

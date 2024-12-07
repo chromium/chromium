@@ -38,7 +38,7 @@
 <translation id="1017280919048282932">&amp;Dodaj do słownika</translation>
 <translation id="1018656279737460067">Anulowano</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
-<translation id="1022669824195822609">Twoim urządzeniem zarządza <ph name="DOMAIN" />. Dostęp do danych każdego profilu na nim mają administratorzy.</translation>
+<translation id="1022669824195822609">Twoim urządzeniem zarządza <ph name="DOMAIN" />. Administratorzy mają dostęp do danych każdego profilu na urządzeniu.</translation>
 <translation id="1022719295563085177">Domyślne ustawienie sieci</translation>
 <translation id="1026196234862089732">Klucz dostępu został zaktualizowany</translation>
 <translation id="1026655690966755180">Dodaj port</translation>
@@ -4314,7 +4314,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Więcej informacji o ustawieniu Dokładność lokalizacji<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Zaimportowane</translation>
 <translation id="3992008114154328194">Pobieram <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Utwórz kopię zapasową danych</translation>
+<translation id="3993259701827857030">Kopia zapasowa danych</translation>
 <translation id="3993887353483242788">Zsynchronizuj to urządzenie (<ph name="DEVICE_TYPE" />), aby Twoje preferencje były dostępne wszędzie tam, gdzie logujesz się na konto Google. Preferencje obejmują m.in. aplikacje, ustawienia, hasła Wi-Fi, języki, tapety i skróty klawiszowe.</translation>
 <translation id="3994318741694670028">Twój komputer jest skonfigurowany przy użyciu błędnie sformatowanego identyfikatora sprzętu. Uniemożliwia to zaktualizowanie ChromeOS Flex za pomocą najnowszych poprawek zabezpieczeń, a komputer <ph name="BEGIN_BOLD" />może być narażony na szkodliwe ataki<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Aby odblokować system, <ph name="DEVICE_TYPE" /> i odblokowany telefon muszą być bliżej siebie.</translation>

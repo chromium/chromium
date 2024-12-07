@@ -4111,7 +4111,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3843464315703645664">Nella lista consentita interna</translation>
 <translation id="3844888638014364087">Emoji inserita</translation>
 <translation id="3846116211488856547">Scarica strumenti per sviluppare siti web, app Android e non solo. Se installi Linux verranno scaricati <ph name="DOWNLOAD_SIZE" /> di dati.</translation>
-<translation id="3847319713229060696">Contribuisci ad aumentare la sicurezza sul Web per tutti gli utenti</translation>
+<translation id="3847319713229060696">Contribuisci ad aumentare la sicurezza sul web per tutti gli utenti</translation>
 <translation id="3848547754896969219">Apri l'URL nella finestra di navigazione in &amp;incognito</translation>
 <translation id="3850172593216628215">Gli aggiornamenti della sicurezza sono terminati. Risparmia 50 $ o più su un nuovo Chromebook.</translation>
 <translation id="385051799172605136">Indietro</translation>
@@ -7102,7 +7102,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Dispositivo USB collegato</translation>
 <translation id="6027945736510816438">Intendevi <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Aggiungi impronta</translation>
-<translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento dell'annuncio</translation>
+<translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento degli annunci</translation>
 <translation id="6031600495088157824">Opzioni di immissione nella barra degli strumenti</translation>
 <translation id="6032715498678347852">Per consentire a un'estensione di accedere a questo sito, fai clic sull'estensione.</translation>
 <translation id="603539183851330738">Pulsante per annullare la correzione automatica. Ripristina <ph name="TYPED_WORD" />.  Premi Invio per attivare o Esc per ignorare.</translation>
@@ -7890,7 +7890,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6610002944194042868">Opzioni di Traduttore</translation>
 <translation id="6610064275805055636">Gestisci le app web isolate</translation>
 <translation id="6611972847767394631">Trova le tue schede qui</translation>
-<translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul Web.</translation>
+<translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul web.</translation>
 <translation id="6613267708691765962">Ricerca di malware in corso…</translation>
 <translation id="6613668613087513143">Spazio su questo dispositivo insufficiente per completare l'aggiornamento. Libera <ph name="NECESSARY_SPACE" /> sul dispositivo e riprova dal browser Chrome.</translation>
 <translation id="6614172284067813496">Pagina aggiunta all'elenco di lettura</translation>
@@ -8098,7 +8098,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
     <ph name="BEGIN_PARAGRAPH2" />Puoi accedere su questo dispositivo e visualizzare i campi elencati come chromeosflex_ in chrome://system per visualizzare i dati inviati a Google per il filtro degli aggiornamenti, nonché eventuali altri casi in cui decidi di condividere dati con Google.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Visita la pagina g.co/flex/HWDataCollection per avere maggiori informazioni sui dati che <ph name="DEVICE_OS" /> potrebbe condividere con Google e sulle relative modalità di utilizzo.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Siti visitati che definiscono i tuoi interessi</translation>
-<translation id="6770602306803890733">Aumenta la sicurezza per te e per tutti gli utenti del Web</translation>
+<translation id="6770602306803890733">Aumenta la sicurezza per te e per tutti gli utenti del web</translation>
 <translation id="6771503742377376720">È un'autorità di certificazione</translation>
 <translation id="6772974422346500939">Apri e modifica</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
@@ -11136,7 +11136,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8897537894864195436">Scansiona questo codice QR con la fotocamera del dispositivo che ha la tua passkey per <ph name="APP_NAME" /></translation>
 <translation id="8898786835233784856">Seleziona scheda successiva</translation>
 <translation id="8898790559170352647">Aggiungi il tuo account Microsoft</translation>
-<translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
+<translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del web.</translation>
 <translation id="8899851313684471736">Apri link in un'altra &amp;finestra</translation>
 <translation id="8900413463156971200">Abilita rete mobile</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> oggi stesso.}other{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> prima della scadenza.}}</translation>

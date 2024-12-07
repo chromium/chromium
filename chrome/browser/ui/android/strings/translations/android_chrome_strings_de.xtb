@@ -141,7 +141,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1584648915421894279">Derzeit können auf diesem Gerät gespeicherte Passwörter nicht für alle Chrome-Release-Versionen verwendet werden. Nach Chrome 125 werden die für Chrome und <ph name="CHROME_CHANNEL" /> auf deinem Gerät gespeicherten Passwörter zusammengeführt und können in beiden Apps verwendet werden.</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> vorgeschlagene Elemente in der folgenden Liste.</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> verwenden</translation>
-<translation id="160275202205869636">Wenn dies aktiviert ist, kannst du Daten in deinem Google-Konto nutzen und speichern. Ist dies deaktiviert, werden sie nur auf diesem Gerät gespeichert.</translation>
+<translation id="160275202205869636">Bei aktivierten Optionen kannst du die entsprechenden Daten in deinem Google-Konto nutzen und speichern. Bei Deaktivierung werden sie nur auf diesem Gerät gespeichert.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ausgewähltes Element entfernen}other{# ausgewählte Elemente entfernen}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 Lesezeichen und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}other{# Lesezeichen und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -604,7 +604,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3830886834687455630">Aktualisiere die Google Play-Dienste, um deine Passwörter zu prüfen</translation>
 <translation id="3843603704176567761">Deine Passwörter könnten auf diesem Gerät bald nicht mehr funktionieren. Aktualisiere die Google Play-Dienste, um deine Passwörter weiterhin verwenden zu können.</translation>
 <translation id="3845098929839618392">In Inkognitotab öffnen</translation>
-<translation id="3847319713229060696">Dabei helfen, das Web für alle sicherer zu machen</translation>
+<translation id="3847319713229060696">Dazu beitragen, das Web für alle sicherer zu machen</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3856096718352044181">Vergewissere dich, dass dies ein gültiger Provider ist, oder versuche es später noch einmal</translation>
 <translation id="3858860766373142691">Name</translation>
@@ -677,7 +677,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4214315110991671325">Wenn du Cookies erlaubst, kann Chrome diese beim Vorabladen verwenden.</translation>
 <translation id="4216511743389425832">Diese Seite anhören</translation>
 <translation id="4225725533026049334">Folge ich</translation>
-<translation id="4225895483398857530">Tastenkürzel in Symbolleiste</translation>
+<translation id="4225895483398857530">Verknüpfung in Symbolleiste</translation>
 <translation id="4232376164796433044">Passwörter und Autofill</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4248098802131000011">Schütze deine Passwörter vor Datenpannen und anderen Sicherheitsproblemen</translation>
@@ -756,7 +756,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
 <translation id="4595805675102978678">Google-Kontofehler</translation>
-<translation id="4601095002996233687">Umfangreiche Scans für verdächtige Downloads.</translation>
+<translation id="4601095002996233687">Umfangreiche Scans nach verdächtigen Downloads.</translation>
 <translation id="4606559747793337066">Wenn eine Website oder App anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die Seiten und lädt sie ohne Cookies über Google-Server vorab. Dadurch wird deine Identität vor der vorab geladenen Website oder App verborgen.</translation>
 <translation id="4609429330876432068">Deine Listen mit gespeicherten Passwörtern für Chrome und <ph name="CHROME_CHANNEL" /> wurden zusammengeführt. Du kannst weiterhin alle deine gespeicherten Passwörter in beiden Apps automatisch ausfüllen lassen.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
@@ -799,7 +799,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">Video</translation>
 <translation id="4766313118839197559">Passwörter werden auf diesem Gerät im Passwortmanager gespeichert</translation>
-<translation id="4766678251456904326">Konto zum Gerät hinzufügen</translation>
+<translation id="4766678251456904326">Dem Gerät ein Konto hinzufügen</translation>
 <translation id="4767947714785277816">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: Erfolgsmessung bei Anzeigen. Chrome gibt nur sehr wenige Informationen zwischen Websites und Apps weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit die Leistung von Werbung analysiert werden kann.</translation>
 <translation id="4769095993849849966">Neuer Dateiname</translation>
 <translation id="4769632191812288342">Du nutzt den Standardschutz</translation>
@@ -1020,7 +1020,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5797949256525811424">Blockiertes Thema</translation>
 <translation id="580893287573699959">Hier kannst du Themen und Websites verwalten, die dich interessieren</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Vor # Stunde}other{Vor # Stunden}}</translation>
-<translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC Alle Rechte vorbehalten.</translation>
+<translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="5814749351757353073">Lieblingswebsites im Blick behalten</translation>
 <translation id="5822875253699806474">Synchronisiere Tabs und Verlauf, um bereits besuchte Websites schnell wieder aufzurufen</translation>
 <translation id="5828921839638612740">Du kannst die Daten in den Chrome-Einstellungen löschen</translation>
@@ -1491,7 +1491,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7815484226266492798">Langer Screenshot</translation>
 <translation id="7819605256207059717">Von deiner Organisation blockiert</translation>
 <translation id="7821130663268546430">Du findest alle geöffneten Tabs im Tab-Wechsler</translation>
-<translation id="7822705602465980873">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
+<translation id="7822705602465980873">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, beispielsweise durch erhöhten Schutz in Gmail nach einem Sicherheitsvorfall.</translation>
 <translation id="7824665136384946951">Deine Organisation hat Safe Browsing deaktiviert</translation>
 <translation id="7844171778363018843">Keine Daten zum Synchronisieren ausgewählt</translation>
 <translation id="7846161022626028328">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>

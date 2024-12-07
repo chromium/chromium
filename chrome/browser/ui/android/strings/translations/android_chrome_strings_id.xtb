@@ -333,7 +333,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2560519950693256002">Sandi yang disimpan ke <ph name="USERNAME" /> baru saja diperiksa</translation>
 <translation id="2567385386134582609">GAMBAR</translation>
 <translation id="2569733278091928697">Anda dapat dengan mudah mengelola kontrol media, sesi Samaran, download, dan lainnya</translation>
-<translation id="2571711316400087311">Menawarkan pengiriman halaman dalam bahasa lain ke Google Terjemahan</translation>
+<translation id="2571711316400087311">Tawarkan untuk mengirimkan halaman dalam bahasa lain ke Google Terjemahan</translation>
 <translation id="2571834852878229351">Buat sandi saya sendiri</translation>
 <translation id="2574249610672786438">Untuk melihat tab Chrome Anda dari perangkat lain, login ke semua perangkat Anda</translation>
 <translation id="2578337197553672982">Konten oleh Google untuk anak-anak</translation>
@@ -373,7 +373,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2723001399770238859">audio</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> tidak tersedia untuk saat ini.</translation>
 <translation id="2760805590727089264">BB/TT</translation>
-<translation id="2760989362628427051">Mengaktifkan tema gelap ketika tema gelap perangkat atau Penghemat Baterai aktif</translation>
+<translation id="2760989362628427051">Aktifkan tema gelap ketika tema gelap perangkat atau Penghemat Baterai aktif</translation>
 <translation id="2762000892062317888">baru saja</translation>
 <translation id="276969039800130567">Login sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2776236159752647997">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /></translation>
@@ -1483,7 +1483,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7778840695157240389">Periksa kembali nanti untuk membaca artikel baru</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="7798392620021911922">Memulihkan <ph name="TAB_COUNT" /> tab</translation>
-<translation id="780287761701992588">Mendapatkan bookmark, sandi, dan info Anda yang lain di semua perangkat Anda</translation>
+<translation id="780287761701992588">Dapatkan bookmark, sandi, dan info Anda yang lain di semua perangkat Anda</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7808889146555843082">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="SITE" />. Ubah sandi Anda atau hapus akun Anda di <ph name="SITE" /> untuk menjaganya tetap aman dari orang lain.</translation>
 <translation id="7810647596859435254">Buka dengan...</translation>

@@ -272,7 +272,7 @@
 <translation id="2286841657746966508">آدرس صورت‌حساب</translation>
 <translation id="228704530595896923">فهرست گزینه‌های هم‌رسانی.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{دیدن <ph name="TABS_COUNT_ONE" /> برگه}one{دیدن <ph name="TABS_COUNT_MANY" /> برگه}other{دیدن <ph name="TABS_COUNT_MANY" /> برگه}}</translation>
-<translation id="2297822946037605517">اشتراک‌گذاری این صفحه</translation>
+<translation id="2297822946037605517">هم‌رسانی این صفحه</translation>
 <translation id="22981027763501686">برای دریافت نشانک‌ها، سابقه، و موارد دیگر در دستگاه‌های دیگرتان، همگام‌سازی کنید</translation>
 <translation id="230115972905494466">هیچ دستگاه سازگاری پیدا نشد</translation>
 <translation id="2318045970523081853">برای برقراری تماس، تک‌ضرب بزنید.</translation>
@@ -448,7 +448,7 @@
 <translation id="3029704984691124060">عبارت‌های عبور مطابقت ندارند</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />دریافت راهنمایی<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
-<translation id="3037517125981011456">‏درخواست‌هایی برای ورود به سیستم Chrome نشان می‌دهد</translation>
+<translation id="3037517125981011456">‏درخواست‌های ورود به سیستم Chrome را نشان می‌دهد</translation>
 <translation id="3038272154009688107">دیدن همه سایت‌ها</translation>
 <translation id="3055841435094910999">‏اطلاعات مربوط به استفاده شما از Chrome به Google ارسال می‌شود، اما با شما مرتبط نمی‌شود\n\nاگر Chrome خراب شود، ممکن است برخی‌از اطلاعات شخصی در جزئیات آن خرابی لحاظ شود\n\nاگر همگام‌سازی را روشن کنید، ممکن است اطلاعات مربوط به نشانی‌های وبی که بازدید کرده‌اید در سنجه‌ها لحاظ شود</translation>
 <translation id="3059531648236115056">افزودن خلاصه</translation>
@@ -493,7 +493,7 @@
 <translation id="3269093882174072735">بارگیری تصویر</translation>
 <translation id="327204079441056603">نحوه ذخیره شدن گذرواژه‌ها در این دستگاه را تغییر دادیم</translation>
 <translation id="3280562213547448728">جستجوی گفتاری</translation>
-<translation id="3282568296779691940">‏ورود به Chrome</translation>
+<translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{‫<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_ONE" /> برگه}one{‫<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_MANY" /> برگه}other{‫<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_MANY" /> برگه}}</translation>
 <translation id="3293181007446299124">سابقه مرور شما به‌صورت خصوصی در دستگاهتان نگه داشته می‌شود و گزارش‌ها برای محافظت از هویتتان با تأخیر ارسال می‌شود</translation>
 <translation id="3302615849591357577">بازیابی کردن گروه برگه <ph name="TITLE_OF_GROUP" />، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه برگه جدید پس‌زمینه.</translation>
@@ -512,7 +512,7 @@
 <translation id="3387650086002190359">به‌دلیل خطاهای سیستم فایل، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="3398320232533725830">باز کردن مدیر نشانک‌ها</translation>
 <translation id="3414952576877147120">اندازه:</translation>
-<translation id="3421726884497337397">انتخاب مواقعی که کوکی‌های شخص ثالث باید مسدود شوند</translation>
+<translation id="3421726884497337397">انتخاب مواقعی که کوکی‌های طرف سوم باید مسدود شوند</translation>
 <translation id="342220687432920852">{HOURS,plural, =1{‫# ساعت پیش}one{‫# ساعت پیش}other{‫# ساعت پیش}}</translation>
 <translation id="3430670036890315772">خاموش کردن قفل نمایه باعث برداشته شدن اطلاعات ذخیره‌شده‌تان می‌شود</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
@@ -634,7 +634,7 @@
 <translation id="3985022125189960801">اگر می‌خواهید سایتی در مجموعه سایت‌هایی که می‌توانند علایقتان را حدس بزنند قرار گیرد، آن سایت را دوباره اضافه کنید</translation>
 <translation id="3985215325736559418">می‌خواهید دوباره <ph name="FILE_NAME" /> را بارگیری کنید؟</translation>
 <translation id="3987993985790029246">کپی پیوند</translation>
-<translation id="3991055816270226534">مدیریت کوکی‌های شخص ثالث و محافظت دربرابر ردیابی</translation>
+<translation id="3991055816270226534">مدیریت کوکی‌های طرف سوم و محافظت دربرابر ردیابی</translation>
 <translation id="4000212216660919741">صفحه اصلیِ آفلاین</translation>
 <translation id="4016425174436051808">دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
 <translation id="4024768890073681126">ولی‌تان مرورگر را مدیریت می‌کند</translation>
@@ -824,7 +824,7 @@
 <translation id="4850886885716139402">نما</translation>
 <translation id="4852014461738377247">‏درحال ورود به سیستم\u2026</translation>
 <translation id="4860895144060829044">تماس</translation>
-<translation id="4864369630010738180">در حال ورود به سیستم...</translation>
+<translation id="4864369630010738180">درحال ورود به سیستم…</translation>
 <translation id="4866368707455379617">‏<ph name="MODULE" /> برای Chrome نصب نشد</translation>
 <translation id="4871568871368204250">خاموش کردن همگام‌سازی</translation>
 <translation id="4875775213178255010">محتواهای پیشنهادی</translation>
@@ -899,7 +899,7 @@
 <translation id="5171045022955879922">جستجو یا تایپ نشانی وب</translation>
 <translation id="5174700554036517242">برگه به ارتفاع اولیه‌اش برگردانده شد</translation>
 <translation id="5180063720319462041">صفحه به <ph name="TARGET_LANGUAGE" /> ترجمه شده است</translation>
-<translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های شخص ثالث شود آشنا شوید و آن‌ها را کنترل کنید</translation>
+<translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های طرف سوم شود آشنا شوید و آن‌ها را کنترل کنید</translation>
 <translation id="5204967432542742771">گذرواژه را وارد کنید</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{درحال بارگیری فایل…}one{درحال بارگیری # فایل…}other{درحال بارگیری # فایل…}}</translation>
 <translation id="5210286577605176222">رفتن به برگه قبلی</translation>
@@ -943,7 +943,7 @@
 <translation id="5433691172869980887">نام کاربری کپی شد</translation>
 <translation id="5438292632479953702">بارگیری مجدد</translation>
 <translation id="5439191312780166229">‏با تجزیه‌وتحلیل داده‌های بیشتری از سایت‌ها در مقایسه با محافظت استاندارد، درباره سایت‌های خطرناک به شما هشدار می‌دهد، حتی سایت‌هایی که Google قبلاً از آن‌ها اطلاعی نداشته است. می‌توانید هشدارهای Chrome را رد کنید.</translation>
-<translation id="5441137934526263133">سایت کار نمی‌کند؟ کوکی‌های شخص ثالث مسدود شده است</translation>
+<translation id="5441137934526263133">سایت کار نمی‌کند؟ کوکی‌های طرف سوم مسدود شده است</translation>
 <translation id="5441466871879044658">به این زبان ترجمه شود</translation>
 <translation id="5441522332038954058">رفتن به نوار نشانی</translation>
 <translation id="5444999712122199445">برگشتن به سایت</translation>
@@ -1236,7 +1236,7 @@
 <translation id="6734310707649923383">می‌توانید صفحه‌هایی را که از آن‌ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه حذف کنید</translation>
 <translation id="6738867403308150051">در حال بارگیری…</translation>
 <translation id="674388916582496364">‏طبیعی است اگر سایت‌هایی که بازدید می‌کنید برای شخصی‌سازی تجربه‌تان، علایق شما را به‌خاطر آورند. به‌علاوه، سایت‌ها می‌توانند بااستفاده از Chrome اطلاعاتی درباره علایقتان ذخیره کنند.</translation>
-<translation id="6746338529702829275">مرور داده‌های حساب</translation>
+<translation id="6746338529702829275">مرور کردن داده‌های حساب</translation>
 <translation id="6751521182688001123">به‌سرعت برگه جدیدی باز کنید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
 <translation id="6756507620369789050">هم‌رسانی بازخورد</translation>
 <translation id="6762511428368667596"><ph name="NAME" />، <ph name="EMAIL" />.</translation>

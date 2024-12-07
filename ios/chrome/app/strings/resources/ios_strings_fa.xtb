@@ -563,7 +563,7 @@
 <translation id="3588820906588687999">باز کردن تصویر در برگه جدید</translation>
 <translation id="3591006724568464696">برگه‌های اخیر دردسترس نیست</translation>
 <translation id="3595252146048399851">‏همواره می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید چه مواردی همگام‌سازی شود. Google ممکن است براساس سابقه‌تان «جستجو» و سرویس‌های دیگر را شخصی کند.</translation>
-<translation id="3596414637720633074">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
+<translation id="3596414637720633074">مسدود کردن کوکی‌های طرف سوم در «حالت ناشناس»</translation>
 <translation id="3602260545951981695">«محافظت بهبودیافته» را انتخاب کنید</translation>
 <translation id="3622175633937495219">سابقه جستجو (<ph name="COUNT" /> مورد پیدا شد)</translation>
 <translation id="3625008969091706597">برای رفتن به عقب، می‌توانید از لبه تند بکشید.</translation>
@@ -1127,7 +1127,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6189413832092199491">خوانده‌نشده</translation>
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
 <translation id="6196207969502475924">جستجوی گفتاری</translation>
-<translation id="6196640612572343990">مسدود کردن کوکی‌های شخص ثالث</translation>
+<translation id="6196640612572343990">مسدود کردن کوکی‌های طرف سوم</translation>
 <translation id="6198252989419008588">تغییر دادن پین</translation>
 <translation id="6210079381482819663">برگه‌هایی که <ph name="THRESHOLD" /> روز یا بیشتر استفاده نشده‌اند به اینجا منتقل می‌شوند. هرزمان بخواهید می‌توانید آن را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> تغییر دهید.</translation>
 <translation id="6213281885682386884">نشانی‌ای وجود ندارد‏</translation>
@@ -1272,7 +1272,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6723740634201835758">‏در حساب Google</translation>
 <translation id="672735642903863329">نشانک‌ها، گذرواژه‌ها، و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید.</translation>
 <translation id="6732087373923685049">دوربین</translation>
-<translation id="6746338529702829275">مرور داده‌های حساب</translation>
+<translation id="6746338529702829275">مرور کردن داده‌های حساب</translation>
 <translation id="6755200887046212842">مدیریت حساب‌ها</translation>
 <translation id="6761393919622941301">صدا</translation>
 <translation id="6779455296366983087">داده‌های مرورتان حذف خواهد شد</translation>
