@@ -1586,60 +1586,38 @@ bool EqualIgnoringNullity(StringImpl* a, StringImpl* b) {
 }
 
 template <typename CharacterType1, typename CharacterType2>
-int CodeUnitCompareIgnoringASCIICase(wtf_size_t l1,
-                                     wtf_size_t l2,
-                                     const CharacterType1* c1,
-                                     const CharacterType2* c2) {
-  const wtf_size_t lmin = l1 < l2 ? l1 : l2;
-  wtf_size_t pos = 0;
-  while (pos < lmin && ToASCIILower(*c1) == ToASCIILower(*c2)) {
-    ++c1;
-    ++c2;
-    ++pos;
-  }
-
-  if (pos < lmin)
-    return (ToASCIILower(c1[0]) > ToASCIILower(c2[0])) ? 1 : -1;
-
-  if (l1 == l2)
-    return 0;
-
-  return (l1 > l2) ? 1 : -1;
+int CodeUnitCompareIgnoringASCIICase(base::span<const CharacterType1> c1,
+                                     base::span<const CharacterType2> c2) {
+  return CodeUnitCompare(c1, c2, [](auto c) { return ToASCIILower(c); });
 }
 
 template <typename CharacterType>
 int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
-                                     const CharacterType* string2,
-                                     wtf_size_t length2) {
-  if (!string1)
-    return length2 > 0 ? -1 : 0;
-
-  wtf_size_t length1 = string1->length();
-  if (!string2)
-    return length1 > 0 ? 1 : 0;
-
-  if (string1->Is8Bit()) {
-    return CodeUnitCompareIgnoringASCIICase(length1, length2,
-                                            string1->Characters8(), string2);
+                                     base::span<const CharacterType> string2) {
+  if (!string1) {
+    return !string2.empty() ? -1 : 0;
   }
-  return CodeUnitCompareIgnoringASCIICase(length1, length2,
-                                          string1->Characters16(), string2);
+  return VisitCharacters(*string1, [string2](auto string1_chars) {
+    return CodeUnitCompareIgnoringASCIICase(string1_chars, string2);
+  });
 }
 
 int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
                                      const LChar* string2) {
-  return CodeUnitCompareIgnoringASCIICase(
-      string1, string2,
-      string2 ? strlen(reinterpret_cast<const char*>(string2)) : 0);
+  if (!string2) {
+    return string1 && string1->length() ? 1 : 0;
+  }
+  std::string_view string2_view(reinterpret_cast<const char*>(string2));
+  return CodeUnitCompareIgnoringASCIICase(string1, base::span(string2_view));
 }
 
 int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
                                      const StringImpl* string2) {
-  if (!string2)
-    return string1 && string1->length() > 0 ? 1 : 0;
-  return VisitCharacters(*string2, [string1](auto chars) {
-    return CodeUnitCompareIgnoringASCIICase(string1, chars.data(),
-                                            chars.size());
+  if (!string2) {
+    return string1 && string1->length() ? 1 : 0;
+  }
+  return VisitCharacters(*string2, [string1](auto string2_chars) {
+    return CodeUnitCompareIgnoringASCIICase(string1, string2_chars);
   });
 }
 

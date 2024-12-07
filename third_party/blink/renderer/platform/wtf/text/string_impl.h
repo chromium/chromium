@@ -34,6 +34,7 @@
 
 #include <array>
 #include <atomic>
+#include <functional>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -846,44 +847,24 @@ bool EqualIgnoringNullity(const Vector<UChar, inlineCapacity>& a,
   return Equal(a.data(), b->Characters16(), b->length());
 }
 
-template <typename CharacterType1, typename CharacterType2>
-static inline int CodeUnitCompare(wtf_size_t l1,
-                                  wtf_size_t l2,
-                                  const CharacterType1* c1,
-                                  const CharacterType2* c2) {
-  const wtf_size_t lmin = l1 < l2 ? l1 : l2;
-  wtf_size_t pos = 0;
-  while (pos < lmin && *c1 == *c2) {
-    ++c1;
-    ++c2;
+template <typename CharacterType1,
+          typename CharacterType2,
+          typename Projection = std::identity>
+static inline int CodeUnitCompare(base::span<const CharacterType1> c1,
+                                  base::span<const CharacterType2> c2,
+                                  Projection proj = {}) {
+  const size_t lmin = std::min(c1.size(), c2.size());
+  size_t pos = 0;
+  while (pos < lmin && proj(c1[pos]) == proj(c2[pos])) {
     ++pos;
   }
-
-  if (pos < lmin)
-    return (c1[0] > c2[0]) ? 1 : -1;
-
-  if (l1 == l2)
+  if (pos < lmin) {
+    return proj(c1[pos]) > proj(c2[pos]) ? 1 : -1;
+  }
+  if (c1.size() == c2.size()) {
     return 0;
-
-  return (l1 > l2) ? 1 : -1;
-}
-
-static inline int CodeUnitCompare8(const StringImpl* string1,
-                                   const StringImpl* string2) {
-  return CodeUnitCompare(string1->length(), string2->length(),
-                         string1->Characters8(), string2->Characters8());
-}
-
-static inline int CodeUnitCompare16(const StringImpl* string1,
-                                    const StringImpl* string2) {
-  return CodeUnitCompare(string1->length(), string2->length(),
-                         string1->Characters16(), string2->Characters16());
-}
-
-static inline int CodeUnitCompare8To16(const StringImpl* string1,
-                                       const StringImpl* string2) {
-  return CodeUnitCompare(string1->length(), string2->length(),
-                         string1->Characters8(), string2->Characters16());
+  }
+  return c1.size() > c2.size() ? 1 : -1;
 }
 
 static inline int CodeUnitCompare(const StringImpl* string1,
@@ -897,13 +878,15 @@ static inline int CodeUnitCompare(const StringImpl* string1,
   bool string1_is_8bit = string1->Is8Bit();
   bool string2_is_8bit = string2->Is8Bit();
   if (string1_is_8bit) {
-    if (string2_is_8bit)
-      return CodeUnitCompare8(string1, string2);
-    return CodeUnitCompare8To16(string1, string2);
+    if (string2_is_8bit) {
+      return CodeUnitCompare(string1->Span8(), string2->Span8());
+    }
+    return CodeUnitCompare(string1->Span8(), string2->Span16());
   }
-  if (string2_is_8bit)
-    return -CodeUnitCompare8To16(string2, string1);
-  return CodeUnitCompare16(string1, string2);
+  if (string2_is_8bit) {
+    return -CodeUnitCompare(string2->Span8(), string1->Span16());
+  }
+  return CodeUnitCompare(string1->Span16(), string2->Span16());
 }
 
 inline scoped_refptr<StringImpl> StringImpl::IsolatedCopy() const {
