@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
+#include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -346,8 +347,8 @@ void FakeWebAppProvider::Shutdown() {
     icon_manager_->Shutdown();
   if (install_finalizer_)
     install_finalizer_->Shutdown();
-  if (os_integration_manager_) {
-    os_integration_manager_->Shutdown();
+  if (profile_deletion_manager_) {
+    profile_deletion_manager_->Shutdown();
   }
   is_registry_ready_ = false;
 }
