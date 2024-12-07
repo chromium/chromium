@@ -78,8 +78,7 @@ public class ChromeCachedFlagsTest {
                     OmniboxFeatures.sOmniboxAnswerActions,
                     OmniboxFeatures.sRetainOmniboxOnFocus,
                     OmniboxFeatures.sRichInlineAutocomplete,
-                    OmniboxFeatures.sTouchDownTriggerForPrefetch,
-                    OmniboxFeatures.sUseFusedLocationProvider);
+                    OmniboxFeatures.sTouchDownTriggerForPrefetch);
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches
