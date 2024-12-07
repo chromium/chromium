@@ -62,11 +62,13 @@ class SafetyChecker final {
 
   // Runs the configured check (if any) for evaluating raw output.
   void RunRawOutputCheck(const std::string& raw_output,
+                         bool is_complete,
                          ResultCallback callback);
 
   // Runs all of the configured checks for evaluating parsed responses.
   void RunResponseChecks(const google::protobuf::MessageLite& request,
                          const proto::Any& response,
+                         bool is_complete,
                          ResultCallback callback);
 
   const SafetyConfig& safety_cfg() const { return safety_cfg_; }

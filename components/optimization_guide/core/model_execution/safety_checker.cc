@@ -7,6 +7,7 @@
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
 
@@ -58,10 +59,8 @@ SafetyChecker::Result RequestCheckResult(
   result.is_unsafe =
       checker->safety_cfg().IsRequestUnsafe(request_check_idx, safety_info);
   result.is_unsupported_language =
-      !checker->safety_cfg().ShouldIgnoreLanguageResultForRequestCheck(
-          request_check_idx) &&
-      checker->safety_cfg().IsTextInUnsupportedOrUndeterminedLanguage(
-          safety_info);
+      checker->safety_cfg().IsRequestUnsupportedLanguage(request_check_idx,
+                                                         safety_info);
   *result.logs.Add() = MakeTextSafetyExecutionLog(check_input_text, safety_info,
                                                   result.is_unsafe);
   return result;
@@ -70,16 +69,17 @@ SafetyChecker::Result RequestCheckResult(
 SafetyChecker::Result RawOutputCheckResult(
     base::WeakPtr<SafetyChecker> checker,
     std::string check_input_text,
+    bool is_complete,
     on_device_model::mojom::SafetyInfoPtr safety_info) {
   if (!checker) {
     return FailToRunResult();
   }
   SafetyChecker::Result result;
   // Evaluate the check.
-  result.is_unsafe = checker->safety_cfg().IsUnsafeText(safety_info);
+  result.is_unsafe = checker->safety_cfg().IsRawOutputUnsafe(safety_info);
   result.is_unsupported_language =
-      checker->safety_cfg().IsTextInUnsupportedOrUndeterminedLanguage(
-          safety_info);
+      checker->safety_cfg().IsRawOutputUnsupportedLanguage(is_complete,
+                                                           safety_info);
   *result.logs.Add() = MakeTextSafetyExecutionLog(check_input_text, safety_info,
                                                   result.is_unsafe);
   return result;
@@ -89,6 +89,7 @@ SafetyChecker::Result ResponseCheckResult(
     base::WeakPtr<SafetyChecker> checker,
     int request_check_idx,
     std::string check_input_text,
+    bool is_complete,
     on_device_model::mojom::SafetyInfoPtr safety_info) {
   if (!checker) {
     return FailToRunResult();
@@ -98,10 +99,8 @@ SafetyChecker::Result ResponseCheckResult(
   result.is_unsafe =
       checker->safety_cfg().IsResponseUnsafe(request_check_idx, safety_info);
   result.is_unsupported_language =
-      !checker->safety_cfg().ShouldIgnoreLanguageResultForResponseCheck(
-          request_check_idx) &&
-      checker->safety_cfg().IsTextInUnsupportedOrUndeterminedLanguage(
-          safety_info);
+      checker->safety_cfg().IsResponseUnsupportedLanguage(
+          request_check_idx, is_complete, safety_info);
   *result.logs.Add() = MakeTextSafetyExecutionLog(check_input_text, safety_info,
                                                   result.is_unsafe);
   return result;
@@ -175,6 +174,7 @@ void SafetyChecker::RunRequestChecks(
 }
 
 void SafetyChecker::RunRawOutputCheck(const std::string& raw_output,
+                                      bool is_complete,
                                       ResultCallback callback) {
   if (!safety_cfg_.HasRawOutputCheck()) {
     std::move(callback).Run(SafetyChecker::Result{});
@@ -192,13 +192,14 @@ void SafetyChecker::RunRawOutputCheck(const std::string& raw_output,
   auto text = check_input->ToString();
   client_->GetTextSafetyModelRemote(params_)->ClassifyTextSafety(
       text, base::BindOnce(&RawOutputCheckResult,
-                           weak_ptr_factory_.GetWeakPtr(), text)
+                           weak_ptr_factory_.GetWeakPtr(), text, is_complete)
                 .Then(std::move(callback)));
 }
 
 void SafetyChecker::RunResponseChecks(
     const google::protobuf::MessageLite& request,
     const proto::Any& response_as_any,
+    bool is_complete,
     ResultCallback callback) {
   int num_checks = safety_cfg_.NumResponseChecks();
   if (num_checks == 0) {
@@ -227,7 +228,7 @@ void SafetyChecker::RunResponseChecks(
     auto text = check_input->ToString();
     auto merge_result_fn =
         base::BindOnce(&ResponseCheckResult, weak_ptr_factory_.GetWeakPtr(),
-                       idx, text)
+                       idx, text, is_complete)
             .Then(merge_fn);
     client_->GetTextSafetyModelRemote(params_)->ClassifyTextSafety(
         text, std::move(merge_result_fn));

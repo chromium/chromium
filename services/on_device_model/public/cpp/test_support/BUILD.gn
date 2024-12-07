@@ -17,5 +17,6 @@ source_set("test_support") {
     "//mojo/public/cpp/bindings",
     "//services/on_device_model/public/cpp",
     "//services/on_device_model/public/mojom",
+    "//third_party/re2",
   ]
 }

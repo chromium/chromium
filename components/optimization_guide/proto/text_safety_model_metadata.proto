@@ -47,6 +47,17 @@ message SafetyCategoryThreshold {
   optional float threshold = 3;
 }
 
+message LanguageCheck {
+  // Requires one of the allowed languages was detected with at least this level
+  // of confidence. If this value is 0 or unset, language results will be
+  // ignored.
+  optional double confidence_threshold = 1;
+
+  // An alternative threshold used when checking incomplete model output.
+  // If unspecified, the same threshold is used for all checks.
+  optional double partial_threshold = 2;
+}
+
 message RequestSafetyCheck {
   // How to generate input for the text safety check from the request message.
   repeated SubstitutedString input_template = 1;
@@ -59,7 +70,13 @@ message RequestSafetyCheck {
   optional bool check_language_only = 3;
 
   // Whether to ignore the language result of the safety check.
+  // Exclusive with "check_language_only" and "language_check".
   optional bool ignore_language_result = 4;
+
+  // Specify a requirement on the output language.
+  // If neither "language_check" nor "ignore_language_result" is specified, the
+  // language will be checked with a default threshold.
+  optional LanguageCheck language_check = 5;
 }
 
 message PartialOutputChecks {
@@ -75,6 +92,10 @@ message RawOutputCheck {
   // Should be written against a google.protobuf.StringValue proto with the raw
   // output.
   repeated SubstitutedString input_template = 1;
+
+  // Specify a requirement on the output language.
+  // If unspecified, the language will be checked with a default threshold.
+  optional LanguageCheck language_check = 2;
 }
 
 message ResponseSafetyCheck {
@@ -88,6 +109,11 @@ message ResponseSafetyCheck {
 
   // Whether to ignore the language result of the safety check.
   optional bool ignore_language_result = 3;
+
+  // Specify a requirement on the output language.
+  // If neither "language_check" nor "ignore_language_result" is specified, the
+  // language will be checked with a default threshold.
+  optional LanguageCheck language_check = 4;
 }
 
 message FeatureTextSafetyConfiguration {

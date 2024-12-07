@@ -313,7 +313,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Evaluates raw output safety.
   // Will invoke SendResponse if evaluations are successful.
-  void RunRawOutputSafetyCheck();
+  void RunRawOutputSafetyCheck(bool is_complete);
 
   // Called when output safety check completes.
   void OnRawOutputSafetyResult(size_t raw_output_size,
