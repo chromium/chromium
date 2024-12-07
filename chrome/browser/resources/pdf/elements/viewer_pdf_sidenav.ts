@@ -9,6 +9,7 @@ import './viewer_thumbnail_bar.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -58,6 +59,7 @@ export class ViewerPdfSidenavElement extends CrLitElement {
       clockwiseRotations: {type: Number},
       docLength: {type: Number},
       pdfCr23Enabled: {type: Boolean},
+      strings: {type: Object},
       selectedTab_: {type: Number},
       tabs_: {type: Array},
     };
@@ -69,6 +71,7 @@ export class ViewerPdfSidenavElement extends CrLitElement {
   clockwiseRotations: number = 0;
   docLength: number = 0;
   pdfCr23Enabled: boolean = false;
+  strings?: {[key: string]: string};
   private selectedTab_: number = 0;
   protected tabs_: Tab[] = [];
 
@@ -90,7 +93,7 @@ export class ViewerPdfSidenavElement extends CrLitElement {
       {
         id: TabId.THUMBNAIL,
         icon: this.iconsetName_() + ':thumbnails',
-        title: '$i18n{tooltipThumbnails}',
+        title: this.strings ? loadTimeData.getString('tooltipThumbnails') : '',
       },
     ];
 
@@ -98,7 +101,8 @@ export class ViewerPdfSidenavElement extends CrLitElement {
       tabs.push({
         id: TabId.OUTLINE,
         icon: this.iconsetName_() + ':doc-outline',
-        title: '$i18n{tooltipDocumentOutline}',
+        title: this.strings ? loadTimeData.getString('tooltipDocumentOutline') :
+                              '',
       });
     }
 
@@ -106,7 +110,7 @@ export class ViewerPdfSidenavElement extends CrLitElement {
       tabs.push({
         id: TabId.ATTACHMENT,
         icon: this.iconsetName_() + ':attach-file',
-        title: '$i18n{tooltipAttachments}',
+        title: this.strings ? loadTimeData.getString('tooltipAttachments') : '',
       });
     }
     return tabs;
