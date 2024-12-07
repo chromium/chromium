@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cast/sender/performance_metrics_overlay.h"
 
 #include <stddef.h>
@@ -38,9 +33,10 @@ constexpr int kPlane = 0;        // Y-plane in YUV formats.
 // different value than it did before.  |p_ul| is a pointer to the pixel at
 // coordinate (0,0) in a single-channel 8bpp bitmap.  |stride| is the number of
 // bytes per row in the output bitmap.
-void DivergePixels(const gfx::Rect& rect, uint8_t* p_ul, int stride) {
-  DCHECK(p_ul);
-  DCHECK_GT(stride, 0);
+void DivergePixels(const gfx::Rect& rect,
+                   base::span<uint8_t> p_ul,
+                   int stride) {
+  CHECK_GT(stride, 0);
 
   // These constants and heuristics were chosen based on experimenting with a
   // wide variety of content, and converging on a readable result.  The amount
@@ -51,17 +47,24 @@ void DivergePixels(const gfx::Rect& rect, uint8_t* p_ul, int stride) {
   //    [16,31] --> [32,63]   (always a difference of +16)
   //    [32,64] --> 16        (a difference between -16 and -48)
   //   [65,235] --> [17,187]  (always a difference of -48)
-  const int kDivergeDownThreshold = 32;
-  const int kDivergeDownAmount = 48;
-  const int kDivergeUpAmount = 32;
-  const int kMinIntensity = 16;
+  constexpr int kDivergeDownThreshold = 32;
+  constexpr int kDivergeDownAmount = 48;
+  constexpr int kDivergeUpAmount = 32;
+  constexpr int kMinIntensity = 16;
 
   const int top = rect.y() * kScale;
   const int bottom = rect.bottom() * kScale;
   const int left = rect.x() * kScale;
   const int right = rect.right() * kScale;
+  CHECK_GE(top, 0);
+  CHECK_GE(bottom, 0);
+  CHECK_GE(left, 0);
+  CHECK_GE(right, 0);
+  CHECK_LE(top, bottom);
+  CHECK_LE(left, right);
+
   for (int y = top; y < bottom; ++y) {
-    uint8_t* const p_l = p_ul + y * stride;
+    base::span<uint8_t> p_l = p_ul.subspan(static_cast<size_t>(y * stride));
     for (int x = left; x < right; ++x) {
       int intensity = p_l[x];
       if (intensity >= kDivergeDownThreshold)
@@ -93,19 +96,20 @@ void RenderLineOfText(const std::string& line, int top, VideoFrame* frame) {
   // Compute the pointer to the pixel at the upper-left corner of the first
   // character to be rendered.
   const int stride = frame->stride(kPlane);
-  uint8_t* p_ul =
+  base::span<uint8_t> p_ul =
       // Start at the first pixel in the first row...
-      frame->GetWritableVisibleData(kPlane) +
-      (stride * top)
-      // ...now move to the right edge of the visible part of the frame...
-      + frame->visible_rect().width()
-      // ...now move left to where line[0] would be rendered...
-      - line_width
-      // ...now move right to where line[first_idx] would be rendered.
-      + first_idx * pixels_per_char;
+      frame->GetWritableVisiblePlaneData(kPlane).subspan(
+          stride * top
+          // ...now move to the right edge of the visible part of the frame...
+          + frame->visible_rect().width()
+          // ...now move left to where line[0] would be rendered...
+          - line_width
+          // ...now move right to where line[first_idx] would be rendered.
+          + first_idx * pixels_per_char);
 
   // Render each character.
-  for (size_t i = first_idx; i < line.size(); ++i, p_ul += pixels_per_char) {
+  for (size_t i = first_idx; i < line.size(); ++i) {
+    p_ul = p_ul.subspan(static_cast<size_t>(pixels_per_char));
     switch (line[i]) {
       case '0':
         DivergePixels(gfx::Rect(0, 0, 3, 1), p_ul, stride);
@@ -243,29 +247,33 @@ scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
   // Compute the physical pixel top row for the bottom-most line of text.
   const int line_height = (kCharacterHeight + kLineSpacing) * kScale;
   int top = source->visible_rect().height() - line_height;
-  if (top < 0)
+  if (top < 0) {
     return source;  // No pixels would change: Return source frame.
+  }
 
   // Allocate a new frame, identical in configuration to |source| and copy over
   // all data and metadata.
   const scoped_refptr<VideoFrame> frame = VideoFrame::CreateFrame(
       source->format(), source->coded_size(), source->visible_rect(),
       source->natural_size(), source->timestamp());
-  if (!frame)
+  if (!frame) {
     return source;  // Allocation failure: Return source frame.
+  }
+
   for (size_t plane = 0, num_planes = VideoFrame::NumPlanes(source->format());
        plane < num_planes; ++plane) {
     const size_t row_count = VideoFrame::Rows(plane, source->format(),
                                               source->visible_rect().height());
     const size_t bytes_per_row = VideoFrame::RowBytes(
         plane, source->format(), source->visible_rect().width());
-    const uint8_t* src = source->visible_data(plane);
-    const int src_stride = source->stride(plane);
-    uint8_t* dst = frame->GetWritableVisibleData(plane);
-    const int dst_stride = frame->stride(plane);
-    for (size_t row = 0; row < row_count;
-         ++row, src += src_stride, dst += dst_stride) {
-      memcpy(dst, src, bytes_per_row);
+    base::span<const uint8_t> src = source->GetVisiblePlaneData(plane);
+    const size_t src_stride = source->stride(plane);
+    base::span<uint8_t> dst = frame->GetWritableVisiblePlaneData(plane);
+    const size_t dst_stride = frame->stride(plane);
+    for (size_t row = 0; row < row_count; ++row) {
+      dst.copy_prefix_from(src.first(bytes_per_row));
+      src = src.subspan(src_stride);
+      dst = dst.subspan(dst_stride);
     }
   }
   frame->metadata().MergeMetadataFrom(source->metadata());

@@ -158,7 +158,7 @@ class OpenscreenFrameSender : public FrameSender,
   // Ring buffer to keep track of recent frame timestamps. These should only be
   // accessed through the Record/GetXXX() methods.  The index into this ring
   // buffer is the lower 8 bits of the FrameId.
-  RtpTimeTicks frame_rtp_timestamps_[256];
+  std::array<RtpTimeTicks, 256> frame_rtp_timestamps_;
 
   // TODO(https://crbug.com/1316434): move this property to VideoSender once
   // the legacy implementation has been removed.
