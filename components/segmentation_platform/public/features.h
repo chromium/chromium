@@ -112,6 +112,9 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface);
 // Feature flag for enabling the URL visit resumption ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker);
 
+// Feature flag for enabling the URL visit resumption ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralBottomRank);
+
 extern const char kEphemeralCardRankerForceShowCardParam[];
 extern const char kEphemeralCardRankerForceHideCardParam[];
 

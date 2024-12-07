@@ -13,6 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
+#include "components/segmentation_platform/embedder/home_modules/rank_fetcher_helper.h"
 
 namespace segmentation_platform::home_modules {
 
@@ -53,6 +54,8 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
   // through clicking, tapping, or engaging with the card in some way.
   void NotifyCardInteracted(const char* card_name);
 
+  RankFetcherHelper* get_rank_fecther_helper() { return &rank_fecther_helper_; }
+
   const std::vector<std::string>& all_output_labels() const {
     return all_output_labels_;
   }
@@ -81,6 +84,8 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
 
   // Adds `card_labels` to the registry.
   void AddCardLabels(const std::vector<std::string>& card_labels);
+
+  RankFetcherHelper rank_fecther_helper_;
 
   const raw_ptr<PrefService> profile_prefs_;
 

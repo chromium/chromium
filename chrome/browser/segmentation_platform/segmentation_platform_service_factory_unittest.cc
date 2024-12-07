@@ -673,11 +673,9 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
   auto input_context = base::MakeRefCounted<InputContext>();
 
   // No cards are added, the model fetches no results and fails.
-  std::vector<std::string> result = {};
-  ExpectGetClassificationResult(
+  ExpectGetAnnotatedNumericResult(
       kEphemeralHomeModuleBackendKey, prediction_options, input_context,
-      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
-      /*expected_labels=*/result);
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded);
 }
 
 }  // namespace
