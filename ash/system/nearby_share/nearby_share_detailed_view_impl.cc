@@ -107,7 +107,7 @@ void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
   auto toggle_switch = std::make_unique<Switch>(base::BindRepeating(
       &NearbyShareDetailedViewImpl::OnQuickShareToggleClicked,
       weak_factory_.GetWeakPtr()));
-  toggle_switch_ = toggle_switch.get();
+  quick_share_toggle_ = toggle_switch.get();
   toggle_switch->SetIsOn(is_qs_enabled);
   toggle_row_->AddRightView(toggle_switch.release());
 
@@ -133,6 +133,7 @@ void NearbyShareDetailedViewImpl::CreateVisibilitySelectionContainer() {
 
   CreateYourDevicesRow();
   CreateContactsRow();
+  CreateEveryoneRow();
 }
 
 void NearbyShareDetailedViewImpl::CreateYourDevicesRow() {
@@ -177,6 +178,39 @@ void NearbyShareDetailedViewImpl::CreateVisibilityRow(
   visibility_row->SetSubText(sublabel);
 }
 
+void NearbyShareDetailedViewImpl::CreateEveryoneRow() {
+  CHECK(!everyone_row_);
+  CHECK(visibility_selection_container_);
+  CHECK(nearby_share_delegate_);
+
+  everyone_row_ = visibility_selection_container_->AddChildView(
+      std::make_unique<HoverHighlightView>(/*listener=*/this));
+  everyone_row_->SetFocusBehavior(FocusBehavior::NEVER);
+
+  // TODO(brandosocarras, b/360150790): Use IDS strings for label and sublabel.
+  everyone_row_->AddIconAndLabel(
+      ui::ImageModel::FromVectorIcon(
+          kQuickSettingsQuickShareEveryoneIcon,
+          /*color_id=*/cros_tokens::kCrosSysOnSurface),
+      u"Visible to everyone");
+  everyone_row_->SetSubText(u"You will be visible to everyone for 5 minutes.");
+  everyone_row_->text_label()->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                        *everyone_row_->text_label());
+  auto toggle_switch = std::make_unique<Switch>(
+      base::BindRepeating(&NearbyShareDetailedViewImpl::OnEveryoneToggleClicked,
+                          weak_factory_.GetWeakPtr()));
+  everyone_toggle_ = toggle_switch.get();
+  toggle_switch->SetIsOn(
+      nearby_share_delegate_->IsHighVisibilityOn() ||
+      nearby_share_delegate_->IsEnableHighVisibilityRequestActive());
+  everyone_row_->AddRightView(toggle_switch.release());
+
+  // ChromeVox users will just use the toggle switch to toggle.
+  everyone_row_->text_label()->GetViewAccessibility().SetIsIgnored(true);
+}
+
 void NearbyShareDetailedViewImpl::OnSettingsButtonClicked() {
   CloseBubble();
   Shell::Get()->system_tray_model()->client()->ShowNearbyShareSettings();
@@ -184,10 +218,18 @@ void NearbyShareDetailedViewImpl::OnSettingsButtonClicked() {
 
 void NearbyShareDetailedViewImpl::OnQuickShareToggleClicked() {
   CHECK(nearby_share_delegate_);
+  CHECK(quick_share_toggle_);
+
+  if (nearby_share_delegate_->IsEnableHighVisibilityRequestActive()) {
+    quick_share_toggle_->SetIsOn(true);
+    return;
+  }
+
   const bool new_enabled_state = !nearby_share_delegate_->IsEnabled();
   // TODO(brandosocarras, b/360150790): Create and use 'On'/'Off' strings.
   toggle_row_->text_label()->SetText(new_enabled_state ? u"On" : u"Off");
   nearby_share_delegate_->SetEnabled(new_enabled_state);
+  quick_share_toggle_->SetIsOn(new_enabled_state);
 }
 
 void NearbyShareDetailedViewImpl::OnYourDevicesSelected() {
@@ -200,6 +242,25 @@ void NearbyShareDetailedViewImpl::OnContactsSelected() {
   CHECK(nearby_share_delegate_);
   nearby_share_delegate_->SetVisibility(
       ::nearby_share::mojom::Visibility::kAllContacts);
+}
+
+void NearbyShareDetailedViewImpl::OnEveryoneToggleClicked() {
+  CHECK(nearby_share_delegate_);
+  CHECK(everyone_toggle_);
+
+  if (nearby_share_delegate_->IsEnableHighVisibilityRequestActive()) {
+    everyone_toggle_->SetIsOn(true);
+    return;
+  }
+
+  if (nearby_share_delegate_->IsHighVisibilityOn()) {
+    nearby_share_delegate_->DisableHighVisibility();
+    everyone_toggle_->SetIsOn(false);
+    return;
+  }
+
+  nearby_share_delegate_->EnableHighVisibility();
+  everyone_toggle_->SetIsOn(true);
 }
 
 BEGIN_METADATA(NearbyShareDetailedViewImpl)
