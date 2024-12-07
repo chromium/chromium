@@ -114,11 +114,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // the helpers for the predefined formats instead.
   static ClipboardFormatType CustomPlatformType(std::string_view format_string);
 
-  // Deprecated synonym for `CustomPlatformType()` that will be removed.
-  static ClipboardFormatType GetType(std::string_view format_string) {
-    return CustomPlatformType(format_string);
-  }
-
   // Returns the ClipboardFormatType used for the web custom format map that has
   // the mapping of MIME types to custom format names.
   static const ClipboardFormatType& WebCustomFormatMap();
