@@ -622,7 +622,7 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
   }
-  votes_uploader_->FlushQueuedVotes();
+  client().GetVotesUploader().FlushQueuedVotes();
 
   client().GetSingleFieldFillRouter().CancelPendingQueries();
 }
@@ -844,7 +844,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
     DeterminePossibleFieldTypesForUpload(
         std::move(copied_profiles), std::move(copied_credit_cards),
-        votes_uploader_->last_unlocked_credit_card_cvc_,
+        client().GetVotesUploader().last_unlocked_credit_card_cvc_,
         client().GetAppLocale(), submitted_form.get());
 
     delegate->MaybeImportForm(
@@ -908,7 +908,7 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
   LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
 
   MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
-  votes_uploader_->MaybeStartVoteUploadProcess(
+  client().GetVotesUploader().MaybeStartVoteUploadProcess(
       std::move(submitted_form),
       /*observed_submission=*/true, GetCurrentPageLanguage(),
       metrics_->initial_interaction_timestamp, driver().GetPageUkmSourceId());
@@ -943,7 +943,7 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
     return;
   }
 
-  votes_uploader_->MaybeStartVoteUploadProcess(
+  client().GetVotesUploader().MaybeStartVoteUploadProcess(
       std::move(upload_form),
       /*observed_submission=*/false, GetCurrentPageLanguage(),
       metrics_->initial_interaction_timestamp, driver().GetPageUkmSourceId());
@@ -2215,11 +2215,11 @@ void BrowserAutofillManager::Reset() {
     ProcessFieldLogEventsInForm(*form_structure);
   }
   ProcessPendingFormForUpload();
-  votes_uploader_->FlushQueuedVotes();
+  client().GetVotesUploader().FlushQueuedVotes();
   DCHECK(!pending_form_data_);
 
   four_digit_combinations_in_dom_.clear();
-  votes_uploader_->last_unlocked_credit_card_cvc_.clear();
+  client().GetVotesUploader().last_unlocked_credit_card_cvc_.clear();
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->Reset();
   }
@@ -2539,7 +2539,8 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
 
 void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     const CreditCard& credit_card) {
-  votes_uploader_->last_unlocked_credit_card_cvc_ = credit_card.cvc();
+  client().GetVotesUploader().last_unlocked_credit_card_cvc_ =
+      credit_card.cvc();
   // If the synced down card is a virtual card or a server card enrolled in
   // runtime retrieval, let the client know so that it can show the UI to help
   // user to manually fill the form, if needed.

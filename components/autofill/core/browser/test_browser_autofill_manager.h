@@ -25,7 +25,6 @@ namespace autofill {
 class AutofillDriver;
 class FormStructure;
 class TestPersonalDataManager;
-class TestVotesUploader;
 
 class TestBrowserAutofillManager : public BrowserAutofillManager {
  public:
@@ -107,8 +106,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldDidChange);
-
-  TestVotesUploader& votes_uploader();
 
  private:
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
