@@ -184,7 +184,6 @@ class AutofillMetricsBaseTest {
 
   FormData GetAndAddSeenForm(const test::FormDescription& form_description) {
     FormData form = test::GetFormData(form_description);
-    autofill_driver().SetLocalFrameToken(form.host_frame());
     autofill_manager().AddSeenForm(form,
                                    test::GetHeuristicTypes(form_description),
                                    test::GetServerTypes(form_description));
