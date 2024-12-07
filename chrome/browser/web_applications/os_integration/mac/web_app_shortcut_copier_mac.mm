@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/web_applications/mojom/web_app_shortcut_copier.mojom.h"
@@ -122,11 +123,21 @@ int ChromeWebAppShortcutCopierMain(int argc, char** argv) {
   // versioned path is two levels upwards.
   base::FilePath executable_path =
       base::PathService::CheckedGet(base::FILE_EXE);
-  base::apple::SetOverrideFrameworkBundlePath(
-      executable_path.DirName().DirName());
+  base::FilePath framework_path = executable_path.DirName().DirName();
+  base::apple::SetOverrideFrameworkBundlePath(framework_path);
 
-  NSBundle* base_bundle = chrome::OuterAppBundle();
-  base::apple::SetBaseBundleID(base_bundle.bundleIdentifier.UTF8String);
+  // Matching what chrome::OuterAppBundle does, go up five steps from
+  // C.app/Contents/Frameworks/C.framework/Versions/1.2.3.4 to C.app.
+  base::FilePath outer_app_dir =
+      framework_path.DirName().DirName().DirName().DirName().DirName();
+  NSString* outer_app_dir_ns = base::SysUTF8ToNSString(outer_app_dir.value());
+  NSBundle* base_bundle = [NSBundle bundleWithPath:outer_app_dir_ns];
+  // In tests we might not be running from inside an app bundle, in that case
+  // there is also no need to overide the bundle ID, as the default value should
+  // already match that of the caller process.
+  if (base_bundle && base_bundle.bundleIdentifier) {
+    base::apple::SetBaseBundleID(base_bundle.bundleIdentifier.UTF8String);
+  }
 
   auto requirement = CallerProcessRequirement();
   if (!requirement) {
