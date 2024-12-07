@@ -45,7 +45,7 @@ source_set("unit_tests") {
   testonly = true
 
   if (enable_soda_integration_tests) {
-    sources = [ "soda_client_unittest.cc" ]
+    sources = [ "soda_client_impl_unittest.cc" ]
 
     if (is_mac) {
       data_deps = [ "//third_party/soda-mac64:soda_resources" ]

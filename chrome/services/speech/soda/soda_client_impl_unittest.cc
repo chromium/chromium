@@ -1,7 +1,7 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/services/speech/soda/soda_client.h"
+#include "chrome/services/speech/soda/soda_client_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -26,10 +26,10 @@
 
 namespace soda {
 
-class SodaClientUnitTest : public testing::Test {
+class SodaClientImplUnitTest : public testing::Test {
  public:
-  SodaClientUnitTest() = default;
-  ~SodaClientUnitTest() override = default;
+  SodaClientImplUnitTest() = default;
+  ~SodaClientImplUnitTest() override = default;
 
   static void RecognitionCallback(const char* result,
                                   const bool is_final,
@@ -42,7 +42,7 @@ class SodaClientUnitTest : public testing::Test {
 
   // The root directory for test files.
   base::FilePath test_data_dir_;
-  std::unique_ptr<soda::SodaClient> soda_client_;
+  std::unique_ptr<soda::SodaClientImpl> soda_client_;
   std::vector<std::string> recognition_results_;
 };
 
@@ -59,31 +59,31 @@ void OnSodaResponse(const char* serialized_proto,
     speech::soda::chrome::SodaRecognitionResult result =
         response.recognition_result();
     ASSERT_TRUE(result.hypothesis_size());
-    static_cast<soda::SodaClientUnitTest*>(callback_handle)
+    static_cast<soda::SodaClientImplUnitTest*>(callback_handle)
         ->AddRecognitionResult(result.hypothesis(0));
   }
 }
 
-void SodaClientUnitTest::AddRecognitionResult(std::string result) {
+void SodaClientImplUnitTest::AddRecognitionResult(std::string result) {
   // The language pack used by the MacOS builder is newer and has punctuation
   // enabled whereas the one used by the Linux builder does not.
   result.erase(std::remove(result.begin(), result.end(), ','), result.end());
   recognition_results_.push_back(std::move(result));
 }
 
-void SodaClientUnitTest::SetUp() {
+void SodaClientImplUnitTest::SetUp() {
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir_));
   auto libsoda_path =
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
           .Append(base::FilePath(soda::kSodaTestBinaryRelativePath));
   ASSERT_TRUE(base::PathExists(libsoda_path));
-  soda_client_ = std::make_unique<soda::SodaClient>(libsoda_path);
+  soda_client_ = std::make_unique<soda::SodaClientImpl>(libsoda_path);
   ASSERT_TRUE(soda_client_.get());
   ASSERT_FALSE(soda_client_->IsInitialized());
 }
 
-TEST_F(SodaClientUnitTest, CreateSodaClient) {
+TEST_F(SodaClientImplUnitTest, CreateSodaClient) {
   auto audio_file =
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
           .Append(base::FilePath(soda::kSodaTestAudioRelativePath));
