@@ -14,7 +14,7 @@ namespace quick_answers {
 const gfx::FontList& GetCrosAnnotation1FontList();
 int GetCrosAnnotation1LineHeight();
 
-const gfx::FontList& GetFirstLineFontList(Design design);
+const gfx::FontList GetFirstLineFontList(Design design);
 int GetFirstLineHeight(Design design);
 
 const gfx::FontList& GetSecondLineFontList(Design design);
