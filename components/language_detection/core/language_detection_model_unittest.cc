@@ -60,15 +60,15 @@ TEST_F(LanguageDetectionTest, ModelUnavailable) {
 TEST_F(LanguageDetectionTest, EmptyFileProvided) {
   LanguageDetectionModel language_detection_model;
 
-  bool callback_called = false;
+  base::RunLoop run_loop;
   language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
-      [](bool* called, LanguageDetectionModel& model) {
+      [](base::OnceClosure callback, LanguageDetectionModel& model) {
         EXPECT_FALSE(model.IsAvailable());
-        *called = true;
+        std::move(callback).Run();
       },
-      &callback_called));
+      run_loop.QuitClosure()));
   language_detection_model.UpdateWithFile(base::File());
-  EXPECT_TRUE(callback_called);
+  run_loop.Run();
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
@@ -78,18 +78,15 @@ TEST_F(LanguageDetectionTest, EmptyFileProvided) {
 TEST_F(LanguageDetectionTest, EmptyFileProvidedAsync) {
   LanguageDetectionModel language_detection_model;
 
-  bool callback_called = false;
-  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
-      [](bool* called, LanguageDetectionModel& model) {
-        EXPECT_FALSE(model.IsAvailable());
-        *called = true;
-      },
-      &callback_called));
   base::RunLoop run_loop;
-  language_detection_model.UpdateWithFileAsync(base::File(),
-                                               run_loop.QuitClosure());
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](base::OnceClosure callback, LanguageDetectionModel& model) {
+        EXPECT_FALSE(model.IsAvailable());
+        std::move(callback).Run();
+      },
+      run_loop.QuitClosure()));
+  language_detection_model.UpdateWithFileAsync(base::File(), base::DoNothing());
   run_loop.Run();
-  EXPECT_TRUE(callback_called);
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
@@ -99,15 +96,15 @@ TEST_F(LanguageDetectionTest, EmptyFileProvidedAsync) {
 TEST_F(LanguageDetectionTest, UnsupportedModelFileProvided) {
   base::File file = CreateInvalidModelFile();
   LanguageDetectionModel language_detection_model;
-  bool callback_called = false;
+  base::RunLoop run_loop;
   language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
-      [](bool* called, LanguageDetectionModel& model) {
+      [](base::OnceClosure callback, LanguageDetectionModel& model) {
         EXPECT_FALSE(model.IsAvailable());
-        *called = true;
+        std::move(callback).Run();
       },
-      &callback_called));
+      run_loop.QuitClosure()));
   language_detection_model.UpdateWithFile(std::move(file));
-  EXPECT_TRUE(callback_called);
+  run_loop.Run();
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
@@ -121,18 +118,16 @@ TEST_F(LanguageDetectionTest, UnsupportedModelFileProvided) {
 TEST_F(LanguageDetectionTest, UnsupportedModelFileProvidedAsync) {
   base::File file = CreateInvalidModelFile();
   LanguageDetectionModel language_detection_model;
-  bool callback_called = false;
-  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
-      [](bool* called, LanguageDetectionModel& model) {
-        EXPECT_FALSE(model.IsAvailable());
-        *called = true;
-      },
-      &callback_called));
   base::RunLoop run_loop;
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](base::OnceClosure callback, LanguageDetectionModel& model) {
+        EXPECT_FALSE(model.IsAvailable());
+        std::move(callback).Run();
+      },
+      run_loop.QuitClosure()));
   language_detection_model.UpdateWithFileAsync(std::move(file),
-                                               run_loop.QuitClosure());
+                                               base::DoNothing());
   run_loop.Run();
-  EXPECT_TRUE(callback_called);
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
@@ -145,32 +140,30 @@ TEST_F(LanguageDetectionTest, UnsupportedModelFileProvidedAsync) {
 
 TEST_F(LanguageDetectionTest, CallbackForValidFile) {
   LanguageDetectionModel language_detection_model;
-  bool callback_called = false;
+  base::RunLoop run_loop;
   language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
-      [](bool* called, LanguageDetectionModel& model) {
+      [](base::OnceClosure callback, LanguageDetectionModel& model) {
         EXPECT_TRUE(model.IsAvailable());
-        *called = true;
+        std::move(callback).Run();
       },
-      &callback_called));
+      run_loop.QuitClosure()));
   language_detection_model.UpdateWithFile(GetValidModelFile());
-  EXPECT_TRUE(callback_called);
+  run_loop.Run();
   EXPECT_TRUE(language_detection_model.IsAvailable());
 }
 
 TEST_F(LanguageDetectionTest, CallbackForValidFileAsync) {
   LanguageDetectionModel language_detection_model;
-  bool callback_called = false;
-  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
-      [](bool* called, LanguageDetectionModel& model) {
-        EXPECT_TRUE(model.IsAvailable());
-        *called = true;
-      },
-      &callback_called));
   base::RunLoop run_loop;
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](base::OnceClosure callback, LanguageDetectionModel& model) {
+        EXPECT_TRUE(model.IsAvailable());
+        std::move(callback).Run();
+      },
+      run_loop.QuitClosure()));
   language_detection_model.UpdateWithFileAsync(GetValidModelFile(),
-                                               run_loop.QuitClosure());
+                                               base::DoNothing());
   run_loop.Run();
-  EXPECT_TRUE(callback_called);
   EXPECT_TRUE(language_detection_model.IsAvailable());
 }
 

@@ -668,6 +668,7 @@ the generic promo launch. -->
   <int value="13" label="Help"/>
   <int value="14" label="ShareChrome"/>
   <int value="15" label="EditActions"/>
+  <int value="16" label="LensOverlay"/>
 </enum>
 
 <enum name="IOSOverflowMenuActionType">

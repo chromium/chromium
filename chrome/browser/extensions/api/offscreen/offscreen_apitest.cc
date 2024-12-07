@@ -398,8 +398,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
             incognito_manager->GetOffscreenDocumentForExtension(*extension));
 }
 
-// TODO(crbug.com/378916068): Enable more tests on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests creating, querying, and closing offscreen documents in an incognito
 // split mode extension.
 // TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
@@ -437,9 +435,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   extension = SetExtensionIncognitoEnabled(*extension, *profile());
   ASSERT_TRUE(extension);
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  ASSERT_TRUE(incognito_browser);
-  Profile* incognito_profile = incognito_browser->profile();
+  Profile* incognito_profile = GetOrCreateIncognitoProfile();
 
   // We're going to be executing scripts in the service worker context, so
   // ensure the service worker is active.
@@ -465,8 +461,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   EXPECT_FALSE(has_offscreen_document(*incognito_profile));
 
   // Now, create a new document in the off-the-record profile.
-  ProgrammaticallyCreateOffscreenDocument(*extension,
-                                          *incognito_browser->profile());
+  ProgrammaticallyCreateOffscreenDocument(*extension, *incognito_profile);
   EXPECT_TRUE(has_offscreen_document(*profile()));
   EXPECT_TRUE(has_offscreen_document(*incognito_profile));
 
@@ -482,6 +477,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   EXPECT_FALSE(has_offscreen_document(*incognito_profile));
 }
 
+// TODO(crbug.com/378916068): Enable more tests on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
   static constexpr char kManifest[] =
       R"({

@@ -21,7 +21,7 @@ ClipboardFormatType::ClipboardFormatType() = default;
 
 ClipboardFormatType::~ClipboardFormatType() = default;
 
-ClipboardFormatType::ClipboardFormatType(const std::string& native_format)
+ClipboardFormatType::ClipboardFormatType(std::string_view native_format)
     : data_(native_format) {}
 
 std::string ClipboardFormatType::Serialize() const {
@@ -30,7 +30,7 @@ std::string ClipboardFormatType::Serialize() const {
 
 // static
 ClipboardFormatType ClipboardFormatType::Deserialize(
-    const std::string& serialization) {
+    std::string_view serialization) {
   return ClipboardFormatType(serialization);
 }
 
@@ -48,8 +48,8 @@ bool ClipboardFormatType::operator==(const ClipboardFormatType& other) const {
 
 // static
 ClipboardFormatType ClipboardFormatType::CustomPlatformType(
-    const std::string& format_string) {
-  DCHECK(base::IsStringASCII(format_string));
+    std::string_view format_string) {
+  CHECK(base::IsStringASCII(format_string));
   return ClipboardFormatType::Deserialize(format_string);
 }
 
@@ -67,12 +67,6 @@ const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
 }
 
 // Various predefined ClipboardFormatTypes.
-
-// static
-ClipboardFormatType ClipboardFormatType::GetType(
-    const std::string& format_string) {
-  return ClipboardFormatType::Deserialize(format_string);
-}
 
 // static
 const ClipboardFormatType& ClipboardFormatType::FilenamesType() {

@@ -1831,27 +1831,6 @@ BASE_FEATURE_PARAM(
     "low_pri_async_exec_opt_out_high_fetch_priority_hint",
     false);
 
-BASE_FEATURE(kLowPriorityScriptLoading,
-             "LowPriorityScriptLoading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(bool,
-                   kLowPriorityScriptLoadingCrossSiteOnlyParam,
-                   &kLowPriorityScriptLoading,
-                   "low_pri_async_loading_cross_site_only",
-                   false);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kLowPriorityScriptLoadingFeatureLimitParam,
-                   &kLowPriorityScriptLoading,
-                   "low_pri_async_loading_feature_limit",
-                   base::Seconds(0));
-const base::FeatureParam<std::string> kLowPriorityScriptLoadingDenyListParam{
-    &kLowPriorityScriptLoading, "low_pri_async_loading_deny_list", ""};
-BASE_FEATURE_PARAM(bool,
-                   kLowPriorityScriptLoadingMainFrameOnlyParam,
-                   &kLowPriorityScriptLoading,
-                   "low_pri_async_loading_main_frame_only",
-                   false);
-
 BASE_FEATURE(kMixedContentAutoupgrade,
              "AutoupgradeMixedContent",
              base::FEATURE_ENABLED_BY_DEFAULT);

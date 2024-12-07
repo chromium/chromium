@@ -921,6 +921,7 @@
       _showAccountMenuInProgress = YES;
       __weak __typeof(self) weakSelf = self;
       [handler showAccountMenuWithAnchorView:identityDisc
+                        skipIfUINotAvailable:NO
                                   completion:^{
                                     [weakSelf showAccountMenuDidFinish];
                                   }];
@@ -2012,7 +2013,6 @@
   if (!_customizationCoordinator) {
     return;
   }
-  [self.NTPViewController dismissViewControllerAnimated:YES completion:nil];
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
 }

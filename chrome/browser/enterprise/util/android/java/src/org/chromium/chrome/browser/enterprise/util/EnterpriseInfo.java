@@ -55,9 +55,16 @@ public abstract class EnterpriseInfo {
      * Returns, via callback, whether the device has a device owner or a profile owner. Guaranteed
      * to not invoke the callback synchronously, instead will be posted to the UI thread, even in
      * tests.
+     *
      * @param callback to invoke with results.
      */
     public abstract void getDeviceEnterpriseInfo(Callback<OwnedState> callback);
+
+    /**
+     * Returns whether the device has a device owner or a profile owner synchronously. Returns null
+     * if the OwnedState isn't yet available and kicks off a background request to fetch the state.
+     */
+    public abstract OwnedState getDeviceEnterpriseInfoSync();
 
     /** Records metrics regarding whether the device has a device owner or a profile owner. */
     public abstract void logDeviceEnterpriseInfo();

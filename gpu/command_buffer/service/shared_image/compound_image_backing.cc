@@ -65,11 +65,11 @@ constexpr bool kAllowShmOverlays = false;
 gpu::SharedImageUsageSet GetShmSharedImageUsage(SharedImageUsageSet usage) {
   if (kAllowShmOverlays) {
     return usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)
-               ? SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_SCANOUT
-               : SHARED_IMAGE_USAGE_CPU_WRITE;
+               ? SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_SCANOUT
+               : SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
   }
 
-  return SHARED_IMAGE_USAGE_CPU_WRITE;
+  return SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
 }
 
 }  // namespace

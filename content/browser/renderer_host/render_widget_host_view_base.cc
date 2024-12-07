@@ -697,11 +697,11 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
 }
 
 gfx::PointF RenderWidgetHostViewBase::TransformPointToRootCoordSpaceF(
-    const gfx::PointF& point) {
+    const gfx::PointF& point) const {
   return RenderWidgetHostViewInput::TransformPointToRootCoordSpaceF(point);
 }
 
-bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() {
+bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() const {
   return false;
 }
 
@@ -764,6 +764,11 @@ TextInputManager* RenderWidgetHostViewBase::GetTextInputManager() {
 
 TouchSelectionControllerClientManager*
 RenderWidgetHostViewBase::GetTouchSelectionControllerClientManager() {
+  return nullptr;
+}
+
+TouchSelectionControllerInputObserver*
+RenderWidgetHostViewBase::GetTouchSelectionControllerInputObserver() {
   return nullptr;
 }
 

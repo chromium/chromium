@@ -23,15 +23,10 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "ui/base/models/image_model.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace signin_metrics {
 enum class AccessPoint;
-}
-
-namespace ui {
-class ImageModel;
 }
 
 namespace views {
@@ -61,22 +56,6 @@ class ProfileMenuView : public ProfileMenuViewBase {
   friend class ProfileMenuViewSignoutTest;
   friend class ProfileMenuViewSyncErrorButtonTest;
   friend class ProfileMenuInteractiveUiTest;
-
-  struct IdentitySectionParams {
-    IdentitySectionParams();
-    ~IdentitySectionParams();
-
-    IdentitySectionParams(const IdentitySectionParams&) = delete;
-    IdentitySectionParams& operator=(const IdentitySectionParams&) = delete;
-
-    IdentitySectionParams(IdentitySectionParams&&);
-    IdentitySectionParams& operator=(IdentitySectionParams&&);
-
-    std::u16string description;
-    std::u16string button_text;
-    base::RepeatingClosure button_action;
-    ui::ImageModel button_image;
-  };
 
   // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
@@ -115,7 +94,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void MaybeBuildCloseBrowsersButton();
   void MaybeBuildSignoutButton();
   void BuildFeatureButtons();
-  IdentitySectionParams GetIdentitySectionParams();
+  IdentitySectionParams GetIdentitySectionParams(
+      const ProfileAttributesEntry& entry);
   void BuildIdentityWithCallToAction();
 
   // TODO(crbug.com/370473765): Delete these functions after

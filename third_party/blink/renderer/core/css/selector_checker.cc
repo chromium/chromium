@@ -2134,15 +2134,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return select->PopupIsVisible();
       }
       return false;
-    case CSSSelector::kPseudoClosed:
-      if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
-        return !dialog->FastHasAttribute(html_names::kOpenAttr);
-      } else if (auto* details = DynamicTo<HTMLDetailsElement>(element)) {
-        return !details->FastHasAttribute(html_names::kOpenAttr);
-      } else if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
-        return select->UsesMenuList() && !select->PopupIsVisible();
-      }
-      return false;
     case CSSSelector::kPseudoFullscreen:
     // fall through
     case CSSSelector::kPseudoFullScreen:
@@ -2270,13 +2261,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return false;
       }
       return !element.GetDocument().GetPage()->GetFocusController().IsActive();
-    case CSSSelector::kPseudoStateDeprecatedSyntax: {
-      CHECK(RuntimeEnabledFeatures::CSSCustomStateDeprecatedSyntaxEnabled());
-      return element.DidAttachInternals() &&
-             element.EnsureElementInternals().HasState(selector.Value());
-    }
     case CSSSelector::kPseudoState: {
-      CHECK(RuntimeEnabledFeatures::CSSCustomStateNewSyntaxEnabled());
       return element.DidAttachInternals() &&
              element.EnsureElementInternals().HasState(selector.Argument());
     }

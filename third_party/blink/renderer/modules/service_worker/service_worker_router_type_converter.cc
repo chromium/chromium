@@ -273,6 +273,8 @@ std::optional<ServiceWorkerRouterSource> RouterSourceEnumToBlink(
       ServiceWorkerRouterSource source;
       source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
       source.race_source.emplace();
+      source.race_source->target = blink::ServiceWorkerRouterRaceSource::
+          TargetEnum::kNetworkAndFetchHandler;
       return source;
     }
     case V8RouterSourceEnum::Enum::kFetchEvent: {

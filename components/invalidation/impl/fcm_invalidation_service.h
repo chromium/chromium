@@ -67,7 +67,6 @@ class FCMInvalidationService : public InvalidationService,
   void Init();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
-  static void ClearDeprecatedPrefs(PrefService* prefs);
 
   // InvalidationService implementation.
   // It is an error to have registered handlers when the service is destroyed.

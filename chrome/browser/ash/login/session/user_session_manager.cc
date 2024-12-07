@@ -189,6 +189,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "rlz/buildflags/buildflags.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #include "ui/aura/window.h"
@@ -443,7 +444,7 @@ void OnPrepareTpmDeviceFinished() {
 }
 
 void SaveSyncTrustedVaultKeysToProfile(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const SyncTrustedVaultKeys& trusted_vault_keys,
     Profile* profile) {
   trusted_vault::TrustedVaultService* trusted_vault_service =
@@ -1398,7 +1399,7 @@ void UserSessionManager::InitProfilePreferences(
     // `IdentityManager`.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    std::string gaia_id = user_context.GetGaiaID();
+    GaiaId gaia_id = user_context.GetGaiaID();
     // TODO(http://crbug.com/1454286): Remove.
     bool used_extended_account_info = false;
     if (gaia_id.empty()) {
@@ -1488,7 +1489,7 @@ void UserSessionManager::InitProfilePreferences(
       base::debug::Alias(&set_account_result_copy);
       base::debug::Alias(&used_extended_account_info_copy);
 
-      DEBUG_ALIAS_FOR_CSTR(local_gaia_id_str, gaia_id.c_str(), 32);
+      DEBUG_ALIAS_FOR_CSTR(local_gaia_id_str, gaia_id.ToString().c_str(), 32);
       DEBUG_ALIAS_FOR_CSTR(identity_manager_gaia_id_str,
                            identity_manager_account_info.gaia.c_str(), 32);
 

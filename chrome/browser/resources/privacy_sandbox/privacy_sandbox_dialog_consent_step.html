@@ -82,17 +82,19 @@
       </div>
     </template>
     <div class="buttons-container">
-      <cr-button id="declineButton" on-click="onConsentDeclined_">
+      <cr-button id="declineButton" class$="[[getButtonsClass_(shouldShowV2_)]]"
+          on-click="onConsentDeclined_">
         $i18n{m1ConsentDeclineButton}
       </cr-button>
-      <cr-button id="confirmButton" on-click="onConsentAccepted_">
+      <cr-button id="confirmButton" class$="[[getButtonsClass_(shouldShowV2_)]]"
+          on-click="onConsentAccepted_">
         $i18n{m1ConsentAcceptButton}
       </cr-button>
     </div>
   </div>
   <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
     <cr-button id="moreButton" on-click="onConsentMoreClicked"
-        class="action-button" aria-hidden="true" tabindex="-1">
+        class="action-button">
       $i18n{m1DialogMoreButton}
       <cr-icon icon="cr:expand-more"></cr-icon>
     </cr-button>

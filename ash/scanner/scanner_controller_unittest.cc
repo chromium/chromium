@@ -110,6 +110,19 @@ TEST_F(ScannerControllerTest, NoActionsFetchedWhenNoActiveSession) {
   EXPECT_THAT(actions_future.Take(), IsEmpty());
 }
 
+TEST_F(ScannerControllerTest, ResetsScannerSessionWhenActiveUserChanges) {
+  SimulateUserLogin("user1@gmail.com");
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  EXPECT_TRUE(scanner_controller->HasActiveSessionForTesting());
+
+  // Switch to a different user.
+  SimulateUserLogin("user2@gmail.com");
+
+  EXPECT_FALSE(scanner_controller->HasActiveSessionForTesting());
+}
+
 }  // namespace
 
 }  // namespace ash

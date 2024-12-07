@@ -1,6 +1,0 @@
-[wrap-file]
-directory = clap_builder-4.5.20
-source_url = https://static.crates.io/crates/clap_builder/4.5.20/download
-source_filename = clap_builder-4.5.20.tar.gz
-source_hash = 19bc80abd44e4bed93ca373a0704ccbd1b710dc5749406201bb018272808dc54
-patch_directory = clap_builder

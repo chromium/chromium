@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
@@ -82,6 +83,7 @@ using ::cc::ClipPathOp;
 using ::cc::ClipRectOp;
 using ::cc::ConcatOp;
 using ::cc::DrawColorOp;
+using ::cc::DrawImageOp;
 using ::cc::DrawImageRectOp;
 using ::cc::DrawRectOp;
 using ::cc::DrawVerticesOp;
@@ -142,6 +144,12 @@ class TestRenderingContext2D final
   Color GetCurrentColor() const override { return Color::kBlack; }
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() override {
+    // Context child classes uses `GetOrCreatePaintCanvas` to check for context
+    // loss.
+    if (isContextLost()) [[unlikely]] {
+      return nullptr;
+    }
+
     return &recorder_.getRecordingCanvas();
   }
   using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
@@ -3013,6 +3021,74 @@ TEST(BaseRenderingContextMeshTests, DrawMesh) {
   EXPECT_THAT(
       context->FlushRecorder(),
       RecordedOpsAre(PaintOpEq<DrawVerticesOp>(vbuf, uvbuf, ibuf, flags)));
+}
+
+TEST(BaseRenderingContextPlaceElementTests, DrawsPlacedElement) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  NonThrowableExceptionState exception_state;
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
+  context->SetHostHTMLCanvas(host);
+  host->appendChild(img);
+
+  context->placeElement(img, /*x=*/12, /*y=*/34, exception_state);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpIs<DrawImageOp>()));
+}
+
+TEST(BaseRenderingContextPlaceElementTests, PlaceElementThrowsForNonChildNode) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
+  context->SetHostHTMLCanvas(host);
+  // `img` isn't a child of `host`.
+
+  context->placeElement(img, /*x=*/12, /*y=*/34, scope.GetExceptionState());
+
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
+            ESErrorType::kTypeError);
+  EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
+}
+
+TEST(BaseRenderingContextPlaceElementTests, PlaceElementThrowsForChildCanvas) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  context->SetHostHTMLCanvas(host);
+  host->appendChild(canvas);
+
+  context->placeElement(canvas, /*x=*/12, /*y=*/34, scope.GetExceptionState());
+
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<ESErrorType>(),
+            ESErrorType::kTypeError);
+  EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
+}
+
+TEST(BaseRenderingContextPlaceElementTests, PlaceElementAbortsIfContextLost) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  NonThrowableExceptionState exception_state;
+
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
+  context->SetHostHTMLCanvas(host);
+  host->appendChild(img);
+
+  context->SetContextLost(true);
+  context->placeElement(img, /*x=*/12, /*y=*/34, exception_state);
+
+  EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());
 }
 
 }  // namespace

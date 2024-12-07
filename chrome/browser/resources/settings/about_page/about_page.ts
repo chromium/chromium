@@ -7,7 +7,6 @@
  * information.
  */
 
-import '../icons.html.js';
 import '/shared/settings/prefs/prefs.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
@@ -300,7 +299,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         return 'cr:error';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
-        return 'settings:check-circle';
+        return 'cr:check-circle';
       default:
         return '';
     }

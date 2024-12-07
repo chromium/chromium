@@ -189,6 +189,14 @@ this text can be found by Ctrl + F because it isn't hidden. -->
           <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
           <span>$i18n{publishedInStoreRequiredByPolicy}</span>
         </div>
+        <div class="cr-row continuation warning"
+            id="unsupported-developer-extension-warning"
+            ?hidden="${!this.data.disableReasons.
+              unsupportedDeveloperExtension}">
+          <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+          <!-- TODO(crbug.com/362756477) Replace after string is finalized. -->
+          <span>This extension is only supported in developer mode.</span>
+        </div>
       </div>` : ''}
     ${this.showAllowlistWarning_() ? html`
       <div id="allowlist-warning" class="cr-row continuation">

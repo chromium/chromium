@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -98,17 +99,7 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       "require-trusted-types-for 'script';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types parse-html-subset sanitize-inner-html static-types "
-      // Add TrustedTypes policies for cr-lottie.
-      "lottie-worker-script-loader "
-      // Add TrustedTypes policies used during tests.
-      "webui-test-script webui-test-html "
-      // Add TrustedTypes policy for creating the PDF plugin.
-      "print-preview-plugin-loader "
-      // Add TrustedTypes policies necessary for using Polymer.
-      "polymer-html-literal polymer-template-event-attribute-policy "
-      // Add TrustedTypes policies necessary for using Desktop's Lit bundle.
-      "lit-html-desktop;");
+      base::StrCat({kDefaultTrustedTypesPolicies, ";"}));
 }
 
 void AddLocalizedString(content::WebUIDataSource* source,

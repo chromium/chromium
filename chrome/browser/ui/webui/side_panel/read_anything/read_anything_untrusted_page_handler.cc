@@ -72,6 +72,8 @@
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 using ash::language_packs::LanguagePackManager;
 using ash::language_packs::PackResult;
+#else
+#include "chrome/common/extensions/extension_constants.h"
 #endif
 
 using content::TtsController;
@@ -313,6 +315,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   content::TtsController::GetInstance()->AddUpdateLanguageStatusDelegate(this);
+  extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
 #endif
   side_panel_controller_ = ReadAnythingSidePanelControllerGlue::FromWebContents(
                                web_ui_->GetWebContents())
@@ -403,6 +406,7 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   content::TtsController::GetInstance()->RemoveUpdateLanguageStatusDelegate(
       this);
+  extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 #endif
   translate_observation_.Reset();
   web_screenshotter_.reset();
@@ -498,6 +502,16 @@ void ReadAnythingUntrustedPageHandler::OnUpdateLanguageStatus(
   voicePackInfo->pack_state = VoicePackInstallationState::NewInstallationState(
       GetInstallationStateFromStatusCode(install_status));
   OnGetVoicePackInfo(std::move(voicePackInfo));
+}
+
+void ReadAnythingUntrustedPageHandler::OnExtensionInstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    bool is_update) {
+  if (extension->id() != extension_misc::kTTSEngineExtensionId) {
+    return;
+  }
+  page_->OnTtsEngineInstalled();
 }
 #endif
 

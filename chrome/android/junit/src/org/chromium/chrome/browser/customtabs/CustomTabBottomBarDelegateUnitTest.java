@@ -195,9 +195,11 @@ public class CustomTabBottomBarDelegateUnitTest {
         mBottomBarDelegate.onControlsOffsetChanged(
                 /* topOffset= */ 0,
                 /* topControlsMinHeightOffset= */ 0,
+                /* topControlsMinHeightChanged= */ false,
                 /* bottomOffset= */ 0,
                 /* bottomControlsMinHeightOffset= */ 0,
-                /* needsAnimate= */ false,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
                 /* isVisibilityForced= */ false);
         verify(mBottomBarView).setTranslationY(-100);
     }

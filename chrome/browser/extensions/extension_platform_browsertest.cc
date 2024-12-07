@@ -13,6 +13,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_paths.h"
 
@@ -205,6 +206,21 @@ void ExtensionPlatformBrowserTest::DisableExtension(
 
 content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents() {
   return chrome_test_utils::GetActiveWebContents(this);
+}
+
+Profile* ExtensionPlatformBrowserTest::GetOrCreateIncognitoProfile() {
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // Ensure ExtensionSystem is properly initialized for `incognito_profile`
+  // in split mode.
+  // TODO(crbug.com/356905053): Remove this workaround when the proper
+  // extension runtime is implemented on Android.
+  util::InitExtensionSystemForIncognitoSplit(incognito_profile);
+#endif
+
+  return incognito_profile;
 }
 
 void ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(

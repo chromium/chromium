@@ -6,27 +6,22 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/crowdsourcing/votes_uploader_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-TestVotesUploader::TestVotesUploader(BrowserAutofillManager* owner)
-    : VotesUploader(owner) {}
+TestVotesUploader::TestVotesUploader(AutofillClient* client)
+    : VotesUploader(client) {}
 TestVotesUploader::~TestVotesUploader() = default;
 
 void TestVotesUploader::UploadVote(
     std::unique_ptr<FormStructure> submitted_form,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
+    base::TimeTicks initial_interaction_timestamp,
+    base::TimeTicks submission_timestamp,
     bool observed_submission,
     const ukm::SourceId source_id) {
   submitted_form_signature_ = submitted_form->FormSignatureAsStr();
-
-  if (observed_submission) {
-    // In case no submission was observed, the run_loop is quit in
-    // StoreUploadVotesAndLogQualityCallback.
-    run_loop_->Quit();
-  }
 
   if (expected_observed_submission_ != std::nullopt) {
     EXPECT_EQ(expected_observed_submission_, observed_submission);
@@ -53,31 +48,29 @@ void TestVotesUploader::UploadVote(
     }
   }
 
-  VotesUploader::UploadVote(std::move(submitted_form), interaction_time,
-                            submission_time, observed_submission, source_id);
-}
-
-void TestVotesUploader::QueueVote(FormSignature form_signature,
-                                  base::OnceClosure callback) {
-  VotesUploader::QueueVote(form_signature, std::move(callback));
-  run_loop_->Quit();
+  VotesUploader::UploadVote(std::move(submitted_form),
+                            initial_interaction_timestamp, submission_timestamp,
+                            observed_submission, source_id);
 }
 
 bool TestVotesUploader::MaybeStartVoteUploadProcess(
-    std::unique_ptr<FormStructure> form_structure,
+    std::unique_ptr<FormStructure> form,
     bool observed_submission,
     LanguageCode current_page_language,
     base::TimeTicks initial_interaction_timestamp,
     ukm::SourceId ukm_source_id) {
-  // The purpose of this runloop is to ensure that the field type determination
-  // finishes. If `observed_submission` is true, it's terminated in
-  // LogQualityAndUploadVotes. Otherwise, it is already terminated in
-  // StoreUploadVotesAndLogQualityCallback.
-  run_loop_ = std::make_unique<base::RunLoop>();
   if (VotesUploader::MaybeStartVoteUploadProcess(
-          std::move(form_structure), observed_submission, current_page_language,
+          std::move(form), observed_submission, current_page_language,
           initial_interaction_timestamp, ukm_source_id)) {
-    run_loop_->Run();
+    // The purpose of this runloop is to ensure that the field type
+    // determination finishes.
+    base::RunLoop run_loop;
+    // Since the `vote_upload_task_runner()` is a `base::SequencedTaskRunner`,
+    // the `run_loop` is quit only after the task and reply posted by
+    // MaybeStartVoteUploadProcess() is finished.
+    test_api(*this).vote_upload_task_runner().PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+    run_loop.Run();
     return true;
   }
   return false;

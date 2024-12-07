@@ -46,9 +46,8 @@ class WebClientImpl implements WebClientInterface {
     });
   }
 
-  async notifyPanelClosed(): Promise<{success: boolean}> {
+  async notifyPanelClosed(): Promise<void> {
     await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
-    return {success: true};
   }
 }
 
@@ -113,12 +112,15 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   async glicBrowserGetContextFromFocusedTab(
       request: {
-        options: {innerText?: boolean, viewportScreenshot?: {}},
+        options: {innerText?: boolean, viewportScreenshot?: boolean},
       },
       transfer: Transferable[]) {
     const response = await this.handler.getContextFromFocusedTab(
         request.options.innerText || false,
-        request.options.viewportScreenshot !== undefined);
+        // Note: viewportScreenshot was previously an empty object to imply
+        // true, this code works for either. Can be replaced with
+        // "request.options.viewportScreenshot || false" after 2025/01/05.
+        request.options.viewportScreenshot ? true : false);
     const tabContextResult = response.tabContextResult;
     if (!tabContextResult) {
       return {};

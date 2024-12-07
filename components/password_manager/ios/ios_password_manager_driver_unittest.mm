@@ -74,10 +74,9 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
                                    std::move(web_frames_manager));
 
     auto web_frame = web::FakeWebFrame::Create(SysNSStringToUTF8(@"main-frame"),
-                                               /*is_main_frame=*/true, GURL());
-    auto web_frame2 =
-        web::FakeWebFrame::Create(SysNSStringToUTF8(@"frame"),
-                                  /*is_main_frame=*/false, GURL());
+                                               /*is_main_frame=*/true);
+    auto web_frame2 = web::FakeWebFrame::Create(SysNSStringToUTF8(@"frame"),
+                                                /*is_main_frame=*/false);
     web::WebFrame* frame = web_frame.get();
     web::WebFrame* frame2 = web_frame2.get();
     web_frames_manager_->AddWebFrame(std::move(web_frame));

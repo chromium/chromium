@@ -1,7 +1,6 @@
 {
   "description": "Aggregatable debug reports creation",
   "api_config": {
-    "needs_aggregatable_debug": true,
     "aggregation_coordinator_origins": [
       "https://c1.test",
       "https://c2.test"

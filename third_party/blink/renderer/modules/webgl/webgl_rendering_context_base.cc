@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bit_cast.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -3401,15 +3402,15 @@ bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
               .IsWorkaroundEnabled(gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS));
 }
 
-ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
-                                                    const String& name) {
+ScriptObject WebGLRenderingContextBase::getExtension(ScriptState* script_state,
+                                                     const String& name) {
   if (name == WebGLDebugRendererInfo::ExtensionName()) {
     ExecutionContext* context = ExecutionContext::From(script_state);
     UseCounter::Count(context, WebFeature::kWebGLDebugRendererInfo);
   }
 
   WebGLExtension* extension = EnableExtensionIfSupported(name);
-  return ScriptValue(
+  return ScriptObject(
       script_state->GetIsolate(),
       ToV8Traits<IDLNullable<WebGLExtension>>::ToV8(script_state, extension));
 }
@@ -4423,7 +4424,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
         }
         switch (base_type) {
           case GL_FLOAT: {
-            GLfloat value[16] = {0};
+            GLfloat value[16] = {};
             ContextGL()->GetUniformfv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
@@ -4431,7 +4432,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                                               base::span(value).first(length)));
           }
           case GL_INT: {
-            GLint value[4] = {0};
+            GLint value[4] = {};
             ContextGL()->GetUniformiv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
@@ -4439,7 +4440,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                                               base::span(value).first(length)));
           }
           case GL_UNSIGNED_INT: {
-            GLuint value[4] = {0};
+            GLuint value[4] = {};
             ContextGL()->GetUniformuiv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
@@ -7457,9 +7458,14 @@ ScriptValue WebGLRenderingContextBase::GetWebGLFloatArrayParameter(
       NOTIMPLEMENTED();
   }
   if (ShouldMeasureGLParam(pname)) {
+    // `IdentifiableTokenBuilder::AddValue()` requires
+    // `std::has_unique_object_representations_v<>`, which doesn't hold for
+    // floating-point values. Work around by reinterpreting as an integral type
+    // of the same size, without changing the underlying bit pattern.
+    static_assert(sizeof(decltype(value)::value_type) == sizeof(int32_t));
     blink::IdentifiableTokenBuilder builder;
     for (unsigned i = 0; i < length; i++) {
-      builder.AddValue(value[i]);
+      builder.AddValue(base::bit_cast<int32_t>(value[i]));
     }
     RecordIdentifiableGLParameterDigest(pname, builder.GetToken());
   }

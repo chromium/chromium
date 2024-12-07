@@ -74,7 +74,9 @@ constexpr char kFindDivWithClassScript[] = R"(
 )";
 
 const char kNpsUrl[] = "https://www.nps.gov/articles/route-66-overview.htm";
-const char kPuppiesUrl[] = "https://puppiesbydesignonline.com/pooton/";
+const char kNpsObjectUrl[] =
+    "https://www.nps.gov/common/commonspot/templates/images/graphics/404/"
+    "04.jpg";
 }  // namespace
 
 // Live tests for Companion.
@@ -109,7 +111,6 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   void SetUpInProcessBrowserTestFixture() override {
     // Allowlists hosts.
     host_resolver()->AllowDirectLookup("*.nps.gov");
-    host_resolver()->AllowDirectLookup("puppiesbydesignonline.com");
 
     LiveTest::SetUpInProcessBrowserTestFixture();
   }
@@ -195,7 +196,9 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   }
 
   virtual void SetUpFeatureList() {
-    feature_list_.InitAndEnableFeature(lens::features::kLensOverlay);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay,
+        {{"enable-shimmer", "false"}, {"use-blur", "false"}});
   }
 
   void TearDown() override { LiveTest::TearDown(); }
@@ -229,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Confirm that the WebUI has reported that it is ready. This means the local
@@ -324,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   // Navigate to a website and wait for paint before starting controller.
-  WaitForPaint(kPuppiesUrl);
+  WaitForPaint(kNpsObjectUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // State should start in off.
@@ -364,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   // Navigate to a website and wait for paint before starting controller.
-  WaitForPaint(kPuppiesUrl);
+  WaitForPaint(kNpsObjectUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // State should start in off.
@@ -396,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasObject_SignedOut) {
   // Navigate to a website and wait for paint before starting controller.
-  WaitForPaint(kPuppiesUrl);
+  WaitForPaint(kNpsObjectUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // State should start in off.

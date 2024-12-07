@@ -313,6 +313,7 @@ class WebTestFinderTests(unittest.TestCase):
             'virtual/path/test.html',
         ]))
 
+
 class FilterTestsTests(unittest.TestCase):
     simple_test_filter = ['a/a1.html', 'a/a2.html', 'b/b1.html']
 
@@ -365,6 +366,15 @@ class FilterTestsTests(unittest.TestCase):
         self.check(self.simple_test_filter, [['a*'], ['-b*']],
                    ['a/a1.html', 'a/a2.html'])
 
+    def test_middle_exclude(self):
+        self.check(['a2', 'a1', 'a3'], [['a*', '-a2']], ['a1', 'a3'])
+
+    def test_fall_back_to_glob(self):
+        self.check(['a/b/c'], [['*', '-a/b/d']], ['a/b/c'])
+
+    def test_glob_can_match_zero_chars(self):
+        self.check(['a'], [['-a*']], [])
+
     def test_longest_glob_wins(self):
         # These test that if two matching globs are specified as
         # part of the same filter expression, the longest matching
@@ -394,3 +404,11 @@ class FilterTestsTests(unittest.TestCase):
     def test_escaped_globs_allowed(self):
         self.check(self.simple_test_filter + ['a\\*1'], [['-a\\*1']],
                    self.simple_test_filter)
+
+    def test_contradictory_sign_not_allowed(self):
+        with self.assertRaises(ValueError):
+            self.check([], [['a/a.html', '-a/a.html']], [])
+        with self.assertRaises(ValueError):
+            self.check([], [['a/*', '-a/*']], [])
+        # This is allowed, but maybe it shouldn't be?
+        self.check([], [['a/a.html', '+a/a.html']], [])

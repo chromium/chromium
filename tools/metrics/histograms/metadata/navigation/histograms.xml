@@ -27,6 +27,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Subframe"/>
 </variants>
 
+<variants name="Initiator">
+  <variant name=".BrowserInitiated" summary="browser initiated"/>
+  <variant name=".RendererInitiated" summary="renderer initiated"/>
+</variants>
+
 <variants name="InitiatorType">
   <variant name="All" summary="any"/>
   <variant name="FromAd" summary="ad-initiated"/>
@@ -37,6 +42,11 @@ chromium-metrics-reviews@google.com.
   <variant name="" summary="both gesture nav mode and 3 button mode"/>
   <variant name=".3ButtonMode" summary="only 3-button mode"/>
   <variant name=".GestureMode" summary="only gesture nav mode"/>
+</variants>
+
+<variants name="NavigationSite">
+  <variant name="" summary="for all sites"/>
+  <variant name=".GoogleSearch" summary="for Google Search"/>
 </variants>
 
 <variants name="NavigationStage">
@@ -400,7 +410,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.DisallowActivationReason"
-    enum="InactiveFrameDisallowActivationReason" expires_after="2024-07-07">
+    enum="InactiveFrameDisallowActivationReason" expires_after="2025-07-07">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -413,7 +423,8 @@ chromium-metrics-reviews@google.com.
     of navigations which where not cached
 
     This is recorded for all websites regardless whether back-forward cache is
-    enabled or not.
+    enabled or not. Warning: this histogram was expired from 2024-07-07 to
+    2024-12-04; data may be missing.
   </summary>
 </histogram>
 
@@ -1194,17 +1205,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.IsDuplicate" enum="Boolean"
-    expires_after="2025-05-18">
-  <owner>rakina@chromium.org</owner>
-  <owner>chrome-navigation@google.com</owner>
-  <summary>
-    Whether a new navigation is a duplicate of a currently ongoing navigation,
-    where the destination and params are the same. Logged when the new
-    navigation is triggered and about to take the place of the old navigation.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
     expires_after="2025-04-13">
   <owner>alexmos@chromium.org</owner>
@@ -1927,17 +1927,6 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
-<histogram name="Navigation.RendererInitiated.IsDuplicate" enum="Boolean"
-    expires_after="2025-05-18">
-  <owner>rakina@chromium.org</owner>
-  <owner>chrome-navigation@google.com</owner>
-  <summary>
-    Whether a new renderer-initiated navigation is a duplicate of a currently
-    ongoing navigation, where the destination and params are the same. Logged
-    when the new navigation is triggered on the renderer side.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.RendererRunLoopStartToFirstCommitNavigation2.{FrameType}"
     units="ms" expires_after="2025-03-23">
@@ -2189,15 +2178,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.Throttles.PolicyBlocklist.CacheHit.GoogleSearch.SafeSitesFilterEnabled"
+    name="Navigation.Throttles.PolicyBlocklist.CacheHit{Target}.SafeSitesFilterEnabled"
     enum="BooleanCacheHit" expires_after="2025-04-06">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Records cache hit distribution that PolicyBlocklistNavigationThrottle uses
-    for the Safe Sites Filter check. Recorded at OnCommit() if the Safe Sites
-    Filter is enabled.
+    for the Safe Sites Filter check. Recorded at OnCommit() {Target} if the Safe
+    Sites Filter is enabled.
   </summary>
+  <token key="Target" variants="NavigationSite"/>
 </histogram>
 
 <histogram name="Navigation.Throttles.PolicyBlocklist.DeferDurationTime2"
@@ -2212,14 +2202,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.Throttles.PolicyBlocklist.RedirectCount.GoogleSearch.SafeSitesFilterEnabled"
+    name="Navigation.Throttles.PolicyBlocklist.RedirectCount{Target}.SafeSitesFilterEnabled"
     units="times" expires_after="2025-04-06">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures redirect counts that PolicyBlocklistNavigationThrottles recognize.
-    Recorded at OnCommit() if the Safe Sites Filter is enabled.
+    Recorded at OnCommit() {Target} if the Safe Sites Filter is enabled.
   </summary>
+  <token key="Target" variants="NavigationSite"/>
 </histogram>
 
 <histogram name="Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2"
@@ -2247,20 +2238,25 @@ chromium-metrics-reviews@google.com.
   <token key="Condition">
     <variant name="" summary="when the WillProcessResponse() is handled"/>
     <variant name=".GoogleSearch.SafeSitesFilterEnabled"
-        summary="at OnCommit() if the Safe Sites Filter is enabled"/>
+        summary="at OnCommit() for Google Search if the Safe Sites Filter is
+                 enabled"/>
+    <variant name=".SafeSitesFilterEnabled"
+        summary="at OnCommit() for all sites if the Safe Sites Filter is
+                 enabled"/>
   </token>
 </histogram>
 
 <histogram
-    name="Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration.GoogleSearch.SafeSitesFilterEnabled"
+    name="Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration{Target}.SafeSitesFilterEnabled"
     units="ms" expires_after="2025-04-06">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures duration times from the time PolicyBlocklistNavigationThrottles
     defers WillProcessResponse() to the time it calls Resume(). Recorded at
-    OnCommit() if the Safe Sites Filter is enabled.
+    OnCommit() {Target} if the Safe Sites Filter is enabled.
   </summary>
+  <token key="Target" variants="NavigationSite"/>
 </histogram>
 
 <histogram name="Navigation.ThrottleTotalDeferCount{Condition}"
@@ -2382,6 +2378,7 @@ chromium-metrics-reviews@google.com.
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from the speculative RFH previously created for the navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram
@@ -2400,6 +2397,7 @@ chromium-metrics-reviews@google.com.
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from a speculative RFH previously created for the navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram
@@ -2419,6 +2417,7 @@ chromium-metrics-reviews@google.com.
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from the speculative RFH previously created for the navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram
@@ -2438,6 +2437,7 @@ chromium-metrics-reviews@google.com.
     {InitiatorType} navigations that picked a RenderFrameHost that is different
     from the speculative RFH previously created for the navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram name="Navigation.{InitiatorType}.WastedSpeculativeRFHCase"
@@ -2453,6 +2453,7 @@ chromium-metrics-reviews@google.com.
     RenderFrameHostManager::GetFrameHostNavigation(). Note that this can be
     called multiple times for each navigation.
   </summary>
+  <token key="InitiatorType" variants="InitiatorType"/>
 </histogram>
 
 <histogram name="Navigation.{Stage}.{FrameType}" units="ms"
@@ -2590,6 +2591,55 @@ chromium-metrics-reviews@google.com.
     engaged sites data. Recorded whenever a navigation is deferred waiting for
     engaged sites.
   </summary>
+</histogram>
+
+<histogram name="Navigation{Initiator}.DuplicateNavIsUnderThreshold"
+    enum="Boolean" expires_after="2025-05-18">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    When a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same, records whether the
+    difference between the new navigation's start time and the previous
+    navigation's start time is under the threshold defined by
+    kDuplicateNavThreshold (defaults to 2s).
+
+    Logged when the new navigation is triggered and about to take the place of
+    the old navigation.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
+</histogram>
+
+<histogram name="Navigation{Initiator}.DuplicateNavStartTimeDiff" units="ms"
+    expires_after="2025-05-18">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    When a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same, records the difference
+    between the new navigation's start time and the previous navigation's start
+    time.
+
+    Logged when the new navigation is triggered and about to take the place of
+    the old navigation.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
+</histogram>
+
+<histogram name="Navigation{Initiator}.IsDuplicateWithoutThresholdCheck"
+    enum="Boolean" expires_after="2025-05-18">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Whether a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same. This does not do a navigation
+    start threshold check, so this will be true even if the new navigation
+    started a long time after the previous navigation.
+
+    Logged when the new navigation is triggered and about to take the place of
+    the old navigation.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
 </histogram>
 
 <histogram

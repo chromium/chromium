@@ -115,9 +115,9 @@ const uint8_t kTestDescriptorDefaultValue1[] = {0x04, 0x05};
 
 class BluetoothLowEnergyApiTest : public extensions::ExtensionApiTest {
  public:
-  BluetoothLowEnergyApiTest() {}
+  BluetoothLowEnergyApiTest() = default;
 
-  ~BluetoothLowEnergyApiTest() override {}
+  ~BluetoothLowEnergyApiTest() override = default;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();

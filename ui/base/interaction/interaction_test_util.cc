@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/interaction/interaction_test_util.h"
+
+#include <array>
 #include <functional>
 
 namespace ui::test {
@@ -137,16 +134,15 @@ ActionResult InteractionTestUtil::Confirm(TrackedElement* element) {
 }
 
 void PrintTo(InteractionTestUtil::InputType input_type, std::ostream* os) {
-  const char* const kInputTypeNames[] = {
-      "InputType::kDontCare", "InputType::kMouse", "InputType::kKeyboard",
-      "InputType::kMouse"};
-  constexpr int kCount = sizeof(kInputTypeNames) / sizeof(kInputTypeNames[0]);
+  static constexpr auto kInputTypeNames =
+      std::to_array<const char*>({"InputType::kDontCare", "InputType::kMouse",
+                                  "InputType::kKeyboard", "InputType::kMouse"});
+  constexpr size_t kCount = kInputTypeNames.size();
   static_assert(kCount ==
-                static_cast<int>(InteractionTestUtil::InputType::kMaxValue) +
+                static_cast<size_t>(InteractionTestUtil::InputType::kMaxValue) +
                     1);
-  const int value = static_cast<int>(input_type);
-  *os << ((value < 0 || value >= kCount) ? "[invalid InputType]"
-                                         : kInputTypeNames[value]);
+  const size_t value = base::checked_cast<size_t>(input_type);
+  *os << (value >= kCount ? "[invalid InputType]" : kInputTypeNames[value]);
 }
 
 std::ostream& operator<<(std::ostream& os,

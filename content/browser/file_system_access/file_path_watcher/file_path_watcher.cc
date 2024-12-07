@@ -89,14 +89,17 @@ bool FilePathWatcher::WatchWithOptions(const base::FilePath& path,
   return impl_->WatchWithOptions(path, options, callback);
 }
 
-bool FilePathWatcher::WatchWithChangeInfo(
+std::optional<size_t> FilePathWatcher::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
     const CallbackWithChangeInfo& callback,
     const UsageChangeCallback& usage_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
-  return impl_->WatchWithChangeInfo(path, options, callback, usage_callback);
+  if (impl_->WatchWithChangeInfo(path, options, callback, usage_callback)) {
+    return impl_->current_usage();
+  }
+  return std::nullopt;
 }
 
 bool FilePathWatcher::PlatformDelegate::WatchWithOptions(

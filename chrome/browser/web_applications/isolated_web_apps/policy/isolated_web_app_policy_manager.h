@@ -10,7 +10,9 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
@@ -20,6 +22,10 @@
 #include "net/base/backoff_entry.h"
 
 namespace web_app {
+
+// Controls whether we attempt to fetch latest component data before processing
+// the policy for the first time.
+BASE_DECLARE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate);
 
 // This class is responsible for installing, uninstalling, updating etc.
 // of the policy installed IWAs.
@@ -45,10 +51,11 @@ class IsolatedWebAppPolicyManager
   base::Value GetDebugValue() const;
 
  private:
+  void ConfigureObserversOnSessionStart();
   void CleanupAndProcessPolicyOnSessionStart();
   int GetPendingInitCount();
   void SetPendingInitCount(int pending_count);
-  void ProcessPolicy(base::OnceClosure finished_closure);
+  void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
 
@@ -96,13 +103,19 @@ class IsolatedWebAppPolicyManager
   raw_ptr<WebAppProvider> provider_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   ProcessLogs process_logs_;
-  base::OnceClosure on_started_callback_;
 
   bool reprocess_policy_needed_ = false;
   bool policy_is_being_processed_ = false;
   base::Value::Dict current_process_log_;
 
   net::BackoffEntry install_retry_backoff_entry_;
+
+  base::OnceClosure initial_policy_processing_finished_cb_;
+
+  // This timer will be set to run in ~15 seconds if the available component is
+  // preloaded to give the system a chance to fetch the latest component data.
+  // Will call `ProcessPolicy()` upon firing.
+  base::OneShotTimer process_policy_fallback_timer_;
 
   // We must execute install tasks in a queue, because each task uses a
   // `WebContents`, and installing an unbound number of apps in parallel would

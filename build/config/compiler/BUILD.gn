@@ -1994,7 +1994,7 @@ config("default_warnings") {
         cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
 
         # TODO(crbug.com/376641662): Fix and re-enable.
-        cflags += [ "-Wno-nontrivial-memaccess" ]
+        cflags += [ "-Wno-nontrivial-memcall" ]
       }
     }
 

@@ -50,12 +50,11 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       bool show_back_button,
       bool is_choose_an_account) override;
 
-  void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
+  void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override;
 
-  void ShowSingleAccountConfirmDialog(
-      const content::IdentityRequestAccount& account,
-      bool show_back_button) override;
+  void ShowSingleAccountConfirmDialog(const IdentityRequestAccountPtr& account,
+                                      bool show_back_button) override;
 
   void ShowFailureDialog(
       const std::u16string& idp_for_display,
@@ -68,8 +67,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       override;
 
   void ShowRequestPermissionDialog(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data) override;
+      const IdentityRequestAccountPtr& account) override;
 
   void ShowSingleReturningAccountDialog(
       const std::vector<IdentityRequestAccountPtr>& accounts,
@@ -89,20 +87,21 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // the user to sign in to an RP with an account from an IDP.
   std::unique_ptr<views::View> CreateHeader();
 
-  // Returns a View for single account chooser. It contains a row of account
-  // information. `should_hover` determines whether the row is clickable.
-  // `show_disclosure_label` determines whether disclosure text is shown.
-  std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const content::IdentityRequestAccount& account,
-      bool should_hover,
-      bool show_disclosure_label,
-      bool show_separator,
-      int additional_row_vertical_padding);
-
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
       const std::vector<IdentityRequestAccountPtr>& accounts);
+
+  // Returns a View to display account rows. It contains one row per account.
+  // `should_hover` determines whether the rows are clickable.
+  // `show_separator` determines whether rows should be surrounded by a
+  // separator.
+  std::unique_ptr<views::View> CreateAccountRows(
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      bool should_hover,
+      bool show_separator,
+      bool is_single_account_chooser,
+      int additional_row_vertical_padding);
 
   // Returns a View for an account row that acts as a placeholder.
   std::unique_ptr<views::View> CreatePlaceholderAccountRow();
@@ -150,8 +149,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // Notifies the observer of the account selection and updates the continue
   // button into a spinner button.
-  void OnContinueButtonClicked(const content::IdentityRequestAccount& account,
-                               const content::IdentityProviderData& idp_data,
+  void OnContinueButtonClicked(const IdentityRequestAccountPtr& account,
                                const ui::Event& event);
 
   // Notifies the observer of the use other account button being clicked.
@@ -164,6 +162,10 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       views::MdTextButton* button,
       ui::ColorId spinner_color = ui::kColorButtonForeground,
       ui::ColorId button_color = ui::kColorButtonBackground);
+
+  // Helper method to show the given accounts.
+  void ShowAccounts(const std::vector<IdentityRequestAccountPtr>& accounts,
+                    bool is_single_account_chooser);
 
   // View containing the header.
   raw_ptr<views::View> header_view_ = nullptr;

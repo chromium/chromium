@@ -49,6 +49,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/auto_reset.h"
@@ -1728,6 +1729,84 @@ TEST_F(SunfishTest, LauncherNudgeLimits) {
   EXPECT_EQ(capture_mode_util::GetActiveUserPrefService()->GetInteger(
                 prefs::kSunfishLauncherNudgeShownCount),
             3);
+}
+
+// Test that the action buttons can be navigated using the keyboard, and that
+// the indices are correct when new buttons are added.
+TEST_F(SunfishTest, KeyboardNavigationActionButtons) {
+  // Start default mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+
+  // Select a capture region. Only the "Search with Lens" should be present by
+  // default.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+
+  // Use tab to navigate to the action button.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN, /*count=*/3);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kActionButtons,
+            session_test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(0u, session_test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(session_test_api.GetActionButtons()[0],
+            session_test_api.GetCurrentFocusedView()->GetView());
+
+  // Add a fake "Copy Text" button to the front of the list.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Copy Text", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kOther, 0),
+      ActionButtonViewID::kCopyTextButton);
+
+  // The "Search with Lens" buttons should still be focused.
+  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
+                  session_test_api.GetActionButtons()[1])
+                  ->has_focus());
+
+  // Cycle backwards once.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kActionButtons,
+            session_test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(0u, session_test_api.GetCurrentFocusIndex());
+
+  // We should now be focused on the "Copy Text" button, even though the focus
+  // index is still 0.
+  ActionButtonView* copy_text_button = session_test_api.GetActionButtons()[0];
+  EXPECT_EQ(copy_text_button, session_test_api.GetButtonWithViewID(
+                                  ActionButtonViewID::kCopyTextButton));
+  EXPECT_TRUE(
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(copy_text_button)
+          ->has_focus());
+
+  // Cycle forwards once.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kActionButtons,
+            session_test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(1u, session_test_api.GetCurrentFocusIndex());
+
+  // Add another generic test button to the end of the list.
+  capture_mode_util::AddActionButton(
+      views::Button::PressedCallback(), u"Test", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kSunfish, 1),
+      ActionButtonViewID::kSmartActionsButton);
+
+  // Cycle forwards once.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kActionButtons,
+            session_test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(2u, session_test_api.GetCurrentFocusIndex());
+
+  // We should now be focused on the newest test button.
+  ActionButtonView* smart_action_button =
+      session_test_api.GetActionButtons()[2];
+  EXPECT_EQ(smart_action_button, session_test_api.GetButtonWithViewID(
+                                     ActionButtonViewID::kSmartActionsButton));
+  EXPECT_TRUE(
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(smart_action_button)
+          ->has_focus());
 }
 
 class ScannerTest : public AshTestBase {

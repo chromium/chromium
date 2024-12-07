@@ -372,27 +372,6 @@ void PasswordStoreBuiltInBackend::RemoveLoginsCreatedBetweenAsync(
           .Then(std::move(callback)));
 }
 
-void PasswordStoreBuiltInBackend::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(helper_);
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime,
-          base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          location, url_filter, delete_begin, delete_end,
-          std::move(sync_completion)),
-      ReportMetricsForResultCallback<PasswordChangesOrError>(
-          MethodName("RemoveLoginsByURLAndTimeAsync"))
-          .Then(std::move(callback)));
-}
-
 void PasswordStoreBuiltInBackend::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {

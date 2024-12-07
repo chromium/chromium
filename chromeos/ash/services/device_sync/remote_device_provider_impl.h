@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_manager.h"
 #include "chromeos/ash/services/device_sync/remote_device_provider.h"
 #include "google_apis/gaia/core_account_id.h"

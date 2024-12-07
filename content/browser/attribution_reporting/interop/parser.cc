@@ -173,8 +173,6 @@ class AttributionInteropParser {
       bool required) && {
     interop_config.needs_cross_app_web =
         ParseBool(dict, "needs_cross_app_web").value_or(false);
-    interop_config.needs_aggregatable_debug =
-        ParseBool(dict, "needs_aggregatable_debug").value_or(false);
     interop_config.needs_attribution_scopes =
         ParseBool(dict, "needs_attribution_scopes").value_or(false);
     interop_config.needs_aggregatable_named_budgets =

@@ -49,7 +49,7 @@ struct WidgetEventPair {
 views::Widget* GetImmersiveFullscreenWidgetForEvent(
     views::View* this_view,
     const ui::MouseEvent* this_event) {
-  views::Widget* parent_widget = this_view->GetWidget()->parent();
+  const views::Widget* parent_widget = this_view->GetWidget()->parent();
   BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
       parent_widget->GetNativeWindow());
 
@@ -189,7 +189,7 @@ class TopBackgroundView : public views::View {
   }
 
   ui::Cursor GetCursor(const ui::MouseEvent& event) override {
-    auto pair = GetParentWidgetAndEvent(this, &event);
+    const auto pair = GetParentWidgetAndEvent(this, &event);
     if (pair.widget) {
       views::View* omnibox_view =
           pair.widget->GetRootView()->GetEventHandlerForPoint(
@@ -228,7 +228,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 
   // Use rounded corners.
-  int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kOmniboxExpandedRadius);
   contents_host_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(corner_radius));

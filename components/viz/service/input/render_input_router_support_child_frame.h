@@ -47,7 +47,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportChildFrame
   gfx::PointF TransformRootPointToViewCoordSpace(
       const gfx::PointF& point) override;
   gfx::PointF TransformPointToRootCoordSpaceF(
-      const gfx::PointF& point) override;
+      const gfx::PointF& point) const override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
       input::RenderWidgetHostViewInput* target_view,

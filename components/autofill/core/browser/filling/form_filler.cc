@@ -707,7 +707,7 @@ void FormFiller::FillOrPreviewForm(
           FieldFillingSkipReason::kNoValueToFill);
     }
 
-    const bool has_value_before = !result_fields[i].value().empty();
+    const bool has_value_before = !form.fields()[i].value().empty();
     const bool has_value_after = !result_fields[i].value().empty();
     const bool is_autofilled_before = form.fields()[i].is_autofilled();
     const bool is_autofilled_after = result_fields[i].is_autofilled();

@@ -4,12 +4,14 @@
 
 #include "components/input/android_input_helper.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "components/input/events_helper.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/web_input_event_traits.h"
+#include "ui/events/event_utils.h"
 
 namespace input {
 
@@ -18,6 +20,35 @@ AndroidInputHelper::~AndroidInputHelper() = default;
 AndroidInputHelper::AndroidInputHelper(RenderWidgetHostViewInput* view,
                                        Delegate* delegate)
     : view_(*view), delegate_(*delegate) {}
+
+void AndroidInputHelper::RouteOrForwardTouchEvent(
+    blink::WebTouchEvent& web_event) {
+  RenderInputRouter* rir = view_->GetViewRenderInputRouter();
+  CHECK(rir);
+  ui::LatencyInfo latency_info;
+  latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
+  if (ShouldRouteEvents()) {
+    rir->delegate()->GetInputEventRouter()->RouteTouchEvent(&*view_, &web_event,
+                                                            latency_info);
+  } else {
+    rir->ForwardTouchEventWithLatencyInfo(web_event, latency_info);
+  }
+}
+
+void AndroidInputHelper::RouteOrForwardGestureEvent(
+    const blink::WebGestureEvent& event) {
+  RenderInputRouter* rir = view_->GetViewRenderInputRouter();
+  CHECK(rir);
+
+  ui::LatencyInfo latency_info;
+  if (ShouldRouteEvents()) {
+    blink::WebGestureEvent gesture_event(event);
+    rir->delegate()->GetInputEventRouter()->RouteGestureEvent(
+        &*view_, &gesture_event, latency_info);
+  } else {
+    rir->ForwardGestureEventWithLatencyInfo(event, latency_info);
+  }
+}
 
 bool AndroidInputHelper::ShouldRouteEvents() const {
   CHECK(view_->GetViewRenderInputRouter());
@@ -98,6 +129,42 @@ bool AndroidInputHelper::TransformPointToCoordSpaceForView(
   // is responsible for converting before computing the final transform.
   return target_view->TransformPointToLocalCoordSpace(
       point, view_->GetFrameSinkId(), transformed_point);
+}
+
+void AndroidInputHelper::RecordToolTypeForActionDown(
+    const ui::MotionEventAndroid& event) {
+  ui::MotionEventAndroid::Action action = event.GetAction();
+  if (action == ui::MotionEventAndroid::Action::DOWN ||
+      action == ui::MotionEventAndroid::Action::POINTER_DOWN ||
+      action == ui::MotionEventAndroid::Action::BUTTON_PRESS) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Event.AndroidActionDown.ToolType",
+        static_cast<int>(event.GetToolType(0)),
+        static_cast<int>(ui::MotionEventAndroid::ToolType::LAST) + 1);
+  }
+}
+
+void AndroidInputHelper::ComputeEventLatencyOSTouchHistograms(
+    const ui::MotionEvent& event) {
+  base::TimeTicks event_time = event.GetEventTime();
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  ui::EventType event_type;
+  switch (event.GetAction()) {
+    case ui::MotionEvent::Action::DOWN:
+    case ui::MotionEvent::Action::POINTER_DOWN:
+      event_type = ui::EventType::kTouchPressed;
+      break;
+    case ui::MotionEvent::Action::MOVE:
+      event_type = ui::EventType::kTouchMoved;
+      break;
+    case ui::MotionEvent::Action::UP:
+    case ui::MotionEvent::Action::POINTER_UP:
+      event_type = ui::EventType::kTouchReleased;
+      break;
+    default:
+      return;
+  }
+  ui::ComputeEventLatencyOS(event_type, event_time, current_time);
 }
 
 }  // namespace input

@@ -22,13 +22,13 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -475,15 +475,15 @@ void TabStripRegionView::Layout(PassKey) {
 
 bool TabStripRegionView::CanDrop(const OSExchangeData& data) {
   return TabDragController::IsSystemDnDSessionRunning() &&
-         data.HasCustomFormat(
-             ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
+         data.HasCustomFormat(ui::ClipboardFormatType::CustomPlatformType(
+             ui::kMimeTypeWindowDrag));
 }
 
 bool TabStripRegionView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
   format_types->insert(
-      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
+      ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag));
   return true;
 }
 
@@ -656,6 +656,11 @@ void TabStripRegionView::UpdateTabStripMargin() {
                             GetLayoutConstant(TAB_STRIP_PADDING) +
                             GetLayoutConstant(TAB_STRIP_PADDING) -
                             TabStyle::Get()->GetBottomCornerRadius();
+  } else if (features::IsTabstripComboButtonEnabled() &&
+             !tabs::GetDefaultTabSearchRightAligned()) {
+    // With the combobutton, this case has no caption buttons on the left side.
+    // Leave a padding so the tabstrip is after the corner radius.
+    tab_strip_left_margin = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
   }
 
   UpdateButtonBorders();

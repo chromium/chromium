@@ -86,6 +86,8 @@ class MockPage : public read_anything::mojom::UntrustedPage {
               (read_anything::mojom::VoicePackInfoPtr voice_pack_info));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(void, OnDeviceLocked, ());
+#else
+  MOCK_METHOD(void, OnTtsEngineInstalled, ());
 #endif
 
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};

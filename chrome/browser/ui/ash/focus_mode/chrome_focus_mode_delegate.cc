@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace {
@@ -146,10 +147,10 @@ bool ChromeFocusModeDelegate::IsMinorUser() {
     return false;
   }
 
-  std::string gaia_id = user_manager::UserManager::Get()
-                            ->GetActiveUser()
-                            ->GetAccountId()
-                            .GetGaiaId();
+  GaiaId gaia_id = user_manager::UserManager::Get()
+                       ->GetActiveUser()
+                       ->GetAccountId()
+                       .GetGaiaId();
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   // TODO(b/366042251): Update minor targeting to use a better signal.

@@ -29,6 +29,7 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/transport_security_state_source.h"
 #include "net/log/net_log_with_source.h"
+#include "net/net_buildflags.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -457,6 +458,10 @@ class NET_EXPORT TransportSecurityState {
 
   // The number of cached STSState entries.
   size_t num_sts_entries() const;
+
+#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+  static base::Time GetBuiltInPinsListTimestamp();
+#endif
 
  private:
   friend class TransportSecurityStateTest;

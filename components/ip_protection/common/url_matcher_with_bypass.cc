@@ -129,8 +129,8 @@ void UrlMatcherWithBypass::AddMaskedDomainListRules(
     }
 
     if (!matcher.rules().empty()) {
-      match_list_with_bypass_map_[partition_key].emplace_back(
-          std::move(matcher), bypass_matcher);
+      match_list_with_bypass_map_[partition_key].emplace_back(PartitionMatcher{
+          .matcher = std::move(matcher), .bypass_matcher = bypass_matcher});
     }
   }
 }
@@ -176,22 +176,22 @@ UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
 
   std::string resource_host_suffix = PartitionMapKey(request_url.host());
 
-  if (!match_list_with_bypass_map_.contains(resource_host_suffix)) {
+  auto it = match_list_with_bypass_map_.find(resource_host_suffix);
+  if (it == match_list_with_bypass_map_.end()) {
     vlog("no suffix match", false);
     return UrlMatcherWithBypassResult::kNoMatch;
   }
 
-  for (const auto& [matcher, bypass_matcher] :
-       match_list_with_bypass_map_.at(resource_host_suffix)) {
-    auto rule_result = matcher.Evaluate(request_url);
+  for (const PartitionMatcher& partition_matcher : it->second) {
+    auto rule_result = partition_matcher.matcher.Evaluate(request_url);
     if (rule_result == net::SchemeHostPortMatcherResult::kInclude) {
       if (skip_bypass_check) {
         vlog("matched with skipped bypass check", true);
         return UrlMatcherWithBypassResult::kMatchAndNoBypass;
       }
-      const bool no_match =
-          bypass_matcher->Evaluate(top_frame_site->GetURL()) ==
-          net::SchemeHostPortMatcherResult::kNoMatch;
+      const bool no_match = partition_matcher.bypass_matcher->Evaluate(
+                                top_frame_site->GetURL()) ==
+                            net::SchemeHostPortMatcherResult::kNoMatch;
       vlog("bypass_matcher.NoMatch", no_match);
       return no_match ? UrlMatcherWithBypassResult::kMatchAndNoBypass
                       : UrlMatcherWithBypassResult::kMatchAndBypass;

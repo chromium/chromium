@@ -588,6 +588,10 @@ RenderWidgetHostViewBase* RenderWidgetHostImpl::GetView() {
   return view_.get();
 }
 
+const RenderWidgetHostViewBase* RenderWidgetHostImpl::GetView() const {
+  return view_.get();
+}
+
 VisibleTimeRequestTrigger&
 RenderWidgetHostImpl::GetVisibleTimeRequestTrigger() {
   return delegate()->GetVisibleTimeRequestTrigger();

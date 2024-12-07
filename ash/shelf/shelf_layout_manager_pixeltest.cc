@@ -21,8 +21,7 @@ class ShelfLayoutManagerPixelRTLTest
   ShelfLayoutManagerPixelRTLTest() {
     // Disable kHideShelfControlsInTabletMode to disable contextual nudges.
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHideShelfControlsInTabletMode, false},
-         {chromeos::features::kJelly, true}});
+        {{features::kHideShelfControlsInTabletMode, false}});
   }
 
   // ShelfLayoutManagerTestBase:

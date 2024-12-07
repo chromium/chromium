@@ -283,16 +283,22 @@ Reviewers expect to review code that compiles and passes tests. If you have
 access, now is a good time to run your change through the [automated
 tests](#running-automated-tests).
 
-Click **Add Reviewers** in the left column (if you don't see this link, make
-sure you are logged in). In the **Reviewers** field, enter a comma-separated
-list of the reviewers you picked.
+Click the big blue **Start Review** button near the top of the page. (If you are
+not signed in, the button will instead say "Sign In", so click it to sign in.)
+An in-page dialog will appear, and there will be a **Reviewers** field in which
+you can specify reviewers for the change. To the right of the field, in the
+upper-right of the in-page dialog, will be a link titled "Suggest Owners" which,
+when clicked, will suggest owners relevant to your change. Unless you have a
+specific reason not to, it is recommended to click it and rely on its suggestion
+of owners.
 
 In the same dialog, you can include an optional message to your reviewers. This
-space can be used for specific questions or instructions. Once you're done,
-make sure to click **Start Review**, which notifies the requested reviewers that
-they should review your change.
+space can be used for specific questions or instructions. Once you're done, make
+sure to click **Send and Start Review**, which notifies the requested reviewers
+that they should review your change.
 
-**IMPORTANT: UNTIL YOU SEND THE REVIEW REQUEST, NO ONE WILL LOOK AT THE REVIEW**
+**⚠️ Be sure to click the "Send and Start Review" button as NO ONE WILL LOOK AT
+YOUR CHANGE UNTIL YOU DO SO ⚠️**
 
 ### Review process
 

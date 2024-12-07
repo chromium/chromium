@@ -50,7 +50,6 @@ class TestTokenService
   TestTokenService(const std::string& enrollment_token,
                    const std::string& dm_token)
       : enrollment_token_(enrollment_token), dm_token_(dm_token) {}
-  ~TestTokenService() override = default;
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return "test-device-id"; }
@@ -86,7 +85,6 @@ class TestTokenService
 class TestConfigurator : public DMClient::Configurator {
  public:
   explicit TestConfigurator(const GURL& url);
-  ~TestConfigurator() override = default;
 
   GURL GetDMServerUrl() const override { return server_url_; }
 
@@ -289,8 +287,6 @@ class DMValidationReportRequestCallbackHandler
 
 class DMClientTest : public ::testing::Test {
  public:
-  ~DMClientTest() override = default;
-
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     std::string app_type;

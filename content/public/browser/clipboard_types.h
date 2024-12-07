@@ -143,6 +143,9 @@ struct ClipboardMetadata {
   ui::ClipboardSequenceNumberToken seqno;
 };
 
+// Chromium-only type to associate clipboard data to the RFH it originated from.
+const ui::ClipboardFormatType& SourceRFHTokenType();
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_CLIPBOARD_TYPES_H_

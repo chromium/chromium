@@ -133,6 +133,15 @@ class FakePasswordAutofillAgent
                const std::u16string&,
                autofill::AutofillSuggestionTriggerSource),
               (override));
+  MOCK_METHOD(void,
+              SubmitChangePasswordForm,
+              (autofill::FieldRendererId,
+               autofill::FieldRendererId,
+               autofill::FieldRendererId,
+               const std::u16string&,
+               const std::u16string&,
+               SubmitChangePasswordFormCallback),
+              (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, KeyboardReplacingSurfaceClosed, (bool), (override));
   MOCK_METHOD(void, TriggerFormSubmission, (), (override));

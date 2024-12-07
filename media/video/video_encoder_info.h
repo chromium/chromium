@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "media/base/media_export.h"
+#include "media/base/video_types.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -44,6 +45,8 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   VideoEncoderInfo();
   VideoEncoderInfo(const VideoEncoderInfo&);
   ~VideoEncoderInfo();
+
+  bool DoesSupportGpuSharedImages(VideoPixelFormat format);
 
   std::string implementation_name;
 
@@ -80,6 +83,13 @@ struct MEDIA_EXPORT VideoEncoderInfo {
 
   std::array<std::vector<uint8_t>, kMaxSpatialLayers> fps_allocation;
   std::vector<ResolutionBitrateLimit> resolution_bitrate_limits;
+
+  // Set of pixel formats that this encoder can handle on the gpu
+  // withhout readback.
+  std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
+
+  // If true, the encoder can handle shared image video frames
+  bool supports_gpu_shared_images = false;
 };
 
 MEDIA_EXPORT bool operator==(const VideoEncoderInfo& lhs,

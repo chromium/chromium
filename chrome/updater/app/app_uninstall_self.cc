@@ -25,9 +25,6 @@ namespace updater {
 
 // AppUninstallSelf uninstalls this instance of the updater.
 class AppUninstallSelf : public App {
- public:
-  AppUninstallSelf() = default;
-
  private:
   ~AppUninstallSelf() override = default;
   [[nodiscard]] int Initialize() override;

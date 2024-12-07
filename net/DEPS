@@ -9,6 +9,7 @@ include_rules = [
   "+third_party/nss",
   "+third_party/protobuf/src/google/protobuf",
   "+third_party/zlib",
+  "+third_party/simdutf",
 
   # Most of net should not depend on icu, and brotli to keep size down when
   # built as a library.

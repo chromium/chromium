@@ -1000,16 +1000,23 @@ TEST(FwupdClientUpdatePath, FileUrl) {
   EXPECT_EQ(GetUpdatePathFromDict(dict).value(), "file:///usr/test.cab");
 }
 
-TEST(FwupdClientUpdatePath, HttpsUrl) {
+TEST(FwupdClientUpdatePath, HttpsUrlNotOnMirror) {
   base::Value::Dict dict;
   base::Value::List list;
   list.Append("https://fwupd.org/downloads/test.cab");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, ValidHttpsUrl) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append(
+      "https://storage.googleapis.com/chromeos-localmirror/lvfs/test.cab");
   dict.Set(kLocationsKey, std::move(list));
   EXPECT_EQ(
       GetUpdatePathFromDict(dict).value(),
       "https://storage.googleapis.com/chromeos-localmirror/lvfs/test.cab");
 }
-
-// TODO: valid mirror test
 
 }  // namespace ash

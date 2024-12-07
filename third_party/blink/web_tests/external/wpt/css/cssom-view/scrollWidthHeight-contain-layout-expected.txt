@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] scroll{Width,Height} should match with contain: layout for display: flex, overflow: hidden, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and hidden expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: inline-block, overflow: hidden, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and hidden expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: grid, overflow: hidden, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and hidden expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: flex, overflow: hidden, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and hidden expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: inline-block, overflow: hidden, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and hidden expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: grid, overflow: hidden, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and hidden expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: flex, overflow: auto, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and auto expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: inline-block, overflow: auto, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and auto expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: grid, overflow: auto, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and auto expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: flex, overflow: auto, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and auto expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: inline-block, overflow: auto, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and auto expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: grid, overflow: auto, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and auto expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: flex, overflow: scroll, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and scroll expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: inline-block, overflow: scroll, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and scroll expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: grid, overflow: scroll, padding: 2px, border: 0
+  assert_equals: scrollHeight should match for visible and scroll expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: flex, overflow: scroll, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and scroll expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: inline-block, overflow: scroll, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and scroll expected 2004 but got 4
+[FAIL] scroll{Width,Height} should match with contain: layout for display: grid, overflow: scroll, padding: 2px, border: 3px solid
+  assert_equals: scrollHeight should match for visible and scroll expected 2004 but got 4
+Harness: the test ran to completion.

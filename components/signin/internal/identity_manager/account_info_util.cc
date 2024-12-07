@@ -12,6 +12,9 @@
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 // Keys used to store the different values in the JSON dictionary received

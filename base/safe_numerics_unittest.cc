@@ -1414,6 +1414,8 @@ TEST(SafeNumerics, CastTests) {
   EXPECT_EQ(0, strict_cast<int>(static_cast<char>(0)));
   EXPECT_EQ(0, strict_cast<int>(static_cast<unsigned char>(0)));
   EXPECT_EQ(0U, strict_cast<unsigned>(static_cast<unsigned char>(0)));
+  EXPECT_EQ(0U,
+            strict_cast<unsigned>(std::integral_constant<unsigned char, 0>()));
   EXPECT_EQ(1ULL, static_cast<uint64_t>(StrictNumeric<size_t>(1U)));
   EXPECT_EQ(1ULL, static_cast<uint64_t>(SizeT(1U)));
   EXPECT_EQ(1U, static_cast<size_t>(StrictNumeric<unsigned>(1U)));
@@ -1433,12 +1435,6 @@ TEST(SafeNumerics, CastTests) {
   EXPECT_FALSE(IsValueNegative(numeric_limits<int>::max()));
   EXPECT_FALSE(IsValueNegative(numeric_limits<unsigned>::max()));
   EXPECT_FALSE(IsValueNegative(numeric_limits<double>::max()));
-
-  // These casts and coercions will fail to compile:
-  // EXPECT_EQ(0, strict_cast<int>(static_cast<size_t>(0)));
-  // EXPECT_EQ(0, strict_cast<size_t>(static_cast<int>(0)));
-  // EXPECT_EQ(1ULL, StrictNumeric<size_t>(1));
-  // EXPECT_EQ(1, StrictNumeric<size_t>(1U));
 
   // Test various saturation corner cases.
   EXPECT_EQ(saturated_cast<int>(small_negative),

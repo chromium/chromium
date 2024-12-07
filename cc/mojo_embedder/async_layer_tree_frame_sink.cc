@@ -243,12 +243,23 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
 
   // The trace_id is negated in order to keep the Graphics.Pipeline and
   // Event.Pipeline flows separated.
-  const int64_t trace_id = ~frame.metadata.begin_frame_ack.trace_id;
+  const int64_t trace_id = frame.metadata.begin_frame_ack.trace_id;
+  const int64_t negated_trace_id = ~trace_id;
   TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
-                         "Event.Pipeline", TRACE_ID_GLOBAL(trace_id),
+                         "Event.Pipeline", TRACE_ID_GLOBAL(negated_trace_id),
                          TRACE_EVENT_FLAG_FLOW_OUT, "step",
                          "SubmitHitTestData");
 
+  TRACE_EVENT(
+      "graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(trace_id), [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(
+            perfetto::protos::pbzero::ChromeGraphicsPipeline::StepName::
+                STEP_SEND_SUBMIT_COMPOSITOR_FRAME_MOJO_MESSAGE);
+        data->set_surface_frame_trace_id(trace_id);
+      });
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
 }

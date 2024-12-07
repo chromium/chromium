@@ -541,9 +541,6 @@ TEST(TriggerRegistrationTest, ParseAggregatableDebugReportingConfig) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
-
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 

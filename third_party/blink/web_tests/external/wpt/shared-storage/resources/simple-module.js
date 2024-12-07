@@ -155,6 +155,20 @@ class AppendWithLockOptionOperation {
   }
 }
 
+class BatchUpdateWithTwoAppendMethodsWithBatchLockOptionOperation {
+  async run(urls, data) {
+    if (data && data.hasOwnProperty('key') && data.hasOwnProperty('lock_name')
+        && data.hasOwnProperty('append_letter')) {
+      sharedStorage.batchUpdate([
+          new SharedStorageAppendMethod(data['key'], data['append_letter']),
+          new SharedStorageAppendMethod(data['key'], data['append_letter'])
+        ], {withLock: data['lock_name']});
+      return 1;
+    }
+    return -1;
+  }
+}
+
 register('test-url-selection-operation', TestURLSelectionOperation);
 register('test-url-selection-operation-2', TestURLSelectionOperationTwo);
 register('test-slow-url-selection-operation', TestSlowURLSelectionOperation);
@@ -166,3 +180,4 @@ register('verify-interest-groups', VerifyInterestGroups);
 register('get-wait-increment-within-lock', GetWaitIncrementWithinLockOperation);
 register('get-wait-set-within-lock', GetWaitSetWithinLockOperation);
 register('append-with-lock-option', AppendWithLockOptionOperation);
+register('batch-update-with-two-append-methods-with-batch-lock-option', BatchUpdateWithTwoAppendMethodsWithBatchLockOptionOperation);

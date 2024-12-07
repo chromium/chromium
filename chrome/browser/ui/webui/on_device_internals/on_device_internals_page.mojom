@@ -12,6 +12,18 @@ import "mojo/public/mojom/base/time.mojom";
 struct OnDeviceInternalsData {
   // Whether the base model is downloaded and ready.
   bool base_model_ready;
+  // The state of the foundational model (e.g. "Ready", "NotEligible").
+  string model_state;
+  // Installer criteria for the base model.
+  map<string, string> registration_criteria;
+  // Whether each supplementary model is downloaded.
+  array<OnDeviceSupplementaryModelInfo> supp_models;
+};
+
+// Struct containing name of supplementary model and whether they are ready.
+struct OnDeviceSupplementaryModelInfo {
+  string supp_model_name;
+  bool is_ready;
 };
 
 // Lives in the browser process. A renderer uses this to link itself with

@@ -51,8 +51,8 @@ class FakeMessageCenterAsh : public MessageCenterAsh {
 class AppNotificationHandlerTestObserver
     : public app_notification::mojom::AppNotificationsObserver {
  public:
-  AppNotificationHandlerTestObserver() {}
-  ~AppNotificationHandlerTestObserver() override {}
+  AppNotificationHandlerTestObserver() = default;
+  ~AppNotificationHandlerTestObserver() override = default;
 
   void OnNotificationAppChanged(app_notification::mojom::AppPtr app) override {
     recently_updated_app_ = std::move(app);

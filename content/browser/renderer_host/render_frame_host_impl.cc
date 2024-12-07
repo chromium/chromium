@@ -322,7 +322,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #endif
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
 #include "base/command_line.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -1445,27 +1445,11 @@ WindowProxyUserActivationState GetWindowProxyUserActivationState(
 class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
                                   public ServiceWorkerContextObserver {
  public:
-  explicit DiscardedRFHProcessHelper(RenderProcessHost* host) : host_(host) {
-    if (host_->IsInitializedAndNotDead() && !host_->IsDeletingSoon()) {
-      service_worker_context_observation_.Observe(
-          host_->GetStoragePartition()->GetServiceWorkerContext());
-    }
-  }
+  explicit DiscardedRFHProcessHelper(RenderProcessHost* host) : host_(host) {}
   DiscardedRFHProcessHelper(const DiscardedRFHProcessHelper&) = delete;
   DiscardedRFHProcessHelper& operator=(const DiscardedRFHProcessHelper&) =
       delete;
   ~DiscardedRFHProcessHelper() override = default;
-
-  // ServiceWorkerContextObserver:
-  void OnVersionStoppedRunning(int64_t version_id) override {
-    // Service workers may outlive the documents of their discarded rfh if
-    // executing pre-existing tasks. Attempt a shutdown if any associated worker
-    // has stopped to clear away the process if possible.
-    ShutdownForDiscardIfPossible();
-  }
-  void OnDestruct(ServiceWorkerContext* context) override {
-    service_worker_context_observation_.Reset();
-  }
 
   static DiscardedRFHProcessHelper* GetForRenderProcessHost(
       RenderProcessHost* host) {
@@ -1485,7 +1469,7 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
     shutdown_attempt_timer_.Stop();
     retries_ = 0;
     shutdown_attempt_timer_.Start(
-        FROM_HERE, /*delay=*/base::TimeDelta(),
+        FROM_HERE, /*delay=*/kUnloadTimeout,
         base::BindRepeating(&DiscardedRFHProcessHelper::ShutdownIfPossible,
                             base::Unretained(this)));
   }
@@ -1495,8 +1479,6 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
   // discarded frames remain.
   void ShutdownIfPossible() {
     if (!host_->IsInitializedAndNotDead() || host_->IsDeletingSoon()) {
-      shutdown_attempt_timer_.Stop();
-      retries_ = 0;
       return;
     }
 
@@ -1504,7 +1486,7 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
     // continue until a maximum delay of kKeepAliveHandleFactoryTimeout is
     // reached.
     constexpr base::TimeDelta kProcessShutdownRetryDelay =
-        base::Milliseconds(5000);
+        base::Milliseconds(500);
 
     // Attempt a fast shutdown if only discarded frames remain in the process. A
     // render process may host both speculative and non-speculative frames,
@@ -1532,7 +1514,8 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
          RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout) &&
         !host_->FastShutdownIfPossible(
             /*page_count=*/discarded_widgets.size(),
-            /*skip_unload_handlers=*/true)) {
+            /*skip_unload_handlers=*/true,
+            /*ignore_workers=*/true)) {
       retries_++;
       shutdown_attempt_timer_.Start(
           FROM_HERE, kProcessShutdownRetryDelay,
@@ -1549,9 +1532,6 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
 
   // Owns this.
   const raw_ptr<RenderProcessHost> host_;
-
-  base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
-      service_worker_context_observation_{this};
 };
 
 }  // namespace
@@ -7936,7 +7916,7 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
     UnrecoverableAccessibilityError();
   }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // Don't exercise the accessibility tree when we either had an
   // accessibility failure or if we are not allowed to fire events
   if (!accessibility_error && browser_accessibility_manager_->CanFireEvents()) {
@@ -7946,7 +7926,7 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
 }
 
 void RenderFrameHostImpl::ExerciseAccessibilityForTest() {
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // When running a debugging/sanitizer build with
   // --force-renderer-accessibility, exercise the properties for every node, to
   // ensure no crashes or assertions are triggered. This helpfully runs for all

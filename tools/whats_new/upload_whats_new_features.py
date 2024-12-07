@@ -91,8 +91,16 @@ def _UploadChangesToCL(message: str) -> None:
 
 
 def _AddFeature(index: int, feature_dict: dict[str, str],
+                valid_icons: whats_new_util.ValidIcons,
                 path_to_milestone_folder: str) -> None:
     start = time.time()
+    validation_error = whats_new_util.ValidateWhatsNewData(
+        feature_dict, valid_icons)
+    if validation_error:
+        print(
+            f'Error in row {index}, {feature_dict["Feature name"]}, '
+            f'submitter {feature_dict["Submitter email"]}: {validation_error}')
+        return
     new_enum = whats_new_util.UpdateWhatsNewItemAndGetNewTypeValue(
         feature_dict)
     whats_new_util.UpdateWhatsNewPlist(feature_dict, new_enum)
@@ -137,9 +145,11 @@ def main():
     # Delete existing features from the plist
     whats_new_util.CleanUpFeaturesPlist()
     features_name = []
+    valid_icons = whats_new_util.LoadValidIconNames()
     for index, feature_row in pd.DataFrame(xlsx_content).iterrows():
         feature_row.fillna('', inplace=True)
-        _AddFeature(index, feature_row, milestone_folder_absolute_path)
+        _AddFeature(index, feature_row, valid_icons,
+                    milestone_folder_absolute_path)
         features_name.append(feature_row['Feature name'])
 
     # Update FET event

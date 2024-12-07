@@ -347,8 +347,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // instead of the one picked randomly.
   bool use_fixed_placeholder_text_for_test_ = false;
 
-  const bool is_jelly_enabled_ = false;
-
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
       search_box_model_observer_{this};
 

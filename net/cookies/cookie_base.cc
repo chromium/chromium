@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 
@@ -378,7 +379,7 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
                                      &status, false /* is_cookie_being_set */);
 
   CookieAccessResult result{effective_same_site, status,
-                            params.access_semantics,
+                            params.access_semantics, params.scope_semantics,
                             is_allowed_to_access_secure_cookies};
 
   PostIncludeForRequestURL(result, options, cookie_inclusion_context);

@@ -185,7 +185,7 @@ gfx::Size PrintingContextWin::GetPdfPaperSizeDeviceUnits() {
 
   // Get settings from locale. Paper type buffer length is at most 4.
   const int paper_type_buffer_len = 4;
-  wchar_t paper_type_buffer[paper_type_buffer_len] = {0};
+  wchar_t paper_type_buffer[paper_type_buffer_len] = {};
   GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IPAPERSIZE, paper_type_buffer,
                 paper_type_buffer_len);
   if (wcslen(paper_type_buffer)) {  // The call succeeded.

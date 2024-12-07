@@ -10,6 +10,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/types/pass_key.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/signin_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -17,6 +18,8 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -122,9 +125,20 @@ DeviceAccountsProviderImpl::DeviceAccountsProviderImpl(
     ChromeAccountManagerService* account_manager_service)
     : account_manager_service_(account_manager_service) {
   DCHECK(account_manager_service_);
+  chrome_account_manager_observation_.Observe(account_manager_service_);
 }
 
 DeviceAccountsProviderImpl::~DeviceAccountsProviderImpl() = default;
+
+void DeviceAccountsProviderImpl::AddObserver(
+    DeviceAccountsProvider::Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void DeviceAccountsProviderImpl::RemoveObserver(
+    DeviceAccountsProvider::Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
 
 void DeviceAccountsProviderImpl::GetAccessToken(
     const std::string& gaia_id,
@@ -165,4 +179,10 @@ DeviceAccountsProviderImpl::GetAccountsOnDevice() const {
       account_manager_service_->GetAllIdentitiesOnDevice(
           base::PassKey<DeviceAccountsProviderImpl>());
   return ConvertSystemIdentitiesToAccountInfos(identities);
+}
+
+void DeviceAccountsProviderImpl::OnIdentitiesOnDeviceChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountsOnDeviceChanged();
+  }
 }

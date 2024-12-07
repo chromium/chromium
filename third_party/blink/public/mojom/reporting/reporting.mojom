@@ -68,4 +68,14 @@ interface ReportingServiceProxy {
                                      string? source_file,
                                      int32 line_number,
                                      int32 column_number);
+
+  // Attempts to queue a CSP hash report using the Reporting API.
+  //
+  // (See //third_party/blink/renderer/core/frame/subresource_report_body.h.)
+  QueueCSPHashReport(url.mojom.Url url,
+                     string endpoint,
+                     string subresource_url,
+                     string integrity_hash,
+                     string type,
+                     string destination);
 };

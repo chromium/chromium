@@ -143,9 +143,11 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                     public void onControlsOffsetChanged(
                             int topOffset,
                             int topControlsMinHeightOffset,
+                            boolean topControlsMinHeightChanged,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate,
+                            boolean bottomControlsMinHeightChanged,
+                            boolean requestNewFrame,
                             boolean isVisibilityForced) {
                         controller.setBrowserControlsHiddenRatio(
                                 mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio());

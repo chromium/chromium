@@ -8,23 +8,16 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
 class ReadingListDownloadService;
 
 // Singleton that creates the ReadingListDownloadService and associates that
 // service with Profile.
-class ReadingListDownloadServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+class ReadingListDownloadServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static ReadingListDownloadService* GetForProfile(ProfileIOS* profile);
   static ReadingListDownloadServiceFactory* GetInstance();
-
-  ReadingListDownloadServiceFactory(const ReadingListDownloadServiceFactory&) =
-      delete;
-  ReadingListDownloadServiceFactory& operator=(
-      const ReadingListDownloadServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<ReadingListDownloadServiceFactory>;
@@ -34,8 +27,6 @@ class ReadingListDownloadServiceFactory
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

@@ -83,7 +83,6 @@ ArrayBufferAllocator* ArrayBufferAllocator::SharedInstance() {
 // static
 void ArrayBufferAllocator::InitializePartition() {
   partition_alloc::PartitionOptions opts;
-  opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
   opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
   opts.use_configurable_pool = partition_alloc::PartitionOptions::kAllowed;
 

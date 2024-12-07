@@ -37,7 +37,8 @@ const CGFloat kTrackButtonTopPadding = 4;
     [string addAttributes:attributes range:NSMakeRange(0, string.length)];
     buttonConfiguration.attributedTitle = string;
 
-    buttonConfiguration.baseForegroundColor = UIColor.whiteColor;
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidWhiteColor];
     buttonConfiguration.background.backgroundColor =
         [UIColor colorNamed:kBlueColor];
     buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;

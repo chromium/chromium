@@ -217,7 +217,22 @@ public class AuxiliarySearchUtilsUnitTest {
 
         assertFalse(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
         // Verifies that isShareTabsWithOsDefaultEnabled() returns true if skipping device check is
-        // enabled.
+        // enabled on Pixel devices.
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON
+                + ":skip_device_check/true/show_third_party_card/true"
+    })
+    public void testIsShareTabsWithOsDefaultEnabled_SkipDeviceCheck_NonPixelDevices() {
+        assertTrue(AuxiliarySearchUtils.SKIP_DEVICE_CHECK.getValue());
+
+        assertFalse(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
+        // Verifies that isShareTabsWithOsDefaultEnabled() returns false if skipping device check is
+        // enabled on third party devices.
+        assertFalse(AuxiliarySearchUtils.isShareTabsWithOsDefaultEnabled());
     }
 }

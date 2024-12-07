@@ -10,7 +10,7 @@
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
-#             android-sm-a235m android-sm-s911u1 android-moto-g-power-5g---2023
+#             android-sm-a235m android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -295,16 +295,6 @@ crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_half_f
 crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_WEBGL_color_buffer_float [ Skip ]
 crbug.com/1372155 [ android android-sm-a135m arm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 
-# Extensions not available on Motorola Moto G Power 5Gs
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_EXT_sRGB [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_OES_texture_float_linear [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] WebglExtension_OES_texture_half_float_linear [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough imagination ] conformance/extensions/oes-texture-float.html [ Skip ]
-crbug.com/332583994 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/extensions/webgl-compressed-texture-pvrtc.html [ Skip ]
-
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -488,6 +478,8 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
+crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Failure ]
+crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # flaky and worth retrying.
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/ogles/GL/functions/functions_073_to_080.html [ RetryOnFailure ]
@@ -583,22 +575,21 @@ crbug.com/365680832 [ angle-swiftshader graphite-enabled oop-c passthrough rende
 
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 
-crbug.com/328102507 [ amd-0x7340 angle-opengl asan graphite-disabled mac-x86_64 oop-c release sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-crbug.com/328102507 [ amd-0x7340 angle-opengl debug graphite-disabled mac-x86_64 no-asan oop-c sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-
 ## Mac AMD failures ##
-
-crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
-crbug.com/1230781 [ mac amd angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
-crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
+crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
+crbug.com/1230781 [ mac amd angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
+crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
+crbug.com/328102507 [ amd-0x7340 angle-opengl asan graphite-disabled mac-x86_64 oop-c release sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/328102507 [ amd-0x7340 angle-opengl debug graphite-disabled mac-x86_64 no-asan oop-c sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
+crbug.com/382090956 [ mac amd angle-metal ] deqp/data/gles2/shaders/conversions_vector_to_vector.html [ RetryOnFailure ]
 
 ## Mac Retina NVidia failures / flakes ##
 

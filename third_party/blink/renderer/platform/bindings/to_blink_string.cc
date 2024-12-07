@@ -328,16 +328,17 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
   // sense. It's odd that pointer compression changes externalization
   // behavior.
   if (is_one_byte) {
-    LChar* lchar = backing_store.Realloc<LChar>(length);
-    v8_string->WriteOneByteV2(isolate, 0, length, lchar);
-    return StringView(lchar, length);
+    base::span<LChar> lchar = backing_store.Realloc<LChar>(length);
+    v8_string->WriteOneByteV2(isolate, 0, length, lchar.data());
+    return StringView(lchar);
   }
 
-  UChar* uchar = backing_store.Realloc<UChar>(length);
+  base::span<UChar> uchar = backing_store.Realloc<UChar>(length);
   static_assert(sizeof(UChar) == sizeof(uint16_t),
                 "UChar isn't the same as uint16_t");
-  v8_string->WriteV2(isolate, 0, length, reinterpret_cast<uint16_t*>(uchar));
-  return StringView(uchar, length);
+  v8_string->WriteV2(isolate, 0, length,
+                     reinterpret_cast<uint16_t*>(uchar.data()));
+  return StringView(uchar);
 }
 
 // Fast but non thread-safe version.

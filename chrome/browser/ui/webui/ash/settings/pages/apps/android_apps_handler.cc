@@ -24,7 +24,7 @@ AndroidAppsHandler::AndroidAppsHandler(Profile* profile,
                                        apps::AppServiceProxy* app_service_proxy)
     : profile_(profile), app_service_proxy_(app_service_proxy) {}
 
-AndroidAppsHandler::~AndroidAppsHandler() {}
+AndroidAppsHandler::~AndroidAppsHandler() = default;
 
 void AndroidAppsHandler::RegisterMessages() {
   // Note: requestAndroidAppsInfo must be called before observers will be added.

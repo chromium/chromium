@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_translate_modal_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
+@protocol InfobarModalPresentationHandler;
 @protocol InfobarTranslateModalDelegate;
 class PrefService;
 
@@ -21,6 +22,10 @@ class PrefService;
                      prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
+// Handler used to resize the modal.
+@property(nonatomic, weak) id<InfobarModalPresentationHandler>
+    presentationHandler;
 
 @end
 

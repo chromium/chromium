@@ -194,11 +194,6 @@ BASE_FEATURE(kBluetoothFixA2dpPacketSize,
              "BluetoothFixA2dpPacketSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Bluetooth Disconnect Warning feature.
-BASE_FEATURE(kBluetoothDisconnectWarning,
-             "BluetoothDisconnectWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the Bluetooth Quality Report feature.
 BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
@@ -1462,7 +1457,7 @@ BASE_FEATURE(kSanitize, "CrosSanitize", base::FEATURE_ENABLED_BY_DEFAULT);
 // CrOS settings. In addition to the existing Sanitize features, this will
 // provide a functional reset to user's proxy settings, input methods for
 // keyboard and choice of languages in the spellchecker.
-BASE_FEATURE(kSanitizeV1, "CrosSanitizeV1", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSanitizeV1, "CrosSanitizeV1", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, `SmbService` is created on user session startup task completed.
 BASE_FEATURE(kSmbServiceIsCreatedOnUserSessionStartUpTaskCompleted,
@@ -1689,11 +1684,6 @@ BASE_FEATURE(kLanguagePacksInOobe,
 // via the corresponding Settings page.
 BASE_FEATURE(kLanguagePacksInSettings,
              "LanguagePacksInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables using lacros's extension printers from ash when lacros is enabled.
-BASE_FEATURE(kLacrosExtensionPrinting,
-             "LacrosExtensionPrinting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, launcher continue section will suggest drive files based on
@@ -2300,11 +2290,6 @@ BASE_FEATURE(kPerDeskShelf, "PerDeskShelf", base::FEATURE_DISABLED_BY_DEFAULT);
 // and perform phone-side actions within ChromeOS.
 BASE_FEATURE(kPhoneHub, "PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Retry generating attestation certificates when there are failures.
-BASE_FEATURE(kPhoneHubAttestationRetries,
-             "PhoneHubAttestationRetries",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Camera Roll feature in Phone Hub, which allows users to access
 // recent photos and videos taken on a connected Android device
 BASE_FEATURE(kPhoneHubCameraRoll,
@@ -2461,11 +2446,6 @@ BASE_FEATURE(kProjectorRedirectToPwa,
 
 // Controls whether projector V2 is enabled.
 BASE_FEATURE(kProjectorV2, "ProjectorV2", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether the transcript chapter title feature is enabled.
-BASE_FEATURE(kProjectorTranscriptChapterTitle,
-             "ProjectorTranscriptChapterTitle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to use USM for serverside speech recognition for projector.
 BASE_FEATURE(kProjectorUseUSMForS3,
@@ -2731,6 +2711,24 @@ BASE_FEATURE(kShowSharingUserInLauncherContinueSection,
 // Shows the spatial audio toggle in audio settings page.
 BASE_FEATURE(kShowSpatialAudioToggle,
              "ShowSpatialAudioToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Only collect metrics for the server certificate verification failure in
+// EAP networks.
+BASE_FEATURE(kSingleCaCertVerificationPhase0,
+             "SingleCaCertVerificationPhase0",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Try to use only a single CA cert for the EAP network if CA cert was selected,
+// fallback to the previous config.
+BASE_FEATURE(kSingleCaCertVerificationPhase1,
+             "SingleCaCertVerificationPhase1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use a single CA cert for the EAP network if CA cert was selected, no
+// fallback.
+BASE_FEATURE(kSingleCaCertVerificationPhase2,
+             "SingleCaCertVerificationPhase2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling/disabling the Sunfish feature.
@@ -3371,10 +3369,6 @@ bool IsBirchWeatherEnabled() {
   return base::FeatureList::IsEnabled(kBirchWeather);
 }
 
-bool IsBluetoothDisconnectWarningEnabled() {
-  return base::FeatureList::IsEnabled(kBluetoothDisconnectWarning);
-}
-
 bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
 }
@@ -3939,10 +3933,6 @@ bool IsLanguagePacksInOobeEnabled() {
   return base::FeatureList::IsEnabled(kLanguagePacksInOobe);
 }
 
-bool IsLacrosExtensionPrintingEnabled() {
-  return base::FeatureList::IsEnabled(kLacrosExtensionPrinting);
-}
-
 bool IsLauncherContinueSectionWithRecentsEnabled() {
   // If the holdback feature flag is enabled, the feature should be disabled,
   // but only if the device is eligible for the study. Exclusion happens
@@ -4289,10 +4279,6 @@ bool IsPhoneHubEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHub);
 }
 
-bool IsPhoneHubAttestationRetriesEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubAttestationRetries);
-}
-
 bool IsPhoneHubCallNotificationEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubCallNotification);
 }
@@ -4356,10 +4342,6 @@ bool IsProjectorRedirectToPwaEnabled() {
 
 bool IsProjectorV2Enabled() {
   return base::FeatureList::IsEnabled(kProjectorV2);
-}
-
-bool IsProjectorTranscriptChapterTitleEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorTranscriptChapterTitle);
 }
 
 bool IsProjectorUseUSMForS3Enabled() {

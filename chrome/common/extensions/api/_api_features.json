@@ -228,6 +228,15 @@
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
     ]
+  }, {
+    "internal": true,
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*"
+    ]
   }],
   "chromeWebViewInternal": [{
     "internal": true,
@@ -241,6 +250,15 @@
     // to the specified set of URLs, so this could even be <all_urls>. Just to
     // be extra-cautious, we restrict to the chrome scheme.
     "matches": [ "chrome://*/*" ]
+  }, {
+    "internal": true,
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*"
+    ]
   }, {
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.

@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override;
   net::CookieAccessSemantics GetAccessSemantics(
       const net::CanonicalCookie& cookie) const override;
-  net::CookieLegacyScope GetAccessForLegacyCookieScope(
+  net::CookieScopeSemantics GetScopeSemantics(
       const net::CanonicalCookie& cookie) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,

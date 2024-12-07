@@ -71,9 +71,6 @@ class SqlDatabase {
   // The path to the *.db file.
   const base::FilePath path_to_db_;
 
-  // The identifying prefix for metrics.
-  const std::string histogram_tag_;
-
   sql::Database db_;
   sql::MetaTable meta_table_;
 

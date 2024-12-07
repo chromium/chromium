@@ -2214,6 +2214,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.StorageAccessRedirect"
+    enum="StorageAccessRedirectKind" expires_after="2025-08-01">
+  <owner>cfredric@chromium.org</owner>
+  <owner>johannhof@chromium.org</owner>
+  <summary>
+    Records whether a redirect response has the kStorageAccessGrantEligible
+    override (from calling document.requestStorageAccess()), and if so, whether
+    it was a same-origin, cross-origin same-site, or cross-site redirect.
+
+    Recorded whenever a redirect response is received.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.TotalTime" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 

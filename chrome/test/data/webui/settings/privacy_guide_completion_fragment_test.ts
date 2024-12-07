@@ -10,7 +10,7 @@ import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyGuide
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacyGuideBrowserProxy} from './test_privacy_guide_browser_proxy.js';
@@ -34,13 +34,12 @@ suite('CompletionFragment', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isPrivacySandboxRestrictedNoticeEnabled: false,
+      showAdvancedFeaturesMainControl: true,
     });
     resetRouterForTesting();
   });
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
@@ -51,12 +50,15 @@ suite('CompletionFragment', function() {
     PrivacyGuideBrowserProxyImpl.setInstance(testPrivacyGuideBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
+    createPage();
+  });
 
+  function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fragment = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(fragment);
-
     return flushTasks();
-  });
+  }
 
   teardown(function() {
     fragment.remove();
@@ -77,7 +79,10 @@ suite('CompletionFragment', function() {
   test('backToSettingsNavigation', async function() {
     const closeEventPromise = eventToPromise('close', fragment);
 
-    fragment.shadowRoot!.querySelector<HTMLElement>('#leaveButton')!.click();
+    const leaveButton =
+        fragment.shadowRoot!.querySelector<HTMLElement>('#leaveButton');
+    assertTrue(!!leaveButton);
+    leaveButton.click();
 
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideNextNavigationHistogram');
@@ -94,8 +99,10 @@ suite('CompletionFragment', function() {
   test('SWAALinkClick', async function() {
     setSignInState(true);
 
-    assertTrue(isChildVisible(fragment, '#waaRow'));
-    fragment.shadowRoot!.querySelector<HTMLElement>('#waaRow')!.click();
+    const waaRow = fragment.shadowRoot!.querySelector<HTMLElement>('#waaRow');
+    assertTrue(!!waaRow);
+    assertTrue(isVisible(waaRow));
+    waaRow.click();
     flush();
 
     assertEquals(
@@ -118,7 +125,7 @@ suite('CompletionFragment', function() {
     assertEquals(
         fragment.i18n('privacyGuideCompletionCardPrivacySandboxSubLabel'),
         privacySandboxRow.subLabel);
-    privacySandboxRow!.click();
+    privacySandboxRow.click();
     flush();
 
     assertEquals(
@@ -130,15 +137,41 @@ suite('CompletionFragment', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
+  test('aiSettingsLink', async function() {
+    const aiRow = fragment.shadowRoot!.querySelector<HTMLElement>('#aiRow');
+    assertTrue(!!aiRow);
+    assertTrue(isVisible(aiRow));
+    aiRow.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(PrivacyGuideInteractions.AI_SETTINGS_COMPLETION_LINK, result);
+    assertEquals(
+        'Settings.PrivacyGuide.CompletionAiSettingsClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+  });
+
   test('updateFragmentFromSignIn', function() {
     setSignInState(true);
     assertTrue(isChildVisible(fragment, '#privacySandboxRow'));
+    assertTrue(isChildVisible(fragment, '#aiRow'));
     assertTrue(isChildVisible(fragment, '#waaRow'));
 
     // Sign the user out and expect the waa row to no longer be visible.
     setSignInState(false);
     assertTrue(isChildVisible(fragment, '#privacySandboxRow'));
+    assertTrue(isChildVisible(fragment, '#aiRow'));
     assertFalse(isChildVisible(fragment, '#waaRow'));
+  });
+
+  test('aiRowNotShownWhenAiPageHidden', function() {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: false,
+    });
+    createPage();
+
+    assertFalse(isChildVisible(fragment, '#aiRow'));
   });
 });
 
@@ -266,5 +299,43 @@ suite('CompletionFragmentWithAdTopicsCard', function() {
         fragment.i18n(
             'privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics'),
         privacySandboxRow.subLabel);
+  });
+});
+
+// TODO(crbug.com/362225975): Remove after PrivacyGuideAiSettings is launched.
+suite('CompletionFragmentAiSettingsInPrivacyGuideDisabled', function() {
+  let fragment: PrivacyGuideCompletionFragmentElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableAiSettingsInPrivacyGuide: false,
+      showAdvancedFeaturesMainControl: true,
+    });
+    resetRouterForTesting();
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
+    fragment = document.createElement('privacy-guide-completion-fragment');
+    document.body.appendChild(fragment);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    fragment.remove();
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('aiRowNotShown', function() {
+    setSignInState(false);
+    assertFalse(isChildVisible(fragment, '#aiRow'));
+
+    setSignInState(true);
+    assertFalse(isChildVisible(fragment, '#aiRow'));
   });
 });

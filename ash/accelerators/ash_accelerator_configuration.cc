@@ -160,6 +160,11 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
   if (ash::debug::DeveloperAcceleratorsEnabled()) {
     AppendAcceleratorData(accelerators, ash::kDeveloperAcceleratorData);
   }
+
+  if (ash::features::IsAppLaunchShortcutEnabled()) {
+    AppendAcceleratorData(accelerators, ash::kGeminiAcceleratorData);
+  }
+
   return accelerators;
 }
 

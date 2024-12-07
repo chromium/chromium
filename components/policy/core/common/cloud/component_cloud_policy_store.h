@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_export.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace enterprise_management {
 class ExternalPolicyData;
@@ -87,7 +88,7 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // stored later.
   // All ValidatePolicy() requests without credentials fail.
   void SetCredentials(const std::string& username,
-                      const std::string& gaia_id,
+                      const GaiaId& gaia_id,
                       const std::string& dm_token,
                       const std::string& device_id,
                       const std::string& public_key,
@@ -155,7 +156,7 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
 
   // The following fields contain credentials used for validating the policy.
   std::string username_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::string dm_token_;
   std::string device_id_;
   std::string public_key_;

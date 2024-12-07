@@ -61,7 +61,7 @@ export declare interface HostRequestTypes {
       options: {
         innerText?: boolean,
         // Options for capturing screenshot, currently none supported.
-        viewportScreenshot?: {},
+        viewportScreenshot?: boolean,
       },
     },
     response: {

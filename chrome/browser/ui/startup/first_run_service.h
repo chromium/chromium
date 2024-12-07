@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -19,7 +18,6 @@
 
 class PrefRegistrySimple;
 class Profile;
-class SilentSyncEnabler;
 class ProfileNameResolver;
 
 namespace version_info {
@@ -34,6 +32,8 @@ class IdentityManager;
 // should be aborted or resumed.
 using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 
+// TODO(crbug.com/382086296): Remove this lacros-only class.
+//
 // Service handling the First Run Experience for the primary profile on Lacros.
 // It is not available on the other profiles.
 class FirstRunService : public KeyedService {
@@ -127,20 +127,11 @@ class FirstRunService : public KeyedService {
 
   void FinishProfileSetUp(std::u16string profile_name);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void StartSilentSync(base::OnceClosure callback);
-  void ClearSilentSyncEnabler();
-#endif
-
   // Owns of this instance via the KeyedService mechanism.
   const raw_ref<Profile> profile_;
 
   // KeyedService(s) this service depends on:
   const raw_ref<signin::IdentityManager> identity_manager_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<SilentSyncEnabler> silent_sync_enabler_;
-#endif
 
   std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
 
@@ -171,7 +162,6 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
 
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
-  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 // Returns whether the first run experience (including sync promo) might be

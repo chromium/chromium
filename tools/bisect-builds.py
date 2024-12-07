@@ -16,6 +16,7 @@ import abc
 import argparse
 import base64
 import copy
+import functools
 import glob
 import importlib
 import json
@@ -29,10 +30,11 @@ import tarfile
 import tempfile
 import threading
 import traceback
-import urllib.request, urllib.parse
-from distutils.version import LooseVersion as BaseLooseVersion
+import urllib.parse
+import urllib.request
 from xml.etree import ElementTree
 import zipfile
+
 
 # These constants are used for android bisect which depends on
 # Catapult repo.
@@ -811,7 +813,31 @@ class ArchiveBuild(abc.ABC):
     return result
 
 
-class LooseVersion(BaseLooseVersion):
+@functools.total_ordering
+class ChromiumVersion:
+  """Chromium version numbers consist of 4 parts: MAJOR.MINOR.BUILD.PATCH.
+
+  This class is used to compare the version numbers.
+  """
+  def __init__(self, vstring: str):
+    self.vstring = vstring
+    self.version = tuple(int(x) for x in vstring.split('.'))
+
+  def __str__ (self):
+    return self.vstring
+
+  def __repr__ (self):
+    return "ChromiumVersion ('%s')" % str(self)
+
+  def __lt__(self, other):
+    if isinstance(other, str):
+      other = ChromiumVersion(other)
+    return self.version < other.version
+
+  def __eq__(self, other):
+    if isinstance(other, str):
+      other = ChromiumVersion(other)
+    return self.version == other.version
 
   def __hash__(self):
     return hash(str(self))
@@ -821,8 +847,8 @@ class ReleaseBuild(ArchiveBuild):
 
   def __init__(self, options):
     super().__init__(options)
-    self.good_revision = LooseVersion(self.good_revision)
-    self.bad_revision = LooseVersion(self.bad_revision)
+    self.good_revision = ChromiumVersion(self.good_revision)
+    self.bad_revision = ChromiumVersion(self.bad_revision)
 
   @property
   def build_type(self):
@@ -838,7 +864,7 @@ class ReleaseBuild(ArchiveBuild):
     for path in GsutilList(self._get_release_bucket()):
       match = revision_re.search(path)
       if match:
-        build_numbers.append(LooseVersion(match[1]))
+        build_numbers.append(ChromiumVersion(match[1]))
     # Filter the versions between min_rev and max_rev.
     build_numbers = [
         x for x in build_numbers
@@ -860,7 +886,7 @@ class ReleaseBuild(ArchiveBuild):
                              ignore_fail=True):
         match = revision_re.search(path)
         if match:
-          final_list.append(LooseVersion(match[1]))
+          final_list.append(ChromiumVersion(match[1]))
     sys.stdout.write('\r')
     sys.stdout.flush()
     return final_list
@@ -879,13 +905,13 @@ class ReleaseBuild(ArchiveBuild):
     return self._get_archive_path('**')
 
   def _save_rev_list_cache(self, revisions):
-    # LooseVersion is not json-able, convert it back to string format.
+    # ChromiumVersion is not json-able, convert it back to string format.
     super()._save_rev_list_cache([str(x) for x in revisions])
 
   def _load_rev_list_cache(self):
-    # Convert to LooseVersion that revisions can be correctly compared.
+    # Convert to ChromiumVersion that revisions can be correctly compared.
     revisions = super()._load_rev_list_cache()
-    return [LooseVersion(x) for x in revisions]
+    return [ChromiumVersion(x) for x in revisions]
 
   def get_download_url(self, revision):
     if self.chromedriver:
@@ -1257,7 +1283,7 @@ class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
   def get_download_url(self, revision):
     # M112 is when we started serving 6432 to 4GB+ devices. Before this it was
     # only to 6GB+ devices.
-    if revision >= LooseVersion('112'):
+    if revision >= ChromiumVersion('112'):
       trichrome = self.binary_name
       trichrome_library = self.library_binary_name
     else:
@@ -1928,7 +1954,7 @@ def GetReleaseChangeLogURL(version1, version2):
 
 def IsVersionNumber(revision):
   """Checks if provided revision is version_number"""
-  if isinstance(revision, LooseVersion):
+  if isinstance(revision, ChromiumVersion):
     return True
   if not isinstance(revision, str):
     return False
@@ -2471,8 +2497,8 @@ def MaybeSwitchBuildType(opts, good, bad):
   new_opts.signed = False  # --signed is only supported by release builds
   new_opts.build_type = 'official'
   new_opts.verify_range = True  # always verify_range when switching the build
-  new_opts.good = str(good)  # good could be LooseVersion
-  new_opts.bad = str(bad)  # bad could be LooseVersion
+  new_opts.good = str(good)  # good could be ChromiumVersion
+  new_opts.bad = str(bad)  # bad could be ChromiumVersion
   rev_list = None
   if opts.use_local_cache:
     print('Checking available official builds (-o) for %s.' % new_opts.archive)

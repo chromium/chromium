@@ -14,10 +14,12 @@
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/filling/form_filler_test_api.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_fill_router.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -74,6 +76,16 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         consider_form_as_secure_for_testing;
   }
 
+  void FillCreditCardFormWithoutAuthentication(
+      const FormData& form,
+      FieldGlobalId field_id,
+      const CreditCard& credit_card,
+      AutofillTriggerSource trigger_source) {
+    manager_->FillOrPreviewCreditCardFormImpl(
+        /*require_card_fetching=*/false, mojom::ActionPersistence::kFill, form,
+        field_id, credit_card, trigger_source);
+  }
+
   FormFiller& form_filler() { return *manager_->form_filler_; }
 
   void set_form_filler(std::unique_ptr<FormFiller> form_filler) {
@@ -94,12 +106,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         form, CHECK_DEREF(form_structure), field, CHECK_DEREF(autofill_field),
         trigger_source, std::move(plus_address_override));
   }
-
-  void set_votes_uploader(std::unique_ptr<VotesUploader> votes_uploader) {
-    manager_->votes_uploader_ = std::move(votes_uploader);
-  }
-
-  VotesUploader& votes_uploader() { return *manager_->votes_uploader_; }
 
  private:
   raw_ref<BrowserAutofillManager> manager_;

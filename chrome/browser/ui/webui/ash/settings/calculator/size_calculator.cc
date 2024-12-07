@@ -93,7 +93,7 @@ std::ostream& operator<<(std::ostream& out, SizeCalculator::CalculationType t) {
 SizeCalculator::SizeCalculator(CalculationType calculation_type)
     : calculation_type_(calculation_type) {}
 
-SizeCalculator::~SizeCalculator() {}
+SizeCalculator::~SizeCalculator() = default;
 
 void SizeCalculator::StartCalculation() {
   if (calculating_) {

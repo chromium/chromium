@@ -17,9 +17,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-VersionHandlerChromeOS::VersionHandlerChromeOS() {}
+VersionHandlerChromeOS::VersionHandlerChromeOS() = default;
 
-VersionHandlerChromeOS::~VersionHandlerChromeOS() {}
+VersionHandlerChromeOS::~VersionHandlerChromeOS() = default;
 
 void VersionHandlerChromeOS::OnJavascriptDisallowed() {
   VersionHandler::OnJavascriptDisallowed();

@@ -72,17 +72,9 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/app_restore/full_restore_utils.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/lacros/browser_launcher.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -96,24 +88,12 @@ namespace {
 // On ChromeOS Ash check the previous apps launching history info to decide
 // whether restore apps.
 //
-// On ChromeOS Lacros restore if the browser has automatically restarted or if
-// performing a full restore.
-//
 // In other platforms, restore apps only when the browser is automatically
 // restarted.
 bool ShouldRestoreApps(bool is_post_restart, Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In ChromeOS, restore apps only when there are apps launched before reboot.
   return full_restore::HasAppTypeBrowser(profile->GetPath());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* primary_user_profile =
-      g_browser_process->profile_manager()->GetProfileByPath(
-          ProfileManager::GetPrimaryUserProfilePath());
-
-  return is_post_restart ||
-         (primary_user_profile &&
-          BrowserLauncher::GetForProfile(primary_user_profile)
-              ->is_launching_for_last_opened_profiles());
 #else
   return is_post_restart;
 #endif

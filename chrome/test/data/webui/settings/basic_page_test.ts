@@ -91,22 +91,6 @@ suite('BasicPage', () => {
     }
   });
 
-  // TODO(crbug.com/40277421): Remove after SafetyHub launched.
-  test('safetyCheckVisibilityTest', function() {
-    function querySafetyCheckSection() {
-      return page.shadowRoot!.querySelector('#safetyCheckSettingsSection');
-    }
-
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility || {};
-    flush();
-
-    // When enabled, SafetyHub replaces SafetyCheck by default.
-    assertFalse(
-        !!querySafetyCheckSection(),
-        'SafetyCheck should not be visible with default page visibility');
-  });
-
   function assertActiveSection(section: string) {
     const activeSections =
         page.shadowRoot!.querySelectorAll<SettingsSectionElement>(
@@ -538,66 +522,6 @@ suite('Performance', () => {
         batterySettingsSection.hidden,
         'Battery section should be visible after being notified that the ' +
             'device has a battery');
-  });
-});
-
-// TODO(crbug.com/40277421): Remove after SafetyHub launched.
-suite('SafetyHubDisabled', () => {
-  let page: SettingsBasicPageElement;
-
-  setup(async function() {
-    loadTimeData.overrideValues({enableSafetyHub: false});
-    resetRouterForTesting();
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-basic-page');
-    document.body.appendChild(page);
-    flush();
-    await page.shadowRoot!
-        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get();
-    const sections = page.shadowRoot!.querySelectorAll('settings-section');
-    assertTrue(sections.length > 1);
-  });
-
-  test('load page', function() {
-    // This will fail if there are any asserts or errors in the Settings page.
-  });
-
-
-  test('safety check visible', function() {
-    function querySafetyCheckSection() {
-      return page.shadowRoot!.querySelector('#safetyCheckSettingsSection');
-    }
-
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility || {};
-    flush();
-
-    assertTrue(
-        !!querySafetyCheckSection(),
-        'Safety check section should be visible with default page visibility');
-
-    // Set the visibility of the pages under test to "false".
-    page.pageVisibility = Object.assign(pageVisibility || {}, {
-      safetyCheck: false,
-    });
-    flush();
-
-    assertFalse(!!querySafetyCheckSection());
-  });
-
-  test('safety hub not visible', function() {
-    function querySafetyHubSection() {
-      return page.shadowRoot!.querySelector('#safetyHubEntryPointSection');
-    }
-
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility || {};
-    flush();
-
-    assertFalse(
-        !!querySafetyHubSection(),
-        'Safety Hub section should not be visible with default visibility');
   });
 });
 

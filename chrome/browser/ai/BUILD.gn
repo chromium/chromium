@@ -14,8 +14,7 @@ source_set("ai") {
     "ai_data_keyed_service.h",
     "ai_data_keyed_service_factory.h",
     "ai_language_model.h",
-    "ai_manager_keyed_service.h",
-    "ai_manager_keyed_service_factory.h",
+    "ai_manager.h",
     "ai_on_device_model_component_observer.h",
     "ai_rewriter.h",
     "ai_summarizer.h",
@@ -46,8 +45,7 @@ source_set("impl") {
     "ai_data_keyed_service.cc",
     "ai_data_keyed_service_factory.cc",
     "ai_language_model.cc",
-    "ai_manager_keyed_service.cc",
-    "ai_manager_keyed_service_factory.cc",
+    "ai_manager.cc",
     "ai_on_device_model_component_observer.cc",
     "ai_rewriter.cc",
     "ai_summarizer.cc",
@@ -100,7 +98,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ai_language_model_unittest.cc",
-    "ai_manager_keyed_service_unittest.cc",
+    "ai_manager_unittest.cc",
     "ai_rewriter_unittest.cc",
     "ai_summarizer_unittest.cc",
     "ai_writer_unittest.cc",

@@ -945,6 +945,55 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void OnDemoResourcesLoaded(chromeos::VoidDBusMethodCallback callback,
                              FileSystemStatus file_system_status) {
+    // vm_concierge service needs to be running to start ARCVM but it may not be
+    // started. Explicitly start the service to make sure it's running. We don't
+    // have to stop it since it stops on "stopping ui".
+    std::vector<std::string> env;
+    ash::UpstartClient::Get()->StartJobWithErrorDetails(
+        kVmConciergeServiceName, env,
+        base::BindOnce(&ArcVmClientAdapter::OnVmConciergeServiceStarted,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(file_system_status), std::move(callback)));
+  }
+
+  void OnVmConciergeServiceStarted(FileSystemStatus file_system_status,
+                                   chromeos::VoidDBusMethodCallback callback,
+                                   bool result,
+                                   std::optional<std::string> error_name,
+                                   std::optional<std::string> error_message) {
+    if (!result) {
+      // vm_concierge may be already started by "started-user-session" upstart
+      // signal.
+      if (error_name.has_value() &&
+          error_name.value() == ash::UpstartClient::kAlreadyStartedError) {
+        DVLOG(1) << "vm_concierge is already running";
+      } else {
+        LOG(ERROR)
+            << "Failed to start arcvm. vm_concierge service cannot be started: "
+            << (error_name.has_value() ? error_name.value() : "unknown error")
+            << ": " << (error_message.has_value() ? error_message.value() : "");
+        std::move(callback).Run(false);
+        return;
+      }
+    }
+
+    // Wait until vm_concierge is ready to serve D-Bus requests.
+    ash::ConciergeClient::Get()->WaitForServiceToBeAvailable(
+        base::BindOnce(&ArcVmClientAdapter::OnVmConciergeServiceAvailable,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(file_system_status), std::move(callback)));
+  }
+
+  void OnVmConciergeServiceAvailable(FileSystemStatus file_system_status,
+                                     chromeos::VoidDBusMethodCallback callback,
+                                     bool service_is_available) {
+    if (!service_is_available) {
+      LOG(ERROR)
+          << "Failed to start arcvm. vm_concierge service is not available.";
+      std::move(callback).Run(false);
+      return;
+    }
+
     if (!start_params_.use_virtio_blk_data) {
       VLOG(2) << "Using virtio-fs for /data";
       StartArcVm(std::move(callback), std::move(file_system_status),
@@ -1041,56 +1090,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         file_system_status, use_per_vm_core_scheduling, start_params_,
         delegate_.get());
 
-    // vm_concierge service needs to be running to start ARCVM but it may not be
-    // started. Explicitly start the service to make sure it's running. We don't
-    // have to stop it since it stops on "stopping ui".
-    std::vector<std::string> env;
-    ash::UpstartClient::Get()->StartJobWithErrorDetails(
-        kVmConciergeServiceName, env,
-        base::BindOnce(&ArcVmClientAdapter::OnVmConciergeServiceStarted,
-                       weak_factory_.GetWeakPtr(), std::move(start_request),
-                       std::move(callback)));
-  }
-
-  void OnVmConciergeServiceStarted(
-      vm_tools::concierge::StartArcVmRequest start_request,
-      chromeos::VoidDBusMethodCallback callback,
-      bool result,
-      std::optional<std::string> error_name,
-      std::optional<std::string> error_message) {
-    if (!result) {
-      // vm_concierge may be already started by "started-user-session" upstart
-      // signal.
-      if (error_name.has_value() &&
-          error_name.value() == ash::UpstartClient::kAlreadyStartedError) {
-        DVLOG(1) << "vm_concierge is already running";
-      } else {
-        LOG(ERROR)
-            << "Failed to start arcvm. vm_concierge service cannot be started: "
-            << (error_name.has_value() ? error_name.value() : "unknown error")
-            << ": " << (error_message.has_value() ? error_message.value() : "");
-        std::move(callback).Run(false);
-        return;
-      }
-    }
-
-    // Wait until vm_concierge is ready to serve D-Bus requests.
-    ash::ConciergeClient::Get()->WaitForServiceToBeAvailable(
-        base::BindOnce(&ArcVmClientAdapter::OnVmConciergeServiceAvailable,
-                       weak_factory_.GetWeakPtr(), std::move(start_request),
-                       std::move(callback)));
-  }
-
-  void OnVmConciergeServiceAvailable(
-      vm_tools::concierge::StartArcVmRequest start_request,
-      chromeos::VoidDBusMethodCallback callback,
-      bool service_is_available) {
-    if (!service_is_available) {
-      LOG(ERROR)
-          << "Failed to start arcvm. vm_concierge service is not available.";
-      std::move(callback).Run(false);
-      return;
-    }
     // ARCVM startup will fail if patchpanel DBus service is not available. The
     // startup of patchpanel is slow on some low-end devices. According to
     // b/325850116 the interval between ARCVM startup and patchpanel getting

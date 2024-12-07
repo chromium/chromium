@@ -1237,6 +1237,7 @@
 <translation id="3229277193950731405">ভার্সন স্ট্রিং কপি করুন</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-এর CVC লিখুন</translation>
 <translation id="3234666976984236645">এই সাইটে সবসময় গুরুত্বপূর্ণ কন্টেন্ট শনাক্ত করুন</translation>
+<translation id="323585066388831737">হালকা লাল</translation>
 <translation id="3236212803136366317">কার্ডের বিভিন্ন সুবিধা</translation>
 <translation id="3238395604961564389">লিঙ্কটি ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
@@ -1855,6 +1856,7 @@
 <translation id="4277937682389409325">স্থানীয় ঠিকানা</translation>
 <translation id="4278090321534187713">এই ব্যবসায়ী যে কার্ড গ্রহণ করেন না তা বন্ধ করা আছে</translation>
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>
+<translation id="4281245629646759298">হালকা হলুদ</translation>
 <translation id="4281998142035485137">{0,plural, =1{গোপনীয় ফাইল খুলবেন?}one{গোপনীয় ফাইল খুলবেন?}other{গোপনীয় ফাইল খুলবেন?}}</translation>
 <translation id="4282280603030594840">যানবাহন কেনাকেটা</translation>
 <translation id="4282346679996504092">এই প্রোডাক্টের জন্য বিজ্ঞপ্তি বন্ধ করে বুকমার্ক সরানো হয়েছে</translation>
@@ -2744,6 +2746,7 @@
 <translation id="5969199813874624822">দাম সেভ এবং ট্র্যাক করুন</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixth Roll</translation>
+<translation id="5974745851230707809">সময়ে সময়ে পেমেন্ট করার বিকল্প</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
 <translation id="5984570616552610254">চেম্বারের আর্দ্রতা</translation>
@@ -4307,6 +4310,7 @@
 <translation id="8767765348545497220">সহায়তা বাবল বন্ধ করুন</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{১টি পেমেন্ট পদ্ধতি}one{#টি পেমেন্ট পদ্ধতি}other{#টি পেমেন্ট পদ্ধতি}}</translation>
 <translation id="8768225988514678921">'প্রেজেন্টেশন তৈরি করুন' বোতাম, Slides-এ চটপট নতুন Google প্রেজেন্টেশন তৈরি করতে এটি চালু করুন</translation>
+<translation id="8769662576926275897">কার্ডের বিশদ বিবরণ</translation>
 <translation id="8770286973007342895">ঘাস কাটার যন্ত্র</translation>
 <translation id="8772387130037509473">যোগা ও পিলাটেজ</translation>
 <translation id="877348612833018844">{0,plural, =1{গোপনীয় ফাইল সরাবেন?}one{গোপনীয় ফাইল সরাবেন?}other{গোপনীয় ফাইল সরাবেন?}}</translation>
@@ -4335,6 +4339,7 @@
 <translation id="882338992931677877">ম্যানুয়াল স্লট</translation>
 <translation id="8830320733681313421">Hagaki পোস্টকার্ড</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" />-এ ফাইল দেখুন</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" />-এর বেশি দামে কেনাকাটা করলে উপলভ্য</translation>
 <translation id="8833007469711500369">ওয়াশার ও ড্রায়ার</translation>
 <translation id="8834962751196791179">আপনি এই সতর্কতা দেখছেন কারণ, আপনি ছদ্মবেশী মোডে রয়েছেন এবং এই সাইটে HTTPS কাজ করে না। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">টিভিতে কল্পবিজ্ঞান ও কল্পনা শো</translation>

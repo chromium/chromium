@@ -61,7 +61,6 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sDrawKeyNativeEdgeToEdge,
                     ChromeFeatureList.sEdgeToEdgeBottomChin,
                     ChromeFeatureList.sEdgeToEdgeWebOptIn,
-                    ChromeFeatureList.sMostVisitedTilesReselect,
                     ChromeFeatureList.sNewTabPageAndroidTriggerForPrerender2,
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
@@ -79,8 +78,7 @@ public class ChromeCachedFlagsTest {
                     OmniboxFeatures.sOmniboxAnswerActions,
                     OmniboxFeatures.sRetainOmniboxOnFocus,
                     OmniboxFeatures.sRichInlineAutocomplete,
-                    OmniboxFeatures.sTouchDownTriggerForPrefetch,
-                    OmniboxFeatures.sUseFusedLocationProvider);
+                    OmniboxFeatures.sTouchDownTriggerForPrefetch);
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches

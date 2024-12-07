@@ -312,12 +312,6 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   bool foregrounded_event_ = false;
   bool power_resumed_event_ = false;
 
-  // The lock between the GpuMainThread and GpuWatchdogThread for stopping
-  // GpuWatchdog.
-  base::Lock skip_lock_;
-  bool skip_for_pause_ GUARDED_BY(skip_lock_) = false;
-  bool skip_for_backgrounded_ GUARDED_BY(skip_lock_) = false;
-
   // The watched thread name string used for UMA and crash key.
   std::string watched_thread_name_str_uma_;
 

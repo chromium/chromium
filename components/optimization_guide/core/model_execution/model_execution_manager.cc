@@ -345,6 +345,11 @@ ModelExecutionManager::StartSession(
       config_params);
 }
 
+// Whether the supplementary on-device models are registered.
+bool ModelExecutionManager::IsSupplementaryModelRegistered() {
+  return did_register_for_supplementary_on_device_models_;
+}
+
 void ModelExecutionManager::OnModelExecuteResponse(
     ModelBasedCapabilityKey feature,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,

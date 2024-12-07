@@ -243,6 +243,13 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
     NOTREACHED();
   }
 
+  // `colr`
+  if (params.color_space && params.color_space->IsValid()) {
+    visual_sample_entry.color_information =
+        mp4::writable_boxes::ColorInformation(
+            VideoColorSpace::FromGfxColorSpace(*params.color_space));
+  }
+
   description.video_sample_entry = std::move(visual_sample_entry);
   description.entry_count = 1;
 

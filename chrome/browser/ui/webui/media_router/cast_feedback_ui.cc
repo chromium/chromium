@@ -162,9 +162,6 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
       "categoryTag",
       std::string(version_info::GetChannelString(chrome::GetChannel())));
 
-  source->AddBoolean("globalMediaControlsCastStartStop",
-                     GlobalMediaControlsCastStartStopEnabled(profile_));
-
   webui::SetupWebUIDataSource(source, kMediaRouterFeedbackResources,
                               IDR_MEDIA_ROUTER_FEEDBACK_FEEDBACK_HTML);
 

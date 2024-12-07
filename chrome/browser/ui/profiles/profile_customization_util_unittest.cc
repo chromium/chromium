@@ -12,7 +12,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 

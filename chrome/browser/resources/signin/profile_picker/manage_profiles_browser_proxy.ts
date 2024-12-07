@@ -16,6 +16,8 @@ export interface ProfileState {
   gaiaName: string;
   userName: string;
   avatarIcon: string;
+  // Contains the aria label of the profile card button.
+  profileCardButtonLabel: string;
   // Empty if no badge should be set.
   avatarBadge: string;
 }

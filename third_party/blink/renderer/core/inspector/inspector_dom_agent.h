@@ -95,6 +95,7 @@ class CORE_EXPORT InspectorDOMAgent final
 
   static protocol::Response ToResponse(DummyExceptionStateForTesting&);
   static protocol::DOM::PseudoType ProtocolPseudoElementType(PseudoId);
+  static PseudoId ProtocolPseudoTypeToPseudoId(protocol::DOM::PseudoType);
   static protocol::DOM::ShadowRootType GetShadowRootType(ShadowRoot*);
   static protocol::DOM::CompatibilityMode GetDocumentCompatibilityMode(
       Document*);

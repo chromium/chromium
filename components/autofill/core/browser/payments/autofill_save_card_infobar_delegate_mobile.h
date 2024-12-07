@@ -43,6 +43,7 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
 
   bool is_for_upload() const { return ui_info_.is_for_upload; }
   int issuer_icon_id() const { return ui_info_.issuer_icon_id; }
+  const std::u16string& card_network() const { return ui_info_.card_network; }
   const std::u16string& card_label() const { return ui_info_.card_label; }
   const std::u16string& card_sub_label() const {
     return ui_info_.card_sub_label;

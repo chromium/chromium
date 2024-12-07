@@ -8,10 +8,13 @@ import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleUniqueAnnotations;
+import org.jni_zero.internal.NullUnmarked;
+import org.jni_zero.internal.Nullable;
 
 @CheckDiscard("crbug.com/993421")
+@NullUnmarked
 class SampleUniqueAnnotationsJni implements SampleUniqueAnnotations.Natives {
-  private static JniTestInstanceHolder sOverride;
+  private static @Nullable JniTestInstanceHolder sOverride;
 
   public static SampleUniqueAnnotations.Natives get() {
     JniTestInstanceHolder holder = sOverride;

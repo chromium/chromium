@@ -6,7 +6,6 @@
 
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
-#import "components/content_settings/core/browser/cookie_settings.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"

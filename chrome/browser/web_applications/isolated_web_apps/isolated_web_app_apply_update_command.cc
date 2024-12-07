@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -102,7 +103,8 @@ void IsolatedWebAppApplyUpdateCommand::StartWithLock(
       weak_factory_.GetWeakPtr(),
       &IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending,
       &IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures,
-      &IsolatedWebAppApplyUpdateCommand::HandleKeyRotationIfNecessary,
+      &IsolatedWebAppApplyUpdateCommand::
+          HandleKeyRotationOrDowngradeIfNecessary,
       &IsolatedWebAppApplyUpdateCommand::CreateStoragePartition,
       &IsolatedWebAppApplyUpdateCommand::PrepareInstallInfo,
       &IsolatedWebAppApplyUpdateCommand::FinalizeUpdate);
@@ -125,7 +127,6 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
   GetMutableDebugValue().Set("pending_update_info",
                              pending_update_info().AsDebugValue());
 
-  CHECK_GE(pending_update_info().version, isolation_data().version());
   CHECK_EQ(pending_update_info().location.dev_mode(),
            isolation_data().location().dev_mode());
 
@@ -151,31 +152,33 @@ void IsolatedWebAppApplyUpdateCommand::OnTrustAndSignaturesChecked(
   std::move(next_step_callback).Run();
 }
 
-void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationIfNecessary(
+void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationOrDowngradeIfNecessary(
     base::OnceClosure next_step_callback) {
-  CHECK_GE(pending_update_info().version, isolation_data().version());
-  if (pending_update_info().version > isolation_data().version()) {
-    // Updates to higher version are always fine.
+  const base::Version& pending_version = pending_update_info().version;
+  const base::Version& current_version = isolation_data().version();
+
+  if (pending_version > current_version) {
     std::move(next_step_callback).Run();
-    return;
-  }
-
-  // Same-version updates are only allowed in case of key rotation, i.e. when
-  // the current installation doesn't have the required key but the pending one
-  // does.
-  CHECK_EQ(pending_update_info().version, isolation_data().version());
-  if (LookupRotatedKey(url_info_.web_bundle_id(), GetMutableDebugValue()) ==
-      KeyRotationLookupResult::kKeyFound) {
-    KeyRotationData data =
-        GetKeyRotationData(url_info_.web_bundle_id(), isolation_data());
-    if (!data.current_installation_has_rk && data.pending_update_has_rk) {
-      std::move(next_step_callback).Run();
-      return;
+  } else if (pending_version < current_version) {
+    // Downgrade: Remove user data to avoid incompatibility. Proceed with
+    // update.
+    web_app::RemoveIsolatedWebAppBrowsingData(&profile(), url_info_.origin(),
+                                              std::move(next_step_callback));
+  } else {
+    // Handle key rotation for same-version updates.
+    if (LookupRotatedKey(url_info_.web_bundle_id(), GetMutableDebugValue()) ==
+        KeyRotationLookupResult::kKeyFound) {
+      KeyRotationData data =
+          GetKeyRotationData(url_info_.web_bundle_id(), isolation_data());
+      if (!data.current_installation_has_rk && data.pending_update_has_rk) {
+        std::move(next_step_callback).Run();
+        return;
+      }
     }
+    // No version change, and no key rotation needed.
+    ReportFailure(base::StringPrintf("Installed app is already on version %s.",
+                                     current_version.GetString()));
   }
-
-  ReportFailure(base::StringPrintf("Installed app is already on version %s.",
-                                   isolation_data().version().GetString()));
 }
 
 void IsolatedWebAppApplyUpdateCommand::CreateStoragePartition(

@@ -401,7 +401,9 @@ void ParkableStringManager::AgeStringsAndPark(
   TRACE_EVENT0("blink", "ParkableStringManager::AgeStringsAndPark");
 
   if (context == base::MemoryReductionTaskContext::kProactive) {
-    ParkAll(ParkableStringImpl::ParkingMode::kCompress);
+    ParkAll(ParkableStringImpl::ParkingMode::kCompressThenToDisk);
+    // Don't reschedule, because we don't want to cause any further task
+    // execution.
     return;
   }
 

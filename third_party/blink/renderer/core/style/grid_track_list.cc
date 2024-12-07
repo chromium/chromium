@@ -9,12 +9,10 @@ namespace blink {
 NGGridTrackRepeater::NGGridTrackRepeater(wtf_size_t repeat_index,
                                          wtf_size_t repeat_size,
                                          wtf_size_t repeat_count,
-                                         wtf_size_t line_name_indices_count,
                                          RepeatType repeat_type)
     : repeat_index(repeat_index),
       repeat_size(repeat_size),
       repeat_count(repeat_count),
-      line_name_indices_count(line_name_indices_count),
       repeat_type(repeat_type) {}
 
 String NGGridTrackRepeater::ToString() const {
@@ -23,8 +21,6 @@ String NGGridTrackRepeater::ToString() const {
   builder.AppendNumber<wtf_size_t>(repeat_index);
   builder.Append("], [RepeatSize: ");
   builder.AppendNumber<wtf_size_t>(repeat_size);
-  builder.Append("], [LineNameIndicesCount: ");
-  builder.AppendNumber<wtf_size_t>(line_name_indices_count);
   builder.Append("], [RepeatCount: ");
   switch (repeat_type) {
     case RepeatType::kNoRepeat:
@@ -67,11 +63,6 @@ wtf_size_t NGGridTrackList::RepeatIndex(wtf_size_t index) const {
 wtf_size_t NGGridTrackList::RepeatSize(wtf_size_t index) const {
   DCHECK_LT(index, RepeaterCount());
   return repeaters_[index].repeat_size;
-}
-
-wtf_size_t NGGridTrackList::LineNameIndicesCount(wtf_size_t index) const {
-  DCHECK_LT(index, RepeaterCount());
-  return repeaters_[index].line_name_indices_count;
 }
 
 NGGridTrackRepeater::RepeatType NGGridTrackList::RepeatType(
@@ -118,8 +109,7 @@ bool NGGridTrackList::AddRepeater(
     const Vector<GridTrackSize, 1>& repeater_track_sizes,
     NGGridTrackRepeater::RepeatType repeat_type,
     wtf_size_t repeat_count,
-    wtf_size_t repeat_number_of_lines,
-    wtf_size_t line_name_indices_count) {
+    wtf_size_t repeat_number_of_lines) {
   // Non-subgrid repeaters always have sizes associated with them, while
   // subgrids repeaters never do, as sizes will come from the parent grid.
   DCHECK(!IsSubgriddedAxis() || repeater_track_sizes.empty());
@@ -163,7 +153,7 @@ bool NGGridTrackList::AddRepeater(
   }
 
   repeaters_.emplace_back(repeater_track_sizes_.size(), repeat_size,
-                          repeat_count, line_name_indices_count, repeat_type);
+                          repeat_count, repeat_type);
   if (!IsSubgriddedAxis()) {
     repeater_track_sizes_.AppendVector(repeater_track_sizes);
   }

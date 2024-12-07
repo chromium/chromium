@@ -175,7 +175,7 @@ class TestURLLoaderFactoryInterceptor {
 class MockExternalProviderVisitor
     : public extensions::ExternalProviderInterface::VisitorInterface {
  public:
-  MockExternalProviderVisitor() {}
+  MockExternalProviderVisitor() = default;
 
   MOCK_METHOD1(OnExternalExtensionFileFound,
                bool(const ExternalInstallInfoFile&));

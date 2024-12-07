@@ -58,14 +58,14 @@ DefaultPlatformConfiguration::GetEnableRates(
 
   if (!release_channel) {
     // This is a local/CQ build.
-    return RelativePopulations{0, 100, 0};
+    return RelativePopulations{0.0, 100.0, 0.0};
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (browser_test_mode_enabled()) {
     // This is a browser test or maybe a tast test that called
     // chrome.EnableStackSampledMetrics().
-    return RelativePopulations{0, 100, 0};
+    return RelativePopulations{0.0, 100.0, 0.0};
   }
 #endif
 
@@ -75,9 +75,9 @@ DefaultPlatformConfiguration::GetEnableRates(
 
   if (*release_channel == version_info::Channel::BETA) {
     // TODO(crbug.com/1497983): Ramp up enable rate on Non-Android platforms.
-    return RelativePopulations{90, 0, 10};
+    return RelativePopulations{90.0, 0.0, 10.0};
   }
-  return RelativePopulations{0, 80, 20};
+  return RelativePopulations{0.0, 80.0, 20.0};
 }
 
 double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
@@ -205,7 +205,7 @@ AndroidPlatformConfiguration::GetEnableRates(
     std::optional<version_info::Channel> release_channel) const {
   // Always enable profiling in local/CQ builds or browser test mode.
   if (!release_channel.has_value() || browser_test_mode_enabled()) {
-    return RelativePopulations{0, 100, 0};
+    return RelativePopulations{0.0, 100.0, 0.0};
   }
 
   CHECK(*release_channel == version_info::Channel::CANARY ||
@@ -214,18 +214,19 @@ AndroidPlatformConfiguration::GetEnableRates(
 
   if (*release_channel == version_info::Channel::BETA) {
     // For 100% of population
-    // - 1/2 within the subgroup, i.e. 50% of total population, enable
+    // - 1/2 within the subgroup, i.e. 50.0% of total population, enable
     // profiling.
     // - 1/2 within the subgroup, disable profiling.
-    // This results a total of 50% enable rate.
-    return RelativePopulations{0, 0, 100};
+    // This results a total of 50.0% enable rate.
+    return RelativePopulations{0.0, 0.0, 100.0};
   }
 
   // For 100% of population
-  // - 1/2 within the subgroup, i.e. 50% of total population, enable profiling.
+  // - 1/2 within the subgroup, i.e. 50.0% of total population, enable
+  // profiling.
   // - 1/2 within the subgroup, disable profiling.
-  // This results a total of 50% enable rate.
-  return RelativePopulations{0, 0, 100};
+  // This results a total of 50.0% enable rate.
+  return RelativePopulations{0.0, 0.0, 100.0};
 }
 
 double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(

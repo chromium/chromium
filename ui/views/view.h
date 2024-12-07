@@ -1392,6 +1392,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   const std::u16string& GetCachedTooltipText() const;
   void SetCachedTooltipText(const std::u16string& text);
 
+  base::CallbackListSubscription AddTooltipTextChangedCallback(
+      PropertyChangedCallback callback);
+
   // Views will normally display tooltips (if any) when they are focused
   // (which usually happens via a keyboard event). Because they are both
   // visible and displayed asynchronously, some tests may wish to disable

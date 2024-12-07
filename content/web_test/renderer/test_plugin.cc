@@ -340,7 +340,7 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
     auto shared_image_mapping = shared_image_interface_->CreateSharedImage(
         {format, rect_.size(), gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "TestPluginSharedBitmap"});
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "TestPluginSharedBitmap"});
     shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
         viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
         std::move(shared_image_mapping.mapping), gfx::Rect(rect_).size(),

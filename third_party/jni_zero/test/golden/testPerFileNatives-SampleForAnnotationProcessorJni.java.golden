@@ -9,10 +9,13 @@ import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForAnnotationProcessor;
+import org.jni_zero.internal.NullUnmarked;
+import org.jni_zero.internal.Nullable;
 import org.stubs.MyClass;
 
+@NullUnmarked
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
-  private static JniTestInstanceHolder sOverride;
+  private static @Nullable JniTestInstanceHolder sOverride;
 
   public static SampleForAnnotationProcessor.Natives get() {
     JniTestInstanceHolder holder = sOverride;

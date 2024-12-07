@@ -123,6 +123,11 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         return mLayoutHelper;
     }
 
+    @Override
+    public RecyclerView.Adapter<?> getAdapter() {
+        return this;
+    }
+
     RecyclerView getListViewForTest() {
         return mView;
     }

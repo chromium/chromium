@@ -35,7 +35,7 @@ class RendererFreezer
    public:
     using ResultCallback = base::OnceCallback<void(bool)>;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // If |frozen| is true, marks the renderer process |handle| to be frozen
     // when FreezeRenderers() is called; otherwise marks it to remain unfrozen.

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web {
 
@@ -37,6 +38,7 @@ class WebFrame : public base::SupportsUserData {
   virtual bool IsMainFrame() const = 0;
   // The security origin associated with this frame.
   virtual GURL GetSecurityOriginDeprecated() const = 0;
+  virtual url::Origin GetSecurityOrigin() const = 0;
 
   // Returns the BrowserState associated with this WebFrame.
   virtual BrowserState* GetBrowserState() = 0;

@@ -39,7 +39,7 @@ class DefaultPermissionMessageFormatter
   DefaultPermissionMessageFormatter& operator=(
       const DefaultPermissionMessageFormatter&) = delete;
 
-  ~DefaultPermissionMessageFormatter() override {}
+  ~DefaultPermissionMessageFormatter() override = default;
 
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
@@ -61,7 +61,7 @@ class SingleParameterFormatter : public ChromePermissionMessageFormatter {
   SingleParameterFormatter(const SingleParameterFormatter&) = delete;
   SingleParameterFormatter& operator=(const SingleParameterFormatter&) = delete;
 
-  ~SingleParameterFormatter() override {}
+  ~SingleParameterFormatter() override = default;
 
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
@@ -88,7 +88,7 @@ class SimpleListFormatter : public ChromePermissionMessageFormatter {
   SimpleListFormatter(const SimpleListFormatter&) = delete;
   SimpleListFormatter& operator=(const SimpleListFormatter&) = delete;
 
-  ~SimpleListFormatter() override {}
+  ~SimpleListFormatter() override = default;
 
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
@@ -118,7 +118,7 @@ class SpaceSeparatedListFormatter : public ChromePermissionMessageFormatter {
   SpaceSeparatedListFormatter& operator=(const SpaceSeparatedListFormatter&) =
       delete;
 
-  ~SpaceSeparatedListFormatter() override {}
+  ~SpaceSeparatedListFormatter() override = default;
 
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
@@ -156,7 +156,7 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
   HostListFormatter(const HostListFormatter&) = delete;
   HostListFormatter& operator=(const HostListFormatter&) = delete;
 
-  ~HostListFormatter() override {}
+  ~HostListFormatter() override = default;
 
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
@@ -212,12 +212,12 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
 
 class USBDevicesFormatter : public ChromePermissionMessageFormatter {
  public:
-  USBDevicesFormatter() {}
+  USBDevicesFormatter() = default;
 
   USBDevicesFormatter(const USBDevicesFormatter&) = delete;
   USBDevicesFormatter& operator=(const USBDevicesFormatter&) = delete;
 
-  ~USBDevicesFormatter() override {}
+  ~USBDevicesFormatter() override = default;
 
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {

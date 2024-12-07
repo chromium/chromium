@@ -111,6 +111,10 @@ def GetNodeDescription(node: IDLNode) -> str:
 
   Returns:
     The formatted string expected for the description of the node.
+
+  Raises:
+    SchemaCompilerError: If top of file is reached while trying to extract a
+    comment for a description.
   """
 
   # Extended attributes for a node can actually be formatted onto a preceding
@@ -136,8 +140,15 @@ def GetNodeDescription(node: IDLNode) -> str:
       break
 
     line_number -= 1
-    # TODO(crbug.com/340297705): Emit a SchemaCompilerError if we reach the top
-    # of the file, as in practice it should never happen.
+    if line_number == 1:
+      # We should never reach the top of the file when trying to get a node
+      # description from a file comment. If this happens, it likely means there
+      # should be a blank newline.
+      raise SchemaCompilerError(
+          'Reached top of file when trying to parse description from file'
+          ' comment. Make sure there is a blank line before the comment.',
+          node,
+      )
   description = ''.join(lines)
 
   # Remove new line characters and add HTML paragraphing to comments formatted
@@ -179,7 +190,7 @@ class Type:
     properties = OrderedDict()
     # TODO(crbug.com/340297705): Add support for extended attributes on types.
     # TODO(crbug.com/340297705): Add processing of comments to descriptions on
-    #                            types for function acguments.
+    #                            types for function arguments.
     properties['name'] = self.name
     # We consider both nullable properties on types or arguments marked as
     # optional as being "optional" in the schema compiler's logic.

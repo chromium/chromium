@@ -34,7 +34,6 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
@@ -1592,8 +1591,7 @@ class ScrollableShelfViewDeskButtonTest : public ScrollableShelfViewTest {
   // ScrollableShelfViewTest:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDeskButton,
-                              chromeos::features::kJellyroll},
+        /*enabled_features=*/{features::kDeskButton},
         /*disabled_features=*/{});
 
     // Shelf overflow can be influenced by system time (i.e. if the date is

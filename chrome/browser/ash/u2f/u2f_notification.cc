@@ -44,9 +44,9 @@ enum class ButtonIndex : int {
 
 }  // namespace
 
-U2FNotification::U2FNotification() {}
+U2FNotification::U2FNotification() = default;
 
-U2FNotification::~U2FNotification() {}
+U2FNotification::~U2FNotification() = default;
 
 void U2FNotification::Check() {
   DebugDaemonClient::Get()->GetU2fFlags(base::BindOnce(

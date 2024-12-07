@@ -306,16 +306,19 @@ base::FixedArray<DataType> FillMaskTriangular(
 //     [[0,  1,]                  [[0, 0], [0, 1],
 //      [2,  3,]      =>           [1, 0], [1, 1]
 //      [4,  5,]]                  [2, 0], [2, 1]]
-base::expected<base::FixedArray<int64_t>, std::string>
+template <typename DataType>
+  requires(std::is_same_v<DataType, int32_t> ||
+           std::is_same_v<DataType, int64_t>)
+base::expected<base::FixedArray<DataType>, std::string>
 GetCoordinatesNDFromIndex(size_t flat_index,
                           base::span<const uint32_t> strides) {
   const size_t rank = strides.size();
-  base::FixedArray<int64_t> coordinates(rank);
+  base::FixedArray<DataType> coordinates(rank);
   for (size_t i = 0; i < rank; ++i) {
     size_t coordinate = flat_index / strides[i];
     flat_index -= coordinate * strides[i];
 
-    auto checked_coordinate = base::MakeCheckedNum<int64_t>(coordinate);
+    auto checked_coordinate = base::MakeCheckedNum<DataType>(coordinate);
     if (!checked_coordinate.IsValid()) {
       return base::unexpected("The coordinate is too large.");
     }
@@ -506,9 +509,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
        /*reshape_input=*/kAllDataTypesExceptUint4,
        /*reverse_input=*/kFloat16To32AndInt8To32AndUint8,
-       // TODO(crbug.com/370538329): Implement scatterElements.
-       /*scatter_elements_input=*/{},
-       /*scatter_elements_indices=*/{},
+       /*scatter_elements_input=*/kFloat16To32AndInt8To64AndUint32,
+       // The indices data type is the same as scatter_nd.
+       /*scatter_elements_indices=*/{OperandDataType::kInt32},
        /*scatter_nd_input=*/kFloat16To32AndInt8To64AndUint32,
        // The indices of tfl.scatter_nd only support int32.
        // https://www.tensorflow.org/mlir/tfl_ops#operands_117
@@ -892,6 +895,11 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeReverse(*op.get_reverse()));
       break;
     }
+    case mojom::Operation::Tag::kScatterElements: {
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeScatterElements(*op.get_scatter_elements()));
+      break;
+    }
     case mojom::Operation::Tag::kScatterNd: {
       ASSIGN_OR_RETURN(operator_offset,
                        SerializeScatterND(*op.get_scatter_nd()));
@@ -943,8 +951,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeWhere(*op.get_where()));
       break;
     }
-    case mojom::Operation::Tag::kScatterElements:
-      return base::unexpected(NotSupportedOperatorError(op));
   }
   operators_.emplace_back(operator_offset);
 
@@ -1401,7 +1407,7 @@ auto GraphBuilderTflite::SerializeTransposeOperation(
                                   builder_.CreateVector<int32_t>(op_outputs));
 }
 
-auto GraphBuilderTflite::SerializeScatterNDOperation(
+auto GraphBuilderTflite::SerializeTFLiteScatterND(
     base::span<const int32_t> input_shapes,
     int32_t indices_tensor_index,
     int32_t updates_tensor_index,
@@ -2429,6 +2435,55 @@ auto GraphBuilderTflite::SerializeGatherNDOperation(
                                   builder_.CreateVector<int32_t>(op_outputs));
 }
 
+template <typename DataType>
+  requires(std::is_same_v<DataType, int32_t> ||
+           std::is_same_v<DataType, int64_t>)
+auto GraphBuilderTflite::SerializeElementsCoordinates(
+    base::span<const uint32_t> indices_dimensions,
+    base::span<const DataType> indices_value,
+    base::span<const int32_t> input_dimensions,
+    int32_t axis) -> base::expected<int32_t, std::string> {
+  const std::vector<uint32_t> indices_strides =
+      CalculateStrides(indices_dimensions);
+  const size_t indices_rank = indices_strides.size();
+
+  // Clamp the values in `indices` to be in range of `-N` (inclusive) to `N`
+  // (exclusive), where `N = input.dimensions[axis]`
+  const DataType axis_dimension = input_dimensions[axis];
+  const DataType min_values = -(axis_dimension);
+  const DataType max_values = axis_dimension - 1;
+  base::FixedArray<DataType> indices_coordinates(indices_value.size() *
+                                                 indices_rank);
+  for (size_t i = 0; i < indices_value.size(); ++i) {
+    DataType clamp_value =
+        std::min(std::max(min_values, indices_value[i]), max_values);
+    if (clamp_value < 0) {
+      clamp_value += axis_dimension;
+    }
+
+    // Get coordinates from the index of the flat array.
+    ASSIGN_OR_RETURN(base::FixedArray<DataType> coordinates,
+                     GetCoordinatesNDFromIndex<DataType>(i, indices_strides));
+    // Update the coordinates with WebNN indices operand along the axis.
+    //
+    //   unravelled index   WebNN indices   axis = 0      TFLite indices
+    //  [[0, 0], [0, 1],     [[1, 0],                    [[1 ,0], [0, 1],
+    //   [1, 0], [1, 1]       [2, 1],         =>          [2, 0], [1, 1],
+    //   [2, 0], [2, 1]]      [0, 2]]                     [0, 0], [2, 1]]
+    coordinates[axis] = clamp_value;
+    CHECK_EQ(coordinates.size(), indices_rank);
+    base::span(indices_coordinates)
+        .subspan(i * indices_rank, indices_rank)
+        .copy_from(coordinates);
+  }
+
+  return SerializeTensorWithBuffer<DataType>(
+      /*buffer=*/indices_coordinates,
+      /*dimensions=*/std::array<int32_t, 2>{
+          base::checked_cast<int32_t>(indices_value.size()),
+          base::checked_cast<int32_t>(indices_rank)});
+}
+
 auto GraphBuilderTflite::SerializeGatherElements(
     const mojom::GatherElements& gather_elements)
     -> base::expected<OperatorOffset, std::string> {
@@ -2442,50 +2497,15 @@ auto GraphBuilderTflite::SerializeGatherElements(
     // TODO(crbug.com/377615324): Support user input indices.
     return base::unexpected("gatherElements only supports constant indices.");
   }
-  const std::vector<uint32_t> indices_strides =
-      CalculateStrides(indices_operand.descriptor.shape());
-  const size_t indices_rank = indices_strides.size();
 
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(gather_elements.input_operand_id));
-  // Clamp the values in `indices` to be in range of `-N` (inclusive) to `N`
-  // (exclusive), where `N = input.dimensions[axis]`
-  const int64_t axis_dimension =
-      input_tensor_info.dimensions[gather_elements.axis];
-  const int64_t min_values = -(axis_dimension);
-  const int64_t max_values = axis_dimension - 1;
-  base::FixedArray<int64_t> indices_value =
-      GetConstantInt64Value(gather_elements.indices_operand_id);
-  base::FixedArray<int64_t> unraveled_indices(indices_value.size() *
-                                              indices_rank);
-  for (size_t i = 0; i < indices_value.size(); ++i) {
-    indices_value[i] =
-        std::min(std::max(min_values, indices_value[i]), max_values);
-    if (indices_value[i] < 0) {
-      indices_value[i] += axis_dimension;
-    }
-
-    // Get coordinates from the index of the flat array.
-    ASSIGN_OR_RETURN(base::FixedArray<int64_t> coordinates,
-                     GetCoordinatesNDFromIndex(i, indices_strides));
-    // Adjust the coordinates with WebNN indices operand along the axis.
-    //
-    //   unravelled index   WebNN indices   axis = 0      TFLite indices
-    //  [[0, 0], [0, 1],     [[1, 0],                    [[1 ,0], [0, 1],
-    //   [1, 0], [1, 1]       [2, 1],         =>          [2, 0], [1, 1],
-    //   [2, 0], [2, 1]]      [0, 2]]                     [0, 0], [2, 1]]
-    coordinates[gather_elements.axis] = indices_value[i];
-    CHECK_EQ(coordinates.size(), indices_rank);
-    base::span(unraveled_indices)
-        .subspan(i * indices_rank, indices_rank)
-        .copy_from(coordinates);
-  }
-  const int32_t indices_tensor_index = SerializeTensorWithBuffer<int64_t>(
-      /*buffer=*/unraveled_indices,
-      /*dimensions=*/std::array<int32_t, 2>{
-          base::checked_cast<int32_t>(indices_value.size()),
-          base::checked_cast<int32_t>(indices_rank)});
-
+  ASSIGN_OR_RETURN(
+      const int32_t indices_tensor_index,
+      SerializeElementsCoordinates<int64_t>(
+          indices_operand.descriptor.shape(),
+          GetConstantInt64Value(gather_elements.indices_operand_id),
+          input_tensor_info.dimensions, gather_elements.axis));
   ASSIGN_OR_RETURN(
       const TensorInfo& output_tensor_info,
       SerializeOutputTensorInfo(gather_elements.output_operand_id));
@@ -4839,16 +4859,15 @@ auto GraphBuilderTflite::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
                                  output_tensor_info.index);
 }
 
-auto GraphBuilderTflite::SerializeScatterND(const mojom::ScatterND& scatter_nd)
-    -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.scatter_nd_input.Has(
-      GetOperand(scatter_nd.input_operand_id).descriptor.data_type()));
-  CHECK(context_properties_.data_type_limits.scatter_nd_indices.Has(
-      GetOperand(scatter_nd.indices_operand_id).descriptor.data_type()));
-  ASSIGN_OR_RETURN(const TensorInfo& updates_tensor_info,
-                   SerializeInputTensorInfo(scatter_nd.updates_operand_id));
+auto GraphBuilderTflite::SerializeWebNNScatterND(
+    const TensorInfo& input_tensor_info,
+    const TensorInfo& updates_tensor_info,
+    int32_t indices_tensor_index,
+    int32_t output_tensor_index) -> OperatorOffset {
   base::FixedArray<bool> true_updates(
-      GetOperand(scatter_nd.updates_operand_id).descriptor.NumberOfElements(),
+      std::accumulate(updates_tensor_info.dimensions.begin(),
+                      updates_tensor_info.dimensions.end(),
+                      static_cast<size_t>(1), std::multiplies()),
       true);
   const int32_t true_updates_tensor_index = SerializeTensorWithBuffer<bool>(
       /*buffer=*/true_updates,
@@ -4856,30 +4875,95 @@ auto GraphBuilderTflite::SerializeScatterND(const mojom::ScatterND& scatter_nd)
 
   // Scatter the True values into a zero (False) initialized tensor according to
   // indices.
-  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(scatter_nd.input_operand_id));
-  ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
-                   SerializeInputTensorInfo(scatter_nd.indices_operand_id));
   const int32_t scatter_true_tensor_index = SerializeTemporaryTensor(
       input_tensor_info.dimensions, ::tflite::TensorType_BOOL);
-  operators_.emplace_back(SerializeScatterNDOperation(
-      input_tensor_info.dimensions, indices_tensor_info.index,
+  operators_.emplace_back(SerializeTFLiteScatterND(
+      input_tensor_info.dimensions, indices_tensor_index,
       true_updates_tensor_index, scatter_true_tensor_index));
 
   // Scatter the values of updates into another zero-initialized tensor
   // according to indices.
   const int32_t scatter_updates_tensor_index = SerializeTemporaryTensor(
-      input_tensor_info.dimensions, updates_tensor_info.data_type);
-  operators_.emplace_back(SerializeScatterNDOperation(
-      input_tensor_info.dimensions, indices_tensor_info.index,
+      input_tensor_info.dimensions, input_tensor_info.data_type);
+  operators_.emplace_back(SerializeTFLiteScatterND(
+      input_tensor_info.dimensions, indices_tensor_index,
       updates_tensor_info.index, scatter_updates_tensor_index));
 
   // Select scattered value or input value based on condition.
+  return SerializeWhereOperation(scatter_true_tensor_index,
+                                 scatter_updates_tensor_index,
+                                 input_tensor_info.index, output_tensor_index);
+}
+
+auto GraphBuilderTflite::SerializeScatterElements(
+    const mojom::ScatterElements& scatter_elements)
+    -> base::expected<OperatorOffset, std::string> {
+  CHECK(context_properties_.data_type_limits.scatter_elements_input.Has(
+      GetOperand(scatter_elements.input_operand_id).descriptor.data_type()));
+  const mojom::Operand& indices_operand =
+      GetOperand(scatter_elements.indices_operand_id);
+  CHECK(context_properties_.data_type_limits.scatter_elements_indices.Has(
+      indices_operand.descriptor.data_type()));
+  if (indices_operand.kind != mojom::Operand::Kind::kConstant) {
+    // TODO(crbug.com/377615324): Support user input indices.
+    return base::unexpected("scatterElements only supports constant indices.");
+  }
+
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(scatter_elements.input_operand_id));
+  ASSIGN_OR_RETURN(
+      const int32_t indices_tensor_index,
+      SerializeElementsCoordinates<int32_t>(
+          indices_operand.descriptor.shape(),
+          GetConstantValue<int32_t>(scatter_elements.indices_operand_id),
+          input_tensor_info.dimensions, scatter_elements.axis));
+
+  // The TFLite kernel of scatter_nd expects updates operand's shape to be one
+  // dimension when indices operand's shape is two dimensions here:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/scatter_nd.cc;l=64?q=scatter_nd.cc&ss=chromium%2Fchromium%2Fsrc
+  //
+  // So reshape updates from updates.descriptor.shape() to one dimension
+  // (updates.descriptor.NumberOfElements())
+  ASSIGN_OR_RETURN(
+      const TensorInfo& updates_tensor_info,
+      SerializeInputTensorInfo(scatter_elements.updates_operand_id));
+  const std::array<int32_t, 1> updates_new_shape = {base::checked_cast<int32_t>(
+      GetOperand(scatter_elements.updates_operand_id)
+          .descriptor.NumberOfElements())};
+  const int32_t reshape_updates_tensor_index = SerializeTemporaryTensor(
+      updates_new_shape, updates_tensor_info.data_type);
+  operators_.emplace_back(SerializeReshapeOperation(
+      updates_tensor_info.index, reshape_updates_tensor_index,
+      updates_new_shape));
+
+  ASSIGN_OR_RETURN(
+      const TensorInfo& output_tensor_info,
+      SerializeOutputTensorInfo(scatter_elements.output_operand_id));
+  return SerializeWebNNScatterND(
+      input_tensor_info,
+      TensorInfo(reshape_updates_tensor_index, updates_tensor_info.data_type,
+                 updates_new_shape),
+      indices_tensor_index, output_tensor_info.index);
+}
+
+auto GraphBuilderTflite::SerializeScatterND(const mojom::ScatterND& scatter_nd)
+    -> base::expected<OperatorOffset, std::string> {
+  CHECK(context_properties_.data_type_limits.scatter_nd_input.Has(
+      GetOperand(scatter_nd.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.scatter_nd_indices.Has(
+      GetOperand(scatter_nd.indices_operand_id).descriptor.data_type()));
+
+  ASSIGN_OR_RETURN(const TensorInfo& updates_tensor_info,
+                   SerializeInputTensorInfo(scatter_nd.updates_operand_id));
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(scatter_nd.input_operand_id));
+  ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
+                   SerializeInputTensorInfo(scatter_nd.indices_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
                    SerializeOutputTensorInfo(scatter_nd.output_operand_id));
-  return SerializeWhereOperation(
-      scatter_true_tensor_index, scatter_updates_tensor_index,
-      input_tensor_info.index, output_tensor_info.index);
+  return SerializeWebNNScatterND(input_tensor_info, updates_tensor_info,
+                                 indices_tensor_info.index,
+                                 output_tensor_info.index);
 }
 
 auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)

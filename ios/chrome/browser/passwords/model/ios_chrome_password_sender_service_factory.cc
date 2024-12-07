@@ -4,8 +4,6 @@
 
 #include "ios/chrome/browser/passwords/model/ios_chrome_password_sender_service_factory.h"
 
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
@@ -26,13 +24,12 @@ IOSChromePasswordSenderServiceFactory::GetInstance() {
 password_manager::PasswordSenderService*
 IOSChromePasswordSenderServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordSenderService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
 IOSChromePasswordSenderServiceFactory::IOSChromePasswordSenderServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PasswordSenderService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PasswordSenderService",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 

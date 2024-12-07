@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/page_info/core",
+  "+components/page_info/page_info_action.h",
+  "+ios/chrome/browser/permissions/ui_bundled",
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/content_settings/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/history/ui_bundled",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/web/model",
+  "+ios/chrome/browser/reading_list/model",
+  "+ios/chrome/browser/net/model",
+]

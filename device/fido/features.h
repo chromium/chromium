@@ -112,6 +112,12 @@ BASE_DECLARE_FEATURE(kWebAuthniCloudKeychainPrf);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHybridLinking);
 
+// Enables publishing prelinking information on Android.
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnPublishPrelinkingInfo);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Update the "last_used" timestamp in GPM passkeys when asserted.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnUpdateLastUsed);

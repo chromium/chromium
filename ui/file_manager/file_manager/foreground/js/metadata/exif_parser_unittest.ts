@@ -186,7 +186,7 @@ class ByteWriter {
  * @param bytes Bytes to be written.
  * @param tag An exif entry which will be written.
  */
-function writeDirectory(bytes: ArrayBufferView, tag: ExifEntry) {
+function writeDirectory(bytes: ArrayBufferView<ArrayBuffer>, tag: ExifEntry) {
   assertEquals(2, tag.format);
   assertTrue(tag.componentCount > 4);
 
@@ -228,7 +228,8 @@ class ConsoleLogger implements MetadataParserLogger {
  * @param bytes Bytes to be read.
  * @return Tags.
  */
-function parseExifData(bytes: ArrayBufferView): Record<ExifTag, ExifEntry> {
+function parseExifData(bytes: ArrayBufferView<ArrayBuffer>):
+    Record<ExifTag, ExifEntry> {
   const exifParser = new ExifParser(new ConsoleLogger());
 
   const tags = {} as Record<ExifTag, ExifEntry>;

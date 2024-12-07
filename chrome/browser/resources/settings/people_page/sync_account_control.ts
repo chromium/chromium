@@ -335,6 +335,13 @@ export class SettingsSyncAccountControlElement extends
         !this.getPref('signin.allowed_on_next_startup').value;
   }
 
+  private getSignInLabel_(
+      peopleSignIn: string, peopleSignInNoAccountAwareness: string): string {
+    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') ?
+        peopleSignInNoAccountAwareness :
+        peopleSignIn;
+  }
+
   /**
    * Determines whether the banner should be hidden, in the case where the user
    * has sync enabled or if the property to hide the banner was explicitly set.

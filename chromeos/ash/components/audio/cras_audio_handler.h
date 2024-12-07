@@ -831,6 +831,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // AudioPrefObserver overrides.
   void OnAudioPolicyPrefChanged() override;
+  void OnVoiceIsolationPrefChanged() override;
 
   // Sets the |active_device| to be active.
   // If |notify|, notifies Active*NodeChange.

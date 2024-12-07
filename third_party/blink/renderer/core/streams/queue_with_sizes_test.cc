@@ -57,8 +57,7 @@ TEST_P(QueueWithSizesBadSizeTest, BadSizeThrowsException) {
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation, "",
-                                 "");
+  DummyExceptionStateForTesting exception_state;
   queue->EnqueueValueWithSize(isolate, v8::Undefined(isolate), GetParam(),
                               exception_state);
   EXPECT_TRUE(exception_state.HadException());

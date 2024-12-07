@@ -64,7 +64,7 @@ IconWithBadgeImageSource::Badge::Badge(const std::string& text,
                                        SkColor background_color)
     : text(text), text_color(text_color), background_color(background_color) {}
 
-IconWithBadgeImageSource::Badge::~Badge() {}
+IconWithBadgeImageSource::Badge::~Badge() = default;
 
 IconWithBadgeImageSource::IconWithBadgeImageSource(
     const gfx::Size& size,

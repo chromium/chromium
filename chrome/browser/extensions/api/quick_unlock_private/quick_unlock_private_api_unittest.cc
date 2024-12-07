@@ -101,7 +101,7 @@ class FakeSmartLockService : public ash::SmartLockService {
   FakeSmartLockService(const FakeSmartLockService&) = delete;
   FakeSmartLockService& operator=(const FakeSmartLockService&) = delete;
 
-  ~FakeSmartLockService() override {}
+  ~FakeSmartLockService() override = default;
 };
 
 std::unique_ptr<KeyedService> CreateSmartLockServiceForTest(

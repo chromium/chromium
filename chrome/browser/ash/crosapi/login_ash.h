@@ -19,6 +19,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+class GaiaId;
+
 namespace crosapi {
 
 // The ash-chrome implementation of the Login crosapi interface.
@@ -114,7 +116,7 @@ class LoginAsh : public mojom::Login {
   // Launches a SAML user session with the provided email, gaiaId, password
   // and oauth_code cookie.
   void LaunchSamlUserSession(const std::string& email,
-                             const std::string& gaia_id,
+                             const GaiaId& gaia_id,
                              const std::string& password,
                              const std::string& oauth_code,
                              OptionalErrorCallback callback);

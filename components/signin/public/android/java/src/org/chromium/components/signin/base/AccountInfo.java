@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.components.signin.AccountEmailDisplayHook;
+import org.chromium.components.signin.SigninConstants;
 import org.chromium.components.signin.Tribool;
 
 import java.util.HashMap;
@@ -87,15 +88,12 @@ public class AccountInfo extends CoreAccountInfo {
         }
     }
 
-    // TODO(crbug.com/380424627): Expose corresponding C++ constant to Java.
-    private static final String NO_HOSTED_DOMAIN_FOUND = "NO_HOSTED_DOMAIN";
-
     private final String mFullName;
     private final String mGivenName;
 
     /**
-     * `null` if the hosted domain isn't know yet. Contains `NO_HOSTED_DOMAIN_FOUND` if the account
-     * is not managed.
+     * `null` if the hosted domain isn't know yet. Contains {@link
+     * SigninConstants.NO_HOSTED_DOMAIN_FOUND} if the account is not managed.
      */
     private final @Nullable String mHostedDomain;
 
@@ -153,7 +151,9 @@ public class AccountInfo extends CoreAccountInfo {
         if (mHostedDomain == null) {
             return Tribool.UNKNOWN;
         }
-        return mHostedDomain.equals(NO_HOSTED_DOMAIN_FOUND) ? Tribool.FALSE : Tribool.TRUE;
+        return mHostedDomain.equals(SigninConstants.NO_HOSTED_DOMAIN_FOUND)
+                ? Tribool.FALSE
+                : Tribool.TRUE;
     }
 
     /**

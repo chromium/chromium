@@ -136,7 +136,8 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     if (sii) {
       auto shared_image_mapping = sii->CreateSharedImage(
           {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "BitmapRasterBufferProvider"});
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+           "BitmapRasterBufferProvider"});
       backing->shared_image = std::move(shared_image_mapping.shared_image);
       CHECK(backing->shared_image);
       backing->mapping = std::move(shared_image_mapping.mapping);

@@ -117,7 +117,7 @@ class TestHelper {
 class OsUpdatesReporterTest
     : public ::testing::TestWithParam<OsUpdatesReporterTestCase> {
  protected:
-  OsUpdatesReporterTest() {}
+  OsUpdatesReporterTest() = default;
 
   void SetUp() override { test_helper_.Init(); }
 
@@ -287,7 +287,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class PowerwashTest : public ::testing::TestWithParam<bool> {
  protected:
-  PowerwashTest() {}
+  PowerwashTest() = default;
 
   void SetUp() override {
     test_helper_.Init();

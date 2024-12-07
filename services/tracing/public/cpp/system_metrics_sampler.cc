@@ -160,11 +160,29 @@ SystemMetricsSampler::ProcessSampler::~ProcessSampler() = default;
 
 void SystemMetricsSampler::ProcessSampler::SampleProcessMetrics() {
   auto cpu_usage = process_metrics_->GetPlatformIndependentCPUUsage();
-  if (!cpu_usage.has_value()) {
-    return;
+  if (cpu_usage.has_value()) {
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "CpuUsage",
+                  *cpu_usage);
   }
-  TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "CpuUsage",
-                *cpu_usage);
+  auto memory_info = process_metrics_->GetMemoryInfo();
+  if (memory_info.has_value()) {
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "ResidentSet",
+                  memory_info->resident_set_bytes);
+#if BUILDFLAG(IS_MAC)
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+                  "PhysicalMemoryFootprint",
+                  memory_info->physical_footprint_bytes);
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "VmSwapMemory",
+                  memory_info->vm_swap_bytes);
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "RssAnonMemory",
+                  memory_info->rss_anon_bytes);
+#elif BUILDFLAG(IS_WIN)
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "PrivateMemory",
+                  memory_info->private_bytes);
+#endif  // BUILDFLAG(IS_WIN)
+  }
 }
 
 }  // namespace tracing

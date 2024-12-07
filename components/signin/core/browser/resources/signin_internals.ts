@@ -6,7 +6,6 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
-import 'chrome://resources/js/jstemplate_compiled.js';
 import '/strings.m.js';
 
 import {html, render} from '//resources/lit/v3_0/lit.rollup.js';
@@ -47,7 +46,7 @@ interface BoundSessionInfo {
   refreshUrl?: string;
 }
 
-interface DataInfo {
+interface BasicInfoData {
   label: string;
   status: string;
   time: string;
@@ -55,7 +54,19 @@ interface DataInfo {
 
 interface BasicInfo {
   title: string;
-  data: DataInfo[];
+  data: BasicInfoData[];
+}
+
+interface TokenInfoData {
+  service: string;
+  scopes: string;
+  request_time: string;
+  status: string;
+}
+
+interface TokenInfo {
+  title: string;
+  data: TokenInfoData[];
 }
 
 interface SigninInfo {
@@ -63,6 +74,7 @@ interface SigninInfo {
   refreshTokenEvents: RefreshTokenEvent[];
   boundSessionInfo?: BoundSessionInfo[];
   signin_info: BasicInfo[];
+  token_info: TokenInfo[];
 }
 
 function getSigninInfoHtml(infos: BasicInfo[]) {
@@ -80,6 +92,38 @@ function getSigninInfoHtml(infos: BasicInfo[]) {
               <td ?hidden="${data.time.length!==0}">&nbsp;</td>
             </tr>
           `)}
+        </table>
+      </div>
+    `)}
+  `;
+  // clang-format on
+}
+
+function getTokenInfoHtml(infos: TokenInfo[]) {
+  // clang-format off
+  return html`
+    <h2>Access Token Details By Account</h2>
+    ${infos.map(item => html`
+      <div class="tokenSection">
+        <h3>${item.title}</h3>
+        <table class="signin-details">
+          <tr class="header">
+            <td>Service</td>
+            <td>Requested Scopes</td>
+            <td>Request Time</td>
+            <td>Request Status</td>
+          </tr>
+          ${item.data.map(data => html`
+            <tr class="${getClassFromValue(data.status)}">
+              <td>${data.service}</td>
+              <td>${data.scopes}</td>
+              <td>${data.request_time}</td>
+              <td style="${data.status.includes('Expired at')
+                         ? 'color: #ffffff; background-color: #ff0000' : ''}">
+                ${data.status}
+              </td>
+            </tr>
+         `)}
         </table>
       </div>
     `)}
@@ -188,7 +232,11 @@ function getBoundSessionInfoHtml(infos?: BoundSessionInfo[]) {
               <td>${item.sessionID}</td>
               <td>${item.domain}</td>
               <td>${item.path}</td>
-              <td>${item.expirationTime}</td>
+              <td style="${item.expirationTime &&
+                           item.expirationTime.includes('Expired at')
+                         ? 'color: #ffffff; background-color: #ff0000' : ''}">
+                ${item.expirationTime}
+              </td>
               <td>${item.throttlingPaused}</td>
               <td>${item.boundCookieNames}</td>
               <td>${item.refreshUrl}</td>
@@ -201,7 +249,7 @@ function getBoundSessionInfoHtml(infos?: BoundSessionInfo[]) {
   // clang-format on
 }
 
-function setClassFromValue(value: string): string {
+function getClassFromValue(value: string): string {
   if (value === 'Successful') {
     return 'ok';
   }
@@ -209,16 +257,15 @@ function setClassFromValue(value: string): string {
   return '';
 }
 
-// Set on window for jstemplate.
-Object.assign(window, {setClassFromValue});
-
 // Replace the displayed values with the latest fetched ones.
 function refreshSigninInfo(signinInfo: SigninInfo) {
   // Process templates even against an empty `signinInfo` to hide some sections.
   render(
       getSigninInfoHtml(signinInfo.signin_info),
       getRequiredElement('signin-info'));
-  jstProcess(new JsEvalContext(signinInfo), getRequiredElement('token-info'));
+  render(
+      getTokenInfoHtml(signinInfo.token_info),
+      getRequiredElement('token-info'));
   render(
       getAccountInfoHtml(signinInfo.accountInfo),
       getRequiredElement('account-info'));
@@ -228,15 +275,6 @@ function refreshSigninInfo(signinInfo: SigninInfo) {
   render(
       getBoundSessionInfoHtml(signinInfo.boundSessionInfo),
       getRequiredElement('bound-session-info'));
-  // TODO(https://crbug.com/378692755): Fix.
-  document
-      .querySelectorAll(
-          'td[jsvalues=".textContent: status"], td[jscontent="expirationTime"]')
-      .forEach(td => {
-        if (td.textContent!.includes('Expired at')) {
-          td.setAttribute('style', 'color: #ffffff; background-color: #ff0000');
-        }
-      });
 }
 
 // Replace the cookie information with the fetched values.

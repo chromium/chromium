@@ -465,7 +465,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
 
     // Correct the RequestContext if necessary.
     if (IsA<HTMLPictureElement>(GetElement()->parentNode()) ||
-        !GetElement()->FastGetAttribute(html_names::kSrcsetAttr).IsNull()) {
+        GetElement()->FastHasAttribute(html_names::kSrcsetAttr)) {
       resource_request.SetRequestContext(
           mojom::blink::RequestContextType::IMAGE_SET);
       resource_request.SetRequestDestination(

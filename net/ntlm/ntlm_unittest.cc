@@ -18,6 +18,7 @@
 
 #include "net/ntlm/ntlm.h"
 
+#include <array>
 #include <iterator>
 #include <string>
 
@@ -206,10 +207,8 @@ TEST(NtlmTest, GenerateNtlmHashV2SpecTests) {
 }
 
 TEST(NtlmTest, GenerateProofInputV2SpecTests) {
-  std::vector<uint8_t> proof_input;
-  proof_input =
+  std::array<uint8_t, kProofInputLenV2> proof_input =
       GenerateProofInputV2(test::kServerTimestamp, test::kClientChallenge);
-  ASSERT_EQ(kProofInputLenV2, proof_input.size());
 
   // |GenerateProofInputV2| generates the first |kProofInputLenV2| bytes of
   // what [MS-NLMP] calls "temp".

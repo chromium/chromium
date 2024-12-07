@@ -239,8 +239,9 @@ export class ExtensionsDetailViewElement extends
   protected hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
-        this.data.disableReasons.updateRequired || !!this.data.blocklistText ||
         this.data.disableReasons.publishedInStoreRequired ||
+        this.data.disableReasons.unsupportedDeveloperExtension ||
+        this.data.disableReasons.updateRequired || !!this.data.blocklistText ||
         this.data.runtimeWarnings.length > 0;
   }
 

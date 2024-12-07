@@ -34,8 +34,12 @@ public class AuxiliarySearchUtils {
             ChromeFeatureList.sAndroidAppIntegrationWithFaviconSkipDeviceCheck;
 
     @VisibleForTesting
-    public static final BooleanCachedFieldTrialParameter FORCE_CARD_SHOWN =
+    static final BooleanCachedFieldTrialParameter FORCE_CARD_SHOWN =
             ChromeFeatureList.sAndroidAppIntegrationWithFaviconForceCardShow;
+
+    @VisibleForTesting
+    static final BooleanCachedFieldTrialParameter SHOW_THIRD_PARTY_CARD =
+            ChromeFeatureList.sAndroidAppIntegrationWithFaviconShowThirdPartyCard;
 
     /** Convert a Bitmap instance to a byte array. */
     @Nullable
@@ -126,7 +130,7 @@ public class AuxiliarySearchUtils {
     /** Returns whether the sharing Tabs settings is enabled by default. */
     public static boolean isShareTabsWithOsDefaultEnabled() {
         return AuxiliarySearchUtils.SKIP_DEVICE_CHECK.getValue()
-                ? true
+                ? !AuxiliarySearchUtils.SHOW_THIRD_PARTY_CARD.getValue()
                 : AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs();
     }
 

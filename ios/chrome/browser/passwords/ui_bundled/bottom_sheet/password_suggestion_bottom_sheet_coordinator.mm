@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/feature_list.h"
+#import "base/not_fatal_until.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -202,6 +203,15 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 - (void)primaryButtonTappedForSuggestion:(FormSuggestion*)formSuggestion
                                  atIndex:(NSInteger)index {
+  if (_dismissing) {
+    // Do not handle an action if the view controller is already being
+    // dismissed. Only one action is allowed on the sheet.
+    return;
+  }
+  // Disable user interactions on the root view of the view controller so any
+  // further user action isn't allowed. Only one action is allowed on the sheet.
+  self.viewController.view.userInteractionEnabled = NO;
+
   _dismissing = YES;
   [self.mediator logExitReason:kUsePasswordSuggestion];
   __weak __typeof(self) weakSelf = self;
@@ -209,12 +219,16 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     [weakSelf.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
   };
   [self.viewController.presentingViewController
-      dismissViewControllerAnimated:NO
+      dismissViewControllerAnimated:YES
                          completion:^{
                            [weakSelf.mediator didSelectSuggestion:formSuggestion
                                                           atIndex:index
                                                        completion:completion];
                          }];
+
+  // Dismiss the soft keyboard right after starting the animation so it doesn't
+  // flicker.
+  [self dismissSoftKeyboard];
 
   // Records the usage of password autofill. This notifies the Tips Manager,
   // which may trigger tips or guidance related to password management features.
@@ -289,6 +303,17 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 - (void)showPasswordDetailsForCredential:
     (password_manager::CredentialUIEntry)credential {
   [_passwordControllerDelegate showPasswordDetailsForCredential:credential];
+}
+
+// Dismisses the soft keyboard. Make sure to only call this when there is an
+// active webstate.
+- (void)dismissSoftKeyboard {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  CHECK(activeWebState, base::NotFatalUntil::M135);
+  if (activeWebState) {
+    [activeWebState->GetView() endEditing:NO];
+  }
 }
 
 @end

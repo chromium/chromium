@@ -225,7 +225,7 @@ ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient()
       std::make_unique<ChromeComponentExtensionResourceManager>();
 }
 
-ChromeExtensionsBrowserClient::~ChromeExtensionsBrowserClient() {}
+ChromeExtensionsBrowserClient::~ChromeExtensionsBrowserClient() = default;
 
 void ChromeExtensionsBrowserClient::StartTearDown() {
   user_script_listener_.StartTearDown();

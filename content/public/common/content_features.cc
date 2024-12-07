@@ -635,13 +635,6 @@ BASE_FEATURE(kLegacyTechReportEnableCookieIssueReports,
              "LegacyTechReportEnableCookieIssueReports",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Configures whether Blink on Windows 8.0 and below should use out of process
-// API font fallback calls to retrieve a fallback font family name as opposed to
-// using a hard-coded font lookup table.
-BASE_FEATURE(kLegacyWindowsDWriteFontFallback,
-             "LegacyWindowsDWriteFontFallback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLogJsConsoleMessages,
              "LogJsConsoleMessages",
 #if BUILDFLAG(IS_ANDROID)
@@ -1227,7 +1220,7 @@ BASE_FEATURE(kUnrestrictedSharedArrayBuffer,
 // renderer-calculated ones.
 BASE_FEATURE(kUseBrowserCalculatedOrigin,
              "UseBrowserCalculatedOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
 // If enabled, blink's context snapshot is used rather than the v8 snapshot.
@@ -1464,14 +1457,6 @@ BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
 
 #endif  // BUILDFLAG(IS_MAC)
 
-#if defined(WEBRTC_USE_PIPEWIRE)
-// Controls whether the PipeWire support for screen capturing is enabled on the
-// Wayland display server.
-BASE_FEATURE(kWebRtcPipeWireCapturer,
-             "WebRTCPipeWireCapturer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // defined(WEBRTC_USE_PIPEWIRE)
-
 // Default amount of days after which the global navigation capturing IPH
 // guardrails are cleared from storage.
 const base::FeatureParam<int> kNavigationCapturingIPHGuardrailStorageDuration{
@@ -1489,12 +1474,6 @@ const base::FeatureParam<CapturingState>::Option kNavigationCapturingParams[] =
 const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
     &kPwaNavigationCapturing, "link_capturing_state",
     CapturingState::kReimplDefaultOn, &kNavigationCapturingParams};
-
-// The called preferred audio output device is used when the audio output
-// device for the frames are system default.
-BASE_FEATURE(kPreferredAudioOutputDevices,
-             "PreferredAudioOutputDevices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kForcedOffCapturingAppsOnFirstNavigation{
     &kPwaNavigationCapturing, "initial_nav_forced_off_apps", ""};

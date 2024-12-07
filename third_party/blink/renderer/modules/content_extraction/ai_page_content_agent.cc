@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
+#include "third_party/blink/renderer/core/layout/layout_iframe.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_media.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -83,9 +84,13 @@ bool HasEmphasis(const ComputedStyle& style) {
          style.VerticalAlign() == EVerticalAlign::kSuper;
 }
 
+const LayoutIFrame* GetIFrame(const LayoutObject& object) {
+  return DynamicTo<LayoutIFrame>(object);
+}
+
 std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
     const LayoutObject& object) {
-  if (object.IsLayoutIFrame()) {
+  if (GetIFrame(object)) {
     return mojom::blink::AIPageContentAttributeType::kIframe;
   }
 
@@ -106,10 +111,13 @@ std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
     return mojom::blink::AIPageContentAttributeType::kHeading;
   }
 
-  if (element->HasTagName(html_names::kOlTag) ||
-      element->HasTagName(html_names::kUlTag) ||
+  if (element->HasTagName(html_names::kOlTag)) {
+    return mojom::blink::AIPageContentAttributeType::kOrderedList;
+  }
+
+  if (element->HasTagName(html_names::kUlTag) ||
       element->HasTagName(html_names::kDlTag)) {
-    return mojom::blink::AIPageContentAttributeType::kList;
+    return mojom::blink::AIPageContentAttributeType::kUnorderedList;
   }
 
   if (element->HasTagName(html_names::kFigureTag)) {
@@ -118,31 +126,6 @@ std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
 
   // TODO: Add FormData for attribute_type = FORM.
   return std::nullopt;
-}
-
-// Returns true if `object` should be skipped because it's a cross-process or
-// cross-origin iframe.
-//
-// Returns false if `object` is not an iframe or it's a same-origin iframe.
-//
-// The second param is set to the child Document if it's a same-origin iframe.
-std::tuple<bool, const LayoutView*> ShouldSkipNestedIFrame(
-    const LayoutObject& object) {
-  auto* frame = DynamicTo<LayoutEmbeddedContent>(object);
-  if (!frame) {
-    return std::make_tuple(false, nullptr);
-  }
-
-  auto* frame_view = DynamicTo<LocalFrameView>(frame->ChildFrameView());
-  if (!frame_view) {
-    return std::make_tuple(true, nullptr);
-  }
-
-  if (frame_view->GetFrame().IsCrossOriginToParentOrOuterDocument()) {
-    return std::make_tuple(true, nullptr);
-  }
-
-  return std::make_tuple(false, frame_view->GetFrame().ContentLayoutObject());
 }
 
 std::optional<DOMNodeId> GetNodeId(const LayoutObject& object) {
@@ -155,6 +138,12 @@ std::optional<DOMNodeId> GetNodeId(const LayoutObject& object) {
     return std::nullopt;
   }
   return DOMNodeIds::IdForNode(node);
+}
+
+// TODO(crbug.com/381273397): Add content for embed and object.
+bool ShouldSkipEmbeddedContent(const LayoutObject& object) {
+  auto* layout_embedded_content = DynamicTo<LayoutEmbeddedContent>(object);
+  return layout_embedded_content && !GetIFrame(object);
 }
 
 }  // namespace
@@ -173,7 +162,6 @@ void AIPageContentAgent::BindReceiver(
     mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver) {
   CHECK(frame && frame->GetDocument());
   CHECK(frame->IsLocalRoot());
-  CHECK(frame->IsOutermostMainFrame());
 
   auto& document = *frame->GetDocument();
   auto* agent = AIPageContentAgent::From(document);
@@ -253,24 +241,24 @@ void AIPageContentAgent::ProcessNode(
 
   for (auto* child = object.SlowFirstChild(); child;
        child = child->NextSibling()) {
-    auto [skip, child_layout_view] = ShouldSkipNestedIFrame(*child);
-    if (skip) {
+    if (ShouldSkipEmbeddedContent(*child)) {
+      continue;
+    }
+
+    if (child->IsListMarker()) {
       continue;
     }
 
     auto child_content_node = MaybeGenerateContentNode(*child);
-    auto& node_for_child =
-        child_content_node ? *child_content_node : content_node;
-
-    MaybeAddNodeContent(*child, *node_for_child.content_attributes,
-                        document_style);
-
-    // We could generate a ContentNode for the child LayoutView but that seems
-    // redundant given we already have one for the iframe.
-    if (child_layout_view) {
-      auto* child_document_style = child_layout_view->Style();
-      ProcessNode(*child_layout_view, node_for_child, *child_document_style);
+    if (child_content_node &&
+        child_content_node->content_attributes->attribute_type ==
+            mojom::blink::AIPageContentAttributeType::kIframe) {
+      ProcessIframe(*GetIFrame(*child), *child_content_node);
     } else {
+      auto& node_for_child =
+          child_content_node ? *child_content_node : content_node;
+      MaybeAddNodeContent(*child, *node_for_child.content_attributes,
+                          document_style);
       ProcessNode(*child, node_for_child, document_style);
     }
 
@@ -280,13 +268,39 @@ void AIPageContentAgent::ProcessNode(
   }
 }
 
+void AIPageContentAgent::ProcessIframe(
+    const LayoutIFrame& object,
+    mojom::blink::AIPageContentNode& content_node) const {
+  auto& frame = object.ChildFrameView()->GetFrame();
+
+  auto iframe_data = mojom::blink::AIPageContentIframeData::New();
+  iframe_data->frame_token = frame.GetFrameToken();
+  iframe_data->likely_ad_frame = frame.IsAdFrame();
+  content_node.content_attributes->iframe_data = std::move(iframe_data);
+
+  auto* local_frame = DynamicTo<LocalFrame>(frame);
+  auto* child_layout_view =
+      local_frame ? local_frame->ContentLayoutObject() : nullptr;
+  if (child_layout_view) {
+    // Add a node for the iframe's LayoutView for consistency with remote
+    // frames.
+    auto child_content_node = MaybeGenerateContentNode(*child_layout_view);
+    MaybeAddNodeContent(*child_layout_view,
+                        *child_content_node->content_attributes,
+                        *child_layout_view->Style());
+    ProcessNode(*child_layout_view, *child_content_node,
+                *child_layout_view->Style());
+    content_node.children_nodes.emplace_back(std::move(child_content_node));
+  }
+}
+
 mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
     const LayoutObject& object) const {
   const auto attribute_type = GetAttributeType(object);
   if (!attribute_type) {
     return nullptr;
   }
-
+  LOG(ERROR) << "Generated content node : " << object;
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
@@ -349,6 +363,7 @@ void AIPageContentAgent::MaybeAddNodeContent(
       // which could be reused for this.
       image_info->image_caption = image_element->AltText();
     }
+    // TODO(khushalsagar): Include image source origin.
     attributes.image_info.emplace_back(std::move(image_info));
   }
 }

@@ -2012,6 +2012,11 @@ void View::SetCachedTooltipText(const std::u16string& text) {
   TooltipTextChanged();
 }
 
+base::CallbackListSubscription View::AddTooltipTextChangedCallback(
+    PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&cached_tooltip_text_, std::move(callback));
+}
+
 std::u16string View::GetTooltipText(const gfx::Point& p) const {
   return GetCachedTooltipText();
 }

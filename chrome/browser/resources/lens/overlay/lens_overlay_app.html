@@ -244,6 +244,10 @@
     inset-inline-end: 140px;
   }
 
+  :host([show-ghost-loader]) #searchboxContainer {
+    --color-searchbox-background: var(--color-searchbox-results-background);
+  }
+
   :host([is-searchbox-focused]) #searchboxContainer {
     inset-inline-end: 84px;
   }
@@ -273,7 +277,7 @@
    * Show the ghost loader when the searchbox is focused and the searchbox
    * dropdown isn't showing (no results available).
    */
-   :host([is-searchbox-focused]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+  :host([show-ghost-loader]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
     display: block;
   }
 </style>
@@ -284,6 +288,7 @@
     on-selection-finished="handleSelectionFinished"
     on-pointerenter="handlePointerEnter"
     on-pointerleave="handlePointerLeave"
+    on-escape-searchbox="handleEscapeSearchbox"
     style="
     --color-primary: [[skColorToHex_(theme.primary)]];
     --color-shader-layer-1: [[skColorToHex_(theme.shaderLayer1)]];

@@ -24,7 +24,7 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
  public:
   DocumentScanScanFunctionTest()
       : function_(base::MakeRefCounted<DocumentScanScanFunction>()) {}
-  ~DocumentScanScanFunctionTest() override {}
+  ~DocumentScanScanFunctionTest() override = default;
 
   void SetUp() override {
     ExtensionApiUnittest::SetUp();

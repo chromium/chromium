@@ -16,6 +16,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/script_injection_tracker.h"
@@ -112,6 +113,16 @@ bool CanCrossIncognito(const Extension* extension,
   return IsIncognitoEnabled(extension->id(), context) &&
          !IncognitoInfo::IsSplitMode(extension);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void InitExtensionSystemForIncognitoSplit(
+    content::BrowserContext* incognito_context) {
+  ExtensionSystem* extension_system = ExtensionSystem::Get(incognito_context);
+  if (!extension_system->is_ready()) {
+    extension_system->InitForRegularProfile(/*extensions_enabled=*/true);
+  }
+}
+#endif
 
 bool AllowFileAccess(const ExtensionId& extension_id,
                      content::BrowserContext* context) {

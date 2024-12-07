@@ -56,6 +56,9 @@
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
         ],
+        'args': [
+          '--release',
+        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -2521,9 +2524,6 @@
         'mixins': [
           'has_native_resultdb_integration',
         ],
-        'args': [
-          '--out_dir=.',
-        ],
         'linux_args': [
           '--no-xvfb',
         ],
@@ -2534,9 +2534,6 @@
       'ondevice_stability_tests': {
         'mixins': [
           'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--out_dir=.',
         ],
         'linux_args': [
           '--chromedriver',

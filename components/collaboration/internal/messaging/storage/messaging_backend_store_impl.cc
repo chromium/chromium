@@ -91,6 +91,21 @@ void MessagingBackendStoreImpl::ClearDirtyMessage(const base::Uuid uuid,
 }
 
 std::vector<collaboration_pb::Message>
+MessagingBackendStoreImpl::GetDirtyMessages(DirtyType dirty_type) {
+  std::vector<collaboration_pb::Message> result;
+  TraverseMessages(base::BindRepeating(
+      [](std::vector<collaboration_pb::Message>* result, DirtyType dirty_type,
+         collaboration_pb::Message& message) {
+        if (IsDirty(message, dirty_type)) {
+          result->push_back(message);
+        }
+        return true;
+      },
+      &result, dirty_type));
+  return result;
+}
+
+std::vector<collaboration_pb::Message>
 MessagingBackendStoreImpl::GetDirtyMessagesForGroup(
     const data_sharing::GroupId& collaboration_id,
     DirtyType dirty_type) {

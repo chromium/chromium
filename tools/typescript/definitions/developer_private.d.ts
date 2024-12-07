@@ -154,6 +154,7 @@ declare global {
         custodianApprovalRequired: boolean;
         parentDisabledPermissions: boolean;
         unsupportedManifestVersion: boolean;
+        unsupportedDeveloperExtension: boolean;
       }
 
       export interface OptionsPage {

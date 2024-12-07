@@ -500,7 +500,12 @@ bool FullscreenController::HandleUserPressedEscape() {
 }
 
 void FullscreenController::HandleUserHeldEscape() {
-  if (RequiresPressAndHoldEscToExit()) {
+  CHECK(exclusive_access_manager());
+  CHECK(exclusive_access_manager()->context());
+  ExclusiveAccessContext* const exclusive_access_context =
+      exclusive_access_manager()->context();
+  if (RequiresPressAndHoldEscToExit() &&
+      exclusive_access_context->CanUserExitFullscreen()) {
     ExitFullscreenModeInternal();
     base::RecordAction(
         base::UserMetricsAction("ExitFullscreen_PressAndHoldEsc"));

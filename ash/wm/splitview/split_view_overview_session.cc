@@ -219,9 +219,6 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
   // the grid bounds, because `OverviewGrid` will calculate the bounds based
   // on `SplitViewController::divider_position_` which wouldn't work for
   // multiple groups.
-  // TODO(michelefan | sophiewen): Reconsider the ownership of the session
-  // and generalize the `OverviewGrid` bounds calculation to be independent
-  // from `SplitViewController`.
   GetOverviewSession()
       ->GetGridWithRootWindow(window->GetRootWindow())
       ->RefreshGridBounds(/*animate=*/false);

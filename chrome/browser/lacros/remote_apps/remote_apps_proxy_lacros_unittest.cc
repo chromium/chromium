@@ -119,7 +119,7 @@ class RemoteAppsProxyLacrosUnittest : public testing::Test {
     CHECK(testing_profile_manager_.SetUp());
   }
 
-  ~RemoteAppsProxyLacrosUnittest() override {}
+  ~RemoteAppsProxyLacrosUnittest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();

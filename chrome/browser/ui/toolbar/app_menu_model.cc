@@ -228,7 +228,7 @@ std::u16string GetUpgradeDialogTitleText() {
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-    return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT);
+  return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT);
 #else
   return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
 #endif
@@ -273,10 +273,7 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
     // Showing `Install Page as App` allows the user to refetch the manifest and
     // go through the install flow without relying on the AppBannerManager to
     // finish working.
-    if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-      return install_page_as_app_label;
-    }
-    return std::u16string();
+    return install_page_as_app_label;
   }
 
   std::optional<webapps::InstallBannerConfig> install_config =
@@ -286,10 +283,7 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
     // the information populated to be used for determining installability and
     // other parameters is not available. In this case, allow users to try
     // installability by refetching the manifest.
-    if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-      return install_page_as_app_label;
-    }
-    return std::u16string();
+    return install_page_as_app_label;
   }
   CHECK_EQ(install_config->mode, webapps::AppBannerMode::kWebApp);
   webapps::InstallableWebAppCheckResult installable =
@@ -306,30 +300,20 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
       // user to trigger the install flow to verify all the data required for
       // installability. The correct dialog will be shown to the user depending
       // on whether the app turns out to be installable or not.
-      if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-        return install_page_as_app_label;
-      }
-      return std::u16string();
+      return install_page_as_app_label;
     case webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled:
       // Returning an empty string here allows the `launch page as app` field to
       // get populated in place of the `install` strings.
       return std::u16string();
     case webapps::InstallableWebAppCheckResult::kNo:
-      if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-        return install_page_as_app_label;
-      }
-      return std::u16string();
+      return install_page_as_app_label;
     case webapps::InstallableWebAppCheckResult::kYes_ByUserRequest:
     case webapps::InstallableWebAppCheckResult::kYes_Promotable:
       std::u16string app_name = install_config->GetWebOrNativeAppName();
       if (app_name.empty()) {
         // Prefer showing `Install Page as App` here, as users can set the name
         // of the installed app on the DIY app dialog anyway.
-        if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-          return install_page_as_app_label;
-        } else {
-          return std::u16string();
-        }
+        return install_page_as_app_label;
       }
       return l10n_util::GetStringFUTF16(
           IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
@@ -342,12 +326,6 @@ ui::ImageModel GetInstallPWAIcon(Browser* browser) {
   ui::ImageModel app_icon_to_use = ui::ImageModel::FromVectorIcon(
       kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
       ui::SimpleMenuModel::kDefaultIconSize);
-
-  // App icons in the app menu are only a part of the WebAppUniversalInstall
-  // feature.
-  if (!base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-    return app_icon_to_use;
-  }
 
   content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();

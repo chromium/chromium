@@ -157,11 +157,10 @@ AggregationServiceStorageSql::AggregationServiceStorageSql(
       clock_(*clock),
       max_stored_requests_per_reporting_origin_(
           max_stored_requests_per_reporting_origin),
-      db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 32}) {
+      db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 32},
+          /*tag=*/"AggregationService") {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   CHECK(clock);
-
-  db_.set_histogram_tag("AggregationService");
 
   // base::Unretained is safe here because the callback will only be called
   // while the sql::Database in `db_` is alive, and this instance owns `db_`.

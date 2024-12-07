@@ -60,7 +60,7 @@ class LoginScreenPowerManagementPolicyHandlerTest : public testing::Test {
 };
 
 LoginScreenPowerManagementPolicyHandlerTest::
-    LoginScreenPowerManagementPolicyHandlerTest() {}
+    LoginScreenPowerManagementPolicyHandlerTest() = default;
 
 void LoginScreenPowerManagementPolicyHandlerTest::SetUp() {
   chrome_schema_ = Schema::Wrap(GetChromeSchemaData());

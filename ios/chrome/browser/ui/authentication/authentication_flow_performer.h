@@ -65,7 +65,8 @@ using OnProfileSwitchCompletion = base::OnceCallback<void(bool success)>;
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                      userEmail:(NSString*)userEmail
                                 viewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser;
+                                       browser:(Browser*)browser
+                     skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration;
 
 // Completes the post-signin actions. In most cases the action is showing a
 // snackbar confirming sign-in with `identity` and an undo button to sign out

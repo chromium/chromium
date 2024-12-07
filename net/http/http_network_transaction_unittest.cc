@@ -23788,9 +23788,6 @@ class HttpNetworkTransactionReportingTest
   HttpNetworkTransactionReportingTest() {
     std::vector<base::test::FeatureRef> required_features = {
         features::kPartitionConnectionsByNetworkIsolationKey};
-    if (UseDocumentReporting()) {
-      required_features.push_back(features::kDocumentReporting);
-    }
     feature_list_.InitWithFeatures(required_features, {});
   }
 

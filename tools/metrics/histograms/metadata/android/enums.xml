@@ -1464,9 +1464,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Custom Tab"/>
   <int value="4" label="Hub"/>
   <int value="5" label="Launcher"/>
+  <int value="6" label="WebSearch / External"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/searchactivityutils/java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityExtras.java:IntentOrigin) -->
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:IntentOriginVariants) -->
 
 <enum name="SearchActivitySearchType">
   <int value="0" label="Text"/>

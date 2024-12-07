@@ -6,6 +6,7 @@
 
 NSString* const kCardholderNamePrefKey = @"cardholderName";
 NSString* const kCardIssuerIconNamePrefKey = @"cardIssuerIconName";
+NSString* const kCardNetworkPrefKey = @"cardNetwork";
 NSString* const kCardNumberPrefKey = @"cardNumber";
 NSString* const kExpirationMonthPrefKey = @"expirationMonth";
 NSString* const kExpirationYearPrefKey = @"expirationYear";

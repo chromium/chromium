@@ -81,43 +81,6 @@ void LogInstallCriteria(std::string_view event_name,
 
 }  // namespace
 
-struct OnDeviceModelComponentStateManager::RegistrationCriteria {
-  // Requirements for install. Please update `LogInstallCriteria()` when
-  // updating this.
-  bool disk_space_available = false;
-  bool device_capable = false;
-  bool on_device_feature_recently_used = false;
-  bool enabled_by_feature = false;
-  bool enabled_by_enterprise_policy = false;
-
-  // Reasons to uninstall. TODO(b/302327114): Add UMA for uninstall reason.
-  bool running_out_of_disk_space = false;
-  bool out_of_retention = false;
-
-  // Current state.
-
-  // We've registered the installer in the past, and haven't uninstalled yet.
-  // The component may or may not be ready.
-  bool is_already_installing = false;
-
-  bool is_model_allowed() const {
-    return device_capable && enabled_by_feature && enabled_by_enterprise_policy;
-  }
-
-  bool should_install() const {
-    if (should_uninstall()) {
-      return false;
-    }
-    return (disk_space_available && is_model_allowed() &&
-            on_device_feature_recently_used);
-  }
-
-  bool should_uninstall() const {
-    return (is_already_installing &&
-            (running_out_of_disk_space || out_of_retention));
-  }
-};
-
 namespace {
 
 void LogInstallCriteria(
@@ -167,6 +130,12 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
   }
   // This may happen before the first registration.
   return OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
+}
+
+const OnDeviceModelComponentStateManager::RegistrationCriteria*
+OnDeviceModelComponentStateManager::GetRegistrationCriteria() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return registration_criteria_.get();
 }
 
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(

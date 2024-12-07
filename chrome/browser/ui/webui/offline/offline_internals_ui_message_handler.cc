@@ -74,7 +74,7 @@ std::string GetStringFromSavePageStatus() {
 OfflineInternalsUIMessageHandler::OfflineInternalsUIMessageHandler()
     : offline_page_model_(nullptr), request_coordinator_(nullptr) {}
 
-OfflineInternalsUIMessageHandler::~OfflineInternalsUIMessageHandler() {}
+OfflineInternalsUIMessageHandler::~OfflineInternalsUIMessageHandler() = default;
 
 void OfflineInternalsUIMessageHandler::HandleDeleteSelectedPages(
     const base::Value::List& args) {

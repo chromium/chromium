@@ -253,6 +253,12 @@ TEST_F(AIPageContentAgentTest, Lists) {
       "    <li>Step 1</li>"
       "    <li>Step 2</li>"
       "  </ol>"
+      "  <dl>"
+      "    <dt>Detail 1 title</dt>"
+      "    <dd>Detail 1 description</dd>"
+      "    <dt>Detail 2 title</dt>"
+      "    <dd>Detail 2 description</dd>"
+      "  </dl>"
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
@@ -265,26 +271,30 @@ TEST_F(AIPageContentAgentTest, Lists) {
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
-  ASSERT_EQ(root.children_nodes.size(), 2u);
+  ASSERT_EQ(root.children_nodes.size(), 3u);
 
   const auto& ul = *root.children_nodes[0]->content_attributes;
-  EXPECT_EQ(ul.attribute_type, mojom::blink::AIPageContentAttributeType::kList);
-
-  // Each list item also has a ::marker before it.
-  ASSERT_EQ(ul.text_info.size(), 4u);
-  const auto bullet_point = String(u"\u2022 ");
-  EXPECT_EQ(ul.text_info[0]->text_content, bullet_point);
-  EXPECT_EQ(ul.text_info[1]->text_content, "Item 1");
-  EXPECT_EQ(ul.text_info[2]->text_content, bullet_point);
-  EXPECT_EQ(ul.text_info[3]->text_content, "Item 2");
+  EXPECT_EQ(ul.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kUnorderedList);
+  ASSERT_EQ(ul.text_info.size(), 2u);
+  EXPECT_EQ(ul.text_info[0]->text_content, "Item 1");
+  EXPECT_EQ(ul.text_info[1]->text_content, "Item 2");
 
   const auto& ol = *root.children_nodes[1]->content_attributes;
-  EXPECT_EQ(ol.attribute_type, mojom::blink::AIPageContentAttributeType::kList);
-  ASSERT_EQ(ol.text_info.size(), 4u);
-  EXPECT_EQ(ol.text_info[0]->text_content, "1. ");
-  EXPECT_EQ(ol.text_info[1]->text_content, "Step 1");
-  EXPECT_EQ(ol.text_info[2]->text_content, "2. ");
-  EXPECT_EQ(ol.text_info[3]->text_content, "Step 2");
+  EXPECT_EQ(ol.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kOrderedList);
+  ASSERT_EQ(ol.text_info.size(), 2u);
+  EXPECT_EQ(ol.text_info[0]->text_content, "Step 1");
+  EXPECT_EQ(ol.text_info[1]->text_content, "Step 2");
+
+  const auto& dl = *root.children_nodes[2]->content_attributes;
+  EXPECT_EQ(dl.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kUnorderedList);
+  ASSERT_EQ(dl.text_info.size(), 4u);
+  EXPECT_EQ(dl.text_info[0]->text_content, "Detail 1 title");
+  EXPECT_EQ(dl.text_info[1]->text_content, "Detail 1 description");
+  EXPECT_EQ(dl.text_info[2]->text_content, "Detail 2 title");
+  EXPECT_EQ(dl.text_info[3]->text_content, "Detail 2 description");
 }
 
 TEST_F(AIPageContentAgentTest, IFrameWithContent) {
@@ -322,12 +332,15 @@ TEST_F(AIPageContentAgentTest, IFrameWithContent) {
 
   const auto& iframe = *root.children_nodes[0];
   const auto& iframe_attributes = *iframe.content_attributes;
-  EXPECT_TRUE(iframe.children_nodes.empty());
 
   EXPECT_EQ(iframe_attributes.attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
-  ASSERT_EQ(iframe_attributes.text_info.size(), 1u);
-  EXPECT_EQ(iframe_attributes.text_info[0]->text_content, "inside iframe");
+
+  const auto& iframe_root = iframe.children_nodes[0];
+  const auto& iframe_root_attributes = *iframe_root->content_attributes;
+
+  ASSERT_EQ(iframe_root_attributes.text_info.size(), 1u);
+  EXPECT_EQ(iframe_root_attributes.text_info[0]->text_content, "inside iframe");
 }
 
 TEST_F(AIPageContentAgentTest, NoLayoutElement) {

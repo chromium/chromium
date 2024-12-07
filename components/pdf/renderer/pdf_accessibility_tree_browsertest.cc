@@ -2753,10 +2753,10 @@ TEST_P(PdfOcrHelperTest, UMAMetrics) {
   // `PdfAccessibilityTree::SetAccessibilityPageInfo` for the second time.
   // Either update text fixture to be more realistic, or add metrics test to
   // browser test without fake OCR helper.
-  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText",
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2",
                                /*sample=*/false,
                                /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText",
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
                               /*expected_count=*/1);
 
   histograms.ExpectBucketCount("Accessibility.PdfOcr.InaccessiblePdfPageCount",

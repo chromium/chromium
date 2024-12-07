@@ -336,7 +336,7 @@ BASE_FEATURE(kReportApplicationLanguageInSearchRequest,
 BASE_FEATURE(kOmniboxAsyncViewInflation, "OmniboxAsyncViewInflation", DISABLED);
 
 // Use FusedLocationProvider on Android to fetch device location.
-BASE_FEATURE(kUseFusedLocationProvider, "UseFusedLocationProvider", DISABLED);
+BASE_FEATURE(kUseFusedLocationProvider, "UseFusedLocationProvider", ENABLED);
 
 // Enables storing successful query/match in the shortcut database On Android.
 BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);

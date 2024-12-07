@@ -413,6 +413,18 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Request is destroyed"/>
 </enum>
 
+<enum name="FedCmVerifyingDialogResult">
+  <int value="0" label="User waits for success/failure, explicit sign-in"/>
+  <int value="1" label="User waits for success/failure, auto re-authn"/>
+  <int value="2"
+      label="Cancel button clicked or swiped to dismiss, explicit sign-in"/>
+  <int value="3"
+      label="Cancel button clicked or swiped to dismiss, auto re-authn"/>
+  <int value="4"
+      label="Tab or window is closed or refreshed, explicit sign-in"/>
+  <int value="5" label="Tab or window is closed or refreshed, auto re-authn"/>
+</enum>
+
 <enum name="FencedFrameBeaconReportingResult">
   <int value="0" label="Unknown result"/>
   <int value="1" label="Invalid / missing network request for an enum beacon"/>

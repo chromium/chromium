@@ -20,7 +20,7 @@ namespace device {
 
 // Helper enum used to describe if DOMOverlay should attempt to be setup, and if
 // it should, if initialization should fail if it is unable to be setup.
-enum DomOverlaySetup {
+enum class DomOverlaySetup {
   kNone,
   kRequired,
   kOptional,

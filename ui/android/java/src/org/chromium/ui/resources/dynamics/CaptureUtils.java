@@ -13,9 +13,7 @@ import android.view.View;
 public class CaptureUtils {
     /** Creates a bitmap with the given size. */
     public static Bitmap createBitmap(int width, int height) {
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.setHasAlpha(true);
-        return bitmap;
+        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888, /* hasAlpha= */ true);
     }
 
     /**

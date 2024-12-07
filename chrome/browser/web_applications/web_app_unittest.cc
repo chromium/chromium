@@ -90,7 +90,7 @@ void SetContentsOrDie(const base::FilePath& filepath,
 std::string SerializeValueToJsonOrDie(const base::Value& value) {
   std::string contents;
   CHECK(base::JSONWriter::WriteWithOptions(
-      value, base::JSONWriter::Options::OPTIONS_PRETTY_PRINT, &contents));
+      value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &contents));
   return contents;
 }
 

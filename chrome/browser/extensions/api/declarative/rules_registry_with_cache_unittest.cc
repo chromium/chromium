@@ -68,7 +68,7 @@ class RulesRegistryWithCacheTest : public testing::Test {
     CHECK_NE(extension2_->id(), extension1_->id());
   }
 
-  ~RulesRegistryWithCacheTest() override {}
+  ~RulesRegistryWithCacheTest() override = default;
 
   std::string AddRule(const std::string& extension_id,
                       const std::string& rule_id,

@@ -76,7 +76,7 @@ RenderInputRouterSupportChildFrame::TransformRootPointToViewCoordSpace(
 }
 
 gfx::PointF RenderInputRouterSupportChildFrame::TransformPointToRootCoordSpaceF(
-    const gfx::PointF& point) {
+    const gfx::PointF& point) const {
   return input_helper_->TransformPointToRootCoordSpaceF(point);
 }
 

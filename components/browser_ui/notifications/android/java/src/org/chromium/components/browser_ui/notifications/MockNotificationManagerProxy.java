@@ -94,20 +94,6 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
         return mutationCount;
     }
 
-    public void setNotificationsEnabled(boolean enabled) {
-        mNotificationsEnabled = enabled;
-    }
-
-    @Override
-    public boolean areNotificationsEnabled() {
-        return mNotificationsEnabled;
-    }
-
-    @Override
-    public void areNotificationsEnabled(Callback<Boolean> callback) {
-        callback.onResult(mNotificationsEnabled);
-    }
-
     @Override
     public void cancel(int id) {
         cancel(/* tag= */ null, id);

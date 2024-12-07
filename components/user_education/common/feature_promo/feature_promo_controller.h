@@ -30,9 +30,9 @@
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
-#include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/user_education_data.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
 class AcceleratorProvider;
@@ -219,8 +219,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       HelpBubbleFactoryRegistry* help_bubble_registry,
       UserEducationStorageService* storage_service,
       FeaturePromoSessionPolicy* session_policy,
-      TutorialService* tutorial_service,
-      ProductMessagingController* messaging_controller);
+      TutorialService* tutorial_service);
   ~FeaturePromoControllerCommon() override;
 
   // For systems where there are rendering issues of e.g. displaying the
@@ -305,6 +304,10 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   bool EndPromo(const base::Feature& iph_feature,
                 FeaturePromoClosedReason close_reason);
 
+  // Closes any existing help bubble in `context`; usually called after
+  // canceling any existing promo to clear up tutorial bubbles, etc.
+  void CloseHelpBubbleIfPresent(ui::ElementContext context);
+
   // Returns whether we can play a screen reader prompt for the "focus help
   // bubble" promo.
   // TODO(crbug.com/40200981): This must be called *before* we ask if the bubble
@@ -314,6 +317,11 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // all of this logic can be rewritten.
   bool CheckScreenReaderPromptAvailable(bool for_demo) const;
 
+  // Creates a lifecycle for the given promo.
+  std::unique_ptr<FeaturePromoLifecycle> CreateLifecycleFor(
+      const FeaturePromoSpecification& spec,
+      const FeaturePromoParams& params) const;
+
   // Derived classes need non-const access to these members in const methods.
   // Be careful when calling them.
   UserEducationStorageService* storage_service() const {
@@ -321,9 +329,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
   feature_engagement::Tracker* feature_engagement_tracker() const {
     return feature_engagement_tracker_;
-  }
-  ProductMessagingController* messaging_controller() const {
-    return messaging_controller_;
   }
   FeaturePromoSessionPolicy* session_policy() { return session_policy_; }
   const FeaturePromoSessionPolicy* session_policy() const {
@@ -500,7 +505,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   const raw_ptr<UserEducationStorageService> storage_service_;
   const raw_ptr<FeaturePromoSessionPolicy> session_policy_;
   const raw_ptr<TutorialService> tutorial_service_;
-  const raw_ptr<ProductMessagingController> messaging_controller_;
 
   // Whether IPH should be allowed to show in an inactive window or app.
   // Should be checked in implementations of CanShowPromo(). Typically only

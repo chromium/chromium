@@ -18,7 +18,7 @@ WebApksHandler::WebApksHandler()
     : delegate_(base::BindRepeating(&WebApksHandler::OnWebApkInfoRetrieved,
                                     base::Unretained(this))) {}
 
-WebApksHandler::~WebApksHandler() {}
+WebApksHandler::~WebApksHandler() = default;
 
 void WebApksHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

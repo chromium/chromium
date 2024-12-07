@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 
@@ -98,11 +101,8 @@ public class DefaultBrowserPromoUtils {
      * @return True if promo dialog will be displayed.
      */
     public boolean prepareLaunchPromoIfNeeded(
-            Activity activity,
-            WindowAndroid windowAndroid,
-            Tracker tracker,
-            boolean ignoreMaxCount) {
-        if (!shouldShowRoleManagerPromo(activity, ignoreMaxCount)) return false;
+            Activity activity, WindowAndroid windowAndroid, Tracker tracker) {
+        if (!shouldShowRoleManagerPromo(activity)) return false;
         mImpressionCounter.onPromoShown();
         tracker.notifyEvent("role_manager_default_browser_promos_shown");
         DefaultBrowserPromoManager manager =
@@ -152,8 +152,8 @@ public class DefaultBrowserPromoUtils {
      * 3. Current default browser state satisfied the pre-defined conditions.
      */
     public boolean shouldShowNonRoleManagerPromo(Context context) {
-        return !shouldShowRoleManagerPromo(context, false)
-                && mImpressionCounter.shouldShowPromo(true)
+        return !shouldShowRoleManagerPromo(context)
+                && mImpressionCounter.shouldShowPromo(/* ignoreMaxCount= */ true)
                 && mStateProvider.shouldShowPromo();
     }
 
@@ -162,16 +162,16 @@ public class DefaultBrowserPromoUtils {
      * the {@link RoleManager} is available, and both the impression count and current default
      * browser state satisfied the pre-defined conditions.
      */
-    public boolean shouldShowRoleManagerPromo(Context context, boolean ignoreMaxCount) {
+    public boolean shouldShowRoleManagerPromo(Context context) {
         if (!isFeatureEnabled()) return false;
 
-        if (!mStateProvider.isRoleAvailable(context)) {
+        if (!isRoleAvailableButNotHeld(context)) {
             // Returns false if RoleManager default app setting is not available in the current
-            // system.
+            // system, or the browser role is already held.
             return false;
         }
 
-        return mImpressionCounter.shouldShowPromo(ignoreMaxCount)
+        return mImpressionCounter.shouldShowPromo(/* ignoreMaxCount= */ false)
                 && mStateProvider.shouldShowPromo();
     }
 
@@ -204,6 +204,18 @@ public class DefaultBrowserPromoUtils {
                 mDefaultBrowserPromoTriggerStateListeners) {
             listener.onDefaultBrowserPromoTriggered();
         }
+    }
+
+    @SuppressLint("NewApi")
+    private boolean isRoleAvailableButNotHeld(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return false;
+        }
+        RoleManager roleManager = (RoleManager) context.getSystemService(Context.ROLE_SERVICE);
+        if (roleManager == null) return false;
+        boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);
+        boolean isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);
+        return isRoleAvailable && !isRoleHeld;
     }
 
     public static void setInstanceForTesting(DefaultBrowserPromoUtils testInstance) {

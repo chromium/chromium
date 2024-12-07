@@ -43,6 +43,7 @@ public @interface SearchActivityExtras {
         IntentOrigin.CUSTOM_TAB,
         IntentOrigin.HUB,
         IntentOrigin.LAUNCHER,
+        IntentOrigin.WEB_SEARCH,
         IntentOrigin.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -65,8 +66,11 @@ public @interface SearchActivityExtras {
         /** User redirected from Launcher MAIN intent (Jump-Start Omnibox). */
         int LAUNCHER = 5;
 
+        /** Intent.ACTION_WEB_SEARCH. */
+        int WEB_SEARCH = 6;
+
         /** Total count of items, used for histogram recording. */
-        int COUNT = 6;
+        int COUNT = 7;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:IntentOrigin)

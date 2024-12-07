@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/trace_event/memory_usage_estimator.h"
 #include "base/types/optional_ref.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/scheme_host_port_matcher.h"
@@ -82,10 +83,18 @@ class UrlMatcherWithBypass {
   static std::string PartitionMapKey(std::string_view domain);
 
  private:
+  struct PartitionMatcher {
+    net::SchemeHostPortMatcher matcher;
+    raw_ptr<net::SchemeHostPortMatcher> bypass_matcher;
+
+    size_t EstimateMemoryUsage() const {
+      return base::trace_event::EstimateMemoryUsage(matcher) +
+             sizeof(bypass_matcher);
+    }
+  };
+
   // Contains a single bypass matcher for each ResourceOwner that is referenced
   // by `match_list_with_bypass_map_`.
-  // TODO(crbug.com/344506511): Remove this when `net::SchemeHostPortMatcher` is
-  // replaced with a matcher that supports `scoped_refptr`.
   std::vector<std::unique_ptr<net::SchemeHostPortMatcher>> bypass_matchers_;
 
   // Empty matcher used by reference instead of creating new empty instances.
@@ -93,9 +102,7 @@ class UrlMatcherWithBypass {
 
   // Maps partition map keys to smaller maps of domains eligible for the match
   // list and the top frame domains that allow the match list to be bypassed.
-  std::map<std::string,
-           std::vector<std::pair<net::SchemeHostPortMatcher,
-                                 raw_ptr<net::SchemeHostPortMatcher>>>>
+  std::map<std::string, std::vector<PartitionMatcher>>
       match_list_with_bypass_map_;
 };
 

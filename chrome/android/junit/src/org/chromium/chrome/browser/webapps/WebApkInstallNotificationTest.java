@@ -30,10 +30,12 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.webapps.WebApkInstallResult;
 
 /** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Config(shadows = {ShadowNotificationManager.class})
 public class WebApkInstallNotificationTest {
     private static final String PACKAGE_NAME = "org.chromium.webapk.for.testing";

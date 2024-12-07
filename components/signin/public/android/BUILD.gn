@@ -18,6 +18,7 @@ android_library("java") {
 
   srcjar_deps = [
     ":account_capabilities_constants_javagen",
+    ":java_constants",
     ":jni_headers",
     ":signin_java_features_srcjar",
     ":tribool_javagen",
@@ -92,6 +93,11 @@ java_cpp_template("account_capabilities_constants_javagen") {
   inputs = [
     "//components/signin/internal/identity_manager/account_capabilities_list.h",
   ]
+}
+
+java_cpp_strings("java_constants") {
+  sources = [ "//components/signin/public/identity_manager/signin_constants.h" ]
+  template = "java_templates/SigninConstants.java.tmpl"
 }
 
 java_cpp_enum("tribool_javagen") {

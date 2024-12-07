@@ -538,7 +538,7 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
                               options.packet_time_params, rtc::TimeMicros());
 
   if (pad_bytes) {
-    char padding[4] = {0};
+    char padding[4] = {};
     DCHECK_LE(pad_bytes, 4);
     memcpy(send_buffer.buffer->data() + data.size(), padding, pad_bytes);
   }

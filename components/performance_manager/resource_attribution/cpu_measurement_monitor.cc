@@ -391,8 +391,7 @@ void CPUMeasurementMonitor::OnBeforeFrameNodeRemoved(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage, including this frame, so that
   // its final CPU usage is attributed to it before it's removed.
-  UpdateCPUMeasurements(frame_node->GetProcessNode(),
-                        GraphChangeRemoveFrame(frame_node));
+  UpdateCPUMeasurements(frame_node->GetProcessNode());
   SaveFinalMeasurements({frame_node->GetResourceContext()});
 }
 
@@ -460,8 +459,7 @@ void CPUMeasurementMonitor::OnBeforeWorkerNodeRemoved(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage, including this node, so that
   // its final CPU usage is attributed to it before it's removed.
-  UpdateCPUMeasurements(worker_node->GetProcessNode(),
-                        GraphChangeRemoveWorker(worker_node));
+  UpdateCPUMeasurements(worker_node->GetProcessNode());
   SaveFinalMeasurements({worker_node->GetResourceContext()});
 }
 
@@ -1019,25 +1017,12 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
   // The current measurement covers the time before the node was added.
   NodeSplitSet nodes_to_skip;
 
-  // Include nodes that are being removed from the graph. They may not be
-  // reachable through visitors at this point, but the current measurement
-  // covers the time before they were removed.
-  // TODO(crbug.com/40930981): Make the graph state consistent in
-  // OnBefore*NodeRemoved so `extra_nodes` isn't needed.
-  NodeSplitSet extra_nodes;
-
   absl::visit(base::Overloaded{
                   [&nodes_to_skip](GraphChangeAddFrame change) {
                     nodes_to_skip.insert(change.frame_node.get());
                   },
                   [&nodes_to_skip](GraphChangeAddWorker change) {
                     nodes_to_skip.insert(change.worker_node.get());
-                  },
-                  [&extra_nodes](GraphChangeRemoveFrame change) {
-                    extra_nodes.insert(change.frame_node.get());
-                  },
-                  [&extra_nodes](GraphChangeRemoveWorker change) {
-                    extra_nodes.insert(change.worker_node.get());
                   },
                   [](auto change) {
                     // Do nothing.
@@ -1048,7 +1033,7 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
   record_cpu_deltas(process_node->GetResourceContext(), cumulative_cpu_delta,
                     MeasurementAlgorithm::kDirectMeasurement);
   resource_attribution::SplitResourceAmongFramesAndWorkers(
-      cumulative_cpu_delta, process_node, extra_nodes, nodes_to_skip,
+      cumulative_cpu_delta, process_node, nodes_to_skip,
       [&record_cpu_deltas](const FrameNode* f, base::TimeDelta cpu_delta) {
         record_cpu_deltas(f->GetResourceContext(), cpu_delta,
                           MeasurementAlgorithm::kSplit);

@@ -154,7 +154,6 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
       : name_(name) {
     auto settings =
         SequenceManager::Settings::Builder()
-            .SetRandomisedSamplingEnabled(randomised_sampling_enabled)
             .Build();
     SetSequenceManager(SequenceManagerForTest::Create(
         std::make_unique<internal::ThreadControllerWithMessagePumpImpl>(

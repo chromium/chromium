@@ -245,10 +245,10 @@ INSTANTIATE_TEST_SUITE_P(
         // Chinese name, Unihan
         NameParserTestRecord{"孫文", "文", "", "孫", "", "", "孫"}));
 
-class AutofillStructuredAlternativeNameTest
+class AutofillStructuredParseAlternativeNameTest
     : public testing::TestWithParam<AlternativeNameParserTestRecord> {};
 
-TEST_P(AutofillStructuredAlternativeNameTest, ParseFullAlternativeName) {
+TEST_P(AutofillStructuredParseAlternativeNameTest, ParseFullAlternativeName) {
   auto name_test = GetParam();
 
   SCOPED_TRACE(name_test.full);
@@ -257,21 +257,43 @@ TEST_P(AutofillStructuredAlternativeNameTest, ParseFullAlternativeName) {
                        VerificationStatus::kObserved);
   name.CompleteFullTree();
 
-  EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FULL_NAME),
-            base::UTF8ToUTF16(name_test.full));
   SCOPED_TRACE(testing::Message()
-               << "alternative given name: "
+               << "\nalternative given name: "
                << name.GetValueForType(ALTERNATIVE_GIVEN_NAME) << "\n"
                << "alternative family name: "
-               << name.GetValueForType(ALTERNATIVE_FAMILY_NAME));
-
+               << name.GetValueForType(ALTERNATIVE_FAMILY_NAME) << "\n"
+               << "alternative full name: "
+               << name.GetValueForType(ALTERNATIVE_FULL_NAME));
+  EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FULL_NAME),
+            base::UTF8ToUTF16(name_test.full));
   EXPECT_EQ(name.GetValueForType(ALTERNATIVE_GIVEN_NAME),
             base::UTF8ToUTF16(name_test.given));
   EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FAMILY_NAME),
             base::UTF8ToUTF16(name_test.family));
 }
 
-TEST_P(AutofillStructuredAlternativeNameTest, FormatFullAlternativeName) {
+INSTANTIATE_TEST_SUITE_P(
+    ParseAlternativeNameTest,
+    AutofillStructuredParseAlternativeNameTest,
+    testing::Values(
+        // Hiragana with space as a separator.
+        AlternativeNameParserTestRecord{"やまもと あおい", "あおい",
+                                        "やまもと"},
+        // Hiragana with full width space as a separator.
+        AlternativeNameParserTestRecord{"さとう　みどり", "みどり", "さとう"},
+        // Dot as a separator.
+        AlternativeNameParserTestRecord{"やまもと・あおい", "あおい",
+                                        "やまもと"},
+        // Hiragana without the separator.
+        AlternativeNameParserTestRecord{"やまもとあおい", "やまもとあおい", ""},
+        // Latin characters.
+        AlternativeNameParserTestRecord{"Karol Kotynia", "Karol", "Kotynia"}));
+
+class AutofillStructuredFormatFullAlternativeNameTest
+    : public testing::TestWithParam<AlternativeNameParserTestRecord> {};
+
+TEST_P(AutofillStructuredFormatFullAlternativeNameTest,
+       FormatFullAlternativeName) {
   auto name_test = GetParam();
   SCOPED_TRACE(name_test.full);
   AlternativeFullName name;
@@ -283,33 +305,33 @@ TEST_P(AutofillStructuredAlternativeNameTest, FormatFullAlternativeName) {
                        VerificationStatus::kObserved);
   name.CompleteFullTree();
 
-  EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FULL_NAME),
-            base::StrCat({base::UTF8ToUTF16(name_test.family),
-                          base::UTF8ToUTF16(name_test.given)}));
   SCOPED_TRACE(testing::Message()
-               << "alternative given name: "
+               << "\nalternative given name: "
                << name.GetValueForType(ALTERNATIVE_GIVEN_NAME) << "\n"
                << "alternative family name: "
-               << name.GetValueForType(ALTERNATIVE_FAMILY_NAME));
+               << name.GetValueForType(ALTERNATIVE_FAMILY_NAME) << "\n"
+               << "alternative full name: "
+               << name.GetValueForType(ALTERNATIVE_FULL_NAME));
 
+  EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FULL_NAME),
+            base::UTF8ToUTF16(name_test.full));
   EXPECT_EQ(name.GetValueForType(ALTERNATIVE_GIVEN_NAME),
             base::UTF8ToUTF16(name_test.given));
   EXPECT_EQ(name.GetValueForType(ALTERNATIVE_FAMILY_NAME),
             base::UTF8ToUTF16(name_test.family));
 }
 
-INSTANTIATE_TEST_SUITE_P(AutofillStructuredAlternativeNameTest,
-                         AutofillStructuredAlternativeNameTest,
-                         testing::Values(
-                             // Hiragana with space as a separator.
-                             AlternativeNameParserTestRecord{
-                                 "やまもと あおい", "あおい", "やまもと"},
-                             // Hiragana with full width space as a separator.
-                             AlternativeNameParserTestRecord{
-                                 "さとう　みどり", "みどり", "さとう"},
-                             // Dot as a separator.
-                             AlternativeNameParserTestRecord{
-                                 "やまもと・あおい", "あおい", "やまもと"}));
+INSTANTIATE_TEST_SUITE_P(
+    FormatFullAlternativeNameTest,
+    AutofillStructuredFormatFullAlternativeNameTest,
+    testing::Values(
+        // Hiragana with space as a separator.
+        AlternativeNameParserTestRecord{"やまもと あおい", "あおい",
+                                        "やまもと"},
+        // Hiragana without the separator.
+        AlternativeNameParserTestRecord{"やまもとあおい", "やまもとあおい", ""},
+        // Latin characters.
+        AlternativeNameParserTestRecord{"Karol Kotynia", "Karol", "Kotynia"}));
 
 // Tests the detection of CJK name characteristics.
 TEST(AutofillStructuredName, HasCjkNameCharacteristics) {

@@ -22,6 +22,8 @@ blink_modules_sources("shared_storage") {
     "shared_storage_clear_method.h",
     "shared_storage_delete_method.cc",
     "shared_storage_delete_method.h",
+    "shared_storage_modifier_method.cc",
+    "shared_storage_modifier_method.h",
     "shared_storage_operation_definition.cc",
     "shared_storage_operation_definition.h",
     "shared_storage_set_method.cc",

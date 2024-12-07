@@ -8,15 +8,16 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
 class BrowserContext;
-class WebContents;
 }  // namespace content
 
 namespace glic {
+class GlicFocusedTabManager;
 class GlicWindowController;
 
 class GlicKeyedService : public KeyedService {
@@ -45,10 +46,10 @@ class GlicKeyedService : public KeyedService {
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
 
  private:
-  content::WebContents* GetWebContentsForContext();
   raw_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<GlicWindowController> window_controller_;
+  GlicFocusedTabManager focused_tab_manager_;
 };
 
 }  // namespace glic

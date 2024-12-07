@@ -239,6 +239,13 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     NOTIMPLEMENTED();
   }
 
+  virtual HashSet<HashAlgorithm> CSPHashesToReport() const {
+    return HashSet<HashAlgorithm>();
+  }
+  virtual void AddCSPHashReport(
+      const String& url,
+      const HashMap<HashAlgorithm, String>& integrity_hashes) {}
+
  protected:
   const Vector<KURL> empty_unused_preloads_;
 };

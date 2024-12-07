@@ -29,6 +29,7 @@
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
@@ -88,17 +89,21 @@ base::expected<TimeDelta, ProcessCPUUsageError> ParseTotalCPUTimeFromStats(
   return base::ok(cpu_time);
 }
 
+size_t GetKbFieldAsSizeT(std::string_view value_str) {
+  std::vector<std::string_view> split_value_str =
+      SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
+  CHECK(split_value_str.size() == 2 && split_value_str[1] == "kB");
+  size_t value;
+  CHECK(StringToSizeT(split_value_str[0], &value));
+  return value;
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
     ProcessHandle process) {
   return WrapUnique(new ProcessMetrics(process));
-}
-
-size_t ProcessMetrics::GetResidentSetSize() const {
-  return internal::ReadProcStatsAndGetFieldAsSizeT(process_, internal::VM_RSS) *
-         checked_cast<size_t>(getpagesize());
 }
 
 base::expected<TimeDelta, ProcessCPUUsageError>
@@ -140,9 +145,48 @@ bool ProcessMetrics::GetCumulativeCPUUsagePerThread(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-uint64_t ProcessMetrics::GetVmSwapBytes() const {
-  return internal::ReadProcStatusAndGetKbFieldAsSizeT(process_, "VmSwap") *
-         1024;
+base::expected<ProcessMemoryInfo, ProcessUsageError>
+ProcessMetrics::GetMemoryInfo() const {
+  StringPairs pairs;
+  if (!internal::ReadProcFileToTrimmedStringPairs(process_, "status", &pairs)) {
+    return base::unexpected(ProcessUsageError::kSystemError);
+  }
+  ProcessMemoryInfo dump;
+  for (const auto& pair : pairs) {
+    const std::string& key = pair.first;
+    const std::string& value_str = pair.second;
+    if (key == "VmSwap") {
+      dump.vm_swap_bytes =
+          static_cast<uint64_t>(GetKbFieldAsSizeT(value_str)) * 1024;
+    } else if (key == "VmRSS") {
+      dump.resident_set_bytes =
+          static_cast<uint64_t>(GetKbFieldAsSizeT(value_str)) * 1024;
+    } else if (key == "RssAnon") {
+      dump.rss_anon_bytes =
+          static_cast<uint64_t>(GetKbFieldAsSizeT(value_str)) * 1024;
+    } else {
+      continue;
+    }
+  }
+  if (dump.rss_anon_bytes != 0) {
+    return dump;
+  }
+  // RssAnon was introduced in Linux 4.5, use /proc/pid/statm as fallback.
+  std::string statm_data;
+  FilePath statm_file = internal::GetProcPidDir(process_).Append("statm");
+  if (!internal::ReadProcFile(statm_file, &statm_data)) {
+    return base::unexpected(ProcessUsageError::kSystemError);
+  }
+  std::vector<std::string_view> values = SplitStringPieceUsingSubstr(
+      statm_data, " ", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
+  CHECK_GE(values.size(), 3U);
+  uint64_t resident_pages = 0;
+  uint64_t shared_pages = 0;
+  CHECK(StringToUint64(values[1], &resident_pages));
+  CHECK(StringToUint64(values[2], &shared_pages));
+  static const size_t page_size = GetPageSize();
+  dump.rss_anon_bytes = (resident_pages - shared_pages) * page_size;
+  return dump;
 }
 
 bool ProcessMetrics::GetPageFaultCounts(PageFaultCounts* counts) const {

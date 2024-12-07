@@ -337,18 +337,9 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(AppBannerManagerInstallStateObserver,
 }  // namespace
 
 class UniversalInstallAppMenuModelInteractiveTest
-    : public AppMenuModelInteractiveTest,
-      public testing::WithParamInterface<bool> {
+    : public AppMenuModelInteractiveTest {
  public:
-  UniversalInstallAppMenuModelInteractiveTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kWebAppUniversalInstall);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kWebAppUniversalInstall);
-    }
-  }
+  UniversalInstallAppMenuModelInteractiveTest() = default;
   UniversalInstallAppMenuModelInteractiveTest(
       const UniversalInstallAppMenuModelInteractiveTest&) = delete;
   void operator=(const UniversalInstallAppMenuModelInteractiveTest&) = delete;
@@ -373,7 +364,6 @@ class UniversalInstallAppMenuModelInteractiveTest
   // a corresponding menu item entry for installation, as well as the default
   // install icon next to them.
   auto VerifyDiyAppMenuItemViews() {
-    if (IsUniversalInstallEnabled()) {
       const ui::ImageModel icon_image = ui::ImageModel::FromVectorIcon(
           kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
@@ -384,9 +374,6 @@ class UniversalInstallAppMenuModelInteractiveTest
               l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE)),
           CheckViewProperty(AppMenuModel::kInstallAppItem,
                             &views::MenuItemView::GetIcon, icon_image));
-    } else {
-      return Steps(EnsureNotPresent(AppMenuModel::kInstallAppItem));
-    }
   }
 
   AppBannerManager* GetManager() {
@@ -401,17 +388,10 @@ class UniversalInstallAppMenuModelInteractiveTest
   // so we do a 1:1 comparison.
   auto CompareIcons() {
     return base::BindLambdaForTesting([&](views::MenuItemView* item_view) {
-      if (IsUniversalInstallEnabled()) {
         EXPECT_TRUE(item_view->GetIcon().IsImage());
         EXPECT_EQ(
             GetMidColorFromBitmap(item_view->GetIcon().GetImage().AsBitmap()),
             GetAppIconColorBasedOnBannerData());
-      } else {
-        EXPECT_EQ(item_view->GetIcon(),
-                  ui::ImageModel::FromVectorIcon(
-                      kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
-                      ui::SimpleMenuModel::kDefaultIconSize));
-      }
     });
   }
 
@@ -442,8 +422,6 @@ class UniversalInstallAppMenuModelInteractiveTest
   }
 
  private:
-  bool IsUniversalInstallEnabled() { return GetParam(); }
-
   SkColor GetAppIconColorBasedOnBannerData() {
     std::optional<WebAppBannerData> banner_data =
         GetManager()->GetCurrentWebAppBannerData();
@@ -468,7 +446,7 @@ class UniversalInstallAppMenuModelInteractiveTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
+IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
                        DIYAppMenuWorksCorrectly) {
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
@@ -482,7 +460,7 @@ IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
       VerifyDiyAppMenuItemViews());
 }
 
-IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
+IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
                        DIYAppMenuWorksCorrectlyInvalidManifestParsingSites) {
   RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
                   ObserveState(kAppBannerManagerState, GetManager()),
@@ -502,7 +480,7 @@ IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
                   VerifyDiyAppMenuItemViews());
 }
 
-IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
+IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
                        InstallAppMenuWorksCorrectly) {
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
@@ -523,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
       WithView(AppMenuModel::kInstallAppItem, CompareIcons()));
 }
 
-IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
+IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
                        InstallAppMenuShowsForNonLocallyInstalledApps) {
   EXPECT_TRUE(InstallNonLocallyInstalledApp(GetInstallableAppUrl()));
   RunTestSequence(
@@ -538,14 +516,6 @@ IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       EnsurePresent(AppMenuModel::kInstallAppItem));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UniversalInstallAppMenuModelInteractiveTest,
-                         ::testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "UniversalInstallEnabled"
-                                             : "UniversalInstallDisabled";
-                         });
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class SupervisedUserAppMenuModelInteractiveTest

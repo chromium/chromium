@@ -188,10 +188,10 @@ class GPU_EXPORT SharedImageInterface
     base::WritableSharedMemoryMapping mapping;
   };
 
-  // Creates a shared image with the usage of gpu::SHARED_IMAGE_USAGE_CPU_WRITE
-  // only. A shared memory buffer is created internally and a shared image is
-  // created out this buffer. This method is used by the software compositor
-  // only.
+  // Creates a shared image with the usage of
+  // gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY only. A shared memory buffer is
+  // created internally and a shared image is created out this buffer. This
+  // method is used by the software compositor only.
   virtual SharedImageMapping CreateSharedImage(
       const SharedImageInfo& si_info) = 0;
 

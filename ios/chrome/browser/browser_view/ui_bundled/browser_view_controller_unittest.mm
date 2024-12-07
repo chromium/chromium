@@ -11,7 +11,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "components/commerce/core/mock_shopping_service.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/keyed_service/core/keyed_service.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/supervised_user/core/common/features.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_consumer.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_events_mediator.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
@@ -91,7 +94,6 @@
 class BrowserViewControllerTest : public BlockCleanupTest {
  public:
  protected:
-
   void SetUp() override {
     BlockCleanupTest::SetUp();
 
@@ -99,7 +101,12 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     // Set up a TestProfileIOS instance.
     TestProfileIOS::Builder test_profile_builder;
-
+    test_profile_builder.AddTestingFactory(
+        commerce::ShoppingServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return commerce::MockShoppingService::Build();
+            }));
     test_profile_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
@@ -219,6 +226,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
       browser_->GetWebStateList()->InsertWebState(std::move(webState));
       browser_->GetWebStateList()->ActivateWebStateAt(0);
     }
+
+    shopping_service_ = static_cast<commerce::MockShoppingService*>(
+        commerce::ShoppingServiceFactory::GetForProfile(GetProfile()));
+    shopping_service_->SetIsShoppingListEligible(true);
 
     // Load TemplateURLService.
     TemplateURLService* template_url_service =
@@ -402,6 +413,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   BrowserViewController* bvc_;
   UIWindow* window_;
   SceneState* scene_state_;
+  raw_ptr<commerce::MockShoppingService> shopping_service_;
   PopupMenuCoordinator* popup_menu_coordinator_;
   ToolbarCoordinator* toolbar_coordinator_;
   TabStripCoordinator* tab_strip_coordinator_;

@@ -98,6 +98,10 @@ process_template() (
     -e "s#@@REPOCONFIGREGEX@@#${REPOCONFIGREGEX}#g" \
     -e "s#@@SHORTDESC@@#${SHORTDESC}#g" \
     -e "s#@@FULLDESC@@#${FULLDESC}#g" \
+    -e "s#@@PROJECT_LICENSE@@#${PROJECT_LICENSE}#g" \
+    -e "s#@@DEVELOPER_NAME@@#${DEVELOPER_NAME}#g" \
+    -e "s#@@BUGTRACKERURL@@#${BUGTRACKERURL}#g" \
+    -e "s#@@HELPURL@@#${HELPURL}#g" \
     -e "s#@@USR_BIN_SYMLINK_NAME@@#${USR_BIN_SYMLINK_NAME:-}#g" \
     -e "s#@@LOGO_RESOURCES_PNG@@#${LOGO_RESOURCES_PNG}#g" \
     -e "s#@@LOGO_RESOURCE_XPM@@#${LOGO_RESOURCE_XPM}#g" \
@@ -325,14 +329,9 @@ stage_install_common() {
   install -m 755 "${OUTPUTDIR}/xdg-mime" "${STAGEDIR}${INSTALLDIR}/"
   install -m 755 "${OUTPUTDIR}/xdg-settings" "${STAGEDIR}${INSTALLDIR}/"
 
-  if [ "$BRANDING" = "google_chrome" ]; then
-    process_template "${OUTPUTDIR}/installer/common/google-chrome.appdata.xml.template" \
-      "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
-    chmod 644 "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
-  else
-    install -m 644 "${OUTPUTDIR}/installer/common/chromium-browser.appdata.xml" \
-      "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
-  fi
+  process_template "${OUTPUTDIR}/installer/common/appdata.xml.template" \
+    "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
+  chmod 644 "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
 
   process_template "${OUTPUTDIR}/installer/common/desktop.template" \
     "${STAGEDIR}/usr/share/applications/${PACKAGE}.desktop"

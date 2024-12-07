@@ -167,7 +167,7 @@ ALWAYS_INLINE typename Allocator::ResultStringType ConvertASCIICase(
       return allocator.CoerceOriginal(string);
     }
 
-    LChar* data8;
+    base::span<LChar> data8;
     auto new_impl = allocator.Alloc(length, data8);
 
     for (wtf_size_t i = 0; i < length; ++i) {
@@ -180,7 +180,7 @@ ALWAYS_INLINE typename Allocator::ResultStringType ConvertASCIICase(
     return allocator.CoerceOriginal(string);
   }
 
-  UChar* data16;
+  base::span<UChar> data16;
   auto new_impl = allocator.Alloc(length, data16);
 
   for (wtf_size_t i = 0; i < length; ++i) {

@@ -306,8 +306,6 @@ try_.builder(
     contact_team_email = "chromeos-chrome-build@google.com",
     execution_timeout = 8 * time.hour,
     main_list_view = "try",
-    # TODO(b/381210302): Chrome crashed on DUT, re-eanble after fixes.
-    siso_remote_linking = False,
 )
 
 try_.builder(
@@ -323,8 +321,6 @@ try_.builder(
     contact_team_email = "chromeos-chrome-build@google.com",
     execution_timeout = 8 * time.hour,
     main_list_view = "try",
-    # TODO(b/381210302): Chrome crashed on DUT, re-eanble after fixes.
-    siso_remote_linking = False,
 )
 
 try_.orchestrator_builder(

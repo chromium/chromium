@@ -713,6 +713,9 @@ void DeleteSelectionCommand::
         EditingState* editing_state) {
   Range* range = CreateRange(CreateVisibleSelection(selection_to_delete_)
                                  .ToNormalizedEphemeralRange());
+  if (!range) {
+    return;
+  }
   Node* node = range->FirstNode();
   while (node && node != range->PastLastNode()) {
     Node* next_node = NodeTraversal::Next(*node);

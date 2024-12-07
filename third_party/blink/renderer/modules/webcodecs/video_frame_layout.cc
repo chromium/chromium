@@ -68,7 +68,7 @@ VideoFrameLayout::VideoFrameLayout(
     return;
   }
 
-  uint32_t end[media::VideoFrame::kMaxPlanes] = {0};
+  uint32_t end[media::VideoFrame::kMaxPlanes] = {};
   for (wtf_size_t i = 0; i < num_planes; i++) {
     const gfx::Size sample_size = media::VideoFrame::SampleSize(format_, i);
     const uint32_t sample_bytes =

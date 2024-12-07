@@ -1892,7 +1892,7 @@ public class AwContents implements SmartClipProvider {
                         mNativeAwContents,
                         prerenderingUrl,
                         prefetchParameters,
-                        activationCallback.bind(null));
+                        activationCallback != null ? activationCallback.bind(null) : null);
     }
 
     public void cancelAllPrerendering() {

@@ -150,6 +150,15 @@ TEST_F(MessagingBackendStoreTest, ClearDirtyMessageById) {
   EXPECT_FALSE(store_->HasAnyDirtyMessages(DirtyType::kAll));
 }
 
+TEST_F(MessagingBackendStoreTest, GetAllDirtyMessages) {
+  store_->AddMessage(CreateMessage(collaboration_pb::TAB_ADDED));
+  store_->AddMessage(CreateMessage(collaboration_pb::TAB_UPDATED));
+  store_->AddMessage(CreateMessage(collaboration_pb::TAB_GROUP_COLOR_UPDATED));
+  store_->AddMessage(
+      CreateMessage(collaboration_pb::COLLABORATION_MEMBER_ADDED));
+  EXPECT_EQ(4u, store_->GetDirtyMessages(DirtyType::kAll).size());
+}
+
 TEST_F(MessagingBackendStoreTest, GetRecentMessagesForGroup) {
   auto message1 = CreateMessage(collaboration_pb::TAB_ADDED);
   auto message2 =

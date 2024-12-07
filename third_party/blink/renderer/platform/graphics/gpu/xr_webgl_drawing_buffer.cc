@@ -85,7 +85,8 @@ XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
 }
 
 void XRWebGLDrawingBuffer::ColorBuffer::BeginAccess() {
-  scoped_access_ = texture_->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
+  scoped_access_ =
+      texture_->BeginAccess(receive_sync_token, /*readonly=*/false);
 }
 
 void XRWebGLDrawingBuffer::ColorBuffer::EndAccess() {
@@ -543,10 +544,6 @@ XRWebGLDrawingBuffer::CreateOrRecycleColorBuffer() {
   if (!recycled_color_buffer_queue_.empty()) {
     scoped_refptr<ColorBuffer> recycled =
         recycled_color_buffer_queue_.TakeLast();
-    if (recycled->receive_sync_token.HasData()) {
-      gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
-      gl->WaitSyncTokenCHROMIUM(recycled->receive_sync_token.GetData());
-    }
     DCHECK(recycled->size == size_);
     return recycled;
   }
@@ -678,12 +675,9 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
   const SkImageInfo sk_image_info =
       SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
-  const bool is_origin_top_left =
-      buffer->shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       buffer->shared_image, buffer->produce_sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
-      /* is_origin_top_left = */ is_origin_top_left,
       drawing_buffer_->ContextProviderWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),

@@ -181,24 +181,3 @@
     </template>
   </div>
 </template>
-<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-  <div class="settings-box two-line">
-    <div id="forgetDeviceLabel" class="start" aria-hidden="true">
-      $i18n{multideviceForgetDevice}
-      <div id="forgetDeviceSummary" class="secondary" aria-hidden="true">
-        $i18n{multideviceForgetDeviceSummary}
-      </div>
-    </div>
-    <cr-button on-click="handleForgetDeviceClick_"
-        aria-labelledby="forgetDeviceLabel"
-        aria-describedby="forgetDeviceSummary"
-        deep-link-focus-id$="[[Setting.kForgetPhone]]">
-      $i18n{multideviceForgetDeviceDisconnect}
-    </cr-button>
-  </div>
-  <template is="dom-if" if="[[shouldShowForgetDeviceDialog_]]" restamp>
-    <settings-multidevice-forget-device-dialog
-      on-close="onCloseForgetDeviceDialog_">
-    </settings-multidevice-forget-device-dialog>
-  </template>
-</template>

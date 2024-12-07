@@ -64,6 +64,15 @@ struct EnumTraits<network::mojom::CookieAccessSemantics,
 };
 
 template <>
+struct EnumTraits<network::mojom::CookieScopeSemantics,
+                  net::CookieScopeSemantics> {
+  static network::mojom::CookieScopeSemantics ToMojom(
+      net::CookieScopeSemantics input);
+  static bool FromMojom(network::mojom::CookieScopeSemantics input,
+                        net::CookieScopeSemantics* output);
+};
+
+template <>
 struct EnumTraits<network::mojom::ContextType,
                   net::CookieOptions::SameSiteCookieContext::ContextType> {
   static network::mojom::ContextType ToMojom(
@@ -339,6 +348,10 @@ struct StructTraits<network::mojom::CookieAccessResultDataView,
   static const net::CookieAccessSemantics& access_semantics(
       const net::CookieAccessResult& c) {
     return c.access_semantics;
+  }
+  static const net::CookieScopeSemantics& scope_semantics(
+      const net::CookieAccessResult& c) {
+    return c.scope_semantics;
   }
   static bool is_allowed_to_access_secure_cookies(
       const net::CookieAccessResult& c) {

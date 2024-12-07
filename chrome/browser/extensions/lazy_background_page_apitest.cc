@@ -129,7 +129,7 @@ class LazyBackgroundPageApiTest : public ExtensionApiTest {
   LazyBackgroundPageApiTest& operator=(const LazyBackgroundPageApiTest&) =
       delete;
 
-  ~LazyBackgroundPageApiTest() override {}
+  ~LazyBackgroundPageApiTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
@@ -859,7 +859,7 @@ class PictureInPictureLazyBackgroundPageApiTest
   PictureInPictureLazyBackgroundPageApiTest& operator=(
       const PictureInPictureLazyBackgroundPageApiTest&) = delete;
 
-  ~PictureInPictureLazyBackgroundPageApiTest() override {}
+  ~PictureInPictureLazyBackgroundPageApiTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     LazyBackgroundPageApiTest::SetUpInProcessBrowserTestFixture();

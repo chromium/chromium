@@ -336,7 +336,7 @@ class CookieSettingsBase {
   //
   // Legacy behavior is based on the domain of the cookie itself, effectively
   // the domain of the requested URL, which may be embedded in another domain.
-  net::CookieLegacyScope GetCookieLegacyScopeForDomain(
+  net::CookieScopeSemantics GetCookieScopeSemanticsForDomain(
       const std::string& cookie_domain) const;
 
   // Returns whether a cookie should be attached regardless of its SameSite
@@ -510,7 +510,9 @@ class CookieSettingsBase {
   // effect (under `first_party_url`). True when mitigations are enabled for
   // 3PCD or when third-party cookies are not blocked and the origin trial for
   // 3PCD is enabled for `first_party_url`.
-  bool ShouldConsiderMitigationsFor3pcd(const GURL& first_party_url) const;
+  bool ShouldConsiderMitigationsFor3pcd(
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const;
   // Returns whether Third Party Cookie Deprecation mitigations are enabled,
   // which requires that we are not blocking or allowing all 3PC and that either
   // 3PCD is enabled or that ForceThirdPartyCookieBlocking is enabled.

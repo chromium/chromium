@@ -6311,6 +6311,8 @@ void RenderFrameImpl::BeginNavigationInternal(
                                  request_destination);
 
   bool is_duplicate_navigation = false;
+  base::TimeDelta nav_start_diff;
+
   if (navigation_client_impl_ &&
       navigation_client_impl_->HasBeginNavigationParams()) {
     // We ignore navigations that are identical to the ongoing navigation. This
@@ -6318,9 +6320,7 @@ void RenderFrameImpl::BeginNavigationInternal(
     // the same link multiple times, etc).
     auto& prev_begin_params = navigation_client_impl_->begin_params();
     auto& prev_common_params = navigation_client_impl_->common_params();
-    if (common_params->navigation_start - prev_common_params.navigation_start <=
-            features::kDuplicateNavThreshold.Get() &&
-        begin_params->was_initiated_by_link_click ==
+    if (begin_params->was_initiated_by_link_click ==
             prev_begin_params.was_initiated_by_link_click &&
         common_params->url == prev_common_params.url &&
         common_params->method == "GET" && prev_common_params.method == "GET" &&
@@ -6335,13 +6335,29 @@ void RenderFrameImpl::BeginNavigationInternal(
         begin_params->headers == prev_begin_params.headers &&
         begin_params->has_rel_opener == prev_begin_params.has_rel_opener) {
       is_duplicate_navigation = true;
+      nav_start_diff = (common_params->navigation_start -
+                        prev_common_params.navigation_start);
     }
   }
-  base::UmaHistogramBoolean("Navigation.RendererInitiated.IsDuplicate",
-                            is_duplicate_navigation);
-  if (is_duplicate_navigation &&
-      base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
-    return;
+  base::UmaHistogramBoolean(
+      "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck",
+      is_duplicate_navigation);
+  if (is_duplicate_navigation) {
+    // The navigation is similar to a previous navigation. Check if it's started
+    // close enough to the start of the previous navigation, in which case we
+    // can just ignore the new navigation and keep the previous navigation.
+    bool start_diff_under_threshold =
+        (nav_start_diff <= features::kDuplicateNavThreshold.Get());
+    base::UmaHistogramBoolean(
+        "Navigation.RendererInitiated.DuplicateNavIsUnderThreshold",
+        start_diff_under_threshold);
+    base::UmaHistogramTimes(
+        "Navigation.RendererInitiated.DuplicateNavStartTimeDiff",
+        nav_start_diff);
+    if (start_diff_under_threshold &&
+        base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+      return;
+    }
   }
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>

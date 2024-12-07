@@ -306,7 +306,7 @@ void PermissionsRequestFunction::SetIgnoreUserGestureForTests(
   ignore_user_gesture_for_tests = ignore;
 }
 
-PermissionsRequestFunction::PermissionsRequestFunction() {}
+PermissionsRequestFunction::PermissionsRequestFunction() = default;
 
 PermissionsRequestFunction::~PermissionsRequestFunction() {
   CHECK_NE(g_pending_request_function, this)

@@ -31,7 +31,7 @@ chromeos::LacrosService* GetLacrosService(int min_version,
 
 }  // namespace
 
-DeviceOAuth2TokenServiceLacros::DeviceOAuth2TokenServiceLacros() {}
+DeviceOAuth2TokenServiceLacros::DeviceOAuth2TokenServiceLacros() = default;
 
 DeviceOAuth2TokenServiceLacros::~DeviceOAuth2TokenServiceLacros() = default;
 

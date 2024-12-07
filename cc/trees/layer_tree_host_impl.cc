@@ -713,7 +713,6 @@ void LayerTreeHostImpl::PullLayerTreeHostPropertiesFrom(
     RecordGpuRasterizationHistogram();
   SetDebugState(commit_state.debug_state);
   SetVisualDeviceViewportSize(commit_state.visual_device_viewport_size);
-  SetMaxSafeAreaInsets(commit_state.max_safe_area_insets);
   set_viewport_mobile_optimized(commit_state.is_viewport_mobile_optimized);
   SetPrefersReducedMotion(commit_state.prefers_reduced_motion);
   SetMayThrottleIfUndrawnFrames(commit_state.may_throttle_if_undrawn_frames);
@@ -2441,6 +2440,14 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 
   metadata.page_scale_factor = active_tree_->current_page_scale_factor();
   metadata.scrollable_viewport_size = active_tree_->ScrollableViewportSize();
+
+  if (InnerViewportScrollNode()) {
+    // Uses InnerViewportScrollNode's container bounds in since it represents
+    // visual scroll layers.
+    metadata.visible_viewport_size =
+        gfx::ScaleToFlooredSize(InnerViewportScrollNode()->container_bounds,
+                                1 / metadata.device_scale_factor);
+  }
 
   metadata.root_background_color = active_tree_->background_color();
   metadata.may_throttle_if_undrawn_frames = may_throttle_if_undrawn_frames_;
@@ -4526,15 +4533,6 @@ gfx::Size LayerTreeHostImpl::VisualDeviceViewportSize() const {
   return visual_device_viewport_size_;
 }
 
-void LayerTreeHostImpl::SetMaxSafeAreaInsets(
-    const gfx::Insets& max_safe_area_insets) {
-  max_safe_area_insets_ = max_safe_area_insets;
-}
-
-gfx::Insets LayerTreeHostImpl::MaxSafeAreaInsets() const {
-  return max_safe_area_insets_;
-}
-
 void LayerTreeHostImpl::SetPrefersReducedMotion(bool prefers_reduced_motion) {
   if (prefers_reduced_motion_ == prefers_reduced_motion)
     return;
@@ -5082,7 +5080,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
     // Must not include gpu::SHARED_IMAGE_USAGE_DISPLAY_READ here because
     // DISPLAY_READ means gpu composition.
-    shared_image_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
+    shared_image_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
     auto sii = layer_tree_frame_sink_->shared_image_interface();
     CHECK(sii);
 

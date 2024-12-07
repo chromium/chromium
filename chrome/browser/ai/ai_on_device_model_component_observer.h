@@ -9,12 +9,12 @@
 #include "base/scoped_observation.h"
 #include "components/component_updater/component_updater_service.h"
 
-class AIManagerKeyedService;
+class AIManager;
 
 class AIOnDeviceModelComponentObserver
     : public component_updater::ServiceObserver {
  public:
-  explicit AIOnDeviceModelComponentObserver(AIManagerKeyedService* ai_manager);
+  explicit AIOnDeviceModelComponentObserver(AIManager* ai_manager);
   ~AIOnDeviceModelComponentObserver() override;
   AIOnDeviceModelComponentObserver(const AIOnDeviceModelComponentObserver&) =
       delete;
@@ -30,7 +30,7 @@ class AIOnDeviceModelComponentObserver
                           component_updater::ComponentUpdateService::Observer>
       component_updater_observation_{this};
 
-  raw_ptr<AIManagerKeyedService> ai_manager_;
+  raw_ptr<AIManager> ai_manager_;
 };
 
 #endif  // CHROME_BROWSER_AI_AI_ON_DEVICE_MODEL_COMPONENT_OBSERVER_H_

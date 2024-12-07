@@ -44,7 +44,7 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BluetoothInternalsUI)
 
-BluetoothInternalsUI::~BluetoothInternalsUI() {}
+BluetoothInternalsUI::~BluetoothInternalsUI() = default;
 
 void BluetoothInternalsUI::BindInterface(
     content::RenderFrameHost* host,

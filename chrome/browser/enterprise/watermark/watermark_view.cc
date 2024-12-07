@@ -47,9 +47,11 @@ void WatermarkView::SetString(const std::string& text) {
 }
 
 void WatermarkView::OnPaint(gfx::Canvas* canvas) {
-  DrawWatermark(canvas->sk_canvas(), &watermark_block_.record,
-                watermark_block_.width, watermark_block_.height,
-                GetContentsBounds());
+  gfx::Rect contents_bounds = GetContentsBounds();
+  DrawWatermark(
+      canvas->sk_canvas(), &watermark_block_.record, watermark_block_.width,
+      watermark_block_.height,
+      SkSize::Make(contents_bounds.width(), contents_bounds.height()));
 }
 
 void WatermarkView::SetBackgroundColor(SkColor background_color) {

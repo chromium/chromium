@@ -46,7 +46,7 @@ void AXRelationCache::Init() {
     DoInitialDocumentScan(*popup_doc);
   }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   is_initialized_ = true;
 #endif
 }
@@ -79,7 +79,7 @@ void AXRelationCache::DoInitialDocumentScan(Document& document) {
 void AXRelationCache::CacheRelations(Element& element) {
   DOMNodeId node_id = element.GetDomNodeId();
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // Register that the relations for this element have been cached, to
   // help enforce that relations are never missed.
   CHECK(node_id);
@@ -110,7 +110,7 @@ void AXRelationCache::CacheRelations(Element& element) {
   UpdateReverseOtherRelations(element);
 }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
 void AXRelationCache::CheckRelationsCached(Element& element) {
   if (!is_initialized_) {
     return;
@@ -247,7 +247,7 @@ void AXRelationCache::CheckElementWasProcessed(Element& element) {
               ? obj->ParentObjectIncludedInTree()->GetAXTreeForThis()
               : "");
 }
-#endif  // defined(AX_FAIL_FAST_BUILD)
+#endif  // AX_FAIL_FAST_BUILD()
 
 void AXRelationCache::ProcessUpdatesWithCleanLayout() {
   HashSet<DOMNodeId> old_owner_axids_to_update;

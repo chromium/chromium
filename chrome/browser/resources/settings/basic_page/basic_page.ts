@@ -13,7 +13,6 @@ import '../ai_page/ai_page.js';
 import '../appearance_page/appearance_page.js';
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
-import '../safety_check_page/safety_check_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
 import '../autofill_page/autofill_page.js';
 import '../controls/settings_idle_load.js';
@@ -346,11 +345,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   private showAdvancedSettings_(visibility?: boolean): boolean {
     return this.showPage_(visibility);
-  }
-
-  private showSafetyCheckPage_(visibility?: boolean): boolean {
-    return !loadTimeData.getBoolean('enableSafetyHub') &&
-        this.showPage_(visibility);
   }
 
   private showSafetyHubEntryPointPage_(visibility?: boolean): boolean {

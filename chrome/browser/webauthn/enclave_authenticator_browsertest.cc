@@ -2094,7 +2094,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // The modal UI should not be shown yet.
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kNotStarted);
+            AuthenticatorRequestDialogModel::Step::kPasskeyAutofill);
 
   // Resolve the connection and wait for the next step.
   model_observer()->SetStepToObserve(
@@ -2211,11 +2211,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kPasskeyAutofill);
 
-  // Tap the passkey. The step should be kNotStarted while autofill shows a
+  // Tap the passkey. The step should be kPasskeyAutofill while autofill shows a
   // loading indicator.
   dialog_model()->OnAccountPreselectedIndex(0);
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kNotStarted);
+            AuthenticatorRequestDialogModel::Step::kPasskeyAutofill);
 
   // Wait for the request to time out.
   model_observer()->SetStepToObserve(

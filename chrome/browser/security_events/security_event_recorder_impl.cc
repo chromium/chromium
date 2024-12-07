@@ -19,7 +19,7 @@ SecurityEventRecorderImpl::SecurityEventRecorderImpl(
   DCHECK(clock_);
 }
 
-SecurityEventRecorderImpl::~SecurityEventRecorderImpl() {}
+SecurityEventRecorderImpl::~SecurityEventRecorderImpl() = default;
 
 void SecurityEventRecorderImpl::RecordGaiaPasswordReuse(
     const sync_pb::GaiaPasswordReuse& event) {

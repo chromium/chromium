@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/feature_list.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
+#include "chrome/browser/ui/views/page_info/star_rating_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
@@ -73,6 +75,8 @@ int GetSeparatorPadding() {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kCookieButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kMainLayoutElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kPermissionsElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
+                                      kMerchantTrustElementId);
 
 PageInfoMainView::ContainerView::ContainerView() {
   auto box_layout = std::make_unique<views::BoxLayout>(
@@ -672,7 +676,12 @@ std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton() {
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   merchant_trust_button->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
-  // TODO(crbug.com/381215331): Add custom subtitle with a star rating.
+  merchant_trust_button->SetProperty(views::kElementIdentifierKey,
+                                     kMerchantTrustElementId);
+  // TODO(crbug.com/381215331): Fetch the data from the service.
+  auto* star_rating_view = merchant_trust_button->AddCustomSubtitle(
+      std::make_unique<StarRatingView>());
+  star_rating_view->SetRating(3.5);
   return merchant_trust_button;
 }
 

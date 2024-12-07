@@ -27,12 +27,6 @@ public class MimeTypeUtils {
     /** The MIME type for a tab object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB = "chrome/tab";
 
-    /** The MIME type for text. */
-    public static final String TEXT_MIME_TYPE = "text/plain";
-
-    /** The MIME type for an image. */
-    public static final String IMAGE_MIME_TYPE = "image/*";
-
     /** The MIME type for pdf. */
     public static final String PDF_MIME_TYPE = "application/pdf";
 

@@ -292,7 +292,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // outdated calls of SetAccessibilityPageInfo().
   uint32_t next_page_index_ = 0;
 
-  bool did_get_a_text_run_ = false;
+  // Indicates that the PDF had accessible text (at least on some pages) without
+  // applying searchify.
+  bool had_accessible_text_ = false;
   bool did_have_an_image_ = false;
   bool sent_metrics_once_ = false;
   // Initialize `currently_in_foreground_` to be true as an associated render

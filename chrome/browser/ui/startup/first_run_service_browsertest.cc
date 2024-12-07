@@ -42,14 +42,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/lacros/device_settings_lacros.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif
-
 namespace {
 class PolicyUpdateObserver : public policy::PolicyService::Observer {
  public:
@@ -100,10 +92,6 @@ class FirstRunServiceBrowserTest : public FirstRunServiceBrowserTestBase {
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    identity_test_env()->SetRefreshTokenForPrimaryAccount();
-#endif
   }
 
   void TearDownOnMainThread() override { identity_test_env_adaptor_.reset(); }
@@ -143,11 +131,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   base::test::TestFuture<bool> proceed_future;
   bool expected_fre_finished = true;
   bool expected_proceed = false;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  expected_fre_finished = false;  // QuitEarly
-#else
   expected_proceed = true;
-#endif
 
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
   fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
@@ -166,12 +150,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
   EXPECT_EQ(expected_fre_finished, GetFirstRunFinishedPrefValue());
   EXPECT_NE(expected_fre_finished, fre_service()->ShouldOpenFirstRun());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  histogram_tester.ExpectUniqueSample(
-      "ProfilePicker.FirstRun.ExitStatus",
-      ProfilePicker::FirstRunExitStatus::kQuitEarly, 1);
-  histogram_tester.ExpectTotalCount("ProfilePicker.FirstRun.FinishReason", 0);
-#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
@@ -189,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   // When `OpenFirstRunIfNeeded` is called twice, the callback passed to it the
   // first time should be aborted (called with false) and replaced by the
   // callback passed to it the second time, which will be later called with
-  // true on DICE and false on Lacros because it will quit early in the process.
+  // true on DICE .
   base::test::TestFuture<bool> first_proceed_future;
   base::test::TestFuture<bool> second_proceed_future;
   base::HistogramTester histogram_tester;
@@ -200,9 +179,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   profiles::testing::WaitForPickerWidgetCreated();
 
   bool expected_second_proceed = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  expected_second_proceed = false;
-#endif
   fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
                                       second_proceed_future.GetCallback());
   EXPECT_FALSE(first_proceed_future.Get());
@@ -215,75 +191,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   profiles::testing::WaitForPickerClosed();
   EXPECT_EQ(expected_second_proceed, second_proceed_future.Get());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
-                       FinishedSilentlyAlreadySyncing) {
-  signin::IdentityManager* identity_manager =
-      identity_test_env()->identity_manager();
-  CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  ASSERT_FALSE(account_id.empty());
-  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_id, signin::ConsentLevel::kSync);
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(profile()->IsMainProfile());
-  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
-
-  ASSERT_TRUE(fre_service());
-
-  // The FRE should be finished silently during the creation of the service.
-  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
-  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
-}
-
-IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
-                       FinishedSilentlySyncConsentDisabled) {
-  signin::IdentityManager* identity_manager =
-      identity_test_env()->identity_manager();
-  base::HistogramTester histogram_tester;
-
-  profile()->GetPrefs()->SetBoolean(prefs::kEnableSyncConsent, false);
-  EXPECT_FALSE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
-  ASSERT_TRUE(profile()->IsMainProfile());
-  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
-
-  ASSERT_TRUE(fre_service());
-
-  // The FRE should be finished silently during the creation of the service.
-  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
-  EXPECT_FALSE(ShouldOpenFirstRun(profile()));
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-}
-
-IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
-                       FinishedSilentlyIsCurrentUserEphemeral) {
-  signin::IdentityManager* identity_manager =
-      identity_test_env()->identity_manager();
-  base::HistogramTester histogram_tester;
-
-  // Setup the ephemeral for Lacros.
-  auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
-  init_params->is_current_user_ephemeral = true;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
-  ASSERT_TRUE(profile()->IsMainProfile());
-  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
-
-  ASSERT_TRUE(fre_service());
-
-  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
-  EXPECT_FALSE(ShouldOpenFirstRun(profile()));
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest, CloseProceeds) {
@@ -320,13 +227,11 @@ struct PolicyTestParam {
 
 const PolicyTestParam kPolicyTestParams[] = {
     {.key = policy::key::kSyncDisabled, .value = "true"},
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.key = policy::key::kBrowserSignin, .value = "0"},
     {.key = policy::key::kBrowserSignin, .value = "1", .should_open_fre = true},
 #if !BUILDFLAG(IS_LINUX)
     {.key = policy::key::kBrowserSignin, .value = "2"},
 #endif  // BUILDFLAG(IS_LINUX)
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     {.key = policy::key::kPromotionalTabsEnabled, .value = "false"},
 };
 
@@ -387,21 +292,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
   ASSERT_TRUE(fre_service());
 
   base::RunLoop run_loop;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros the silent finish happens right when the service is created.
-  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
-
-  // Quitting the loop for consistency with the dice code path. Posting the task
-  // is important to get the profile name resolution's timeout task to run
-  // before the assertions below.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-#else
   fre_service()->OpenFirstRunIfNeeded(
       FirstRunService::EntryPoint::kOther,
       base::IgnoreArgs<bool>(run_loop.QuitClosure()));
   EXPECT_EQ(GetParam().should_open_fre, ProfilePicker::IsOpen());
-#endif
 
   EXPECT_NE(GetParam().should_open_fre, GetFirstRunFinishedPrefValue());
 
@@ -409,14 +303,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
   run_loop.Run();
 
   std::optional<std::u16string> expected_profile_name;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros we always have an account, the profile name will reflect it.
-  signin::IdentityManager* identity_manager =
-      identity_test_env()->identity_manager();
-  CoreAccountInfo account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  expected_profile_name = base::ASCIIToUTF16(account_info.email);
-#else
   // On Dice platforms, we use a default enterprise name after skipped FREs.
   //
   // If force sign in is active and through the profile picker, the profile
@@ -425,7 +311,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
     expected_profile_name = l10n_util::GetStringUTF16(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
   }
-#endif
 
   if (expected_profile_name.has_value()) {
     EXPECT_EQ(*expected_profile_name, GetProfileName());

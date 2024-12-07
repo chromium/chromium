@@ -70,8 +70,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmNullMethod) {
       ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "pull"),
             v8::Null(scope.GetIsolate()))
       .Check();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), exception_state);
@@ -86,8 +85,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmThrowingGetter) {
       &scope, "({ get pull() { throw new TypeError(); } })");
   ASSERT_TRUE(underlying_value.IsObject());
   auto underlying_object = underlying_value.V8Value().As<v8::Object>();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), exception_state);
@@ -279,8 +277,7 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1NullMethod) {
       ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "transform"),
             v8::Null(scope.GetIsolate()))
       .Check();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   auto maybe_result =
       CallOrNoop1(scope.GetScriptState(), underlying_object, "transform",
                   "transformer.transform", arg0, exception_state);
@@ -391,8 +388,7 @@ TEST(MiscellaneousOperationsTest, ValidateInfiniteHighWaterMark) {
 TEST(MiscellaneousOperationsTest, NegativeHighWaterMarkInvalid) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   ValidateAndNormalizeHighWaterMark(-1, exception_state);
   EXPECT_TRUE(exception_state.HadException());
 }
@@ -400,8 +396,7 @@ TEST(MiscellaneousOperationsTest, NegativeHighWaterMarkInvalid) {
 TEST(MiscellaneousOperationsTest, NaNHighWaterMarkInvalid) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   ValidateAndNormalizeHighWaterMark(std::numeric_limits<double>::quiet_NaN(),
                                     exception_state);
   EXPECT_TRUE(exception_state.HadException());
@@ -423,8 +418,7 @@ TEST(MiscellaneousOperationsTest, UndefinedSizeFunction) {
 TEST(MiscellaneousOperationsTest, NullSizeFunction) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   EXPECT_EQ(MakeSizeAlgorithmFromSizeFunction(scope.GetScriptState(),
                                               v8::Null(scope.GetIsolate()),
 

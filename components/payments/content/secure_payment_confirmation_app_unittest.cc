@@ -23,6 +23,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
@@ -32,11 +33,77 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Property;
 
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
+
+class FakeBrowserBoundKey : public BrowserBoundKey {
+ public:
+  FakeBrowserBoundKey() = default;
+  FakeBrowserBoundKey(std::vector<uint8_t> cose_key,
+                      std::vector<uint8_t> signature,
+                      std::vector<uint8_t> expected_client_data)
+      : cose_key_(cose_key),
+        signature_(signature),
+        expected_client_data_(expected_client_data) {}
+  FakeBrowserBoundKey(const FakeBrowserBoundKey& other)
+      : cose_key_(other.cose_key_),
+        signature_(other.signature_),
+        expected_client_data_(other.expected_client_data_) {}
+  FakeBrowserBoundKey& operator=(const FakeBrowserBoundKey& other) {
+    cose_key_ = other.cose_key_;
+    signature_ = other.signature_;
+    expected_client_data_ = other.expected_client_data_;
+    return *this;
+  }
+  ~FakeBrowserBoundKey() override = default;
+
+  std::vector<uint8_t> Sign(const std::vector<uint8_t>& client_data) override {
+    if (client_data == expected_client_data_) {
+      return signature_;
+    }
+    return {};
+  }
+  std::vector<uint8_t> GetPublicKeyAsCoseKey() override { return cose_key_; }
+
+ private:
+  std::vector<uint8_t> cose_key_;
+  std::vector<uint8_t> signature_;
+  std::vector<uint8_t> expected_client_data_;
+};
+
+class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
+ public:
+  FakeBrowserBoundKeyStore() = default;
+  ~FakeBrowserBoundKeyStore() override = default;
+
+  std::unique_ptr<BrowserBoundKey> GetOrCreateBrowserBoundKeyForCredentialId(
+      const std::vector<uint8_t>& credential_id) override {
+    if (key_map_.find(credential_id) == key_map_.end()) {
+      key_map_[credential_id] = FakeBrowserBoundKey();
+    }
+    return std::unique_ptr<BrowserBoundKey>(
+        new FakeBrowserBoundKey(key_map_[credential_id]));
+  }
+
+  void PutFakeKey(const std::vector<uint8_t>& credential_id,
+                  FakeBrowserBoundKey bbk) {
+    key_map_[credential_id] = bbk;
+  }
+
+  base::WeakPtr<FakeBrowserBoundKeyStore> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  std::map<std::vector<uint8_t>, FakeBrowserBoundKey> key_map_;
+  base::WeakPtrFactory<FakeBrowserBoundKeyStore> weak_ptr_factory_{this};
+};
 
 class SecurePaymentConfirmationAppTest : public testing::Test,
                                          public PaymentApp::Delegate {
@@ -65,6 +132,12 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     request->challenge =
         std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
     return request;
+  }
+
+  std::unique_ptr<BrowserBoundKeyStore> MakeFakeBrowserBoundKeyStore() {
+    FakeBrowserBoundKeyStore* key_store = new FakeBrowserBoundKeyStore();
+    browser_bound_key_store_ = key_store->GetWeakPtr();
+    return base::WrapUnique(static_cast<BrowserBoundKeyStore*>(key_store));
   }
 
   // PaymentApp::Delegate:
@@ -97,6 +170,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
   bool on_instrument_details_ready_called_ = false;
   bool on_instrument_details_error_called_ = false;
 
+  base::WeakPtr<FakeBrowserBoundKeyStore> browser_bound_key_store_;
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -147,6 +221,60 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
   EXPECT_TRUE(on_instrument_details_ready_called_);
   EXPECT_FALSE(on_instrument_details_error_called_);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundSignature) {
+  base::test::ScopedFeatureList features(
+      blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
+  auto authenticator =
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
+  webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
+  std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
+                                     credential_id_bytes_.end());
+  const std::vector<uint8_t> client_data_json({0x01, 0x02, 0x03, 0x04});
+  const std::vector<uint8_t> signature({0x05, 0x06, 0x07, 0x08});
+  FakeBrowserBoundKey browser_bound_key(/*cose_key=*/{}, signature,
+                                        client_data_json);
+  SecurePaymentConfirmationApp app(
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(), std::move(authenticator),
+      /*network_label=*/u"", /*network_icon=*/SkBitmap(),
+      /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
+  app.SetBrowserBoundKeyStoreForTesting(MakeFakeBrowserBoundKeyStore());
+  browser_bound_key_store_->PutFakeKey(credential_id, browser_bound_key);
+
+  EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
+      .WillOnce(
+          [client_data_json](
+              blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+              blink::mojom::Authenticator::GetAssertionCallback callback) {
+            auto authenticator_response =
+                blink::mojom::GetAssertionAuthenticatorResponse::New();
+            authenticator_response->info =
+                blink::mojom::CommonCredentialInfo::New();
+            authenticator_response->info->client_data_json = client_data_json;
+            authenticator_response->extensions =
+                blink::mojom::AuthenticationExtensionsClientOutputs::New();
+            std::move(callback).Run(blink::mojom::AuthenticatorStatus::SUCCESS,
+                                    std::move(authenticator_response),
+                                    /*dom_exception_details=*/nullptr);
+          });
+  app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(on_instrument_details_ready_called_);
+  mojom::PaymentResponsePtr payment_response =
+      app.SetAppSpecificResponseFields(mojom::PaymentResponse::New());
+
+  EXPECT_THAT(
+      payment_response->get_assertion_authenticator_response->extensions
+          ->payment,
+      Pointee(Field("browser_bound_signatures",
+                    &blink::mojom::AuthenticationExtensionsPaymentResponse::
+                        browser_bound_signatures,
+                    ElementsAre(ElementsAreArray(signature)))));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test that OnInstrumentDetailsError is called when the authenticator returns
 // an error.

@@ -9,10 +9,12 @@
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -48,6 +50,7 @@ void WebAppTabHelper::Create(tabs::TabInterface* tab,
   // discarding will no longer change the WebContents.
 
   auto helper = std::make_unique<WebAppTabHelper>(tab, contents);
+  helper->SubscribeToTabState(tab);
   contents->SetUserData(UserDataKey(), std::move(helper));
 }
 
@@ -138,6 +141,23 @@ void WebAppTabHelper::SetAppId(std::optional<webapps::AppId> app_id) {
 void WebAppTabHelper::SetIsInAppWindow(
     std::optional<webapps::AppId> window_app_id) {
   SetState(app_id(), std::move(window_app_id));
+}
+
+void WebAppTabHelper::SetCallbackToRunOnTabChanges(base::OnceClosure callback) {
+  on_tab_details_changed_callback_ = std::move(callback);
+}
+
+void WebAppTabHelper::OnTabBackgrounded(tabs::TabInterface*) {
+  MaybeNotifyTabChanged();
+}
+
+void WebAppTabHelper::OnTabDetached(tabs::TabInterface* tab_interface,
+                                    tabs::TabInterface::DetachReason) {
+  MaybeNotifyTabChanged();
+
+  // The subscriptions need to be updaed if the tab gets detached, in case it
+  // gets attached to a new window.
+  SubscribeToTabState(tab_interface);
 }
 
 void WebAppTabHelper::ReadyToCommitNavigation(
@@ -300,6 +320,23 @@ void WebAppTabHelper::UpdateAudioFocusGroupId() {
 void WebAppTabHelper::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   provider_->policy_manager().ReinstallPlaceholderAppIfNecessary(
       url, base::DoNothing());
+}
+
+void WebAppTabHelper::SubscribeToTabState(tabs::TabInterface* tab_interface) {
+  tab_subscriptions_.clear();
+  CHECK(tab_interface);
+  tab_subscriptions_.push_back(
+      tab_interface->RegisterWillEnterBackground(base::BindRepeating(
+          &WebAppTabHelper::OnTabBackgrounded, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(
+      tab_interface->RegisterWillDetach(base::BindRepeating(
+          &WebAppTabHelper::OnTabDetached, weak_factory_.GetWeakPtr())));
+}
+
+void WebAppTabHelper::MaybeNotifyTabChanged() {
+  if (on_tab_details_changed_callback_) {
+    std::move(on_tab_details_changed_callback_).Run();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

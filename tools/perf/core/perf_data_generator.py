@@ -578,7 +578,7 @@ BUILDERS = {
     'android-pixel4-perf': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -593,7 +593,7 @@ BUILDERS = {
     'android-pixel4-perf-pgo': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -608,7 +608,7 @@ BUILDERS = {
     'android-pixel6-perf': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -623,7 +623,7 @@ BUILDERS = {
     'android-pixel6-perf-pgo': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
             'extra_args': ['--benchmark-max-runs=3'],
             'remove_args': ['--ignore-benchmark-exit-code'],
         }],
@@ -640,7 +640,7 @@ BUILDERS = {
     'android-pixel-fold-perf': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -655,7 +655,7 @@ BUILDERS = {
     'android-pixel-tangor-perf': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -669,7 +669,7 @@ BUILDERS = {
     'android-pixel6-pro-perf': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -684,7 +684,7 @@ BUILDERS = {
     'android-pixel6-pro-perf-pgo': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -696,10 +696,14 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-go-processor-perf': {
+        'platform': 'linux',
+        'perf_processor': True,
+    },
     'android-go-wembley-perf': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-bundle',
@@ -725,7 +729,7 @@ BUILDERS = {
     'android-new-pixel-perf': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -734,7 +738,7 @@ BUILDERS = {
     'android-new-pixel-perf-pgo': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -743,7 +747,7 @@ BUILDERS = {
     'android-new-pixel-pro-perf': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
@@ -752,13 +756,13 @@ BUILDERS = {
     'android-new-pixel-pro-perf-pgo': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
         'dimension': {},
     },
-    'win-10_laptop_low_end-perf': {
+    'linux-perf': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -768,25 +772,15 @@ BUILDERS = {
             },
         ],
         'platform':
-        'win',
-        'target_bits':
-        64,
+        'linux',
         'dimension': {
-            'pool':
-            'chrome.tests.perf',
-            # Explicitly set GPU driver version and Windows OS version such
-            # that we can be informed if this
-            # version ever changes or becomes inconsistent. It is important
-            # that bots are homogeneous. See crbug.com/988045 for history.
-            'os':
-            'Windows-10-19045',
-            'gpu':
-            '8086:1616-20.19.15.5171',
-            'synthetic_product_name':
-            'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
+            'gpu': '10de:1cb3-440.100',
+            'os': 'Ubuntu-18.04',
+            'pool': 'chrome.tests.perf',
+            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
         },
     },
-    'win-10_laptop_low_end-perf-pgo': {
+    'linux-perf-pgo': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -796,16 +790,15 @@ BUILDERS = {
             },
         ],
         'platform':
-        'win',
-        'target_bits':
-        64,
+        'linux',
         'dimension': {
+            'gpu': '10de:1cb3-440.100',
+            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests.perf',
-            'os': 'Windows-10',
-            'gpu': '8086:1616',
+            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
         },
     },
-    'win-10-perf': {
+    'linux-perf-rel': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -815,16 +808,15 @@ BUILDERS = {
             },
         ],
         'platform':
-        'win',
-        'target_bits':
-        64,
+        'linux',
         'dimension': {
+            'gpu': '10de:1cb3-440.100',
+            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests.perf',
-            'os': 'Windows-10',
-            'synthetic_product_name': 'OptiPlex 7050 (Dell Inc.)'
+            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
         },
     },
-    'win-10-perf-pgo': {
+    'linux-r350-perf': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -834,134 +826,16 @@ BUILDERS = {
             },
         ],
         'platform':
-        'win',
-        'target_bits':
-        64,
+        'linux',
         'dimension': {
+            'os': 'Ubuntu-22',
             'pool': 'chrome.tests.perf',
-            'os': 'Windows-10',
-            'synthetic_product_name': 'OptiPlex 7050 (Dell Inc.)'
-        },
-    },
-    'win-10_amd_laptop-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            # Explicitly set GPU driver version and Windows OS version such
-            # that we can be informed if this
-            # version ever changes or becomes inconsistent. It is important
-            # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10',
-            'gpu': '1002:1638',
-            'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
-        },
-    },
-    'win-10_amd_laptop-perf-pgo': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            # Explicitly set GPU driver version and Windows OS version such
-            # that we can be informed if this
-            # version ever changes or becomes inconsistent. It is important
-            # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10',
-            'gpu': '1002:1638',
-            'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
-        },
-    },
-    'win-11-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            # Explicitly set GPU driver version and Windows OS version such
-            # that we can be informed if this
-            # version ever changes or becomes inconsistent. It is important
-            # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-11-22631.2428',
-            'gpu': '102b:0536-4.5.0.5',
             'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
         },
     },
-    'win-11-perf-pgo': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            # Explicitly set GPU driver version and Windows OS version such
-            # that we can be informed if this
-            # version ever changes or becomes inconsistent. It is important
-            # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-11-22631.2428',
-            'gpu': '102b:0536-4.5.0.5',
-            'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
-        },
-    },
-    'mac-laptop_low_end-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'mac',
-        'dimension': {
-            'cpu':
-            'x86-64',
-            'gpu':
-            '8086:1626',
-            'os':
-            'Mac-12',
-            'pool':
-            'chrome.tests.perf',
-            'synthetic_product_name':
-            'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
-        },
+    'linux-processor-perf': {
+        'platform': 'linux',
+        'perf_processor': True,
     },
     'mac-intel-perf': {
         'tests': [
@@ -985,30 +859,6 @@ BUILDERS = {
             'chrome.tests.perf',
             'synthetic_product_name':
             'Macmini8,1_x86-64-i7-8700B_Intel UHD Graphics 630_65536_APPLE SSD AP1024M'
-        },
-    },
-    'mac-laptop_low_end-perf-pgo': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'mac',
-        'dimension': {
-            'cpu':
-            'x86-64',
-            'gpu':
-            '8086:1626',
-            'os':
-            'Mac-12',
-            'pool':
-            'chrome.tests.perf',
-            'synthetic_product_name':
-            'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
         },
     },
     'mac-m1_mini_2020-perf': {
@@ -1107,7 +957,7 @@ BUILDERS = {
             'Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z',
         },
     },
-    'linux-perf': {
+    'win-10_amd_laptop-perf': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -1117,15 +967,21 @@ BUILDERS = {
             },
         ],
         'platform':
-        'linux',
+        'win',
+        'target_bits':
+        64,
         'dimension': {
-            'gpu': '10de:1cb3-440.100',
-            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-10',
+            'gpu': '1002:1638',
+            'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },
     },
-    'linux-perf-pgo': {
+    'win-10_amd_laptop-perf-pgo': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -1135,15 +991,21 @@ BUILDERS = {
             },
         ],
         'platform':
-        'linux',
+        'win',
+        'target_bits':
+        64,
         'dimension': {
-            'gpu': '10de:1cb3-440.100',
-            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-10',
+            'gpu': '1002:1638',
+            'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },
     },
-    'linux-perf-rel': {
+    'win-10_laptop_low_end-perf': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -1153,56 +1015,25 @@ BUILDERS = {
             },
         ],
         'platform':
-        'linux',
+        'win',
+        'target_bits':
+        64,
         'dimension': {
-            'gpu': '10de:1cb3-440.100',
-            'os': 'Ubuntu-18.04',
-            'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
-        },
-    },
-    'linux-r350-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'linux',
-        'dimension': {
-            'os': 'Ubuntu-22',
-            'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
-        },
-    },
-    'mac-laptop_high_end-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'mac',
-        'dimension': {
-            'cpu':
-            'x86-64',
-            'gpu':
-            '1002:6821-4.0.20-3.2.8',
-            'os':
-            'Mac-12',
             'pool':
             'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os':
+            'Windows-10-19045',
+            'gpu':
+            '8086:1616-20.19.15.5171',
             'synthetic_product_name':
-            'MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G',
+            'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
         },
     },
-    'mac-laptop_high_end-perf-pgo': {
+    'win-10_laptop_low_end-perf-pgo': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -1212,48 +1043,113 @@ BUILDERS = {
             },
         ],
         'platform':
-        'mac',
+        'win',
+        'target_bits':
+        64,
         'dimension': {
-            'cpu':
-            'x86-64',
-            'gpu':
-            '1002:6821-4.0.20-3.2.8',
-            'os':
-            'Mac-12',
-            'pool':
-            'chrome.tests.perf',
-            'synthetic_product_name':
-            'MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G',
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-10',
+            'gpu': '8086:1616',
         },
-    },
-    'linux-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
-    'android-go-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
-    'win-10-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
     },
     'win-10_laptop_low_end-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },
+    'win-10-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-10',
+            'synthetic_product_name': 'OptiPlex 7050 (Dell Inc.)'
+        },
+    },
+    'win-10-perf-pgo': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-10',
+            'synthetic_product_name': 'OptiPlex 7050 (Dell Inc.)'
+        },
+    },
+    'win-10-processor-perf': {
+        'platform': 'linux',
+        'perf_processor': True,
+    },
+    'win-11-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-11-22631.2428',
+            'gpu': '102b:0536-4.5.0.5',
+            'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
+        },
+    },
+    'win-11-perf-pgo': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-11-22631.2428',
+            'gpu': '102b:0536-4.5.0.5',
+            'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
+        },
+    },
     'win-11-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },
-    'mac-laptop_low_end-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
-    'mac-laptop_high_end-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
-    }
 }
 
 # pylint: enable=line-too-long

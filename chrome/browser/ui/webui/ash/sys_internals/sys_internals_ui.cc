@@ -74,6 +74,6 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
   base::RecordAction(base::UserMetricsAction("Open_Sys_Internals"));
 }
 
-SysInternalsUI::~SysInternalsUI() {}
+SysInternalsUI::~SysInternalsUI() = default;
 
 }  // namespace ash

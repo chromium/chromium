@@ -1016,9 +1016,11 @@ public class CompositorViewHolder extends FrameLayout
     public void onControlsOffsetChanged(
             int topOffset,
             int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
             boolean isVisibilityForced) {
         onViewportChanged();
 
@@ -1027,7 +1029,7 @@ public class CompositorViewHolder extends FrameLayout
         boolean scrollingWithBciv =
                 ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                         && (mInGesture || mContentViewScrolling);
-        if (needsAnimate && !scrollingWithBciv) {
+        if (requestNewFrame && !scrollingWithBciv) {
             requestRender();
         }
 

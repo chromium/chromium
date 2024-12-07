@@ -20,8 +20,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   if (loadTimeData.getBoolean('enableSafetyHub')) {
     r.SAFETY_HUB = r.PRIVACY.createChild('/safetyCheck');
-  } else {
-    r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
   }
 
   if (loadTimeData.getBoolean('showPrivacyGuide')) {

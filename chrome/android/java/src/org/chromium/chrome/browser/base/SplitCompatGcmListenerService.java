@@ -10,8 +10,6 @@ import android.os.Bundle;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.chromium.base.BundleUtils;
-
 /**
  * GcmListenerService base class which will call through to the given {@link Impl}. This class must
  * be present in the base module, while the Impl can be in the chrome module.
@@ -25,11 +23,13 @@ public class SplitCompatGcmListenerService extends FirebaseMessagingService {
     }
 
     @Override
-    protected void attachBaseContext(Context unused) {
-        Context splitContext = SplitCompatApplication.createChromeContext();
-        mImpl = (Impl) BundleUtils.newInstance(splitContext, mServiceClassName);
+    protected void attachBaseContext(Context baseContext) {
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContextChrome(
+                                baseContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(splitContext);
+        super.attachBaseContext(baseContext);
     }
 
     @Override

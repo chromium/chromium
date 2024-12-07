@@ -78,7 +78,7 @@ class BnplIssuer {
     payment_instrument_ = payment_instrument;
   }
 
-  base::span<const EligiblePriceRange> eligible_price_ranges() {
+  base::span<const EligiblePriceRange> eligible_price_ranges() const {
     return eligible_price_ranges_;
   }
   void set_eligible_price_ranges(

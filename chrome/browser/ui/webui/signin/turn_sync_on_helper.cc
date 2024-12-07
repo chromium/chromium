@@ -97,7 +97,7 @@ class TurnSyncOnHelperShutdownNotifierFactory
     DependsOn(UnifiedConsentServiceFactory::GetInstance());
     DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
   }
-  ~TurnSyncOnHelperShutdownNotifierFactory() override {}
+  ~TurnSyncOnHelperShutdownNotifierFactory() override = default;
 };
 
 // User input handler for the signin confirmation dialog.

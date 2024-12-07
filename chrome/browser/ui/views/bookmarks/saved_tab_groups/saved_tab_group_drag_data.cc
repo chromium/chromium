@@ -67,7 +67,7 @@ SavedTabGroupDragData::SavedTabGroupDragData(const base::Uuid guid)
 // static
 const ui::ClipboardFormatType& SavedTabGroupDragData::GetFormatType() {
   static base::NoDestructor<ui::ClipboardFormatType> format(
-      ui::ClipboardFormatType::GetType(kClipboardFormatString));
+      ui::ClipboardFormatType::CustomPlatformType(kClipboardFormatString));
 
   return *format;
 }

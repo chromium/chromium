@@ -29,6 +29,8 @@ namespace on_device_translation {
 
 namespace {
 
+const void* kTranslationManagerUserDataKey = &kTranslationManagerUserDataKey;
+
 using blink::mojom::TranslationAvailability;
 using blink::mojom::TranslatorLanguageCode;
 using blink::mojom::TranslatorLanguageCodePtr;
@@ -192,23 +194,45 @@ std::vector<std::vector<TranslationAvailability>> CreateAvailabilityMatrix(
 
 }  // namespace
 
-DOCUMENT_USER_DATA_KEY_IMPL(TranslationManagerImpl);
-
-TranslationManagerImpl::TranslationManagerImpl(content::RenderFrameHost* rfh)
-    : DocumentUserData<TranslationManagerImpl>(rfh),
-      browser_context_(rfh->GetBrowserContext()->GetWeakPtr()),
-      origin_(rfh->GetLastCommittedOrigin()) {}
+TranslationManagerImpl::TranslationManagerImpl(
+    base::PassKey<TranslationManagerImpl>,
+    content::BrowserContext* browser_context,
+    const url::Origin& origin)
+    : browser_context_(browser_context->GetWeakPtr()), origin_(origin) {}
 
 TranslationManagerImpl::~TranslationManagerImpl() = default;
 
 // static
-void TranslationManagerImpl::Create(
-    content::RenderFrameHost* render_frame_host,
+void TranslationManagerImpl::Bind(
+    content::BrowserContext* browser_context,
+    base::SupportsUserData* context_user_data,
+    const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
-  TranslationManagerImpl* translation_manager =
-      TranslationManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
-  translation_manager->receiver_set_.Add(translation_manager,
-                                         std::move(receiver));
+  auto* manager = GetOrCreate(browser_context, context_user_data, origin);
+  CHECK(manager);
+  CHECK_EQ(manager->origin_, origin);
+  manager->receiver_set_.Add(manager, std::move(receiver));
+}
+
+// static
+TranslationManagerImpl* TranslationManagerImpl::GetOrCreate(
+    content::BrowserContext* browser_context,
+    base::SupportsUserData* context_user_data,
+    const url::Origin& origin) {
+  // Currently two TranslationManagers can be bound, for self.ai.translator and
+  // for self.translator.
+  // TODO(crbug.com/322229993): Remove this when we delete the legacy Translator
+  // API.
+  if (auto* manager = static_cast<TranslationManagerImpl*>(
+          context_user_data->GetUserData(kTranslationManagerUserDataKey))) {
+    return manager;
+  }
+  auto manager = std::make_unique<TranslationManagerImpl>(
+      base::PassKey<TranslationManagerImpl>(), browser_context, origin);
+  auto* manager_ptr = manager.get();
+  context_user_data->SetUserData(kTranslationManagerUserDataKey,
+                                 std::move(manager));
+  return manager_ptr;
 }
 
 void TranslationManagerImpl::CanCreateTranslator(

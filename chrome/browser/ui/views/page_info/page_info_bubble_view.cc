@@ -197,7 +197,8 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     base::OnceClosure initialized_callback,
     PageInfoClosingCallback closing_callback,
     bool allow_about_this_site,
-    std::optional<ContentSettingsType> type) {
+    std::optional<ContentSettingsType> type,
+    bool open_merchant_trust_page) {
   DCHECK(web_contents);
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
 
@@ -213,7 +214,12 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
       std::move(initialized_callback), std::move(closing_callback),
       allow_about_this_site);
   if (type) {
+    CHECK(!open_merchant_trust_page);
     bubble->OpenPermissionPage(*type);
+  }
+  if (open_merchant_trust_page) {
+    CHECK(!type);
+    bubble->OpenMerchantTrustPage();
   }
   return bubble;
 }

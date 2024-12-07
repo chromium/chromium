@@ -23,7 +23,8 @@ void DevToolsPrerenderAttempt::SetTriggeringOutcome(
   devtools_instrumentation::DidUpdatePrerenderStatus(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
-      attributes.prerendering_url, attributes.target_hint, outcome,
+      attributes.prerendering_url, attributes.target_hint,
+      attributes.preload_pipeline_info->id(), outcome,
       /*prerender_status=*/std::nullopt,
       /*disallowed_mojo_interface=*/std::nullopt,
       /*mismatched_headers=*/nullptr);
@@ -45,6 +46,7 @@ void DevToolsPrerenderAttempt::SetFailureReason(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, attributes.target_hint,
+      attributes.preload_pipeline_info->id(),
       PreloadingTriggeringOutcome::kFailure, prerender_status,
       /*disallowed_mojo_interface=*/std::nullopt,
       /*mismatched_headers=*/nullptr);
@@ -78,6 +80,7 @@ void DevToolsPrerenderAttempt::SetFailureReason(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, attributes.target_hint,
+      attributes.preload_pipeline_info->id(),
       PreloadingTriggeringOutcome::kFailure, prerender_status,
       disallowed_mojo_interface, mismatched_headers);
 }

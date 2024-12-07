@@ -116,8 +116,7 @@ class FormFetchBatcherTest : public PlatformTest {
       : test_bridge_([[TestAutofillDriverIOSBridge alloc]
             initWithForms:{MakeTestFormData(u"form1"),
                            MakeTestFormData(u"form2")}]),
-        fake_web_frame_(
-            web::FakeWebFrame::Create("main_frame_id", true, GURL())),
+        fake_web_frame_(web::FakeWebFrame::Create("main_frame_id", true)),
         batcher_(test_bridge_,
                  fake_web_frame_.get()->AsWeakPtr(),
                  kBatchPeriodMs) {}

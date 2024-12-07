@@ -32,7 +32,7 @@ namespace device::cablev2 {
 namespace {
 
 TEST(CableV2Encoding, TunnelServerURLs) {
-  uint8_t tunnel_id[16] = {0};
+  uint8_t tunnel_id[16] = {};
   // Tunnel ID zero should map to Google's tunnel server.
   const tunnelserver::KnownDomainID kGoogleDomain(0);
   const GURL url = tunnelserver::GetNewTunnelURL(kGoogleDomain, tunnel_id);
@@ -126,7 +126,7 @@ TEST(CableV2Encoding, KnownQRs) {
       0x57, 0x42, 0x1D, 0x49, 0x7E, 0x56, 0x9E, 0x1E, 0xBA, 0x6C, 0xFF,
       0x9A, 0x69, 0xD3, 0x2E, 0x90, 0xF1, 0x9E, 0x7F, 0x6F, 0xD1, 0x5E,
   };
-  static const uint8_t kQRSecret[16] = {0};
+  static const uint8_t kQRSecret[16] = {};
 
   const struct {
     std::function<void(cbor::Value::MapValue* m)> build;
@@ -348,7 +348,7 @@ TEST(CableV2Encoding, PaddedCBOR) {
   EXPECT_EQ(0u, decoded->GetMap().size());
 
   cbor::Value::MapValue map2;
-  uint8_t blob[kPostHandshakeMsgPaddingGranularity] = {0};
+  uint8_t blob[kPostHandshakeMsgPaddingGranularity] = {};
   map2.emplace(1, base::span<const uint8_t>(blob, sizeof(blob)));
   encoded = EncodePaddedCBORMap(std::move(map2));
   ASSERT_TRUE(encoded);

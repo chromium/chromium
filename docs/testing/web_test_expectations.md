@@ -209,16 +209,16 @@ files. You can follow the steps below for easier review.
 * [TestExpectations](../../third_party/blink/web_tests/TestExpectations): The
   main test failure suppression file. In theory, this should be used for
   temporarily marking tests as flaky.
-* [ChromeTestExpectations](/third_party/blink/web_tests/ChromeTestExpectations):
-  Tests that fail under Chrome but pass under content shell.
-  Tests absent from this file inherit expectations from `TestExpectations` and
-  other files.
   See [the `run_wpt_tests.py` doc](run_web_platform_tests.md) for information
   about WPT coverage for Chrome.
 * [ASANExpectations](../../third_party/blink/web_tests/ASANExpectations):
   Tests that fail under ASAN.
+* [CfTTestExpecations](../../third_party/blink/web_tests/CfTTestExpecations):
+  Tests that fail under Chrome for Testing
 * [LeakExpectations](../../third_party/blink/web_tests/LeakExpectations):
   Tests that have memory leaks under the leak checker.
+* [MobileTestExpectations](../../third_party/blink/web_tests/MobileTestExpectations)
+  Tests that fails under Chrome Android and Chrome WebView platform.
 * [MSANExpectations](../../third_party/blink/web_tests/MSANExpectations):
   Tests that fail under MSAN.
 * [NeverFixTests](../../third_party/blink/web_tests/NeverFixTests): Tests

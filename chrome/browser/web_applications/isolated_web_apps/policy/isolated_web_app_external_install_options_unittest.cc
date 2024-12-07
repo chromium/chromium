@@ -83,11 +83,27 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueCustomChannel) {
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValuePinnedVersion) {
   const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, kCustomChannelId,
-      kCorrectPinnedVersion);
+      kCorrectPinnedVersion, /*allow_downgrades=*/false);
 
   ASSERT_OK_AND_ASSIGN(
       const auto options,
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
+
+  EXPECT_EQ(options.pinned_version(), base::Version(kCorrectPinnedVersion));
+  EXPECT_EQ(options.allow_downgrades(), false);
+}
+
+// Verify if allow_downgrades field is correctly set.
+TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueAllowDowngrades) {
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
+      kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, kCustomChannelId,
+      kCorrectPinnedVersion, /*allow_downgrades=*/true);
+
+  ASSERT_OK_AND_ASSIGN(
+      const auto options,
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
+
+  EXPECT_EQ(options.allow_downgrades(), true);
   EXPECT_EQ(options.pinned_version(), base::Version(kCorrectPinnedVersion));
 }
 

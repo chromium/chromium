@@ -92,8 +92,6 @@ namespace {
 
 using OperationResult = SharedStorageManager::OperationResult;
 
-using HeaderOperationResult = content::SharedStorageWriteOperationAndResult;
-
 constexpr char kMainHost[] = "a.test";
 constexpr char kSimplePagePath[] = "/simple.html";
 constexpr char kFencedFramePagePath[] = "/fenced_frames/title1.html";
@@ -4090,7 +4088,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletNumPerPage_Two) {
+// TODO(crbug.com/382530217): Test is flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WorkletNumPerPage_Two DISABLED_WorkletNumPerPage_Two
+#else
+#define MAYBE_WorkletNumPerPage_Two WorkletNumPerPage_Two
+#endif
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
+                       MAYBE_WorkletNumPerPage_Two) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
   // The test assumes pages get deleted after navigation. To ensure this,
@@ -5010,26 +5015,23 @@ IN_PROC_BROWSER_TEST_P(SharedStorageHeaderPrefBrowserTest, Basic) {
 
   // Shared Storage is enabled.
 
-  observer_->WaitForOperations(3);
+  observer_->WaitForOperations(1);
 
   url::Origin fetch_origin = url::Origin::Create(fetch_url);
   EXPECT_EQ(observer_->header_results().size(), 1u);
   EXPECT_EQ(observer_->header_results().front(), fetch_origin);
+  EXPECT_EQ(observer_->operations().size(), 1u);
 
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          HeaderOperationResult(fetch_origin, content::MojomClearMethod(),
-                                /*success=*/true),
-          HeaderOperationResult(
-              fetch_origin,
-              content::MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
-                                      /*ignore_if_present=*/true),
-              /*success=*/true),
-          HeaderOperationResult(
-              fetch_origin,
-              content::MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
-              /*success=*/true)));
+  std::vector<content::MethodWithOptionsPtr> methods_with_options;
+  methods_with_options.push_back(content::MojomClearMethod());
+  methods_with_options.push_back(
+      content::MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                              /*ignore_if_present=*/true));
+  methods_with_options.push_back(
+      content::MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"));
+  EXPECT_EQ(observer_->operations()[0],
+            content::HeaderOperationSuccess(fetch_origin,
+                                            std::move(methods_with_options)));
 
   response.Done();
 

@@ -67,8 +67,9 @@ ScopedDevZero::Server::Server(
   }
 
   if (status == ZX_OK) {
-    status = dev_dir_.Serve(fuchsia::io::OpenFlags::RIGHT_READABLE,
-                            directory_request.TakeChannel());
+    status = dev_dir_.Serve(fuchsia_io::wire::kPermReadable,
+                            fidl::ServerEnd<fuchsia_io::Directory>(
+                                directory_request.TakeChannel()));
     ZX_LOG_IF(ERROR, status != ZX_OK, status);
   }
 
@@ -82,8 +83,9 @@ ScopedDevZero* ScopedDevZero::instance_ = nullptr;
 
 // static
 scoped_refptr<ScopedDevZero> ScopedDevZero::Get() {
-  if (instance_)
+  if (instance_) {
     return WrapRefCounted(instance_);
+  }
   scoped_refptr<ScopedDevZero> result = AdoptRef(new ScopedDevZero);
   return result->Initialize() ? std::move(result) : nullptr;
 }
@@ -95,8 +97,9 @@ ScopedDevZero::ScopedDevZero() : io_thread_("/dev/zero") {
 
 ScopedDevZero::~ScopedDevZero() {
   DCHECK_EQ(instance_, this);
-  if (global_namespace_)
+  if (global_namespace_) {
     fdio_ns_unbind(std::exchange(global_namespace_, nullptr), "/dev");
+  }
   instance_ = nullptr;
 }
 
@@ -107,8 +110,9 @@ bool ScopedDevZero::Initialize() {
     return false;
   }
 
-  if (!io_thread_.StartWithOptions(Thread::Options(MessagePumpType::IO, 0)))
+  if (!io_thread_.StartWithOptions(Thread::Options(MessagePumpType::IO, 0))) {
     return false;
+  }
 
   zx::channel client;
   zx::channel request;
@@ -128,8 +132,9 @@ bool ScopedDevZero::Initialize() {
           run_loop.QuitClosure(), std::ref(status)));
   run_loop.Run();
 
-  if (status != ZX_OK)
+  if (status != ZX_OK) {
     return false;
+  }
 
   // Install the directory holding "zero" into the global namespace as /dev.
   // This relies on the component not asking for any /dev entries in its

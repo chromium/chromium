@@ -1001,7 +1001,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Focusability logic:
   //   IsFocusable: true if the element can be focused via element.focus().
   //   IsMouseFocusable: true if clicking on the element will focus it.
-  //   IsKeyboardFocusable: true if the element appears in the sequential
+  //   IsKeyboardFocusableSlow: true if the element appears in the sequential
   //     focus navigation loop. I.e. if the tab key can focus it.
   //
   // Helpers:
@@ -1013,9 +1013,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   //     of keyboard focusable scrollers.
   //
   // IsFocusable can only be true if SupportsFocus is true. And both
-  // IsMouseFocusable and IsKeyboardFocusable require IsFocusable to be true.
-  // But it is possible for an element to be keyboard-focusable without being
-  // mouse-focusable, or vice versa.
+  // IsMouseFocusable and IsKeyboardFocusableSlow require IsFocusable to be
+  // true. But it is possible for an element to be keyboard-focusable without
+  // being mouse-focusable, or vice versa.
   //
   // All of these methods can be called when layout is not clean, but a
   // lifecycle update might be triggered in that case. If layout is already
@@ -1030,7 +1030,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // If the element might be a keyboard-focusable scroller, then it will call
   // IsKeyboardFocusableScroller which can be slow. Avoid calling this function
   // outside of focus sequential navigation.
-  virtual bool IsKeyboardFocusable(
+  virtual bool IsKeyboardFocusableSlow(
       UpdateBehavior update_behavior = UpdateBehavior::kStyleAndLayout) const;
 
   bool IsFocusedElementInDocument() const;

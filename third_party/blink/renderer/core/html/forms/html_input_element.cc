@@ -302,9 +302,9 @@ bool HTMLInputElement::HasCustomFocusLogic() const {
   return input_type_view_->HasCustomFocusLogic();
 }
 
-bool HTMLInputElement::IsKeyboardFocusable(
+bool HTMLInputElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  return input_type_->IsKeyboardFocusable(update_behavior);
+  return input_type_->IsKeyboardFocusableSlow(update_behavior);
 }
 
 bool HTMLInputElement::MayTriggerVirtualKeyboard() const {
@@ -983,6 +983,9 @@ bool HTMLInputElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
 }
 
 LayoutObject* HTMLInputElement::CreateLayoutObject(const ComputedStyle& style) {
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
   return input_type_view_->CreateLayoutObject(style);
 }
 

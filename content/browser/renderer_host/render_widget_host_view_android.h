@@ -222,6 +222,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       gfx::PointF* transformed_point) override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
+  TouchSelectionControllerInputObserver*
+  GetTouchSelectionControllerInputObserver() override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   void OnRendererWidgetCreated() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
@@ -372,8 +374,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   ImeAdapterAndroid* ime_adapter_for_testing() { return ime_adapter_android_; }
 
-  ui::TouchSelectionControllerClient*
-  GetSelectionControllerClientManagerForTesting();
   void SetSelectionControllerClientForTesting(
       std::unique_ptr<ui::TouchSelectionControllerClient> client);
 
@@ -582,8 +582,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool Animate(base::TimeTicks frame_time);
   void RequestDisallowInterceptTouchEvent();
 
-  void ComputeEventLatencyOSTouchHistograms(const ui::MotionEvent& event);
-
   void CreateOverscrollControllerIfPossible();
 
   void UpdateMouseState(int action_button,
@@ -599,8 +597,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SetTextHandlesHiddenInternal();
 
   void OnUpdateScopedSelectionHandles();
-
-  void HandleSwipeToMoveCursorGestureAck(const blink::WebGestureEvent& event);
 
   void BeginRotationBatching();
   void EndRotationBatching();
@@ -664,14 +660,22 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   StylusTextSelector stylus_text_selector_;
 
   // Manages selection handle rendering and manipulation.
-  // This will always be NULL if |content_view_core_| is NULL.
-  std::unique_ptr<ui::TouchSelectionController> touch_selection_controller_;
   std::unique_ptr<ui::TouchSelectionControllerClient>
       touch_selection_controller_client_for_test_;
   // Keeps track of currently active touch selection controller clients (some
   // may be representing out-of-process iframes).
   std::unique_ptr<TouchSelectionControllerClientManagerAndroid>
       touch_selection_controller_client_manager_;
+  // Keep `touch_selection_controller_` below
+  // `touch_selection_controller_client_manager_` since the former keeps
+  // reference to the latter (it's client).
+  std::unique_ptr<ui::TouchSelectionController> touch_selection_controller_;
+  // Keep `touch_selection_controller_input_observer_` below
+  // `touch_selection_controller_` and
+  // `touch_selection_controller_client_manager_`, since the former contains
+  // `raw_ptr`s to both.
+  std::unique_ptr<TouchSelectionControllerInputObserver>
+      touch_selection_controller_input_observer_;
   // Notifies the WindowAndroid when the page has active selection handles.
   std::unique_ptr<ui::WindowAndroid::ScopedSelectionHandles>
       scoped_selection_handles_;

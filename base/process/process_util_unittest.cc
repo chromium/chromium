@@ -1240,7 +1240,7 @@ TEST_F(ProcessUtilTest, LaunchWithHandleTransfer) {
   ASSERT_TRUE(signals & ZX_SOCKET_READABLE);
 
   size_t bytes_read = 0;
-  char buf[16] = {0};
+  char buf[16] = {};
   result = zx_socket_read(handles[1], 0, buf, sizeof(buf), &bytes_read);
   EXPECT_EQ(ZX_OK, result);
   EXPECT_EQ(1u, bytes_read);

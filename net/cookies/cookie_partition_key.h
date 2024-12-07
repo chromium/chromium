@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/net_export.h"
@@ -88,7 +89,7 @@ class NET_EXPORT CookiePartitionKey {
   // TODO(crbug.com/40188414) Investigate ways to persist partition keys with
   // opaque origins if a browser session is restored.
   [[nodiscard]] static base::expected<SerializedCookiePartitionKey, std::string>
-  Serialize(const std::optional<CookiePartitionKey>& in);
+  Serialize(base::optional_ref<const CookiePartitionKey> in);
 
   static CookiePartitionKey FromURLForTesting(
       const GURL& url,
@@ -137,9 +138,10 @@ class NET_EXPORT CookiePartitionKey {
   // argument has no default. It also checks that cookie partitioning is enabled
   // before returning a valid key, which FromWire does not check.
   [[nodiscard]] static std::optional<CookiePartitionKey>
-  FromStorageKeyComponents(const SchemefulSite& top_level_site,
-                           AncestorChainBit ancestor_chain_bit,
-                           const std::optional<base::UnguessableToken>& nonce);
+  FromStorageKeyComponents(
+      const SchemefulSite& top_level_site,
+      AncestorChainBit ancestor_chain_bit,
+      base::optional_ref<const base::UnguessableToken> nonce);
 
   // FromStorage is a factory method which is meant for creating a new
   // CookiePartitionKey using properties of a previously existing
@@ -170,7 +172,7 @@ class NET_EXPORT CookiePartitionKey {
 
   const std::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
-  static bool HasNonce(const std::optional<CookiePartitionKey>& key) {
+  static bool HasNonce(base::optional_ref<const CookiePartitionKey> key) {
     return key && key->nonce();
   }
 

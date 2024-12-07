@@ -106,6 +106,10 @@ class SpeechRecognitionRecognizerImpl
   void OnAudioCaptureEnd() override;
   void OnAudioCaptureError() override;
 
+  // Either create a real soda client or configure one for testing.
+  void CreateSodaClient(const base::FilePath& binary_path);
+  void SetSodaClientForTesting(std::unique_ptr<soda::SodaClient> soda_client);
+
  protected:
   virtual void SendAudioToSpeechRecognitionServiceInternal(
       media::mojom::AudioDataS16Ptr buffer);

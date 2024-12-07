@@ -101,7 +101,7 @@ class SoftwareRendererTest : public testing::Test {
                                              const SkBitmap& source) {
     auto shared_image_mapping = shared_image_interface()->CreateSharedImage(
         {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
          "SoftwareRendererTestSharedBitmap"});
 
     SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());

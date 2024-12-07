@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">આ, તમારા બ્રાઉઝિંગ ડેટાને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" />માંથી તમારા Chrome બ્રાઉઝરની વસ્તુઓ મેળવો</translation>
 <translation id="259935314519650377">ડાઉનલોડ કરેલા ઇન્સ્ટૉલરને કૅશ મેમરીમાં સાચવવામાં નિષ્ફળ રહ્યાં. ભૂલ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome અપડેટ ચેક કરી શકતું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="2632707915638608719">Chrome માટેના એક્સ્ટેન્શન વડે વધુ કાર્યો પૂર્ણ કરો</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome નિયમિત રીતે ચેક કરીને એ વાતની ખાતરી કરતું રહે છે કે તમારા બ્રાઉઝરના સેટિંગ સૌથી સલામત છે. જો કોઈ બાબતનો રિવ્યૂ કરવો જરૂરી હશે તો અમે તમને તેની જાણ કરીશું.</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. Chromeને <ph name="BEGIN_LINK" />તમારા માટે સશક્ત પાસવર્ડ બનાવવા અને યાદ રાખવા<ph name="END_LINK" />ની મંજૂરી આપો.</translation>
 <translation id="2926952073016206995">આ સાઇટ માટે Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="2928420929544864228">ઇન્સ્ટૉલેશનની પ્રક્રિયા પૂર્ણ થઈ.</translation>
-<translation id="2929907241665500097">કંઈક ખોટુ થયું હોવાને કારણે Chrome અપડેટ કરી શકાયું નથી. <ph name="BEGIN_LINK" />Chrome અપડેટ કરવામાં આવતી સમસ્યાઓ અને નિષ્ફળ થયેલા અપડેટ સુધારો.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલરની પ્રક્રિયા શરૂ થવામાં નિષ્ફળ રહી.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chrome</translation>
 <translation id="2970681950995291301">Chromeમાંથી તમારા Google એકાઉન્ટને કાઢી નાખવા માટે, સેટિંગ પેજમાં જઈને Chromeમાંથી સાઇન આઉટ કરો</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome બૅકગ્રાઉન્ડ મોડમાં છે.</translation>
 <translation id="3038232873781883849">ઇન્સ્ટૉલ થવાની રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="3045032126857188731">અનુવાદિત ભાષા: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Safe Browsingની સુવિધા બંધ છે. Chrome તેને ચાલુ રાખવાનો સુઝાવ આપે છે.</translation>
 <translation id="306179102415443347">Google Password Manager પર ઝડપથી જવા માટે તમારા શૉર્ટકટનો ઉપયોગ કરો. તમે તમારા શૉર્ટકટને તમારા કમ્પ્યુટરની હોમ સ્ક્રીન અથવા ઍપ લૉન્ચર પર ખસેડી શકો છો.</translation>
 <translation id="3065168410429928842">Chrome ટૅબ</translation>
 <translation id="3080151273017101988">જ્યારે Google Chrome બંધ થાય ત્યારે બૅકગ્રાઉન્ડમાં ઍપ ચલાવવાનું ચાલુ રાખો</translation>
@@ -243,7 +240,6 @@
 <translation id="383928141529488001">બ્લૂટૂથ ડિવાઇસ વિશે શોધખોળ કરવા Google Chromeને બ્લૂટૂથના 
  ઍક્સેસની જરૂર છે. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">કૃપા કરીને બધી Google Chrome વિંડોઝ બંધ કરો અને ફરીથી પ્રયાસ કરો.</translation>
-<translation id="3865754807470779944">Chromeનું <ph name="PRODUCT_VERSION" /> વર્ઝન ઇન્સ્ટૉલ કરવામાં આવેલું છે</translation>
 <translation id="3873044882194371212">Chrome છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="3885770153807205175">ભાષા પિકર</translation>
 <translation id="3889417619312448367">Google Chromeને અનઇન્સ્ટૉલ કરો</translation>
@@ -283,12 +279,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">મનગમતું બનાવવાની અને અન્ય સુવિધાઓ મેળવવા માટે, Chromeનો વેબ અને ઍપ ઍક્ટિવિટી અને લિંક કરેલી Google સેવાઓમાં સમાવેશ કરો</translation>
 <translation id="4334294535648607276">ડાઉનલોડ પૂર્ણ.</translation>
-<translation id="4335235004908507846">Chrome તમને ડેટા ઉલ્લંઘન, ખરાબ એક્સ્ટેંશન અને બીજી ઘણી બાબતોથી સુરક્ષિત રાખી શકે છે</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />ને Chromeમાં ઉમેરવામાં આવ્યું છે</translation>
 <translation id="4348548358339558429">મનગમતું બનાવવાની સુવિધા મેળવવા માટે, Chromeમાં વેબ અને ઍપ ઍક્ટિવિટી ઉમેરો</translation>
 <translation id="436060642166082913">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું છે, કારણ કે આ ફાઇલ તમારા વ્યક્તિગત અને સોશિયલ નેટવર્ક એકાઉન્ટને નુકસાન પહોંચાડી શકે છે</translation>
 <translation id="4367027658822022112">તમે સરળ ઍક્સેસ માટે Google Lensને પિન કરી શકો છો; બાજુની પૅનલમાં સૌથી ઉપર પિન કરો બટન પર ક્લિક કરો</translation>
-<translation id="4384570495110188418">તમે સાઇન ઇન કરેલું ન હોવાને કારણે Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
 <translation id="4389991535395284064">છૂપા મોડમાં બ્રાઉઝ કરતી વખતે, Chrome તમને અસુરક્ષિત કનેક્શનનો ઉપયોગ કરીને સાઇટ લોડ કરતા પહેલાં ચેતવણી આપશે</translation>
 <translation id="4427306783828095590">વધારેલી સુરક્ષા ફિશિંગ અને માલવેરને બ્લૉક કરવામાં વધુ સહાયરૂપ થાય છે</translation>
 <translation id="4434353761996769206">ઇન્સ્ટૉલરની ભૂલ <ph name="INSTALLER_ERROR" /></translation>

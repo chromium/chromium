@@ -258,6 +258,7 @@ class FrameNodeImpl
   // NodeBase:
   void OnJoiningGraph() override;
   void OnBeforeLeavingGraph() override;
+  void OnUninitializing() override;
   void RemoveNodeAttachedData() override;
 
   // Helper function to sever all opened/embedded page relationships. This is

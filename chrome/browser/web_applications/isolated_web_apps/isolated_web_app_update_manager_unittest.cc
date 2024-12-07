@@ -45,6 +45,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -109,9 +111,10 @@ using ::testing::WithArg;
 
 struct IwaForceInstallPolicyEntry {
   IsolatedWebAppUrlInfo url_info;
-  std::string_view update_manifest_url;
+  GURL update_manifest_url;
   std::optional<UpdateChannel> update_channel;
   std::optional<base::Version> pinned_version;
+  bool allow_downgrades = false;
 };
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
@@ -462,27 +465,15 @@ class IsolatedWebAppUpdateManagerUpdateTest
 #if BUILDFLAG(IS_CHROMEOS)
   void SetIwaForceInstallPolicy(
       std::vector<IwaForceInstallPolicyEntry> entries) {
-    profile()->GetPrefs()->SetList(
-        prefs::kIsolatedWebAppInstallForceList,
-        base::ToValueList(entries, [](const auto& entry) {
-          auto dict =
-              base::Value::Dict()
-                  .Set(kPolicyWebBundleIdKey,
-                       entry.url_info.web_bundle_id().id())
-                  .Set(kPolicyUpdateManifestUrlKey, entry.update_manifest_url);
+    PolicyGenerator policy_generator;
+    for (auto& entry : entries) {
+      policy_generator.AddForceInstalledIwa(
+          entry.url_info.web_bundle_id(), entry.update_manifest_url,
+          entry.update_channel, entry.pinned_version, entry.allow_downgrades);
+    }
 
-          if (entry.update_channel) {
-            dict.Set(kPolicyUpdateChannelKey,
-                     entry.update_channel.value().ToString());
-          }
-
-          if (entry.pinned_version) {
-            dict.Set(kPolicyPinnedVersionKey,
-                     entry.pinned_version.value().GetString());
-          }
-
-          return dict;
-        }));
+    profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                               policy_generator.Generate());
   }
 
   // TODO(crbug.com/298005569): This should eventually go away and instead rely
@@ -610,10 +601,11 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
 
   SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
-       {non_installed_url_info, "https://example.com/update_manifest.json"},
-       {dev_bundle_url_info, "https://example.com/update_manifest.json"},
-       {dev_proxy_url_info, "https://example.com/update_manifest.json"}});
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url},
+       {non_installed_url_info,
+        GURL("https://example.com/update_manifest.json")},
+       {dev_bundle_url_info, GURL("https://example.com/update_manifest.json")},
+       {dev_proxy_url_info, GURL("https://example.com/update_manifest.json")}});
 
   task_environment()->FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
@@ -656,7 +648,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   SetIwaForceInstallPolicy(
-      {{iwa_info3_->url_info, iwa_info3_->update_manifest_url.spec(),
+      {{iwa_info3_->url_info, iwa_info3_->update_manifest_url,
         UpdateChannel::Create("beta").value()}});
 
   task_environment()->FastForwardBy(
@@ -697,7 +689,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
           .Build(),
       webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
   SetIwaForceInstallPolicy(
-      {{iwa_info3_->url_info, iwa_info3_->update_manifest_url.spec()}});
+      {{iwa_info3_->url_info, iwa_info3_->update_manifest_url}});
 
   task_environment()->FastForwardBy(
       *update_manager().GetNextUpdateDiscoveryTimeForTesting() -
@@ -738,7 +730,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   SetIwaForceInstallPolicy(
       {{/*url_info=*/iwa_info1_->url_info,
-        /*update_manifest_url=*/iwa_info1_->update_manifest_url.spec(),
+        /*update_manifest_url=*/iwa_info1_->update_manifest_url,
         /*update_channel=*/std::nullopt,
         /*pinned_version=*/iwa_info1_->update_version}});
 
@@ -779,7 +771,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   SetIwaForceInstallPolicy(
       {{/*url_info=*/iwa_info1_->url_info,
-        /*update_manifest_url=*/iwa_info1_->update_manifest_url.spec(),
+        /*update_manifest_url=*/iwa_info1_->update_manifest_url,
         /*update_channel=*/std::nullopt,
         /*pinned_version=*/iwa_info1_->installed_version}});
 
@@ -827,11 +819,11 @@ TEST_F(
   // is not possible)
   SetIwaForceInstallPolicy(
       {{/*url_info=*/iwa_info1_->url_info,
-        /*update_manifest_url=*/iwa_info1_->update_manifest_url.spec(),
+        /*update_manifest_url=*/iwa_info1_->update_manifest_url,
         /*update_channel=*/std::nullopt,
         /*pinned_version=*/base::Version("5.0.0")},
        {/*url_info=*/iwa_info2_->url_info,
-        /*update_manifest_url=*/iwa_info2_->update_manifest_url.spec(),
+        /*update_manifest_url=*/iwa_info2_->update_manifest_url,
         /*update_channel=*/std::nullopt,
         /*pinned_version=*/base::Version("0.5.0")}});
 
@@ -871,6 +863,50 @@ TEST_F(
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
       ->Shutdown();
 }
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
+       DiscoverDowngradeOfPolicyInstalledApps) {
+  AddDummyIsolatedAppToRegistry(
+      profile(), iwa_info2_->url_info.origin().GetURL(), "latest iwa 2",
+      IsolationData::Builder(iwa_info2_->installed_location,
+                             base::Version("10.0.0"))
+          .Build(),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+
+  // Pin IWA to lower version than the current one
+  SetIwaForceInstallPolicy(
+      {{/*url_info=*/iwa_info2_->url_info,
+        /*update_manifest_url=*/iwa_info2_->update_manifest_url,
+        /*update_channel=*/std::nullopt,
+        /*pinned_version=*/iwa_info2_->update_version,
+        /*allow_downgrades=*/true}});
+
+  EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
+                  iwa_info2_->url_info.app_id()),
+              IsTrue());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info2_->url_info.app_id()),
+              test::IwaIs(Eq("updated app 2"),
+                          test::IsolationDataIs(
+                              UpdateLocationMatcher(profile()),
+                              Eq(iwa_info2_->update_version, ),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+
+  EXPECT_THAT(
+      UpdateDiscoveryLog(),
+      UnorderedElementsAre(IsDict(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+  EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
+  EXPECT_THAT(UpdateApplyLog(), SizeIs(1));
+
+  fake_provider().Shutdown();
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
@@ -903,7 +939,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
   SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
 
   EXPECT_THAT(update_manager().MaybeDiscoverUpdatesForApp(
                   iwa_info1_->url_info.app_id()),
@@ -949,7 +985,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
 
   SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
 
   // After one hour, the update should not yet have run, but still be scheduled
   // (i.e. containing a value in the `std::optional`).
@@ -1004,7 +1040,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
 
   SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
   update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 
@@ -1060,8 +1096,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
-       {iwa_info2_->url_info, iwa_info2_->update_manifest_url.spec()}});
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url},
+       {iwa_info2_->url_info, iwa_info2_->update_manifest_url}});
   update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 
@@ -1142,8 +1178,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
-       {iwa_info2_->url_info, iwa_info2_->update_manifest_url.spec()}});
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url},
+       {iwa_info2_->url_info, iwa_info2_->update_manifest_url}});
   update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 
@@ -1196,7 +1232,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
 
   SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()}});
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
   update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 
@@ -1242,8 +1278,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   fake_ui_manager().SetNumWindowsForApp(iwa_info2_->url_info.app_id(), 1);
 
   SetIwaForceInstallPolicy(
-      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
-       {iwa_info2_->url_info, iwa_info2_->update_manifest_url.spec()}});
+      {{iwa_info1_->url_info, iwa_info1_->update_manifest_url},
+       {iwa_info2_->url_info, iwa_info2_->update_manifest_url}});
   update_manager().DiscoverUpdatesNow();
   task_environment()->RunUntilIdle();
 

@@ -7,7 +7,7 @@ import type {InkColorSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeo
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertSelectedColor, getColorButtons} from './test_util.js';
+import {assertLabels, assertSelectedColor, getColorButtons} from './test_util.js';
 
 
 function createSelector(): InkColorSelectorElement {
@@ -173,6 +173,57 @@ chrome.test.runTests([
     await testColorKeyboardEvent(
         colorButtons, colorButtons[16], 'ArrowDown',
         /*expectedButtonIndex=*/ 1);
+
+    chrome.test.succeed();
+  },
+
+  // Test the labels for each highlighter color button.
+  async function testHighlighterLabels() {
+    const selector = createSelector();
+    selector.currentType = AnnotationBrushType.HIGHLIGHTER;
+    await microtasksFinished();
+
+    const colorButtons = getColorButtons(selector);
+
+    const expectedLabels: string[] = [
+      'Light Red',
+      'Light Yellow',
+      'Light Green',
+      'Light Blue',
+      'Light Orange',
+      'Red',
+      'Yellow',
+      'Green',
+      'Blue',
+      'Orange',
+    ];
+    chrome.test.assertEq(expectedLabels.length, colorButtons.length);
+
+    for (let i = 0; i < colorButtons.length; ++i) {
+      assertLabels(colorButtons[i], expectedLabels[i]);
+    }
+
+    chrome.test.succeed();
+  },
+
+  // Test the labels for each pen color button.
+  function testPenLabels() {
+    const selector = createSelector();
+    chrome.test.assertEq(AnnotationBrushType.PEN, selector.currentType);
+
+    const colorButtons = getColorButtons(selector);
+
+    const expectedLabels: string[] = [
+      'Black', 'Dark Grey 2', 'Dark Grey 1', 'Light Grey', 'White',
+      'Red 1', 'Yellow 1',    'Green 1',     'Blue 1',     'Tan 1',
+      'Red 2', 'Yellow 2',    'Green 2',     'Blue 2',     'Tan 2',
+      'Red 3', 'Yellow 3',    'Green 3',     'Blue 3',     'Tan 3',
+    ];
+    chrome.test.assertEq(expectedLabels.length, colorButtons.length);
+
+    for (let i = 0; i < colorButtons.length; ++i) {
+      assertLabels(colorButtons[i], expectedLabels[i]);
+    }
 
     chrome.test.succeed();
   },

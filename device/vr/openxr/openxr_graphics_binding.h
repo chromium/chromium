@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "device/vr/android/local_texture.h"
+#include "device/vr/android/local_texture.h"  //nogncheck
 #include "ui/gl/scoped_egl_image.h"
 #endif
 

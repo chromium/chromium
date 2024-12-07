@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <set>
 #include <string>
@@ -107,7 +103,8 @@ const char kSerialChooserDataGroupType[] = "serial-ports-data";
 const char kHidChooserDataGroupType[] = "hid-devices-data";
 const char kBluetoothChooserDataGroupType[] = "bluetooth-devices-data";
 
-const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
+constexpr auto kContentSettingsTypeGroupNames = std::to_array<
+    const ContentSettingsTypeNameEntry>({
     // The following ContentSettingsTypes have UI in Content Settings
     // and require a mapping from their Javascript string representation in
     // chrome/browser/resources/settings/site_settings/constants.ts to their C++
@@ -248,10 +245,10 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // TODO(crbug.com/368266658): Implement the UI for Direct Sockets PNA.
     {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, nullptr},
     {ContentSettingsType::LEGACY_COOKIE_SCOPE, nullptr},
-};
+});
 
 static_assert(
-    std::size(kContentSettingsTypeGroupNames) ==
+    kContentSettingsTypeGroupNames.size() ==
         // Add one since the sequence is kMinValue = -1, 0, ..., kMaxValue
         1 + static_cast<int32_t>(ContentSettingsType::kMaxValue) -
             static_cast<int32_t>(ContentSettingsType::kMinValue),

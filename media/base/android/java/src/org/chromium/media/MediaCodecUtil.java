@@ -5,7 +5,6 @@
 package org.chromium.media;
 
 import android.media.MediaCodec;
-import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaCodecInfo.CodecProfileLevel;
@@ -661,14 +660,5 @@ class MediaCodecUtil {
 
         Log.w(TAG, "HW encoder for " + mime + " is not available on this device.");
         return null;
-    }
-
-    /**
-     * Sets the encryption pattern value if and only if CryptoInfo.setPattern method is supported.
-     * Note that if platformSupportsCbcsEncryption returns true, then this function will set the
-     * pattern.
-     */
-    static void setPatternIfSupported(CryptoInfo cryptoInfo, int encrypt, int skip) {
-        cryptoInfo.setPattern(new CryptoInfo.Pattern(encrypt, skip));
     }
 }

@@ -209,6 +209,9 @@ chromium-metrics-reviews@google.com.
       summary="Returns suitability of this page for compose."/>
   <variant name="CompressPublicImages" summary="Compresses public images"/>
   <variant name="DeferAllScript" summary="Defers execution of script"/>
+  <variant name="EwalletMerchantAllowlist"
+      summary="This optimization provides information about merchant origins
+               for which eWallet push payments payments should be triggered."/>
   <variant name="FastHostHints"
       summary="Provides information about hosts that historically provide a
                fast and responsive user experience"/>
@@ -264,6 +267,9 @@ chromium-metrics-reviews@google.com.
       summary="Returns price insights data for shopping websites"/>
   <variant name="PriceTracking"
       summary="Returns price related data for shopping websites"/>
+  <variant name="PrivacyPolicyAnnotation"
+      summary="Provides information about whether a URL is a privacy policy
+               page."/>
   <variant name="SalientImage"
       summary="Provides information about images for a URL."/>
   <variant name="SavedTabGroup"

@@ -312,18 +312,10 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
   if (!card) {
     return;
   }
-  if (is_virtual) {
-    // Virtual credit cards are not persisted in Chrome, modify record type
-    // locally.
-    manager_->AuthenticateThenFillCreditCardForm(
-        query_form_, query_field_.global_id(),
-        CreditCard::CreateVirtualCard(*card),
-        AutofillTriggerSource::kTouchToFillCreditCard);
-  } else {
-    manager_->AuthenticateThenFillCreditCardForm(
-        query_form_, query_field_.global_id(), *card,
-        AutofillTriggerSource::kTouchToFillCreditCard);
-  }
+  manager_->FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
+      is_virtual ? CreditCard::CreateVirtualCard(*card) : *card,
+      AutofillTriggerSource::kTouchToFillCreditCard);
 }
 
 void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(

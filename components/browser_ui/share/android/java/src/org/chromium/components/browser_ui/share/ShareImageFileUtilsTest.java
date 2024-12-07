@@ -51,6 +51,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.FileProviderHelper;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -316,6 +317,7 @@ public class ShareImageFileUtilsTest {
     @SmallTest
     @MaxAndroidSdkLevel(value = VERSION_CODES.P, reason = "Added to MediaStore.Downloads on Q+")
     public void testAddCompletedDownload() throws IOException {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         String filename =
                 TEST_IMAGE_FILE_NAME + "_add_completed_download" + TEST_JPG_IMAGE_FILE_EXTENSION;
         File externalStorageDir = sActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);

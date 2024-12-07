@@ -1,6 +1,7 @@
 include_rules = [
     "+chrome/installer/util",
     "+chrome/updater",
+    "+components/crash/core/common",
     "+components/named_mojo_ipc_server",
     "+components/named_system_lock",
     "+components/policy",

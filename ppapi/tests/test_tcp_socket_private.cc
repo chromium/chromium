@@ -278,7 +278,7 @@ std::string TestTCPSocketPrivate::TestSSLWriteFails() {
 
   // Write to the socket until there's an error. Some writes may succeed, since
   // Mojo writes complete before the socket tries to send data.
-  char write_data[32 * 1024] = {0};
+  char write_data[32 * 1024] = {};
   while (true) {
     TestCompletionCallback cb(instance_->pp_instance(), callback_type());
     cb.WaitForResult(socket.Write(write_data,

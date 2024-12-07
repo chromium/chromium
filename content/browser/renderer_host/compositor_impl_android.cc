@@ -116,7 +116,6 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes() {
 }
 
 void CreateContextProviderAfterGpuChannelEstablished(
-    gpu::SurfaceHandle handle,
     gpu::SharedMemoryLimits shared_memory_limits,
     Compositor::ContextProviderCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
@@ -137,7 +136,8 @@ void CreateContextProviderAfterGpuChannelEstablished(
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), stream_id, stream_priority, handle,
+          std::move(gpu_channel_host), stream_id, stream_priority,
+          gpu::kNullSurfaceHandle,
           GURL(std::string("chrome://gpu/Compositor::CreateContextProvider")),
           automatic_flushes, support_locking, shared_memory_limits, attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
@@ -207,12 +207,11 @@ void Compositor::Initialize() {
 
 // static
 void Compositor::CreateContextProvider(
-    gpu::SurfaceHandle handle,
     gpu::SharedMemoryLimits shared_memory_limits,
     ContextProviderCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserGpuChannelHostFactory::instance()->EstablishGpuChannel(
-      base::BindOnce(&CreateContextProviderAfterGpuChannelEstablished, handle,
+      base::BindOnce(&CreateContextProviderAfterGpuChannelEstablished,
                      shared_memory_limits, std::move(callback)));
 }
 

@@ -467,7 +467,8 @@ void PasswordManagerBrowserTestBase::SetUpCommandLine(
 
 // static
 content::WebContents* PasswordManagerBrowserTestBase::GetNewTab(
-    Browser* browser) {
+    Browser* browser,
+    bool open_new_tab) {
   // Add a tab with a customized ManagePasswordsUIController. Thus, we can
   // intercept useful UI events.
   content::WebContents* preexisting_tab =
@@ -486,13 +487,12 @@ content::WebContents* PasswordManagerBrowserTestBase::GetNewTab(
       new CustomManagePasswordsUIController(web_contents);
   browser->tab_strip_model()->AppendWebContents(std::move(owned_web_contents),
                                                 true);
-  if (preexisting_tab) {
+  if (!open_new_tab && preexisting_tab) {
     browser->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
   }
   EXPECT_EQ(controller,
             ManagePasswordsUIController::FromWebContents(web_contents));
-  EXPECT_EQ(web_contents, browser->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(web_contents->IsLoading());
   return web_contents;
 }
@@ -520,6 +520,11 @@ void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
 
 content::WebContents* PasswordManagerBrowserTestBase::WebContents() const {
   return web_contents_;
+}
+
+void PasswordManagerBrowserTestBase::SetWebContents(
+    content::WebContents* web_contents) {
+  web_contents_ = web_contents;
 }
 
 content::RenderFrameHost* PasswordManagerBrowserTestBase::RenderFrameHost()
@@ -676,6 +681,13 @@ void PasswordManagerBrowserTestBase::CheckElementValue(
     const std::string& iframe_id,
     const std::string& element_id,
     const std::string& expected_value) {
+  EXPECT_EQ(expected_value, GetElementValue(iframe_id, element_id))
+      << "element_id = " << element_id;
+}
+
+std::string PasswordManagerBrowserTestBase::GetElementValue(
+    const std::string& iframe_id,
+    const std::string& element_id) {
   const std::string value_get_script = base::StringPrintf(
       "if (%s)"
       "  var element = document.getElementById("
@@ -686,11 +698,9 @@ void PasswordManagerBrowserTestBase::CheckElementValue(
       "value;",
       iframe_id.c_str(), iframe_id.c_str(), element_id.c_str(),
       element_id.c_str());
-  std::string return_value =
-      content::EvalJs(RenderFrameHost(), value_get_script,
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractString();
-  EXPECT_EQ(expected_value, return_value) << "element_id = " << element_id;
+  return content::EvalJs(RenderFrameHost(), value_get_script,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+      .ExtractString();
 }
 
 void PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {

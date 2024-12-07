@@ -30,14 +30,17 @@ BookmarkMenuController::BookmarkMenuController(Browser* browser,
                                                const BookmarkNode* node,
                                                size_t start_child_index,
                                                bool for_drop)
-    : menu_delegate_(new BookmarkMenuDelegate(browser, parent)),
+    : menu_delegate_(
+          new BookmarkMenuDelegate(browser,
+                                   parent,
+                                   this,
+                                   BookmarkLaunchLocation::kSubfolder)),
       node_(node),
       observer_(nullptr),
       for_drop_(for_drop),
       bookmark_bar_(nullptr) {
-  menu_delegate_->Init(this, nullptr, node, start_child_index,
-                       BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
-                       BookmarkLaunchLocation::kSubfolder);
+  menu_delegate_->SetActiveMenu(node, start_child_index);
+
   int run_type = 0;
   if (for_drop)
     run_type |= views::MenuRunner::FOR_DROP;

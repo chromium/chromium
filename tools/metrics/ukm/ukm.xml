@@ -320,26 +320,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Accessibility.InaccessiblePDFs">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records inaccessible PDFs.
-  </summary>
-  <metric name="Seen" enum="Boolean">
-    <summary>
-      A boolean signaling that the PDF was opened by the user.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
 <event name="Accessibility.PageZoom">
   <owner>aldietz@google.com</owner>
   <owner>mschillaci@google.com</owner>
@@ -4006,6 +3986,13 @@ be describing additional metrics about the same event.
       are multiple attempts.
     </summary>
   </metric>
+  <metric name="VerifyingDialogResult" enum="FedCmVerifyingDialogResult">
+    <summary>
+      Records the outcome of the verifying dialog. Recorded once per verifying
+      dialog shown when the FedCM call is completed, i.e. at the same time as
+      Blink.FedCm.Status.RequestIdToken.
+    </summary>
+  </metric>
 </event>
 
 <event name="Blink.FedCmIdp">
@@ -4195,6 +4182,13 @@ be describing additional metrics about the same event.
       button, when the request is fulfilled (either resolved or rejected). Only
       considers the last &quot;use other account&quot; button clicked if there
       are multiple attempts.
+    </summary>
+  </metric>
+  <metric name="VerifyingDialogResult" enum="FedCmVerifyingDialogResult">
+    <summary>
+      Records the outcome of the verifying dialog. Recorded once per verifying
+      dialog shown when the FedCM call is completed, i.e. at the same time as
+      Blink.FedCm.Status.RequestIdToken.
     </summary>
   </metric>
 </event>
@@ -11583,9 +11577,9 @@ be describing additional metrics about the same event.
     content type. Records whether the contextual searchbox was focused at least
     once in sessions in which it was shown.
   </summary>
-  <metric name="AllPageContentTypes" enum="Boolean">
+  <metric name="FocusedInSession" enum="Boolean">
     <summary>
-      Focused in session for all page content types.
+      Whether the searchbox was focused in the session.
     </summary>
     <aggregation>
       <history>
@@ -11595,45 +11589,9 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="Html" enum="Boolean">
+  <metric name="PageContentType" enum="MimeType">
     <summary>
-      Focused in session for html page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Pdf" enum="Boolean">
-    <summary>
-      Focused in session for pdf page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="PlainText" enum="Boolean">
-    <summary>
-      Focused in session for plain text page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Unknown" enum="Boolean">
-    <summary>
-      Focused in session for unspecified page content types.
+      Focused in session sliced by page content type.
     </summary>
     <aggregation>
       <history>
@@ -11645,16 +11603,16 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Lens.Overlay.ContextualSearchBox.Shown">
+<event name="Lens.Overlay.ContextualSearchBox.ShownInSession">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
-    Recorded once when the contextual searchbox is shown to the user. Measures
-    if it was shown and the document type it was shown on.
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the contextual searchbox was shown in the session.
   </summary>
-  <metric name="DocumentType" enum="MimeType">
+  <metric name="PageContentType" enum="MimeType">
     <summary>
-      The type of document the contextual searchbox was shown on.
+      The page content type the contextual searchbox was shown on.
     </summary>
     <aggregation>
       <history>
@@ -11689,9 +11647,9 @@ be describing additional metrics about the same event.
     type when the lens overlay is invoked, not necessarily the same as the page
     type as when ZPS is shown.
   </summary>
-  <metric name="AllPageContentTypes" enum="Boolean">
+  <metric name="PageContentType" enum="MimeType">
     <summary>
-      Query issued in session for all page content types.
+      Query issued in session sliced by page content type.
     </summary>
     <aggregation>
       <history>
@@ -11701,45 +11659,9 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="Html" enum="Boolean">
+  <metric name="QueryIssuedInSession" enum="Boolean">
     <summary>
-      Query issued in session for html page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Pdf" enum="Boolean">
-    <summary>
-      Query issued in session for pdf page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="PlainText" enum="Boolean">
-    <summary>
-      Query issued in session for web page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Unknown" enum="Boolean">
-    <summary>
-      Query issued in session for unknown page content types.
+      Whether a query was issued in the session.
     </summary>
     <aggregation>
       <history>
@@ -11757,13 +11679,14 @@ be describing additional metrics about the same event.
   <summary>
     Recorded once when the Lens Overlay feature is dismissed, sliced by page
     content type. Records whether any zero prefix contextual suggestions were
-    shown in sessions in which the contextual searchbox was shown. The document
-    type is the intial document type when the lens overlay is invoked, not
-    necessarily the same as the document type as when ZPS is shown.
+    shown in sessions in which the contextual searchbox was shown. The page
+    content type is the intial page content type when the lens overlay is
+    invoked, not necessarily the same as the page content type as when ZPS is
+    shown.
   </summary>
-  <metric name="AllPageContentTypes" enum="Boolean">
+  <metric name="PageContentType" enum="MimeType">
     <summary>
-      ZPS shown in session for all page content types.
+      ZPS shown in session sliced by page content type.
     </summary>
     <aggregation>
       <history>
@@ -11773,45 +11696,9 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="Html" enum="Boolean">
+  <metric name="ShownInSession" enum="Boolean">
     <summary>
-      ZPS shown in session for html page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Pdf" enum="Boolean">
-    <summary>
-      ZPS shown in session for pdf page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="PlainText" enum="Boolean">
-    <summary>
-      ZPS shown in session for plain text page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Unknown" enum="Boolean">
-    <summary>
-      ZPS shown in session for unknown page content types.
+      Whether ZPS was shown in the session.
     </summary>
     <aggregation>
       <history>
@@ -11827,15 +11714,16 @@ be describing additional metrics about the same event.
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
-    Recorded once when the Lens Overlay feature is dismissed, sliced by document
-    type. Records whether at least one contextual zero prefix suggestion was
-    used in sessions in which the contextual searchbox was shown. The document
-    type is the intial document type when the lens overlay is invoked, not
-    necessarily the same as the document type as when ZPS suggestion was used.
+    Recorded once when the Lens Overlay feature is dismissed, sliced by page
+    content type. Records whether at least one contextual zero prefix suggestion
+    was used in sessions in which the contextual searchbox was shown. The page
+    content type is the intial page content type when the lens overlay is
+    invoked, not necessarily the same as the page content type as when ZPS
+    suggestion was used.
   </summary>
-  <metric name="AllPageContentTypes" enum="Boolean">
+  <metric name="PageContentType" enum="MimeType">
     <summary>
-      ZPS used in session for all page content types.
+      ZPS used in session sliced by page content type.
     </summary>
     <aggregation>
       <history>
@@ -11845,45 +11733,9 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="Html" enum="Boolean">
+  <metric name="SuggestionUsedInSession" enum="Boolean">
     <summary>
-      ZPS used in session for html text page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Pdf" enum="Boolean">
-    <summary>
-      ZPS used in session for pdf page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="PlainText" enum="Boolean">
-    <summary>
-      ZPS used in session for plain text page content types.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="Unknown" enum="Boolean">
-    <summary>
-      ZPS used in session for unknown page content types.
+      Whether ZPS was used in the session.
     </summary>
     <aggregation>
       <history>
@@ -13517,6 +13369,20 @@ be describing additional metrics about the same event.
       !IsMSE src=URL playbacks, this is the container of the media being played
       back; E.g., mp4, avi, mp3, etc.
     </summary>
+  </metric>
+  <metric name="DemuxerType" enum="MediaDemuxerType">
+    <summary>
+      Type of media::Demuxer used for the playback. DemuxerType does not change
+      dynamically during one playback, and is only determined after any HLS
+      fallback might happen.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="FinalPipelineStatus" enum="PipelineStatus">
     <summary>

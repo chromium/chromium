@@ -39,7 +39,6 @@ std::optional<std::string> GetAppReportingCategoryForType(
   switch (app_type) {
     case ::apps::AppType::kArc:
       return kAppCategoryAndroidApps;
-    case ::apps::AppType::kBuiltIn:
     case ::apps::AppType::kSystemWeb:
       return kAppCategorySystemApps;
     case ::apps::AppType::kCrostini:
@@ -51,8 +50,6 @@ std::optional<std::string> GetAppReportingCategoryForType(
       return kAppCategoryChromeAppsExtensions;
     case ::apps::AppType::kWeb:
       return kAppCategoryPWA;
-    case ::apps::AppType::kStandaloneBrowser:
-      return kAppCategoryBrowser;
     case ::apps::AppType::kBorealis:
       return kAppCategoryGames;
     case ::apps::AppType::kPluginVm:  // Only applies to MGS, so we skip.

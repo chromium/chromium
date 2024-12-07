@@ -4,6 +4,7 @@
 
 #include "base/fuchsia/filtered_service_directory.h"
 
+#include <fidl/fuchsia.io/cpp/common_types.h>
 #include <lib/async/default.h>
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/service.h>
@@ -39,9 +40,8 @@ zx_status_t FilteredServiceDirectory::ConnectClient(
   // sys::OutgoingDirectory puts public services under ./svc . Connect to that
   // directory and return client handle for the connection,
   return outgoing_directory_.GetOrCreateDirectory("svc")->Serve(
-      fuchsia::io::OpenFlags::RIGHT_READABLE |
-          fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-      dir_request.TakeChannel());
+      fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+      fidl::ServerEnd<fuchsia_io::Directory>(dir_request.TakeChannel()));
 }
 
 }  // namespace base

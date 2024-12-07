@@ -122,6 +122,53 @@ class AddressSuggestionGeneratorTest : public testing::Test {
   syncer::TestSyncService sync_service_;
 };
 
+// Tests that `SuggestionType::AddressEntryOnTyping` suggestions are returned
+// when the triggering field contents matches profile data.
+TEST_F(AddressSuggestionGeneratorTest,
+       GetSuggestionsOnTypingForProfile_ReturnMatchingSuggestions) {
+  AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
+  AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile_1.SetRawInfo(NAME_FULL, u"Sergey brin");
+  profile_2.SetRawInfo(NAME_FULL, u"Larry page");
+  profile_2.SetRawInfo(ADDRESS_HOME_ZIP, u"4398125");
+
+  address_data().AddProfile(profile_1);
+  address_data().AddProfile(profile_2);
+  ASSERT_EQ(address_data().GetProfilesToSuggest().size(), 2u);
+
+  // Expects that no suggestion is returned if the field content matches
+  // `NAME_FULL` prefix from the top profile but the field content
+  // has only 1 character.
+  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"L").size(), 0u);
+  // Expects that no suggestion is returned if the field content matches
+  // `NAME_FULL` prefix from the top profile but the field content
+  // has only 2 characters.
+  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"La").size(), 0u);
+  // Expects that suggestions are returned if the field content matches
+  // prefix data from the top profile, even when the field content
+  // has more than 3 characters.
+  EXPECT_THAT(
+      GetSuggestionsOnTypingForProfile(address_data(), u"Lar"),
+      ElementsAre(
+          EqualsSuggestion(SuggestionType::kAddressEntryOnTyping, u"Larry"),
+          EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                           u"Larry page")));
+  // Expects that NO suggestion is returned if the field content matches
+  // `NAME_FULL` prefix from the a profile that is not the top one (for now we
+  // only support suggestions form one profile), and the field content has at
+  // least 3 characters.
+  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Sergey").size(),
+            0u);
+  // Expects that for data that are number (like `ADDRESS_HOME_ZIP`) only two
+  // matching characters are enough to create suggestions.
+  EXPECT_THAT(GetSuggestionsOnTypingForProfile(address_data(), u"43"),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAddressEntryOnTyping, u"4398125")));
+  // However 1 matching digit is not enough to return a suggestion.
+  EXPECT_THAT(GetSuggestionsOnTypingForProfile(address_data(), u"4").size(),
+              0u);
+}
+
 // Tests that special characters will be used while prefix matching the user's
 // field input with the available emails to suggest.
 TEST_F(AddressSuggestionGeneratorTest,

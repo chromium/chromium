@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">এই কাৰ্যই এই ডিভাইচটোৰ পৰা আপোনাৰ ব্ৰাউজিং ডেটা মচি পেলাব৷ আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ, Chromeত <ph name="USER_EMAIL" />.হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" />ৰ পৰা আপোনাৰ Chrome ব্ৰাউজাৰৰ বস্তু পাওক</translation>
 <translation id="259935314519650377">ডাউনল’ড কৰা ইনষ্টলাৰটো কেশ্ব কৰাত বিফল হৈছে। আসোঁৱাহ: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
-<translation id="2622559029861875898">Chromeএ আপডে'টসমূহ পৰীক্ষা কৰিব নোৱাৰে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি চাওক।</translation>
 <translation id="2632707915638608719">Chromeৰ পৰা পোৱা এক্সটেনশ্বনসমূহৰ জৰিয়তে অধিক কাৰ্য কৰক</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">আপোনাৰ ব্ৰাউজাৰত আটাইতকৈ সুৰক্ষিত ছেটিং আছে নে নাই সেয়া নিশ্চিত কৰিবলৈ Chromeএ নিয়মিতভাৱে পৰীক্ষা কৰে। যদি আপুনি কিবা পৰ্যালোচনা কৰাৰ প্ৰয়োজন হয় তেন্তে আমি আপোনাক জনাম।</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">দুৰ্বল পাছৱৰ্ডসমূহ অনুমান কৰিবলৈ সহজ। Chromeক <ph name="BEGIN_LINK" />আপোনাৰ বাবে শক্তিশালী পাছৱৰ্ড সৃষ্টি কৰিবলৈ আৰু মনত ৰাখিবলৈ দিয়ক<ph name="END_LINK" />।</translation>
 <translation id="2926952073016206995">Chromeক এই ছাইটটোৰ বাবে কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="2928420929544864228">ইনষ্টল কৰাটো সম্পূৰ্ণ হ’ল।</translation>
-<translation id="2929907241665500097">Chrome আপডে'ট হোৱা নাই, কিবা ভুল হৈছে। <ph name="BEGIN_LINK" />Chromeৰ আপডে'ট সম্পর্কীয় সমস্যাবোৰ আৰু বিফল হোৱা আপডে'টসমূহ সমাধান কৰক।<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে: ইনষ্টলাৰৰ প্ৰক্ৰিয়াটো আৰম্ভ হ’ব পৰা নাই।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - নেটৱর্কত ছাইন ইন - Chrome</translation>
 <translation id="2970681950995291301">Chromeৰ পৰা আপোনাৰ Google একাউণ্টটো আঁতৰাবলৈ ছেটিঙৰ পৃষ্ঠাত Chromeৰ পৰা ছাইন আউট কৰক</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome নেপথ্যৰ ম’ডত আছে।</translation>
 <translation id="3038232873781883849">ইনষ্টল কৰাৰ বাবে অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="3045032126857188731">অনুবাদ কৰা ভাষা: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">সুৰক্ষিত ব্ৰাউজিং অফ আছে। Chromeএ ইয়াক অন কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="306179102415443347">দ্ৰুতভাৱে Google Password Managerলৈ যাবলৈ আপোনাৰ শ্বৰ্টকাট ব্যৱহাৰ কৰক। আপুনি আপোনাৰ শ্বৰ্টকাটটো আপোনাৰ কম্পিউটাৰৰ গৃহ স্ক্ৰীন অথবা এপ্‌ লঞ্চাৰলৈ স্থানান্তৰ কৰিব পাৰে।</translation>
 <translation id="3065168410429928842">Chrome টেব</translation>
 <translation id="3080151273017101988">Google Chrome বন্ধ কৰাৰ পিছতো নেপথ্যত এপ্‌সমূহ চলি থাকিবলৈ দিয়ক</translation>
@@ -243,7 +240,6 @@
 <translation id="383928141529488001">Google Chromeক ব্লুটুথ ডিভাইচসমূহ অন্বেষণ কৰিবলৈ 
  ব্লুটুথ এক্সেছৰ আৱশ্যক। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">অনুগ্ৰহ কৰি Google Chrome windows বন্ধ কৰি পুনৰ চেষ্টা কৰক।</translation>
-<translation id="3865754807470779944">Chrome সংস্কৰণ <ph name="PRODUCT_VERSION" /> ইনষ্টল কৰা হ’ল</translation>
 <translation id="3873044882194371212">Chromeৰ ইনক'&amp;গনিট' ৱিণ্ড'ত লিংকটো খোলক</translation>
 <translation id="3885770153807205175">ভাষা বাছনিকৰ্তা</translation>
 <translation id="3889417619312448367">Google Chrome আনইনষ্টল কৰক</translation>
@@ -283,12 +279,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ব্যক্তিগতকৰণ আৰু অন্য সুবিধাসমূহ পাবলৈ, ৱেব আৰু এপৰ কাৰ্যকলাপত Chrome আৰু লিংক কৰি থোৱা Google সেৱাসমূহক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="4334294535648607276">ডাউনল’ড সম্পূৰ্ণ হ’ল।</translation>
-<translation id="4335235004908507846">Chromeএ আপোনাক ডেটা উলংঘন, ক্ষতিকাৰক এক্সটেনশ্বন তথা আন বহুতৰ পৰা সুৰক্ষিত থকাত সহায় কৰিব পাৰে</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chromeত যোগ কৰা হ’ল</translation>
 <translation id="4348548358339558429">ব্যক্তিগতকৰণ পাবলৈ, ৱেব আৰু এপৰ কাৰ্যকলাপত Chromeক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="436060642166082913">ফাইলটোৱে আপোনাৰ ব্যক্তিগত আৰু সামাজিক নেটৱৰ্কৰ একাউণ্টসমূহৰ ক্ষতি কৰিব পাৰে বাবে Chromeএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="4367027658822022112">সহজে এক্সেছ কৰিবলৈ আপুনি Google Lens পিন কৰিব পাৰে; ছাইডৰ পেনেলৰ একেবাৰে ওপৰত থকা পিন কৰক বুটামটোত ক্লিক কৰক</translation>
-<translation id="4384570495110188418">আপুনি ছাইন ইন হৈ নথকাৰ বাবে Chromeএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="4389991535395284064">ইনক’গনিট’ ম’ডত ব্ৰাউজ কৰাৰ সময়ত, Chromeএ কোনো অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি এটা ছাইট ল’ড কৰাৰ পূৰ্বে আপোনাক সতৰ্ক কৰিব</translation>
 <translation id="4427306783828095590">বৰ্ধিত সুৰক্ষাৰ সুবিধাটোৱে ফিশ্বিং আৰু মালৱেৰ অৱৰোধ কৰিবলৈ অধিক কাৰ্য কৰে</translation>
 <translation id="4434353761996769206">ইনষ্টলাৰৰ আসোঁৱাহ: <ph name="INSTALLER_ERROR" /></translation>

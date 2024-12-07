@@ -85,7 +85,7 @@ std::optional<KeystoreAlgorithmName> KeystoreAlgorithmNameFromString(
 
 //------------------------------------------------------------------------------
 PlatformKeysInternalSelectClientCertificatesFunction::
-    ~PlatformKeysInternalSelectClientCertificatesFunction() {}
+    ~PlatformKeysInternalSelectClientCertificatesFunction() = default;
 
 void PlatformKeysInternalSelectClientCertificatesFunction::
     SetSkipInteractiveCheckForTest(bool skip_interactive_check) {
@@ -216,7 +216,7 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
 //------------------------------------------------------------------------------
 
 PlatformKeysInternalGetPublicKeyFunction::
-    ~PlatformKeysInternalGetPublicKeyFunction() {}
+    ~PlatformKeysInternalGetPublicKeyFunction() = default;
 
 ExtensionFunction::ResponseAction
 PlatformKeysInternalGetPublicKeyFunction::Run() {
@@ -305,7 +305,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
 
 //------------------------------------------------------------------------------
 
-PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() {}
+PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() = default;
 
 ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
   std::optional<api_pki::Sign::Params> params =
@@ -389,7 +389,7 @@ void PlatformKeysInternalSignFunction::OnSigned(
 //------------------------------------------------------------------------------
 
 PlatformKeysVerifyTLSServerCertificateFunction::
-    ~PlatformKeysVerifyTLSServerCertificateFunction() {}
+    ~PlatformKeysVerifyTLSServerCertificateFunction() = default;
 
 ExtensionFunction::ResponseAction
 PlatformKeysVerifyTLSServerCertificateFunction::Run() {

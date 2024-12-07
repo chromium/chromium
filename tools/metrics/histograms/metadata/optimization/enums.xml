@@ -743,6 +743,9 @@ chromium-metrics-reviews@google.com.
   <int value="71" label="SAVED_TAB_GROUP"/>
   <int value="73" label="FORMS_ANNOTATIONS"/>
   <int value="74" label="TEXT_CLASSIFIER_ENTITY_DETECTION"/>
+  <int value="75" label="EWALLET_MERCHANT_ALLOWLIST"/>
+  <int value="76" label="OPTIMIZATION_GUIDE_ICON_VIEW"/>
+  <int value="77" label="PRIVACY_POLICY_ANNOTATION"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

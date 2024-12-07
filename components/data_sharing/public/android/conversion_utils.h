@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_PUBLIC_ANDROID_CONVERSION_UTILS_H_
 #define COMPONENTS_DATA_SHARING_PUBLIC_ANDROID_CONVERSION_UTILS_H_
 
+#include <set>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/data_sharing/public/data_sharing_network_loader.h"

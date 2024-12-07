@@ -1394,8 +1394,8 @@ class MaybeSwitchBuildTypeTest(BisectTestCase):
     options = bisect_builds.ParseCommandLine(command_line)
     with patch('sys.argv', ['bisect-builds.py', *command_line]):
       new_cmd = bisect_builds.MaybeSwitchBuildType(
-          options, bisect_builds.LooseVersion('127.0.6533.74'),
-          bisect_builds.LooseVersion('127.0.6533.88'))
+          options, bisect_builds.ChromiumVersion('127.0.6533.74'),
+          bisect_builds.ChromiumVersion('127.0.6533.88'))
       self.assertEqual(new_cmd[1:], [
           '-o', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88',
           '--verify-range', '--no-local-cache'
@@ -1538,6 +1538,20 @@ class MethodTest(BisectTestCase):
 
     self.assertListEqual(dumped_argv, ['-c'] + test_data)
 
+
+class ChromiumVersionTest(BisectTestCase):
+  def test_cmpare_version_numbers(self):
+    v127_0_6533_74 = bisect_builds.ChromiumVersion('127.0.6533.74')
+    v127_0_6533_75 = bisect_builds.ChromiumVersion('127.0.6533.75')
+    v127_0_6533_75_with_space = bisect_builds.ChromiumVersion('127.0.6533.75 ')
+    v127 = bisect_builds.ChromiumVersion('127')
+
+    self.assertLess(v127_0_6533_74, v127_0_6533_75)
+    self.assertLessEqual(v127_0_6533_74, v127_0_6533_75)
+    self.assertGreater(v127_0_6533_75, v127_0_6533_74)
+    self.assertGreaterEqual(v127_0_6533_75, v127_0_6533_74)
+    self.assertEqual(v127_0_6533_75, v127_0_6533_75_with_space)
+    self.assertLess(v127, v127_0_6533_74)
 
 if __name__ == '__main__':
   unittest.main()

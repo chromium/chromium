@@ -25,7 +25,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
@@ -106,7 +105,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
@@ -119,13 +118,10 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/json/json_string_value_serializer.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -137,13 +133,8 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#endif
-
 using testing::Return;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -162,7 +153,7 @@ using web_app::WebAppProvider;
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 const char kAppId[] = "dofnemchnjfeendjmdhaldenaiabpiad";
 const char16_t kAppName[] = u"Test App";
@@ -214,7 +205,7 @@ struct StartupBrowserCreatorFlagTypeValue {
   bool is_global_infobar;
 };
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 typedef std::optional<policy::PolicyLevel> PolicyVariant;
 
@@ -261,7 +252,7 @@ class StartupBrowserCreatorTest : public extensions::ExtensionBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kHomePage, url::kAboutBlankURL);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // TODO(nkostylev): Investigate if we can remove this switch.
     command_line->AppendSwitch(switches::kCreateBrowserOnStartupForTests);
 #endif
@@ -353,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenURLsPopup) {
 // We don't do non-process-startup browser launches on ChromeOS.
 // Session restore for process-startup browser launches is tested
 // in session_restore_uitest.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Verify that startup URLs are honored when the process already exists but has
 // no tabbed browser windows (eg. as if the process is running only due to a
 // background application.
@@ -529,14 +520,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   base::RunLoop().RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_LaunchWebAppWhileBrowserShutdown \
-  DISABLED_LaunchWebAppWhileBrowserShutdown
-#else
-#define MAYBE_LaunchWebAppWhileBrowserShutdown LaunchWebAppWhileBrowserShutdown
-#endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
-                       MAYBE_LaunchWebAppWhileBrowserShutdown) {
+                       LaunchWebAppWhileBrowserShutdown) {
   // Test callback for verifying browser shutdown is called.
   base::test::TestFuture<void> browser_shutdown_complete;
   web_app::startup::SetBrowserShutdownCompleteCallbackForTesting(
@@ -1043,7 +1028,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ValidNotificationLaunchId) {
@@ -1143,8 +1128,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 // If startup pref is set as LAST_AND_URLS, startup urls should be opened in a
 // new browser window separated from the last-session-restored browser. This
-// test does not apply to ChromeOS. Ash-chrome and lacros-chrome handle startup
-// URLs in a different way.
+// test does not apply to ChromeOS.
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1237,9 +1221,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   EXPECT_EQ(t2_url, tab_strip_model->GetWebContentsAt(1)->GetVisibleURL());
   EXPECT_EQ(0, tab_strip_model->active_index());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsForTwoProfiles) {
   Profile* default_profile = browser()->profile();
 
@@ -1530,14 +1512,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 // This tests that opening multiple profiles with session restore enabled,
 // shutting down, and then launching with kNoStartupWindow doesn't restore
 // the previously opened profiles.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40176564): enable this test on Lacros.
-#define MAYBE_RestoreWithNoStartupWindow DISABLED_RestoreWithNoStartupWindow
-#else
-#define MAYBE_RestoreWithNoStartupWindow RestoreWithNoStartupWindow
-#endif
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
-                       MAYBE_RestoreWithNoStartupWindow) {
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -2298,7 +2273,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class StartupBrowserCreatorTestWithGuestParam
     : public StartupBrowserCreatorTest,
       public testing::WithParamInterface<bool> {
@@ -2573,8 +2547,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   new_browser = FindOneOtherBrowserForProfile(&profile1, new_browser);
   ASSERT_EQ(new_browser->type(), Browser::Type::TYPE_APP);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -3009,7 +2982,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
 
 // These tests are not applicable to Chrome OS as neither initial preferences
 // nor the onboarding promos exist there.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 class StartupBrowserCreatorFirstRunTest : public InProcessBrowserTest {
  public:
@@ -3033,6 +3006,7 @@ void StartupBrowserCreatorFirstRunTest::SetUpCommandLine(
 }
 
 void StartupBrowserCreatorFirstRunTest::SetUpInProcessBrowserTestFixture() {
+  // TODO(crbug.com/382086296): Confirm IS_CHROMEOS is needed here.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Set a policy that prevents the first-run dialog from being shown.
@@ -3184,7 +3158,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
             tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Validates that prefs::kWasRestarted is automatically reset after next browser
 // start.
@@ -3541,7 +3515,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 // Verifies that infobars are not displayed in Kiosk mode.
 class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
@@ -3967,10 +3941,6 @@ IN_PROC_BROWSER_TEST_F(SearchQueryStartupBrowserCreatorPickerTest,
             StartupProfileModeReason::kCommandLineTabs);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_CHROMEOS)
-
 class StartupBrowserCreatorPickerInfobarTest
     : public StartupBrowserCreatorPickerTestBase,
       public ::testing::WithParamInterface<StartupBrowserCreatorFlagTypeValue> {
@@ -4123,111 +4093,3 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // !BUILDFLAG(IS_WIN)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class StartupBrowserCreatorLacrosNoWindowTest
-    : public StartupBrowserCreatorPickerTestBase {
- public:
-  StartupBrowserCreatorLacrosNoWindowTest() = default;
-
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    if (!content::IsPreTest()) {
-      crosapi::mojom::BrowserInitParamsPtr init_params =
-          crosapi::mojom::BrowserInitParams::New();
-      init_params->initial_browser_action =
-          crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow;
-      chromeos::BrowserInitParams::SetInitParamsForTests(
-          std::move(init_params));
-    }
-
-    StartupBrowserCreatorPickerTestBase::CreatedBrowserMainParts(
-        browser_main_parts);
-  }
-
-  base::FilePath GetDefaultProfileDir() const {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    return profile_manager->user_data_dir().Append(
-        profile_manager->GetInitialProfileDir());
-  }
-};
-
-// Create a secondary profile in a separate PRE run because the existence of
-// profiles is checked during startup in the actual test.
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest,
-                       PRE_MultiProfile) {
-  CreateMultipleProfiles();
-  // Need to close the browser window manually so that the real test does not
-  // treat it as session restore.
-  CloseAllBrowsers();
-}
-
-// Checks that no picker and no browser window are open when there are multiple
-// profiles.
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest, MultiProfile) {
-  EXPECT_FALSE(ProfilePicker::IsOpen());
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
-}
-
-// Checks that no picker and no browser window are open when there is a single
-// profile.
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest, SingleProfile) {
-  EXPECT_FALSE(ProfilePicker::IsOpen());
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
-
-  // Checks that it's possible to open a profile after startup.
-  // Regression test for https://crbug.com/1278549
-  base::test::TestFuture<Browser*> future;
-  profiles::SwitchToProfile(GetDefaultProfileDir(),
-                            /*always_create=*/false, future.GetCallback());
-  Profile* profile = future.Get()->profile();
-  EXPECT_NE(profile, nullptr);
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-
-  // Checks that it's possible to open the profile picker.
-  EXPECT_FALSE(ProfilePicker::IsOpen());
-  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
-  profiles::testing::WaitForPickerWidgetCreated();
-}
-
-class StartupBrowserCreatorLacrosGuestSessionTest
-    : public InProcessBrowserTest {
- public:
-  StartupBrowserCreatorLacrosGuestSessionTest() = default;
-
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        crosapi::mojom::BrowserInitParams::New();
-    init_params->session_type = crosapi::mojom::SessionType::kGuestSession;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
-    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-};
-
-// Checks that a browser window with new tab is open in Guest session.
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosGuestSessionTest, Startup) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitch(::switches::kIncognito);
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
-                                   chrome::startup::IsFirstRun::kNo);
-  launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
-                /*restore_tabbed_browser=*/true);
-
-  // A new browser window should be open.
-  Browser* new_browser = FindOneOtherBrowser(browser());
-  EXPECT_TRUE(new_browser);
-  EXPECT_TRUE(new_browser->profile()->IsGuestSession());
-
-  // The new browser should have exactly one tab (new tab url).
-  TabStripModel* tab_strip = new_browser->tab_strip_model();
-  EXPECT_TRUE(tab_strip);
-  ASSERT_EQ(1, tab_strip->count());
-  EXPECT_EQ(
-      chrome::kChromeUINewTabURL,
-      tab_strip->GetWebContentsAt(0)->GetVisibleURL().possibly_invalid_spec());
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

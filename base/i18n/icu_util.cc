@@ -150,7 +150,7 @@ void LazyInitIcuDataFile() {
   }
 #if BUILDFLAG(IS_WIN)
   // TODO(brucedawson): http://crbug.com/445616
-  wchar_t tmp_buffer[_MAX_PATH] = {0};
+  wchar_t tmp_buffer[_MAX_PATH] = {};
   wcscpy_s(tmp_buffer, data_path.value().c_str());
   debug::Alias(tmp_buffer);
 #endif
@@ -158,7 +158,7 @@ void LazyInitIcuDataFile() {
 
 #if BUILDFLAG(IS_WIN)
   // TODO(brucedawson): http://crbug.com/445616
-  wchar_t tmp_buffer2[_MAX_PATH] = {0};
+  wchar_t tmp_buffer2[_MAX_PATH] = {};
   wcscpy_s(tmp_buffer2, data_path.value().c_str());
   debug::Alias(tmp_buffer2);
 #endif
@@ -286,7 +286,7 @@ bool InitializeICUFromDataFile() {
   debug::Alias(&debug_icu_pf_last_error);
   int debug_icu_pf_error_details = g_debug_icu_pf_error_details;
   debug::Alias(&debug_icu_pf_error_details);
-  wchar_t debug_icu_pf_filename[_MAX_PATH] = {0};
+  wchar_t debug_icu_pf_filename[_MAX_PATH] = {};
   wcscpy_s(debug_icu_pf_filename, g_debug_icu_pf_filename);
   debug::Alias(&debug_icu_pf_filename);
 #endif            // BUILDFLAG(IS_WIN)

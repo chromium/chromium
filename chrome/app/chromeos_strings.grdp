@@ -2102,7 +2102,7 @@
     Instant hotspot connection failed
   </message>
   <message name="IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE_LEGACY" desc="Title of the notification shown to the user when an attempt to tether to another device has failed.">
-    Instant Tethering connection failed
+    Instant hotspot connection failed
   </message>
   <message name="IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE" desc="Message shown as part of the notification shown to the user when an attempt to tether to another device has failed which gives the user instructions about how to configure tethering.">
     Tap to configure

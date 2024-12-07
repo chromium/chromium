@@ -247,6 +247,12 @@ class LensOverlayQueryController {
     std::optional<base::OnceClosure> request_sent_callback_;
   };
 
+  // Updates the request id based on the given update mode and returns the
+  // request id proto. Also updates the suggest signals with the new request id
+  // and runs the suggest inputs callback.
+  std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
+      RequestIdUpdateMode update_mode);
+
   // Makes a LensOverlayServerClusterInfoRequest to get the cluster info. Will
   // continue to the FullImageRequest once a response is received.
   void FetchClusterInfoRequest();
@@ -449,11 +455,9 @@ class LensOverlayQueryController {
   // Resets the request cluster info state.
   void ResetRequestClusterInfoState();
 
-  // Updates the suggest inputs with the request id.
-  void UpdateSuggestInputsWithRequestId(lens::LensOverlayRequestId* request_id);
-
   // Updates the suggest inputs with the feature params and latest cluster info
-  // response, then runs the callback.
+  // response, then runs the callback. The request id in the suggest inputs will
+  // if the parameter is not null.
   void RunSuggestInputsCallback();
 
   // Callback for when the full image endpoint fetcher is created.

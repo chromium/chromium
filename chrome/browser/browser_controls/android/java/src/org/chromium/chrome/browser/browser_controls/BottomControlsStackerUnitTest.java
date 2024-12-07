@@ -1472,9 +1472,16 @@ public class BottomControlsStackerUnitTest {
     // Test helpers
 
     private void onBottomControlsOffsetChanged(
-            int bottomControlsOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+            int bottomControlsOffset, int bottomControlsMinHeightOffset, boolean requestNewFrame) {
         mBottomControlsStacker.onControlsOffsetChanged(
-                0, 0, bottomControlsOffset, bottomControlsMinHeightOffset, needsAnimate, false);
+                0,
+                0,
+                false,
+                bottomControlsOffset,
+                bottomControlsMinHeightOffset,
+                false,
+                requestNewFrame,
+                false);
     }
 
     private void assertLayerYOffset(TestLayer layer, int expectedOffset) {

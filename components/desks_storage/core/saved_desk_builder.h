@@ -190,7 +190,6 @@ class SavedDeskBrowserBuilder {
  private:
   SavedDeskGenericAppBuilder generic_builder_;
 
-  bool is_lacros_ = false;
   std::optional<bool> is_app_;
   std::vector<SavedDeskTabGroupBuilder> tab_group_builders_;
   std::optional<int> active_tab_index_;

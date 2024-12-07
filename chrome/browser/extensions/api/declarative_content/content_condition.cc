@@ -31,7 +31,7 @@ ContentCondition::ContentCondition(
     std::vector<std::unique_ptr<const ContentPredicate>> predicates)
     : predicates(std::move(predicates)) {}
 
-ContentCondition::~ContentCondition() {}
+ContentCondition::~ContentCondition() = default;
 
 std::unique_ptr<ContentCondition> CreateContentCondition(
     const Extension* extension,

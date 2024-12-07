@@ -4,13 +4,23 @@
 
 #include "chrome/browser/glic/launcher/glic_controller.h"
 
+#include "chrome/common/buildflags.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_window_manager.h"
+#endif
+
 GlicController::GlicController() = default;
 GlicController::~GlicController() = default;
 
 void GlicController::Show() {
-  // TODO(379165768): Show the UI.
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicWindowManager::GetInstance()->ShowGlicWindowForPinnedProfile();
+#endif
 }
 
 void GlicController::Hide() {
-  // TODO(379165768): Hide the UI.
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicWindowManager::GetInstance()->CloseGlicWindow();
+#endif
 }

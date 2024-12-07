@@ -51,6 +51,7 @@ using crosapi::mojom::KeystoreAlgorithmPtr;
 using crosapi::mojom::KeystoreBinaryResult;
 using crosapi::mojom::KeystoreBinaryResultPtr;
 using crosapi::mojom::KeystoreError;
+using crosapi::mojom::KeystoreKeyAttributeType;
 using crosapi::mojom::KeystoreSelectClientCertificatesResult;
 using crosapi::mojom::KeystoreSelectClientCertificatesResultPtr;
 using crosapi::mojom::KeystoreService;
@@ -578,6 +579,129 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   base::WeakPtrFactory<SignTask> weak_factory_{this};
 };
 
+class ExtensionPlatformKeysService::SetKeyTagTask : public Task {
+ public:
+  enum class Step {
+    GET_EXTENSION_PERMISSIONS,
+    CHECK_PERMISSIONS,
+    SET_KEY_TAG,
+    DONE,
+  };
+
+  SetKeyTagTask(platform_keys::TokenId token_id,
+                std::vector<uint8_t> key_tag,
+                std::vector<uint8_t> public_key_spki_der,
+                std::string extension_id,
+                SetKeyTagCallback callback,
+                ExtensionPlatformKeysService* service)
+      : token_id_(token_id),
+        key_tag_(std::move(key_tag)),
+        public_key_spki_der_(std::move(public_key_spki_der)),
+        extension_id_(std::move(extension_id)),
+        callback_(std::move(callback)),
+        service_(service) {}
+
+  SetKeyTagTask(const SignTask&) = delete;
+  auto operator=(const SignTask&) = delete;
+
+  ~SetKeyTagTask() override = default;
+
+  void Start() override {
+    CHECK(next_step_ == Step::GET_EXTENSION_PERMISSIONS);
+    DoStep();
+  }
+
+  bool IsDone() override { return next_step_ == Step::DONE; }
+
+ private:
+  void DoStep() {
+    switch (next_step_) {
+      case Step::GET_EXTENSION_PERMISSIONS:
+        next_step_ = Step::CHECK_PERMISSIONS;
+        GetExtensionPermissions();
+        return;
+      case Step::CHECK_PERMISSIONS:
+        next_step_ = Step::SET_KEY_TAG;
+        CheckPermissions();
+        return;
+      case Step::SET_KEY_TAG:
+        next_step_ = Step::DONE;
+        SetKeyTag();
+        return;
+      case Step::DONE:
+        service_->TaskFinished(this);
+        // |this| might be invalid now.
+        return;
+    }
+  }
+
+  void GetExtensionPermissions() {
+    platform_keys::ExtensionKeyPermissionsServiceFactory::
+        GetForBrowserContextAndExtension(
+            base::BindOnce(&SetKeyTagTask::GotPermissions,
+                           weak_factory_.GetWeakPtr()),
+            service_->browser_context_, extension_id_);
+  }
+
+  void GotPermissions(
+      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+          extension_key_permissions_service) {
+    extension_key_permissions_service_ =
+        std::move(extension_key_permissions_service);
+    DoStep();
+  }
+
+  void CheckPermissions() {
+    extension_key_permissions_service_->CanUseKey(
+        public_key_spki_der_, base::BindOnce(&SetKeyTagTask::OnCanUseKeyKnown,
+                                             weak_factory_.GetWeakPtr()));
+  }
+
+  void OnCanUseKeyKnown(bool allowed) {
+    if (!allowed) {
+      std::move(callback_).Run(KeystoreError::kKeyNotAllowedForOperation);
+      next_step_ = Step::DONE;
+      DoStep();
+      return;
+    }
+
+    DoStep();
+  }
+
+  void SetKeyTag() {
+    service_->keystore_service_->SetAttributeForKey(
+        KeystoreTypeFromTokenId(token_id_), public_key_spki_der_,
+        KeystoreKeyAttributeType::kPlatformKeysTag, key_tag_,
+        base::BindOnce(&SetKeyTagTask::DidSetKeyTag,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void DidSetKeyTag(bool is_error, KeystoreError error) {
+    if (is_error) {
+      LOG(ERROR) << "Failed to set the tag to the key with an error: "
+                 << platform_keys::KeystoreErrorToString(error);
+      std::move(callback_).Run(error);
+    } else {
+      std::move(callback_).Run(/*error=*/std::nullopt);
+    }
+
+    DoStep();
+  }
+
+  Step next_step_ = Step::GET_EXTENSION_PERMISSIONS;
+
+  platform_keys::TokenId token_id_;
+  const std::vector<uint8_t> key_tag_;
+  const std::vector<uint8_t> public_key_spki_der_;
+
+  const extensions::ExtensionId extension_id_;
+  SetKeyTagCallback callback_;
+  std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+      extension_key_permissions_service_;
+  const raw_ptr<ExtensionPlatformKeysService> service_;
+  base::WeakPtrFactory<SetKeyTagTask> weak_factory_{this};
+};
+
 class ExtensionPlatformKeysService::SelectTask : public Task {
  public:
   enum class Step {
@@ -1016,6 +1140,24 @@ void ExtensionPlatformKeysService::SelectClientCertificates(
   StartOrQueueTask(std::make_unique<SelectTask>(
       request, std::move(client_certificates), interactive,
       std::move(extension_id), std::move(callback), web_contents, this));
+}
+
+void ExtensionPlatformKeysService::SetKeyTag(
+    platform_keys::TokenId token_id,
+    std::vector<uint8_t> tag,
+    std::vector<uint8_t> public_key_spki_der,
+    std::string extension_id,
+    SetKeyTagCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!keystore_service_) [[unlikely]] {
+    std::move(callback).Run(crosapi::mojom::KeystoreError::kMojoUnavailable);
+    return;
+  }
+
+  StartOrQueueTask(std::make_unique<SetKeyTagTask>(
+      token_id, std::move(tag), std::move(public_key_spki_der),
+      std::move(extension_id), std::move(callback), this));
 }
 
 void ExtensionPlatformKeysService::StartOrQueueTask(

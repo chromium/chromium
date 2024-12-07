@@ -190,6 +190,11 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="HTTP request to a captive portal login page"/>
   <int value="11" label="Request was for a single-label hostname"/>
   <int value="12" label="Request was for a URL with non-default ports"/>
+  <int value="13"
+      label="The hostname was in the HTTPS-enforcement list because of the
+             HFM+SE heuristic. Recorded regardless of whether there was a
+             fallback navigation or an interstitial. Not recorded if the
+             hostname is allowlisted."/>
 </enum>
 
 <enum name="NewAcceptedDeviceType">

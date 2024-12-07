@@ -15,7 +15,6 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
@@ -155,6 +154,7 @@ ProfileOAuth2TokenServiceIOSDelegate::ProfileOAuth2TokenServiceIOSDelegate(
   DCHECK(client_);
   DCHECK(provider_);
   DCHECK(account_tracker_service_);
+  device_accounts_provider_observation_.Observe(provider_.get());
 }
 
 ProfileOAuth2TokenServiceIOSDelegate::~ProfileOAuth2TokenServiceIOSDelegate() {
@@ -359,6 +359,10 @@ void ProfileOAuth2TokenServiceIOSDelegate::AddOrUpdateAccount(
                   /*fire_auth_error_changed=*/false);
   FireAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone());
   FireRefreshTokenAvailable(account_id);
+}
+
+void ProfileOAuth2TokenServiceIOSDelegate::OnAccountsOnDeviceChanged() {
+  FireAccountsOnDeviceChanged();
 }
 
 void ProfileOAuth2TokenServiceIOSDelegate::RemoveAccount(

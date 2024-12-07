@@ -26,7 +26,6 @@
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 #import "ios/web/webui/web_ui_messaging_java_script_feature.h"
 
 namespace web {
@@ -89,7 +88,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       ErrorEventListenerJavaScriptFeature::GetInstance(),
       GetScriptErrorMessageHandlerJavaScriptFeature(),
       NavigationJavaScriptFeature::GetInstance(),
-      TextFragmentsJavaScriptFeature::GetInstance(),
       WebUIMessagingJavaScriptFeature::GetInstance(),
       AnnotationsJavaScriptFeature::GetInstance()};
 

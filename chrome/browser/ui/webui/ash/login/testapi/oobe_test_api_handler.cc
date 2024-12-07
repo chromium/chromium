@@ -42,6 +42,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 #include "ui/display/screen.h"
 
@@ -189,7 +190,7 @@ void OobeTestAPIHandler::HandleCompleteLogin(const std::string& gaia_id,
   const std::string sanitized_email = gaia::SanitizeEmail(typed_email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
   const AccountId account_id =
-      login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE);
+      login::GetAccountId(typed_email, GaiaId(gaia_id), AccountType::GOOGLE);
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
 

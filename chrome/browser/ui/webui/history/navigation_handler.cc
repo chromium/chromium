@@ -15,9 +15,9 @@
 
 namespace webui {
 
-NavigationHandler::NavigationHandler() {}
+NavigationHandler::NavigationHandler() = default;
 
-NavigationHandler::~NavigationHandler() {}
+NavigationHandler::~NavigationHandler() = default;
 
 void NavigationHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

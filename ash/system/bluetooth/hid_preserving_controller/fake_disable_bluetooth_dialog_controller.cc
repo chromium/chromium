@@ -8,9 +8,8 @@
 
 namespace ash {
 
-FakeDisableBluetoothDialogController::FakeDisableBluetoothDialogController() {
-  CHECK(features::IsBluetoothDisconnectWarningEnabled());
-}
+FakeDisableBluetoothDialogController::FakeDisableBluetoothDialogController() =
+    default;
 
 FakeDisableBluetoothDialogController::~FakeDisableBluetoothDialogController() =
     default;

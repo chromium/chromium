@@ -179,7 +179,7 @@ FocusableState HTMLAnchorElementBase::IsFocusableState(
   return HTMLElement::IsFocusableState(update_behavior);
 }
 
-bool HTMLAnchorElementBase::IsKeyboardFocusable(
+bool HTMLAnchorElementBase::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   if (!IsFocusableStyle(update_behavior)) {
     return false;
@@ -191,12 +191,12 @@ bool HTMLAnchorElementBase::IsKeyboardFocusable(
   if (Element::SupportsFocus(update_behavior) !=
           FocusableState::kNotFocusable &&
       IsFocusable(update_behavior)) {
-    return HTMLElement::IsKeyboardFocusable(update_behavior);
+    return HTMLElement::IsKeyboardFocusableSlow(update_behavior);
   }
 
   if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks())
     return false;
-  return HTMLElement::IsKeyboardFocusable(update_behavior);
+  return HTMLElement::IsKeyboardFocusableSlow(update_behavior);
 }
 
 static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {

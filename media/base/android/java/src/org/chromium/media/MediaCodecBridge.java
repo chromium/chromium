@@ -69,6 +69,9 @@ class MediaCodecBridge {
     private Queue<DequeueInputResult> mPendingInputBuffers;
     private Queue<DequeueOutputResult> mPendingOutputBuffers;
 
+    // Cache for codec name array that is passed to LinearBlock.obtain().
+    private String[] mObtainBlockNames;
+
     // Set by tests which don't have a Java MessagePump to ensure the MediaCodec
     // callbacks are actually delivered. Always null in production.
     private static HandlerThread sCallbackHandlerThread;
@@ -598,10 +601,11 @@ class MediaCodecBridge {
         MediaCodec.LinearBlock block = null;
         ByteBuffer buffer = null;
         try {
-            // TODO(crbug.com/327625558): Store as member to avoid frequent allocations.
-            String[] names = new String[1];
-            names[0] = mMediaCodecName;
-            block = MediaCodec.LinearBlock.obtain(capacity < 16 ? 16 : capacity, names);
+            if (mObtainBlockNames == null) {
+                mObtainBlockNames = new String[1];
+                mObtainBlockNames[0] = mMediaCodecName;
+            }
+            block = MediaCodec.LinearBlock.obtain(capacity < 16 ? 16 : capacity, mObtainBlockNames);
             if (block != null) {
                 buffer = block.map();
             }
@@ -791,6 +795,39 @@ class MediaCodecBridge {
         }
     }
 
+    private int validateCryptoInfo(int cipherMode, int patternEncrypt, int patternSkip) {
+        if (cipherMode == MEDIA_CODEC_UNKNOWN_CIPHER_MODE) {
+            return MediaCodecStatus.UNKNOWN_CIPHER_MODE;
+        }
+        if (cipherMode != MediaCodec.CRYPTO_MODE_AES_CBC
+                && patternEncrypt != 0
+                && patternSkip != 0) {
+            Log.e(TAG, "Pattern encryption only supported for 'cbcs' scheme (CBC mode).");
+            return MediaCodecStatus.PATTERN_ENCRYPTION_NOT_SUPPORTED;
+        }
+        return MediaCodecStatus.OK;
+    }
+
+    private CryptoInfo generateCryptoInfo(
+            byte[] iv,
+            byte[] keyId,
+            int[] numBytesOfClearData,
+            int[] numBytesOfEncryptedData,
+            int numSubSamples,
+            int cipherMode,
+            int patternEncrypt,
+            int patternSkip) {
+        var cryptoInfo = new CryptoInfo();
+        cryptoInfo.set(
+                numSubSamples, numBytesOfClearData, numBytesOfEncryptedData, keyId, iv, cipherMode);
+        if (cipherMode == MediaCodec.CRYPTO_MODE_AES_CBC
+                && patternEncrypt != 0
+                && patternSkip != 0) {
+            cryptoInfo.setPattern(new CryptoInfo.Pattern(patternEncrypt, patternSkip));
+        }
+        return cryptoInfo;
+    }
+
     @SuppressLint("WrongConstant") // False positive on logging statement.
     @CalledByNative
     private int queueSecureInputBuffer(
@@ -807,27 +844,23 @@ class MediaCodecBridge {
             long presentationTimeUs) {
         try {
             cipherMode = translateEncryptionSchemeValue(cipherMode);
-            if (cipherMode == MEDIA_CODEC_UNKNOWN_CIPHER_MODE) {
-                return MediaCodecStatus.UNKNOWN_CIPHER_MODE;
+
+            var status = validateCryptoInfo(cipherMode, patternEncrypt, patternSkip);
+            if (status != MediaCodecStatus.OK) {
+                return status;
             }
-            boolean usesCbcs = cipherMode == MediaCodec.CRYPTO_MODE_AES_CBC;
-            CryptoInfo cryptoInfo = new CryptoInfo();
-            cryptoInfo.set(
-                    numSubSamples,
-                    numBytesOfClearData,
-                    numBytesOfEncryptedData,
-                    keyId,
-                    iv,
-                    cipherMode);
-            if (patternEncrypt != 0 && patternSkip != 0) {
-                if (usesCbcs) {
-                    // Above platform check ensured that setting the pattern is indeed supported.
-                    MediaCodecUtil.setPatternIfSupported(cryptoInfo, patternEncrypt, patternSkip);
-                } else {
-                    Log.e(TAG, "Pattern encryption only supported for 'cbcs' scheme (CBC mode).");
-                    return MediaCodecStatus.PATTERN_ENCRYPTION_NOT_SUPPORTED;
-                }
-            }
+
+            var cryptoInfo =
+                    generateCryptoInfo(
+                            iv,
+                            keyId,
+                            numBytesOfClearData,
+                            numBytesOfEncryptedData,
+                            numSubSamples,
+                            cipherMode,
+                            patternEncrypt,
+                            patternSkip);
+            assert cryptoInfo != null;
             mMediaCodec.queueSecureInputBuffer(index, offset, cryptoInfo, presentationTimeUs, 0);
         } catch (MediaCodec.CryptoException e) {
             if (e.getErrorCode() == MediaCodec.CryptoException.ERROR_NO_KEY) {

@@ -61,7 +61,7 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
 // `personal_data_manager` and dereferences them before returning them.
 std::vector<CreditCard> FetchCards(
     const autofill::PersonalDataManager& personal_data_manager) {
-  std::vector<CreditCard*> fetched_cards =
+  std::vector<const CreditCard*> fetched_cards =
       personal_data_manager.payments_data_manager().GetCreditCardsToSuggest();
   std::vector<CreditCard> cards;
   cards.reserve(fetched_cards.size());

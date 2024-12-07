@@ -52,7 +52,9 @@ export class FaceGaze {
             this.gestureHandler_.getGestureForDictation() :
             undefined,
         heldMacros: this.gestureHandler_.getHeldMacroDisplayStrings(),
-        precision: this.mouseController_.isPrecisionActive(),
+        precision: this.mouseController_.isPrecisionActive() ?
+            this.gestureHandler_.getGestureForPrecision() :
+            undefined,
       };
     });
 

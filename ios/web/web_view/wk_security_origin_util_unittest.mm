@@ -88,4 +88,64 @@ TEST_F(WKSecurityOriginUtilTest, GURLOriginWithChromeProtocol) {
   EXPECT_TRUE(url.port().empty());
 }
 
+// Tests calling OriginWithWKSecurityOrigin with nil.
+TEST_F(WKSecurityOriginUtilTest, OriginWithNilWKSecurityOrigin) {
+  url::Origin origin(OriginWithWKSecurityOrigin(nil));
+
+  EXPECT_TRUE(origin.opaque());
+  EXPECT_NE(url::Origin(), origin);
+}
+
+// Tests calling OriginWithWKSecurityOrigin with valid origin.
+TEST_F(WKSecurityOriginUtilTest, OriginWithValidWKSecurityOrigin) {
+  WKSecurityOriginStub* wk_origin = [[WKSecurityOriginStub alloc] init];
+  [wk_origin setProtocol:@"http"];
+  [wk_origin setHost:@"chromium.org"];
+  [wk_origin setPort:80];
+
+  url::Origin origin(
+      OriginWithWKSecurityOrigin(static_cast<WKSecurityOrigin*>(wk_origin)));
+  EXPECT_TRUE(origin.IsSameOriginWith(GURL("http://chromium.org/")));
+  EXPECT_EQ(80, origin.port());
+}
+
+// Tests calling OriginWithWKSecurityOrigin with default port.
+TEST_F(WKSecurityOriginUtilTest, OriginWithDefaultPort) {
+  WKSecurityOriginStub* wk_origin = [[WKSecurityOriginStub alloc] init];
+  [wk_origin setProtocol:@"http"];
+  [wk_origin setHost:@"chromium.org"];
+  [wk_origin setPort:0];
+
+  url::Origin origin(
+      OriginWithWKSecurityOrigin(static_cast<WKSecurityOrigin*>(wk_origin)));
+  EXPECT_TRUE(origin.IsSameOriginWith(GURL("http://chromium.org/")));
+  EXPECT_EQ(80, origin.port());
+}
+
+// Tests calling OriginWithWKSecurityOrigin with valid origin.
+TEST_F(WKSecurityOriginUtilTest, OriginWithNonDefaultPort) {
+  WKSecurityOriginStub* wk_origin = [[WKSecurityOriginStub alloc] init];
+  [wk_origin setProtocol:@"http"];
+  [wk_origin setHost:@"chromium.org"];
+  [wk_origin setPort:123];
+
+  url::Origin origin(
+      OriginWithWKSecurityOrigin(static_cast<WKSecurityOrigin*>(wk_origin)));
+  EXPECT_TRUE(origin.IsSameOriginWith(GURL("http://chromium.org:123/")));
+  EXPECT_EQ(123, origin.port());
+}
+
+// Tests calling OriginWithWKSecurityOrigin with valid origin.
+TEST_F(WKSecurityOriginUtilTest, OriginWithChromeProtocol) {
+  WKSecurityOriginStub* wk_origin = [[WKSecurityOriginStub alloc] init];
+  [wk_origin setProtocol:@"testwebui"];
+  [wk_origin setHost:@"version"];
+  [wk_origin setPort:0];
+
+  url::Origin origin(
+      OriginWithWKSecurityOrigin(static_cast<WKSecurityOrigin*>(wk_origin)));
+  EXPECT_TRUE(origin.IsSameOriginWith(GURL("testwebui://version/")));
+  EXPECT_EQ(0, origin.port());
+}
+
 }  // namespace web

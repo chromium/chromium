@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/interaction/interaction_sequence.h"
 
+#include <array>
 #include <list>
 #include <memory>
 #include <optional>
@@ -1484,50 +1480,42 @@ ElementContext InteractionSequence::context() const {
 }
 
 void PrintTo(InteractionSequence::StepType step_type, std::ostream* os) {
-  static const char* const kStepTypeNames[] = {
-      "kShown", "kActivated", "kHidden", "kCustomEvent", "kSubsequence"};
-  constexpr int kCount = sizeof(kStepTypeNames) / sizeof(kStepTypeNames[0]);
+  static constexpr auto kStepTypeNames = std::to_array<const char*>(
+      {"kShown", "kActivated", "kHidden", "kCustomEvent", "kSubsequence"});
+  constexpr size_t kCount = kStepTypeNames.size();
   static_assert(kCount ==
-                static_cast<int>(InteractionSequence::StepType::kMaxValue) + 1);
-  const int value = static_cast<int>(step_type);
-  *os << ((value < 0 || value >= kCount) ? "[invalid StepType]"
-                                         : kStepTypeNames[value]);
+                static_cast<size_t>(InteractionSequence::StepType::kMaxValue) +
+                    1);
+  const size_t value = base::checked_cast<size_t>(step_type);
+  *os << (value >= kCount ? "[invalid StepType]" : kStepTypeNames[value]);
 }
 
 void PrintTo(InteractionSequence::AbortedReason reason, std::ostream* os) {
-  static const char* const kAbortedReasonNames[] = {
-      "kSequenceDestroyed",
-      "kElementHiddenBeforeSequenceStart",
-      "kElementNotVisibleAtStartOfStep",
-      "kElementHiddenDuringStep",
-      "kElementHiddenBetweenTriggerAndStepStart",
-      "kNoSubsequenceRun",
-      "kSubsequenceFailed",
-      "kFailedForTesting",
-      "kSequenceTimedOut",
-      "kSubsequentStepTriggeredTooEarly",
-      "kSubsequentStepTriggerInvalidated"};
-  constexpr int kCount =
-      sizeof(kAbortedReasonNames) / sizeof(kAbortedReasonNames[0]);
+  static constexpr auto kAbortedReasonNames = std::to_array(
+      {"kSequenceDestroyed", "kElementHiddenBeforeSequenceStart",
+       "kElementNotVisibleAtStartOfStep", "kElementHiddenDuringStep",
+       "kElementHiddenBetweenTriggerAndStepStart", "kNoSubsequenceRun",
+       "kSubsequenceFailed", "kFailedForTesting", "kSequenceTimedOut",
+       "kSubsequentStepTriggeredTooEarly",
+       "kSubsequentStepTriggerInvalidated"});
+  constexpr size_t kCount = kAbortedReasonNames.size();
   static_assert(
       kCount ==
-      static_cast<int>(InteractionSequence::AbortedReason::kMaxValue) + 1);
-  const int value = static_cast<int>(reason);
-  *os << ((value < 0 || value >= kCount) ? "[invalid StepType]"
-                                         : kAbortedReasonNames[value]);
+      static_cast<size_t>(InteractionSequence::AbortedReason::kMaxValue) + 1);
+  const size_t value = base::checked_cast<size_t>(reason);
+  *os << (value >= kCount ? "[invalid StepType]" : kAbortedReasonNames[value]);
 }
 
 void PrintTo(InteractionSequence::SubsequenceMode mode, std::ostream* os) {
-  static const char* const kSubsequenceModeNames[] = {
-      "kAtMostOne", "kExactlyOne", "kAtLeastOne", "kAll"};
-  constexpr int kCount =
-      sizeof(kSubsequenceModeNames) / sizeof(kSubsequenceModeNames[0]);
+  static constexpr auto kSubsequenceModeNames = std::to_array<const char*>(
+      {"kAtMostOne", "kExactlyOne", "kAtLeastOne", "kAll"});
+  constexpr size_t kCount = kSubsequenceModeNames.size();
   static_assert(
       kCount ==
       static_cast<int>(InteractionSequence::SubsequenceMode::kMaxValue) + 1);
-  const int value = static_cast<int>(mode);
-  *os << ((value < 0 || value >= kCount) ? "[invalid SubsequenceMode]"
-                                         : kSubsequenceModeNames[value]);
+  const size_t value = base::checked_cast<size_t>(mode);
+  *os << (value >= kCount ? "[invalid SubsequenceMode]"
+                          : kSubsequenceModeNames[value]);
 }
 
 void PrintTo(InteractionSequence::StepStartMode mode, std::ostream* os) {

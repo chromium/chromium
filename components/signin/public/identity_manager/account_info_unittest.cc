@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/account_info.h"
+
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 class AccountInfoTest : public testing::Test {};
 

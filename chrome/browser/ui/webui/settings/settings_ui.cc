@@ -67,7 +67,6 @@
 #include "chrome/browser/ui/webui/settings/profile_info_handler.h"
 #include "chrome/browser/ui/webui/settings/protocol_handlers_handler.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
-#include "chrome/browser/ui/webui/settings/safety_check_handler.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
@@ -243,7 +242,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<BrowserLifetimeHandler>());
   AddSettingsPageUIHandler(
       std::make_unique<ClearBrowsingDataHandler>(web_ui, profile));
-  AddSettingsPageUIHandler(std::make_unique<SafetyCheckHandler>());
   AddSettingsPageUIHandler(std::make_unique<SafetyHubHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<DownloadsHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ExtensionControlHandler>());
@@ -463,6 +461,16 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(html_source, kSettingsResources,
                               IDR_SETTINGS_SETTINGS_HTML);
+  // Add chrome://webui-test for cr-lottie test.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc,
+      "connect-src chrome://webui-test chrome://resources chrome://theme "
+      "'self';");
+  // Add TrustedTypes policy for cr-lottie.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      base::StrCat({webui::kDefaultTrustedTypesPolicies,
+                    " lottie-worker-script-loader;"}));
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
   html_source->AddResourcePaths(kSettingsSharedResources);
@@ -563,8 +571,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
   // AI
-  const bool ai_settings_refresh_enabled = base::FeatureList::IsEnabled(
-      optimization_guide::features::kAiSettingsPageRefresh);
+  const bool ai_settings_refresh_enabled =
+      optimization_guide::features::IsAiSettingsPageRefreshEnabled();
 
   if (ai_settings_refresh_enabled) {
     const bool show_ai_settings_for_testing =
@@ -625,6 +633,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean("enableAiSettingsPageRefresh",
                           ai_settings_refresh_enabled);
+  html_source->AddBoolean(
+      "enableAiSettingsInPrivacyGuide",
+      optimization_guide::features::IsPrivacyGuideAiSettingsEnabled());
 
   TryShowHatsSurveyWithTimeout();
 }

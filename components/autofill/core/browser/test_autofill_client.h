@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -113,6 +114,13 @@ class TestAutofillClientTemplate : public T {
               this, GetLogManager());
     }
     return *crowdsourcing_manager_;
+  }
+
+  TestVotesUploader& GetVotesUploader() override {
+    if (!votes_uploader_) {
+      votes_uploader_ = std::make_unique<TestVotesUploader>(this);
+    }
+    return *votes_uploader_;
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -615,23 +623,32 @@ class TestAutofillClientTemplate : public T {
       this};
 
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
+  std::unique_ptr<TestVotesUploader> votes_uploader_;
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
+};
+
+// Base class for TestAutofillClientTemplate to derive from so that the
+// AutofillDriverFactory is initialized before the members of
+// TestAutofillClientTemplate. This initialization order mimics that of
+// ContentAutofillClient and AndroidAutofillClient / ChromeAutofillClient.
+class TestAutofillClientBase : public AutofillClient {
+ public:
+  AutofillDriverFactory& GetAutofillDriverFactory() override;
+
+ protected:
+  // Instantiation should only happen through TestAutofillClient.
+  TestAutofillClientBase();
+
+ private:
+  AutofillDriverFactory autofill_driver_factory_;
 };
 
 // A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as
 // an alternative for tests where the content layer is visible.
 //
 // Consider using TestAutofillClientInjector, especially in browser tests.
-class TestAutofillClient : public TestAutofillClientTemplate<AutofillClient> {
- public:
-  using TestAutofillClientTemplate<AutofillClient>::TestAutofillClientTemplate;
-
-  AutofillDriverFactory& GetAutofillDriverFactory() override;
-
- private:
-  AutofillDriverFactory autofill_driver_factory_;
-};
+using TestAutofillClient = TestAutofillClientTemplate<TestAutofillClientBase>;
 
 }  // namespace autofill
 

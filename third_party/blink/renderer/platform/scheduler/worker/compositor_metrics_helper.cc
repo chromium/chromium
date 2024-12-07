@@ -7,12 +7,9 @@
 namespace blink {
 namespace scheduler {
 
-CompositorMetricsHelper::CompositorMetricsHelper(
-    bool has_cpu_timing_for_each_task)
-    : MetricsHelper(ThreadType::kCompositorThread,
-                    has_cpu_timing_for_each_task) {}
+CompositorMetricsHelper::CompositorMetricsHelper() = default;
 
-CompositorMetricsHelper::~CompositorMetricsHelper() {}
+CompositorMetricsHelper::~CompositorMetricsHelper() = default;
 
 void CompositorMetricsHelper::RecordTaskMetrics(
     const base::sequence_manager::Task& task,

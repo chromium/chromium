@@ -369,7 +369,6 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
       background_status_changed_at(now),
       metrics_helper(
           main_thread_scheduler_impl,
-          main_thread_scheduler_impl->helper_.HasCPUTimingForEachTask(),
           now,
           renderer_backgrounded),
       process_type(WebRendererProcessType::kRenderer,

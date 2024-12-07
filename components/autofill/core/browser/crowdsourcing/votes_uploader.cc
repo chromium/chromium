@@ -6,9 +6,11 @@
 
 #include "base/containers/to_vector.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -16,7 +18,9 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
 
@@ -63,33 +67,127 @@ std::map<std::string, std::string> FormFillingStatsToSurveyStringData(
 }  // namespace
 
 struct VotesUploader::QueuedVote {
+  LocalFrameToken frame_of_form;
   FormSignature form_signature;
-  base::OnceClosure callback;
+  base::OnceClosure upload_vote;
 };
 
-VotesUploader::VotesUploader(BrowserAutofillManager* owner) : owner_(*owner) {}
-VotesUploader::~VotesUploader() = default;
-
-AutofillClient& VotesUploader::client() {
-  return owner_->client();
+VotesUploader::VotesUploader(AutofillClient* client) : client_(*client) {
+  driver_observer_.Observe(&client_->GetAutofillDriverFactory());
 }
 
-void VotesUploader::WipePendingVotesForForm(FormSignature form_signature) {
-  std::erase_if(queued_vote_uploads_, [form_signature](const QueuedVote& vote) {
+VotesUploader::~VotesUploader() = default;
+
+base::SequencedTaskRunner& VotesUploader::vote_upload_task_runner() {
+  if (!vote_upload_task_runner_) {
+    // If the priority is BEST_EFFORT, the task can be preempted, which is
+    // thought to cause high memory usage (as memory is retained by the task
+    // while it is preempted), https://crbug.com/974249
+    vote_upload_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  }
+  return *vote_upload_task_runner_;
+}
+
+void VotesUploader::WipeQueuedVotesForForm(FormSignature form_signature) {
+  std::erase_if(queued_votes_, [form_signature](const QueuedVote& vote) {
     return vote.form_signature == form_signature;
   });
 }
 
-void VotesUploader::FlushPendingVotes() {
-  std::list<QueuedVote> queued_vote_uploads =
-      std::exchange(queued_vote_uploads_, {});
-  for (QueuedVote& vote : queued_vote_uploads) {
-    std::move(vote.callback).Run();
+void VotesUploader::FlushQueuedVotesForFrame(const LocalFrameToken& frame) {
+  // Removes from `list` all elements that satisfy `pred` and returns them
+  // in a separate list.
+  auto extract_if = []<typename T>(std::list<T>& list, auto pred) {
+    // stable_partition() returns the range of elements that *satisfy* `pred`.
+    auto r = std::ranges::stable_partition(list, std::not_fn(pred));
+    std::list<T> removed;
+    // splice() moves the elements that satisfy `pred` to `removed`.
+    removed.splice(removed.end(), list, r.begin(), r.end());
+    return removed;
+  };
+
+  // We remove the callbacks from `queued_votes_` *before* invoking them.
+  // The motivation is that we don't want to loop over `queued_votes_`
+  // and call member functions in the loop's body for memory safety reasons.
+  auto is_from_frame = [&](const QueuedVote& vote) {
+    return vote.frame_of_form == frame;
+  };
+  size_t num_old_queued_votes = queued_votes_.size();
+  std::list<QueuedVote> votes_of_frame =
+      extract_if(queued_votes_, is_from_frame);
+  DCHECK_EQ(queued_votes_.size() + votes_of_frame.size(), num_old_queued_votes);
+  DCHECK(std::ranges::all_of(votes_of_frame, is_from_frame));
+  DCHECK(std::ranges::none_of(queued_votes_, is_from_frame));
+  for (QueuedVote& vote : votes_of_frame) {
+    std::move(vote.upload_vote).Run();
+  }
+}
+
+void VotesUploader::OnAutofillDriverFactoryDestroyed(
+    AutofillDriverFactory& factory) {
+  driver_observer_.Reset();
+}
+
+// We want to flush votes in three cases:
+// (1) The frame goes into BFcache.
+// (2) The frame will be deleted. If there are no pending votes, this is the
+//     time to flush. Otherwise, we want to wait for the pending votes and
+//     then flush.
+// (3) The frame *was* (not: will be) reset. The difference between "was" and
+//     "will be" is important because BrowserAutofillManager::Reset() may add
+//     new votes that should be flushed.
+void VotesUploader::OnAutofillDriverStateChanged(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver,
+    AutofillDriver::LifecycleState old_state,
+    AutofillDriver::LifecycleState new_state) {
+  // Calls FlushQueuedVotes() after the currently pending
+  // DeterminePossibleFieldTypesForUpload() / OnFieldTypesDetermined() tasks are
+  // finished.
+  auto delayed_flush_queued_votes_for_frame =
+      [this](const LocalFrameToken& frame) {
+        // Since vote_upload_task_runner() is a sequenced task runner,
+        // FlushQueuedVotes() will be called after any pending tasks and their
+        // replies.
+        vote_upload_task_runner().PostTaskAndReply(
+            FROM_HERE, base::DoNothing(),
+            base::BindOnce(&VotesUploader::FlushQueuedVotesForFrame,
+                           weak_ptr_factory_.GetWeakPtr(), frame));
+      };
+
+  using enum AutofillDriver::LifecycleState;
+  switch (new_state) {
+    case kInactive:
+      if (old_state == kActive) {
+        // Case (1): The frame has become inactive (i.e., entered bfcache).
+        if (base::FeatureList::IsEnabled(features::kAutofillVoteWhenInactive)) {
+          delayed_flush_queued_votes_for_frame(driver.GetFrameToken());
+        }
+      }
+      break;
+    case kActive:
+      break;
+    case kPendingReset:
+      // Don't do anything yet. We wait for the transition *out* of the
+      // kPendingReset state (i.e., `old_state == kPendingReset`) because new
+      // votes may be cast in the kPendingReset state (specifically by
+      // BrowserAutofillManager::Reset()).
+      break;
+    case kPendingDeletion:
+      // Case (2): The frame will be deleted.
+      delayed_flush_queued_votes_for_frame(driver.GetFrameToken());
+      break;
+  }
+
+  if (old_state == kPendingReset) {
+    // Case (3): The was reset.
+    FlushQueuedVotesForFrame(driver.GetFrameToken());
   }
 }
 
 bool VotesUploader::MaybeStartVoteUploadProcess(
-    std::unique_ptr<FormStructure> form_structure,
+    std::unique_ptr<FormStructure> form,
     bool observed_submission,
     LanguageCode current_page_language,
     base::TimeTicks initial_interaction_timestamp,
@@ -97,22 +195,22 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
-      client().GetPersonalDataManager().address_data_manager().GetProfiles();
-  if (observed_submission && form_structure->IsAutofillable()) {
+      client_->GetPersonalDataManager().address_data_manager().GetProfiles();
+  if (observed_submission && form->IsAutofillable()) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
         profiles.size());
   }
 
-  const std::vector<CreditCard*>& credit_cards = client()
-                                                     .GetPersonalDataManager()
-                                                     .payments_data_manager()
-                                                     .GetCreditCards();
+  const std::vector<CreditCard*>& credit_cards =
+      client_->GetPersonalDataManager()
+          .payments_data_manager()
+          .GetCreditCards();
 
   if (profiles.empty() && credit_cards.empty()) {
     return false;
   }
 
-  if (form_structure->field_count() * (profiles.size() + credit_cards.size()) >=
+  if (form->field_count() * (profiles.size() + credit_cards.size()) >=
       kMaxTypeMatchingCalls) {
     return false;
   }
@@ -125,144 +223,85 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
       credit_cards, [](const CreditCard* card) { return *card; });
 
   // Annotate the form with the source language of the page.
-  form_structure->set_current_page_language(current_page_language);
+  form->set_current_page_language(current_page_language);
 
   // Attach the Randomized Encoder.
-  form_structure->set_randomized_encoder(
-      RandomizedEncoder::Create(client().GetPrefs()));
+  form->set_randomized_encoder(RandomizedEncoder::Create(client_->GetPrefs()));
 
   // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
-  // |form_structure| with the help of |AlternativeStateNameMap|.
+  // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
-  PreProcessStateMatchingTypes(client(), copied_profiles, *form_structure);
-
-  // Ownership of |form_structure| is passed to the
-  // BrowserAutofillManager::OnSubmissionFieldTypesDetermined() call.
-  FormStructure* raw_form = form_structure.get();
-
-  base::OnceClosure call_after_determine_field_types =
-      base::BindOnce(&VotesUploader::OnSubmissionFieldTypesDetermined,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
-                     initial_interaction_timestamp, base::TimeTicks::Now(),
-                     observed_submission, ukm_source_id);
-
-  // If the form was not submitted (e.g. the user just removed the focus from
-  // the form), it's possible that later modifications lead to more accurate
-  // votes. In this case we just want to cache the upload and have a chance to
-  // override it with better data.
-  if (!observed_submission) {
-    call_after_determine_field_types = base::BindOnce(
-        &VotesUploader::QueueVote, weak_ptr_factory_.GetWeakPtr(),
-        raw_form->form_signature(),
-        std::move(call_after_determine_field_types));
-  }
-
-  if (!vote_upload_task_runner_) {
-    // If the priority is BEST_EFFORT, the task can be preempted, which is
-    // thought to cause high memory usage (as memory is retained by the task
-    // while it is preempted), https://crbug.com/974249
-    vote_upload_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  }
+  PreProcessStateMatchingTypes(*client_, copied_profiles, *form);
 
   // TODO(crbug.com/368306576): Bound the size of `copied_profiles` and
   // `copied_credit_cards` by `kMaxDataConsideredForPossibleTypes` and make
-  // the call to DeterminePossibleFieldTypesForUpload synchronous.
-  vote_upload_task_runner_->PostTaskAndReply(
+  // the call to DeterminePossibleFieldTypesForUpload() synchronous.
+  vote_upload_task_runner().PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DeterminePossibleFieldTypesForUpload,
-                     std::move(copied_profiles), std::move(copied_credit_cards),
-                     last_unlocked_credit_card_cvc_, client().GetAppLocale(),
-                     raw_form),
-      std::move(call_after_determine_field_types));
-
+      base::BindOnce(
+          [](const std::vector<AutofillProfile>& profiles,
+             const std::vector<CreditCard>& credit_cards,
+             const std::u16string& last_unlocked_credit_card_cvc,
+             const std::string& app_locale,
+             std::unique_ptr<FormStructure> form) {
+            DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
+                                                 last_unlocked_credit_card_cvc,
+                                                 app_locale, form.get());
+            return form;
+          },
+          std::move(copied_profiles), std::move(copied_credit_cards),
+          last_unlocked_credit_card_cvc_, client_->GetAppLocale(),
+          std::move(form)),
+      base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     initial_interaction_timestamp, base::TimeTicks::Now(),
+                     observed_submission, ukm_source_id));
   return true;
 }
 
-void VotesUploader::QueueVote(FormSignature form_signature,
-                              base::OnceClosure callback) {
-  // Remove entries with the same FormSignature to replace them.
-  WipePendingVotesForForm(form_signature);
+void VotesUploader::OnFieldTypesDetermined(
+    base::TimeTicks initial_interaction_timestamp,
+    base::TimeTicks submission_timestamp,
+    bool observed_submission,
+    ukm::SourceId ukm_source_id,
+    std::unique_ptr<FormStructure> form) {
+  LocalFrameToken frame = form->global_id().frame_token;
+  WipeQueuedVotesForForm(form->form_signature());
+  if (observed_submission) {
+    UploadVote(std::move(form), initial_interaction_timestamp,
+               submission_timestamp, observed_submission, ukm_source_id);
+    FlushQueuedVotesForFrame(frame);
+  } else {
+    TruncateQueueIfNecessary();
+    queued_votes_.push_front(
+        {.frame_of_form = frame,
+         .form_signature = form->form_signature(),
+         .upload_vote = base::BindOnce(
+             &VotesUploader::UploadVote, weak_ptr_factory_.GetWeakPtr(),
+             std::move(form), initial_interaction_timestamp,
+             submission_timestamp, observed_submission, ukm_source_id)});
+  }
+}
 
-  // Entries in queued_vote_uploads_ are submitted after navigations or form
+void VotesUploader::TruncateQueueIfNecessary() {
+  // Entries in queued_votes_ are submitted after navigations or form
   // submissions. To reduce the risk of collecting too much data that is not
   // send, we allow only `kMaxEntriesInQueue` entries. Anything in excess will
   // be sent when the queue becomes to long.
   constexpr int kMaxEntriesInQueue = 10;
-  while (queued_vote_uploads_.size() >= kMaxEntriesInQueue) {
+  while (queued_votes_.size() >= kMaxEntriesInQueue) {
     base::OnceCallback oldest_callback =
-        std::move(queued_vote_uploads_.back().callback);
-    queued_vote_uploads_.pop_back();
+        std::move(queued_votes_.back().upload_vote);
+    queued_votes_.pop_back();
     std::move(oldest_callback).Run();
   }
-
-  queued_vote_uploads_.emplace_front(form_signature, std::move(callback));
 }
 
-// We explicitly pass in all the time stamps of interest, as the cached ones
-// might get reset before this method executes.
 void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
-                               base::TimeTicks interaction_time,
-                               base::TimeTicks submission_time,
+                               base::TimeTicks initial_interaction_timestamp,
+                               base::TimeTicks submission_timestamp,
                                bool observed_submission,
-                               ukm::SourceId source_id) {
-  // If the form is submitted, we don't need to send pending votes from blur
-  // (un-focus) events.
-  if (observed_submission) {
-    WipePendingVotesForForm(submitted_form->form_signature());
-  }
-  if (submitted_form->ShouldRunHeuristics() ||
-      submitted_form->ShouldRunHeuristicsForSingleFields() ||
-      submitted_form->ShouldBeQueried()) {
-    // TODO(crbug.com/374086145): Eliminate reference to `owner_`.
-    autofill_metrics::LogQualityMetrics(
-        *submitted_form, submitted_form->form_parsed_timestamp(),
-        interaction_time, submission_time,
-        owner_->client().GetFormInteractionsUkmLogger(), source_id,
-        observed_submission);
-    if (observed_submission) {
-      // Ensure that callbacks for blur votes get sent as well here because
-      // we are not sure whether a full navigation with a Reset() call follows.
-      FlushPendingVotes();
-    }
-  }
-  if (!submitted_form->ShouldBeUploaded()) {
-    return;
-  }
-  if (autofill_metrics::ShouldRecordUkm() &&
-      submitted_form->ShouldUploadUkm(
-          /*require_classified_field=*/true)) {
-    AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
-        client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
-  }
-  const PersonalDataManager& pdm = client().GetPersonalDataManager();
-  FieldTypeSet non_empty_types;
-  for (const AutofillProfile* profile :
-       pdm.address_data_manager().GetProfiles()) {
-    profile->GetNonEmptyTypes(client().GetAppLocale(), &non_empty_types);
-  }
-  for (const CreditCard* card : pdm.payments_data_manager().GetCreditCards()) {
-    card->GetNonEmptyTypes(client().GetAppLocale(), &non_empty_types);
-  }
-  // As CVC is not stored, treat it separately.
-  if (!last_unlocked_credit_card_cvc_.empty() ||
-      non_empty_types.contains(CREDIT_CARD_NUMBER)) {
-    non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
-  }
-  client().GetCrowdsourcingManager().StartUploadRequest(
-      /*upload_contents=*/EncodeUploadRequest(*submitted_form, non_empty_types,
-                                              /*login_form_signature=*/{},
-                                              observed_submission),
-      submitted_form->submission_source(),
-      /*is_password_manager_upload=*/false);
-}
-
-void VotesUploader::OnSubmissionFieldTypesDetermined(
-    std::unique_ptr<FormStructure> submitted_form,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
-    bool observed_submission,
-    ukm::SourceId source_id) {
+                               ukm::SourceId ukm_source_id) {
   auto count_types = [&submitted_form](FormType type) {
     return base::ranges::count_if(
         submitted_form->fields(),
@@ -291,18 +330,60 @@ void VotesUploader::OnSubmissionFieldTypesDetermined(
       credit_card_filling_stats.TotalFilled() > 0;
 
   if (can_trigger_address_survey) {
-    client().TriggerUserPerceptionOfAutofillSurvey(
+    client_->TriggerUserPerceptionOfAutofillSurvey(
         FillingProduct::kAddress,
         FormFillingStatsToSurveyStringData(address_filling_stats));
   } else if (can_trigger_credit_card_survey &&
              base::FeatureList::IsEnabled(
                  features::kAutofillCreditCardUserPerceptionSurvey)) {
-    client().TriggerUserPerceptionOfAutofillSurvey(
+    client_->TriggerUserPerceptionOfAutofillSurvey(
         FillingProduct::kCreditCard,
         FormFillingStatsToSurveyStringData(credit_card_filling_stats));
   }
-  UploadVote(std::move(submitted_form), interaction_time, submission_time,
-             observed_submission, source_id);
+
+  // If the form is submitted, we don't need to send pending votes from blur
+  // (un-focus) events.
+  if (submitted_form->ShouldRunHeuristics() ||
+      submitted_form->ShouldRunHeuristicsForSingleFields() ||
+      submitted_form->ShouldBeQueried()) {
+    autofill_metrics::LogQualityMetrics(
+        *submitted_form, submitted_form->form_parsed_timestamp(),
+        initial_interaction_timestamp, submission_timestamp,
+        client_->GetFormInteractionsUkmLogger(), ukm_source_id,
+        observed_submission);
+  }
+  if (!submitted_form->ShouldBeUploaded()) {
+    return;
+  }
+  // TODO(crbug.com/40100455): Remove the CHECK in M134.
+  CHECK(submitted_form->ShouldBeUploaded(), base::NotFatalUntil::M134);
+  if (autofill_metrics::ShouldRecordUkm() &&
+      submitted_form->ShouldUploadUkm(
+          /*require_classified_field=*/true)) {
+    AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
+        client_->GetUkmRecorder(), ukm_source_id, *submitted_form,
+        submission_timestamp);
+  }
+  const PersonalDataManager& pdm = client_->GetPersonalDataManager();
+  FieldTypeSet non_empty_types;
+  for (const AutofillProfile* profile :
+       pdm.address_data_manager().GetProfiles()) {
+    profile->GetNonEmptyTypes(client_->GetAppLocale(), &non_empty_types);
+  }
+  for (const CreditCard* card : pdm.payments_data_manager().GetCreditCards()) {
+    card->GetNonEmptyTypes(client_->GetAppLocale(), &non_empty_types);
+  }
+  // As CVC is not stored, treat it separately.
+  if (!last_unlocked_credit_card_cvc_.empty() ||
+      non_empty_types.contains(CREDIT_CARD_NUMBER)) {
+    non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
+  }
+  client_->GetCrowdsourcingManager().StartUploadRequest(
+      /*upload_contents=*/EncodeUploadRequest(*submitted_form, non_empty_types,
+                                              /*login_form_signature=*/{},
+                                              observed_submission),
+      submitted_form->submission_source(),
+      /*is_password_manager_upload=*/false);
 }
 
 }  // namespace autofill

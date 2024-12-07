@@ -112,6 +112,14 @@ export class PrivacySandboxDialogNoticeStepElement extends
   private onPrivacyPolicyLinkClicked_() {
     this.hideNoticePage_ = true;
   }
+
+  private getSettingsButtonsClass_() {
+    return this.shouldShowV2_ ? 'tonal-button' : '';
+  }
+
+  private getAckButtonsClass_() {
+    return this.shouldShowV2_ ? 'tonal-button' : 'action-button';
+  }
 }
 
 declare global {

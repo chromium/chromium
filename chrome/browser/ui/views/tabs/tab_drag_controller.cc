@@ -682,11 +682,10 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
       if (!ref)
         return;
     }
+
     current_state_ = DragState::kDraggingTabs;
-    // |source_context_| already owns |this| (it created us, even), so no need
-    // to hand off ownership.
-    DCHECK_EQ(source_context_->GetDragController(), this);
-    Attach(source_context_, gfx::Point(), nullptr);
+    StartDrag();
+
     if (num_dragging_tabs() == source_context_->GetTabStripModel()->count()) {
       if (ShouldDragWindowUsingSystemDnD()) {
         StartSystemDnDSessionIfNecessary(attached_context_, point_in_screen);
@@ -1038,8 +1037,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     } else {
       // We already transferred ownership of |this| above, before we released
       // capture.
-      DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context,
-                                  point_in_screen);
+      DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context);
 
       // Enter kWaitingToExitRunLoop until we actually have exited the nested
       // run loop. Otherwise, we might attempt to start another nested run loop,
@@ -1067,8 +1065,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
   // tabstrip to trigger dragging a window;
   // - or the platform does not support RunMoveLoop() and this is the normal
   // behaviour.
-  DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context,
-                              point_in_screen);
+  DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context);
   MoveAttached(point_in_screen, true);
   return DRAG_BROWSER_RESULT_CONTINUE;
 }
@@ -1121,7 +1118,8 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
   // happen.
   base::Pickle pickle;
   data_provider->SetPickledData(
-      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag), pickle);
+      ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag),
+      pickle);
 
   gfx::ImageSkia drag_image = GetDragImageForSystemDnD();
   data_provider->SetDragImage(
@@ -1334,13 +1332,9 @@ TabDragController::DetachPosition TabDragController::GetDetachPosition(
 
 void TabDragController::DetachAndAttachToNewContext(
     ReleaseCapture release_capture,
-    TabDragContext* target_context,
-    const gfx::Point& point_in_screen,
-    bool set_capture) {
+    TabDragContext* target_context) {
   std::unique_ptr<TabDragController> me = Detach(release_capture);
-  DCHECK_EQ(me.get(), this);
-  DCHECK(!target_context->GetDragController());
-  Attach(target_context, point_in_screen, std::move(me), set_capture);
+  AttachToNewContext(target_context, std::move(me));
 }
 
 TabDragController::Liveness TabDragController::GetTargetTabStripForPoint(
@@ -1388,83 +1382,89 @@ bool TabDragController::DoesTabStripContain(
              tabstrip_bounds, kVerticalDetachMagnetism, point_in_screen.y());
 }
 
-void TabDragController::Attach(TabDragContext* attached_context,
-                               const gfx::Point& point_in_screen,
-                               std::unique_ptr<TabDragController> controller,
-                               bool set_capture) {
-  TRACE_EVENT1("views", "TabDragController::Attach", "point_in_screen",
-               point_in_screen.ToString());
+void TabDragController::StartDrag() {
+  // `source_context_` already owns `this` (it created us, even), so no need
+  // to hand off ownership.
+  CHECK_EQ(source_context_->GetDragController(), this);
+  attached_context_ = source_context_;
 
-  DCHECK(!attached_context_);  // We should already have detached by the time
-                               // we get here.
+  AttachImpl();
+}
 
-  if (controller) {
-    // |this| may be owned by |controller|.
-    DCHECK_EQ(this, controller.get());
-    DCHECK(!attached_context->GetDragController());
-  } else {
-    // Or |this| may be owned by |attached_context|
-    DCHECK_EQ(this, attached_context->GetDragController());
-  }
-
+void TabDragController::AttachToNewContext(
+    TabDragContext* attached_context,
+    std::unique_ptr<TabDragController> controller) {
+  // We should already have detached by the time we get here.
+  CHECK(!attached_context_);
   attached_context_ = attached_context;
 
-  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views =
+  // `this` is owned by `controller`, and not by `attached_context`.
+  CHECK_EQ(this, controller.get());
+  CHECK(!attached_context_->GetDragController());
+
+  // Transitioning from detached to attached to a new context. Add tabs to
+  // the new model.
+  CHECK(GetViewsMatchingDraggedContents(attached_context_).empty());
+
+  selection_model_before_attach_ =
+      attached_context_->GetTabStripModel()->selection_model();
+
+  // Register a new group if necessary, so that the insertion index in the
+  // tab strip can be calculated based on the group membership of tabs.
+  if (header_drag_) {
+    const tab_groups::TabGroupVisualData og_visual_data =
+        source_view_drag_data()->tab_group_data.value().group_visual_data;
+    // Create the new group already un-collapsed, regardless of whether the
+    // original group started out collapsed or not.
+    const tab_groups::TabGroupVisualData new_visual_data =
+        tab_groups::TabGroupVisualData(og_visual_data.title(),
+                                       og_visual_data.color(),
+                                       /*is_collapsed=*/false);
+
+    attached_context_->GetTabStripModel()->group_model()->AddTabGroup(
+        group_.value(), new_visual_data);
+  }
+
+  // Insert at any valid index in the tabstrip. We'll fix up the insertion
+  // index in MoveAttached() later, if we're transitioning to kDraggingTabs;
+  // if we're transitioning to kDraggingWindow this is the correct index, 0.
+  const int index = attached_context_->GetPinnedTabCount();
+
+  base::AutoReset<bool> setter(&is_mutating_, true);
+  for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
+    int add_types = AddTabTypes::ADD_NONE;
+    if (drag_data_[i].pinned) {
+      add_types |= AddTabTypes::ADD_PINNED;
+    }
+
+    // We should have owned_tab here, this CHECK is used to gather data for
+    // https://crbug.com/677806.
+    CHECK(drag_data_[i].owned_tab);
+    attached_context_->GetTabStripModel()->InsertDetachedTabAt(
+        index + i - first_tab_index(), std::move(drag_data_[i].owned_tab),
+        add_types, group_);
+
+    // If a sad tab is showing, the SadTabView needs to be updated.
+    SadTabHelper* const sad_tab_helper =
+        SadTabHelper::FromWebContents(drag_data_[i].contents);
+    if (sad_tab_helper) {
+      sad_tab_helper->ReinstallInWebView();
+    }
+  }
+
+  // If we're dragging a saved group, resume tracking now that the group is
+  // re-attached.
+  MaybeResumeTrackingSavedTabGroup();
+
+  AttachImpl();
+
+  attached_context_->OwnDragController(std::move(controller));
+}
+
+void TabDragController::AttachImpl() {
+  const std::vector<raw_ptr<TabSlotView, VectorExperimental>> views =
       GetViewsMatchingDraggedContents(attached_context_);
 
-  if (views.empty()) {
-    // Transitioning from detached to attached to a new context. Add tabs to
-    // the new model.
-
-    selection_model_before_attach_ =
-        attached_context->GetTabStripModel()->selection_model();
-
-    // Register a new group if necessary, so that the insertion index in the
-    // tab strip can be calculated based on the group membership of tabs.
-    if (header_drag_) {
-      const tab_groups::TabGroupVisualData og_visual_data =
-          source_view_drag_data()->tab_group_data.value().group_visual_data;
-      // Create the new group already un-collapsed, regardless of whether the
-      // original group started out collapsed or not.
-      const tab_groups::TabGroupVisualData new_visual_data =
-          tab_groups::TabGroupVisualData(og_visual_data.title(),
-                                         og_visual_data.color(),
-                                         /*is_collapsed=*/false);
-
-      attached_context_->GetTabStripModel()->group_model()->AddTabGroup(
-          group_.value(), new_visual_data);
-    }
-
-    // Insert at any valid index in the tabstrip. We'll fix up the insertion
-    // index in MoveAttached() later.
-    int index = attached_context_->GetPinnedTabCount();
-
-    base::AutoReset<bool> setter(&is_mutating_, true);
-    for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
-      int add_types = AddTabTypes::ADD_NONE;
-      if (drag_data_[i].pinned)
-        add_types |= AddTabTypes::ADD_PINNED;
-
-      // We should have owned_tab here, this CHECK is used to gather data for
-      // https://crbug.com/677806.
-      CHECK(drag_data_[i].owned_tab);
-      attached_context_->GetTabStripModel()->InsertDetachedTabAt(
-          index + i - first_tab_index(), std::move(drag_data_[i].owned_tab),
-          add_types, group_);
-
-      // If a sad tab is showing, the SadTabView needs to be updated.
-      SadTabHelper* sad_tab_helper =
-          SadTabHelper::FromWebContents(drag_data_[i].contents);
-      if (sad_tab_helper)
-        sad_tab_helper->ReinstallInWebView();
-    }
-
-    views = GetViewsMatchingDraggedContents(attached_context_);
-
-    // If we're dragging a saved group, resume tracking now that the group is
-    // re-attached.
-    MaybeResumeTrackingSavedTabGroup();
-  }
   DCHECK_EQ(views.size(), drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i) {
     drag_data_[i].attached_view = views[i].get();
@@ -1482,21 +1482,16 @@ void TabDragController::Attach(TabDragContext* attached_context,
   std::vector<raw_ptr<TabSlotView, VectorExperimental>> tabs_to_source(views);
   tabs_to_source.erase(tabs_to_source.begin() + source_view_index_ + 1,
                        tabs_to_source.end());
-  int new_x = TabStrip::GetSizeNeededForViews(tabs_to_source) -
-              views[source_view_index_]->width() +
-              base::ClampRound(offset_to_width_ratio_ *
-                               views[source_view_index_]->width());
+  const int new_x = TabStrip::GetSizeNeededForViews(tabs_to_source) -
+                    views[source_view_index_]->width() +
+                    base::ClampRound(offset_to_width_ratio_ *
+                                     views[source_view_index_]->width());
   mouse_offset_.set_x(new_x);
 
-  // Transfer ownership of us to the new tabstrip as well as making sure the
-  // window has capture. This is important so that if activation changes the
-  // drag isn't prematurely canceled.
-  if (set_capture)
-    SetCapture(attached_context_);
-  if (controller)
-    attached_context_->OwnDragController(std::move(controller));
+  // Make sure the window has capture. This is important so that if activation
+  // changes the drag isn't prematurely canceled.
+  SetCapture(attached_context_);
 
-  SetTabDraggingInfo();
   attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
           attached_context_->GetTabStripModel(), this);
@@ -1557,7 +1552,6 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
     }
   }
 
-  ClearTabDraggingInfo();
   attached_context_->DraggedTabsDetached();
   attached_context_ = nullptr;
   attached_views_.clear();
@@ -1631,8 +1625,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       can_release_capture_ ? RELEASE_CAPTURE : DONT_RELEASE_CAPTURE;
 #endif
   DetachAndAttachToNewContext(
-      release_capture, dragged_browser_view->tabstrip()->GetDragContext(),
-      gfx::Point());
+      release_capture, dragged_browser_view->tabstrip()->GetDragContext());
 
   if (ShouldDragWindowUsingSystemDnD()) {
     // Keep the new window hidden and start a system DnD session.
@@ -1718,13 +1711,11 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
     current_state_ = DragState::kDraggingTabs;
   } else if (current_state_ == DragState::kWaitingToDragTabs) {
     DCHECK(tab_strip_to_attach_to_after_exit_);
-    gfx::Point point_in_screen(GetCursorScreenPoint());
     DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE,
-                                tab_strip_to_attach_to_after_exit_,
-                                point_in_screen);
+                                tab_strip_to_attach_to_after_exit_);
     current_state_ = DragState::kDraggingTabs;
     // Move the tabs into position.
-    MoveAttached(point_in_screen, true);
+    MoveAttached(GetCursorScreenPoint(), true);
     attached_context_->GetWidget()->Activate();
     // Activate may trigger a focus loss, destroying us.
     if (!ref)
@@ -1846,10 +1837,6 @@ void TabDragController::EndDragImpl(EndDragType type) {
     if (previous_state != DragState::kNotStarted)
       RevertDrag();
   }  // else case the only tab we were dragging was deleted. Nothing to do.
-
-  // Clear tab dragging info after the complete/revert as CompleteDrag() may
-  // need to use some of the properties.
-  ClearTabDraggingInfo();
 
   // Clear out drag data so we don't attempt to do anything with it.
   drag_data_.clear();
@@ -2586,39 +2573,6 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   *window = window_finder_->GetLocalProcessWindowAtPoint(screen_point, exclude);
   return ref ? Liveness::ALIVE : Liveness::DELETED;
-}
-
-void TabDragController::SetTabDraggingInfo() {
-#if BUILDFLAG(IS_CHROMEOS)
-  TabDragContext* dragged_context =
-      attached_context_ ? attached_context_ : source_context_;
-  DCHECK(dragged_context->IsDragSessionActive() &&
-         current_state_ != DragState::kStopped);
-
-  aura::Window* dragged_window =
-      GetWindowForTabDraggingProperties(dragged_context);
-  dragged_window->SetProperty(ash::kIsDraggingTabsKey, true);
-#endif
-}
-
-void TabDragController::ClearTabDraggingInfo() {
-#if BUILDFLAG(IS_CHROMEOS)
-  TabDragContext* dragged_context =
-      attached_context_ ? attached_context_ : source_context_;
-  DCHECK(!dragged_context->IsDragSessionActive() ||
-         current_state_ == DragState::kStopped);
-  // Do not clear the dragging info properties for a to-be-destroyed window.
-  // They will be cleared later in Window's destructor. It's intentional as
-  // ash::SplitViewController::TabDraggedWindowObserver listens to both
-  // OnWindowDestroying() event and the window properties change event, and uses
-  // the two events to decide what to do next.
-  if (dragged_context->GetTabStripModel()->empty())
-    return;
-
-  aura::Window* dragged_window =
-      GetWindowForTabDraggingProperties(dragged_context);
-  dragged_window->ClearProperty(ash::kIsDraggingTabsKey);
-#endif
 }
 
 std::optional<tab_groups::TabGroupId>

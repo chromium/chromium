@@ -16,9 +16,6 @@ namespace updater {
 // AppWake is a simple client which dials the same-versioned server via RPC.
 // This is done via the UpdateServiceInternal interface.
 class AppWake : public App {
- public:
-  AppWake() = default;
-
  private:
   ~AppWake() override = default;
 

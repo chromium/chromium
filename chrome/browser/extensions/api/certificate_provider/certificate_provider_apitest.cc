@@ -191,7 +191,7 @@ class JsFailureObserver : public extensions::TestApiObserver {
 
 class CertificateProviderApiTest : public extensions::ExtensionApiTest {
  public:
-  CertificateProviderApiTest() {}
+  CertificateProviderApiTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(

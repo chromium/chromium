@@ -8,7 +8,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -422,45 +421,6 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
 
   // RemoveOnDeviceModelAvailabilityChangeObserver should be called.
   run_loop_for_remove_observer.Run();
-}
-
-TEST_F(AIRewriterTest, ContextDestroyed) {
-  SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) {
-            return std::make_unique<optimization_guide::MockSession>();
-          }));
-
-  mojo::Remote<blink::mojom::AIRewriter> rewriter_remote;
-  {
-    MockCreateRewriterClient mock_create_rewriter_client;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_create_rewriter_client, OnResult(_))
-        .WillOnce(testing::Invoke(
-            [&](mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter) {
-              rewriter_remote =
-                  mojo::Remote<blink::mojom::AIRewriter>(std::move(rewriter));
-              run_loop.Quit();
-            }));
-
-    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-    ai_manager->CreateRewriter(
-        mock_create_rewriter_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIRewriterCreateOptions::New(
-            kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
-            blink::mojom::AIRewriterLength::kAsIs));
-    run_loop.Run();
-  }
-
-  // Resetting mock host must delete the AIRewriter.
-  base::RunLoop run_loop;
-  rewriter_remote.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  ResetMockHost();
-  run_loop.Run();
 }
 
 TEST_F(AIRewriterTest, RewriteRegenerate) {

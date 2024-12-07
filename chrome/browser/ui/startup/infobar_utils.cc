@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,7 +38,7 @@
 
 namespace {
 bool ShouldShowBadFlagsSecurityWarnings() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   PrefService* local_state = g_browser_process->local_state();
   if (!local_state)
     return true;

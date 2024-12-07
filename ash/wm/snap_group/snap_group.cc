@@ -198,8 +198,6 @@ void SnapGroup::ShowDivider() {
   // windows is smaller than `kSplitviewDividerShortSideLength`. This adjustment
   // is necessary when restoring a snap group on Overview exit for example, as
   // the gap might have been created.
-  // TODO(michelefan): See if there are other conditions where we need to
-  // account for the divider.
   const bool account_for_divider_width =
       edge_gap < kSplitviewDividerShortSideLength;
   snap_group_divider_.SetDividerPosition(

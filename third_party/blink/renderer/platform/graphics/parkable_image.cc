@@ -74,7 +74,8 @@ void AsanPoisonBuffer(RWBuffer* rw_buffer) {
   auto ro_buffer = rw_buffer->MakeROBufferSnapshot();
   ROBuffer::Iter iter(ro_buffer);
   do {
-    ASAN_POISON_MEMORY_REGION(iter.data(), iter.size());
+    auto data = *iter;
+    ASAN_POISON_MEMORY_REGION(data.data(), data.size());
   } while (iter.Next());
 #endif
 }
@@ -87,7 +88,8 @@ void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
   auto ro_buffer = rw_buffer->MakeROBufferSnapshot();
   ROBuffer::Iter iter(ro_buffer);
   do {
-    ASAN_UNPOISON_MEMORY_REGION(iter.data(), iter.size());
+    auto data = *iter;
+    ASAN_UNPOISON_MEMORY_REGION(data.data(), data.size());
   } while (iter.Next());
 #endif
 }
@@ -157,8 +159,9 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
     // longer limetime than the SkData.
     parkable_image_->AddRef();
     parkable_image_->LockData();
+    auto data = *iter;
     return SkData::MakeWithProc(
-        iter.data(), available_,
+        data.data(), data.size(),
         [](const void* ptr, void* context) -> void {
           auto* parkable_image = static_cast<ParkableImage*>(context);
           {
@@ -207,7 +210,7 @@ void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
   for (auto it = buffer->GetIteratorAt(offset); it != buffer->cend(); ++it) {
     DCHECK_GE(buffer->size(), rw_buffer_->size() + it->size());
     const size_t remaining = buffer->size() - rw_buffer_->size() - it->size();
-    rw_buffer_->Append(it->data(), it->size(), remaining);
+    rw_buffer_->Append(base::as_byte_span(*it), remaining);
   }
   size_ = rw_buffer_->size();
 }
@@ -221,7 +224,7 @@ scoped_refptr<SharedBuffer> ParkableImageImpl::Data() {
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create();
   ROBuffer::Iter it(ro_buffer.get());
   do {
-    shared_buffer->Append(it.data(), it.size());
+    shared_buffer->Append(*it);
   } while (it.Next());
 
   return shared_buffer;

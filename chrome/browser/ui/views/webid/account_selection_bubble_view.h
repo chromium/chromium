@@ -53,12 +53,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       bool show_back_button,
       bool is_choose_an_account) override;
-  void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
+  void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override;
 
-  void ShowSingleAccountConfirmDialog(
-      const content::IdentityRequestAccount& account,
-      bool show_back_button) override;
+  void ShowSingleAccountConfirmDialog(const IdentityRequestAccountPtr& account,
+                                      bool show_back_button) override;
 
   void ShowFailureDialog(
       const std::u16string& idp_for_display,
@@ -69,8 +68,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                        const std::optional<TokenError>& error) override;
 
   void ShowRequestPermissionDialog(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data) override;
+      const IdentityRequestAccountPtr& account) override;
 
   void ShowSingleReturningAccountDialog(
       const std::vector<IdentityRequestAccountPtr>& accounts,
@@ -95,7 +93,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // information, disclosure text and a button for the user to confirm the
   // selection.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const content::IdentityRequestAccount& account);
+      const IdentityRequestAccountPtr& account);
 
   // Adds a separator as well as a multiple account chooser. The chooser
   // contains the info for each account in a button, so the user can pick an

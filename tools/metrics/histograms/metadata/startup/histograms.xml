@@ -1163,6 +1163,21 @@ chromium-metrics-reviews@google.com.
   <summary>The calling application (if any).</summary>
 </histogram>
 
+<histogram name="Startup.PrefetchOverrideErrorCode" enum="WinGetLastError"
+    expires_after="2025-03-30">
+  <owner>spvw@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Error code returned by ::SetProcessInformation() when overriding the
+    prefetch parameter for subsequent browser launches. On success,
+    ERROR_SUCCESS is recorded. On failure, the result of ::GetLastError() is
+    used. Recorded when a user is in the kOverridePrefetchOnSingleton
+    experiment, and reaches PostEarlyInitialization(). It is therefore recorded
+    at most once per browser process launch. See crbug.com/380088804 for
+    details.
+  </summary>
+</histogram>
+
 <histogram name="Startup.PreMainMessageLoopRunImplLongTime" units="ms"
     expires_after="2025-05-11">
   <owner>rkaplow@chromium.org</owner>

@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
@@ -19,6 +20,7 @@
 #include "base/feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/insets.h"
@@ -182,6 +184,8 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
     widget->SetContentsView(std::move(contents_view));
   }
   widget->SetBounds(CalculateInitialWidgetBounds(mahi_menu_bounds));
+  widget->widget_delegate()->SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_TITLE));
 
   widget->Show();
 

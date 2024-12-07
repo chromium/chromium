@@ -14,7 +14,10 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/browser_context.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 const char kIdentityProviderDomain[] = "google.com";
 

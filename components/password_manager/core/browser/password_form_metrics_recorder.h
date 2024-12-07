@@ -473,6 +473,10 @@ class PasswordFormMetricsRecorder
   void RecordMatchedFormType(const PasswordForm& form);
   void RecordPotentialPreferredMatch(std::optional<MatchedFormType> form_type);
 
+  // Records whether there was at least one grouped match in fill suggestions.
+  void RecordFillSuggestionHasGroupedMatch(
+      base::span<const PasswordForm> best_matches);
+
   // Calculates FillingAssistance metrics for |submitted_form|.
   void CalculateFillingAssistanceMetric(
       const PasswordForm& submitted_form,
@@ -648,9 +652,11 @@ class PasswordFormMetricsRecorder
 
   bool recorded_wait_for_username_reason_ = false;
 
-  bool recorded_preferred_matched_password_type = false;
+  bool recorded_preferred_matched_password_type_ = false;
 
-  bool recorded_potential_preferred_matched_password_type = false;
+  bool recorded_potential_preferred_matched_password_type_ = false;
+
+  bool recorded_fill_suggestion_has_grouped_match_ = false;
 
   absl::variant<absl::monostate,
                 FillingAssistance,

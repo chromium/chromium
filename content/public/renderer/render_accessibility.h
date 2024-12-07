@@ -27,7 +27,6 @@ class CONTENT_EXPORT RenderAccessibility {
  public:
   virtual bool HasActiveDocument() const = 0;
   virtual ui::AXMode GetAXMode() const = 0;
-  virtual void RecordInaccessiblePdfUkm() = 0;
   virtual void SetPluginAXTreeActionTargetAdapter(
       PluginAXTreeActionTargetAdapter* adapter) = 0;
 #if BUILDFLAG(IS_CHROMEOS)

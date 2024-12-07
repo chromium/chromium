@@ -28,7 +28,6 @@ import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resour
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import type {Constructor} from '../common/types.js';
 import {routes} from '../router.js';
 
@@ -78,13 +77,6 @@ class SettingsMultideviceTetherItemElement extends
         readonly: true,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
       /**
        * Whether to show technology badge on mobile network icon.
        */
@@ -100,7 +92,6 @@ class SettingsMultideviceTetherItemElement extends
 
   private activeNetworkState_: OncMojo.NetworkStateProperties|undefined;
   private deviceState_: OncMojo.DeviceStateProperties|undefined;
-  private isRevampWayfindingEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
   private showTechnologyBadge_: boolean;
 

@@ -152,21 +152,6 @@ TEST_F(BookmarkContextMenuTest, OpenCountIncognito) {
   EXPECT_EQ(1, chrome::OpenCount(nullptr, folder, profile_.get()));
 }
 
-// Tests the enabled state of the menus when supplied an empty vector.
-TEST_F(BookmarkContextMenuTest, EmptyNodes) {
-  BookmarkContextMenu controller(
-      nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
-      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>(), false);
-  EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL));
-  EXPECT_FALSE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
-  EXPECT_FALSE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
-  EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
-  EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
-  EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
-}
-
 // Tests the enabled state of the menus when supplied a vector with a single
 // url.
 TEST_F(BookmarkContextMenuTest, SingleURL) {
@@ -289,24 +274,6 @@ TEST_F(BookmarkContextMenuTest, DisabledItemsWithOtherNode) {
                                  BookmarkLaunchLocation::kNone, nodes, false);
   EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_EDIT));
   EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
-}
-
-// Tests the enabled state of the menus when supplied an empty vector and null
-// parent.
-TEST_F(BookmarkContextMenuTest, EmptyNodesNullParent) {
-  BookmarkContextMenu controller(
-      nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
-      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>(), false);
-  EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL));
-  EXPECT_FALSE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
-  EXPECT_FALSE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
-  EXPECT_FALSE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
-  EXPECT_FALSE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
-  EXPECT_FALSE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
 }
 
 TEST_F(BookmarkContextMenuTest, CutCopyPasteNode) {

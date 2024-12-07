@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -5540,6 +5541,40 @@ TEST_F(PasswordAutofillAgentTest, NoFillingFallbackForBannedFields) {
   EXPECT_FALSE(password_autofill_agent_->ShowSuggestions(
       credit_card_cvc_field,
       AutofillSuggestionTriggerSource::kFormControlElementClicked));
+}
+
+// Tests that `SubmitChangePasswordForm` fills and submits change password form.
+TEST_F(PasswordAutofillAgentTest, SubmitChangePasswordForm) {
+  LoadHTML(kPasswordChangeFormHTML);
+  UpdateUrlForHTML(kPasswordChangeFormHTML);
+
+  WebInputElement password = GetInputElementByID("password"),
+                  new_password = GetInputElementByID("newpassword"),
+                  confirmation_password =
+                      GetInputElementByID("confirmpassword");
+  auto password_id = autofill::form_util::GetFieldRendererId(password),
+       new_password_id = autofill::form_util::GetFieldRendererId(new_password),
+       password_confirmation =
+           autofill::form_util::GetFieldRendererId(confirmation_password);
+
+  const std::vector<autofill::FormData>& parsed_form_data =
+      fake_driver_.form_data_parsed().value();
+  EXPECT_EQ(1u, parsed_form_data.size());
+
+  base::MockCallback<base::OnceCallback<void(const autofill::FormData&)>>
+      mock_reply;
+  EXPECT_CALL(mock_reply, Run(parsed_form_data[0]));
+
+  password_autofill_agent_->SubmitChangePasswordForm(
+      password_id, new_password_id, password_confirmation, u"qwerty",
+      u"Pa$sw0rD", mock_reply.Get());
+  // Wait for submission event.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return fake_driver_.called_password_form_submitted(); }));
+
+  EXPECT_EQ(u"qwerty", password.Value().Utf16());
+  EXPECT_EQ(u"Pa$sw0rD", new_password.Value().Utf16());
+  EXPECT_EQ(u"Pa$sw0rD", confirmation_password.Value().Utf16());
 }
 
 #if BUILDFLAG(IS_ANDROID)

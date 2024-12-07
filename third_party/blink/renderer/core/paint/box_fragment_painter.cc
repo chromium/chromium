@@ -1432,8 +1432,8 @@ void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
 
   // https://www.w3.org/TR/css-multicol-1/#propdef-column-rule-style
   // interpret column-rule-style as in the collapsing border model
-  EBorderStyle rule_style =
-      ComputedStyle::CollapsedBorderStyle(style.ColumnRuleStyle());
+  EBorderStyle rule_style = ComputedStyle::CollapsedBorderStyle(
+      style.ColumnRuleStyle().GetLegacyValue());
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context,
                                                   GetDisplayItemClient(),

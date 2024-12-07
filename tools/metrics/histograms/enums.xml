@@ -598,7 +598,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="Web app in a window"/>
   <int value="6" label="(Obsolete) Mac OS app"/>
   <int value="7" label="Plugin VM"/>
-  <int value="8" label="Standalone browser"/>
+  <int value="8" label="(Obsolete) Standalone browser"/>
   <int value="9" label="Remote app"/>
   <int value="10" label="Borealis app"/>
   <int value="11" label="System web app"/>
@@ -10914,6 +10914,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5207" label="Canvas2DIsPointInStroke"/>
   <int value="5208" label="Canvas2DGetImageData"/>
   <int value="5209" label="V8ExtendingNonExtensibleWithPrivate"/>
+  <int value="5210" label="SharedStorageAPI_BatchUpdate_Method"/>
+  <int value="5211" label="PreservesPitch"/>
+  <int value="5212" label="SelectionCustomProperty"/>
+  <int value="5213" label="VerticalFormControls"/>
+  <int value="5214"
+      label="V8AuthenticatorAttestationResponse_GetPublicKey_Method"/>
+  <int value="5215" label="CloseWatcherScriptConstructor"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -16258,6 +16265,7 @@ from previous Chrome versions.
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
   <int value="-1638399923"
       label="PrivacySandboxProactiveTopicsBlocking:disabled"/>
+  <int value="-1637649767" label="SingleCaCertVerificationPhase2:enabled"/>
   <int value="-1637552275" label="NtpRealboxUseGoogleGIcon:disabled"/>
   <int value="-1637519819" label="EnablePolicyTestPage:disabled"/>
   <int value="-1636940108" label="EcheSWACheckAndroidNetworkInfo:enabled"/>
@@ -16793,7 +16801,6 @@ from previous Chrome versions.
   <int value="-1430090822" label="EnableSharedImageForWebview:disabled"/>
   <int value="-1429211493" label="FeedSignedOutViewDemotion:enabled"/>
   <int value="-1428822216" label="TabSelectionEditorV2:disabled"/>
-  <int value="-1428589407" label="WebRTCPipeWireCapturer:disabled"/>
   <int value="-1426911497" label="CCTIncognitoAvailableToThirdParty:enabled"/>
   <int value="-1426817842" label="BlockTabUnders:enabled"/>
   <int value="-1426150007" label="ignore-previews-blacklist"/>
@@ -17313,6 +17320,7 @@ from previous Chrome versions.
   <int value="-1225198073" label="ReaderModeInCCT:disabled"/>
   <int value="-1224962996" label="PwaImprovedSplashScreen:disabled"/>
   <int value="-1224843921" label="DevToolsTabTarget:enabled"/>
+  <int value="-1224643496" label="EnableClipboardDataControlsAndroid:disabled"/>
   <int value="-1222805155" label="PdfIsolation:enabled"/>
   <int value="-1222757260" label="DefaultMeetWebApp:enabled"/>
   <int value="-1222556118" label="VirtualDesks:disabled"/>
@@ -17630,7 +17638,6 @@ from previous Chrome versions.
   <int value="-1098963611" label="ProjectorLocalPlayback:disabled"/>
   <int value="-1097977406"
       label="SupervisedUserCommittedInterstitials:enabled"/>
-  <int value="-1097391719" label="LacrosExtensionPrinting:disabled"/>
   <int value="-1097149297"
       label="EnableAutomaticSharedImageManagement:disabled"/>
   <int value="-1096694296" label="UpcomingFollowFeatures:enabled"/>
@@ -17811,6 +17818,7 @@ from previous Chrome versions.
   <int value="-1024644761" label="OmniboxShortcutBoost:enabled"/>
   <int value="-1024065253" label="EnableWireGuard:disabled"/>
   <int value="-1024018413" label="CrOSLateBootGravedigger:disabled"/>
+  <int value="-1023007976" label="SingleCaCertVerificationPhase1:enabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
   <int value="-1022290134" label="WebApkInstallFailureRetry:disabled"/>
   <int value="-1022281869" label="ArcRtVcpuDualCore:enabled"/>
@@ -18767,7 +18775,6 @@ from previous Chrome versions.
       label="OmniboxUIExperimentUnboldSuggestionText:enabled"/>
   <int value="-633955136" label="ShowScrollableMVTOnNTPAndroid:disabled"/>
   <int value="-633425040" label="ClipboardHistoryReorder:disabled"/>
-  <int value="-633274640" label="WebRTCPipeWireCapturer:enabled"/>
   <int value="-632030508" label="NativeWindowNavButtons:disabled"/>
   <int value="-631740127" label="inert-visual-viewport"/>
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>
@@ -18845,6 +18852,7 @@ from previous Chrome versions.
   <int value="-604068396" label="disable-input-ime-api"/>
   <int value="-603649079" label="ContextualSearchRankerQuery:enabled"/>
   <int value="-602721511" label="NtpPhotosModuleCustomizedOptInTitle:disabled"/>
+  <int value="-601427689" label="FloatingSnackbar:enabled"/>
   <int value="-601384286" label="disable-contextual-search"/>
   <int value="-600792432" label="WebVrAutopresentFromIntent:disabled"/>
   <int value="-600726805" label="DeprecateMenagerieAPI:disabled"/>
@@ -19270,7 +19278,6 @@ from previous Chrome versions.
   <int value="-428599163" label="NTPDownloadSuggestions:enabled"/>
   <int value="-428556995" label="DesktopPWAsTabStripSettings:enabled"/>
   <int value="-428111342" label="FilesInlineSyncStatus:enabled"/>
-  <int value="-428082036" label="AnimatedImageResume:disabled"/>
   <int value="-428064763" label="CCTNestedSecurityIcon:enabled"/>
   <int value="-427835676" label="FullscreenInsetsApiMigration:enabled"/>
   <int value="-427163069" label="isolation-by-default"/>
@@ -19314,6 +19321,7 @@ from previous Chrome versions.
   <int value="-413286115"
       label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
+  <int value="-411616193" label="TabStripGroupReorderAndroid:enabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>
   <int value="-410456165" label="AiSettingsPageRefresh:enabled"/>
   <int value="-408800711"
@@ -19758,6 +19766,7 @@ from previous Chrome versions.
       label="CompressionDictionaryTransportOverHttp2:enabled"/>
   <int value="-239616243" label="HighDynamicRange:enabled"/>
   <int value="-239176328" label="BluetoothAggressiveAppearanceFilter:enabled"/>
+  <int value="-238925706" label="TabStripGroupReorderAndroid:disabled"/>
   <int value="-238717837" label="CellularUseSecondEuicc:disabled"/>
   <int value="-238415226" label="GlobalVaapiLock:disabled"/>
   <int value="-238175256" label="EarlyExitOnNoopClassOrStyleChange:enabled"/>
@@ -20005,6 +20014,7 @@ from previous Chrome versions.
   <int value="-135584721"
       label="OmniboxUIExperimentBoldUserTextOnSearchSuggestions:disabled"/>
   <int value="-135584175" label="EnableAggregatedMlAppRanking:enabled"/>
+  <int value="-135292080" label="SingleCaCertVerificationPhase2:disabled"/>
   <int value="-135223364" label="AutofillShowTypePredictions:disabled"/>
   <int value="-133098377" label="SyncPseudoUSSSearchEngines:disabled"/>
   <int value="-132786900" label="CommerceDeveloper:disabled"/>
@@ -20853,6 +20863,7 @@ from previous Chrome versions.
   <int value="207326879" label="NearbySharingReceiveWifiCredentials:enabled"/>
   <int value="207907053"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:enabled"/>
+  <int value="209072108" label="(Obsolete) LacrosExtensionPrinting:disabled"/>
   <int value="209792775" label="TabGroupsAndroid:enabled"/>
   <int value="209805234" label="MessagesForAndroidAutoDarkWebContents:enabled"/>
   <int value="211313007" label="CrOSEnforceSystemAecNs:disabled"/>
@@ -21363,7 +21374,6 @@ from previous Chrome versions.
   <int value="400272381" label="LazyFrameLoading:disabled"/>
   <int value="400322063" label="ash-disable-screen-orientation-lock"/>
   <int value="400836553" label="ImeKoreanOnlyModeSwitchOnRightAlt:enabled"/>
-  <int value="401606992" label="AnimatedImageResume:enabled"/>
   <int value="401983950" label="enable-spdy4"/>
   <int value="402143634" label="enable-search-button-in-omnibox-always"/>
   <int value="402630521"
@@ -21605,6 +21615,7 @@ from previous Chrome versions.
   <int value="502769956" label="ozone-platform-hint"/>
   <int value="503189154" label="ViewsBrowserWindows:disabled"/>
   <int value="503245473" label="disable-translate-new-ux"/>
+  <int value="503573295" label="SingleCaCertVerificationPhase0:disabled"/>
   <int value="503722868" label="CrosBlockWarnings:disabled"/>
   <int value="504549229" label="WebViewDisplayCutout:disabled"/>
   <int value="504717928" label="PasswordsWeaknessCheck:disabled"/>
@@ -22372,6 +22383,7 @@ from previous Chrome versions.
   <int value="804958673" label="LensCameraAssistedSearch:enabled"/>
   <int value="805882800" label="SafetyCheckChromeCleanerChild:disabled"/>
   <int value="806035639" label="EnableNeuralPalmDetectionFilter:disabled"/>
+  <int value="806173661" label="EnablePolicyPromotionBanner:disabled"/>
   <int value="806334184" label="AndroidSpellChecker:enabled"/>
   <int value="806783713" label="DesktopPWAsTabStripLinkCapturing:enabled"/>
   <int value="807268968" label="VcRelightingInferenceBackend:disabled"/>
@@ -22769,7 +22781,6 @@ from previous Chrome versions.
   <int value="979445973" label="OmniboxSpareRenderer:enabled"/>
   <int value="979915681" label="LocalPrinterObserving:disabled"/>
   <int value="980396200" label="enable-new-korean-ime"/>
-  <int value="980917863" label="LacrosExtensionPrinting:enabled"/>
   <int value="981099951" label="GameDashboardGamePWAs:enabled"/>
   <int value="981818901" label="AppBanners:enabled"/>
   <int value="982032277" label="NTPOfflineBadge:disabled"/>
@@ -23238,6 +23249,7 @@ from previous Chrome versions.
   <int value="1174088940" label="enable-wasm"/>
   <int value="1175660959" label="AutofillEnableCardArtImage:enabled"/>
   <int value="1176183341" label="SearchHistoryLink:enabled"/>
+  <int value="1176484713" label="SingleCaCertVerificationPhase0:enabled"/>
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
   <int value="1177174300" label="LayoutNGTable:disabled"/>
   <int value="1177255376" label="enable-builtin-hls:enabled"/>
@@ -24150,9 +24162,11 @@ from previous Chrome versions.
   <int value="1518946321" label="DisableProcessReuse:disabled"/>
   <int value="1519067750" label="ActionableContentSettings:disabled"/>
   <int value="1519228932" label="OmniboxAnswerActions:enabled"/>
+  <int value="1519310490" label="FloatingSnackbar:disabled"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>
   <int value="1520754417" label="ConfirmationChip:enabled"/>
   <int value="1521290440" label="ModalMemorySaver:disabled"/>
+  <int value="1523918941" label="SingleCaCertVerificationPhase1:disabled"/>
   <int value="1524016321" label="QuickAppAccessTestUI:disabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
   <int value="1524631783" label="CrOSLateBootCrasSplitAlsaUSBInternal:enabled"/>
@@ -25032,6 +25046,7 @@ from previous Chrome versions.
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858523835" label="VerifyDidCommitParams:enabled"/>
   <int value="1859016750" label="Conch:disabled"/>
+  <int value="1859378256" label="EnableClipboardDataControlsAndroid:enabled"/>
   <int value="1859864175" label="AppDeduplicationServiceFondue:enabled"/>
   <int value="1860349258" label="EnableFastInkForSoftwareCursor:enabled"/>
   <int value="1860597983" label="AndroidSpellChecker:disabled"/>
@@ -25225,6 +25240,7 @@ from previous Chrome versions.
   <int value="1933612277" label="EnablePortBoundCookies:disabled"/>
   <int value="1934470615" label="AppIconInIntentChip:disabled"/>
   <int value="1935405622" label="AppServiceInstanceRegistry:disabled"/>
+  <int value="1935968341" label="(Obsolete) LacrosExtensionPrinting:enabled"/>
   <int value="1936099143" label="RemotePlaybackBackend:enabled"/>
   <int value="1936308950" label="ExoConsumedByImeByFlag:disabled"/>
   <int value="1936774335" label="EcheSWASendStartSignaling:enabled"/>
@@ -25485,6 +25501,7 @@ from previous Chrome versions.
   <int value="2040216830" label="ArcTouchscreenEmulation:disabled"/>
   <int value="2040391862" label="SubframeProcessReuseThresholds:enabled"/>
   <int value="2041570184" label="UsePreferredIntervalForVideo:enabled"/>
+  <int value="2042966110" label="EnablePolicyPromotionBanner:enabled"/>
   <int value="2043141918" label="DnsOverHttps:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
   <int value="2043794900" label="CommercePriceTracking:enabled"/>
@@ -26762,6 +26779,17 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
+
+<enum name="MediaDemuxerType">
+  <int value="0" label="kUnknownDemuxer"/>
+  <int value="1" label="kMockDemuxer"/>
+  <int value="2" label="kFFmpegDemuxer"/>
+  <int value="3" label="kChunkDemuxer"/>
+  <int value="4" label="kMediaUrlDemuxer"/>
+  <int value="5" label="kFrameInjectingDemuxer"/>
+  <int value="6" label="kStreamProviderDemuxer"/>
+  <int value="7" label="kManifestDemuxer"/>
+</enum>
 
 <enum name="MediaEncryptionType">
   <int value="0" label="None"/>
@@ -34136,6 +34164,19 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="244" label="LocaleInfoFunctions"/>
   <int value="245" label="ViewTransitionClass"/>
   <int value="246" label="DRAFT_ReferenceTarget"/>
+  <int value="247" label="Fedcm"/>
+  <int value="248" label="WebOtp"/>
+  <int value="249" label="PreservesPitch"/>
+  <int value="250" label="ViewportUnitVariants"/>
+  <int value="251" label="PromiseTry"/>
+  <int value="252" label="StringReplaceall"/>
+  <int value="253" label="StringWellformed"/>
+  <int value="254" label="WeakReferences"/>
+  <int value="255" label="RemotePlayback"/>
+  <int value="256" label="VerticalFormControls"/>
+  <int value="257" label="PdfViewer"/>
+  <int value="258" label="FileSystemAccess"/>
+  <int value="259" label="Closewatcher"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
@@ -34935,583 +34976,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="9" label="Trusted Pinned"/>
   <int value="10" label="Pip"/>
   <int value="11" label="Floated"/>
-</enum>
-
-<enum name="WinGetLastError">
-  <int value="-2146893820" label="NTE_BAD_LEN"/>
-  <int value="-2146893818" label="NTE_BAD_SIGNATURE"/>
-  <int value="-2146893815" label="NTE_BAD_FLAGS"/>
-  <int value="-2146893813" label="NTE_BAD_KEY_STATE">
-    The user password has changed since the private keys were encrypted.
-  </int>
-  <int value="-2146893810" label="NTE_NO_MEMORY"/>
-  <int value="-2146893809" label="NTE_EXISTS"/>
-  <int value="-2146893804" label="NTE_BAD_PROV_TYPE"/>
-  <int value="-2146893802" label="NTE_BAD_KEYSET"/>
-  <int value="-2146893801" label="NTE_PROV_TYPE_NOT_DEF"/>
-  <int value="-2146893800" label="NTE_PROV_TYPE_ENTRY_BAD"/>
-  <int value="-2146893799" label="NTE_KEYSET_NOT_DEF"/>
-  <int value="-2146893798" label="NTE_KEYSET_ENTRY_BAD"/>
-  <int value="-2146893797" label="NTE_PROV_TYPE_NO_MATCH"/>
-  <int value="-2146893796" label="NTE_SIGNATURE_FILE_BAD"/>
-  <int value="-2146893795" label="NTE_PROVIDER_DLL_FAIL"/>
-  <int value="-2146893794" label="NTE_PROV_DLL_NOT_FOUND"/>
-  <int value="-2146893793" label="NTE_BAD_KEYSET_PARAM"/>
-  <int value="-2146892987" label="SEC_E_DELEGATION_REQUIRED"/>
-  <int value="-1073741819" label="STATUS_ACCESS_VIOLATION"/>
-  <int value="-1073741818" label="STATUS_IN_PAGE_ERROR"/>
-  <int value="-1073741790" label="STATUS_ACCESS_DENIED"/>
-  <int value="-1073741766" label="STATUS_OBJECT_PATH_NOT_FOUND"/>
-  <int value="-1073741674" label="STATUS_PRIVILEGED_INSTRUCTION"/>
-  <int value="-1073741670" label="STATUS_INSUFFICIENT_RESOURCES"/>
-  <int value="-1073741634" label="STATUS_BAD_NETWORK_PATH"/>
-  <int value="-1073741566" label="STATUS_FILE_CORRUPT_ERROR"/>
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="INVALID_FUNCTION"/>
-  <int value="2" label="FILE_NOT_FOUND"/>
-  <int value="3" label="PATH_NOT_FOUND"/>
-  <int value="4" label="TOO_MANY_OPEN_FILES"/>
-  <int value="5" label="ACCESS_DENIED"/>
-  <int value="6" label="INVALID_HANDLE"/>
-  <int value="7" label="ARENA_TRASHED"/>
-  <int value="8" label="NOT_ENOUGH_MEMORY"/>
-  <int value="9" label="INVALID_BLOCK"/>
-  <int value="10" label="BAD_ENVIRONMENT"/>
-  <int value="11" label="BAD_FORMAT"/>
-  <int value="12" label="INVALID_ACCESS"/>
-  <int value="13" label="INVALID_DATA"/>
-  <int value="14" label="OUTOFMEMORY"/>
-  <int value="15" label="INVALID_DRIVE"/>
-  <int value="16" label="CURRENT_DIRECTORY"/>
-  <int value="17" label="NOT_SAME_DEVICE"/>
-  <int value="18" label="NO_MORE_FILES"/>
-  <int value="19" label="WRITE_PROTECT"/>
-  <int value="20" label="BAD_UNIT"/>
-  <int value="21" label="NOT_READY"/>
-  <int value="22" label="BAD_COMMAND"/>
-  <int value="23" label="CRC"/>
-  <int value="24" label="BAD_LENGTH"/>
-  <int value="25" label="SEEK"/>
-  <int value="26" label="NOT_DOS_DISK"/>
-  <int value="27" label="SECTOR_NOT_FOUND"/>
-  <int value="28" label="OUT_OF_PAPER"/>
-  <int value="29" label="WRITE_FAULT"/>
-  <int value="30" label="READ_FAULT"/>
-  <int value="31" label="GEN_FAILURE"/>
-  <int value="32" label="SHARING_VIOLATION"/>
-  <int value="33" label="LOCK_VIOLATION"/>
-  <int value="34" label="WRONG_DISK"/>
-  <int value="36" label="SHARING_BUFFER_EXCEEDED"/>
-  <int value="38" label="HANDLE_EOF"/>
-  <int value="39" label="HANDLE_DISK_FULL"/>
-  <int value="50" label="NOT_SUPPORTED"/>
-  <int value="51" label="REM_NOT_LIST"/>
-  <int value="52" label="DUP_NAME"/>
-  <int value="53" label="BAD_NETPATH"/>
-  <int value="54" label="NETWORK_BUSY"/>
-  <int value="55" label="DEV_NOT_EXIST"/>
-  <int value="56" label="TOO_MANY_CMDS"/>
-  <int value="57" label="ADAP_HDW_ERR"/>
-  <int value="58" label="BAD_NET_RESP"/>
-  <int value="59" label="UNEXP_NET_ERR"/>
-  <int value="60" label="BAD_REM_ADAP"/>
-  <int value="61" label="PRINTQ_FULL"/>
-  <int value="62" label="NO_SPOOL_SPACE"/>
-  <int value="63" label="PRINT_CANCELLED"/>
-  <int value="64" label="NETNAME_DELETED"/>
-  <int value="65" label="NETWORK_ACCESS_DENIED"/>
-  <int value="66" label="BAD_DEV_TYPE"/>
-  <int value="67" label="BAD_NET_NAME"/>
-  <int value="68" label="TOO_MANY_NAMES"/>
-  <int value="69" label="TOO_MANY_SESS"/>
-  <int value="70" label="SHARING_PAUSED"/>
-  <int value="71" label="REQ_NOT_ACCEP"/>
-  <int value="72" label="REDIR_PAUSED"/>
-  <int value="80" label="FILE_EXISTS"/>
-  <int value="82" label="CANNOT_MAKE"/>
-  <int value="83" label="FAIL_I24"/>
-  <int value="84" label="OUT_OF_STRUCTURES"/>
-  <int value="85" label="ALREADY_ASSIGNED"/>
-  <int value="86" label="INVALID_PASSWORD"/>
-  <int value="87" label="INVALID_PARAMETER"/>
-  <int value="88" label="NET_WRITE_FAULT"/>
-  <int value="89" label="NO_PROC_SLOTS"/>
-  <int value="100" label="TOO_MANY_SEMAPHORES"/>
-  <int value="101" label="EXCL_SEM_ALREADY_OWNED"/>
-  <int value="102" label="SEM_IS_SET"/>
-  <int value="103" label="TOO_MANY_SEM_REQUESTS"/>
-  <int value="104" label="INVALID_AT_INTERRUPT_TIME"/>
-  <int value="105" label="SEM_OWNER_DIED"/>
-  <int value="106" label="SEM_USER_LIMIT"/>
-  <int value="107" label="DISK_CHANGE"/>
-  <int value="108" label="DRIVE_LOCKED"/>
-  <int value="109" label="BROKEN_PIPE"/>
-  <int value="110" label="OPEN_FAILED"/>
-  <int value="111" label="BUFFER_OVERFLOW"/>
-  <int value="112" label="DISK_FULL"/>
-  <int value="113" label="NO_MORE_SEARCH_HANDLES"/>
-  <int value="114" label="INVALID_TARGET_HANDLE"/>
-  <int value="117" label="INVALID_CATEGORY"/>
-  <int value="118" label="INVALID_VERIFY_SWITCH"/>
-  <int value="119" label="BAD_DRIVER_LEVEL"/>
-  <int value="120" label="CALL_NOT_IMPLEMENTED"/>
-  <int value="121" label="SEM_TIMEOUT"/>
-  <int value="122" label="INSUFFICIENT_BUFFER"/>
-  <int value="123" label="INVALID_NAME"/>
-  <int value="124" label="INVALID_LEVEL"/>
-  <int value="125" label="NO_VOLUME_LABEL"/>
-  <int value="126" label="MOD_NOT_FOUND"/>
-  <int value="127" label="PROC_NOT_FOUND"/>
-  <int value="128" label="WAIT_NO_CHILDREN"/>
-  <int value="129" label="CHILD_NOT_COMPLETE"/>
-  <int value="130" label="DIRECT_ACCESS_HANDLE"/>
-  <int value="131" label="NEGATIVE_SEEK"/>
-  <int value="132" label="SEEK_ON_DEVICE"/>
-  <int value="133" label="IS_JOIN_TARGET"/>
-  <int value="134" label="IS_JOINED"/>
-  <int value="135" label="IS_SUBSTED"/>
-  <int value="136" label="NOT_JOINED"/>
-  <int value="137" label="NOT_SUBSTED"/>
-  <int value="138" label="JOIN_TO_JOIN"/>
-  <int value="139" label="SUBST_TO_SUBST"/>
-  <int value="140" label="JOIN_TO_SUBST"/>
-  <int value="141" label="SUBST_TO_JOIN"/>
-  <int value="142" label="BUSY_DRIVE"/>
-  <int value="143" label="SAME_DRIVE"/>
-  <int value="144" label="DIR_NOT_ROOT"/>
-  <int value="145" label="DIR_NOT_EMPTY"/>
-  <int value="146" label="IS_SUBST_PATH"/>
-  <int value="147" label="IS_JOIN_PATH"/>
-  <int value="148" label="PATH_BUSY"/>
-  <int value="149" label="IS_SUBST_TARGET"/>
-  <int value="150" label="SYSTEM_TRACE"/>
-  <int value="151" label="INVALID_EVENT_COUNT"/>
-  <int value="152" label="TOO_MANY_MUXWAITERS"/>
-  <int value="153" label="INVALID_LIST_FORMAT"/>
-  <int value="154" label="LABEL_TOO_LONG"/>
-  <int value="155" label="TOO_MANY_TCBS"/>
-  <int value="156" label="SIGNAL_REFUSED"/>
-  <int value="157" label="DISCARDED"/>
-  <int value="158" label="NOT_LOCKED"/>
-  <int value="159" label="BAD_THREADID_ADDR"/>
-  <int value="160" label="BAD_ARGUMENTS"/>
-  <int value="161" label="BAD_PATHNAME"/>
-  <int value="162" label="SIGNAL_PENDING"/>
-  <int value="164" label="MAX_THRDS_REACHED"/>
-  <int value="167" label="LOCK_FAILED"/>
-  <int value="170" label="BUSY"/>
-  <int value="171" label="DEVICE_SUPPORT_IN_PROGRESS"/>
-  <int value="173" label="CANCEL_VIOLATION"/>
-  <int value="174" label="ATOMIC_LOCKS_NOT_SUPPORTED"/>
-  <int value="180" label="INVALID_SEGMENT_NUMBER"/>
-  <int value="182" label="INVALID_ORDINAL"/>
-  <int value="183" label="ALREADY_EXISTS"/>
-  <int value="186" label="INVALID_FLAG_NUMBER"/>
-  <int value="187" label="SEM_NOT_FOUND"/>
-  <int value="188" label="INVALID_STARTING_CODESEG"/>
-  <int value="189" label="INVALID_STACKSEG"/>
-  <int value="190" label="INVALID_MODULETYPE"/>
-  <int value="191" label="INVALID_EXE_SIGNATURE"/>
-  <int value="192" label="EXE_MARKED_INVALID"/>
-  <int value="193" label="BAD_EXE_FORMAT"/>
-  <int value="194" label="ITERATED_DATA_EXCEEDS_64k"/>
-  <int value="195" label="INVALID_MINALLOCSIZE"/>
-  <int value="196" label="DYNLINK_FROM_INVALID_RING"/>
-  <int value="197" label="IOPL_NOT_ENABLED"/>
-  <int value="198" label="INVALID_SEGDPL"/>
-  <int value="199" label="AUTODATASEG_EXCEEDS_64k"/>
-  <int value="200" label="RING2SEG_MUST_BE_MOVABLE"/>
-  <int value="201" label="RELOC_CHAIN_XEEDS_SEGLIM"/>
-  <int value="202" label="INFLOOP_IN_RELOC_CHAIN"/>
-  <int value="203" label="ENVVAR_NOT_FOUND"/>
-  <int value="205" label="NO_SIGNAL_SENT"/>
-  <int value="206" label="FILENAME_EXCED_RANGE"/>
-  <int value="207" label="RING2_STACK_IN_USE"/>
-  <int value="208" label="META_EXPANSION_TOO_LONG"/>
-  <int value="209" label="INVALID_SIGNAL_NUMBER"/>
-  <int value="210" label="THREAD_1_INACTIVE"/>
-  <int value="212" label="LOCKED"/>
-  <int value="214" label="TOO_MANY_MODULES"/>
-  <int value="215" label="NESTING_NOT_ALLOWED"/>
-  <int value="216" label="EXE_MACHINE_TYPE_MISMATCH"/>
-  <int value="217" label="EXE_CANNOT_MODIFY_SIGNED_BINARY"/>
-  <int value="218" label="EXE_CANNOT_MODIFY_STRONG_SIGNED_BINARY"/>
-  <int value="220" label="FILE_CHECKED_OUT"/>
-  <int value="221" label="CHECKOUT_REQUIRED"/>
-  <int value="222" label="BAD_FILE_TYPE"/>
-  <int value="223" label="FILE_TOO_LARGE"/>
-  <int value="224" label="FORMS_AUTH_REQUIRED"/>
-  <int value="225" label="VIRUS_INFECTED"/>
-  <int value="226" label="VIRUS_DELETED"/>
-  <int value="229" label="PIPE_LOCAL"/>
-  <int value="230" label="BAD_PIPE"/>
-  <int value="231" label="PIPE_BUSY"/>
-  <int value="232" label="NO_DATA"/>
-  <int value="233" label="PIPE_NOT_CONNECTED"/>
-  <int value="234" label="MORE_DATA"/>
-  <int value="240" label="VC_DISCONNECTED"/>
-  <int value="254" label="INVALID_EA_NAME"/>
-  <int value="255" label="EA_LIST_INCONSISTENT"/>
-  <int value="258" label="TIMEOUT"/>
-  <int value="259" label="NO_MORE_ITEMS"/>
-  <int value="266" label="CANNOT_COPY"/>
-  <int value="267" label="DIRECTORY"/>
-  <int value="275" label="EAS_DIDNT_FIT"/>
-  <int value="276" label="EA_FILE_CORRUPT"/>
-  <int value="277" label="EA_TABLE_FULL"/>
-  <int value="278" label="INVALID_EA_HANDLE"/>
-  <int value="282" label="EAS_NOT_SUPPORTED"/>
-  <int value="288" label="NOT_OWNER"/>
-  <int value="298" label="TOO_MANY_POSTS"/>
-  <int value="299" label="PARTIAL_COPY"/>
-  <int value="300" label="OPLOCK_NOT_GRANTED"/>
-  <int value="301" label="INVALID_OPLOCK_PROTOCOL"/>
-  <int value="302" label="DISK_TOO_FRAGMENTED"/>
-  <int value="303" label="DELETE_PENDING"/>
-  <int value="304"
-      label="INCOMPATIBLE_WITH_GLOBAL_SHORT_NAME_REGISTRY_SETTING"/>
-  <int value="305" label="SHORT_NAMES_NOT_ENABLED_ON_VOLUME"/>
-  <int value="306" label="SECURITY_STREAM_IS_INCONSISTENT"/>
-  <int value="307" label="INVALID_LOCK_RANGE"/>
-  <int value="308" label="IMAGE_SUBSYSTEM_NOT_PRESENT"/>
-  <int value="309" label="NOTIFICATION_GUID_ALREADY_DEFINED"/>
-  <int value="310" label="INVALID_EXCEPTION_HANDLER"/>
-  <int value="311" label="DUPLICATE_PRIVILEGES"/>
-  <int value="312" label="NO_RANGES_PROCESSED"/>
-  <int value="313" label="NOT_ALLOWED_ON_SYSTEM_FILE"/>
-  <int value="314" label="DISK_RESOURCES_EXHAUSTED"/>
-  <int value="315" label="INVALID_TOKEN"/>
-  <int value="316" label="DEVICE_FEATURE_NOT_SUPPORTED"/>
-  <int value="317" label="MR_MID_NOT_FOUND"/>
-  <int value="318" label="SCOPE_NOT_FOUND"/>
-  <int value="319" label="UNDEFINED_SCOPE"/>
-  <int value="320" label="INVALID_CAP"/>
-  <int value="321" label="DEVICE_UNREACHABLE"/>
-  <int value="322" label="DEVICE_NO_RESOURCES"/>
-  <int value="323" label="DATA_CHECKSUM_ERROR"/>
-  <int value="324" label="INTERMIXED_KERNEL_EA_OPERATION"/>
-  <int value="326" label="FILE_LEVEL_TRIM_NOT_SUPPORTED"/>
-  <int value="327" label="OFFSET_ALIGNMENT_VIOLATION"/>
-  <int value="328" label="INVALID_FIELD_IN_PARAMETER_LIST"/>
-  <int value="329" label="OPERATION_IN_PROGRESS"/>
-  <int value="330" label="BAD_DEVICE_PATH"/>
-  <int value="331" label="TOO_MANY_DESCRIPTORS"/>
-  <int value="332" label="SCRUB_DATA_DISABLED"/>
-  <int value="333" label="NOT_REDUNDANT_STORAGE"/>
-  <int value="334" label="RESIDENT_FILE_NOT_SUPPORTED"/>
-  <int value="335" label="COMPRESSED_FILE_NOT_SUPPORTED"/>
-  <int value="336" label="DIRECTORY_NOT_SUPPORTED"/>
-  <int value="337" label="NOT_READ_FROM_COPY"/>
-  <int value="350" label="FAIL_NOACTION_REBOOT"/>
-  <int value="351" label="FAIL_SHUTDOWN"/>
-  <int value="352" label="FAIL_RESTART"/>
-  <int value="353" label="MAX_SESSIONS_REACHED"/>
-  <int value="400" label="THREAD_MODE_ALREADY_BACKGROUND"/>
-  <int value="401" label="THREAD_MODE_NOT_BACKGROUND"/>
-  <int value="402" label="PROCESS_MODE_ALREADY_BACKGROUND"/>
-  <int value="403" label="PROCESS_MODE_NOT_BACKGROUND"/>
-  <int value="483" label="ERROR_DEVICE_HARDWARE_ERROR"/>
-  <int value="487" label="INVALID_ADDRESS"/>
-  <int value="500" label="USER_PROFILE_LOAD"/>
-  <int value="534" label="ARITHMETIC_OVERFLOW"/>
-  <int value="535" label="PIPE_CONNECTED"/>
-  <int value="536" label="PIPE_LISTENING"/>
-  <int value="537" label="VERIFIER_STOP"/>
-  <int value="538" label="ABIOS_ERROR"/>
-  <int value="539" label="WX86_WARNING"/>
-  <int value="540" label="WX86_ERROR"/>
-  <int value="541" label="TIMER_NOT_CANCELED"/>
-  <int value="542" label="UNWIND"/>
-  <int value="543" label="BAD_STACK"/>
-  <int value="544" label="INVALID_UNWIND_TARGET"/>
-  <int value="545" label="INVALID_PORT_ATTRIBUTES"/>
-  <int value="546" label="PORT_MESSAGE_TOO_LONG"/>
-  <int value="547" label="INVALID_QUOTA_LOWER"/>
-  <int value="548" label="DEVICE_ALREADY_ATTACHED"/>
-  <int value="549" label="INSTRUCTION_MISALIGNMENT"/>
-  <int value="550" label="PROFILING_NOT_STARTED"/>
-  <int value="551" label="PROFILING_NOT_STOPPED"/>
-  <int value="552" label="COULD_NOT_INTERPRET"/>
-  <int value="553" label="PROFILING_AT_LIMIT"/>
-  <int value="554" label="CANT_WAIT"/>
-  <int value="555" label="CANT_TERMINATE_SELF"/>
-  <int value="556" label="UNEXPECTED_MM_CREATE_ERR"/>
-  <int value="557" label="UNEXPECTED_MM_MAP_ERROR"/>
-  <int value="558" label="UNEXPECTED_MM_EXTEND_ERR"/>
-  <int value="559" label="BAD_FUNCTION_TABLE"/>
-  <int value="560" label="NO_GUID_TRANSLATION"/>
-  <int value="561" label="INVALID_LDT_SIZE"/>
-  <int value="563" label="INVALID_LDT_OFFSET"/>
-  <int value="564" label="INVALID_LDT_DESCRIPTOR"/>
-  <int value="565" label="TOO_MANY_THREADS"/>
-  <int value="566" label="THREAD_NOT_IN_PROCESS"/>
-  <int value="567" label="PAGEFILE_QUOTA_EXCEEDED"/>
-  <int value="568" label="LOGON_SERVER_CONFLICT"/>
-  <int value="569" label="SYNCHRONIZATION_REQUIRED"/>
-  <int value="570" label="NET_OPEN_FAILED"/>
-  <int value="571" label="IO_PRIVILEGE_FAILED"/>
-  <int value="572" label="CONTROL_C_EXIT"/>
-  <int value="573" label="MISSING_SYSTEMFILE"/>
-  <int value="574" label="UNHANDLED_EXCEPTION"/>
-  <int value="575" label="APP_INIT_FAILURE"/>
-  <int value="576" label="PAGEFILE_CREATE_FAILED"/>
-  <int value="577" label="INVALID_IMAGE_HASH"/>
-  <int value="578" label="NO_PAGEFILE"/>
-  <int value="579" label="ILLEGAL_FLOAT_CONTEXT"/>
-  <int value="580" label="NO_EVENT_PAIR"/>
-  <int value="581" label="DOMAIN_CTRLR_CONFIG_ERROR"/>
-  <int value="582" label="ILLEGAL_CHARACTER"/>
-  <int value="583" label="UNDEFINED_CHARACTER"/>
-  <int value="584" label="FLOPPY_VOLUME"/>
-  <int value="585" label="BIOS_FAILED_TO_CONNECT_INTERRUPT"/>
-  <int value="586" label="BACKUP_CONTROLLER"/>
-  <int value="587" label="MUTANT_LIMIT_EXCEEDED"/>
-  <int value="588" label="FS_DRIVER_REQUIRED"/>
-  <int value="589" label="CANNOT_LOAD_REGISTRY_FILE"/>
-  <int value="590" label="DEBUG_ATTACH_FAILED"/>
-  <int value="591" label="SYSTEM_PROCESS_TERMINATED"/>
-  <int value="592" label="DATA_NOT_ACCEPTED"/>
-  <int value="593" label="VDM_HARD_ERROR"/>
-  <int value="594" label="DRIVER_CANCEL_TIMEOUT"/>
-  <int value="595" label="REPLY_MESSAGE_MISMATCH"/>
-  <int value="596" label="LOST_WRITEBEHIND_DATA"/>
-  <int value="597" label="CLIENT_SERVER_PARAMETERS_INVALID"/>
-  <int value="598" label="NOT_TINY_STREAM"/>
-  <int value="599" label="STACK_OVERFLOW_READ"/>
-  <int value="600" label="CONVERT_TO_LARGE"/>
-  <int value="601" label="FOUND_OUT_OF_SCOPE"/>
-  <int value="602" label="ALLOCATE_BUCKET"/>
-  <int value="603" label="MARSHALL_OVERFLOW"/>
-  <int value="604" label="INVALID_VARIANT"/>
-  <int value="605" label="BAD_COMPRESSION_BUFFER"/>
-  <int value="606" label="AUDIT_FAILED"/>
-  <int value="607" label="TIMER_RESOLUTION_NOT_SET"/>
-  <int value="608" label="INSUFFICIENT_LOGON_INFO"/>
-  <int value="609" label="BAD_DLL_ENTRYPOINT"/>
-  <int value="610" label="BAD_SERVICE_ENTRYPOINT"/>
-  <int value="611" label="IP_ADDRESS_CONFLICT1"/>
-  <int value="612" label="IP_ADDRESS_CONFLICT2"/>
-  <int value="613" label="REGISTRY_QUOTA_LIMIT"/>
-  <int value="614" label="NO_CALLBACK_ACTIVE"/>
-  <int value="615" label="PWD_TOO_SHORT"/>
-  <int value="616" label="PWD_TOO_RECENT"/>
-  <int value="617" label="PWD_HISTORY_CONFLICT"/>
-  <int value="618" label="UNSUPPORTED_COMPRESSION"/>
-  <int value="619" label="INVALID_HW_PROFILE"/>
-  <int value="620" label="INVALID_PLUGPLAY_DEVICE_PATH"/>
-  <int value="621" label="QUOTA_LIST_INCONSISTENT"/>
-  <int value="622" label="EVALUATION_EXPIRATION"/>
-  <int value="623" label="ILLEGAL_DLL_RELOCATION"/>
-  <int value="624" label="DLL_INIT_FAILED_LOGOFF"/>
-  <int value="625" label="VALIDATE_CONTINUE"/>
-  <int value="626" label="NO_MORE_MATCHES"/>
-  <int value="627" label="RANGE_LIST_CONFLICT"/>
-  <int value="628" label="SERVER_SID_MISMATCH"/>
-  <int value="629" label="CANT_ENABLE_DENY_ONLY"/>
-  <int value="630" label="FLOAT_MULTIPLE_FAULTS"/>
-  <int value="631" label="FLOAT_MULTIPLE_TRAPS"/>
-  <int value="632" label="NOINTERFACE"/>
-  <int value="633" label="DRIVER_FAILED_SLEEP"/>
-  <int value="634" label="CORRUPT_SYSTEM_FILE"/>
-  <int value="635" label="COMMITMENT_MINIMUM"/>
-  <int value="636" label="PNP_RESTART_ENUMERATION"/>
-  <int value="637" label="SYSTEM_IMAGE_BAD_SIGNATURE"/>
-  <int value="638" label="PNP_REBOOT_REQUIRED"/>
-  <int value="639" label="INSUFFICIENT_POWER"/>
-  <int value="640" label="MULTIPLE_FAULT_VIOLATION"/>
-  <int value="641" label="SYSTEM_SHUTDOWN"/>
-  <int value="642" label="PORT_NOT_SET"/>
-  <int value="643" label="DS_VERSION_CHECK_FAILURE"/>
-  <int value="644" label="RANGE_NOT_FOUND"/>
-  <int value="646" label="NOT_SAFE_MODE_DRIVER"/>
-  <int value="647" label="FAILED_DRIVER_ENTRY"/>
-  <int value="648" label="DEVICE_ENUMERATION_ERROR"/>
-  <int value="649" label="MOUNT_POINT_NOT_RESOLVED"/>
-  <int value="650" label="INVALID_DEVICE_OBJECT_PARAMETER"/>
-  <int value="651" label="MCA_OCCURED"/>
-  <int value="652" label="DRIVER_DATABASE_ERROR"/>
-  <int value="653" label="SYSTEM_HIVE_TOO_LARGE"/>
-  <int value="654" label="DRIVER_FAILED_PRIOR_UNLOAD"/>
-  <int value="655" label="VOLSNAP_PREPARE_HIBERNATE"/>
-  <int value="656" label="HIBERNATION_FAILURE"/>
-  <int value="657" label="PWD_TOO_LONG"/>
-  <int value="665" label="FILE_SYSTEM_LIMITATION"/>
-  <int value="668" label="ASSERTION_FAILURE"/>
-  <int value="669" label="ACPI_ERROR"/>
-  <int value="670" label="WOW_ASSERTION"/>
-  <int value="671" label="PNP_BAD_MPS_TABLE"/>
-  <int value="672" label="PNP_TRANSLATION_FAILED"/>
-  <int value="673" label="PNP_IRQ_TRANSLATION_FAILED"/>
-  <int value="674" label="PNP_INVALID_ID"/>
-  <int value="675" label="WAKE_SYSTEM_DEBUGGER"/>
-  <int value="676" label="HANDLES_CLOSED"/>
-  <int value="677" label="EXTRANEOUS_INFORMATION"/>
-  <int value="678" label="RXACT_COMMIT_NECESSARY"/>
-  <int value="679" label="MEDIA_CHECK"/>
-  <int value="680" label="GUID_SUBSTITUTION_MADE"/>
-  <int value="681" label="STOPPED_ON_SYMLINK"/>
-  <int value="682" label="LONGJUMP"/>
-  <int value="683" label="PLUGPLAY_QUERY_VETOED"/>
-  <int value="684" label="UNWIND_CONSOLIDATE"/>
-  <int value="685" label="REGISTRY_HIVE_RECOVERED"/>
-  <int value="686" label="DLL_MIGHT_BE_INSECURE"/>
-  <int value="687" label="DLL_MIGHT_BE_INCOMPATIBLE"/>
-  <int value="688" label="DBG_EXCEPTION_NOT_HANDLED"/>
-  <int value="689" label="DBG_REPLY_LATER"/>
-  <int value="690" label="DBG_UNABLE_TO_PROVIDE_HANDLE"/>
-  <int value="691" label="DBG_TERMINATE_THREAD"/>
-  <int value="692" label="DBG_TERMINATE_PROCESS"/>
-  <int value="693" label="DBG_CONTROL_C"/>
-  <int value="694" label="DBG_PRINTEXCEPTION_C"/>
-  <int value="695" label="DBG_RIPEXCEPTION"/>
-  <int value="696" label="DBG_CONTROL_BREAK"/>
-  <int value="697" label="DBG_COMMAND_EXCEPTION"/>
-  <int value="698" label="OBJECT_NAME_EXISTS"/>
-  <int value="699" label="THREAD_WAS_SUSPENDED"/>
-  <int value="700" label="IMAGE_NOT_AT_BASE"/>
-  <int value="701" label="RXACT_STATE_CREATED"/>
-  <int value="702" label="SEGMENT_NOTIFICATION"/>
-  <int value="703" label="BAD_CURRENT_DIRECTORY"/>
-  <int value="704" label="FT_READ_RECOVERY_FROM_BACKUP"/>
-  <int value="705" label="FT_WRITE_RECOVERY"/>
-  <int value="706" label="IMAGE_MACHINE_TYPE_MISMATCH"/>
-  <int value="707" label="RECEIVE_PARTIAL"/>
-  <int value="708" label="RECEIVE_EXPEDITED"/>
-  <int value="709" label="RECEIVE_PARTIAL_EXPEDITED"/>
-  <int value="710" label="EVENT_DONE"/>
-  <int value="711" label="EVENT_PENDING"/>
-  <int value="712" label="CHECKING_FILE_SYSTEM"/>
-  <int value="713" label="FATAL_APP_EXIT"/>
-  <int value="714" label="PREDEFINED_HANDLE"/>
-  <int value="715" label="WAS_UNLOCKED"/>
-  <int value="716" label="SERVICE_NOTIFICATION"/>
-  <int value="717" label="WAS_LOCKED"/>
-  <int value="718" label="LOG_HARD_ERROR"/>
-  <int value="719" label="ALREADY_WIN32"/>
-  <int value="720" label="IMAGE_MACHINE_TYPE_MISMATCH_EXE"/>
-  <int value="721" label="NO_YIELD_PERFORMED"/>
-  <int value="722" label="TIMER_RESUME_IGNORED"/>
-  <int value="723" label="ARBITRATION_UNHANDLED"/>
-  <int value="724" label="CARDBUS_NOT_SUPPORTED"/>
-  <int value="725" label="MP_PROCESSOR_MISMATCH"/>
-  <int value="726" label="HIBERNATED"/>
-  <int value="727" label="RESUME_HIBERNATION"/>
-  <int value="728" label="FIRMWARE_UPDATED"/>
-  <int value="729" label="DRIVERS_LEAKING_LOCKED_PAGES"/>
-  <int value="730" label="WAKE_SYSTEM"/>
-  <int value="731" label="WAIT_1"/>
-  <int value="732" label="WAIT_2"/>
-  <int value="733" label="WAIT_3"/>
-  <int value="734" label="WAIT_63"/>
-  <int value="735" label="ABANDONED_WAIT_0"/>
-  <int value="736" label="ABANDONED_WAIT_63"/>
-  <int value="737" label="USER_APC"/>
-  <int value="738" label="KERNEL_APC"/>
-  <int value="739" label="ALERTED"/>
-  <int value="740" label="ELEVATION_REQUIRED"/>
-  <int value="741" label="REPARSE"/>
-  <int value="742" label="OPLOCK_BREAK_IN_PROGRESS"/>
-  <int value="743" label="VOLUME_MOUNTED"/>
-  <int value="744" label="RXACT_COMMITTED"/>
-  <int value="745" label="NOTIFY_CLEANUP"/>
-  <int value="746" label="PRIMARY_TRANSPORT_CONNECT_FAILED"/>
-  <int value="747" label="PAGE_FAULT_TRANSITION"/>
-  <int value="748" label="PAGE_FAULT_DEMAND_ZERO"/>
-  <int value="749" label="PAGE_FAULT_COPY_ON_WRITE"/>
-  <int value="750" label="PAGE_FAULT_GUARD_PAGE"/>
-  <int value="751" label="PAGE_FAULT_PAGING_FILE"/>
-  <int value="752" label="CACHE_PAGE_LOCKED"/>
-  <int value="753" label="CRASH_DUMP"/>
-  <int value="754" label="BUFFER_ALL_ZEROS"/>
-  <int value="755" label="REPARSE_OBJECT"/>
-  <int value="756" label="RESOURCE_REQUIREMENTS_CHANGED"/>
-  <int value="757" label="TRANSLATION_COMPLETE"/>
-  <int value="758" label="NOTHING_TO_TERMINATE"/>
-  <int value="759" label="PROCESS_NOT_IN_JOB"/>
-  <int value="760" label="PROCESS_IN_JOB"/>
-  <int value="761" label="VOLSNAP_HIBERNATE_READY"/>
-  <int value="762" label="FSFILTER_OP_COMPLETED_SUCCESSFULLY"/>
-  <int value="763" label="INTERRUPT_VECTOR_ALREADY_CONNECTED"/>
-  <int value="764" label="INTERRUPT_STILL_CONNECTED"/>
-  <int value="765" label="WAIT_FOR_OPLOCK"/>
-  <int value="766" label="DBG_EXCEPTION_HANDLED"/>
-  <int value="767" label="DBG_CONTINUE"/>
-  <int value="768" label="CALLBACK_POP_STACK"/>
-  <int value="769" label="COMPRESSION_DISABLED"/>
-  <int value="770" label="CANTFETCHBACKWARDS"/>
-  <int value="771" label="CANTSCROLLBACKWARDS"/>
-  <int value="772" label="ROWSNOTRELEASED"/>
-  <int value="773" label="BAD_ACCESSOR_FLAGS"/>
-  <int value="774" label="ERRORS_ENCOUNTERED"/>
-  <int value="775" label="NOT_CAPABLE"/>
-  <int value="776" label="REQUEST_OUT_OF_SEQUENCE"/>
-  <int value="777" label="VERSION_PARSE_ERROR"/>
-  <int value="778" label="BADSTARTPOSITION"/>
-  <int value="779" label="MEMORY_HARDWARE"/>
-  <int value="780" label="DISK_REPAIR_DISABLED"/>
-  <int value="781"
-      label="INSUFFICIENT_RESOURCE_FOR_SPECIFIED_SHARED_SECTION_SIZE"/>
-  <int value="782" label="SYSTEM_POWERSTATE_TRANSITION"/>
-  <int value="783" label="SYSTEM_POWERSTATE_COMPLEX_TRANSITION"/>
-  <int value="784" label="MCA_EXCEPTION"/>
-  <int value="785" label="ACCESS_AUDIT_BY_POLICY"/>
-  <int value="786" label="ACCESS_DISABLED_NO_SAFER_UI_BY_POLICY"/>
-  <int value="787" label="ABANDON_HIBERFILE"/>
-  <int value="788" label="LOST_WRITEBEHIND_DATA_NETWORK_DISCONNECTED"/>
-  <int value="789" label="LOST_WRITEBEHIND_DATA_NETWORK_SERVER_ERROR"/>
-  <int value="790" label="LOST_WRITEBEHIND_DATA_LOCAL_DISK_ERROR"/>
-  <int value="791" label="BAD_MCFG_TABLE"/>
-  <int value="792" label="DISK_REPAIR_REDIRECTED"/>
-  <int value="793" label="DISK_REPAIR_UNSUCCESSFUL"/>
-  <int value="794" label="CORRUPT_LOG_OVERFULL"/>
-  <int value="795" label="CORRUPT_LOG_CORRUPTED"/>
-  <int value="796" label="CORRUPT_LOG_UNAVAILABLE"/>
-  <int value="797" label="CORRUPT_LOG_DELETED_FULL"/>
-  <int value="798" label="CORRUPT_LOG_CLEARED"/>
-  <int value="799" label="ORPHAN_NAME_EXHAUSTED"/>
-  <int value="800" label="OPLOCK_SWITCHED_TO_NEW_HANDLE"/>
-  <int value="801" label="CANNOT_GRANT_REQUESTED_OPLOCK"/>
-  <int value="802" label="CANNOT_BREAK_OPLOCK"/>
-  <int value="803" label="OPLOCK_HANDLE_CLOSED"/>
-  <int value="804" label="NO_ACE_CONDITION"/>
-  <int value="805" label="INVALID_ACE_CONDITION"/>
-  <int value="806" label="FILE_HANDLE_REVOKED"/>
-  <int value="807" label="IMAGE_AT_DIFFERENT_BASE"/>
-  <int value="994" label="EA_ACCESS_DENIED"/>
-  <int value="995" label="OPERATION_ABORTED"/>
-  <int value="996" label="IO_INCOMPLETE"/>
-  <int value="997" label="IO_PENDING"/>
-  <int value="998" label="NOACCESS"/>
-  <int value="999" label="SWAPERROR"/>
-  <int value="1011" label="ERROR_CANTOPEN"/>
-  <int value="1114" label="ERROR_DLL_INIT_FAILED"/>
-  <int value="1117" label="ERROR_IO_DEVICE"/>
-  <int value="1127" label="DISK_OPERATION_FAILED"/>
-  <int value="1175" label="UNABLE_TO_REMOVE_REPLACED"/>
-  <int value="1176" label="UNABLE_TO_MOVE_REPLACEMENT"/>
-  <int value="1177" label="UNABLE_TO_MOVE_REPLACEMENT_2"/>
-  <int value="1223" label="ERROR_CANCELLED"/>
-  <int value="1260" label="ERROR_ACCESS_DISABLED_BY_POLICY"/>
-  <int value="1296" label="CONTENT_BLOCKED"/>
-  <int value="1346" label="ERROR_BAD_IMPERSONATION_LEVEL"/>
-  <int value="1392" label="ERROR_FILE_CORRUPT"/>
-  <int value="1393" label="ERROR_DISK_CORRUPT"/>
-  <int value="1450" label="ERROR_NO_SYSTEM_RESOURCES"/>
-  <int value="1453" label="ERROR_WORKING_SET_QUOTA"/>
-  <int value="1455" label="ERROR_COMMITMENT_LIMIT"/>
-  <int value="1717" label="RPC_S_UNKNOWN_IF"/>
-  <int value="1721" label="RPC_S_OUT_OF_RESOURCES"/>
-  <int value="1722" label="RPC_S_SERVER_UNAVAILABLE"/>
-  <int value="1723" label="RPC_S_SERVER_TOO_BUSY"/>
-  <int value="1726" label="RPC_S_CALL_FAILED"/>
-  <int value="1784" label="INVALID_USER_BUFFER"/>
-  <int value="1816" label="NOT_ENOUGH_QUOTA"/>
-  <int value="1818" label="RPC_S_CALL_CANCELLED"/>
-  <int value="1920" label="CANT_ACCESS_FILE"/>
-  <int value="4551" label="ERROR_SYSTEM_INTEGRITY_POLICY_VIOLATION"/>
-  <int value="6000" label="ERROR_ENCRYPTION_FAILED"/>
-  <int value="6001" label="ERROR_DECRYPTION_FAILED"/>
-  <int value="7041" label="ERROR_CTX_CONSOLE_DISCONNECT"/>
 </enum>
 
 <enum name="WorkerType">

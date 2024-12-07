@@ -1132,7 +1132,10 @@ class LensOverlayController : public LensSearchboxClient,
   // session. Used to record interaction rate, defined by whether or not a
   // user focused the contextual searchbox in sessions in which it was shown.
   // Set if contextual searchbox is shown.
-  std::optional<bool> contextual_searchbox_focused_in_session_;
+  bool contextual_searchbox_focused_in_session_ = false;
+
+  // Whether the contextual searchbox should be shown in the session.
+  bool contextual_searchbox_shown_in_session_ = false;
 
   // The type of the page content extracted from the page when the lens overlay
   // was initialized. This is used when recording contextual searchbox metrics
@@ -1166,6 +1169,11 @@ class LensOverlayController : public LensSearchboxClient,
   // session. Note that a trigger does not mean the survey will actually be
   // shown.
   bool hats_triggered_in_session_ = false;
+
+  // The stored suggest inputs to be attached to the initialization data
+  // if suggest inputs were updated before the initialization data was ready.
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+      pre_initialization_suggest_inputs_;
 
   // The callback subscription for the element shown callback used to show the
   // translate feature promo.

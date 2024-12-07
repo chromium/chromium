@@ -328,6 +328,10 @@ export class SearchboxElement extends SearchboxElementBase {
     return this.$.matches;
   }
 
+  isInputEmpty(): boolean {
+    return !!this.$.input.value.trim();
+  }
+
   //============================================================================
   // Callbacks
   //============================================================================
@@ -634,6 +638,17 @@ export class SearchboxElement extends SearchboxElementBase {
         e.preventDefault();
         return;
       }
+    }
+
+    if (e.key === 'Escape') {
+      this.dispatchEvent(new CustomEvent('escape-searchbox', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          event: e,
+          emptyInput: !this.$.input.value,
+        },
+      }));
     }
 
     // Do not handle the following keys if there are no matches available.

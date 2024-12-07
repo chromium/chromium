@@ -358,8 +358,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
   if (ShowActFeatures()) {
-    tracking_protection_settings_->AddTrackingProtectionException(
-        url, /*is_user_bypass_exception=*/true);
+    tracking_protection_settings_->AddTrackingProtectionException(url);
   }
   cookie_settings_->SetCookieSettingForUserBypass(url);
   // Record expiration metadata for the newly created exception, and increased

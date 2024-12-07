@@ -1236,6 +1236,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3229277193950731405">Skopiuj ciąg znaków wersji</translation>
 <translation id="323107829343500871">Wpisz kod CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Zawsze wykrywaj ważną treść na tej stronie</translation>
+<translation id="323585066388831737">Jasnoczerwony</translation>
 <translation id="3236212803136366317">Korzyści z karty</translation>
 <translation id="3238395604961564389">Otwórz link w oknie incognito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby dostosować wygląd przeglądarki, naciśnij Tab, a potem Enter.</translation>
@@ -1854,6 +1855,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4277937682389409325">Adres lokalny</translation>
 <translation id="4278090321534187713">Karty nieakceptowane przez tego sprzedawcę są wyłączone</translation>
 <translation id="4278390842282768270">Dozwolone</translation>
+<translation id="4281245629646759298">Jasnożółty</translation>
 <translation id="4281998142035485137">{0,plural, =1{Otworzyć poufny plik?}few{Otworzyć poufne pliki?}many{Otworzyć poufne pliki?}other{Otworzyć poufne pliki?}}</translation>
 <translation id="4282280603030594840">Zakup samochodu</translation>
 <translation id="4282346679996504092">Alerty dotyczące tego produktu zostały wyłączone, a zakładka usunięta</translation>
@@ -2743,6 +2745,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5969199813874624822">Zapisz i obserwuj cenę</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Rolka 6</translation>
+<translation id="5974745851230707809">Opcje płatności w ratach</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
 <translation id="5984570616552610254">Wilgotność w komorze</translation>
@@ -4307,6 +4310,7 @@ Dodatkowe informacje:
 <translation id="8767765348545497220">Zamknij okno pomocy</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 forma płatności}few{# formy płatności}many{# form płatności}other{# formy płatności}}</translation>
 <translation id="8768225988514678921">Przycisk Utwórz prezentację; aktywuj, aby szybko utworzyć nową prezentację w Prezentacjach Google</translation>
+<translation id="8769662576926275897">Dane karty</translation>
 <translation id="8770286973007342895">Kosiarki do trawy</translation>
 <translation id="8772387130037509473">Joga i pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Przenieść poufny plik?}few{Przenieść poufne pliki?}many{Przenieść poufne pliki?}other{Przenieść poufne pliki?}}</translation>
@@ -4335,6 +4339,7 @@ Dodatkowe informacje:
 <translation id="882338992931677877">Szczelina ręczna</translation>
 <translation id="8830320733681313421">Hagaki (pocztówka)</translation>
 <translation id="8830565333350631528">Wyświetl pliki w usłudze <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Dostępne w przypadku zakupów powyżej <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Pralki i suszarki</translation>
 <translation id="8834962751196791179">Widzisz to ostrzeżenie, ponieważ korzystasz z trybu incognito, a ta witryna nie obsługuje HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Seriale science fiction i fantasy</translation>

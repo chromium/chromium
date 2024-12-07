@@ -85,8 +85,15 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
               testing::ElementsAre(GetAppUrl(), GetAppUrlWithQuery()));
 }
 
+// TODO(crbug.com/382315984): Fix this flake.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigateExisting DISABLED_NavigateExisting
+#else
+#define MAYBE_NavigateExisting NavigateExisting
+#endif
+
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
-                       NavigateExisting) {
+                       MAYBE_NavigateExisting) {
   webapps::AppId app_id = InstallWebApp(WebAppInstallInfo::CreateForTesting(
       GetAppUrl(), blink::mojom::DisplayMode::kMinimalUi,
       mojom::UserDisplayMode::kStandalone,

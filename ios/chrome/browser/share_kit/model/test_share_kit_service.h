@@ -37,9 +37,10 @@ class TestShareKitService : public ShareKitService {
   // ShareKitService.
   bool IsSupported() const override;
   void PrimaryAccountChanged() override;
-  void ShareGroup(ShareKitShareGroupConfiguration* config) override;
-  void ManageGroup(ShareKitManageConfiguration* config) override;
-  void JoinGroup(ShareKitJoinConfiguration* config) override;
+  void CancelSession(NSString* session_id) override;
+  NSString* ShareTabGroup(ShareKitShareGroupConfiguration* config) override;
+  NSString* ManageTabGroup(ShareKitManageConfiguration* config) override;
+  NSString* JoinTabGroup(ShareKitJoinConfiguration* config) override;
   UIViewController* FacePile(ShareKitFacePileConfiguration* config) override;
   void ReadGroups(ShareKitReadConfiguration* config) override;
   void LeaveGroup(ShareKitLeaveConfiguration* config) override;

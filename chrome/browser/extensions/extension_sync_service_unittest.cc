@@ -132,7 +132,7 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
   StatefulChangeProcessor(const StatefulChangeProcessor&) = delete;
   StatefulChangeProcessor& operator=(const StatefulChangeProcessor&) = delete;
 
-  ~StatefulChangeProcessor() override {}
+  ~StatefulChangeProcessor() override = default;
 
   // We let our parent class, FakeSyncChangeProcessor, handle saving the
   // changes for us, but in addition we "apply" these changes by treating
@@ -1862,7 +1862,7 @@ TEST_F(ExtensionSyncServiceTest, AppToExtension) {
 
 class BlocklistedExtensionSyncServiceTest : public ExtensionSyncServiceTest {
  public:
-  BlocklistedExtensionSyncServiceTest() {}
+  BlocklistedExtensionSyncServiceTest() = default;
 
   BlocklistedExtensionSyncServiceTest(
       const BlocklistedExtensionSyncServiceTest&) = delete;

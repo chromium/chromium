@@ -5,9 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_SUBRESOURCE_INTEGRITY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_SUBRESOURCE_INTEGRITY_H_
 
+#include <string_view>
+
 #include "base/gtest_prod_util.h"
+#include "base/types/expected.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
+#include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -35,17 +39,24 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   //
   // Note: If a resource's body is empty, then these methods are called with a
   // null `buffer`.
-  static bool CheckSubresourceIntegrity(const IntegrityMetadataSet&,
-                                        const SegmentedBuffer* buffer,
-                                        const KURL& resource_url,
-                                        const Resource&,
-                                        IntegrityReport&);
+  static bool CheckSubresourceIntegrity(
+      const IntegrityMetadataSet&,
+      const SegmentedBuffer* buffer,
+      const KURL& resource_url,
+      const Resource&,
+      IntegrityReport&,
+      HashMap<HashAlgorithm, String>* computed_hashes);
   static bool CheckSubresourceIntegrity(const IntegrityMetadataSet&,
                                         const SegmentedBuffer* buffer,
                                         const KURL& resource_url,
                                         const FetchResponseType,
                                         const String& raw_headers,
                                         IntegrityReport&);
+  static std::optional<String> GetSubresourceIntegrityHash(
+      const SegmentedBuffer*,
+      HashAlgorithm);
+
+  static HashAlgorithm IntegrityAlgorithmToHashAlgorithm(IntegrityAlgorithm);
 
   // The IntegrityMetadataSet argument is an out parameters which contains the
   // set of all valid, parsed metadata from |attribute|.
@@ -66,18 +77,21 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   FRIEND_TEST_ALL_PREFIXES(SubresourceIntegritySignatureTest,
                            ParseSignatureAlgorithm);
 
-  // The core implementation for all CheckSubresoureIntegrity functions.
-  static bool CheckSubresourceIntegrityImpl(const IntegrityMetadataSet&,
-                                            const SegmentedBuffer* buffer,
-                                            const KURL& resource_url,
-                                            const String& raw_headers,
-                                            IntegrityReport&);
+  // The core implementation for all CheckSubresourceIntegrity functions.
+  static bool CheckSubresourceIntegrityImpl(
+      const IntegrityMetadataSet&,
+      const SegmentedBuffer* buffer,
+      const KURL& resource_url,
+      const String& raw_headers,
+      IntegrityReport&,
+      HashMap<HashAlgorithm, String>* computed_hashes);
 
   // Handles hash validation during SRI checks.
   static bool CheckHashesImpl(const WTF::HashSet<IntegrityMetadataPair>&,
                               const SegmentedBuffer*,
                               const KURL&,
-                              IntegrityReport&);
+                              IntegrityReport&,
+                              HashMap<HashAlgorithm, String>* computed_hashes);
 
   // Handles signature-based matching during SRI checks
   static bool CheckSignaturesImpl(const WTF::HashSet<IntegrityMetadataPair>&,
@@ -85,30 +99,19 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                   const String& raw_headers,
                                   IntegrityReport&);
 
-  enum AlgorithmParseResult {
-    kAlgorithmValid,
-    kAlgorithmUnparsable,
-    kAlgorithmUnknown
-  };
+  enum AlgorithmParseError { kAlgorithmUnparsable, kAlgorithmUnknown };
+  using AlgorithmParseResult = base::expected<size_t, AlgorithmParseError>;
 
   static IntegrityAlgorithm FindBestAlgorithm(
       const WTF::HashSet<IntegrityMetadataPair>&);
 
-  typedef bool (*CheckFunction)(const IntegrityMetadata&,
-                                const char*,
-                                size_t,
-                                const String&);
-
   static bool CheckSubresourceIntegrityDigest(const IntegrityMetadata&,
                                               const SegmentedBuffer* buffer);
 
-  static AlgorithmParseResult ParseAttributeAlgorithm(const UChar*& begin,
-                                                      const UChar* end,
+  static AlgorithmParseResult ParseAttributeAlgorithm(std::string_view token,
                                                       IntegrityAlgorithm&);
   typedef std::pair<const char*, IntegrityAlgorithm> AlgorithmPrefixPair;
-  static bool ParseDigest(const UChar*& begin,
-                          const UChar* end,
-                          String& digest);
+  static bool ParseDigest(std::string_view maybe_digest, String& digest);
 };
 
 }  // namespace blink

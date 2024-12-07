@@ -187,7 +187,16 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
 
       return;
     }
-    case TabStripModelChange::kSelectionOnly:
+    case TabStripModelChange::kSelectionOnly: {
+      if (selection.active_tab_changed()) {
+        CHECK(selection.new_tab)
+            << "Selection change detected but no new tab was selected.";
+        service_->OnTabSelected(
+            /*group_id=*/selection.new_tab->GetGroup(),
+            /*tab_id=*/selection.new_tab->GetHandle().raw_value());
+      }
+      return;
+    }
     case TabStripModelChange::kInserted:
     case TabStripModelChange::kReplaced:
     case TabStripModelChange::kRemoved: {

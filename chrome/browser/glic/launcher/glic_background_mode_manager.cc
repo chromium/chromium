@@ -12,6 +12,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 
+namespace glic {
+
 GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
     : status_tray_(status_tray) {
   configuration_ = std::make_unique<GlicConfiguration>(this);
@@ -51,3 +53,5 @@ void GlicBackgroundModeManager::ExitBackgroundMode() {
 }
 
 void GlicBackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {}
+
+}  // namespace glic

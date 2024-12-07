@@ -397,10 +397,9 @@ std::u16string JoinString(std::initializer_list<std::u16string_view> parts,
   return internal::JoinStringT(parts, separator);
 }
 
-std::u16string ReplaceStringPlaceholders(
-    std::u16string_view format_string,
-    const std::vector<std::u16string>& subst,
-    std::vector<size_t>* offsets) {
+std::u16string ReplaceStringPlaceholders(std::u16string_view format_string,
+                                         base::span<const std::u16string> subst,
+                                         std::vector<size_t>* offsets) {
   std::optional<std::u16string> replacement =
       internal::DoReplaceStringPlaceholders(
           format_string, subst,
@@ -412,7 +411,7 @@ std::u16string ReplaceStringPlaceholders(
 }
 
 std::string ReplaceStringPlaceholders(std::string_view format_string,
-                                      const std::vector<std::string>& subst,
+                                      base::span<const std::string> subst,
                                       std::vector<size_t>* offsets) {
   std::optional<std::string> replacement =
       internal::DoReplaceStringPlaceholders(
@@ -428,12 +427,21 @@ std::u16string ReplaceStringPlaceholders(const std::u16string& format_string,
                                          const std::u16string& a,
                                          size_t* offset) {
   std::vector<size_t> offsets;
+  // ReplaceStringPlaceholders() is more efficient when `offsets` is not set.
+  std::vector<size_t>* offsets_pointer = offset ? &offsets : nullptr;
   std::u16string result =
-      ReplaceStringPlaceholders(format_string, {a}, &offsets);
+      internal::DoReplaceStringPlaceholders(
+          std::u16string_view(format_string),
+          base::span<const std::u16string_view>({a}),
+          /*placeholder_prefix*/ u'$',
+          /*should_escape_multiple_placeholder_prefixes*/ true,
+          /*is_strict_mode*/ false, offsets_pointer)
+          .value();
 
-  DCHECK_EQ(1U, offsets.size());
-  if (offset)
+  if (offset) {
+    CHECK_EQ(1U, offsets.size());
     *offset = offsets[0];
+  }
   return result;
 }
 

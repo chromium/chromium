@@ -28,7 +28,6 @@ namespace invalidation {
 namespace {
 
 constexpr char kTopicsToHandler[] = "invalidation.per_sender_topics_to_handler";
-constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
 
 constexpr char kHandler[] = "handler";
 constexpr char kIsPublic[] = "is_public";
@@ -80,14 +79,6 @@ void InvalidatorRegistrarWithMemory::RegisterPrefs(
   // For local state, we want to register exactly the same prefs as for profile
   // prefs; see comment in the header.
   RegisterProfilePrefs(registry);
-}
-
-// static
-void InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(PrefService* prefs) {
-  if (prefs->HasPrefPath(kTopicsToHandler)) {
-    ScopedDictPrefUpdate update(prefs, kTopicsToHandler);
-    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
-  }
 }
 
 InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(

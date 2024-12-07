@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/common/chrome_features.h"
 
 namespace tabs {
 
@@ -46,6 +47,11 @@ BASE_FEATURE(kTabStripCollectionStorage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool CanShowTabSearchPositionSetting() {
+  // The combo button, which includes tab search, is always on the right side
+  // and cannot be repositioned.
+  if (features::IsTabstripComboButtonEnabled()) {
+    return false;
+  }
 // Mac and other platforms will always have the tab search position in the
 // correct location, cros/linux/win git the user the option to change.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

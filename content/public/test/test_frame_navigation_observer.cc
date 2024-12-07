@@ -48,6 +48,7 @@ TestFrameNavigationObserver::~TestFrameNavigationObserver() = default;
 void TestFrameNavigationObserver::Wait() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   wait_for_commit_ = false;
+  TRACE_EVENT("test", "TestFrameNavigationObserver::Wait");
   run_loop_.Run();
 }
 
@@ -58,6 +59,7 @@ void TestFrameNavigationObserver::WaitForCommit() {
     return;
 
   wait_for_commit_ = true;
+  TRACE_EVENT("test", "TestFrameNavigationObserver::WaitForCommit");
   run_loop_.Run();
 }
 

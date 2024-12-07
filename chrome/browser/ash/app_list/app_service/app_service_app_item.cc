@@ -48,8 +48,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
 
   switch (app_update.AppType()) {
     case apps::AppType::kUnknown:
-    case apps::AppType::kBuiltIn:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kSystemWeb:
     case apps::AppType::kRemote:
       // Chrome, Lacros, Settings, etc. are built-in.

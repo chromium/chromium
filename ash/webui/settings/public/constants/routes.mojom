@@ -23,7 +23,7 @@ enum Section {
   // Note: Value 10 was for deprecated kDateAndTime. Do not reuse.
   kPrivacyAndSecurity = 11,
   kLanguagesAndInput = 12,
-  kFiles = 13,
+  // Note: Value 13 was for deprecated kFiles. Do not reuse.
   // Note: Value 14 was for deprecated kPrinting. Do not reuse.
   kAccessibility = 15,
   // Deprecated, do not reuse. http://crbug/370836853

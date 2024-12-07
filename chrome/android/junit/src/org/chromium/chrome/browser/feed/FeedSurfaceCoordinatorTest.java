@@ -604,6 +604,7 @@ public class FeedSurfaceCoordinatorTest {
     private FeedSurfaceCoordinator createCoordinator(RecyclerView recyclerview) {
         when(mRenderer.bind(mContentManagerCaptor.capture(), isNull(), anyInt()))
                 .thenReturn(recyclerview);
+        when(mRenderer.getAdapter()).thenReturn(mAdapter);
         return new FeedSurfaceCoordinator(
                 mActivity,
                 mSnackbarManager,

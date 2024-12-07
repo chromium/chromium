@@ -9,6 +9,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "media/base/output_device_info.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_output_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
@@ -66,6 +68,9 @@ using ::testing::StrictMock;
 using MediaDeviceType = ::blink::mojom::MediaDeviceType;
 
 namespace {
+
+constexpr char kInvalidSinkId[] = "invalid_sink_id";
+constexpr char kValidSinkId[] = "valid_sink_id";
 
 String MaxLengthCaptureHandle() {
   String maxHandle = "0123456789abcdef";  // 16 characters.
@@ -267,6 +272,19 @@ class MockMediaDevicesDispatcherHost final
     }
   }
 
+  void SetPreferredSinkId(const String& sink_id,
+                          SetPreferredSinkIdCallback callback) override {
+    if (sink_id == kValidSinkId) {
+      std::move(callback).Run(
+          static_cast<media::mojom::blink::OutputDeviceStatus>(
+              output_device_status_));
+    } else {
+      std::move(callback).Run(
+          static_cast<media::mojom::blink::OutputDeviceStatus>(
+              media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND));
+    }
+  }
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {}
 
@@ -289,10 +307,8 @@ class MockMediaDevicesDispatcherHost final
     queue.push_back(std::move(next_id));
   }
 #endif
-
-  void SetPreferredSinkId(const String& sink_id,
-                          SetPreferredSinkIdCallback callback) override {
-    NOTREACHED();
+  void SetOutputDeviceStatus(media::OutputDeviceStatus status) {
+    output_device_status_ = status;
   }
 
   void ExpectSetCaptureHandleConfig(
@@ -358,7 +374,8 @@ class MockMediaDevicesDispatcherHost final
   mojo::Receiver<mojom::blink::MediaDevicesDispatcherHost> receiver_{this};
   mojom::blink::CaptureHandleConfigPtr expected_capture_handle_config_;
   std::map<SubCaptureTarget::Type, std::vector<String>> next_ids_;
-
+  media::OutputDeviceStatus output_device_status_ =
+      media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK;
   Vector<Vector<WebMediaDeviceInfo>> enumeration_{static_cast<size_t>(
       blink::mojom::blink::MediaDeviceType::kNumMediaDeviceTypes)};
   Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
@@ -578,6 +595,27 @@ class MediaDevicesTest : public PageTestBase {
         "Media.MediaDevices.EnumerateDevices.Result", expected_result, 1);
     histogram_tester_.ExpectTotalCount(
         "Media.MediaDevices.EnumerateDevices.Latency", 1);
+  }
+
+  DOMException* CallAndValidateSetPreferredSinkId(const char* sink_id,
+                                                  bool expect_fulfilled) {
+    V8TestingScope scope;
+
+    auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
+    ScriptPromiseTester tester(
+        scope.GetScriptState(),
+        media_devices->setPreferredSinkId(scope.GetScriptState(), sink_id,
+                                          scope.GetExceptionState()));
+    tester.WaitUntilSettled();
+
+    if (expect_fulfilled) {
+      EXPECT_TRUE(tester.IsFulfilled());
+    } else {
+      EXPECT_TRUE(tester.IsRejected());
+    }
+
+    return V8DOMException::ToWrappable(scope.GetIsolate(),
+                                       tester.Value().V8Value());
   }
 
  private:
@@ -989,6 +1027,39 @@ TEST_F(MediaDevicesTest,
   ASSERT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(DOMExceptionCode::kNotSupportedError));
+}
+
+TEST_F(MediaDevicesTest, SetPreferredSinkIdWithValidId) {
+  CallAndValidateSetPreferredSinkId(kValidSinkId, /*expect_fulfilled=*/true);
+}
+
+TEST_F(MediaDevicesTest, SetPreferredSinkIdWithInvalidId) {
+  DOMException* dom_exception = CallAndValidateSetPreferredSinkId(
+      kInvalidSinkId, /*expect_fulfilled=*/false);
+
+  EXPECT_EQ(dom_exception->code(),
+            static_cast<uint16_t>(DOMExceptionCode::kNotFoundError));
+}
+
+TEST_F(MediaDevicesTest, SetPreferredSinkIAuthorizationDenied) {
+  dispatcher_host().SetOutputDeviceStatus(
+      media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
+
+  DOMException* dom_exception = CallAndValidateSetPreferredSinkId(
+      kValidSinkId, /*expect_fulfilled=*/false);
+
+  EXPECT_EQ(dom_exception->name(), "NotAllowedError");
+}
+
+TEST_F(MediaDevicesTest, SetPreferredSinkTimeout) {
+  dispatcher_host().SetOutputDeviceStatus(
+      media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT);
+
+  DOMException* dom_exception = CallAndValidateSetPreferredSinkId(
+      kValidSinkId, /*expect_fulfilled=*/false);
+
+  EXPECT_EQ(dom_exception->code(),
+            static_cast<uint16_t>(DOMExceptionCode::kTimeoutError));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

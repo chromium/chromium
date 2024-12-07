@@ -447,7 +447,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     responder_run_loop.Run();
   }
 
-  std::unique_ptr<AITestUtils::MockSupportsUserData> mock_host_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

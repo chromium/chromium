@@ -5,6 +5,7 @@
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -181,7 +182,9 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
   EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, main_frame_url, _))
       .WillOnce(SaveArg<1>(&ukm_source_id));
   navigation->Start();
+  base::RunLoop().RunUntilIdle();
   navigation->Redirect(GURL("http://test2.org"));
+  base::RunLoop().RunUntilIdle();
   navigation->Redirect(GURL("http://test3.org"));
   GURL expected_main_frame_url("http://test3.org");
   EXPECT_CALL(*mock_collector_,
@@ -499,7 +502,9 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
           })))
       .WillRepeatedly(Return());
   navigation->Start();
+  base::RunLoop().RunUntilIdle();
   navigation->Redirect(GURL("http://test2.org"));
+  base::RunLoop().RunUntilIdle();
   navigation->Redirect(GURL("http://test3.org"));
 
   std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,

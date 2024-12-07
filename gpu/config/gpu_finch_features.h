@@ -123,6 +123,11 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kD3DBackingUploadWithUpdateSubresource);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kHandleOverlaysSwapFailure);
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kGPUBlockListTestGroup);
+GPU_EXPORT extern const base::FeatureParam<int> kGPUBlockListTestGroupId;
+GPU_EXPORT BASE_DECLARE_FEATURE(kGPUDriverBugListTestGroup);
+GPU_EXPORT extern const base::FeatureParam<int> kGPUDriverBugListTestGroupId;
+
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();

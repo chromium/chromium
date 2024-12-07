@@ -320,4 +320,14 @@ TEST_F(CustomPropertyTest, ValueMode) {
   }
 }
 
+TEST_F(CustomPropertyTest, SelectionPropertyUseCounted) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kSelectionCustomProperty));
+  GetDocument().body()->setInnerHTML(
+      "<style>div::selection { --x: black; background-color: var(--x); "
+      "}</style> <div id='target'></div>");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSelectionCustomProperty));
+}
+
 }  // namespace blink

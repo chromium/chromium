@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
@@ -56,7 +57,8 @@ HttpStreamPool::Job::Job(Delegate* delegate,
       quic_version_(quic_version),
       allowed_alpns_(CalculateAllowedAlpns(expected_protocol,
                                            delegate_->is_http1_allowed())),
-      net_log_(net_log) {
+      net_log_(net_log),
+      create_time_(base::TimeTicks::Now()) {
   CHECK(delegate_->is_http1_allowed() ||
         expected_protocol != NextProto::kProtoHTTP11);
 }
@@ -74,18 +76,12 @@ void HttpStreamPool::Job::Start() {
     return;
   }
 
-  CHECK(attempt_manager());
-  const url::SchemeHostPort& destination = group_->stream_key().destination();
-  if (!IsPortAllowedForScheme(destination.port(), destination.scheme())) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Job::OnStreamFailed, weak_ptr_factory_.GetWeakPtr(),
-                       ERR_UNSAFE_PORT, NetErrorDetails(), ResolveErrorInfo()));
-    return;
-  }
+  StartInternal();
+}
 
-  attempt_manager()->StartJob(this, priority(), delegate_->allowed_bad_certs(),
-                              quic_version_, net_log_);
+void HttpStreamPool::Job::Resume() {
+  resume_time_ = base::TimeTicks::Now();
+  StartInternal();
 }
 
 LoadState HttpStreamPool::Job::GetLoadState() const {
@@ -154,9 +150,33 @@ void HttpStreamPool::Job::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   delegate_->OnNeedsClientAuth(this, cert_info);
 }
 
+base::TimeDelta HttpStreamPool::Job::CreateToResumeTime() const {
+  if (resume_time_.is_null()) {
+    return base::TimeDelta();
+  }
+  return resume_time_ - create_time_;
+}
+
 HttpStreamPool::AttemptManager* HttpStreamPool::Job::attempt_manager() const {
   CHECK(group_);
   return group_->attempt_manager();
+}
+
+void HttpStreamPool::Job::StartInternal() {
+  CHECK(attempt_manager());
+  CHECK(!attempt_manager()->is_failing());
+
+  const url::SchemeHostPort& destination = group_->stream_key().destination();
+  if (!IsPortAllowedForScheme(destination.port(), destination.scheme())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Job::OnStreamFailed, weak_ptr_factory_.GetWeakPtr(),
+                       ERR_UNSAFE_PORT, NetErrorDetails(), ResolveErrorInfo()));
+    return;
+  }
+
+  attempt_manager()->StartJob(this, priority(), delegate_->allowed_bad_certs(),
+                              quic_version_, net_log_);
 }
 
 }  // namespace net

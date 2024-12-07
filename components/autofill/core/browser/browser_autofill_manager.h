@@ -65,7 +65,6 @@
 namespace autofill {
 
 class AutofillField;
-class AutofillClient;
 class AutofillProfile;
 class CreditCard;
 class CreditCardAccessManager;
@@ -130,6 +129,11 @@ class BrowserAutofillManager : public AutofillManager {
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
                                           const FormFieldData& field);
 
+  // Fills or previews `form` with the information in `credit_card`. `field_id`
+  // is the ID of the field that triggered the filling operation.
+  // `trigger_source` is the reason for triggering the filling operation.
+  // `action_persistence` denotes whether the operation is a filling or preview
+  // operation.
   virtual void FillOrPreviewCreditCardForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
@@ -159,6 +163,12 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       AutofillTriggerSource trigger_source);
 
+  // Logs metrics when the user accepts a
+  // `SuggestionType::kAddressEntryOnTyping` suggestion on the field represented
+  // by `field_id`.
+  virtual void OnDidFillAddressOnTypingSuggestion(
+      const FieldGlobalId& field_id);
+
   // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
                             const FormData& form,
@@ -177,14 +187,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       const AutofillProfile& profile,
-      AutofillTriggerSource trigger_source);
-
-  // Asks for authentication via CVC before filling with server card data.
-  // TODO(crbug.com/40227071): Clean up the API.
-  virtual void AuthenticateThenFillCreditCardForm(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const CreditCard& credit_card,
       AutofillTriggerSource trigger_source);
 
   /////////////////
@@ -393,6 +395,17 @@ class BrowserAutofillManager : public AutofillManager {
   void LogSubmissionMetrics(const FormStructure* submitted_form,
                             const base::TimeTicks& form_submitted_timestamp);
 
+  // See `BrowserAutofillManager::FillOrPreviewCreditCardForm()` for initial
+  // documentation. `require_card_fetching` denotes whether we need to fetch the
+  // full card represented by `credit_card`.
+  void FillOrPreviewCreditCardFormImpl(
+      bool require_card_fetching,
+      mojom::ActionPersistence action_persistence,
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const CreditCard& credit_card,
+      AutofillTriggerSource trigger_source);
+
   // When `AuthenticateThenFillCreditCardForm()` fetches a credit card, this
   // gets called once the fetching has finished. If successful, the
   // `credit_card` is filled.
@@ -544,6 +557,7 @@ class BrowserAutofillManager : public AutofillManager {
       PasswordFormClassification::Type password_form_type,
       const FormData& form,
       const FormFieldData& field,
+      bool should_offer_single_field_form_fill,
       OnGenerateSuggestionsCallback callback,
       std::vector<std::vector<Suggestion>> suggestion_lists);
 
@@ -680,10 +694,6 @@ class BrowserAutofillManager : public AutofillManager {
   // form_filler() instead, because tests inject test objects.
   std::unique_ptr<FormFiller> form_filler_ =
       std::make_unique<FormFiller>(*this, log_manager());
-
-  // TODO(crbug.com/374086145): Move ownership to AutofillClient.
-  std::unique_ptr<VotesUploader> votes_uploader_ =
-      std::make_unique<VotesUploader>(this);
 
   // Contains a list of four digit combinations that were found in the webpage
   // DOM. Populated after a standalone cvc field is processed on a form. Used to

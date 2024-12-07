@@ -163,9 +163,12 @@ enum class TabGridOpeningMode {
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
 
-// Shows the account menu. On scene with regular width, the account menu appears
-// as a popover near the anchor view.
+// Shows the account menu. On scenes with regular width, the account menu
+// appears as a popover near the `anchorView`, if provided. If
+// `skipIfUINotAvailable` is true, then this command is ignored if there is
+// already a UI being presented.
 - (void)showAccountMenuWithAnchorView:(UIView*)anchorView
+                 skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
                            completion:(void (^)())completion;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.

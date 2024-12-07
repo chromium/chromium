@@ -10,10 +10,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import '../controls/settings_checkbox.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.html.js';
 import '../settings_vars.css.js';
 import '../i18n_setup.js';
 

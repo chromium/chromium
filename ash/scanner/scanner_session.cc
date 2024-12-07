@@ -11,15 +11,12 @@
 #include <utility>
 #include <vector>
 
-#include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
-#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
@@ -27,16 +24,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/gfx/codec/jpeg_codec.h"
-#include "url/gurl.h"
+
 namespace ash {
 
 namespace {
@@ -177,8 +171,9 @@ void RecordAllDetectedActions(const manta::proto::ScannerOutput& output) {
 
 }  // namespace
 
-ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate)
-    : delegate_(delegate) {}
+ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate,
+                               ScannerCommandDelegate* command_delegate)
+    : delegate_(delegate), command_delegate_(command_delegate) {}
 
 ScannerSession::~ScannerSession() = default;
 
@@ -230,7 +225,7 @@ void ScannerSession::OnActionsReturned(
                                             populate_to_proto_callback);
     if (unpopulated_action_.has_value()) {
       action_view_models.emplace_back(std::move(*unpopulated_action_),
-                                      weak_ptr_factory_.GetWeakPtr());
+                                      command_delegate_->GetWeakPtr());
     }
   }
 
@@ -244,29 +239,6 @@ void ScannerSession::PopulateAction(
   delegate_->FetchActionDetailsForImage(
       std::move(downscaled_jpeg_bytes), std::move(unpopulated_action),
       base::BindOnce(&OnActionPopulated, std::move(callback)));
-}
-
-void ScannerSession::OpenUrl(const GURL& url) {
-  NewWindowDelegate::GetInstance()->OpenUrl(
-      url, NewWindowDelegate::OpenUrlFrom::kUnspecified,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
-drive::DriveServiceInterface* ScannerSession::GetDriveService() {
-  return delegate_->GetDriveService();
-}
-
-google_apis::RequestSender* ScannerSession::GetGoogleApisRequestSender() {
-  return delegate_->GetGoogleApisRequestSender();
-}
-
-void ScannerSession::SetClipboard(std::unique_ptr<ui::ClipboardData> data) {
-  CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
-      .WriteClipboardData(std::move(data));
-
-  // TODO: b/367871707 - Update this to be separate to the plain text copy toast
-  // once we have finalised UX.
-  CaptureModeController::ShowTextCopiedToast();
 }
 
 }  // namespace ash

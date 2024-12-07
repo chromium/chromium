@@ -21,6 +21,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -36,6 +37,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -55,6 +57,12 @@ void VerifyProfileEntry(const base::Value::Dict& dict,
   EXPECT_EQ(dict.FindString("avatarBadge")->empty(),
             !AccountInfo::IsManaged(entry->GetHostedDomain()) &&
                 !entry->IsSupervised());
+  EXPECT_EQ(*dict.FindString("profileCardButtonLabel"),
+            base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+                (entry->IsSupervised()
+                     ? IDS_PROFILE_PICKER_PROFILE_CARD_LABEL_SUPERVISED
+                     : IDS_PROFILE_PICKER_PROFILE_CARD_LABEL),
+                entry->GetLocalProfileName())));
 }
 
 }  // namespace

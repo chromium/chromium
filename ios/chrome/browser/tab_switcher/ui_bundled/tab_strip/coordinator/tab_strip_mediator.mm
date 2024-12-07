@@ -42,6 +42,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/tab_strip_features_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -1186,20 +1188,16 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   DCHECK(_profile);
 
-  web::WebState::CreateParams params(_profile);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  web::NavigationManager::WebLoadParams loadParams(newTabURL);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
   // Simulating the insertion.
   NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
       _webStateList, /*including_hidden_tab_items=*/false);
-  WebStateList::InsertionParams insertionParams =
-      [self insertionParamsForDestinationItemIndex:index items:items];
-  insertionParams.activate = true;
-  _webStateList->InsertWebState(std::move(webState), insertionParams);
+
+  UrlLoadParams params = [self urlLoadParamsForDestinationItemIndex:index
+                                                              items:items
+                                                                URL:newTabURL];
+  CHECK(_URLLoader);
+  _URLLoader->Load(params);
 }
 
 // Returns `InsertionParams` which can be used to move/insert a WebState so as
@@ -1230,6 +1228,43 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
   return WebStateList::InsertionParams::AtIndex(webStateListInsertionIndex)
       .InGroup(destinationGroup);
+}
+
+// Returns `UrlLoadParams` used to open a URL.
+- (UrlLoadParams)
+    urlLoadParamsForDestinationItemIndex:(NSUInteger)destinationItemIndex
+                                   items:
+                                       (NSArray<TabStripItemIdentifier*>*)items
+                                     URL:(const GURL&)newTabURL {
+  TabStripItemIdentifier* previousItem =
+      destinationItemIndex > 0 ? items[destinationItemIndex - 1] : nil;
+  TabStripItemIdentifier* nextItem =
+      destinationItemIndex < items.count ? items[destinationItemIndex] : nil;
+  const TabGroup* destinationGroup =
+      [self groupForInsertionBetweenPreviousItem:previousItem
+                                        nextItem:nextItem];
+  int webStateListInsertionIndex = 0;
+  for (NSUInteger itemIndex = 0; itemIndex < destinationItemIndex;
+       itemIndex++) {
+    if (items[itemIndex].itemType == TabStripItemTypeTab) {
+      webStateListInsertionIndex++;
+      continue;
+    }
+    const TabGroup* group = items[itemIndex].tabGroupItem.tabGroup;
+    if (group->visual_data().is_collapsed()) {
+      webStateListInsertionIndex += group->range().count();
+    }
+  }
+
+  UrlLoadParams params = UrlLoadParams::InNewTab(newTabURL);
+  params.in_incognito = self.profile->IsOffTheRecord();
+  params.append_to = OpenPosition::kSpecifiedIndex;
+  params.insertion_index = webStateListInsertionIndex;
+  if (destinationGroup) {
+    params.load_in_group = true;
+    params.tab_group = destinationGroup->GetWeakPtr();
+  }
+  return params;
 }
 
 // Returns the appropriate destination group for an item inserted between
@@ -1403,24 +1438,15 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // `insertionParams`.
 - (void)insertAndActivateNewWebStateWithInsertionParams:
     (WebStateList::InsertionParams)insertionParams {
-  CHECK(self.profile);
-  CHECK(self.webStateList);
-
-  if (!IsAddNewTabAllowedByPolicy(self.profile->GetPrefs(),
-                                  self.profile->IsOffTheRecord())) {
-    return;
+  UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
+  params.in_incognito = self.profile->IsOffTheRecord();
+  const TabGroup* group = [self currentTabGroup];
+  if (group && !group->visual_data().is_collapsed()) {
+    params.load_in_group = true;
+    params.tab_group = group->GetWeakPtr();
   }
-
-  web::WebState::CreateParams params(self.profile);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  GURL url(kChromeUINewTabURL);
-  web::NavigationManager::WebLoadParams loadParams(url);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  self.webStateList->InsertWebState(std::move(webState),
-                                    insertionParams.Activate());
+  CHECK(_URLLoader);
+  _URLLoader->Load(params);
 }
 
 // Returns whether the WebState at `index` is collapsed i.e. it is inside of a
@@ -1491,6 +1517,15 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // If all WebStates in the WebStateList are collapsed, return
   // `WebStateList::kInvalidIndex`.
   return WebStateList::kInvalidIndex;
+}
+
+// Returns the current tab group.
+- (const TabGroup*)currentTabGroup {
+  if (!_webStateList ||
+      _webStateList->active_index() == WebStateList::kInvalidIndex) {
+    return nullptr;
+  }
+  return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
 }
 
 @end

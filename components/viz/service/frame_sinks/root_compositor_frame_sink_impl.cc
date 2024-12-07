@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -65,6 +66,15 @@ class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
   ~StandaloneBeginFrameObserver() override { StopObserving(); }
 
   bool OnBeginFrameDerivedImpl(const BeginFrameArgs& args) override {
+    TRACE_EVENT(
+        "graphics.pipeline", "Graphics.Pipeline",
+        [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(
+              perfetto::protos::pbzero::ChromeGraphicsPipeline::StepName::
+                  STEP_SEND_ON_STANDALONE_BEGIN_FRAME_MOJO_MESSAGE);
+        });
     remote_observer_->OnStandaloneBeginFrame(args);
     return true;
   }

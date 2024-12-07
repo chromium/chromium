@@ -129,7 +129,7 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
 
   const String toString(ExceptionState&) const;
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
   const gfx::Transform& Matrix() const { return matrix_; }
 

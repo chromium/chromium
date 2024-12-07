@@ -79,15 +79,15 @@ FakeWebAppProvider* GetFakeWebAppProvider(Profile* profile) {
       ->AsFakeWebAppProviderForTesting();
 }
 
-void FakeInstallPageState(Profile* profile,
-                          const IsolatedWebAppUrlInfo& url_info,
-                          blink::mojom::ManifestPtr blink_manifest) {
+FakeWebContentsManager::FakePageState& FakeInstallPageState(
+    Profile* profile,
+    const IsolatedWebAppUrlInfo& url_info,
+    blink::mojom::ManifestPtr blink_manifest) {
   FakeWebAppProvider* fake_web_app_provider = GetFakeWebAppProvider(profile);
   CHECK(fake_web_app_provider) << "WebAppProvider isn't faked";
   auto& fake_web_contents_manager = static_cast<FakeWebContentsManager&>(
       fake_web_app_provider->web_contents_manager());
 
-  GURL base_url = url_info.origin().GetURL();
   for (const blink::Manifest::ImageResource& icon : blink_manifest->icons) {
     FakeWebContentsManager::FakeIconState& icon_state =
         fake_web_contents_manager.GetOrCreateIconState(icon.src);
@@ -99,6 +99,7 @@ void FakeInstallPageState(Profile* profile,
     icon_state.bitmaps[0].eraseColor(SK_ColorWHITE);
   }
 
+  GURL base_url = url_info.origin().GetURL();
   GURL install_url = base_url.Resolve(kInstallPagePath);
   FakeWebContentsManager::FakePageState& install_page_state =
       fake_web_contents_manager.GetOrCreatePageState(install_url);
@@ -110,6 +111,8 @@ void FakeInstallPageState(Profile* profile,
   install_page_state.valid_manifest_for_web_app = true;
   install_page_state.manifest_before_default_processing =
       std::move(blink_manifest);
+
+  return install_page_state;
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string> Install(
@@ -210,10 +213,11 @@ BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
   return Install(profile);
 }
 
-void BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
+FakeWebContentsManager::FakePageState&
+BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
-  ::web_app::FakeInstallPageState(
+  return ::web_app::FakeInstallPageState(
       profile, url_info, manifest_builder_.ToBlinkManifest(url_info.origin()));
 }
 
@@ -276,6 +280,16 @@ ScopedProxyIsolatedWebApp::Install(
   return ::web_app::Install(profile, web_bundle_id,
                             IsolatedWebAppInstallSource::FromDevUi(
                                 IwaSourceProxy(proxy_server_->GetOrigin())));
+}
+
+FakeWebContentsManager::FakePageState&
+ScopedProxyIsolatedWebApp::FakeInstallPageState(
+    Profile* profile,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
+  return ::web_app::FakeInstallPageState(
+      profile, url_info, manifest_builder_->ToBlinkManifest(url_info.origin()));
 }
 
 ManifestBuilder::PermissionsPolicy::PermissionsPolicy(

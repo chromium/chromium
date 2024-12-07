@@ -856,8 +856,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         }
     }
 
-    boolean hasStarted() {
-        return mAwInit.hasStarted();
+    boolean isChromiumInitialized() {
+        return mAwInit.isChromiumInitialized();
     }
 
     // Only on UI thread.

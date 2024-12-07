@@ -106,7 +106,7 @@ bool CanShowDefaultAppAssociationsUi() {
 
 }  // namespace
 
-AppManagementPageHandlerBase::~AppManagementPageHandlerBase() {}
+AppManagementPageHandlerBase::~AppManagementPageHandlerBase() = default;
 
 void AppManagementPageHandlerBase::GetApps(GetAppsCallback callback) {
   std::vector<app_management::mojom::AppPtr> app_management_apps;

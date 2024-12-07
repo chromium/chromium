@@ -630,6 +630,14 @@ void IdentityManager::OnAuthErrorChanged(
         account_info, auth_error, token_operation_source);
 }
 
+#if BUILDFLAG(IS_IOS)
+void IdentityManager::OnAccountsOnDeviceChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountsOnDeviceChanged();
+  }
+}
+#endif
+
 void IdentityManager::OnGaiaAccountsInCookieUpdated(
     const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {

@@ -51,6 +51,8 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
 
   HTMLVideoElement* VideoElement() const;
 
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutVideo";

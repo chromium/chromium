@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_NG_FLEX_LINE_H_
 
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/geometry/flex_offset.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -28,7 +27,7 @@ struct NGFlexItem {
   // it becomes negative, that means that the item expanded as a result of
   // fragmentation. This is only used for column flex containers.
   LayoutUnit total_remaining_block_size;
-  FlexOffset offset;
+  LogicalOffset offset;
   bool is_initial_block_size_indefinite = false;
   bool is_used_flex_basis_indefinite = false;
   bool has_descendant_that_depends_on_percentage_block_size = false;
@@ -48,6 +47,7 @@ struct NGFlexLine {
   void Trace(Visitor* visitor) const { visitor->Trace(line_items); }
 
   LayoutUnit main_axis_free_space;
+  LayoutUnit sum_hypothetical_main_size;
   LayoutUnit line_cross_size;
   LayoutUnit cross_axis_offset;
   LayoutUnit major_baseline;

@@ -244,7 +244,7 @@ public class PdfCoordinator {
         }
     }
 
-    String requestAssistContent(String filename) {
+    String requestAssistContent(String filename, boolean isWorkProfile) {
         if (mUri == null) {
             return null;
         }
@@ -258,7 +258,7 @@ public class PdfCoordinator {
                                             .put("file_uri", mUri.toString())
                                             .put("mime_type", MimeTypeUtils.PDF_MIME_TYPE)
                                             .put("file_name", filename)
-                                            .put("is_work_profile", false))
+                                            .put("is_work_profile", isWorkProfile))
                             .toString();
         } catch (JSONException e) {
             return null;

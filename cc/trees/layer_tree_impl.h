@@ -687,6 +687,11 @@ class CC_EXPORT LayerTreeImpl {
   }
   void PushBrowserControlsFromMainThread(float top_controls_shown_ratio,
                                          float bottom_controls_shown_ratio);
+
+  void SetMaxSafeAreaInsetBottom(float max_safe_area_inset_bottom);
+  float max_safe_area_inset_bottom() const {
+    return max_safe_area_inset_bottom_;
+  }
   float bottom_controls_height() const {
     return browser_controls_params_.bottom_controls_height;
   }
@@ -747,8 +752,6 @@ class CC_EXPORT LayerTreeImpl {
       const base::flat_set<ElementId>& scrolls_to_invalidate);
 
   void UpdateViewportContainerSizes();
-
-  gfx::Insets MaxSafeAreaInsets() const;
 
   LayerTreeLifecycle& lifecycle() { return lifecycle_; }
 
@@ -905,6 +908,12 @@ class CC_EXPORT LayerTreeImpl {
   bool always_push_properties_on_picture_layers_ : 1 = false;
 
   gfx::Rect device_viewport_rect_;
+
+  // Used for supporting dynamic safe area insets in the Clank Edge-to-Edge
+  // bottom bar feature(go/cc-dynamic-sai) This is originally passed down from
+  // browser for the display cutout. It has been scaled to the size of physical
+  // pixels.
+  float max_safe_area_inset_bottom_ = 0;
 
   scoped_refptr<SyncedElasticOverscroll> elastic_overscroll_;
 

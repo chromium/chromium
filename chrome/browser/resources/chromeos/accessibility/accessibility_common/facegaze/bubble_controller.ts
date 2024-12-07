@@ -15,7 +15,7 @@ interface State {
   longClick: FacialGesture|undefined;
   dictation: FacialGesture|undefined;
   heldMacros: string[];
-  precision: boolean;
+  precision: FacialGesture|undefined;
 }
 
 /** Handles setting the text content of the FaceGaze bubble UI. */
@@ -63,8 +63,9 @@ export class BubbleController {
     }
 
     if (precision) {
-      this.baseText_.push(
-          chrome.i18n.getMessage('facegaze_state_precision_active'));
+      this.baseText_.push(chrome.i18n.getMessage(
+          'facegaze_state_precision_active',
+          BubbleController.getDisplayTextForGesture_(precision)));
     }
 
     if (paused) {

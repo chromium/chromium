@@ -12,7 +12,6 @@ namespace ash {
 
 HidPreservingBluetoothStateControllerTestHelper::
     HidPreservingBluetoothStateControllerTestHelper() {
-  CHECK(features::IsBluetoothDisconnectWarningEnabled());
   bluetooth::OverrideInProcessInstanceForTesting(&hid_preserving_bluetooth_);
 }
 

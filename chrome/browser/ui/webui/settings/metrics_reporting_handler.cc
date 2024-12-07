@@ -21,8 +21,8 @@
 
 namespace settings {
 
-MetricsReportingHandler::MetricsReportingHandler() {}
-MetricsReportingHandler::~MetricsReportingHandler() {}
+MetricsReportingHandler::MetricsReportingHandler() = default;
+MetricsReportingHandler::~MetricsReportingHandler() = default;
 
 void MetricsReportingHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

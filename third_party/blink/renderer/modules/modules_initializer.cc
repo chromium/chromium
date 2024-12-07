@@ -242,7 +242,7 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
     frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
         &DocumentMetadataServer::BindReceiver, WrapWeakPersistent(&frame)));
   }
-  if (frame.IsOutermostMainFrame()) {
+  if (frame.IsLocalRoot()) {
     frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
         &AIPageContentAgent::BindReceiver, WrapWeakPersistent(&frame)));
   }

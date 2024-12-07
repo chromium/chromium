@@ -18,20 +18,43 @@
 
 namespace ash {
 
-void OnRecieveClassifySafetyResults(
+namespace {
+
+using cros_safety::mojom::SafetyClassifierVerdict;
+
+SafetyClassifierVerdict ToSafetyClassifierVerdict(
+    manta::MantaStatusCode status_code,
+    bool is_classify_image) {
+  switch (status_code) {
+    case manta::MantaStatusCode::kOk:
+      return SafetyClassifierVerdict::kPass;
+    case manta::MantaStatusCode::kBlockedOutputs:
+      return is_classify_image ? SafetyClassifierVerdict::kFailedImage
+                               : SafetyClassifierVerdict::kFailedText;
+    default:
+      return SafetyClassifierVerdict::kGenericError;
+  }
+}
+
+void OnClassifyTextSafetyComplete(
     CloudSafetySession::ClassifySafetyCallback callback,
     base::Value::Dict dict,
     manta::MantaStatus status) {
-  switch (status.status_code) {
-    case manta::MantaStatusCode::kOk:
-      std::move(callback).Run(
-          cros_safety::mojom::SafetyClassifierVerdict::kPass);
-      break;
-    default:
-      std::move(callback).Run(
-          cros_safety::mojom::SafetyClassifierVerdict::kGenericError);
-  }
+  SafetyClassifierVerdict ret_val =
+      ToSafetyClassifierVerdict(status.status_code, /* is_image*/ false);
+  std::move(callback).Run(ret_val);
 }
+
+void OnClassifyImageSafetyComplete(
+    CloudSafetySession::ClassifySafetyCallback callback,
+    base::Value::Dict dict,
+    manta::MantaStatus status) {
+  SafetyClassifierVerdict ret_val =
+      ToSafetyClassifierVerdict(status.status_code, /* is_image*/ true);
+  std::move(callback).Run(ret_val);
+}
+
+}  // namespace
 
 CloudSafetySession::CloudSafetySession(
     std::unique_ptr<manta::WalrusProvider> walrus_provider)
@@ -51,8 +74,8 @@ void CloudSafetySession::ClassifyTextSafety(
     cros_safety::mojom::SafetyRuleset ruleset,
     const std::string& text,
     ClassifySafetyCallback callback) {
-  walrus_provider_->Filter(text, base::BindOnce(&OnRecieveClassifySafetyResults,
-                                                std::move(callback)));
+  walrus_provider_->Filter(
+      text, base::BindOnce(&OnClassifyTextSafetyComplete, std::move(callback)));
 }
 void CloudSafetySession::ClassifyImageSafety(
     cros_safety::mojom::SafetyRuleset ruleset,
@@ -63,7 +86,7 @@ void CloudSafetySession::ClassifyImageSafety(
   images.push_back(std::vector<uint8_t>(image.begin(), image.end()));
   walrus_provider_->Filter(
       text, images,
-      base::BindOnce(&OnRecieveClassifySafetyResults, std::move(callback)));
+      base::BindOnce(&OnClassifyImageSafetyComplete, std::move(callback)));
 }
 
 }  // namespace ash

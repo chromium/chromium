@@ -88,7 +88,7 @@ try_.builder(
         ],
     ),
     builderless = False,
-    tryjob = try_.job(experiment_percentage = 100),
+    tryjob = try_.job(),
 )
 
 try_.builder(

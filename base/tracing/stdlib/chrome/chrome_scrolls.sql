@@ -53,6 +53,8 @@ SELECT
   chrome_event_latency.is_janky_scrolled_frame AS is_janky,
   chrome_event_latency.event_type
     = 'INERTIAL_GESTURE_SCROLL_UPDATE' AS is_inertial,
+  chrome_event_latency.event_type
+    = 'FIRST_GESTURE_SCROLL_UPDATE' AS is_first,
   chrome_event_latency.ts AS generation_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   touch_move_received_step.slice_id AS touch_move_received_slice_id,
@@ -237,6 +239,7 @@ SELECT
   is_presented,
   is_janky,
   is_inertial,
+  is_first,
   coalesced_into IS NOT NULL AS is_coalesced,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- Ids
@@ -400,6 +403,9 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
   -- If this is `true`, "generation" and "touch_move" related timestamps and
   -- durations will be null.
   is_inertial BOOL,
+  -- Whether this is the first update in a scroll.
+  -- First scroll update can never be janky.
+  is_first BOOL,
   -- Whether the corresponding input event was coalesced into another.
   is_coalesced BOOL,
   -- Input generation timestamp (from the Android system).
@@ -523,6 +529,7 @@ SELECT
   is_presented,
   is_janky,
   is_inertial,
+  is_first,
   -- TODO(b:380868337): Check/fix this for flings.
   is_coalesced,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --

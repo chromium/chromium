@@ -4,16 +4,21 @@
 
 source_set("glic") {
   sources = [
+    "glic_focused_tab_manager.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
     "glic_page_context_fetcher.h",
+    "glic_profile.h",
     "glic_window_controller.h",
     "glic_window_manager.h",
+    "guest_util.h",
   ]
   public_deps = [
     "//base",
     "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/webui/glic:mojo_bindings",
     "//content/public/browser",
     "//ui/views:views",
@@ -22,18 +27,27 @@ source_set("glic") {
 
 source_set("impl") {
   sources = [
+    "glic_focused_tab_manager.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_page_context_fetcher.cc",
+    "glic_profile.cc",
     "glic_window_controller.cc",
     "glic_window_manager.cc",
+    "guest_util.cc",
   ]
-  public_deps = [ "//chrome/browser/ui:ui" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:ui",
+  ]
   deps = [
     ":glic",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/common",
+    "//components/guest_view/browser",
     "//components/sessions",
+    "//url",
   ]
 }
 

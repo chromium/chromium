@@ -17582,7 +17582,6 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
       FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
   Region empty_invalidation;
   root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
-  root->RegenerateDiscardableImageMapIfNeeded();
 
   UpdateDrawProperties(host_impl_->pending_tree());
 
@@ -17632,7 +17631,6 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
       FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
   Region empty_invalidation;
   root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
-  root->RegenerateDiscardableImageMapIfNeeded();
 
   UpdateDrawProperties(host_impl_->pending_tree());
 
@@ -17679,7 +17677,6 @@ TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
       FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
   Region empty_invalidation;
   root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
-  root->RegenerateDiscardableImageMapIfNeeded();
 
   UpdateDrawProperties(host_impl_->pending_tree());
 

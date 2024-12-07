@@ -13,7 +13,7 @@
             [[getBackgroundImages_(selectedValue, destination,
                                    noDestinations, dark)]];"
         disabled$="[[disabled]]"
-        value="{{selectedValue::change}}">
+        value="[[selectedValue]]" on-change="onSelectChange">
       <template is="dom-repeat" items="[[recentDestinationList]]">
         <option value="[[item.key]]">[[item.displayName]]</option>
       </template>

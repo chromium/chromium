@@ -18,9 +18,9 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 import static org.chromium.base.MathUtils.EPSILON;
-import static org.chromium.chrome.browser.hub.HubLayoutConstants.EXPAND_NEW_TAB_DURATION_MS;
-import static org.chromium.chrome.browser.hub.HubLayoutConstants.SHRINK_EXPAND_DURATION_MS;
-import static org.chromium.chrome.browser.hub.HubLayoutConstants.TIMEOUT_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_TIMEOUT_MS;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -117,7 +117,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS,
+                        HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
                         mOnAlphaChange);
         assertEquals(HubLayoutAnimationType.SHRINK_TAB, animatorProvider.getPlannedAnimationType());
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
@@ -137,7 +137,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         setUpShrinkExpandListener(
                 /* isShrink= */ true, imageView, initialRect, finalRect, /* hasBitmap= */ true);
         runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
         thumbnailCallback.onResult(mBitmap);
         mAnimationDataSupplier.set(data);
@@ -164,7 +164,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.RED,
-                        SHRINK_EXPAND_DURATION_MS,
+                        HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
                         mOnAlphaChange);
         assertEquals(HubLayoutAnimationType.EXPAND_TAB, animatorProvider.getPlannedAnimationType());
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
@@ -184,7 +184,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         setUpShrinkExpandListener(
                 /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ true);
         runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
         mAnimationDataSupplier.set(data);
         thumbnailCallback.onResult(mBitmap);
@@ -203,7 +203,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.RED,
-                        EXPAND_NEW_TAB_DURATION_MS,
+                        HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
                         mOnAlphaChange);
         assertEquals(
                 HubLayoutAnimationType.EXPAND_NEW_TAB, animatorProvider.getPlannedAnimationType());
@@ -226,7 +226,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         setUpShrinkExpandListener(
                 /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ false);
         runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
         // No bitmap is required.
 
@@ -243,7 +243,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS,
+                        HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
                         mOnAlphaChange);
 
         HubLayoutAnimationRunner runner =
@@ -251,7 +251,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         setUpFadeListener(/* initialAlpha= */ 0f, /* finalAlpha= */ 1f);
         runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
         animatorProvider.getThumbnailCallback().onResult(mBitmap);
 
@@ -270,7 +270,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS,
+                        HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
                         mOnAlphaChange);
 
         Size thumbnailSize = new Size(20, 85);
@@ -284,7 +284,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         setUpFadeListener(/* initialAlpha= */ 0f, /* finalAlpha= */ 1f);
         runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
         // Intentionally supply no bitmap.
         mAnimationDataSupplier.set(data);
@@ -302,7 +302,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS,
+                        HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
                         mOnAlphaChange);
 
         Size thumbnailSize = new Size(20, 85);
@@ -316,7 +316,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         setUpFadeListener(/* initialAlpha= */ 0f, /* finalAlpha= */ 1f);
         runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
         animatorProvider.getThumbnailCallback().onResult(mBitmap);
         mAnimationDataSupplier.set(data);
@@ -334,7 +334,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.BLUE,
-                        SHRINK_EXPAND_DURATION_MS,
+                        HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
                         mOnAlphaChange);
 
         HubLayoutAnimationRunner runner =
@@ -342,7 +342,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         setUpFadeListener(/* initialAlpha= */ 1f, /* finalAlpha= */ 0f);
         runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
         // Intentionally supply no data or bitmap.
 
@@ -359,7 +359,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         mHubContainerView,
                         mAnimationDataSupplier,
                         Color.RED,
-                        EXPAND_NEW_TAB_DURATION_MS,
+                        HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
                         mOnAlphaChange);
 
         HubLayoutAnimationRunner runner =
@@ -378,7 +378,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         setUpShrinkExpandListener(
                 /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ false);
         runner.addListener(mListener);
-        runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
 
         mAnimationDataSupplier.set(data);
 

@@ -200,7 +200,7 @@ base::span<SwapChainInfo> OpenXrGraphicsBindingOpenGLES::GetSwapChainImages() {
 }
 
 bool OpenXrGraphicsBindingOpenGLES::CanUseSharedImages() const {
-  return XrImageTransportBase::UseSharedBuffer();
+  return true;
 }
 
 // This is more or less copied from XrImageTransportBase::ResizeSharedBuffer,

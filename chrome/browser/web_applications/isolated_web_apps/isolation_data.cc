@@ -135,7 +135,6 @@ IsolationData::Builder&& IsolationData::Builder::SetControlledFramePartitions(
 IsolationData::Builder& IsolationData::Builder::SetPendingUpdateInfo(
     IsolationData::PendingUpdateInfo pending_update_info) & {
   CHECK_EQ(pending_update_info.location.dev_mode(), location_.dev_mode());
-  CHECK_GE(pending_update_info.version, version_);
   pending_update_info_ = std::move(pending_update_info);
   return *this;
 }
@@ -143,7 +142,6 @@ IsolationData::Builder& IsolationData::Builder::SetPendingUpdateInfo(
 IsolationData::Builder&& IsolationData::Builder::SetPendingUpdateInfo(
     IsolationData::PendingUpdateInfo pending_update_info) && {
   CHECK_EQ(pending_update_info.location.dev_mode(), location_.dev_mode());
-  CHECK_GE(pending_update_info.version, version_);
   pending_update_info_ = std::move(pending_update_info);
   return std::move(*this);
 }

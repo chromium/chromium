@@ -133,15 +133,23 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
     receiver_.reset();
     return;
   }
+
+  auto recognizer = std::make_unique<SpeechRecognitionRecognizerImpl>(
+      std::move(client), std::move(options), binary_path_, config_paths_,
+      default_live_caption_language_, mask_offensive_words_,
+      weak_factory_.GetWeakPtr());
+
+// On Chrome OS, CrosSpeechRecognitionRecognizerImpl will create its own
+// CrosSodaClient.
+#if !BUILDFLAG(IS_CHROMEOS)
+  recognizer->CreateSodaClient(binary_path_);
+#endif
+
   const bool is_multi_channel_supported =
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported();
-  AudioSourceFetcherImpl::Create(
-      std::move(fetcher_receiver),
-      std::make_unique<SpeechRecognitionRecognizerImpl>(
-          std::move(client), std::move(options), binary_path_, config_paths_,
-          default_live_caption_language_, mask_offensive_words_,
-          weak_factory_.GetWeakPtr()),
-      is_multi_channel_supported, is_server_based);
+  AudioSourceFetcherImpl::Create(std::move(fetcher_receiver),
+                                 std::move(recognizer),
+                                 is_multi_channel_supported, is_server_based);
   std::move(callback).Run(is_multi_channel_supported);
 }
 

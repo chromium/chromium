@@ -35,7 +35,7 @@ FontHandler::FontHandler(Profile* profile) {
 #endif
 }
 
-FontHandler::~FontHandler() {}
+FontHandler::~FontHandler() = default;
 
 void FontHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

@@ -153,7 +153,6 @@
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/field_trials_provider.h"
-#include "components/metrics/grit/metrics_url_constants.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -166,11 +165,9 @@
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/metrics/stability_metrics_provider.h"
-#include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/entropy_provider.h"
-#include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -337,12 +334,6 @@ MetricsService::MetricsService(MetricsStateManager* state_manager,
       state_(CONSTRUCTED),
       idle_since_last_transmission_(false),
       session_id_(-1) {
-  // TODO(crbug.com/358224254): Temporary check to ensure that builds that make
-  // use of metrics are able to read the URL constants from resource files. Note
-  // that for Chromium builds, the string returned will be a dash ('-'), so this
-  // check is still valid for those builds.
-  CHECK(!l10n_util::GetStringUTF8(IDS_NEW_METRICS_SERVER_URL).empty());
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_manager_);
   DCHECK(client_);

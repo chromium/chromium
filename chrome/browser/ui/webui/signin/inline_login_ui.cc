@@ -384,4 +384,4 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   CreateSessionServiceTabHelper(contents);
 }
 
-InlineLoginUI::~InlineLoginUI() {}
+InlineLoginUI::~InlineLoginUI() = default;

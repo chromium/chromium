@@ -25,8 +25,8 @@ namespace win {
 
 void ValidatePathsAreEqual(const FilePath& expected_path,
                            const FilePath& actual_path) {
-  wchar_t long_expected_path_chars[MAX_PATH] = {0};
-  wchar_t long_actual_path_chars[MAX_PATH] = {0};
+  wchar_t long_expected_path_chars[MAX_PATH] = {};
+  wchar_t long_actual_path_chars[MAX_PATH] = {};
 
   // If |expected_path| is empty confirm immediately that |actual_path| is also
   // empty.
@@ -57,11 +57,11 @@ void ValidateShortcut(const FilePath& shortcut_path,
   Microsoft::WRL::ComPtr<IShellLink> i_shell_link;
   Microsoft::WRL::ComPtr<IPersistFile> i_persist_file;
 
-  wchar_t read_target[MAX_PATH] = {0};
-  wchar_t read_working_dir[MAX_PATH] = {0};
-  wchar_t read_arguments[MAX_PATH] = {0};
-  wchar_t read_description[MAX_PATH] = {0};
-  wchar_t read_icon[MAX_PATH] = {0};
+  wchar_t read_target[MAX_PATH] = {};
+  wchar_t read_working_dir[MAX_PATH] = {};
+  wchar_t read_arguments[MAX_PATH] = {};
+  wchar_t read_description[MAX_PATH] = {};
+  wchar_t read_icon[MAX_PATH] = {};
   int read_icon_index = 0;
 
   HRESULT hr;

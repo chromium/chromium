@@ -266,8 +266,7 @@ SavedDeskBrowserBuilder& SavedDeskBrowserBuilder::AddTabGroupBuilder(
 }
 
 BuiltApp SavedDeskBrowserBuilder::Build() {
-  generic_builder_.SetAppId(is_lacros_ ? app_constants::kLacrosAppId
-                                       : app_constants::kChromeAppId);
+  generic_builder_.SetAppId(app_constants::kChromeAppId);
 
   BuiltApp generic_app = generic_builder_.Build();
   if (generic_app.status != BuiltApp::Status::kOk)

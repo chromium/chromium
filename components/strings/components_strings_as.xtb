@@ -1234,6 +1234,7 @@
 <translation id="3229277193950731405">সংস্কৰণৰ ষ্ট্ৰিং প্ৰতিলিপি কৰক</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />ৰ CVC দিয়ক</translation>
 <translation id="3234666976984236645">এই ছাইটটোত সদায়েই গুৰুত্বপূৰ্ণ সমল ধৰা পেলাওক</translation>
+<translation id="323585066388831737">পাতল ৰঙা</translation>
 <translation id="3236212803136366317">কাৰ্ডৰ লাভসমূহ</translation>
 <translation id="3238395604961564389">লিংকটো ইনক’গনিট’ ৱিণ্ড’ত খোলক</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপোনাৰ ব্ৰাউজাৰৰ ৰূপ কাষ্টমাইজ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
@@ -1850,6 +1851,7 @@
 <translation id="4277937682389409325">স্থানীয় ঠিকনা</translation>
 <translation id="4278090321534187713">এইগৰাকী বণিকে গ্ৰহণ নকৰা কাৰ্ডসমূহ অক্ষম কৰা হয়</translation>
 <translation id="4278390842282768270">অনুমতি দিয়া হৈছে</translation>
+<translation id="4281245629646759298">পাতল হালধীয়া</translation>
 <translation id="4281998142035485137">{0,plural, =1{গোপনীয় ফাইল খুলিবনে?}one{গোপনীয় ফাইলসমূহ খুলিবনে?}other{গোপনীয় ফাইলসমূহ খুলিবনে?}}</translation>
 <translation id="4282280603030594840">বাহনৰ শ্বপিং</translation>
 <translation id="4282346679996504092">এই প্ৰ’ডাক্টটোৰ বাবে সতৰ্কবাৰ্তা অফ কৰা হৈছে আৰু বুকমাৰ্কটো আঁতৰোৱা হৈছে</translation>
@@ -2739,6 +2741,7 @@
 <translation id="5969199813874624822">ছেভ কৰক আৰু মূল্য ট্ৰেক কৰক</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ষষ্ঠ ৰোল</translation>
+<translation id="5974745851230707809">ভৱিষ্যতৰ এক সময় জুৰি পৰিশোধ কৰা সুবিধাৰ বিকল্প</translation>
 <translation id="5975083100439434680">জুম আউট কৰক</translation>
 <translation id="5979084224081478209">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
 <translation id="5984570616552610254">চেম্বাৰৰ আৰ্দ্ৰতা</translation>
@@ -4329,6 +4332,7 @@
 <translation id="882338992931677877">মেনুৱেল শ্লট</translation>
 <translation id="8830320733681313421">হেগাকি প’ষ্টকাৰ্ড</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" />ত ফাইল চাওক</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" />তকৈ বেছি পৰিশোধৰ বাবে উপলব্ধ</translation>
 <translation id="8833007469711500369">ৱাশ্বাৰ আৰু ড্ৰায়াৰ</translation>
 <translation id="8834962751196791179">আপুনি এই সকীয়নিটো দেখা পাইছে কাৰণ এই ছাইটটোৱে HTTPS সমৰ্থন নকৰে আৰু আপুনি ইনক’গনিট’ ম’ডত আছে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">টিভিৰ কল্প-বিজ্ঞান আৰু ফেণ্টাছী শ্ব’</translation>

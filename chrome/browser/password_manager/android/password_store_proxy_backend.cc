@@ -184,27 +184,6 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
   }
 }
 
-void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  // The `sync_completion` callback is only relevant for account passwords
-  // which don't exist on Android, so it is not passed in and can be ignored
-  // later.
-  CHECK(!sync_completion);
-  main_backend()->RemoveLoginsByURLAndTimeAsync(
-      location, url_filter, delete_begin, delete_end, base::NullCallback(),
-      std::move(callback));
-  if (UsesAndroidBackendAsMainBackend()) {
-    shadow_backend()->RemoveLoginsByURLAndTimeAsync(
-        location, url_filter, std::move(delete_begin), std::move(delete_end),
-        base::NullCallback(), base::DoNothing());
-  }
-}
-
 void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,

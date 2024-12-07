@@ -139,7 +139,7 @@ bool IsSyncSubpage(const GURL& current_url) {
 
 SyncConfigInfo::SyncConfigInfo() : sync_everything(false) {}
 
-SyncConfigInfo::~SyncConfigInfo() {}
+SyncConfigInfo::~SyncConfigInfo() = default;
 
 bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
   std::optional<base::Value> parsed_value = base::JSONReader::Read(json);

@@ -7,7 +7,6 @@ import 'chrome://print/print_preview.js';
 import type {PrintPreviewColorSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
@@ -30,12 +29,11 @@ suite('ColorSettingsTest', function() {
   });
 
   // Tests that setting the setting updates the UI.
-  test('set setting', async () => {
+  test('set setting', () => {
     const select = colorSection.shadowRoot!.querySelector('select')!;
     assertEquals('color', select.value);
 
     colorSection.setSetting('color', false);
-    await eventToPromise('process-select-change', colorSection);
     assertEquals('bw', select.value);
   });
 

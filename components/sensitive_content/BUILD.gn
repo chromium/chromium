@@ -30,6 +30,7 @@ source_set("sensitive_content") {
       "android/android_sensitive_content_client.h",
     ]
     deps += [ ":jni_headers" ]
+    public_deps += [ "//ui/android" ]
   }
 }
 

@@ -126,7 +126,9 @@ public class TopToolbarOverlayMediatorTest {
     @Test
     public void testShadowVisibility_browserControlsOffsets() {
         when(mBrowserControlsProvider.getBrowserControlHiddenRatio()).thenReturn(0.0f);
-        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         Assert.assertFalse(
                 "Shadow should be invisible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
@@ -134,7 +136,7 @@ public class TopToolbarOverlayMediatorTest {
         when(mBrowserControlsProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
         mBrowserControlsObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(100, 0, 0, 0, false, false);
+                .onControlsOffsetChanged(100, 0, false, 0, 0, false, false, false);
 
         Assert.assertTrue(
                 "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
@@ -239,7 +241,7 @@ public class TopToolbarOverlayMediatorTest {
 
         mBrowserControlsObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(100, 0, 0, 0, false, false);
+                .onControlsOffsetChanged(100, 0, false, 0, 0, false, false, false);
 
         Assert.assertTrue(
                 "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
@@ -288,14 +290,14 @@ public class TopToolbarOverlayMediatorTest {
         doReturn(ControlsPosition.TOP).when(mBrowserControlsProvider).getControlsPosition();
         mBrowserControlsObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(0, 0, 30, 0, false, false);
+                .onControlsOffsetChanged(0, 0, false, 30, 0, false, false, false);
         Assert.assertEquals(
                 0.0f, mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET), MathUtils.EPSILON);
 
         doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsProvider).getControlsPosition();
         mBrowserControlsObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(0, 0, 30, 0, false, false);
+                .onControlsOffsetChanged(0, 0, false, 30, 0, false, false, false);
 
         Assert.assertEquals(
                 height + mBottomControlsOffset,

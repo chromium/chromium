@@ -610,7 +610,6 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, EmptyVideoFrameMetadata) {
   EXPECT_FALSE(
       deserialized_video_frame_metadata.hw_va_protected_session_id.has_value());
 #endif
-  EXPECT_TRUE(deserialized_video_frame_metadata.texture_origin_is_top_left);
   EXPECT_FALSE(deserialized_video_frame_metadata
                    .maximum_composition_delay_in_frames.has_value());
 }
@@ -679,7 +678,6 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoFrameMetadata) {
   EXPECT_FALSE(
       deserialized_video_frame_metadata.hw_va_protected_session_id.has_value());
 #endif
-  EXPECT_TRUE(deserialized_video_frame_metadata.texture_origin_is_top_left);
   EXPECT_FALSE(deserialized_video_frame_metadata
                    .maximum_composition_delay_in_frames.has_value());
 }

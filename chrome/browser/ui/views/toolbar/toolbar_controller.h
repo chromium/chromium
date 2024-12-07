@@ -26,7 +26,8 @@ class Browser;
 // overflow menu and the logic to generate the menu model. It also listens to
 // action item changes and updates the menu as required.
 class ToolbarController : public views::MenuDelegate,
-                          public ui::SimpleMenuModel::Delegate {
+                          public ui::SimpleMenuModel::Delegate,
+                          public PinnedToolbarActionsModel::Observer {
  public:
   // Manages action-based pinned toolbar elements.
   class PinnedActionsDelegate {
@@ -176,6 +177,14 @@ class ToolbarController : public views::MenuDelegate,
     std::unique_ptr<PopOutHandler> handler;
   };
 
+  // PinnedToolbarActionsModel::Observer
+  void OnActionAddedLocally(const actions::ActionId& id) override {}
+  void OnActionRemovedLocally(const actions::ActionId& id) override {}
+  void OnActionMovedLocally(const actions::ActionId& id,
+                            int from_index,
+                            int to_index) override {}
+  void OnActionsChanged() override;
+
   // Return the default responsive elements list in the toolbar.
   static std::vector<ResponsiveElementInfo> GetDefaultResponsiveElements(
       Browser* browser);
@@ -274,10 +283,10 @@ class ToolbarController : public views::MenuDelegate,
   bool IsCommandIdEnabled(int command_id) const override;
 
   // The toolbar elements managed by this controller.
-  // The order of the elements is determined at the constructor.
+  // Actions are kept in order by observing the PinnedToolbarActionsModel.
   // To facilitate menu creation elements order should match overflow
   // menu top to bottom.
-  const std::vector<ResponsiveElementInfo> responsive_elements_;
+  std::vector<ResponsiveElementInfo> responsive_elements_;
   // Returns responsive_elements_ but with the Actions in the correct order,
   // as defined by the pinned_actions_delegate_
   std::vector<ResponsiveElementInfo> GetResponsiveElementsWithOrderedActions()
@@ -301,6 +310,7 @@ class ToolbarController : public views::MenuDelegate,
   raw_ptr<views::MenuItemView> root_menu_item_ = nullptr;
 
   const raw_ptr<PinnedActionsDelegate> pinned_actions_delegate_;
+  const raw_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
 
   // A map to save the original and modified FlexSpecification of responsive
   // elements that need to pop out. Set when ToolbarController is initialized.

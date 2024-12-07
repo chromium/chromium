@@ -270,7 +270,8 @@ void PowerPolicyBrowserTestBase::ReloadUserPolicy(Profile* profile) {
   policy_manager->core()->store()->Load();
 }
 
-PowerPolicyLoginScreenBrowserTest::PowerPolicyLoginScreenBrowserTest() {}
+PowerPolicyLoginScreenBrowserTest::PowerPolicyLoginScreenBrowserTest() =
+    default;
 
 void PowerPolicyLoginScreenBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
@@ -293,7 +294,7 @@ void PowerPolicyLoginScreenBrowserTest::TearDownOnMainThread() {
   PowerPolicyBrowserTestBase::TearDownOnMainThread();
 }
 
-PowerPolicyInSessionBrowserTest::PowerPolicyInSessionBrowserTest() {}
+PowerPolicyInSessionBrowserTest::PowerPolicyInSessionBrowserTest() = default;
 
 void PowerPolicyInSessionBrowserTest::SetUpOnMainThread() {
   PowerPolicyBrowserTestBase::SetUpOnMainThread();

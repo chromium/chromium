@@ -45,11 +45,6 @@ class Profile;
 // The order of execution is the following:
 // - `OnShow` is called upon showing the bottom sheet with credentials.
 // - `OnCredentialSelected` is called upon selecting the credential.
-// - `VerifyBeforeFilling` shows the acknowledgement sheet (e. g. credential for
-// filling is weakly related to the current web site), calls authenticantion or
-// filling immediately (if auth beforefilling is off).
-// - `OnVerificationBeforeFillingFinished` is called upon user confirmation for
-// grouped credential or immediately from `VerifyBeforeFilling`.
 // - `OnReauthCompleted` (only of auth before filling of on).
 // - `FillCredential` finally fills the credentials.
 class TouchToFillControllerAutofillDelegate
@@ -106,9 +101,8 @@ class TouchToFillControllerAutofillDelegate
       autofill::FieldRendererId focused_field_renderer_id,
       ShowHybridOption should_show_hybrid_option,
       ShowPasswordMigrationWarningCallback show_password_migration_warning,
-      std::unique_ptr<PasswordAccessLossWarningBridge> data_loss_warning_bridge,
-      std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
-          grouped_credential_sheet_controller);
+      std::unique_ptr<PasswordAccessLossWarningBridge>
+          data_loss_warning_bridge);
 
   TouchToFillControllerAutofillDelegate(
       ChromePasswordManagerClient* password_client,
@@ -151,16 +145,6 @@ class TouchToFillControllerAutofillDelegate
   // true, `credential` will be filled into the form.
   void OnReauthCompleted(password_manager::UiCredential credential,
                          bool authSuccessful);
-
-  // Depending on the credential match type, there may be additional user
-  // confirmation needed (e. g. for grouped credentials). If verification is
-  // successful, it will trigger `FillCredential`.
-  void VerifyBeforeFilling(const password_manager::UiCredential& credential);
-
-  // Triggered upon user confirmation to fill the credential.
-  void OnVerificationBeforeFillingFinished(
-      const password_manager::UiCredential& credential,
-      AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason);
 
   // Fills the credential into the form and triggers form submission when
   // appropriate.
@@ -213,11 +197,6 @@ class TouchToFillControllerAutofillDelegate
   // Bridge used to show the data loss warning (expected to be shown after
   // filling user's credentials).
   std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
-
-  // Used to show the sheet to ask additional user verification before filling
-  // credential with the grouped match type.
-  std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
-      grouped_credential_sheet_controller_;
 
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 };

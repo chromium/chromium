@@ -36,12 +36,6 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
  public:
   ProfileOAuth2TokenServiceIOSDelegateTest()
       : client_(&prefs_),
-        token_available_count_(0),
-        token_revoked_count_(0),
-        tokens_loaded_count_(0),
-        access_token_success_(0),
-        access_token_failure_(0),
-        auth_error_changed_count_(0),
         last_access_token_error_(GoogleServiceAuthError::NONE) {}
 
   void SetUp() override {
@@ -87,6 +81,10 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
     ++auth_error_changed_count_;
   }
 
+  void OnAccountsOnDeviceChanged() override {
+    ++accounts_on_device_changed_count_;
+  }
+
   void ResetObserverCounts() {
     token_available_count_ = 0;
     token_revoked_count_ = 0;
@@ -94,6 +92,7 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
     token_available_count_ = 0;
     access_token_failure_ = 0;
     auth_error_changed_count_ = 0;
+    accounts_on_device_changed_count_ = 0;
   }
 
   CoreAccountId GetAccountId(const ProviderAccount& provider_account) {
@@ -109,12 +108,13 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
   FakeDeviceAccountsProvider* fake_provider_;
   std::unique_ptr<ProfileOAuth2TokenServiceIOSDelegate> oauth2_delegate_;
   TestingOAuth2AccessTokenManagerConsumer consumer_;
-  int token_available_count_;
-  int token_revoked_count_;
-  int tokens_loaded_count_;
-  int access_token_success_;
-  int access_token_failure_;
-  int auth_error_changed_count_;
+  int token_available_count_ = 0;
+  int token_revoked_count_ = 0;
+  int tokens_loaded_count_ = 0;
+  int access_token_success_ = 0;
+  int access_token_failure_ = 0;
+  int auth_error_changed_count_ = 0;
+  int accounts_on_device_changed_count_ = 0;
   GoogleServiceAuthError last_access_token_error_;
   base::ScopedObservation<ProfileOAuth2TokenServiceIOSDelegate,
                           ProfileOAuth2TokenServiceObserver>
@@ -226,6 +226,11 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, ReloadAllAccountsFromSystem) {
   EXPECT_EQ(1, token_available_count_);
   EXPECT_EQ(0, tokens_loaded_count_);
   EXPECT_EQ(2, token_revoked_count_);
+
+  // One notification should come from `ClearAccounts` and two from `AddAccount`
+  // calls.
+  EXPECT_EQ(3, accounts_on_device_changed_count_);
+
   EXPECT_EQ(2U, oauth2_delegate_->GetAccounts().size());
   EXPECT_TRUE(
       oauth2_delegate_->RefreshTokenIsAvailable(GetAccountId(account1)));

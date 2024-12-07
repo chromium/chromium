@@ -7,20 +7,17 @@
 #import <memory>
 
 #import "base/check_deref.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/browser_state.h"
 
 namespace ios {
 
 SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SearchEngineChoiceServiceFactory",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("SearchEngineChoiceServiceFactory",
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;
 
@@ -34,8 +31,9 @@ SearchEngineChoiceServiceFactory::GetInstance() {
 // static
 search_engines::SearchEngineChoiceService*
 SearchEngineChoiceServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<search_engines::SearchEngineChoiceService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<search_engines::SearchEngineChoiceService>(
+          profile, /*create=*/true);
 }
 
 std::unique_ptr<KeyedService>
@@ -47,11 +45,6 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetLocalState(),
       /*is_profile_elibile_for_dse_guest_propagation=*/false,
       GetApplicationContext()->GetVariationsService());
-}
-
-web::BrowserState* SearchEngineChoiceServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
 }
 
 }  // namespace ios

@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_platform_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/version_info/channel.h"
@@ -20,6 +20,10 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_apitest.h"
+#endif
 
 namespace extensions {
 
@@ -75,7 +79,13 @@ class AudioWaiter : public content::WebContentsObserver {
 
 }  // namespace
 
-class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
+class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTestBase {
  public:
   AudioLifetimeEnforcerBrowserTest() = default;
   ~AudioLifetimeEnforcerBrowserTest() override = default;
@@ -118,6 +128,8 @@ class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTest {
   TestExtensionDir test_dir_;
 };
 
+// TODO(crbug.com/378916068): Enable the test on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that an offscreen document is considered active while playing audio and
 // notifies of inactivity when audio stops.
 IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
@@ -187,6 +199,7 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
   EXPECT_FALSE(audio_enforcer.IsActive());
   EXPECT_FALSE(terminate_called);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that an offscreen document is considered inactive if it never plays
 // audio.

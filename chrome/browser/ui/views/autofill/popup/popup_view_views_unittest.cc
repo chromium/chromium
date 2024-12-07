@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -1996,12 +1996,11 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
 
 TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
-      absl::get_if<autofill_prediction_improvements::
-                       PredictionImprovementsLoadingStateView*>(
+      absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(
           &test_api(view()).rows()[0]);
   ASSERT_TRUE(row_view);
 
@@ -2011,13 +2010,12 @@ TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
 TEST_F(PopupViewViewsTest,
        PredictionImprovementsLoadingOnSuggestionsChangedA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kFillPredictionImprovements});
-  UpdateSuggestions({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kFillAutofillAi});
+  UpdateSuggestions({SuggestionType::kAutofillAiLoadingState});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
-      absl::get_if<autofill_prediction_improvements::
-                       PredictionImprovementsLoadingStateView*>(
+      absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(
           &test_api(view()).rows()[0]);
   ASSERT_TRUE(row_view);
 
@@ -2026,7 +2024,7 @@ TEST_F(PopupViewViewsTest,
 
 TEST_F(PopupViewViewsTest, PredictionImprovementsSuggestionsLoadedAnnounced) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
   MockFunction<PopupViewViewsTestApi::A11yAnnouncer::RunType> a11y_announcer;
   test_api(view()).SetA11yAnnouncer(
       base::BindLambdaForTesting(a11y_announcer.AsStdFunction()));
@@ -2038,8 +2036,7 @@ TEST_F(PopupViewViewsTest, PredictionImprovementsSuggestionsLoadedAnnounced) {
               IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
           /*polite=*/true));
 
-  Suggestion feedback_suggestion(
-      SuggestionType::kPredictionImprovementsFeedback);
+  Suggestion feedback_suggestion(SuggestionType::kAutofillAiFeedback);
   feedback_suggestion.voice_over = u"Required a11y message";
   controller().set_suggestions({std::move(feedback_suggestion)});
   static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(

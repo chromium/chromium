@@ -71,9 +71,10 @@ TEST_F(ScopedServiceBindingTest, ConnectDebugService) {
 
   // Connect a ServiceDirectory to the "debug" subdirectory.
   fidl::InterfaceHandle<fuchsia::io::Directory> debug_handle;
-  debug_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                       fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                   debug_handle.NewRequest().TakeChannel());
+  debug_dir->Serve(
+      fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+      fidl::ServerEnd<fuchsia_io::Directory>(
+          debug_handle.NewRequest().TakeChannel()));
   sys::ServiceDirectory debug_directory(std::move(debug_handle));
 
   // Attempt to connect via the "debug" directory.
@@ -171,9 +172,10 @@ TEST_F(ScopedServiceBindingTest, SingleClientPublishToPseudoDir) {
 
   // Connect a ServiceDirectory to the "debug" subdirectory.
   fidl::InterfaceHandle<fuchsia::io::Directory> debug_handle;
-  debug_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                       fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                   debug_handle.NewRequest().TakeChannel());
+  debug_dir->Serve(
+      fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+      fidl::ServerEnd<fuchsia_io::Directory>(
+          debug_handle.NewRequest().TakeChannel()));
   sys::ServiceDirectory debug_directory(std::move(debug_handle));
 
   // Attempt to connect via the "debug" directory.

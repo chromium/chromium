@@ -24,6 +24,7 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -133,7 +134,7 @@ class CloudPolicyValidatorTest : public testing::Test {
     validator->ValidateTimestamp(timestamp_, timestamp_option_);
     if (validate_by_gaia_id_) {
       validator->ValidateUsernameAndGaiaId(
-          /*expected_user=*/std::string(), PolicyBuilder::kFakeGaiaId);
+          /*expected_user=*/std::string(), GaiaId(PolicyBuilder::kFakeGaiaId));
     } else {
       validator->ValidateUsername(PolicyBuilder::kFakeUsername);
     }

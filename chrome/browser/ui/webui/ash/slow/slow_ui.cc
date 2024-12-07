@@ -89,7 +89,7 @@ SlowHandler::SlowHandler(Profile* profile) : profile_(profile) {
   user_pref_registrar_->Init(profile_->GetPrefs());
 }
 
-SlowHandler::~SlowHandler() {}
+SlowHandler::~SlowHandler() = default;
 
 void SlowHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

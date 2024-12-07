@@ -21,6 +21,7 @@ DevToolsPreloadStorage::~DevToolsPreloadStorage() = default;
 
 void DevToolsPreloadStorage::UpdatePrefetchStatus(
     const GURL& prefetch_url,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome outcome,
     PrefetchStatus status,
     const std::string& request_id) {
@@ -30,27 +31,30 @@ void DevToolsPreloadStorage::UpdatePrefetchStatus(
   if (status == PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved) {
     return;
   }
-  PrefetchData data = {
-      .outcome = outcome, .status = status, .request_id = request_id};
-  prefetch_data_map_[prefetch_url] = data;
+
+  prefetch_data_map_[prefetch_url] = {
+      .preload_pipeline_id = preload_pipeline_id,
+      .outcome = outcome,
+      .status = status,
+      .request_id = request_id};
 }
 
 void DevToolsPreloadStorage::UpdatePrerenderStatus(
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome outcome,
     std::optional<PrerenderFinalStatus> status,
     const std::optional<std::string>& disallowed_mojo_interface,
     const std::vector<PrerenderMismatchedHeaders>* mismatched_headers) {
   PrerenderKey key = std::make_pair(prerender_url, target_hint);
   PrerenderData data;
+  data.preload_pipeline_id = preload_pipeline_id;
   data.outcome = outcome;
   data.status = status;
   data.disallowed_mojo_interface = disallowed_mojo_interface;
   if (mismatched_headers) {
-    std::vector<PrerenderMismatchedHeaders> mismatched_headers_copy(
-        *mismatched_headers);
-    data.mismatched_headers = std::move(mismatched_headers_copy);
+    data.mismatched_headers = *mismatched_headers;
   }
   prerender_data_map_[key] = std::move(data);
 }

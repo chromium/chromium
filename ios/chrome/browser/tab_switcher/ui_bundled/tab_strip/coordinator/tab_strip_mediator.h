@@ -15,19 +15,22 @@ class BrowserList;
 class ProfileIOS;
 @protocol TabStripCommands;
 @protocol TabStripConsumer;
+class UrlLoadingBrowserAgent;
 class WebStateList;
 
 namespace base {
 class Uuid;
-}
+}  // namespace base
+
 namespace tab_groups {
 class TabGroupId;
 class TabGroupSyncService;
 class TabGroupVisualData;
 }  // namespace tab_groups
+
 namespace web {
 class WebStateID;
-}
+}  // namespace web
 
 // This mediator used to manage model interaction for its consumer.
 @interface TabStripMediator
@@ -45,6 +48,9 @@ class WebStateID;
 
 // Commands handler for the Tab Strip.
 @property(nonatomic, weak) id<TabStripCommands> tabStripHandler;
+
+// URL loader to open tabs when needed.
+@property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoader;
 
 // Designated initializer. Initializer with a TabStripConsumer, a
 // `tabGroupSyncService` and the `browserList`.

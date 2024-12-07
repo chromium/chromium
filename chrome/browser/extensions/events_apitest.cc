@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DispatchEventDuringShutdown) {
 
 class EventsApiTest : public ExtensionApiTest {
  public:
-  EventsApiTest() {}
+  EventsApiTest() = default;
 
   EventsApiTest(const EventsApiTest&) = delete;
   EventsApiTest& operator=(const EventsApiTest&) = delete;

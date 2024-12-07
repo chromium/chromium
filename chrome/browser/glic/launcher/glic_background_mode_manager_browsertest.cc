@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace glic {
 namespace {
 
 class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
@@ -28,7 +30,7 @@ class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Checks that modifying the pref propagates to KeepAliveRegistry
+// Checks that modifying the pref propagates to KeepAliveRegistry.
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, KeepAlive) {
   auto* keep_alive_registry = KeepAliveRegistry::GetInstance();
   ASSERT_FALSE(
@@ -36,13 +38,30 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, KeepAlive) {
 
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                true);
-  EXPECT_EQ(true, keep_alive_registry->IsOriginRegistered(
-                      KeepAliveOrigin::GLIC_LAUNCHER));
+  EXPECT_TRUE(
+      keep_alive_registry->IsOriginRegistered(KeepAliveOrigin::GLIC_LAUNCHER));
 
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);
-  EXPECT_EQ(false, keep_alive_registry->IsOriginRegistered(
-                       KeepAliveOrigin::GLIC_LAUNCHER));
+  EXPECT_FALSE(
+      keep_alive_registry->IsOriginRegistered(KeepAliveOrigin::GLIC_LAUNCHER));
+}
+
+// Checks that the status icon exists when the pref is enabled.
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, StatusIcon) {
+  ASSERT_FALSE(g_browser_process->status_tray()->HasStatusIconOfTypeForTesting(
+      StatusTray::StatusIconType::GLIC_ICON));
+
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  EXPECT_TRUE(g_browser_process->status_tray()->HasStatusIconOfTypeForTesting(
+      StatusTray::StatusIconType::GLIC_ICON));
+
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               false);
+  EXPECT_FALSE(g_browser_process->status_tray()->HasStatusIconOfTypeForTesting(
+      StatusTray::StatusIconType::GLIC_ICON));
 }
 
 }  // namespace
+}  // namespace glic

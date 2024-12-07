@@ -33,34 +33,6 @@ namespace memory_instrumentation {
 
 namespace {
 
-// Don't simply use sizeof(task_vm_info) / sizeof(natural_t):
-// In the 10.15 SDK, this structure is 87 32-bit words long, and in
-// mach_types.defs:
-//
-//   type task_info_t    = array[*:87] of integer_t;
-//
-// However in the 10.14 SDK, this structure is 42 32-bit words, and in
-// mach_types.defs:
-//
-//   type task_info_t    = array[*:52] of integer_t;
-//
-// As a result, the 10.15 SDK's task_vm_info won't fit inside the 10.14 SDK's
-// task_info_t, so the *rest of the system* (on 10.14 and earlier) can't handle
-// calls that request the full 10.15 structure. We have to request a prefix of
-// it that 10.14 and earlier can handle by limiting the length we request. The
-// rest of the fields just get ignored, but we don't use them anyway.
-
-constexpr mach_msg_type_number_t ChromeTaskVMInfoCount =
-    TASK_VM_INFO_REV2_COUNT;
-
-// The count field is in units of natural_t, which is the machine's word size
-// (64 bits on all modern machines), but the task_info_t array is in units of
-// integer_t, which is 32 bits.
-constexpr mach_msg_type_number_t MAX_MIG_SIZE_FOR_1014 =
-    52 / (sizeof(natural_t) / sizeof(integer_t));
-static_assert(ChromeTaskVMInfoCount <= MAX_MIG_SIZE_FOR_1014,
-              "task_vm_info must be small enough for 10.14 MIG interfaces");
-
 using VMRegion = mojom::VmRegion;
 
 bool IsAddressInSharedRegion(uint64_t address) {
@@ -254,41 +226,42 @@ void AddRegionByteStats(VMRegion* dest, const VMRegion& source) {
 }  // namespace
 
 // static
-bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
+bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
                                  mojom::RawOSMemDump* dump) {
-  if (pid != base::kNullProcessId && pid != base::GetCurrentProcId()) {
+  auto current_handle = base::GetCurrentProcessHandle();
+  if (handle != base::kNullProcessId && handle != current_handle) {
     return false;
   }
-  return FillOSMemoryDumpFromTaskPort(mach_task_self(), dump);
+  return FillOSMemoryDump(current_handle, nullptr, dump);
 }
 
 // static
-bool OSMetrics::FillOSMemoryDumpFromTaskPort(mach_port_t task_port,
-                                             mojom::RawOSMemDump* dump) {
-  task_vm_info info;
-  mach_msg_type_number_t count = ChromeTaskVMInfoCount;
-  kern_return_t result = task_info(
-      task_port, TASK_VM_INFO, reinterpret_cast<task_info_t>(&info), &count);
-  if (result != KERN_SUCCESS)
+bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
+                                 base::PortProvider* port_provider,
+                                 mojom::RawOSMemDump* dump) {
+  auto process_metrics =
+#if BUILDFLAG(IS_IOS)
+      base::ProcessMetrics::CreateProcessMetrics(handle);
+#else
+      base::ProcessMetrics::CreateProcessMetrics(handle, port_provider);
+#endif
+  auto info = process_metrics->GetMemoryInfo();
+  if (!info.has_value()) {
     return false;
-
-  dump->platform_private_footprint->internal_bytes = info.internal;
-  dump->platform_private_footprint->compressed_bytes = info.compressed;
-  dump->resident_set_kb = info.resident_size / 1024;
-  dump->peak_resident_set_kb = info.resident_size_peak / 1024;
-
-  // The |phys_footprint| field was introduced in 10.11.
-  if (count == ChromeTaskVMInfoCount) {
-    dump->platform_private_footprint->phys_footprint_bytes =
-        info.phys_footprint;
   }
 
+  dump->platform_private_footprint->phys_footprint_bytes =
+      info->physical_footprint_bytes;
+  dump->platform_private_footprint->internal_bytes = info->internal_bytes;
+  dump->platform_private_footprint->compressed_bytes = info->compressed_bytes;
+  dump->resident_set_kb =
+      base::saturated_cast<uint32_t>(info->resident_set_bytes / 1024);
   return true;
 }
 
 // static
 std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
-    base::ProcessId pid) {
+    base::ProcessHandle handle) {
   std::vector<mojom::VmRegionPtr> maps;
 
   std::vector<VMRegion> dyld_regions;
@@ -340,7 +313,7 @@ std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
 
 #if !BUILDFLAG(IS_IOS)
 std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessModules(
-    base::ProcessId pid) {
+    base::ProcessHandle handle) {
   std::vector<mojom::VmRegionPtr> maps;
 
   std::vector<VMRegion> dyld_regions;

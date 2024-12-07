@@ -55,7 +55,7 @@ def main():
 
     with tempfile.TemporaryDirectory() as scripts_dir:
         argv = [
-            "pkgbuild", "--root", options.root_path, "--identifier",
+            "pkgbuild", "--quiet", "--root", options.root_path, "--identifier",
             options.pkg_identifier, "--install-location", options.install_path
         ]
 

@@ -29,8 +29,6 @@
 ### Mac
 
  * [mac-intel-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-intel-perf): Mac Mini 8,1, Core i7 3.2 GHz.
- * [mac-laptop_high_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-laptop_high_end-perf): MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
- * [mac-laptop_low_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-laptop_low_end-perf): MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
  * [mac-m1-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m1-pro-perf): Mac M1 PRO 2020.
  * [mac-m1_mini_2020-no-brp-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m1_mini_2020-no-brp-perf): Mac M1 Mini 2020 with BRP disabled.
  * [mac-m1_mini_2020-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m1_mini_2020-perf): Mac M1 Mini 2020.
@@ -58,11 +56,6 @@
 ### Linux
 
  * linux-perf-pgo: Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
-
-### Mac
-
- * mac-laptop_high_end-perf-pgo: MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
- * mac-laptop_low_end-perf-pgo: MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
 
 ### Win
 

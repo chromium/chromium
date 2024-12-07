@@ -110,9 +110,7 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUp() override {
-    features_.InitWithFeaturesAndParameters(
-        GetEnabledFeatures(),
-        {content_settings::features::kActiveContentSettingExpiry});
+    features_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -134,8 +132,9 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   void SetCrossSiteCookieOnHost(const std::string& host) {
     GURL host_url = GetURL(host);
     std::string cookie = base::StrCat({"cross-site=", host});
-    content::SetCookie(browser()->profile(), host_url,
-                       base::StrCat({cookie, ";SameSite=None;Secure"}));
+    ASSERT_TRUE(
+        content::SetCookie(browser()->profile(), host_url,
+                           base::StrCat({cookie, ";SameSite=None;Secure"})));
     ASSERT_THAT(content::GetCookies(browser()->profile(), host_url),
                 testing::HasSubstr(cookie));
   }
@@ -147,11 +146,11 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
         base::StrCat({"cross-site=", embedded_host, "(partitioned)"});
     net::CookiePartitionKey partition_key =
         net::CookiePartitionKey::FromURLForTesting(GetURL(top_level_host));
-    content::SetCookie(
+    ASSERT_TRUE(content::SetCookie(
         browser()->profile(), host_url,
         base::StrCat({cookie, ";SameSite=None;Secure;Partitioned"}),
         net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-        &partition_key);
+        &partition_key));
     ASSERT_THAT(content::GetCookies(
                     browser()->profile(), host_url,
                     net::CookieOptions::SameSiteCookieContext::MakeInclusive(),

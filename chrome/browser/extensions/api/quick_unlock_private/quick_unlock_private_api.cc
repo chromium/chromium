@@ -257,7 +257,7 @@ QuickUnlockPrivateSetLockScreenEnabledFunction::
     : chrome_details_(this) {}
 
 QuickUnlockPrivateSetLockScreenEnabledFunction::
-    ~QuickUnlockPrivateSetLockScreenEnabledFunction() {}
+    ~QuickUnlockPrivateSetLockScreenEnabledFunction() = default;
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateSetLockScreenEnabledFunction::Run() {
@@ -354,7 +354,7 @@ QuickUnlockPrivateGetAvailableModesFunction::
     : chrome_details_(this) {}
 
 QuickUnlockPrivateGetAvailableModesFunction::
-    ~QuickUnlockPrivateGetAvailableModesFunction() {}
+    ~QuickUnlockPrivateGetAvailableModesFunction() = default;
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAvailableModesFunction::Run() {
@@ -394,10 +394,10 @@ void QuickUnlockPrivateGetActiveModesFunction::OnGetActiveModes(
 // quickUnlockPrivate.checkCredential
 
 QuickUnlockPrivateCheckCredentialFunction::
-    QuickUnlockPrivateCheckCredentialFunction() {}
+    QuickUnlockPrivateCheckCredentialFunction() = default;
 
 QuickUnlockPrivateCheckCredentialFunction::
-    ~QuickUnlockPrivateCheckCredentialFunction() {}
+    ~QuickUnlockPrivateCheckCredentialFunction() = default;
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateCheckCredentialFunction::Run() {
@@ -443,10 +443,10 @@ QuickUnlockPrivateCheckCredentialFunction::Run() {
 }
 
 QuickUnlockPrivateGetCredentialRequirementsFunction::
-    QuickUnlockPrivateGetCredentialRequirementsFunction() {}
+    QuickUnlockPrivateGetCredentialRequirementsFunction() = default;
 
 QuickUnlockPrivateGetCredentialRequirementsFunction::
-    ~QuickUnlockPrivateGetCredentialRequirementsFunction() {}
+    ~QuickUnlockPrivateGetCredentialRequirementsFunction() = default;
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetCredentialRequirementsFunction::Run() {

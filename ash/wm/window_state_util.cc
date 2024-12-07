@@ -14,12 +14,9 @@ namespace ash {
 
 void ToggleFullScreen(WindowState* window_state,
                       WindowStateDelegate* delegate) {
-  // Window which cannot be maximized should not be full screen'ed.
-  // It can, however, be restored if it was full screen'ed.
+  // Window can be restored, even if cannot be fullscreened
   bool is_fullscreen = window_state->IsFullscreen();
-  if (!is_fullscreen &&
-      (!window_state->CanMaximize() || !window_state->CanFullscreen())) {
-    // If `window` cannot be maximized, then do a window bounce animation.
+  if (!is_fullscreen && !window_state->CanFullscreen()) {
     wm::AnimateWindow(window_state->window(), wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     return;
   }

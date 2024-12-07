@@ -212,18 +212,6 @@ class CORE_EXPORT Range final : public AbstractRange {
   RangeBoundaryPoint start_;
   RangeBoundaryPoint end_;
 
-  struct RangeBoundaryPoints : GarbageCollected<RangeBoundaryPoints> {
-    RangeBoundaryPoints(RangeBoundaryPoint start, RangeBoundaryPoint end)
-        : start(start), end(end) {}
-    RangeBoundaryPoint start;
-    RangeBoundaryPoint end;
-
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(start);
-      visitor->Trace(end);
-    }
-  };
-
   friend class RangeUpdateScope;
 };
 

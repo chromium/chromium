@@ -145,7 +145,7 @@ suite('AllBuilds', function() {
 
     fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
     await assertSpinnerVisible(false);
-    assertEquals('settings:check-circle', icon.icon);
+    assertEquals('cr:check-circle', icon.icon);
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
 
@@ -227,7 +227,7 @@ suite('AllBuilds', function() {
 
     fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
     await assertSpinnerVisible(false);
-    assertEquals('settings:check-circle', icon.icon);
+    assertEquals('cr:check-circle', icon.icon);
     assertFalse(queryDeprecationWarning().hidden);
     assertFalse(queryUpdateStatusMessage().hidden);
   });

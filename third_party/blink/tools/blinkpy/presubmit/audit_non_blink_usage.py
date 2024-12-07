@@ -1265,6 +1265,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/platform/web_content_security_policy_struct.h',
+        ],
+        'allowed': [
+            'network::mojom::IntegrityAlgorithm',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/platform/web_audio_device.h',
             'third_party/blink/public/web/web_local_frame_client.h',
             'third_party/blink/renderer/modules/audio_output_devices/html_media_element_audio_output_device.cc',
@@ -2293,6 +2301,14 @@ _CONFIG = [
         ],
         'allowed': [
             'url::Origin',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/public/common/privacy_budget/identifiable_token.h',
+        ],
+        'allowed': [
+            'internal::DigestOfObjectRepresentation',
         ]
     },
     {

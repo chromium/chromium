@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_callbacks.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
@@ -61,20 +62,35 @@ constexpr size_t kBytesPerMegabyte = 1'000'000;
 constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-void OnGotAIPageContentForModelPrototyping(
-    mojo::Remote<blink::mojom::AIPageContentAgent> remote_interface,
-    AiDataKeyedService::AiDataCallback continue_callback,
-    blink::mojom::AIPageContentPtr result) {
+void OnGotAIPageContentForModelPrototypingForAllFrames(
+    content::GlobalRenderFrameHostToken main_frame_token,
+    std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
+    AiDataKeyedService::AiDataCallback continue_callback) {
   TRACE_EVENT("browser", "OnGotAIPageContentForModelPrototyping");
 
-  AiDataKeyedService::AiData data;
-  if (result && result->root_node) {
-    data = std::make_optional<AiDataKeyedService::BrowserData>();
-    optimization_guide::ConvertAIPageContentToProto(
-        *result,
-        data->mutable_page_context()->mutable_annotated_page_content());
+  AiDataKeyedService::BrowserData data;
+  if (optimization_guide::ConvertAIPageContentToProto(
+          main_frame_token, *page_content_map,
+          data.mutable_page_context()->mutable_annotated_page_content())) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
   }
-  std::move(continue_callback).Run(std::move(data));
+
+  std::move(continue_callback).Run(std::nullopt);
+}
+
+void OnGotAIPageContentForModelPrototypingForFrame(
+    content::GlobalRenderFrameHostToken frame_token,
+    mojo::Remote<blink::mojom::AIPageContentAgent> remote_interface,
+    optimization_guide::AIPageContentMap* page_content_map,
+    base::OnceClosure continue_callback,
+    blink::mojom::AIPageContentPtr result) {
+  CHECK(page_content_map->find(frame_token) == page_content_map->end());
+
+  if (result) {
+    (*page_content_map)[frame_token] = std::move(result);
+  }
+  std::move(continue_callback).Run();
 }
 
 void GetAIPageContentForModelPrototyping(
@@ -84,14 +100,39 @@ void GetAIPageContentForModelPrototyping(
   DCHECK(web_contents);
   DCHECK(web_contents->GetPrimaryMainFrame());
 
-  mojo::Remote<blink::mojom::AIPageContentAgent> agent;
-  web_contents->GetPrimaryMainFrame()->GetRemoteInterfaces()->GetInterface(
-      agent.BindNewPipeAndPassReceiver());
-  auto* agent_ptr = agent.get();
-  agent_ptr->GetAIPageContent(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      base::BindOnce(&OnGotAIPageContentForModelPrototyping, std::move(agent),
-                     std::move(continue_callback)),
-      nullptr));
+  auto page_content_map =
+      std::make_unique<optimization_guide::AIPageContentMap>();
+  base::ConcurrentClosures concurrent;
+
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&](content::RenderFrameHost* rfh) {
+        auto* parent_frame = rfh->GetParentOrOuterDocument();
+
+        // Skip dispatching IPCs for non-local root frames. The local root
+        // provides data for itself and all child local frames.
+        const bool is_local_root =
+            !parent_frame ||
+            parent_frame->GetRenderWidgetHost() != rfh->GetRenderWidgetHost();
+        if (!is_local_root) {
+          return;
+        }
+
+        mojo::Remote<blink::mojom::AIPageContentAgent> agent;
+        rfh->GetRemoteInterfaces()->GetInterface(
+            agent.BindNewPipeAndPassReceiver());
+        auto* agent_ptr = agent.get();
+        agent_ptr->GetAIPageContent(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(&OnGotAIPageContentForModelPrototypingForFrame,
+                           rfh->GetGlobalFrameToken(), std::move(agent),
+                           page_content_map.get(), concurrent.CreateClosure()),
+            nullptr));
+      });
+
+  std::move(concurrent)
+      .Done(base::BindOnce(
+          &OnGotAIPageContentForModelPrototypingForAllFrames,
+          web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
+          std::move(page_content_map), std::move(continue_callback)));
 }
 
 // Fills an AiData proto with information from GetInnerText. If no result,

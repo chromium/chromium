@@ -30,21 +30,8 @@ struct GraphChangeAddFrame {
   raw_ptr<const FrameNode> frame_node;
 };
 
-struct GraphChangeRemoveFrame {
-  explicit GraphChangeRemoveFrame(const FrameNode* node) : frame_node(node) {}
-
-  raw_ptr<const FrameNode> frame_node;
-};
-
 struct GraphChangeAddWorker {
   explicit GraphChangeAddWorker(const WorkerNode* node) : worker_node(node) {}
-
-  raw_ptr<const WorkerNode> worker_node;
-};
-
-struct GraphChangeRemoveWorker {
-  explicit GraphChangeRemoveWorker(const WorkerNode* node)
-      : worker_node(node) {}
 
   raw_ptr<const WorkerNode> worker_node;
 };
@@ -78,9 +65,7 @@ struct GraphChangeUpdateProcessPriority {
 
 using GraphChange = absl::variant<NoGraphChange,
                                   GraphChangeAddFrame,
-                                  GraphChangeRemoveFrame,
                                   GraphChangeAddWorker,
-                                  GraphChangeRemoveWorker,
                                   GraphChangeUpdateOrigin,
                                   GraphChangeUpdateProcessPriority>;
 

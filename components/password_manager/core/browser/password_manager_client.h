@@ -567,6 +567,7 @@ class PasswordManagerClient {
                                    base::i18n::TextDirection text_direction,
                                    const GURL& domain,
                                    const std::u16string& password_hostname,
+                                   bool show_warning_text,
                                    base::OnceClosure confirmation_callback) = 0;
 #endif  // !BUILDFLAG(IS_IOS)
 };

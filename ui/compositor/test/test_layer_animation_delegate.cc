@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
 
 namespace ui {
@@ -20,7 +21,7 @@ TestLayerAnimationDelegate::TestLayerAnimationDelegate()
       visibility_(true),
       brightness_(0.0f),
       grayscale_(0.0f),
-      color_(SK_ColorBLACK) {
+      color_(SkColors::kBlack) {
   CreateCcLayer();
 }
 
@@ -30,7 +31,7 @@ TestLayerAnimationDelegate::TestLayerAnimationDelegate(
       transform_(other.GetTransformForAnimation()),
       opacity_(other.GetOpacityForAnimation()),
       visibility_(other.GetVisibilityForAnimation()),
-      color_(SK_ColorBLACK) {
+      color_(SkColors::kBlack) {
   CreateCcLayer();
 }
 
@@ -100,7 +101,7 @@ void TestLayerAnimationDelegate::SetGrayscaleFromAnimation(
 }
 
 void TestLayerAnimationDelegate::SetColorFromAnimation(
-    SkColor color,
+    SkColor4f color,
     PropertyChangeReason reason) {
   color_ = color;
   last_property_change_reason_ = reason;
@@ -158,7 +159,7 @@ float TestLayerAnimationDelegate::GetGrayscaleForAnimation() const {
   return grayscale_;
 }
 
-SkColor TestLayerAnimationDelegate::GetColorForAnimation() const {
+SkColor4f TestLayerAnimationDelegate::GetColorForAnimation() const {
   return color_;
 }
 

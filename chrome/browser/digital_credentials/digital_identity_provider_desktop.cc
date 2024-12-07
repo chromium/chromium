@@ -117,10 +117,10 @@ DigitalIdentityProviderDesktop::ShowDigitalIdentityInterstitial(
                      std::move(callback)));
 }
 
-void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
-                                             const url::Origin& rp_origin,
-                                             base::Value request,
-                                             DigitalIdentityCallback callback) {
+void DigitalIdentityProviderDesktop::Get(content::WebContents* web_contents,
+                                         const url::Origin& rp_origin,
+                                         base::ValueView request,
+                                         DigitalIdentityCallback callback) {
   Transact(web_contents, RequestInfo::RequestType::kGet, rp_origin, request,
            std::move(callback));
 }

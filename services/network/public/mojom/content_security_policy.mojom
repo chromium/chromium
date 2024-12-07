@@ -82,6 +82,7 @@ struct CSPSourceList {
   bool allow_dynamic = false;
   bool allow_unsafe_hashes = false;
   bool report_sample = false;
+  IntegrityAlgorithm? report_hash_algorithm;
 };
 
 enum CSPDirectiveName {

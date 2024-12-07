@@ -64,7 +64,7 @@ declare global {
       }
 
       export interface AudioBuffer {
-        audioBuffer: ArrayBuffer;
+        audioBuffer: Float32Array;
         charIndex?: number;
         isLastBuffer?: boolean;
       }

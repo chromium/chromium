@@ -356,7 +356,7 @@ String TrustedTypePolicyFactory::getAttributeType(
       attributeName.LowerASCII(), tagNS, attributeNS));
 }
 
-ScriptValue TrustedTypePolicyFactory::getTypeMapping(
+ScriptObject TrustedTypePolicyFactory::getTypeMapping(
     ScriptState* script_state) const {
   return getTypeMapping(script_state, String());
 }
@@ -419,21 +419,21 @@ void PopulateTypeMapping(
 
 }  // anonymous namespace
 
-ScriptValue TrustedTypePolicyFactory::getTypeMapping(ScriptState* script_state,
-                                                     const String& ns) const {
+ScriptObject TrustedTypePolicyFactory::getTypeMapping(ScriptState* script_state,
+                                                      const String& ns) const {
   // Create three-deep dictionary of properties, like so:
   // {tagname: { ["attributes"|"properties"]: { attribute: type }}}
-
+  v8::Isolate* isolate = script_state->GetIsolate();
   if (!ns.empty())
-    return ScriptValue::CreateNull(script_state->GetIsolate());
+    return ScriptObject::CreateNull(isolate);
 
-  v8::HandleScope handle_scope(script_state->GetIsolate());
-  v8::Local<v8::Object> top = v8::Object::New(script_state->GetIsolate());
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Object> top = v8::Object::New(isolate);
   PopulateTypeMapping(script_state, top, GetAttributeTypeVector(),
-                      V8String(script_state->GetIsolate(), "attributes"));
+                      V8String(isolate, "attributes"));
   PopulateTypeMapping(script_state, top, GetPropertyTypeVector(),
-                      V8String(script_state->GetIsolate(), "properties"));
-  return ScriptValue(script_state->GetIsolate(), top);
+                      V8String(isolate, "properties"));
+  return ScriptObject(isolate, top);
 }
 
 void TrustedTypePolicyFactory::CountTrustedTypeAssignmentError() {

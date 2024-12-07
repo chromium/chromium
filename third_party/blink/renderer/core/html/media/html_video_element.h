@@ -137,6 +137,9 @@ class CORE_EXPORT HTMLVideoElement final
 
   // WebMediaPlayerClient implementation.
   void OnRequestVideoFrameCallback() final;
+  void SetCcLayer(cc::Layer*) final;
+  void StyleDidChange(const ComputedStyle* old_style,
+                      const ComputedStyle& new_style);
 
   bool IsPersistent() const;
 
@@ -275,6 +278,12 @@ class CORE_EXPORT HTMLVideoElement final
   SkImageInfo resource_provider_info_;
   bool allow_accelerated_images_ = true;
   HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
+
+  // Paint flags set based on CSS properties, which must be propagated to the
+  // cc::Layer.
+  cc::PaintFlags::FilterQuality filter_quality_ =
+      cc::PaintFlags::FilterQuality::kLow;
+  cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit_;
 };
 
 }  // namespace blink

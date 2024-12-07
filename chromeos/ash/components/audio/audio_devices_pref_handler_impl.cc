@@ -531,6 +531,14 @@ void AudioDevicesPrefHandlerImpl::InitializePrefObservers() {
       base::BindRepeating(&AudioDevicesPrefHandlerImpl::NotifyAudioPolicyChange,
                           base::Unretained(this));
   pref_change_registrar_.Add(prefs::kAudioOutputAllowed, callback);
+
+  base::RepeatingClosure callbackVoiceIsolation = base::BindRepeating(
+      &AudioDevicesPrefHandlerImpl::NotifyVoiceIsolationChange,
+      base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kInputVoiceIsolationEnabled,
+                             callbackVoiceIsolation);
+  pref_change_registrar_.Add(prefs::kInputVoiceIsolationPreferredEffect,
+                             callbackVoiceIsolation);
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesMutePref() {
@@ -683,6 +691,12 @@ void AudioDevicesPrefHandlerImpl::MigrateDeviceVolumeGainSettings(
 void AudioDevicesPrefHandlerImpl::NotifyAudioPolicyChange() {
   for (auto& observer : observers_) {
     observer.OnAudioPolicyPrefChanged();
+  }
+}
+
+void AudioDevicesPrefHandlerImpl::NotifyVoiceIsolationChange() {
+  for (auto& observer : observers_) {
+    observer.OnVoiceIsolationPrefChanged();
   }
 }
 

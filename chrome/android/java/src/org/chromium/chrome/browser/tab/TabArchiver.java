@@ -346,7 +346,7 @@ public class TabArchiver implements TabWindowManager.Observer {
             TabGroupModelFilter regularTabGroupModelFilter,
             HashMap<Token, Boolean> groupIdToArchiveEligibilityMap,
             Tab tab) {
-        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs.isEnabled()) {
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
             // Create a map between group id tokens and their archive eligibility. If a group has
             // not been checked yet, check all related tabs and assign a status so that tabs with
             // that group id token can be bypassed in future iterations of this checking cycle.

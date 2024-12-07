@@ -658,6 +658,10 @@ bool CanResizePipWindow() {
   return Shell::Get()->pip_controller()->CanResizePip();
 }
 
+bool CanToggleGeminiApp() {
+  return features::IsAppLaunchShortcutEnabled();
+}
+
 bool CanScreenshot(bool take_screenshot) {
   // |AcceleratorAction::kTakeScreenshot| is allowed when user session is
   // blocked.
@@ -1085,6 +1089,12 @@ void OpenFileManager() {
 
 void OpenHelp() {
   NewWindowDelegate::GetInstance()->OpenGetHelp();
+}
+
+void ToggleGeminiApp() {
+  if (ash::features::IsAppLaunchShortcutEnabled()) {
+    NewWindowDelegate::GetInstance()->ToggleGeminiApp();
+  }
 }
 
 void PerformTilingWindowResize(AcceleratorAction action) {

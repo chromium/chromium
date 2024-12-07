@@ -113,8 +113,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   }
 
  private:
-  friend class HoldingSpaceTestApi;
-
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;

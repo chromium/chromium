@@ -185,6 +185,7 @@ MotionEventAndroid::MotionEventAndroid(float pix_to_dip,
                                        float tick_multiplier,
                                        base::TimeTicks oldest_event_time,
                                        base::TimeTicks latest_event_time,
+                                       base::TimeTicks down_time_ms,
                                        int android_action,
                                        int pointer_count,
                                        int history_size,
@@ -207,6 +208,7 @@ MotionEventAndroid::MotionEventAndroid(float pix_to_dip,
       for_touch_handle_(for_touch_handle),
       cached_oldest_event_time_(FromAndroidTime(oldest_event_time)),
       cached_latest_event_time_(FromAndroidTime(latest_event_time)),
+      cached_down_time_ms_(FromAndroidTime(down_time_ms)),
       cached_action_(FromAndroidAction(android_action)),
       cached_pointer_count_(pointer_count),
       cached_history_size_(ToValidHistorySize(history_size, cached_action_)),
@@ -326,6 +328,11 @@ float MotionEventAndroid::GetRawY(size_t pointer_index) const {
 float MotionEventAndroid::GetTwist(size_t pointer_index) const {
   DCHECK_LT(pointer_index, cached_pointer_count_);
   return 0.f;
+}
+
+base::TimeTicks MotionEventAndroid::GetDownTime() const {
+  DCHECK(!cached_down_time_ms_.is_null());
+  return cached_down_time_ms_;
 }
 
 float MotionEventAndroid::GetTangentialPressure(size_t pointer_index) const {

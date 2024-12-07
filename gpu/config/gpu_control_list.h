@@ -157,8 +157,7 @@ class GPU_EXPORT GpuControlList {
   };
 
   struct GPU_EXPORT MachineModelInfo {
-    // TODO(367764863) Rewrite to base::raw_span.
-    RAW_PTR_EXCLUSION base::span<const char* const> machine_model_names;
+    base::raw_span<const char* const> machine_model_names;
     Version machine_model_version;
 
     bool Contains(const GPUInfo& gpu_info) const;
@@ -193,9 +192,7 @@ class GPU_EXPORT GpuControlList {
   };
 
   struct GPU_EXPORT IntelConditions {
-    // TODO(367764863) Rewrite to base::raw_span.
-    RAW_PTR_EXCLUSION base::span<const IntelGpuSeriesType>
-        intel_gpu_series_list;
+    base::raw_span<const IntelGpuSeriesType> intel_gpu_series_list;
     Version intel_gpu_generation;
 
     bool Contains(const std::vector<GPUInfo::GPUDevice>& candidates,

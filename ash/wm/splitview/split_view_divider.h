@@ -97,7 +97,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   aura::Window* GetRootWindow() const;
 
   // Resizing functions used when resizing with `split_view_divider_` in the
-  // tablet split view mode or clamshell mode if `kSnapGroup` is enabled.
+  // tablet split view mode or clamshell mode when two windows are in a Snap
+  // Group.
   void StartResizeWithDivider(const gfx::Point& location_in_screen);
   void ResizeWithDivider(const gfx::Point& location_in_screen);
   void EndResizeWithDivider(const gfx::Point& location_in_screen);

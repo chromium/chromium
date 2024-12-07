@@ -332,7 +332,6 @@ void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
     const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin,
     base::flat_map<std::string, std::string> header) {
-  DCHECK(base::FeatureList::IsEnabled(net::features::kDocumentReporting));
   DCHECK(GURL::SchemeIsCryptographic(origin.scheme()));
   DCHECK(!reporting_source.is_empty());
   DCHECK(network_anonymization_key.IsEmpty() ||

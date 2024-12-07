@@ -359,7 +359,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     @Override
     public ViewAndroidDelegate getViewAndroidDelegate() {
-        // TODO(crbug.com/343119998): Investigate why this can be null and possibly fix that.
         if (mInternalsHolder == null) return null;
         WebContentsInternals internals = mInternalsHolder.get();
         if (internals == null) return null;

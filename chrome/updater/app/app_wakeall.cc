@@ -25,9 +25,6 @@ namespace updater {
 // AppWakeAll finds and launches --wake applications for all versions of the
 // updater within the same scope.
 class AppWakeAll : public App {
- public:
-  AppWakeAll() = default;
-
  private:
   ~AppWakeAll() override = default;
 

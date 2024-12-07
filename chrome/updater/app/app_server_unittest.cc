@@ -53,10 +53,9 @@ class AppServerTest : public AppServer {
   MOCK_METHOD(bool, ShutdownIfIdleAfterTask, (), (override));
   MOCK_METHOD(void, OnDelayedTaskComplete, (), (override));
 
- protected:
+ private:
   ~AppServerTest() override = default;
 
- private:
   UpdaterScope updater_scope() const override {
     return GetUpdaterScopeForTesting();
   }

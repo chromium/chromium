@@ -1181,16 +1181,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilDismiss"
-    units="impressions" expires_after="2025-04-01">
-  <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the signin promo is implicitly dismissed (by closing
-    the bookmark manager) per impression.
-  </summary>
-</histogram>
-
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons"
     units="impressions" expires_after="2025-04-01">
   <owner>jlebel@chromium.org</owner>
@@ -1210,16 +1200,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts how many times the explicit &quot;X&quot;-to-close button is clicked
     per impression.
-  </summary>
-</histogram>
-
-<histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss"
-    units="impressions" expires_after="2025-09-15">
-  <owner>jlebel@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the signin promo is implicitly dismissed (by leaving
-    the NTP) per impression of the NTP feed top section sign in promo.
   </summary>
 </histogram>
 
@@ -1243,19 +1223,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts how many times the explicit &quot;X&quot;-to-close button is clicked
     per impression of the NTP feed top section sign in promo.
-  </summary>
-</histogram>
-
-<histogram name="MobileSignInPromo.ReadingList.ImpressionsTilDismiss"
-    units="impressions" expires_after="2025-04-01">
-  <owner>myuu@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the signin promo is implicitly dismissed (by closing
-    the reading list) per impression. Recorded when the sign-in promo is removed
-    from the reading list view without being used. If the promo is removed by
-    user authentication (eg. sign-in from another view), the histogram is not
-    recorded.
   </summary>
 </histogram>
 

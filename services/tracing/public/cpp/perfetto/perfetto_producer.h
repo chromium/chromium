@@ -32,17 +32,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
 
   virtual ~PerfettoProducer();
 
-  // See SharedMemoryArbiter::BindStartupTargetBuffer. Should be called on the
-  // producer's task runner.
-  virtual void BindStartupTargetBuffer(
-      uint16_t target_buffer_reservation_id,
-      perfetto::BufferID startup_target_buffer);
-
-  // See SharedMemoryArbiter::AbortStartupTracingForReservation. Should be
-  // called on the producer's task runner.
-  virtual void AbortStartupTracingForReservation(
-      uint16_t target_buffer_reservation_id);
-
   // Used by the DataSource implementations to create TraceWriters
   // for writing their protobufs, and respond to flushes.
   //
@@ -66,9 +55,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // PerfettoProducer to perform initialization on new data sources.
   virtual void NewDataSourceAdded(
       const PerfettoTracedProcess::DataSourceBase* const data_source) = 0;
-
-  // Returns true if this PerfettoProducer is currently tracing.
-  virtual bool IsTracingActive() = 0;
 
   static void DeleteSoonForTesting(
       std::unique_ptr<PerfettoProducer> perfetto_producer);

@@ -63,6 +63,21 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
 """
 
+FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE = """\
+# tags: [ win linux ]
+# results: [ Failure RetryOnFailure Skip Pass ]
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
+
+[ linux ] foo/test [ Failure ]
+
+crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
+crbug.com/3456 [ linux ] some/bad/test [ Skip ]
+crbug.com/4567 [ linux ] some/good/test [ Pass ]
+
+[ linux ] foo/test [ Failure ]
+"""
+
 
 class CreateTestExpectationMapUnittest(unittest.TestCase):
   def setUp(self) -> None:
@@ -157,6 +172,18 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
     }
     self.assertEqual(expectation_map, expected_expectation_map)
     self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
+
+  def testDuplicateExpectation(self):
+    """Tests behavior when duplicate expectations exist."""
+    filename = '/tmp/foo'
+    self._expectation_content[filename] = (
+        FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE)
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Duplicate expectation \\[ linux \\] foo/test \\[ Failure \\]'):
+      self.instance.CreateTestExpectationMap(filename, None,
+                                             datetime.timedelta(days=0))
+
 
 
 class GetNonRecentExpectationContentUnittest(unittest.TestCase):

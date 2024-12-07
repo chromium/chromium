@@ -736,7 +736,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kGeolocation:
         return 'os-settings:geolocation';
       case SearchResultIcon.kGoogleDrive:
-        return 'os-settings:google-drive-revamp';
+        return 'os-settings:google-drive';
       case SearchResultIcon.kGooglePlay:
         return 'os-settings:google-play-revamp';
       case SearchResultIcon.kGraduation:

@@ -273,7 +273,7 @@ TEST_F(FuseFsTest, OpenAndRead) {
   ScopedNode node;
   ASSERT_EQ(0, fs_.Open(Path("/hello"), O_RDONLY, &node));
 
-  char buffer[15] = {0};
+  char buffer[15] = {};
   int bytes_read = 0;
   HandleAttr attr;
   ASSERT_EQ(0, node->Read(attr, &buffer[0], sizeof(buffer), &bytes_read));
@@ -309,7 +309,7 @@ TEST_F(FuseFsTest, CreateAndWrite) {
   ASSERT_EQ(bytes_written, strlen(message));
 
   // Now try to read the data back.
-  char buffer[40] = {0};
+  char buffer[40] = {};
   int bytes_read = 0;
   ASSERT_EQ(0, node->Read(attr, &buffer[0], sizeof(buffer), &bytes_read));
   ASSERT_EQ(strlen(message), bytes_read);

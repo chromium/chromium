@@ -230,10 +230,9 @@ bool FrameResources::Initialize() {
   const viz::SharedImageFormat si_format =
       viz::GetSharedImageFormat(buffer_format);
 
-  shared_image_ = context->CreateSharedImage(
-      buffer_size_in_pixels, kBufferUsage, si_format, color_space_,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-      sync_token_);
+  shared_image_ =
+      context->CreateSharedImage(buffer_size_in_pixels, kBufferUsage, si_format,
+                                 color_space_, kSharedImageUsage, sync_token_);
   if (!shared_image_) {
     DLOG(ERROR) << "Failed to allocate shared image for frame: coded_size="
                 << coded_size_.ToString()

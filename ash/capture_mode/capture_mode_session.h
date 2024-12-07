@@ -101,6 +101,9 @@ class ASH_EXPORT CaptureModeSession
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
   }
+  views::Widget* action_container_widget() {
+    return action_container_widget_.get();
+  }
   views::Widget* disclaimer_widget() { return disclaimer_.get(); }
   bool is_selecting_region() const { return is_selecting_region_; }
   CaptureModeToastController* capture_toast_controller() {
@@ -491,12 +494,9 @@ class ASH_EXPORT CaptureModeSession
   // Invalidates the current image search, so that results from any ongoing
   // search will be discarded. This will invalidate all pointers previously
   // returned from `GetImageSearchToken()` and remove related loading
-  // animations.
+  // animations if needed.
   // `InvalidateImageSearch()` should be called whenever any parameters related
-  // to the image search (e.g. capture type, source, bounds) change. In the case
-  // of a change in bounds, `InvalidateImageSearch()` should be called before
-  // the new bounds are applied, to ensure that loading animations can be
-  // removed by scheduling a repaint around the old capture bounds if needed.
+  // to the image search (e.g. capture type, source, bounds) change.
   void InvalidateImageSearch();
 
   // BaseCaptureModeSession:

@@ -276,8 +276,8 @@ bool WaylandWindowDragController::IsDragInProgress() const {
 }
 
 bool WaylandWindowDragController::IsDragSource() const {
-  CHECK(data_source_);
-  return true;
+  CHECK(!IsDragInProgress() || !!data_source_) << " state=" << state_;
+  return IsDragInProgress();
 }
 
 // Icon drawing and update for window/tab dragging is handled by buffer manager.

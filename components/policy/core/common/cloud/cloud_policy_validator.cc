@@ -32,6 +32,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
@@ -149,7 +150,7 @@ void CloudPolicyValidatorBase::ValidateUser(const AccountId& account_id) {
 
 void CloudPolicyValidatorBase::ValidateUsernameAndGaiaId(
     const std::string& expected_user,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   validation_flags_ |= VALIDATE_USER;
   username_ = expected_user;
   gaia_id_ = gaia_id;
@@ -160,7 +161,7 @@ void CloudPolicyValidatorBase::ValidateUsername(
     const std::string& expected_user) {
   validation_flags_ |= VALIDATE_USER;
   username_ = expected_user;
-  gaia_id_.clear();
+  gaia_id_ = {};
   canonicalize_user_ = false;
 }
 
@@ -712,8 +713,8 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckUser() {
 
   if (policy_data_->has_gaia_id() && !policy_data_->gaia_id().empty() &&
       !gaia_id_.empty()) {
-    std::string expected = gaia_id_;
-    std::string actual = policy_data_->gaia_id();
+    const GaiaId& expected = gaia_id_;
+    const GaiaId actual(policy_data_->gaia_id());
 
     if (expected != actual) {
       LOG_POLICY(ERROR, POLICY_FETCHING) << "Invalid gaia id: " << actual;

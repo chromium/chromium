@@ -856,6 +856,21 @@ AutofillWebDataBackendImpl::GetPaymentInstruments(WebDatabase* db) {
       PAYMENT_INSTRUMENT_RESULT, std::move(payment_instruments));
 }
 
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetPaymentInstrumentCreationOptions(
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
+  PaymentsAutofillTable::FromWebDatabase(db)
+      ->GetPaymentInstrumentCreationOptions(
+          payment_instrument_creation_options);
+  return std::make_unique<
+      WDResult<std::vector<sync_pb::PaymentInstrumentCreationOption>>>(
+      PAYMENT_INSTRUMENT_CREATION_OPTION_RESULT,
+      std::move(payment_instrument_creation_options));
+}
+
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());

@@ -434,31 +434,50 @@ GWSPageLoadMetricsObserver::OnCommit(
     base::UmaHistogramBoolean(internal::kHistogramGWSIsFirstNavigationForGWS,
                               is_gws_url);
   }
-  if (!is_gws_url) {
-    return STOP_OBSERVING;
-  }
-
   if (const PolicyBlocklistMetrics* const metrics =
-      PolicyBlocklistMetrics::Get(*navigation_handle)) {
+          PolicyBlocklistMetrics::Get(*navigation_handle)) {
     is_safesites_filter_enabled_ = true;
     base::UmaHistogramCounts100(
-        "Navigation.Throttles.PolicyBlocklist.RedirectCount.GoogleSearch."
+        "Navigation.Throttles.PolicyBlocklist.RedirectCount."
         "SafeSitesFilterEnabled",
         metrics->redirect_count);
     base::UmaHistogramTimes(
         "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2."
-        "GoogleSearch.SafeSitesFilterEnabled",
+        "SafeSitesFilterEnabled",
         metrics->request_to_response_time);
     base::UmaHistogramTimes(
         "Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration."
-        "GoogleSearch.SafeSitesFilterEnabled",
+        "SafeSitesFilterEnabled",
         metrics->response_defer_duration);
     if (metrics->cache_hit.has_value()) {
       base::UmaHistogramBoolean(
-          "Navigation.Throttles.PolicyBlocklist.CacheHit.GoogleSearch."
+          "Navigation.Throttles.PolicyBlocklist.CacheHit."
           "SafeSitesFilterEnabled",
           *metrics->cache_hit);
     }
+    if (is_gws_url) {
+      base::UmaHistogramCounts100(
+          "Navigation.Throttles.PolicyBlocklist.RedirectCount.GoogleSearch."
+          "SafeSitesFilterEnabled",
+          metrics->redirect_count);
+      base::UmaHistogramTimes(
+          "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2."
+          "GoogleSearch.SafeSitesFilterEnabled",
+          metrics->request_to_response_time);
+      base::UmaHistogramTimes(
+          "Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration."
+          "GoogleSearch.SafeSitesFilterEnabled",
+          metrics->response_defer_duration);
+      if (metrics->cache_hit.has_value()) {
+        base::UmaHistogramBoolean(
+            "Navigation.Throttles.PolicyBlocklist.CacheHit.GoogleSearch."
+            "SafeSitesFilterEnabled",
+            *metrics->cache_hit);
+      }
+    }
+  }
+  if (!is_gws_url) {
+    return STOP_OBSERVING;
   }
 
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();

@@ -24,6 +24,7 @@ const PARAMETERS: ChromeSigninInterceptionParameters = {
   email: 'email@example.com',
   pictureUrl: AVATAR_URL,
   managedUserBadge: '',
+  userBadgeAltText: '',
 };
 
 suite('DiceWebSigninInterceptChromeSigninTest', function() {
@@ -46,6 +47,12 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId);
     assertTrue(img != null);
     assertEquals(expectedUrl, img.src);
+  }
+
+  function checkAriaLabel(elementId: string, expectedAriaLabel: string) {
+    const badge = app.shadowRoot!.querySelector<HTMLElement>(elementId);
+    assertTrue(badge != null);
+    assertEquals(expectedAriaLabel, badge.ariaLabel);
   }
 
   test('ClickAccept', function() {
@@ -96,6 +103,7 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
   test('AccountIconsAndManagedBadges', async function() {
     const iconSelector = '#accountIconContainer > img';
     const badgeSelector = '#accountIconContainer > .managed-user-badge';
+    const badgeAriaLabelSelector = '#accountIconContainer > div > cr-icon';
 
     // Regular (non-supervised) user avatars.
     checkImageUrl(iconSelector, PARAMETERS.pictureUrl);
@@ -104,23 +112,27 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     // Set Supervised user badge source. The badge becomes visible.
     let newParams = {
       ...PARAMETERS,
-      managedUserBadge: 'cr20:kite',
+      managedUserBadge: 'cr:kite',
+      userBadgeAltText: 'Managed by your parent',
     };
     webUIListenerCallback(
         'interception-chrome-signin-parameters-changed', newParams);
     await microtasksFinished();
     checkImageUrl(iconSelector, PARAMETERS.pictureUrl);
     assertTrue(isChildVisible(app, badgeSelector));
+    checkAriaLabel(badgeAriaLabelSelector, newParams.userBadgeAltText);
 
     // Un-set Supervised user badge source. The badge becomes hidden.
     newParams = {
       ...PARAMETERS,
       managedUserBadge: '',
+      userBadgeAltText: '',
     };
     webUIListenerCallback(
         'interception-chrome-signin-parameters-changed', newParams);
     await microtasksFinished();
     assertFalse(isChildVisible(app, badgeSelector));
+    checkAriaLabel(badgeAriaLabelSelector, newParams.userBadgeAltText);
   });
 
 });

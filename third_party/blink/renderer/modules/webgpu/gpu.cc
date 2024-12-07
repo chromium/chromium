@@ -280,9 +280,11 @@ void GPU::RequestAdapterImpl(
     ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
-  // Validate that the featureLevel is undefined. If not return a null adapter.
-  // This logic will evolve as feature levels are added in the future.
-  if (options->hasFeatureLevel()) {
+  // Validate that the featureLevel is an allowed feature level string value. If
+  // not return a null adapter. This logic will evolve as feature levels are
+  // added in the future.
+  if (options->hasFeatureLevel() && options->featureLevel() != "core" &&
+      options->featureLevel() != "compatibility") {
     OnRequestAdapterCallback(script_state, options, resolver,
                              wgpu::RequestAdapterStatus::Error, nullptr,
                              "Unknown feature level");

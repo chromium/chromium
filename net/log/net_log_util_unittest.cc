@@ -31,6 +31,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -40,6 +41,13 @@ namespace {
 // Make sure GetNetConstants doesn't crash.
 TEST(NetLogUtil, GetNetConstants) {
   base::Value constants(GetNetConstants());
+}
+
+TEST(NetLogUtil, GetNetConstantsOkInNetError) {
+  base::Value constants(GetNetConstants());
+  std::optional<int> ok_value =
+      constants.GetDict().FindDict("netError")->FindInt("net::OK");
+  EXPECT_THAT(ok_value, testing::Optional(0));
 }
 
 // Make sure GetNetInfo doesn't crash when called on contexts with and without

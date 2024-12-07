@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/ranges.h"
 #include "base/profiler/stack_sampler.h"
 #include "base/rand_util.h"
 #include "build/branding_buildflags.h"
@@ -187,21 +188,21 @@ bool ThreadProfilerConfiguration::IsProcessGloballyEnabled(
 ThreadProfilerConfiguration::VariationGroup
 ThreadProfilerConfiguration::ChooseVariationGroup(
     std::initializer_list<Variation> variations) {
-  int total_weight = 0;
+  double total_weight = 0;
   for (const Variation& variation : variations)
     total_weight += variation.weight;
-  DCHECK_EQ(100, total_weight);
+  DCHECK(base::IsApproximatelyEqual(total_weight, 100.0, 0.0001));
 
-  int chosen = base::RandInt(0, total_weight - 1);  // Max is inclusive.
-  int cumulative_weight = 0;
-  for (const auto& variation : variations) {
-    if (chosen >= cumulative_weight &&
-        chosen < cumulative_weight + variation.weight) {
-      return variation.group;
+  int chosen = base::RandDouble() * total_weight;  // Max is inclusive.
+  double cumulative_weight = 0;
+  const Variation* last_item = variations.end() - 1;
+  for (const Variation* it = variations.begin(); it != last_item; ++it) {
+    cumulative_weight += it->weight;
+    if (chosen < cumulative_weight) {
+      return it->group;
     }
-    cumulative_weight += variation.weight;
   }
-  NOTREACHED();
+  return last_item->group;
 }
 
 // static
@@ -234,13 +235,12 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   const std::optional<sampling_profiler::ProfilerProcessType>
       process_type_to_sample = platform_configuration.ChooseEnabledProcess();
 
-  CHECK_EQ(0, relative_populations.experiment % 2);
   return {
       ChooseVariationGroup({
           {kProfileDisabledOutsideOfExperiment, relative_populations.disabled},
           {kProfileEnabled, relative_populations.enabled},
-          {kProfileControl, relative_populations.experiment / 2},
-          {kProfileDisabled, relative_populations.experiment / 2},
+          {kProfileControl, relative_populations.experiment / 2.0},
+          {kProfileDisabled, relative_populations.experiment / 2.0},
       }),
       process_type_to_sample};
 }

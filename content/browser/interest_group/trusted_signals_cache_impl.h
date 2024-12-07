@@ -538,6 +538,10 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   std::map<base::UnguessableToken,
            raw_ptr<CompressionGroupData, CtnExperimental>>
       compression_group_data_map_;
+
+  // TODO(crbug.com/379844661): Switch to using an LRU cache of unguessable
+  // tokens keyed on script origin, signals URL, and bidder/seller bit.
+  base::UnguessableToken constant_token = base::UnguessableToken::Create();
 };
 
 }  // namespace content

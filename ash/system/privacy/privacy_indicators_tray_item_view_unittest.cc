@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -347,12 +348,104 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/std::u16string(),
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
 
   privacy_indicators_view()->UpdateScreenShareStatus(
       /*is_screen_sharing=*/true);
+  EXPECT_EQ(GetExpectedTooltipText(
+                /*cam_mic_status=*/std::u16string(),
+                /*screen_share_status=*/l10n_util::GetStringUTF16(
+                    IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE)),
+            GetTooltipText());
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipTextAccessibility) {
+  ui::AXNodeData data;
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/std::u16string(),
+                                   /*screen_share_status=*/std::u16string()),
+            GetTooltipText());
+
+  data = ui::AXNodeData();
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
+                                       IDS_PRIVACY_INDICATORS_STATUS_CAMERA),
+                                   /*screen_share_status=*/std::u16string()),
+            GetTooltipText());
+
+  data = ui::AXNodeData();
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/true);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
+                                       IDS_PRIVACY_INDICATORS_STATUS_MIC),
+                                   /*screen_share_status=*/std::u16string()),
+            GetTooltipText());
+
+  data = ui::AXNodeData();
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(
+      GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
+                                 IDS_PRIVACY_INDICATORS_STATUS_CAMERA_AND_MIC),
+                             /*screen_share_status=*/std::u16string()),
+      GetTooltipText());
+
+  data = ui::AXNodeData();
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false);
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/std::u16string(),
+                                   /*screen_share_status=*/std::u16string()),
+            GetTooltipText());
+
+  data = ui::AXNodeData();
+  privacy_indicators_view()->UpdateScreenShareStatus(
+      /*is_screen_sharing=*/true);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
   EXPECT_EQ(GetExpectedTooltipText(
                 /*cam_mic_status=*/std::u16string(),
                 /*screen_share_status=*/l10n_util::GetStringUTF16(

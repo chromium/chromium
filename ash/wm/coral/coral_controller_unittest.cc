@@ -25,6 +25,7 @@
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
@@ -52,7 +53,7 @@ class CoralControllerTest : public AshTestBase {
   }
 
   void ClickFirstCoralButton() {
-    BirchChipButton* coral_button = GetFirstCoralButton();
+    CoralChipButton* coral_button = GetFirstCoralButton();
     CHECK(coral_button);
     LeftClickOn(coral_button);
   }
@@ -113,7 +114,7 @@ TEST_F(CoralControllerTest, ClickChipWithMaxDesks) {
   // Verify that there is no crash and the expected toast is shown.
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kTests);
-  BirchChipButton* coral_button = GetFirstCoralButton();
+  CoralChipButton* coral_button = GetFirstCoralButton();
   LeftClickOn(coral_button);
   LeftClickOn(coral_button->addon_view());
   EXPECT_TRUE(

@@ -9,6 +9,7 @@
 
 #include "components/account_id/account_id.h"
 #include "components/account_id/mojom/account_id.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace mojo {
 
@@ -50,7 +51,7 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
   static std::string id(const AccountId& r) {
     switch (r.GetAccountType()) {
       case AccountType::GOOGLE:
-        return r.GetGaiaId();
+        return r.GetGaiaId().ToString();
       case AccountType::ACTIVE_DIRECTORY:
         return r.GetObjGuid();
       case AccountType::UNKNOWN:
@@ -74,7 +75,7 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
 
     switch (account_type) {
       case AccountType::GOOGLE:
-        *out = AccountId::FromUserEmailGaiaId(user_email, id);
+        *out = AccountId::FromUserEmailGaiaId(user_email, GaiaId(id));
         break;
       case AccountType::ACTIVE_DIRECTORY:
         *out = AccountId::AdFromUserEmailObjGuid(user_email, id);

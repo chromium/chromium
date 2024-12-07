@@ -56,6 +56,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     // when fallback time is used.  Some events might still have a next paint.
     base::TimeTicks fallback_time;
 
+    // The render start time.
+    // Only not null for event timings that have a next paint.
+    base::TimeTicks render_start_time;
+
     // Keycode for the event. If the event is not a keyboard event, the keycode
     // wouldn't be set.
     std::optional<int> key_code = std::nullopt;
@@ -131,6 +135,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   EventTimingReportingInfo* GetEventTimingReportingInfo() {
     return &reporting_info_;
   }
+
+  bool NeedsNextPaintMeasurement() const;
 
  private:
   AtomicString entry_type_;

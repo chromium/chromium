@@ -129,9 +129,9 @@ class FakeRealm {
               delegate->OnChildInstanceCreated(name);
             }));
 
-    child.instances.Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                              fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                          exposed_dir.TakeChannel());
+    child.instances.Serve(
+        fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+        fidl::ServerEnd<fuchsia_io::Directory>(exposed_dir.TakeChannel()));
   }
 
   // Destroys the child and runs the `on_empty_callback` if none remain.

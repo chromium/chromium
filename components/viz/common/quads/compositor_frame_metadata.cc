@@ -27,6 +27,7 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       root_scroll_offset(other.root_scroll_offset),
       page_scale_factor(other.page_scale_factor),
       scrollable_viewport_size(other.scrollable_viewport_size),
+      visible_viewport_size(other.visible_viewport_size),
       content_color_usage(other.content_color_usage),
       may_contain_video(other.may_contain_video),
       is_handling_interaction(other.is_handling_interaction),

@@ -36,6 +36,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -737,6 +739,16 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
                            kUnsyncedDataWithReauthButton
                      : ChromeSignoutConfirmationPromptVariant::kUnsyncedData;
   }
+  auto extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(primary_account_id);
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kEnableSupervisedUserVersionSignOutDialog) &&
+      extended_account_info.capabilities.is_subject_to_parental_controls() ==
+          signin::Tribool::kTrue) {
+    prompt_variant =
+        ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls;
+  }
+
   // Show confirmation prompt where the user can reauth or sign out.
   ShowChromeSignoutConfirmationPrompt(*browser_, prompt_variant,
                                       std::move(callback));

@@ -179,11 +179,12 @@ interface CrosAudioConfig {
   // switch.
   SetInputMuted(bool muted);
 
-  // Refreshes voice isolation enabled state, source of truth is Prefs.
-  RefreshVoiceIsolationState();
+  // Records the voice isolation enabled state change.
+  RecordVoiceIsolationEnabledChange();
 
-  // Refreshes the preferred effect mode of voice isolation.
-  RefreshVoiceIsolationPreferredEffect();
+  // Records the voice isolation preferred effect mode change.
+  RecordVoiceIsolationPreferredEffectChange(
+      AudioEffectType preferred_effect);
 
   // Sets whether noise cancellation is enabled or not. This is shared between
   // different input devices, so changing the active input device will keep the

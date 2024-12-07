@@ -180,7 +180,7 @@ SystemLogDelegate::SystemLogDelegate(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner) {}
 
-SystemLogDelegate::~SystemLogDelegate() {}
+SystemLogDelegate::~SystemLogDelegate() = default;
 
 std::string SystemLogDelegate::GetPolicyAsJSON() {
   bool include_user_policies = false;
@@ -341,7 +341,7 @@ SystemLogUploader::SystemLogUploader(
   RefreshUploadSettings();
 }
 
-SystemLogUploader::~SystemLogUploader() {}
+SystemLogUploader::~SystemLogUploader() = default;
 
 void SystemLogUploader::OnSuccess() {
   SYSLOG(INFO) << "Upload successful.";

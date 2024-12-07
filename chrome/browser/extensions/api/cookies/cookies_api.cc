@@ -20,10 +20,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -41,6 +37,13 @@
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
+#endif
 
 using content::BrowserThread;
 
@@ -345,6 +348,8 @@ void CookiesGetFunction::GetCookieListCallback(
 }
 
 void CookiesGetFunction::NotifyExtensionTelemetry() {
+  // TODO(crbug.com/371423073): Support telemetry on Android.
+#if !BUILDFLAG(IS_ANDROID)
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
@@ -358,6 +363,7 @@ void CookiesGetFunction::NotifyExtensionTelemetry() {
       parsed_args_->details.store_id.value_or(std::string()),
       parsed_args_->details.url, js_callstack().value_or(StackTrace()));
   telemetry_service->AddSignal(std::move(cookies_get_signal));
+#endif
 }
 
 CookiesGetAllFunction::CookiesGetAllFunction() {
@@ -451,6 +457,8 @@ void CookiesGetAllFunction::GetCookieListCallback(
 }
 
 void CookiesGetAllFunction::NotifyExtensionTelemetry() {
+  // TODO(crbug.com/371423073): Support telemetry on Android.
+#if !BUILDFLAG(IS_ANDROID)
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
@@ -469,6 +477,7 @@ void CookiesGetAllFunction::NotifyExtensionTelemetry() {
           parsed_args_->details.url.value_or(std::string()),
           parsed_args_->details.session, js_callstack().value_or(StackTrace()));
   telemetry_service->AddSignal(std::move(cookies_get_all_signal));
+#endif
 }
 
 CookiesSetFunction::CookiesSetFunction()

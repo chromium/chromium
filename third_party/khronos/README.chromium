@@ -1,7 +1,8 @@
 Name: Khronos header files
 Short Name: khronos_headers
 URL: http://www.khronos.org/registry
-Version: unknown
+Version: N/A
+Date: 2018-07-25
 GLES Date: 2018-07-25
 EGL Date: 2022-03-23
 License: MIT/X11, SGI Free Software License B

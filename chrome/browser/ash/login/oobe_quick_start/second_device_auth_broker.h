@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -62,7 +63,7 @@ class SecondDeviceAuthBroker {
     std::string auth_code;
 
     // Obfuscated Gaia id of the user. May be empty.
-    std::string gaia_id;
+    GaiaId gaia_id;
   };
 
   // `AuthCodeCallback` request was rejected.

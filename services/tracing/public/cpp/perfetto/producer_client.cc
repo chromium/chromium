@@ -45,91 +45,8 @@ ProducerClient::~ProducerClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ProducerClient::Connect(
-    mojo::PendingRemote<mojom::PerfettoService> perfetto_service) {
-  if (!InitSharedMemoryIfNeeded()) {
-    LOG(ERROR) << "Failed to setup tracing service connection for this process";
-    return;
-  }
-
-  base::UnsafeSharedMemoryRegion shm;
-  {
-    base::AutoLock lock(lock_);
-    shm = shared_memory_->CloneRegion();
-  }
-  CHECK(shm.IsValid());
-
-  mojo::PendingRemote<mojom::ProducerClient> client;
-  auto client_receiver = client.InitWithNewPipeAndPassReceiver();
-  mojo::PendingRemote<mojom::ProducerHost> producer_host_remote;
-  mojo::Remote<mojom::PerfettoService>(std::move(perfetto_service))
-      ->ConnectToProducerHost(
-          std::move(client),
-          producer_host_remote.InitWithNewPipeAndPassReceiver(), std::move(shm),
-          kSMBPageSizeBytes);
-  task_runner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProducerClient::BindClientAndHostPipesOnSequence,
-                     base::Unretained(this), std::move(client_receiver),
-                     std::move(producer_host_remote)));
-}
-
-void ProducerClient::BindInProcessSharedMemoryArbiter(
-    perfetto::TracingService::ProducerEndpoint* producer_endpoint,
-    base::tracing::PerfettoTaskRunner* task_runner) {
-  DCHECK(!in_process_arbiter_task_runner_);
-  in_process_arbiter_task_runner_ = task_runner;
-
-  perfetto::SharedMemoryArbiter* arbiter;
-  {
-    base::AutoLock lock(lock_);
-    // Shared memory should have been created before connecting to ProducerHost.
-    DCHECK(shared_memory_arbiter_);
-    // |shared_memory_arbiter_| is never destroyed, thus OK to call
-    // BindToProducerEndpoint() without holding the lock.
-    arbiter = shared_memory_arbiter_.get();
-  }
-  arbiter->BindToProducerEndpoint(producer_endpoint, task_runner);
-}
-
 void ProducerClient::Disconnect() {
   LOG(DFATAL) << "Not implemented yet";
-}
-
-void ProducerClient::BindStartupTargetBuffer(
-    uint16_t target_buffer_reservation_id,
-    perfetto::BufferID startup_target_buffer) {
-  // While we should be called on the ProducerClient's task runner, it's
-  // possible that the SMA lives on a different sequence (when in process).
-  if (in_process_arbiter_task_runner_ &&
-      !in_process_arbiter_task_runner_->RunsTasksOnCurrentThread()) {
-    // |this| is never destroyed, except in tests.
-    in_process_arbiter_task_runner_->GetOrCreateTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProducerClient::BindStartupTargetBuffer,
-                       base::Unretained(this), target_buffer_reservation_id,
-                       startup_target_buffer));
-    return;
-  }
-  MaybeSharedMemoryArbiter()->BindStartupTargetBuffer(
-      target_buffer_reservation_id, startup_target_buffer);
-}
-
-void ProducerClient::AbortStartupTracingForReservation(
-    uint16_t target_buffer_reservation_id) {
-  // While we should be called on the ProducerClient's task runner, it's
-  // possible that the SMA lives on a different sequence (when in process).
-  if (in_process_arbiter_task_runner_ &&
-      !in_process_arbiter_task_runner_->RunsTasksOnCurrentThread()) {
-    // |this| is never destroyed, except in tests.
-    in_process_arbiter_task_runner_->GetOrCreateTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProducerClient::AbortStartupTracingForReservation,
-                       base::Unretained(this), target_buffer_reservation_id));
-    return;
-  }
-  MaybeSharedMemoryArbiter()->AbortStartupTracingForReservation(
-      target_buffer_reservation_id);
 }
 
 perfetto::SharedMemoryArbiter* ProducerClient::MaybeSharedMemoryArbiter() {
@@ -167,28 +84,19 @@ void ProducerClient::NewDataSourceAdded(
   producer_host_->RegisterDataSource(std::move(new_registration));
 }
 
-bool ProducerClient::IsTracingActive() {
-  base::AutoLock lock(lock_);
-  return data_sources_tracing_ > 0;
-}
-
 void ProducerClient::OnTracingStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(producer_host_);
 
-  // In-process ProducerClient's arbiter is bound via
-  // BindInProcessSharedMemoryArbiter() instead.
-  if (!in_process_arbiter_task_runner_) {
-    perfetto::SharedMemoryArbiter* arbiter;
-    {
-      base::AutoLock lock(lock_);
-      // |shared_memory_arbiter_| is never destroyed, thus OK to call
-      // BindToProducerEndpoint() without holding the lock.
-      arbiter = shared_memory_arbiter_.get();
-    }
-    DCHECK(arbiter);
-    arbiter->BindToProducerEndpoint(this, task_runner());
+  perfetto::SharedMemoryArbiter* arbiter;
+  {
+    base::AutoLock lock(lock_);
+    // |shared_memory_arbiter_| is never destroyed, thus OK to call
+    // BindToProducerEndpoint() without holding the lock.
+    arbiter = shared_memory_arbiter_.get();
   }
+  DCHECK(arbiter);
+  arbiter->BindToProducerEndpoint(this, task_runner());
 }
 
 void ProducerClient::StartDataSource(

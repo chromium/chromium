@@ -16,10 +16,10 @@ NotRestoredReasonDetails::NotRestoredReasonDetails(
     const NotRestoredReasonDetails& other)
     : reason_(other.reason_) {}
 
-ScriptValue NotRestoredReasonDetails::toJSON(ScriptState* script_state) const {
+ScriptObject NotRestoredReasonDetails::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.AddString("reason", reason_);
-  return builder.GetScriptValue();
+  return builder.ToScriptObject();
 }
 
 }  // namespace blink

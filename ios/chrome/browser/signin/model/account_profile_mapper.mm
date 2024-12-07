@@ -115,6 +115,7 @@ void DetachGaiaIdFromProfile(
 // propagates other SystemIdentityManagerObserver events out.
 class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
  public:
+  using IdentitiesOnDeviceChangedCallback = base::RepeatingCallback<void()>;
   using MappingUpdatedCallback =
       base::RepeatingCallback<void(const ProfileNameToGaiaIds& old_mapping,
                                    const ProfileNameToGaiaIds& new_mapping)>;
@@ -133,6 +134,7 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   Assigner(
       SystemIdentityManager* system_identity_manager,
       ProfileManagerIOS* profile_manager,
+      IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb,
       MappingUpdatedCallback mapping_updated_cb,
       IdentityUpdatedCallback identity_updated_cb,
       IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb,
@@ -190,6 +192,7 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
 
   raw_ptr<ProfileManagerIOS> profile_manager_;
 
+  IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb_;
   MappingUpdatedCallback mapping_updated_cb_;
   IdentityUpdatedCallback identity_updated_cb_;
   IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb_;
@@ -212,6 +215,7 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
 AccountProfileMapper::Assigner::Assigner(
     SystemIdentityManager* system_identity_manager,
     ProfileManagerIOS* profile_manager,
+    IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb,
     MappingUpdatedCallback mapping_updated_cb,
     IdentityUpdatedCallback identity_updated_cb,
     IdentityRefreshTokenUpdatedCallback identity_refresh_token_updated_cb,
@@ -219,6 +223,7 @@ AccountProfileMapper::Assigner::Assigner(
         identity_access_token_refresh_failed_cb)
     : system_identity_manager_(system_identity_manager),
       profile_manager_(profile_manager),
+      identitites_on_device_changed_cb_(identitites_on_device_changed_cb),
       mapping_updated_cb_(mapping_updated_cb),
       identity_updated_cb_(identity_updated_cb),
       identity_refresh_token_updated_cb_(identity_refresh_token_updated_cb),
@@ -308,6 +313,10 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
 }
 
 void AccountProfileMapper::Assigner::OnIdentityListChanged() {
+  // Send notification about on-device identities first, before sending
+  // per-profile ones.
+  identitites_on_device_changed_cb_.Run();
+
   // Assign identities to profiles, if they're not assigned yet.
   std::set<std::string> processed_gaia_ids;
   system_identity_manager_->IterateOverIdentities(base::BindRepeating(
@@ -504,6 +513,8 @@ AccountProfileMapper::AccountProfileMapper(
 
   assigner_ = std::make_unique<Assigner>(
       system_identity_manager_, profile_manager_,
+      base::BindRepeating(&AccountProfileMapper::IdentitiesOnDeviceChanged,
+                          base::Unretained(this)),
       base::BindRepeating(&AccountProfileMapper::MappingUpdated,
                           base::Unretained(this)),
       base::BindRepeating(&AccountProfileMapper::IdentityUpdated,
@@ -573,6 +584,15 @@ void AccountProfileMapper::IterateOverAllIdentitiesOnDevice(
 void AccountProfileMapper::MakePersonalProfileManagedWithGaiaID(
     std::string_view gaia_id) {
   assigner_->MakePersonalProfileManagedWithGaiaID(gaia_id);
+}
+
+void AccountProfileMapper::IdentitiesOnDeviceChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [name, observer_list] : observer_lists_per_profile_name_) {
+    for (Observer& observer : observer_list) {
+      observer.OnIdentitiesOnDeviceChanged();
+    }
+  }
 }
 
 void AccountProfileMapper::IdentityUpdated(id<SystemIdentity> identity) {

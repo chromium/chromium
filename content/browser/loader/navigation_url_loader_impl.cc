@@ -122,10 +122,6 @@ namespace content {
 
 namespace {
 
-BASE_FEATURE(kSkipUnnecessaryThreadHopsForParseHeaders,
-             "SkipUnnecessaryThreadHopsForParseHeaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 class NavigationLoaderInterceptorBrowserContainer
     : public NavigationLoaderInterceptor {
  public:
@@ -371,8 +367,10 @@ void LogQueueTimeHistogram(std::string_view name,
                            bool is_outermost_main_frame) {
   auto* task = base::TaskAnnotator::CurrentTaskForThread();
   // Only log for non-delayed tasks with a valid queue_time.
-  if (!task || task->queue_time.is_null() || !task->delayed_run_time.is_null())
+  if (!task || task->queue_time.is_null() ||
+      !task->delayed_run_time.is_null()) {
     return;
+  }
 
   base::UmaHistogramTimes(
       base::StrCat(
@@ -597,10 +595,9 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
   }
 
   // Set up an interceptor for prefetch.
-  interceptors_.push_back(
-      std::make_unique<PrefetchURLLoaderInterceptor>(
-          frame_tree_node_id_, request_info_->initiator_document_token,
-          request_info_->prefetch_serving_page_metrics_container));
+  interceptors_.push_back(std::make_unique<PrefetchURLLoaderInterceptor>(
+      frame_tree_node_id_, request_info_->initiator_document_token,
+      request_info_->prefetch_serving_page_metrics_container));
 
   // See if embedders want to add interceptors.
   std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>
@@ -1254,8 +1251,9 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
 
   // Filter out hints that are disabled by features and the like.
   blink::EnabledClientHints filtered_enabled_hints;
-  for (const auto& hint : accept_ch_frame)
+  for (const auto& hint : accept_ch_frame) {
     filtered_enabled_hints.SetIsEnabled(hint, true);
+  }
   const std::vector<network::mojom::WebClientHintsType>& filtered_hints =
       filtered_enabled_hints.GetEnabledHints();
 
@@ -1423,8 +1421,7 @@ void NavigationURLLoaderImpl::ParseHeaders(
   }
 
   // If the network service is running in process, skip unnecessary thread hops.
-  if (base::FeatureList::IsEnabled(kSkipUnnecessaryThreadHopsForParseHeaders) &&
-      IsInProcessNetworkService() && !head->parsed_headers) {
+  if (IsInProcessNetworkService() && !head->parsed_headers) {
     head->parsed_headers =
         network::PopulateParsedHeaders(head->headers.get(), url);
   }

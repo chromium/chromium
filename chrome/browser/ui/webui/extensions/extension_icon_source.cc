@@ -156,7 +156,7 @@ bool ExtensionIconSource::AllowCaching() {
   return false;
 }
 
-ExtensionIconSource::~ExtensionIconSource() {}
+ExtensionIconSource::~ExtensionIconSource() = default;
 
 const SkBitmap* ExtensionIconSource::GetDefaultAppImage() {
   if (!default_app_data_.get()) {

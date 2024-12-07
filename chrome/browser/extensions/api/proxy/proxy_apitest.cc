@@ -30,7 +30,7 @@ const char kNoPac[] = "";
 
 class ProxySettingsApiTest : public ExtensionApiTest {
  public:
-  ProxySettingsApiTest() {}
+  ProxySettingsApiTest() = default;
 
   ProxySettingsApiTest(const ProxySettingsApiTest&) = delete;
   ProxySettingsApiTest& operator=(const ProxySettingsApiTest&) = delete;

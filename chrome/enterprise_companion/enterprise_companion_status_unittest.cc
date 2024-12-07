@@ -104,54 +104,38 @@ TEST(EnterpriseCompanionStatusTest, FromMojomStatusEqualsOtherType) {
   EXPECT_EQ(status1, status2);
 }
 
-TEST(EnterpriseCompanionStatusTest, FromProtoStatusSuccess) {
-  proto::Status proto_status;
-  proto_status.set_space(0);
-  proto_status.set_code(0);
+TEST(EnterpriseCompanionStatusTest, FromPersistedErrorStatusSuccess) {
   EnterpriseCompanionStatus status =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status);
+      EnterpriseCompanionStatus::FromPersistedError(PersistedError(0, 0, {}));
   EXPECT_TRUE(status.ok());
 }
 
 TEST(EnterpriseCompanionStatusTest, FromProtoStatusError) {
-  proto::Status proto_status;
-  proto_status.set_space(2);
-  proto_status.set_code(0);
   EnterpriseCompanionStatus status =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status);
+      EnterpriseCompanionStatus::FromPersistedError(PersistedError(2, 0, {}));
   EXPECT_FALSE(status.ok());
   EXPECT_EQ(status.space(), 2);
   EXPECT_EQ(status.code(), 0);
 }
 
-TEST(EnterpriseCompanionStatusTest, FromProtoStatusEqual) {
-  proto::Status proto_status_1;
-  proto_status_1.set_space(777);
-  proto_status_1.set_code(42);
-  EnterpriseCompanionStatus status1 =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status_1);
-
-  proto::Status proto_status_2;
-  proto_status_2.set_space(777);
-  proto_status_2.set_code(42);
-  EnterpriseCompanionStatus status2 =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status_2);
-
-  EXPECT_EQ(status1, status2);
+TEST(EnterpriseCompanionStatusTest, FromPersistedErrorEqual) {
+  EnterpriseCompanionStatus status_1 =
+      EnterpriseCompanionStatus::FromPersistedError(
+          PersistedError(777, 42, {}));
+  EnterpriseCompanionStatus status_2 =
+      EnterpriseCompanionStatus::FromPersistedError(
+          PersistedError(777, 42, {}));
+  EXPECT_EQ(status_1, status_2);
 }
 
-TEST(EnterpriseCompanionStatusTest, FromProtoStatusEqualsOtherType) {
-  proto::Status proto_status_1;
-  proto_status_1.set_space(3);
-  proto_status_1.set_code(
-      static_cast<int>(ApplicationError::kCannotAcquireLock));
-  EnterpriseCompanionStatus status1 =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status_1);
-
-  EnterpriseCompanionStatus status2 =
-      EnterpriseCompanionStatus(ApplicationError::kCannotAcquireLock);
-
-  EXPECT_EQ(status1, status2);
+TEST(EnterpriseCompanionStatusTest, FromPersistedErrorEqualsOtherType) {
+  EnterpriseCompanionStatus status_1 =
+      EnterpriseCompanionStatus::FromPersistedError(PersistedError(
+          3, static_cast<int>(ApplicationError::kCannotAcquireLock), {}));
+  EnterpriseCompanionStatus status_2 =
+      EnterpriseCompanionStatus::FromPersistedError(PersistedError(
+          3, static_cast<int>(ApplicationError::kCannotAcquireLock), {}));
+  EXPECT_EQ(status_1, status_2);
 }
 
 TEST(EnterpriseCompanionStatusTest, FromPosixErrno) {

@@ -54,12 +54,15 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
+#include "third_party/blink/renderer/core/frame/csp/csp_hash_report_body.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/location.h"
+#include "third_party/blink/renderer/core/frame/report.h"
+#include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -163,6 +166,49 @@ bool AllowOpaqueFencedFrames(
   }
 
   return false;
+}
+
+// https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+static String StripURLForUseInReport(const SecurityOrigin* security_origin,
+                                     const KURL& url,
+                                     CSPDirectiveName effective_type) {
+  if (!url.IsValid()) {
+    return String();
+  }
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 1. If url's scheme is not "`https`", "'http'", "`wss`" or "`ws`" then
+  // >    return url's scheme.
+  static const char* const allow_list[] = {"http", "https", "ws", "wss"};
+  if (!base::Contains(allow_list, url.Protocol())) {
+    return url.Protocol();
+  }
+
+  // Until we're more careful about the way we deal with navigations in frames
+  // (and, by extension, in plugin documents), strip cross-origin 'frame-src'
+  // and 'object-src' violations down to an origin. https://crbug.com/633306
+  bool can_safely_expose_url =
+      security_origin->CanRequest(url) ||
+      (effective_type != CSPDirectiveName::FrameSrc &&
+       effective_type != CSPDirectiveName::ObjectSrc &&
+       effective_type != CSPDirectiveName::FencedFrameSrc);
+
+  if (!can_safely_expose_url) {
+    return SecurityOrigin::Create(url)->ToString();
+  }
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 2. Set url’s fragment to the empty string.
+  // > 3. Set url’s username to the empty string.
+  // > 4. Set url’s password to the empty string.
+  KURL stripped_url = url;
+  stripped_url.RemoveFragmentIdentifier();
+  stripped_url.SetUser(String());
+  stripped_url.SetPass(String());
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 5. Return the result of executing the URL serializer on url.
+  return stripped_url.GetString();
 }
 
 }  // namespace
@@ -615,6 +661,45 @@ bool ContentSecurityPolicy::AllowWasmCodeGeneration(
   return is_allowed;
 }
 
+HashSet<HashAlgorithm> ContentSecurityPolicy::HashesToReport() const {
+  HashSet<HashAlgorithm> algorithms;
+  for (const auto& policy : policies_) {
+    if (auto algorithm = CSPDirectiveListHashToReport(*policy)) {
+      algorithms.insert(algorithm.value());
+    }
+  }
+  return algorithms;
+}
+
+void ContentSecurityPolicy::AddHashReportIfNeeded(
+    LocalFrame* frame,
+    const String& url,
+    const HashMap<HashAlgorithm, String>& integrity_hashes) const {
+  LocalDOMWindow* window = frame->DomWindow();
+  CHECK(window->document());
+  for (const auto& policy : policies_) {
+    if (auto algorithm = CSPDirectiveListHashToReport(*policy)) {
+      auto hash_it = integrity_hashes.find(algorithm.value());
+      String integrity_hash = "";
+      if (hash_it != integrity_hashes.end()) {
+        integrity_hash = hash_it->value;
+      }
+
+      CSPHashReportBody* body = MakeGarbageCollected<CSPHashReportBody>(
+          url, integrity_hash, "subresource", "script");
+      Report* report_to_queue = MakeGarbageCollected<Report>(
+          ReportType::kCSPHash,
+          StripURLForUseInReport(
+              window->GetContentSecurityPolicyDelegate().GetSecurityOrigin(),
+              window->document()->Url(), CSPDirectiveName::DefaultSrc),
+          body);
+
+      ReportingContext::From(window)->QueueReport(report_to_queue,
+                                                  policy->report_endpoints);
+    }
+  }
+}
+
 String ContentSecurityPolicy::EvalDisabledErrorMessage() const {
   for (const auto& policy : policies_) {
     String message;
@@ -1006,46 +1091,6 @@ void ContentSecurityPolicy::EnforceStrictMixedContentChecking() {
 void ContentSecurityPolicy::UpgradeInsecureRequests() {
   insecure_request_policy_ |=
       mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests;
-}
-
-// https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
-static String StripURLForUseInReport(const SecurityOrigin* security_origin,
-                                     const KURL& url,
-                                     CSPDirectiveName effective_type) {
-  if (!url.IsValid())
-    return String();
-
-  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
-  // > 1. If url's scheme is not "`https`", "'http'", "`wss`" or "`ws`" then
-  // >    return url's scheme.
-  static const char* const allow_list[] = {"http", "https", "ws", "wss"};
-  if (!base::Contains(allow_list, url.Protocol()))
-    return url.Protocol();
-
-  // Until we're more careful about the way we deal with navigations in frames
-  // (and, by extension, in plugin documents), strip cross-origin 'frame-src'
-  // and 'object-src' violations down to an origin. https://crbug.com/633306
-  bool can_safely_expose_url =
-      security_origin->CanRequest(url) ||
-      (effective_type != CSPDirectiveName::FrameSrc &&
-       effective_type != CSPDirectiveName::ObjectSrc &&
-       effective_type != CSPDirectiveName::FencedFrameSrc);
-
-  if (!can_safely_expose_url)
-    return SecurityOrigin::Create(url)->ToString();
-
-  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
-  // > 2. Set url’s fragment to the empty string.
-  // > 3. Set url’s username to the empty string.
-  // > 4. Set url’s password to the empty string.
-  KURL stripped_url = url;
-  stripped_url.RemoveFragmentIdentifier();
-  stripped_url.SetUser(String());
-  stripped_url.SetPass(String());
-
-  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
-  // > 5. Return the result of executing the URL serializer on url.
-  return stripped_url.GetString();
 }
 
 namespace {

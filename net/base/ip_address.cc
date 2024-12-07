@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/ip_address.h"
 
 #include <stddef.h>
@@ -49,8 +44,9 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   // Compare all the bytes that fall entirely within the prefix.
   size_t num_entire_bytes_in_prefix = prefix_length_in_bits / 8;
   for (size_t i = 0; i < num_entire_bytes_in_prefix; ++i) {
-    if (ip_address[i] != ip_prefix[i])
+    if (ip_address[i] != UNSAFE_TODO(ip_prefix[i])) {
       return false;
+    }
   }
 
   // In case the prefix was not a multiple of 8, there will be 1 byte
@@ -59,8 +55,9 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   if (remaining_bits != 0) {
     uint8_t mask = 0xFF << (8 - remaining_bits);
     size_t i = num_entire_bytes_in_prefix;
-    if ((ip_address[i] & mask) != (ip_prefix[i] & mask))
+    if ((ip_address[i] & mask) != UNSAFE_TODO((ip_prefix[i] & mask))) {
       return false;
+    }
   }
   return true;
 }

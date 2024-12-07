@@ -225,7 +225,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
                 android:text="@string/privacy_sandbox_m1_notice_eea_ack_button"
-                style="@style/FilledButton" />
+                style="@style/OutlinedButton" />
 
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>

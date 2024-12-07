@@ -1240,6 +1240,14 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
   const bool has_gainmap =
       decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
   ASSERT_FALSE(has_gainmap);
+
+  // Check that we get an error if we try decoding the gain map.
+  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateGainMapAVIFDecoder();
+  gainmap_decoder->SetData(data, true);
+  EXPECT_FALSE(gainmap_decoder->IsSizeAvailable());
+  EXPECT_TRUE(gainmap_decoder->Failed());
+  EXPECT_EQ(gainmap_decoder->FrameCount(), 0u);
+  EXPECT_FALSE(gainmap_decoder->DecodeFrameBufferAtIndex(0));
 }
 
 TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {

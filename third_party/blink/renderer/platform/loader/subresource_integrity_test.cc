@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
 #include <algorithm>
@@ -108,53 +103,44 @@ class SubresourceIntegrityTest : public testing::Test {
 
   void ExpectAlgorithm(const String& text,
                        IntegrityAlgorithm expected_algorithm) {
-    Vector<UChar> characters;
-    text.AppendTo(characters);
-    const UChar* position = characters.data();
-    const UChar* end = characters.data() + characters.size();
-    IntegrityAlgorithm algorithm;
+    StringUTF8Adaptor string_data(text);
 
-    EXPECT_EQ(SubresourceIntegrity::kAlgorithmValid,
-              SubresourceIntegrity::ParseAttributeAlgorithm(position, end,
-                                                            algorithm));
+    IntegrityAlgorithm algorithm;
+    auto result = SubresourceIntegrity::ParseAttributeAlgorithm(
+        base::as_string_view(string_data), algorithm);
+    ASSERT_TRUE(result.has_value());
+    // All algorithm identifiers are currently 6 or 7 characters long.
+    EXPECT_TRUE(result.value() == 6u || result.value() == 7u);
     EXPECT_EQ(expected_algorithm, algorithm);
-    EXPECT_EQ(end, position);
   }
 
   void ExpectAlgorithmFailure(
       const String& text,
-      SubresourceIntegrity::AlgorithmParseResult expected_result) {
-    Vector<UChar> characters;
-    text.AppendTo(characters);
-    const UChar* position = characters.data();
-    const UChar* begin = characters.data();
-    const UChar* end = characters.data() + characters.size();
-    IntegrityAlgorithm algorithm;
+      SubresourceIntegrity::AlgorithmParseError expected_error) {
+    StringUTF8Adaptor string_data(text);
 
-    EXPECT_EQ(expected_result, SubresourceIntegrity::ParseAttributeAlgorithm(
-                                   position, end, algorithm));
-    EXPECT_EQ(begin, position);
+    IntegrityAlgorithm algorithm;
+    auto result = SubresourceIntegrity::ParseAttributeAlgorithm(
+        base::as_string_view(string_data), algorithm);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(expected_error, result.error());
   }
 
   void ExpectDigest(const String& text, const char* expected_digest) {
-    Vector<UChar> characters;
-    text.AppendTo(characters);
-    const UChar* position = characters.data();
-    const UChar* end = characters.data() + characters.size();
-    String digest;
+    StringUTF8Adaptor string_data(text);
 
-    EXPECT_TRUE(SubresourceIntegrity::ParseDigest(position, end, digest));
+    String digest;
+    EXPECT_TRUE(SubresourceIntegrity::ParseDigest(
+        base::as_string_view(string_data), digest));
     EXPECT_EQ(expected_digest, digest);
   }
 
   void ExpectDigestFailure(const String& text) {
-    Vector<UChar> characters;
-    text.AppendTo(characters);
-    const UChar* position = characters.data();
-    const UChar* end = characters.data() + characters.size();
-    String digest;
+    StringUTF8Adaptor string_data(text);
 
-    EXPECT_FALSE(SubresourceIntegrity::ParseDigest(position, end, digest));
+    String digest;
+    EXPECT_FALSE(SubresourceIntegrity::ParseDigest(
+        base::as_string_view(string_data), digest));
     EXPECT_TRUE(digest.empty());
   }
 
@@ -174,11 +160,10 @@ class SubresourceIntegrityTest : public testing::Test {
 
   void ExpectParseMultipleHashes(
       const char* integrity_attribute,
-      const IntegrityMetadata expected_metadata_array[],
-      size_t expected_metadata_array_size) {
+      base::span<const IntegrityMetadata> expected_metadata) {
     IntegrityMetadataSet expected_metadata_set;
-    for (size_t i = 0; i < expected_metadata_array_size; i++) {
-      expected_metadata_set.hashes.insert(expected_metadata_array[i].ToPair());
+    for (const auto& expected : expected_metadata) {
+      expected_metadata_set.hashes.insert(expected.ToPair());
     }
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
@@ -238,7 +223,7 @@ class SubresourceIntegrityTest : public testing::Test {
                   metadata_set, &buffer, test.url,
                   *CreateTestResource(test.url, test.request_mode,
                                       test.response_type),
-                  integrity_report));
+                  integrity_report, nullptr));
   }
 
   Resource* CreateTestResource(
@@ -313,10 +298,10 @@ TEST_F(SubresourceIntegrityTest, ParseAlgorithm) {
 
 TEST_F(SubresourceIntegrityTest, ParseDigest) {
   ExpectDigest("abcdefg", "abcdefg");
-  ExpectDigest("abcdefg?", "abcdefg");
   ExpectDigest("ab+de/g", "ab+de/g");
   ExpectDigest("ab-de_g", "ab+de/g");
 
+  ExpectDigestFailure("abcdefg?");
   ExpectDigestFailure("?");
   ExpectDigestFailure("&&&foobar&&&");
   ExpectDigestFailure("\x01\x02\x03\x04");
@@ -410,8 +395,8 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
       "07yMK81ytlg0MPaIrPAjcHqba5csorDWtKg==",
       IntegrityAlgorithm::kSha512);
 
-  ExpectParseMultipleHashes("", nullptr, 0);
-  ExpectParseMultipleHashes("    ", nullptr, 0);
+  ExpectParseMultipleHashes("", {});
+  ExpectParseMultipleHashes("    ", {});
 
   const IntegrityMetadata valid_sha384_and_sha512[] = {
       IntegrityMetadata(
@@ -425,7 +410,7 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
       "sha384-XVVXBGoYw6AJOh9J+Z8pBDMVVPfkBpngexkA7JqZu8d5GENND6TEIup/tA1v5GPr "
       "sha512-tbUPioKbVBplr0b1ucnWB57SJWt4x9dOE0Vy2mzCXvH3FepqDZ+"
       "07yMK81ytlg0MPaIrPAjcHqba5csorDWtKg==",
-      valid_sha384_and_sha512, std::size(valid_sha384_and_sha512));
+      valid_sha384_and_sha512);
 
   const IntegrityMetadata valid_sha256_and_sha256[] = {
       IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
@@ -434,7 +419,7 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
   };
   ExpectParseMultipleHashes(
       "sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE= sha256-deadbeef",
-      valid_sha256_and_sha256, std::size(valid_sha256_and_sha256));
+      valid_sha256_and_sha256);
 
   const IntegrityMetadata valid_sha256_and_invalid_sha256[] = {
       IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
@@ -442,8 +427,7 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
   };
   ExpectParseMultipleHashes(
       "sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE= sha256-!!!!",
-      valid_sha256_and_invalid_sha256,
-      std::size(valid_sha256_and_invalid_sha256));
+      valid_sha256_and_invalid_sha256);
 
   const IntegrityMetadata invalid_sha256_and_valid_sha256[] = {
       IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
@@ -451,8 +435,7 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
   };
   ExpectParseMultipleHashes(
       "sha256-!!! sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
-      invalid_sha256_and_valid_sha256,
-      std::size(invalid_sha256_and_valid_sha256));
+      invalid_sha256_and_valid_sha256);
 
   ExpectParse("sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=?foo=bar",
               "BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
@@ -812,7 +795,8 @@ TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
-      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report))
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
+      nullptr))
       << "Resource variant";
 }
 
@@ -835,7 +819,7 @@ TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
   EXPECT_EQ(!SignaturesEnabled(),
             SubresourceIntegrity::CheckSubresourceIntegrity(
                 metadata_set, /*buffer=*/nullptr, sec_url, *resource,
-                integrity_report))
+                integrity_report, nullptr))
       << "Resource variant";
 }
 
@@ -882,7 +866,8 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   response.SetHttpHeaderField(http_names::kSignature,
                               AtomicString(kValidSignatureHeader));
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
-      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report))
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
+      nullptr))
       << "Resource variant";
 }
 

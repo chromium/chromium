@@ -1098,7 +1098,7 @@ const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
 }
 
 bool AXTree::Unserialize(const AXTreeUpdate& update) {
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   for (const auto& new_data : update.nodes)
     CHECK(new_data.id != kInvalidAXNodeID)
         << "AXTreeUpdate contains invalid node: " << update.ToString();
@@ -1107,7 +1107,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     CHECK_EQ(update.tree_data.tree_id, data_.tree_id)
         << "Tree id mismatch between tree update and this tree.";
   }
-#endif  // defined(AX_FAIL_FAST_BUILD)
+#endif  // AX_FAIL_FAST_BUILD()
 
   event_data_ = std::make_unique<AXEvent>();
   event_data_->event_from = update.event_from;
@@ -1469,14 +1469,14 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   observers_.Notify(&AXTreeObserver::OnAtomicUpdateFinished, this,
                     root_->id() != old_root_id, changes);
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   CheckTreeConsistency(update);
 #endif
 
   return true;
 }
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
 void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
   // Return early if no expected node count was supplied.
   if (!update.tree_checks || !update.tree_checks->node_count) {
@@ -1499,7 +1499,7 @@ void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
 
   NOTREACHED() << msg.str();
 }
-#endif  // defined(AX_FAIL_FAST_BUILD)
+#endif  // AX_FAIL_FAST_BUILD()
 
 AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   DCHECK(!GetTreeUpdateInProgressState());
@@ -2888,7 +2888,7 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   // Suppress fatal error logging in builds that target fuzzing, as fuzzers
   // generate invalid trees by design to shake out bugs.
   is_fatal = false;
-#elif defined(AX_FAIL_FAST_BUILD)
+#elif AX_FAIL_FAST_BUILD()
   // In fast-failing-builds, crash immediately with a full message, otherwise
   // rely on UnrecoverableAccessibilityError(), which will not crash until
   // multiple errors occur.

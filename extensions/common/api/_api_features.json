@@ -251,6 +251,15 @@
         "chrome://lock-reauth/*"
       ]
     }, {
+      "internal": true,
+      "channel": "stable",
+      "contexts": [
+        "webui_untrusted"
+      ],
+      "matches": [
+        "chrome-untrusted://boca-app/*"
+      ]
+    }, {
       // This feature is used by the Controlled Frame API and is specifically
       // enabled by //chrome.
       "internal": true,
@@ -835,6 +844,15 @@
       "chrome://lock-reauth/*"
     ]
   }, {
+    "internal": true,
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*"
+    ]
+  }, {
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.
     "internal": true,
@@ -871,6 +889,15 @@
       "chrome://lock-reauth/*"
     ]
   }, {
+    "internal": true,
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*"
+    ]
+  }, {
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.
     "internal": true,
@@ -901,6 +928,14 @@
       "chrome://oobe/*",
       "chrome://os-settings/*",
       "chrome://parent-access/*"
+    ]
+  }, {
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*"
     ]
   }]
 }

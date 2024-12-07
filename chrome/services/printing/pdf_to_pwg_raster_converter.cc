@@ -133,7 +133,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
 
 PdfToPwgRasterConverter::PdfToPwgRasterConverter() = default;
 
-PdfToPwgRasterConverter::~PdfToPwgRasterConverter() {}
+PdfToPwgRasterConverter::~PdfToPwgRasterConverter() = default;
 
 void PdfToPwgRasterConverter::Convert(
     base::ReadOnlySharedMemoryRegion pdf_region,

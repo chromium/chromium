@@ -263,6 +263,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       const gfx::ColorSpace& src,
       std::optional<uint32_t> src_bit_depth,
       std::optional<gfx::HDRMetadata> src_hdr_metadata,
+      const cc::PaintFlags::DynamicRangeLimitMixture& src_dynamic_range_limit,
       const gfx::ColorSpace& dst,
       bool is_video_frame);
   // Returns the color filter that should be applied to the current canvas.

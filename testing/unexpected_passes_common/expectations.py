@@ -191,7 +191,9 @@ class Expectations(object):
           continue
         expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
                                              e.reason)
-        assert expectation not in expectations_for_file
+        if expectation in expectations_for_file:
+          raise RuntimeError(
+              f'Duplicate expectation {expectation.AsExpectationFileString()}')
         expectations_for_file[expectation] = data_types.BuilderStepMap()
 
     logging.info('Creating test expectation map')

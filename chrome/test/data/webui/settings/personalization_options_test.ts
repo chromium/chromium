@@ -26,7 +26,6 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 suite('AllBuilds', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let syncBrowserProxy: TestSyncBrowserProxy;
-  let customPageVisibility: PrivacyPageVisibility;
   let testElement: SettingsPersonalizationOptionsElement;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -39,12 +38,14 @@ suite('AllBuilds', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  function buildTestElement() {
+  function buildTestElement(customPageVisibility?: PrivacyPageVisibility) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-personalization-options');
     testElement.prefs = settingsPrefs.prefs!;
     testElement.set('prefs.page_content_collection.enabled.value', false);
-    testElement.pageVisibility = customPageVisibility;
+    if (customPageVisibility) {
+      testElement.pageVisibility = customPageVisibility;
+    }
     document.body.appendChild(testElement);
     flush();
   }
@@ -258,21 +259,19 @@ suite('AllBuilds', function() {
   });
 
   test('searchSuggestToggleHiddenByPageVisibility', function() {
-    customPageVisibility = {
+    buildTestElement({
       searchPrediction: false,
       networkPrediction: false,
-    };
-    buildTestElement();
+    });
     assertFalse(isVisible(
         testElement.shadowRoot!.querySelector('#searchSuggestToggle')));
   });
 
   test('searchSuggestToggleShownByPageVisibility', function() {
-    customPageVisibility = {
+    buildTestElement({
       searchPrediction: true,
       networkPrediction: false,
-    };
-    buildTestElement();
+    });
     assertTrue(isVisible(
         testElement.shadowRoot!.querySelector('#searchSuggestToggle')));
   });

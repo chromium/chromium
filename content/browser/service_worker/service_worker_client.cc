@@ -849,7 +849,7 @@ void ServiceWorkerClient::OnEnterBackForwardCache() {
                             static_cast<int32_t>(GetClientType()));
     SCOPED_CRASH_KEY_BOOL("SWC_OnEBFC", "is_execution_ready",
                           is_execution_ready());
-    SCOPED_CRASH_KEY_BOOL("SWC_OnEBFC", "is_blob_url",
+    SCOPED_CRASH_KEY_BOOL("SWC_OnEBFC", "is_blob_or_about_url",
                           url() != GetUrlForScopeMatch());
     SCOPED_CRASH_KEY_BOOL("SWC_OnEBFC", "is_inherited", is_inherited());
     CHECK(!controller_->BFCacheContainsControllee(client_uuid()));
@@ -864,7 +864,7 @@ void ServiceWorkerClient::OnRestoreFromBackForwardCache() {
   // TODO(crbug.com/330928087): remove check when this issue resolved.
   SCOPED_CRASH_KEY_BOOL("SWC_OnRFBFC", "is_in_bfcache",
                         is_in_back_forward_cache_);
-  SCOPED_CRASH_KEY_BOOL("SWC_OnRFBFC", "is_blob_url",
+  SCOPED_CRASH_KEY_BOOL("SWC_OnRFBFC", "is_blob_or_about_url",
                         url() != GetUrlForScopeMatch());
   SCOPED_CRASH_KEY_BOOL("SWC_OnRFBFC", "is_inherited", is_inherited());
   if (controller_) {
@@ -1007,7 +1007,7 @@ void ServiceWorkerClient::UpdateController(bool notify_controllerchange) {
                             static_cast<int32_t>(GetClientType()));
     SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_execution_ready",
                           is_execution_ready());
-    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_blob_url",
+    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_blob_or_about_url",
                           url() != GetUrlForScopeMatch());
     SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_inherited", is_inherited());
     CHECK(!version->BFCacheContainsControllee(client_uuid()));
@@ -1082,26 +1082,32 @@ void ServiceWorkerClient::CheckControllerConsistency(bool should_crash) const {
 #endif  // DCHECK_IS_ON()
 
 const GURL& ServiceWorkerClient::GetUrlForScopeMatch() const {
-  if (!scope_match_url_for_blob_client_.is_empty()) {
-    return scope_match_url_for_blob_client_;
+  if (!scope_match_url_for_client_.is_empty()) {
+    return scope_match_url_for_client_;
   }
   return url_;
 }
 
 void ServiceWorkerClient::InheritControllerFrom(
     ServiceWorkerClient& creator_host,
-    const GURL& blob_url) {
+    const GURL& client_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix) ||
          blink::mojom::ServiceWorkerClientType::kDedicatedWorker ==
-             GetClientType());
-  DCHECK(blob_url.SchemeIsBlob());
+             GetClientType() ||
+         ((blink::mojom::ServiceWorkerClientType::kWindow == GetClientType() &&
+           (client_url.IsAboutSrcdoc() || client_url.IsAboutBlank()))));
+  DCHECK(client_url.SchemeIsBlob() || client_url.IsAboutSrcdoc() ||
+         client_url.IsAboutBlank());
 
-  UpdateUrls(blob_url, creator_host.top_frame_origin(), creator_host.key());
-
-  // Let `scope_match_url_for_blob_client_` be the creator's url for scope match
+  // Let `scope_match_url_for_client_` be the creator's url for scope match
   // because a client should be handled by the service worker of its creator.
-  scope_match_url_for_blob_client_ = creator_host.GetUrlForScopeMatch();
+  DCHECK(!client_url.SchemeIsBlob() ||
+         url::Origin::Create(client_url)
+             .IsSameOriginWith(creator_host.key().origin()));
+  scope_match_url_for_client_ = creator_host.GetUrlForScopeMatch();
+
+  UpdateUrls(client_url, creator_host.top_frame_origin(), creator_host.key());
 
   // Inherit the controller of the creator.
   if (creator_host.controller_registration()) {

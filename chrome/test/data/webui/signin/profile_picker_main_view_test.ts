@@ -59,7 +59,8 @@ function generateProfilesList(n: number): ProfileState[] {
              gaiaName: sync ? `User${i}` : '',
              userName: sync ? `User${i}@gmail.com` : '',
              avatarIcon: `AvatarUrl-${i}`,
-             avatarBadge: i % 4 === 0 ? `cr:domain` : ``,
+             avatarBadge: i % 4 === 0 ? 'cr:domain' : '',
+             profileCardButtonLabel: '',
            }));
 }
 

@@ -866,8 +866,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest, MAYBE_RendererBuildId) {
     // To match with the memory maps, need to convert it to absolute path,
     // which may hit ScopedBlockingCall.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    auto maps =
-        memory_instrumentation::OSMetrics::GetProcessMemoryMaps(process.Pid());
+    auto maps = memory_instrumentation::OSMetrics::GetProcessMemoryMaps(
+        process.Handle());
     bool found = false;
     for (const memory_instrumentation::mojom::VmRegionPtr& region : maps) {
       if (region->module_debugid.empty())

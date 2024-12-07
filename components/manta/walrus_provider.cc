@@ -21,7 +21,7 @@ namespace {
 constexpr char kOauthConsumerName[] = "manta_walrus";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
 // The maximum number of pixels after resizing an image.
-constexpr int32_t kMaxPixelsAfterResizing = 1024 * 1024;
+constexpr int32_t kMaxPixelsAfterResizing = 512 * 512;
 
 void OnServerResponseOrErrorReceived(
     MantaGenericCallback callback,

@@ -37,6 +37,7 @@ namespace blink {
 
 class Document;
 class ExceptionState;
+class PointerEvent;
 
 enum class ClosedByState {
   kAny,
@@ -74,7 +75,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   String closedBy() const;
   void setClosedBy(const String& return_value);
 
-  static void HandleDialogLightDismiss(const Event& event,
+  static void HandleDialogLightDismiss(const PointerEvent& pointer_event,
                                        const Node& target_node);
 
   void CloseWatcherFiredCancel(Event*);
@@ -87,8 +88,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   FocusableState SupportsFocus(UpdateBehavior) const override {
     return FocusableState::kFocusable;
   }
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
 
   // https://html.spec.whatwg.org/C/#the-dialog-element
   // Chooses the focused element when show() or showModal() is invoked.

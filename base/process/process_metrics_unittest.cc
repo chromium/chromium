@@ -736,6 +736,32 @@ TEST_F(SystemMetricsTest, InvalidProcessCpuUsage) {
 
 #endif  // ENABLE_CPU_TESTS
 
+TEST_F(SystemMetricsTest, TestValidMemoryInfo) {
+  std::unique_ptr<ProcessMetrics> metrics =
+      ProcessMetrics::CreateCurrentProcessMetrics();
+
+  auto memory_info = metrics->GetMemoryInfo();
+  EXPECT_TRUE(memory_info.has_value());
+  EXPECT_GT(memory_info->resident_set_bytes, 0U);
+
+#if BUILDFLAG(IS_APPLE)
+  EXPECT_GT(memory_info->physical_footprint_bytes, 0U);
+  EXPECT_GT(memory_info->internal_bytes, 0U);
+  EXPECT_GE(memory_info->compressed_bytes, 0U);
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
+  EXPECT_GT(memory_info->rss_anon_bytes, 0U);
+  EXPECT_GE(memory_info->vm_swap_bytes, 0U);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_GT(memory_info->private_bytes, 0U);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SystemMetricsTest, ParseZramMmStat) {
   SwapInfo swapinfo;

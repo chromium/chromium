@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -40,6 +41,8 @@
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 

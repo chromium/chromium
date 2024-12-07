@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -70,7 +71,7 @@ class TargetDeviceBootstrapController
 
     std::string email;
     std::string auth_code;
-    std::string gaia_id;
+    GaiaId gaia_id;
     // TODO(b/318664950) - Remove once the server starts sending the gaia_id.
     std::string access_token;
     std::string refresh_token;

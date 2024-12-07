@@ -20,6 +20,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/login_shelf_button.h"
 #include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -41,6 +42,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/action_logger.h"
@@ -53,6 +55,7 @@
 using session_manager::SessionState;
 
 namespace ash {
+
 namespace {
 
 void ExpectFocused(views::View* view) {
@@ -73,6 +76,8 @@ std::vector<KioskAppMenuEntry> GetNFakeKioskApps(int n) {
                            /*name=*/u"Fake App",
                            /*icon=*/gfx::ImageSkia()));
 }
+
+}  // namespace
 
 class LoginShelfViewTest : public LoginTestBase {
  public:
@@ -576,6 +581,144 @@ TEST_F(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
   ExpectNotFocused(status_area);
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kSignOut)->HasFocus());
+}
+
+TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipText) {
+  CreateUserSessions(1);
+  NotifySessionStateChanged(SessionState::LOCKED);
+  EXPECT_TRUE(
+      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
+
+  // Give focus to the shelf. The tabbing between lock screen and shelf is
+  // verified by |LockScreenSanityTest::TabGoesFromLockToShelfAndBackToLock|.
+  FocusOnLoginShelfButton();
+  EXPECT_TRUE(
+      login_shelf_view_->GetViewByID(LoginShelfView::kShutdown)->HasFocus());
+
+  LoginShelfButton* button =
+      login_shelf_view_->GetLoginShelfButtonByID(LoginShelfView::kShutdown);
+  EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_FALSE(button->label()->IsDisplayTextTruncated());
+  EXPECT_EQ(button->GetText(),
+            l10n_util::GetStringUTF16(IDS_ASH_SHELF_SHUTDOWN_BUTTON));
+
+  gfx::Size zero_size;
+  button->label()->SetElideBehavior(gfx::ELIDE_TAIL);
+  button->label()->SetBoundsRect(gfx::Rect(zero_size));
+  EXPECT_EQ(button->GetTooltipText(gfx::Point()),
+            l10n_util::GetStringUTF16(IDS_ASH_SHELF_SHUTDOWN_BUTTON));
+  EXPECT_TRUE(button->label()->IsDisplayTextTruncated());
+
+  std::u16string sample_text = u"Sample Text";
+  button->SetText(sample_text);
+  EXPECT_EQ(button->GetTooltipText(gfx::Point()), sample_text);
+  EXPECT_TRUE(button->label()->IsDisplayTextTruncated());
+
+  button->label()->SetElideBehavior(gfx::NO_ELIDE);
+  EXPECT_EQ(button->GetTooltipText(gfx::Point()), sample_text);
+  EXPECT_TRUE(button->label()->IsDisplayTextTruncated());
+
+  gfx::Size minimum_size(1, 1);
+  button->label()->SetBoundsRect(gfx::Rect(minimum_size));
+  EXPECT_EQ(button->GetTooltipText(gfx::Point()), sample_text);
+  EXPECT_TRUE(button->label()->IsDisplayTextTruncated());
+
+  gfx::Size enough_size(100, 100);
+  button->label()->SetBoundsRect(gfx::Rect(enough_size));
+  EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_FALSE(button->label()->IsDisplayTextTruncated());
+
+  const std::u16string empty_text;
+  button->label()->SetText(empty_text);
+  EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_FALSE(button->label()->IsDisplayTextTruncated());
+  button->label()->SetBoundsRect(gfx::Rect(zero_size));
+  EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+  EXPECT_FALSE(button->label()->IsDisplayTextTruncated());
+}
+
+TEST_F(LoginShelfViewTest, LoginShelfButtonTooltipTextAccessibility) {
+  CreateUserSessions(1);
+  NotifySessionStateChanged(SessionState::LOCKED);
+  EXPECT_TRUE(
+      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
+
+  // Give focus to the shelf. The tabbing between lock screen and shelf is
+  // verified by |LockScreenSanityTest::TabGoesFromLockToShelfAndBackToLock|.
+  FocusOnLoginShelfButton();
+  EXPECT_TRUE(
+      login_shelf_view_->GetViewByID(LoginShelfView::kShutdown)->HasFocus());
+
+  auto* button =
+      login_shelf_view_->GetLoginShelfButtonByID(LoginShelfView::kShutdown);
+  ui::AXNodeData data;
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            button->GetTooltipText(gfx::Point()));
+
+  gfx::Size zero_size;
+  button->label()->SetElideBehavior(gfx::ELIDE_TAIL);
+  button->label()->SetBoundsRect(gfx::Rect(zero_size));
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            button->GetTooltipText(gfx::Point()));
+
+  std::u16string sample_text = u"Sample Text";
+  button->SetText(sample_text);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            button->GetTooltipText(gfx::Point()));
+
+  button->label()->SetElideBehavior(gfx::NO_ELIDE);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            button->GetTooltipText(gfx::Point()));
+
+  gfx::Size minimum_size(1, 1);
+  button->label()->SetBoundsRect(gfx::Rect(minimum_size));
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            button->GetTooltipText(gfx::Point()));
+
+  gfx::Size enough_size(100, 100);
+  button->label()->SetBoundsRect(gfx::Rect(enough_size));
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            button->GetTooltipText(gfx::Point()));
+
+  const std::u16string empty_text;
+  button->label()->SetText(empty_text);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            button->GetTooltipText(gfx::Point()));
+
+  button->label()->SetBoundsRect(gfx::Rect(zero_size));
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            button->GetTooltipText(gfx::Point()));
 }
 
 TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterAddButtonStatusChange) {
@@ -1428,5 +1571,4 @@ TEST_F(LoginShelfViewWithKioskLicenseTest, HideGuestModeButton) {
                    ->GetVisible());
 }
 
-}  // namespace
 }  // namespace ash

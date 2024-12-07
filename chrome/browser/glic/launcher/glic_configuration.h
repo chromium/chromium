@@ -11,6 +11,7 @@
 #include "ui/base/accelerators/accelerator.h"
 
 class PrefRegistrySimple;
+namespace glic {
 
 // This class observes and reports changes to glic prefs such as the
 // enabled/disabled state, and the hotkey for launching the UI. Owned by
@@ -37,5 +38,6 @@ class GlicConfiguration {
 
   raw_ptr<Observer> manager_;
 };
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_CONFIGURATION_H_

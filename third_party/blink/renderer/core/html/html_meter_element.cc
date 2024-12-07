@@ -58,6 +58,9 @@ LayoutObject* HTMLMeterElement::CreateLayoutObject(const ComputedStyle& style) {
     default:
       break;
   }
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
   return HTMLElement::CreateLayoutObject(style);
 }
 

@@ -54,7 +54,7 @@ Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
 }
 
 Suggestion CreatePredictionImprovementsFeedback() {
-  Suggestion suggestion(SuggestionType::kPredictionImprovementsFeedback);
+  Suggestion suggestion(SuggestionType::kAutofillAiFeedback);
   suggestion.icon = Suggestion::Icon::kAutofillPredictionImprovements;
   suggestion.highlight_on_select = false;
   suggestion.voice_over = u"Required feedback screen reader text.";
@@ -89,7 +89,7 @@ const Suggestion kSuggestions[] = {
     Suggestion("Autofill_with_AI",
                "",
                Suggestion::Icon::kAutofillPredictionImprovements,
-               SuggestionType::kRetrievePredictionImprovements),
+               SuggestionType::kRetrieveAutofillAi),
 };
 const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
     u"Address_entry",
@@ -214,7 +214,7 @@ class CreatePopupRowViewTest : public BaseCreatePopupRowViewTest {
 };
 
 // TODO(crbug.com/40261456): Re-enable failing test on Windows.
-#if defined(IS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SuggestionRowUiTest DISABLED_SuggestionRowUiTest
 #else
 #define MAYBE_SuggestionRowUiTest SuggestionRowUiTest

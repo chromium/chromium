@@ -2051,6 +2051,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  UIView* selectedBackgroundView = [[UIView alloc] init];
+  selectedBackgroundView.backgroundColor =
+      [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+  cell.selectedBackgroundView = selectedBackgroundView;
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypeWidgetPromo: {
       InlinePromoCell* widgetPromoCell =

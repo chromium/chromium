@@ -44,6 +44,8 @@
 
 namespace history_embeddings {
 
+using passage_embeddings::ComputeEmbeddingsStatus;
+
 namespace {
 
 base::FilePath GetTestFilePath(const std::string& file_name) {
@@ -250,15 +252,15 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
       Embedding(std::vector<float>(768, 1.0f)),
       Embedding(std::vector<float>(768, 1.0f))};
   OnPassagesEmbeddingsComputed(url_passages, passages, passages_embeddings,
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   url_passages.url_id = 2;
   url_passages.visit_id = 2;
   OnPassagesEmbeddingsComputed(url_passages, passages, passages_embeddings,
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   url_passages.url_id = 3;
   url_passages.visit_id = 3;
   OnPassagesEmbeddingsComputed(url_passages, passages, passages_embeddings,
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
 
   // Verify that we find all three passages initially.
   EXPECT_EQ(CountEmbeddingsRows(), 3U);
@@ -490,17 +492,17 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
                                {"test passage 1", "test passage 2"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   OnPassagesEmbeddingsComputed(UrlData(2, 2, base::Time::Now()),
                                {"test passage 3", "test passage 4"},
                                {Embedding(std::vector<float>(768, -1.0f)),
                                 Embedding(std::vector<float>(768, -1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   OnPassagesEmbeddingsComputed(UrlData(3, 3, base::Time::Now()),
                                {"test passage 5", "test passage 6"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
 
   // Search
   base::test::TestFuture<SearchResult> future;
@@ -555,7 +557,7 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
                                 Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   OverrideVisibilityScoresForTesting({
       {"query without terms", 0.99},
       {"query with inexact spe'cial in the middle", 0.99},
@@ -704,7 +706,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchDoesNotWordMatchBoostLongQueries) {
                                {"test passage 1", "test passage 2"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search(/*previous_search_result=*/nullptr, "boosted test query",
@@ -749,7 +751,7 @@ TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
                                {"test passage one", "test passage two"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   {
     set_ratio(0.3f);
     base::test::TestFuture<SearchResult> future;
@@ -818,7 +820,7 @@ TEST_F(HistoryEmbeddingsServiceTest, GetUrlData) {
                                {"test passage 1", "test passage 2"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   {
     base::test::TestFuture<std::optional<UrlData>> future;
     service_->GetUrlData(1, future.GetCallback());
@@ -853,22 +855,22 @@ TEST_F(HistoryEmbeddingsServiceTest, GetUrlDataInTimeRange) {
                                {"test passage 1", "test passage 2"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   OnPassagesEmbeddingsComputed(UrlData(2, 2, now + base::Hours(1)),
                                {"test passage 3", "test passage 4"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   OnPassagesEmbeddingsComputed(UrlData(3, 3, now + base::Minutes(1)),
                                {"test passage 5", "test passage 6"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   OnPassagesEmbeddingsComputed(UrlData(4, 4, now),
                                {"test passage 7", "test passage 8"},
                                {Embedding(std::vector<float>(768, 1.0f)),
                                 Embedding(std::vector<float>(768, 1.0f))},
-                               ComputeEmbeddingsStatus::SUCCESS);
+                               ComputeEmbeddingsStatus::KSuccess);
   {
     base::test::TestFuture<std::vector<UrlData>> future;
     service_->GetUrlDataInTimeRange(now, now + base::Days(1), 8, 0,

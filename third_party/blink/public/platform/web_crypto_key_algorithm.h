@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_KEY_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_KEY_ALGORITHM_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm_params.h"
@@ -73,8 +74,7 @@ class BLINK_PLATFORM_EXPORT WebCryptoKeyAlgorithm {
   static WebCryptoKeyAlgorithm CreateRsaHashed(
       WebCryptoAlgorithmId,
       unsigned modulus_length_bits,
-      const unsigned char* public_exponent,
-      unsigned public_exponent_size,
+      base::span<const unsigned char> public_exponent,
       WebCryptoAlgorithmId hash);
   static WebCryptoKeyAlgorithm CreateEc(WebCryptoAlgorithmId,
                                         WebCryptoNamedCurve);

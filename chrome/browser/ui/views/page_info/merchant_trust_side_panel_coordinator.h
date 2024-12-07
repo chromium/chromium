@@ -90,8 +90,14 @@ class MerchantTrustSidePanelCoordinator
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  std::optional<page_info::MerchantData>
-  GetMerchantTrustInfo(const GURL& url) const;
+  void GetMerchantTrustInfo(const GURL& url,
+                            page_info::MerchantDataCallback callback) const;
+
+  void OnMerchantTrustDataFetched(
+      const GURL& url,
+      std::optional<page_info::MerchantData> merchant_data);
+
+  base::WeakPtrFactory<MerchantTrustSidePanelCoordinator> weak_ptr_factory_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_MERCHANT_TRUST_SIDE_PANEL_COORDINATOR_H_

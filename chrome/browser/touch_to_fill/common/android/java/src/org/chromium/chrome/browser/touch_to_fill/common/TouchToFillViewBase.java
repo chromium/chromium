@@ -43,6 +43,10 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
             new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                    if (mBottomSheetController.getCurrentSheetContent()
+                            != TouchToFillViewBase.this) {
+                        return;
+                    }
                     super.onSheetClosed(reason);
                     assert mDismissHandler != null;
                     mDismissHandler.onResult(reason);
@@ -51,6 +55,10 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
                 @Override
                 public void onSheetStateChanged(int newState, int reason) {
+                    if (mBottomSheetController.getCurrentSheetContent()
+                            != TouchToFillViewBase.this) {
+                        return;
+                    }
                     super.onSheetStateChanged(newState, reason);
                     if (newState == BottomSheetController.SheetState.FULL) {
                         // The list of items should be scrollable in full state.
@@ -169,7 +177,6 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
             remeasure();
             mBottomSheetController.addObserver(mBottomSheetObserver);
             if (!mBottomSheetController.requestShowContent(this, true)) {
-                mBottomSheetController.removeObserver(mBottomSheetObserver);
                 return false;
             }
         } else {

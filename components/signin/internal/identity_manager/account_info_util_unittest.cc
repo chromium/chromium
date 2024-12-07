@@ -7,8 +7,11 @@
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "testing/platform_test.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 // Returns a base::Value::Dict corresponding to the user info as would be

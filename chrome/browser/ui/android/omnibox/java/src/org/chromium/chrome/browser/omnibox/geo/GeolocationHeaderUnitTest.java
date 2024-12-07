@@ -37,7 +37,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -133,6 +133,7 @@ public class GeolocationHeaderUnitTest {
 
     @Test
     @Config(shadows = {ShadowGeolocationTracker.class})
+    @DisableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
     public void testPrimeLocationForGeoHeader() {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertEquals(1, sRefreshLastKnownLocation);
@@ -158,7 +159,6 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
     @Config(shadows = {ShadowGeolocationTracker.class, ShadowLocationServices.class})
     public void testFusedLocationProvider() {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);

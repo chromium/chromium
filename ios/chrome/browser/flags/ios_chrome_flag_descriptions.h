@@ -454,6 +454,11 @@ extern const char kIndicateIdentityErrorInOverflowMenuDescription[];
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 
+// Title and description for the flag to enable stopping synchronously
+// interruptible coordinators.
+extern const char kIOSInterruptibleChromeStoppedSynchronouslyName[];
+extern const char kIOSInterruptibleChromeStoppedSynchronouslyDescription[];
+
 // Title and description for the flag to enable metrics collection for edit
 // menu.
 extern const char kIOSBrowserEditMenuMetricsName[];

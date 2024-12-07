@@ -83,7 +83,7 @@ class MockOfflinePageModel : public StubOfflinePageModel {
   MockOfflinePageModel(const MockOfflinePageModel&) = delete;
   MockOfflinePageModel& operator=(const MockOfflinePageModel&) = delete;
 
-  ~MockOfflinePageModel() override {}
+  ~MockOfflinePageModel() override = default;
 
   void SavePage(const SavePageParams& save_page_params,
                 std::unique_ptr<OfflinePageArchiver> archiver,
@@ -187,7 +187,7 @@ TestBackgroundLoaderOffliner::TestBackgroundLoaderOffliner(
                                offline_page_model,
                                std::move(load_termination_listener)) {}
 
-TestBackgroundLoaderOffliner::~TestBackgroundLoaderOffliner() {}
+TestBackgroundLoaderOffliner::~TestBackgroundLoaderOffliner() = default;
 
 void TestBackgroundLoaderOffliner::ResetLoader() {
   stub_ = new background_loader::BackgroundLoaderContentsStub(browser_context_);
@@ -316,7 +316,7 @@ BackgroundLoaderOfflinerTest::BackgroundLoaderOfflinerTest()
       progress_(0LL),
       request_status_(Offliner::RequestStatus::UNKNOWN) {}
 
-BackgroundLoaderOfflinerTest::~BackgroundLoaderOfflinerTest() {}
+BackgroundLoaderOfflinerTest::~BackgroundLoaderOfflinerTest() = default;
 
 void BackgroundLoaderOfflinerTest::SetUp() {
   // Set the snapshot controller delay command line switch to short delays.

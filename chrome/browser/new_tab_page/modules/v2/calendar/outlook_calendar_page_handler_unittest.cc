@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -14,6 +15,17 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
 #include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+const char kDocIconUrl[] =
+    "https://res.cdn.office.net/files/fabric-cdn-prod_20240925.001/assets/"
+    "item-types/16/docx.png";
+
+const char kBaseAttachmentResourceUrl[] =
+    "https://outlook.live.com/mail/0/deeplink/attachment/";
+
+}  // namespace
 
 class OutlookCalendarPageHandlerTest : public testing::Test {
  public:
@@ -105,7 +117,12 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponseMissingData) {
       {
         "id": "1",
         "hasAttachments": false,
+        "isCancelled": false,
         "isOrganizer": true,
+        "responseStatus": {
+            "response": "organizer",
+            "time": "0001-01-01T00:00:00Z"
+        },
         "webLink": "https://outlook.com",
         "onlineMeeting": {"joinUrl": "https://outlook.com"},
         "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
@@ -131,7 +148,12 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponsePropertyHasWrongDataType) {
         "id": "1",
         "hasAttachments": "false",
         "subject": "Event"
+        "isCancelled": false,
         "isOrganizer": true,
+        "responseStatus": {
+            "response": "organizer",
+            "time": "0001-01-01T00:00:00Z"
+        },
         "webLink": "https://outlook.com",
         "onlineMeeting": {"joinUrl": "https://outlook.com"},
         "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
@@ -156,7 +178,12 @@ TEST_F(OutlookCalendarPageHandlerTest, OptionalDataMissing) {
         "id": "1",
         "hasAttachments": false,
         "subject": "Event",
+        "isCancelled": false,
         "isOrganizer": true,
+        "responseStatus": {
+            "response": "organizer",
+            "time": "0001-01-01T00:00:00Z"
+        },
         "webLink": "https://outlook.com",
         "onlineMeeting": null,
         "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
@@ -168,4 +195,340 @@ TEST_F(OutlookCalendarPageHandlerTest, OptionalDataMissing) {
 
   handler->GetEventsForTesting(future.GetCallback(), response);
   EXPECT_EQ(future.Get().size(), 1u);
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, HasOtherAttendeeWhenNotOrganizer) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+  // When a user is not the organizer and the event is not canceled, by default
+  // there is another attendee (organizer).
+  std::string response = R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "1",
+        "hasAttachments": false,
+        "subject": "Event 1",
+        "isCancelled": false,
+        "isOrganizer": false,
+        "webLink": "https://outlook.com",
+        "responseStatus": {
+                "response": "notResponded",
+                "time": "0001-01-01T00:00:00Z"
+        },
+        "onlineMeeting": {"joinUrl": "https://outlook.com"},
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test@outlook.com",
+                        "address": "test@outlook.com"
+                  }
+              },
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test1@outlook.com",
+                        "address": "test1@outlook.com"
+                  }
+              }
+        ],
+        "attachments": []
+      }]})";
+
+  handler->GetEventsForTesting(future.GetCallback(), response);
+  const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
+      future.Get();
+  EXPECT_EQ(events.size(), 1u);
+  for (auto& event : events) {
+    EXPECT_TRUE(event->has_other_attendee);
+  }
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, AttendeesAccepted) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+  // User is the organizer. Other attendees have accepted event.
+  std::string response = R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "1",
+        "hasAttachments": false,
+        "subject": "Event 1",
+        "isCancelled": false,
+        "isOrganizer": true,
+        "webLink": "https://outlook.com",
+        "responseStatus": {
+                "response": "none",
+                "time": "0001-01-01T00:00:00Z"
+        },
+        "onlineMeeting": {"joinUrl": "https://outlook.com"},
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test1@outlook.com",
+                        "address": "test1@outlook.com"
+                  }
+              },
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "accepted",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test2@outlook.com",
+                        "address": "test2@outlook.com"
+                  }
+              }
+        ],
+        "attachments": []
+      }]})";
+
+  handler->GetEventsForTesting(future.GetCallback(), response);
+  const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
+      future.Get();
+  EXPECT_EQ(events.size(), 1u);
+  for (auto& event : events) {
+    EXPECT_TRUE(event->has_other_attendee);
+  }
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, AttendeesDeclined) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+  // User is the organizer. No attendees have accepted event.
+  std::string response = R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "1",
+        "hasAttachments": false,
+        "subject": "Event 1",
+        "isCancelled": false,
+        "isOrganizer": true,
+        "webLink": "https://outlook.com",
+        "responseStatus": {
+                "response": "organizer",
+                "time": "0001-01-01T00:00:00Z"
+        },
+        "onlineMeeting": {"joinUrl": "https://outlook.com"},
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test1@outlook.com",
+                        "address": "test1@outlook.com"
+                  }
+              },
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "declined",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test2@outlook.com",
+                        "address": "test2@outlook.com"
+                  }
+              }
+        ],
+        "attachments": []
+      }]})";
+
+  handler->GetEventsForTesting(future.GetCallback(), response);
+  const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
+      future.Get();
+  EXPECT_EQ(events.size(), 1u);
+  for (auto& event : events) {
+    EXPECT_FALSE(event->has_other_attendee);
+  }
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, EventCanceled) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  // Event is canceled.
+  std::string response = R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "1",
+        "hasAttachments": false,
+        "subject": "Canceled: Event 1",
+        "isCancelled": true,
+        "isOrganizer": false,
+        "webLink": "https://outlook.com",
+        "responseStatus": {
+                "response": "notResponded",
+                "time": "0001-01-01T00:00:00Z"
+        },
+        "onlineMeeting": {"joinUrl": "https://outlook.com"},
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test@outlook.com",
+                        "address": "test@outlook.com"
+                  }
+              },
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "tes1t@outlook.com",
+                        "address": "test1@outlook.com"
+                  }
+              }
+        ],
+        "attachments": []
+      }]})";
+
+  handler->GetEventsForTesting(future.GetCallback(), response);
+  const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
+      future.Get();
+  EXPECT_EQ(events.size(), 1u);
+  for (auto& event : events) {
+    EXPECT_FALSE(event->has_other_attendee);
+  }
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  std::string event_id = "1";
+  std::string attachment_id_1 = event_id + "-ABC";
+  std::string attachment_id_2 = event_id + "-DEF";
+  std::string attachment_id_3 = event_id + "-XYZ";
+  std::vector<std::string> id_paths = {event_id + "/" + attachment_id_1,
+                                       event_id + "/" + attachment_id_2,
+                                       event_id + "/" + attachment_id_3};
+
+  // clang-format off
+  std::string response = base::StringPrintf(R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "%s",
+        "hasAttachments": true,
+        "subject": "Event 1",
+        "isCancelled": false,
+        "isOrganizer": true,
+        "webLink": "https://outlook.com",
+        "responseStatus": {
+            "response": "organizer",
+            "time": "0001-01-01T00:00:00Z"
+        },
+        "onlineMeeting": {"joinUrl": "https://outlook.com"},
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test1@outlook.com",
+                        "address": "test1@outlook.com"
+                  }
+              },
+              {
+                  "type": "required",
+                  "status": {
+                      "response": "accepted",
+                      "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                      "name": "test2@outlook.com",
+                      "address": "test2@outlook.com"
+                  }
+              }
+        ],
+        "attachments": [
+              {
+                    "@odata.type": "#microsoft.graph.fileAttachment",
+                    "@odata.mediaContentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "id": "%s",
+                    "name": "Attachment 0.docx"
+              },
+              {
+                    "@odata.type": "#microsoft.graph.fileAttachment",
+                    "@odata.mediaContentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "id": "%s",
+                    "name": "Attachment 1.docx"
+              },
+              {
+                    "@odata.type": "#microsoft.graph.fileAttachment",
+                    "@odata.mediaContentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "id": "%s",
+                    "name": "Attachment 2.docx"
+              }
+        ]
+      }]})", event_id, attachment_id_1, attachment_id_2, attachment_id_3);
+  // clang-format on
+
+  handler->GetEventsForTesting(future.GetCallback(), response);
+  const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
+      future.Get();
+  EXPECT_EQ(events.size(), 1u);
+  EXPECT_EQ(events[0]->attachments.size(), 3u);
+
+  for (int i = 0; i < 3; i++) {
+    ntp::calendar::mojom::AttachmentPtr attachment =
+        std::move(events[0]->attachments[i]);
+    EXPECT_EQ(attachment->title, "Attachment " + base::NumberToString(i));
+    EXPECT_EQ(attachment->icon_url, GURL(kDocIconUrl));
+    EXPECT_EQ(attachment->resource_url,
+              GURL(kBaseAttachmentResourceUrl + id_paths[i]));
+  }
 }

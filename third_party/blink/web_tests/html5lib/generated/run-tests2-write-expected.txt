@@ -1,27 +1,2 @@
-CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
-../resources/tests2.dat:
-38
-
-Test 38 of 63 in ../resources/tests2.dat failed. Input:
-<!DOCTYPE html><select><optgroup><option></optgroup><option><select><option>
-Got:
-| <!DOCTYPE html>
-| <html>
-|   <head>
-|   <body>
-|     <select>
-|       <optgroup>
-|         <option>
-|       <option>
-|     <select>
-|       <option>
-Expected:
-| <!DOCTYPE html>
-| <html>
-|   <head>
-|   <body>
-|     <select>
-|       <optgroup>
-|         <option>
-|       <option>
-|     <option>
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select>. Please add the missing </select> end tag.
+../resources/tests2.dat: PASS

@@ -13,7 +13,7 @@
 
 namespace extensions {
 
-NativeMessagingHostManifest::~NativeMessagingHostManifest() {}
+NativeMessagingHostManifest::~NativeMessagingHostManifest() = default;
 
 // static
 bool NativeMessagingHostManifest::IsValidName(const std::string& name) {

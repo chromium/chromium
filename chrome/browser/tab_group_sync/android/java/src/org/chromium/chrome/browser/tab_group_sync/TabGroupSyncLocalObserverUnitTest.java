@@ -62,8 +62,10 @@ import java.util.Set;
 public class TabGroupSyncLocalObserverUnitTest {
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
+    private static final int TAB_ID_3 = 3;
     private static final int ROOT_ID_1 = 1;
     private static final int ROOT_ID_2 = 2;
+    private static final int ROOT_ID_3 = 3;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
     private static final String TITLE_1 = "Group Title";
@@ -86,6 +88,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     private Tab mTab1;
     private Tab mTab2;
+    private Tab mTab3;
 
     private UserActionTester mActionTester;
 
@@ -104,6 +107,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabGroupSyncService = spy(new TestTabGroupSyncService());
         mTab1 = prepareTab(TAB_ID_1, ROOT_ID_1);
         mTab2 = prepareTab(TAB_ID_2, ROOT_ID_2);
+        mTab3 = prepareTab(TAB_ID_3, ROOT_ID_3);
         Mockito.doReturn(TOKEN_1).when(mTab1).getTabGroupId();
         Mockito.doReturn(TOKEN_1).when(mTab2).getTabGroupId();
 
@@ -195,6 +199,14 @@ public class TabGroupSyncLocalObserverUnitTest {
                 .getValue()
                 .didSelectTab(mTab2, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
         assertEquals(1, mActionTester.getActionCount(action));
+        verify(mTabGroupSyncService).onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_2));
+
+        // Select a non-grouped tab.
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(mTab3, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
+        assertEquals(1, mActionTester.getActionCount(action));
+        verify(mTabGroupSyncService).onTabSelected(eq(null), eq(TAB_ID_3));
     }
 
     @Test

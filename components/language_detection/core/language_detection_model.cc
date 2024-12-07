@@ -288,17 +288,20 @@ void LanguageDetectionModel::AddOnModelLoadedCallback(
 
 void LanguageDetectionModel::NotifyModelLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<ModelLoadedCallback> model_loaded_callbacks;
 
-  // Since the callbacks could result in modification of
-  // `model_loaded_callbacks_`, it's not safe to iterate over the member.
-  // TODO(https://crbug.com/381461495): Post a task for each callback.
-  model_loaded_callbacks.swap(model_loaded_callbacks_);
-
-  for (auto&& callback : model_loaded_callbacks) {
-    std::move(callback).Run(*this);
+  for (auto&& callback : model_loaded_callbacks_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](ModelLoadedCallback callback,
+                          base::WeakPtr<LanguageDetectionModel> model) {
+                         if (model) {
+                           std::move(callback).Run(*model);
+                         }
+                       },
+                       std::move(callback), weak_factory_.GetWeakPtr()));
   }
   loaded_ = true;
+  model_loaded_callbacks_.clear();
 }
 
 }  // namespace language_detection

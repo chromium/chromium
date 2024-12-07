@@ -368,6 +368,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   private hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
+        this.data.disableReasons.unsupportedDeveloperExtension ||
         this.data.runtimeWarnings.length > 0 || !!this.data.blocklistText;
   }
 

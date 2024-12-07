@@ -131,8 +131,6 @@ void OverviewGroupItem::DestroyMirrorsForDragging() {
 }
 
 aura::Window* OverviewGroupItem::GetWindow() {
-  // TODO(michelefan): `GetWindow()` will be replaced by `GetWindows()` in a
-  // follow-up cl.
   CHECK_LE(overview_items_.size(), 2u);
   return overview_items_.empty() ? nullptr : overview_items_[0]->GetWindow();
 }
@@ -358,8 +356,6 @@ void OverviewGroupItem::UpdateRoundedCornersAndShadow() {
 }
 
 float OverviewGroupItem::GetOpacity() const {
-  // TODO(michelefan): This is a temporary placeholder value. The opacity
-  // settings will be handled in a separate task.
   return 1.f;
 }
 

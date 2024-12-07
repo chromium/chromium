@@ -4,6 +4,7 @@
 
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
@@ -88,9 +89,13 @@ TEST_F(LoginDetectionTabHelperTest, OAuthLoginViaRedirect) {
       GURL("https://foo.com/oauth_signin"), web_contents());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/authenticate?client_id=123"));
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/user_login"));
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/?username=user&password=123"));
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://foo.com/redirect?code=secret"));
   simulator->Commit();
 
@@ -131,10 +136,15 @@ TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLoginsWithRedirect) {
       GURL("https://foo.com/oauth_signin"), web_contents());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/authenticate?client_id=123"));
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/user_login"));
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://oauth.com/?username=user&password=123"));
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://bar.com/page.html"));
+  base::RunLoop().RunUntilIdle();
   simulator->Redirect(GURL("https://foo.com/redirect?code=secret"));
   simulator->Commit();
 

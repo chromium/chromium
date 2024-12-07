@@ -72,11 +72,6 @@ BASE_FEATURE(kFallbackToAudioTabMirroring,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(b/202294946): Remove when enabled by default after a few milestones.
-BASE_FEATURE(kGlobalMediaControlsCastStartStop,
-             "GlobalMediaControlsCastStartStop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCastSilentlyRemoveVcOnNavigation,
              "CastSilentlyRemoveVcOnNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -196,11 +191,6 @@ std::string GetReceiverIdHashToken(PrefService* pref_service) {
 
 bool DialMediaRouteProviderEnabled() {
   return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
-}
-
-bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
-  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop) &&
-         MediaRouterEnabled(context);
 }
 
 std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {

@@ -6,6 +6,7 @@ Version: 36838:a59a5f030021
 License: MPL 1.1 / GPL 2 / LGPL 2.1
 License File: LICENSE
 Shipped: yes
+Security Critical: yes
 
 Description:
 This is selected code bits from Mozilla's Personal Security Manager. The

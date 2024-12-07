@@ -1787,6 +1787,11 @@ void CrasAudioHandler::OnAudioPolicyPrefChanged() {
   ApplyAudioPolicy();
 }
 
+void CrasAudioHandler::OnVoiceIsolationPrefChanged() {
+  RefreshVoiceIsolationState();
+  RefreshVoiceIsolationPreferredEffect();
+}
+
 const AudioDevice* CrasAudioHandler::GetDeviceFromId(uint64_t device_id) const {
   AudioDeviceMap::const_iterator it = audio_devices_.find(device_id);
   if (it == audio_devices_.end()) {

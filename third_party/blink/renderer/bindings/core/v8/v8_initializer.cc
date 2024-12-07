@@ -112,8 +112,9 @@ namespace blink {
 
 #if BUILDFLAG(IS_WIN)
 // Defined in v8_initializer_win.cc.
-bool FilterETWSessionByURLCallback(v8::Local<v8::Context> context,
-                                   const std::string& json_payload);
+v8::FilterETWSessionByURLResult FilterETWSessionByURLCallback(
+    v8::Local<v8::Context> context,
+    const std::string& json_payload);
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -401,14 +402,9 @@ void V8Initializer::FailedAccessCheckCallbackInMainThread(
     v8::Local<v8::Object> holder,
     v8::AccessType type,
     v8::Local<v8::Value> data) {
-  // FIXME: This is the access check callback of last resort. We should modify
-  // V8 to pass in more contextual information, so that we can build a full
-  // ExceptionState.
-  ExceptionState exception_state(
-      holder->GetIsolate(), v8::ExceptionContext::kUnknown, nullptr, nullptr);
-  BindingSecurity::FailedAccessCheckFor(holder->GetIsolate(),
-                                        WrapperTypeInfo::Unwrap(data), holder,
-                                        exception_state);
+  BindingSecurity::FailedAccessCheckFor(
+      holder->GetIsolate(), WrapperTypeInfo::Unwrap(data), holder,
+      PassThroughException(holder->GetIsolate()));
 }
 
 // Check whether Content Security Policy allows script execution.
@@ -790,7 +786,7 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
 
 #if BUILDFLAG(IS_WIN)
-  isolate->SetFilterETWSessionByURLCallback(FilterETWSessionByURLCallback);
+  isolate->SetFilterETWSessionByURL2Callback(FilterETWSessionByURLCallback);
 #endif  // BUILDFLAG(IS_WIN)
 
   V8ContextSnapshot::EnsureInterfaceTemplates(isolate);

@@ -74,9 +74,11 @@ class CC_PAINT_EXPORT PaintOpReader {
 
   void Read(SkScalar* data);
   void Read(uint8_t* data);
+  void Read(uint16_t* data);
   void Read(uint32_t* data);
   void Read(uint64_t* data);
   void Read(int32_t* data);
+  void Read(SkPoint* point);
   void Read(SkRect* rect);
   void Read(SkIRect* rect);
   void Read(SkRRect* rect);
@@ -156,13 +158,12 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
   template <typename T>
-  void Read(std::vector<T>* vec) {
+  void Read(std::vector<T>& vec) {
     size_t size = 0;
     ReadSize(&size);
-    if (!CanReadVector(size, *vec)) [[unlikely]] {
-      return;
+    if (CanReadVector(size, vec)) [[likely]] {
+      ReadVectorContent(size, vec);
     }
-    ReadVectorContent(size, vec);
   }
 
   // Returns a pointer to the next block of memory of size |bytes|, and treats
@@ -191,7 +192,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kInsufficientRemainingBytes_ExtractReadableMemory = 4,
     kInsufficientRemainingBytes_Read_PaintRecord = 5,
     kInsufficientRemainingBytes_Read_PaintShader_ColorBytes = 6,
-    kInsufficientRemainingBytes_Read_PaintShader_ColorSize = 7,
+    kInsufficientRemainingBytes_Read_PaintShader_ColorSize = 7,  // Obsolete
     kInsufficientRemainingBytes_Read_PaintShader_Positions = 8,
     kInsufficientRemainingBytes_Read_SkData = 9,
     kInsufficientRemainingBytes_Read_SkPath = 10,
@@ -349,18 +350,11 @@ class CC_PAINT_EXPORT PaintOpReader {
   void DidRead(size_t bytes_read);
 
   template <typename T>
-    requires(std::is_trivially_copyable_v<T>)
-  void ReadVectorContent(size_t size, std::vector<T>* vec) {
-    vec->resize(size);
-    ReadData(base::as_writable_byte_span(*vec));
-  }
-
-  template <typename T>
-    requires(!std::is_trivially_copyable_v<T>)
-  void ReadVectorContent(size_t size, std::vector<T>* vec) {
-    vec->resize(size);
-    for (size_t i = 0; i < size; ++i) {
-      Read(&(*vec)[i]);
+  void ReadVectorContent(size_t size, std::vector<T>& vec) {
+    vec.resize(size);
+    for (base::span span(vec); !span.empty();
+         span = span.template subspan<1>()) {
+      Read(&span.front());
     }
   }
 

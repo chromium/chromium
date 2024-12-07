@@ -213,6 +213,7 @@ protocol_request::App MakeProtocolApp(
     const base::Version& version,
     const std::string& ap,
     const std::string& brand_code,
+    const std::string& install_id,
     const std::string& lang,
     const int install_date,
     const std::string& install_source,
@@ -236,6 +237,7 @@ protocol_request::App MakeProtocolApp(
   app.brand_code = FilterBrandCode(brand_code);
   app.lang = lang;
   app.install_date = install_date;
+  app.install_id = install_id;
   app.install_source = install_source;
   app.install_location = install_location;
   app.fingerprint = fingerprint;

@@ -1252,8 +1252,23 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
         // this OnBeginFrame() call is triggered by an unsolicited frame in the
         // AutoNeedsBeginFrame mode.
         if (!handling_auto_needs_begin_frame_) {
-          client_->OnBeginFrame(adjusted_args, frame_timing_details_, frame_ack,
-                                std::move(surface_returned_resources_));
+          {
+            TRACE_EVENT(
+                "graphics.pipeline", "Graphics.Pipeline",
+                perfetto::Flow::Global(adjusted_args.trace_id),
+                [&](perfetto::EventContext ctx) {
+                  auto* event =
+                      ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                  auto* data = event->set_chrome_graphics_pipeline();
+                  data->set_step(
+                      perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                          StepName::STEP_SEND_ON_BEGIN_FRAME_MOJO_MESSAGE);
+                  data->set_surface_frame_trace_id(adjusted_args.trace_id);
+                });
+            client_->OnBeginFrame(adjusted_args, frame_timing_details_,
+                                  frame_ack,
+                                  std::move(surface_returned_resources_));
+          }
           frame_timing_details_.clear();
         } else {
           if (frame_ack) {
@@ -1269,9 +1284,23 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
         }
         surface_returned_resources_.clear();
       } else if (!handling_auto_needs_begin_frame_) {
-        client_->OnBeginFrame(adjusted_args, frame_timing_details_,
-                              /*frame_ack=*/false,
-                              std::vector<ReturnedResource>());
+        {
+          TRACE_EVENT(
+              "graphics.pipeline", "Graphics.Pipeline",
+              perfetto::Flow::Global(adjusted_args.trace_id),
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                auto* data = event->set_chrome_graphics_pipeline();
+                data->set_step(
+                    perfetto::protos::pbzero::ChromeGraphicsPipeline::StepName::
+                        STEP_SEND_ON_BEGIN_FRAME_MOJO_MESSAGE);
+                data->set_surface_frame_trace_id(adjusted_args.trace_id);
+              });
+          client_->OnBeginFrame(adjusted_args, frame_timing_details_,
+                                /*frame_ack=*/false,
+                                std::vector<ReturnedResource>());
+        }
         frame_timing_details_.clear();
       }
     }

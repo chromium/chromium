@@ -25,13 +25,13 @@ namespace apps {
 enum class AppTypeName {
   kUnknown = 0,
   kArc = 1,
-  kBuiltIn = 2,
+  // kBuiltIn = 2,  removed
   kCrostini = 3,
   kChromeApp = 4,
   kWeb = 5,
   // kMacOs = 6,                        // Removed.
   kPluginVm = 7,
-  kStandaloneBrowser = 8,
+  // kStandaloneBrowser = 8,            // Removed.
   kRemote = 9,
   kBorealis = 10,
   kSystemWeb = 11,
@@ -56,7 +56,7 @@ enum class AppTypeName {
 enum class AppTypeNameV2 {
   kUnknown = 0,
   kArc = 1,
-  kBuiltIn = 2,
+  // kBuiltIn = 2,  removed.
   kCrostini = 3,
   kChromeAppWindow = 4,
   kChromeAppTab = 5,
@@ -64,7 +64,7 @@ enum class AppTypeNameV2 {
   kWebTab = 7,
   // kMacOs = 8,                              // Removed.
   kPluginVm = 9,
-  kStandaloneBrowser = 10,
+  // kStandaloneBrowser = 10,                 // Removed.
   kRemote = 11,
   kBorealis = 12,
   kSystemWeb = 13,
@@ -89,12 +89,10 @@ extern const int kDurationBuckets;
 extern const int kUsageTimeBuckets;
 
 constexpr char kArcHistogramName[] = "Arc";
-constexpr char kBuiltInHistogramName[] = "BuiltIn";
 constexpr char kCrostiniHistogramName[] = "Crostini";
 constexpr char kChromeAppHistogramName[] = "ChromeApp";
 constexpr char kWebAppHistogramName[] = "WebApp";
 constexpr char kPluginVmHistogramName[] = "PluginVm";
-constexpr char kStandaloneBrowserHistogramName[] = "StandaloneBrowser";
 constexpr char kRemoteHistogramName[] = "RemoteApp";
 constexpr char kBorealisHistogramName[] = "Borealis";
 constexpr char kSystemWebAppHistogramName[] = "SystemWebApp";

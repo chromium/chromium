@@ -519,7 +519,7 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     return;
   }
 
-  RunRawOutputSafetyCheck();
+  RunRawOutputSafetyCheck(/*is_complete=*/false);
 }
 
 void SessionImpl::OnComplete(
@@ -546,13 +546,13 @@ void SessionImpl::OnComplete(
     MaybeSendCompleteResponse();
     return;
   }
-  RunRawOutputSafetyCheck();
+  RunRawOutputSafetyCheck(/*is_complete=*/true);
 }
 
-void SessionImpl::RunRawOutputSafetyCheck() {
+void SessionImpl::RunRawOutputSafetyCheck(bool is_complete) {
   on_device_state_->num_unchecked_response_tokens = 0;
   on_device_state_->opts.safety_checker->RunRawOutputCheck(
-      on_device_state_->current_response,
+      on_device_state_->current_response, is_complete,
       base::BindOnce(&SessionImpl::OnRawOutputSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
                      on_device_state_->current_response.size()));
@@ -708,7 +708,7 @@ void SessionImpl::OnParsedResponse(
     }
   }
   on_device_state_->opts.safety_checker->RunResponseChecks(
-      *last_message_, *output,
+      *last_message_, *output, is_complete,
       base::BindOnce(&SessionImpl::OnResponseSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
                      is_complete, *output));

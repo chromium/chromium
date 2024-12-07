@@ -267,9 +267,11 @@ public class EdgeToEdgeControllerImpl
     public void onControlsOffsetChanged(
             int topOffset,
             int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
             boolean isVisibilityForced) {
         updateBrowserControlsVisibility(
                 mBottomControlsHeight > 0 && bottomOffset < mBottomControlsHeight);
@@ -485,12 +487,9 @@ public class EdgeToEdgeControllerImpl
         // In fullscreen mode, there are cases the content isn't being drawn under the system
         // bar (e.g. during multi-window mode). In this case, adjust the padding based on the
         // visibility rects. See https://crbug.com/359659885
-        // The exception of this workaround is in PiP mode. See https://crbug.com/377809718.
-        if (mFullscreenManager.getPersistentFullscreenMode()
-                && !mActivity.isInPictureInPictureMode()) {
-            topPadding = Math.max(0, mCachedWindowVisibleRect.top - mCachedContentVisibleRect.top);
-            bottomPadding =
-                    Math.max(0, mCachedContentVisibleRect.bottom - mCachedWindowVisibleRect.bottom);
+        if (mFullscreenManager.getPersistentFullscreenMode()) {
+            topPadding = 0;
+            bottomPadding = 0;
         }
 
         // Use Insets to store the paddings as it is immutable.

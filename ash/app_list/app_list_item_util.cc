@@ -36,7 +36,7 @@ bool DraggableAppItemInfo::IsValid() const {
 
 const ui::ClipboardFormatType& GetAppItemFormatType() {
   static const base::NoDestructor<ui::ClipboardFormatType> format(
-      ui::ClipboardFormatType::GetType("ash/x-app-item-id"));
+      ui::ClipboardFormatType::CustomPlatformType("ash/x-app-item-id"));
 
   return *format;
 }

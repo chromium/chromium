@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 #include "third_party/blink/renderer/controller/dev_tools_frontend_impl.h"
 #include "third_party/blink/renderer/controller/javascript_call_stack_generator.h"
-#include "third_party/blink/renderer/controller/memory_tracer.h"
 #include "third_party/blink/renderer/controller/performance_manager/renderer_resource_coordinator_impl.h"
 #include "third_party/blink/renderer/controller/performance_manager/v8_detailed_memory_reporter_impl.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -307,9 +306,6 @@ void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
   // Start reporting the highest private memory footprint after the first
   // navigation.
   HighestPmfReporter::Initialize(main_thread_task_runner);
-
-  // And tracing memory metrics to "system_metrics" when enabled.
-  MemoryTracer::Initialize();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

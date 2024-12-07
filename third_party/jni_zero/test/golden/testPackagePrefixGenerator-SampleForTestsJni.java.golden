@@ -12,11 +12,14 @@ import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForTests;
 import org.jni_zero.SampleUnderSamePackage;
+import org.jni_zero.internal.NullUnmarked;
+import org.jni_zero.internal.Nullable;
 import this.is.a.package.prefix.org.jni_zero.GEN_JNI;
 
 @CheckDiscard("crbug.com/993421")
+@NullUnmarked
 public class SampleForTestsJni implements SampleForTests.Natives {
-  private static JniTestInstanceHolder sOverride;
+  private static @Nullable JniTestInstanceHolder sOverride;
 
   public static SampleForTests.Natives get() {
     JniTestInstanceHolder holder = sOverride;
@@ -38,6 +41,8 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   @Override
   public void addStructB(long nativeCPPClass, SampleForTests caller, SampleForTests.InnerStructB b) {
     assert nativeCPPClass != 0;
+    assert caller != null;
+    assert b != null;
     GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_addStructB(
         nativeCPPClass,
         caller,
@@ -46,12 +51,15 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public void classUnderSamePackageTest(SampleUnderSamePackage arg) {
+    assert arg != null;
     GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_classUnderSamePackageTest(arg);
   }
 
   @Override
   public void destroy(long nativeCPPClass, SampleForTests caller, byte[] bytes) {
     assert nativeCPPClass != 0;
+    assert caller != null;
+    assert bytes != null;
     GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_destroy(
         nativeCPPClass,
         caller,
@@ -60,11 +68,13 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public Class getClass(Class env) {
+    assert env != null;
     return (Class) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getClass(env);
   }
 
   @Override
   public double getDoubleFunction(SampleForTests ret) {
+    assert ret != null;
     return (double) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getDoubleFunction(
         ret);
   }
@@ -76,18 +86,25 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public Object getNonPODDatatype(SampleForTests jcaller) {
+    assert jcaller != null;
     return (Object) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getNonPODDatatype(
         jcaller);
   }
 
   @Override
   public Throwable getThrowable(Throwable arg0) {
+    assert arg0 != null;
     return (Throwable) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getThrowable(
         arg0);
   }
 
   @Override
   public long init(SampleForTests caller, String param, byte[] bytes, SampleForTests convertedType, SampleForTests[] nonConvertedArray) {
+    assert caller != null;
+    assert param != null;
+    assert bytes != null;
+    assert convertedType != null;
+    assert nonConvertedArray != null;
     return (long) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_init(
         caller,
         param,
@@ -99,6 +116,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   @Override
   public void iterateAndDoSomethingWithStructB(long nativeCPPClass, SampleForTests caller) {
     assert nativeCPPClass != 0;
+    assert caller != null;
     GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(
         nativeCPPClass,
         caller);
@@ -106,17 +124,21 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public List listTest2(Set items) {
+    assert items != null;
     return (List) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_listTest2(items);
   }
 
   @Override
   public Map mapTest2(Map arg0) {
+    assert arg0 != null;
     return (Map) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_mapTest2(arg0);
   }
 
   @Override
   public int method(long nativeCPPClass, SampleForTests caller, String[] strings) {
     assert nativeCPPClass != 0;
+    assert caller != null;
+    assert strings != null;
     return (int) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_method(
         nativeCPPClass,
         caller,
@@ -126,6 +148,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   @Override
   public double methodOtherP0(long nativePtr, SampleForTests caller) {
     assert nativePtr != 0;
+    assert caller != null;
     return (double) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodOtherP0(
         nativePtr,
         caller);
@@ -133,6 +156,13 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public boolean[] primitiveArrays(byte[] b, char[] c, short[] s, int[] i, long[] l, float[] f, double[] d) {
+    assert b != null;
+    assert c != null;
+    assert s != null;
+    assert i != null;
+    assert l != null;
+    assert f != null;
+    assert d != null;
     return (boolean[]) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_primitiveArrays(
         b,
         c,
@@ -146,6 +176,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   @Override
   public String returnAString(long nativeCPPClass, SampleForTests caller) {
     assert nativeCPPClass != 0;
+    assert caller != null;
     return (String) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_returnAString(
         nativeCPPClass,
         caller);
@@ -153,6 +184,8 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public void setNonPODDatatype(SampleForTests obj, Rect rect) {
+    assert obj != null;
+    assert rect != null;
     GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_setNonPODDatatype(obj, rect);
   }
 }

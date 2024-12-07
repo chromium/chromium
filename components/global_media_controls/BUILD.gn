@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 component("global_media_controls") {
   public = [
     "public/constants.h",
@@ -46,9 +44,6 @@ component("global_media_controls") {
 
   if (is_chromeos) {
     deps += [ "//chromeos/constants:constants" ]
-  }
-
-  if (is_chromeos_ash) {
     public += [ "public/views/chapter_item_view.h" ]
   }
 
@@ -79,7 +74,7 @@ component("global_media_controls") {
     "public/views/media_progress_view.cc",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "public/views/chapter_item_view.cc" ]
   }
 
@@ -103,7 +98,7 @@ source_set("unit_tests") {
     "public/views/media_progress_view_unittest.cc",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "public/views/chapter_item_view_unittest.cc" ]
   }
 

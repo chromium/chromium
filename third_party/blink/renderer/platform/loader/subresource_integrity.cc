@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
+#include "base/strings/string_split.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/sri_message_signature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -23,7 +19,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
-#include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -60,7 +56,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const Resource& resource,
-    IntegrityReport& integrity_report) {
+    IntegrityReport& integrity_report,
+    HashMap<HashAlgorithm, String>* computed_hashes) {
   // FetchResponseType::kError never arrives because it is a loading error.
   DCHECK_NE(resource.GetResponse().GetType(),
             network::mojom::FetchResponseType::kError);
@@ -80,7 +77,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
   String raw_headers = response.HttpHeaderFields().GetAsRawString(
       response.HttpStatusCode(), response.HttpStatusText());
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       raw_headers, integrity_report);
+                                       raw_headers, integrity_report,
+                                       computed_hashes);
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
@@ -103,7 +101,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
   }
 
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
-                                       raw_headers, integrity_report);
+                                       raw_headers, integrity_report, nullptr);
 }
 
 String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
@@ -126,7 +124,20 @@ String IntegrityAlgorithmsForConsole() {
              : "'sha256', 'sha384', or 'sha512'";
 }
 
-blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
+String HashAlgorithmToString(HashAlgorithm algorithm) {
+  switch (algorithm) {
+    case kHashAlgorithmSha1:
+      NOTREACHED();
+    case kHashAlgorithmSha256:
+      return "sha256-";
+    case kHashAlgorithmSha384:
+      return "sha384-";
+    case kHashAlgorithmSha512:
+      return "sha512-";
+  }
+}
+
+HashAlgorithm SubresourceIntegrity::IntegrityAlgorithmToHashAlgorithm(
     IntegrityAlgorithm algorithm) {
   switch (algorithm) {
     case IntegrityAlgorithm::kSha256:
@@ -143,12 +154,31 @@ blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
   }
 }
 
+String GetIntegrityStringFromDigest(const DigestValue& digest,
+                                    HashAlgorithm algorithm) {
+  StringBuilder reported_hash;
+  reported_hash.Append(HashAlgorithmToString(algorithm));
+  reported_hash.Append(Base64Encode(digest));
+  return reported_hash.ReleaseString();
+}
+
+std::optional<String> SubresourceIntegrity::GetSubresourceIntegrityHash(
+    const SegmentedBuffer* buffer,
+    HashAlgorithm algorithm) {
+  DigestValue digest;
+  if (!ComputeDigest(algorithm, buffer, digest)) {
+    return std::nullopt;
+  }
+  return GetIntegrityStringFromDigest(digest, algorithm);
+}
+
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const IntegrityMetadataSet& parsed_metadata,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const String& raw_headers,
-    IntegrityReport& integrity_report) {
+    IntegrityReport& integrity_report,
+    HashMap<HashAlgorithm, String>* computed_hashes) {
   // Implements https://wicg.github.io/signature-based-sri/#matching.
   //
   // 1.  Let |parsedMetadata| be the result of executing [Parse Metadata] on
@@ -175,7 +205,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   // Verify the hash-based integrity constraints:
   //
   if (!CheckHashesImpl(parsed_metadata.hashes, buffer, resource_url,
-                       integrity_report)) {
+                       integrity_report, computed_hashes)) {
     return false;
   }
 
@@ -195,7 +225,8 @@ bool SubresourceIntegrity::CheckHashesImpl(
     const WTF::HashSet<IntegrityMetadataPair>& hashes,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
-    IntegrityReport& integrity_report) {
+    IntegrityReport& integrity_report,
+    HashMap<HashAlgorithm, String>* computed_hashes) {
   // This implements steps 3, 5, and 7 of
   // https://wicg.github.io/signature-based-sri/#matching.
 
@@ -243,6 +274,10 @@ bool SubresourceIntegrity::CheckHashesImpl(
     if (actual_value == expected_value) {
       integrity_report.AddUseCount(
           WebFeature::kSRIElementWithMatchingIntegrityAttribute);
+      if (computed_hashes) {
+        computed_hashes->insert(
+            hash_algo, GetIntegrityStringFromDigest(actual_value, hash_algo));
+      }
       return true;
     }
   }
@@ -350,8 +385,7 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
 }
 
 SubresourceIntegrity::AlgorithmParseResult
-SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
-                                              const UChar* end,
+SubresourceIntegrity::ParseAttributeAlgorithm(std::string_view token,
                                               IntegrityAlgorithm& algorithm) {
   static const AlgorithmPrefixPair kPrefixes[] = {
       {"sha256", IntegrityAlgorithm::kSha256},
@@ -362,52 +396,36 @@ SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
       {"sha-512", IntegrityAlgorithm::kSha512},
       {"ed25519", IntegrityAlgorithm::kEd25519}};
 
-  for (size_t i = 0; i < std::size(kPrefixes); i++) {
+  for (const auto& [prefix_cstr, algorithm_enum] : kPrefixes) {
+    const std::string_view prefix(prefix_cstr);
     // Parse signature-based algorithm prefixes iff the runtime feature is
     // enabled.
     if (!RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled() &&
-        strcmp("ed25519", kPrefixes[i].first) == 0) {
+        prefix == "ed25519") {
       continue;
     }
-    const UChar* pos = begin;
-    if (SkipToken<UChar>(pos, end, kPrefixes[i].first) &&
-        SkipExactly<UChar>(pos, end, '-')) {
-      begin = pos;
-      algorithm = kPrefixes[i].second;
-      return kAlgorithmValid;
+    if (token.starts_with(prefix) && token.size() > prefix.size() &&
+        token[prefix.size()] == '-') {
+      algorithm = algorithm_enum;
+      return base::ok(prefix.size());
     }
   }
 
-  const UChar* dash_position = begin;
-  SkipUntil<UChar>(dash_position, end, '-');
-  return dash_position < end ? kAlgorithmUnknown : kAlgorithmUnparsable;
+  const bool contains_dash = token.find('-') != std::string_view::npos;
+  return contains_dash ? base::unexpected(kAlgorithmUnknown)
+                       : base::unexpected(kAlgorithmUnparsable);
 }
 
-// Before:
-//
-// [algorithm]-[hash]      OR     [algorithm]-[hash]?[options]
-//             ^     ^                        ^               ^
-//      position   end                 position             end
-//
-// After (if successful: if the method returns false, we make no promises and
-// the caller should exit early):
-//
-// [algorithm]-[hash]      OR     [algorithm]-[hash]?[options]
-//                   ^                              ^         ^
-//        position/end                       position       end
-bool SubresourceIntegrity::ParseDigest(const UChar*& position,
-                                       const UChar* end,
+bool SubresourceIntegrity::ParseDigest(std::string_view maybe_digest,
                                        String& digest) {
-  base::span<const UChar> input_span(position, end);
-  SkipWhile<UChar, IsIntegrityCharacter>(position, end);
-  if (position == input_span.data() || (position != end && *position != '?')) {
+  if (maybe_digest.empty() ||
+      !std::ranges::all_of(maybe_digest, IsIntegrityCharacter)) {
     digest = g_empty_string;
     return false;
   }
 
   // We accept base64url encoding, but normalize to "normal" base64 internally:
-  digest = NormalizeToBase64(String(
-      input_span.first(static_cast<wtf_size_t>(position - input_span.data()))));
+  digest = NormalizeToBase64(String(maybe_digest));
   return true;
 }
 
@@ -425,62 +443,59 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
   // once.
   DCHECK(metadata_set.empty());
 
-  Vector<UChar> characters;
-  attribute.StripWhiteSpace().AppendTo(characters);
-  const UChar* position = characters.data();
-  const UChar* end = characters.data() + characters.size();
-  const UChar* current_integrity_end;
+  StringUTF8Adaptor string_adapter(attribute);
+  std::string_view characters = base::TrimWhitespaceASCII(
+      base::as_string_view(string_adapter), base::TRIM_ALL);
 
   // The integrity attribute takes the form:
   //    *WSP hash-with-options *( 1*WSP hash-with-options ) *WSP / *WSP
   // To parse this, break on whitespace, parsing each algorithm/digest/option
   // in order.
-  while (position < end) {
-    WTF::String digest;
-    IntegrityAlgorithm algorithm;
-
-    SkipWhile<UChar, IsASCIISpace>(position, end);
-    current_integrity_end = position;
-    SkipUntil<UChar, IsASCIISpace>(current_integrity_end, end);
-
+  for (const auto& token : base::SplitStringPiece(
+           characters, base::kWhitespaceASCII, base::KEEP_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
     // Algorithm parsing errors are non-fatal (the subresource should
     // still be loaded) because strong hash algorithms should be used
     // without fear of breaking older user agents that don't support
     // them.
+    IntegrityAlgorithm algorithm;
     AlgorithmParseResult parse_result =
-        ParseAttributeAlgorithm(position, current_integrity_end, algorithm);
-    if (parse_result == kAlgorithmUnknown) {
-      // Unknown hash algorithms are treated as if they're not present,
-      // and thus are not marked as an error, they're just skipped.
-      SkipUntil<UChar, IsASCIISpace>(position, end);
+        ParseAttributeAlgorithm(token, algorithm);
+    if (!parse_result.has_value()) {
+      // Unknown hash algorithms are treated as if they're not present, and
+      // thus are not marked as an error, they're just skipped.
       if (integrity_report) {
-        integrity_report->AddConsoleErrorMessage(
-            "Error parsing 'integrity' attribute ('" + attribute +
-            "'). The specified hash algorithm must be one of " +
-            IntegrityAlgorithmsForConsole() + ".");
-        integrity_report->AddUseCount(
-            WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
+        switch (parse_result.error()) {
+          case kAlgorithmUnknown:
+            integrity_report->AddConsoleErrorMessage(
+                "Error parsing 'integrity' attribute ('" + attribute +
+                "'). The specified hash algorithm must be one of " +
+                IntegrityAlgorithmsForConsole() + ".");
+            integrity_report->AddUseCount(
+                WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
+            break;
+          case kAlgorithmUnparsable:
+            integrity_report->AddConsoleErrorMessage(
+                "Error parsing 'integrity' attribute ('" + attribute +
+                "'). The hash algorithm must be one of " +
+                IntegrityAlgorithmsForConsole() +
+                ", followed by a '-' character.");
+            integrity_report->AddUseCount(
+                WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
+            break;
+        }
       }
       continue;
     }
 
-    if (parse_result == kAlgorithmUnparsable) {
-      SkipUntil<UChar, IsASCIISpace>(position, end);
-      if (integrity_report) {
-        integrity_report->AddConsoleErrorMessage(
-            "Error parsing 'integrity' attribute ('" + attribute +
-            "'). The hash algorithm must be one of " +
-            IntegrityAlgorithmsForConsole() + ", followed by a '-' character.");
-        integrity_report->AddUseCount(
-            WebFeature::kSRIElementWithUnparsableIntegrityAttribute);
-      }
-      continue;
-    }
+    const size_t prefix_length = parse_result.value();
+    auto rest = token.substr(prefix_length + 1);
+    auto [maybe_digest, maybe_options] =
+        base::SplitStringOnce(rest, '?').value_or(
+            std::make_pair(rest, std::string_view()));
 
-    DCHECK_EQ(parse_result, kAlgorithmValid);
-
-    if (!ParseDigest(position, current_integrity_end, digest)) {
-      SkipUntil<UChar, IsASCIISpace>(position, end);
+    String digest;
+    if (!ParseDigest(maybe_digest, digest)) {
       if (integrity_report) {
         integrity_report->AddConsoleErrorMessage(
             "Error parsing 'integrity' attribute ('" + attribute +
@@ -495,15 +510,11 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     // '?' character followed by unbounded VCHARs, but no actual options
     // have been defined yet. Thus, for forward compatibility, ignore any
     // options specified.
-    if (SkipExactly<UChar>(position, end, '?')) {
-      base::span<const UChar> input_span(position, end);
-      SkipWhile<UChar, IsValueCharacter>(position, end);
-      if (input_span.data() != position && integrity_report) {
+    if (integrity_report && !maybe_options.empty()) {
+      if (std::ranges::all_of(maybe_options, IsValueCharacter)) {
         integrity_report->AddConsoleErrorMessage(
-            "Ignoring unrecogized 'integrity' attribute option '" +
-            String(input_span.first(
-                static_cast<wtf_size_t>(position - input_span.data()))) +
-            "'.");
+            "Ignoring unrecognized 'integrity' attribute option '" +
+            String(maybe_options) + "'.");
       }
     }
 

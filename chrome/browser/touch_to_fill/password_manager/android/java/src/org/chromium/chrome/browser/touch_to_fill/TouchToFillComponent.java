@@ -101,4 +101,7 @@ public interface TouchToFillComponent {
             boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry);
+
+    /** Clears all subscriptions to services (e. g. BottomSheetController) */
+    void cleanUp();
 }

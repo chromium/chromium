@@ -33,10 +33,6 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
         if (syncService == null) {
             return false;
         }
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            return syncService.isSyncFeatureEnabled();
-        }
 
         if (!IdentityServicesProvider.get()
                 .getIdentityManager(mProfile)

@@ -240,6 +240,24 @@ void ContentPasswordManagerDriver::FillField(
   }
 }
 
+void ContentPasswordManagerDriver::SubmitChangePasswordForm(
+    autofill::FieldRendererId password_element_id,
+    autofill::FieldRendererId new_password_element_id,
+    autofill::FieldRendererId confirm_password_element_id,
+    const std::u16string& old_password,
+    const std::u16string& new_password,
+    base::OnceCallback<void(const autofill::FormData&)> form_data_callback) {
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    LogFilledFieldType();
+    agent->SubmitChangePasswordForm(
+        password_element_id, new_password_element_id,
+        confirm_password_element_id, old_password, new_password,
+        base::BindOnce(
+            &ContentPasswordManagerDriver::OnChangePasswordFormFilled,
+            weak_factory_.GetWeakPtr(), std::move(form_data_callback)));
+  }
+}
+
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password,
@@ -689,6 +707,24 @@ ContentPasswordManagerDriver::GetPasswordGenerationAgent() {
   }
 
   return password_gen_agent_;
+}
+
+void ContentPasswordManagerDriver::OnChangePasswordFormFilled(
+    base::OnceCallback<void(const autofill::FormData&)> form_data_callback,
+    const autofill::FormData& raw_form) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_)) {
+    return;
+  }
+
+  // In case we can't obtain a valid URL or a frame isn't allowed to perform an
+  // operation with generated URL, don't forward anything to password manager.
+  if (!HasValidURL(render_frame_host_)) {
+    return;
+  }
+
+  std::move(form_data_callback)
+      .Run(GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form));
 }
 
 }  // namespace password_manager

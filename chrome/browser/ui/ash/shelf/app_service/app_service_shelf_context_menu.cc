@@ -308,8 +308,6 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
       [[fallthrough]];
     case apps::AppType::kCrostini:
       [[fallthrough]];
-    case apps::AppType::kBuiltIn:
-      [[fallthrough]];
     case apps::AppType::kPluginVm:
       [[fallthrough]];
     case apps::AppType::kBorealis:
@@ -548,8 +546,6 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
     case apps::AppType::kArc:
       [[fallthrough]];
     case apps::AppType::kCrostini:
-      [[fallthrough]];
-    case apps::AppType::kBuiltIn:
       [[fallthrough]];
     case apps::AppType::kPluginVm:
       [[fallthrough]];

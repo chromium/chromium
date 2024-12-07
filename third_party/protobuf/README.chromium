@@ -8,6 +8,8 @@ CPEPrefix: cpe:/a:google:protobuf:21.12
 Revision: f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c
 Security Critical: yes
 Shipped: yes
+Mitigated: CVE-2024-7254
+CVE-2024-7254: Denial of service, outside our threat model. crbug.com/369473715
 
 Steps used to create the current version (or roll a newer one):
 0. Nuke third_party/protobuf from orbit (rm -rf `third_party/protobuf`). Note

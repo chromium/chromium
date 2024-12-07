@@ -73,8 +73,7 @@ class TestScannerCommandDelegate : public ScannerCommandDelegate {
               SetClipboard,
               (std::unique_ptr<ui::ClipboardData> data),
               (override));
-
-  base::WeakPtr<TestScannerCommandDelegate> GetWeakPtr() {
+  base::WeakPtr<ScannerCommandDelegate> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
 

@@ -78,7 +78,6 @@ source_set("profile_ios_io_data") {
     ":ios_thread",
     "//base",
     "//components/content_settings/core/browser",
-    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/metrics:metrics_pref_names",
     "//components/net_log",
@@ -234,6 +233,10 @@ source_set("keyed_service_factories") {
 
   if (ios_enable_credential_provider_extension) {
     deps += [ "//ios/chrome/browser/credential_provider/model" ]
+  }
+
+  if (ios_enable_screen_time) {
+    deps += [ "//ios/chrome/browser/screen_time/model" ]
   }
 }
 

@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -231,6 +232,35 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, Mixed) {
       "Autofill.Leipzig.FillingCorrectness.AccountNonChrome", 0);
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingCorrectness.Mixed", !ShouldEditField(), 1);
+}
+
+class AutofillAddressOnTypingMetricsTest : public AutofillMetricsBaseTest,
+                                           public testing::Test {
+ public:
+  AutofillAddressOnTypingMetricsTest() = default;
+
+  void SetUp() override { SetUpHelper(); }
+  void TearDown() override { TearDownHelper(); }
+};
+
+TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
+  base::HistogramTester histogram_tester_;
+  FormData form = test::GetFormData({.fields = {{}, {}, {}}});
+
+  // See and accept first suggestion.
+  autofill_manager().DidShowSuggestions({SuggestionType::kAddressEntryOnTyping},
+                                        form, form.fields()[0].global_id());
+  autofill_manager().OnDidFillAddressOnTypingSuggestion(
+      form.fields()[0].global_id());
+
+  // Only see second suggestion.
+  autofill_manager().DidShowSuggestions({SuggestionType::kAddressEntryOnTyping},
+                                        form, form.fields()[1].global_id());
+
+  ResetDriverToCommitMetrics();
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Autofill.AddressSuggestionOnTypingAcceptance"),
+              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
 }
 
 }  // namespace autofill::autofill_metrics

@@ -244,9 +244,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
 
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return GetAccessibleText();
-  }
+  void UpdateCachedTooltipText() { SetCachedTooltipText(GetAccessibleText()); }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
     if (event.IsOnlyLeftMouseButton()) {
@@ -259,7 +257,10 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     return BookmarkMenuButtonBase::OnMousePressed(event);
   }
 
-  void OnTextChanged() { GetViewAccessibility().SetName(GetAccessibleText()); }
+  void OnTextChanged() {
+    GetViewAccessibility().SetName(GetAccessibleText());
+    UpdateCachedTooltipText();
+  }
 
   const std::u16string GetAccessibleText() const {
     // If the folder is unnamed, set the name to a default string for unnamed

@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">Энэ нь төхөөрөмжөөс таны хайлтын өгөгдлийг устгах болно. Өгөгдлөө дараа нь сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2597976513418770460">Chrome хөтчийн зүйлсээ <ph name="ACCOUNT_EMAIL" />-с авна уу</translation>
 <translation id="259935314519650377">Татсан суулгагчийг завсрын санах ойд хадгалж чадсангүй. Алдаа: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome нь шинэчлэлтийг шалгах боломжгүй байна. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="2632707915638608719">Chrome-д зориулсан өргөтгөлүүдээр илүү ихийг хийгээрэй</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome таны хөтөч хамгийн аюулгүй тохиргоотой болохыг баталгаажуулахаар тогтмол шалгадаг. Та ямар нэг зүйлийг шалгах шаардлагатай бол бид танд мэдэгдэнэ.</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">Сул нууц үгийг таахад хялбар байдаг. Chrome-д <ph name="BEGIN_LINK" />танд зориулан сайн нууц үг үүсгэж, санах<ph name="END_LINK" /> боломж олгоорой.</translation>
 <translation id="2926952073016206995">Chrome-д энэ сайтын камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="2928420929544864228">Суулгаж дууслаа.</translation>
-<translation id="2929907241665500097">Chrome-г шинэчлээгүй, ямар нэг алдаа гарлаа. <ph name="BEGIN_LINK" />Chrome-г шинэчлэхтэй холбоотой асуудлууд болон амжилтгүй болсон шинэчлэлтүүдийг засна уу.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Суулгах үед алдаа гарлаа: Суулгагч явцыг эхлүүлж чадсангүй.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх - Chrome</translation>
 <translation id="2970681950995291301">Google Бүртгэлээ Chrome-с хасахын тулд Тохиргооны хуудсанд Chrome-с гарна уу</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome нь суурь горимд байна.</translation>
 <translation id="3038232873781883849">Суулгахыг хүлээж байна...</translation>
 <translation id="3045032126857188731">Орчуулсан хэл: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Аюулгүй үзэх онцлог унтраалттай байна. Chrome түүнийг асаахыг зөвлөж байна.</translation>
 <translation id="306179102415443347">Google Password Manager-т шуурхай очихын тулд товчлолоо ашиглана уу. Та товчлолоо компьютерын үндсэн нүүр эсвэл апп байршуулагч руугаа зөөх боломжтой.</translation>
 <translation id="3065168410429928842">Chrome-н таб</translation>
 <translation id="3080151273017101988">Google Chrome хаагдсан үед үндсэн аппликйешнуудыг үргэлжлүүлэн ажиллуул</translation>
@@ -243,7 +240,6 @@
 <translation id="383928141529488001">Google Chrome-д Bluetooth төхөөрөмжүүдийг судлахад 
  Bluetooth-н хандалт шаардлагатай. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Бүх Google Chrome-ын цонхнуудыг хааж дахин оролдоно уу.</translation>
-<translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> хувилбарыг суулгасан</translation>
 <translation id="3873044882194371212">Холбоосыг Chrome-н нууцлалтай цонхонд нээх</translation>
 <translation id="3885770153807205175">Хэл сонгогч</translation>
 <translation id="3889417619312448367">Google Chrome-ыг устгах</translation>
@@ -283,12 +279,10 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Хувийн болгох болон бусад онцлогийг авахын тулд Chrome-г Веб, аппын үйл ажиллагаа болон Google-н холбосон үйлчилгээнүүдэд оруулна уу</translation>
 <translation id="4334294535648607276">Татаж дууслаа.</translation>
-<translation id="4335235004908507846">Chrome нь таныг өгөгдлийн зөрчил, муу өргөтгөл болон бусад асуудлаас хамгаалахад туслах боломжтой</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />-г Chrome-д нэмсэн</translation>
 <translation id="4348548358339558429">Хувийн болгох онцлогийг авахын тулд Chrome-г Веб, аппын үйл ажиллагаанд оруулна уу</translation>
 <translation id="436060642166082913">Файл таны хувийн болон сошиал сүлжээний бүртгэлүүдэд хор хөнөөл учруулах боломжтой тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="4367027658822022112">Та Google Lens-г хялбархан хандахад зориулж бэхлэх боломжтой; хажуугийн самбарын дээд талд байх Бэхлэх товчлуурыг товшино уу</translation>
-<translation id="4384570495110188418">Та нэвтрээгүй байгаа тул Chrome таны нууц үгсийг шалгах боломжгүй байна</translation>
 <translation id="4389991535395284064">Нууцлалын горимд үзэх үед Chrome аюултай холболт ашиглан сайтыг ачаалахаас өмнө танд сануулна</translation>
 <translation id="4427306783828095590">Сайжруулсан хамгаалалт нь фишинг болон хортой кодыг блоклохын тулд илүү ихийг хийдэг</translation>
 <translation id="4434353761996769206">Суулгагчийн алдаа: <ph name="INSTALLER_ERROR" /></translation>

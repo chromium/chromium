@@ -1449,10 +1449,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
         if (DefaultBrowserPromoUtils.getInstance()
                 .prepareLaunchPromoIfNeeded(
-                        mActivity,
-                        mWindowAndroid,
-                        TrackerFactory.getTrackerForProfile(profile),
-                        /* ignoreMaxCount= */ false)) {
+                        mActivity, mWindowAndroid, TrackerFactory.getTrackerForProfile(profile))) {
             return true;
         }
         return AppLanguagePromoDialog.maybeShowPrompt(

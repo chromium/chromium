@@ -139,7 +139,7 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
     if (FAILED(i_shell_link->SetArguments(properties.arguments.c_str())))
       return false;
   } else if (old_i_persist_file.Get()) {
-    wchar_t current_arguments[MAX_PATH] = {0};
+    wchar_t current_arguments[MAX_PATH] = {};
     if (SUCCEEDED(
             old_i_shell_link->GetArguments(current_arguments, MAX_PATH))) {
       i_shell_link->SetArguments(current_arguments);

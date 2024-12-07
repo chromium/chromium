@@ -265,11 +265,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Unsafe scheme should be filtered out.
-  // Note that chrome:// URLs are allowed on Lacros so that trustworthy calls
-  // from Ash will work (URLs from untrustworthy applications are filtered
-  // before getting to StartupTabProvider).
   {
     base::CommandLine command_line({CMD_ARG(""), CMD_ARG("chrome://flags")});
     StartupTabProviderImpl instance;
@@ -280,7 +276,6 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
     EXPECT_EQ(CommandLineTabsPresent::kNo,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Exceptional settings page.
   {

@@ -48,6 +48,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/image/image.h"
@@ -322,7 +323,7 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
   const std::u16string device_type = ui::GetChromeOSDeviceName();
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  std::string gaia_id;
+  GaiaId gaia_id;
   if (user) {
     std::u16string given_name = user->GetGivenName();
     if (!given_name.empty()) {

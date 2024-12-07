@@ -103,15 +103,12 @@ component("controller") {
     frameworks = [ "Foundation.framework" ]
   }
 
-  # HighestPmfReporter and MemoryTracer depend on MemoryUsageMonitor and
-  # MemoryUsageMonitor depends on platform specific code. Explicitly specify
-  # supported platforms.
+  # HighestPmfReporter depends on MemoryUsageMonitor and MemoryUsageMonitor
+  # depends on platform specific code. Explicitly specify supported platforms.
   if (is_linux || is_chromeos || is_win || is_android || is_apple) {
     sources += [
       "highest_pmf_reporter.cc",
       "highest_pmf_reporter.h",
-      "memory_tracer.cc",
-      "memory_tracer.h",
     ]
   }
   if (is_android) {

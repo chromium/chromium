@@ -18,7 +18,7 @@
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/stub_input_controller.h"
 
 namespace ash {
 
@@ -28,7 +28,7 @@ constexpr int kMouseId = 1;
 constexpr int kPointingStickId = 2;
 constexpr int kTouchpadId = 3;
 
-class MockInputController : public ui::InputController {
+class MockInputController : public ui::StubInputController {
  public:
   MOCK_METHOD(void,
               SetTouchpadSensitivity,
@@ -112,75 +112,6 @@ class MockInputController : public ui::InputController {
               (),
               (override));
   MOCK_METHOD(bool, AreInputDevicesEnabled, (), (const override));
-
- private:
-  bool HasMouse() override { return false; }
-  bool HasPointingStick() override { return false; }
-  bool HasTouchpad() override { return false; }
-  bool HasHapticTouchpad() override { return false; }
-  bool IsCapsLockEnabled() override { return false; }
-  void SetCapsLockEnabled(bool enabled) override {}
-  void SetNumLockEnabled(bool enabled) override {}
-  bool IsAutoRepeatEnabled() override { return true; }
-  void SetAutoRepeatEnabled(bool enabled) override {}
-  void SetAutoRepeatRate(const base::TimeDelta& delay,
-                         const base::TimeDelta& interval) override {}
-  void GetAutoRepeatRate(base::TimeDelta* delay,
-                         base::TimeDelta* interval) override {}
-  void SetCurrentLayoutByName(
-      const std::string& layout_name,
-      base::OnceCallback<void(bool)> callback) override {}
-  void SetKeyboardKeyBitsMapping(
-      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
-  std::vector<uint64_t> GetKeyboardKeyBits(int id) override {
-    return std::vector<uint64_t>();
-  }
-  void SetTouchEventLoggingEnabled(bool enabled) override {
-    NOTIMPLEMENTED_LOG_ONCE();
-  }
-  void SuspendMouseAcceleration() override {}
-  void EndMouseAccelerationSuspension() override {}
-  void SetThreeFingerClick(bool enabled) override {}
-  void SetGamepadKeyBitsMapping(
-      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
-  std::vector<uint64_t> GetGamepadKeyBits(int id) override {
-    return std::vector<uint64_t>();
-  }
-  void SetTapToClickPaused(bool state) override {}
-  void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override {
-    std::move(reply).Run(std::string());
-  }
-  void GetTouchEventLog(const base::FilePath& out_dir,
-                        GetTouchEventLogReply reply) override {
-    std::move(reply).Run(std::vector<base::FilePath>());
-  }
-  void DescribeForLog(DescribeForLogReply reply) const override {
-    std::move(reply).Run(std::string());
-  }
-  void SetInternalTouchpadEnabled(bool enabled) override {}
-  bool IsInternalTouchpadEnabled() const override { return false; }
-  void SetTouchscreensEnabled(bool enabled) override {}
-  void GetStylusSwitchState(GetStylusSwitchStateReply reply) override {
-    std::move(reply).Run(ui::StylusState::REMOVED);
-  }
-  void SetInternalKeyboardFilter(
-      bool enable_filter,
-      std::vector<ui::DomCode> allowed_keys) override {}
-  void GetGesturePropertiesService(
-      mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
-          receiver) override {}
-  void PlayVibrationEffect(int id,
-                           uint8_t amplitude,
-                           uint16_t duration_millis) override {}
-  void StopVibration(int id) override {}
-  void PlayHapticTouchpadEffect(
-      ui::HapticTouchpadEffect effect_type,
-      ui::HapticTouchpadEffectStrength strength) override {}
-  void SetHapticTouchpadEffectForNextButtonRelease(
-      ui::HapticTouchpadEffect effect_type,
-      ui::HapticTouchpadEffectStrength strength) override {}
-  bool AreAnyKeysPressed() override { return false; }
-  void DisableKeyboardImposterCheck() override {}
 };
 
 const ui::InputDevice CreateInputDevice(int id,

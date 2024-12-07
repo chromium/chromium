@@ -11,7 +11,6 @@
 #include <utility>
 #include <variant>
 
-#include "ash/constants/ash_pref_names.h"
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
@@ -19,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -55,12 +56,18 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
 namespace {
+
+constexpr base::FeatureParam<base::TimeDelta>
+    kComponentUpdatePolicyProcessingDelay{
+        &kIwaPolicyManagerOnDemandComponentUpdate,
+        "component_update_policy_processing_delay", base::Seconds(15)};
 
 constexpr net::BackoffEntry::Policy kInstallRetryBackoffPolicy = {
     .num_errors_to_ignore = 0,
@@ -171,6 +178,10 @@ GetOnInstallTaskCompletedCallbackForTesting() {
 
 }  // namespace
 
+BASE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate,
+             "IwaPolicyManagerOnDemandComponentUpdate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // static
 void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -194,42 +205,41 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
-  key_distribution_info_observation_.Observe(
-      IwaKeyDistributionInfoProvider::GetInstance());
-
-  CHECK(on_started_callback_.is_null());
   if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
-    if (!on_started_callback.is_null()) {
-      std::move(on_started_callback).Run();
-    }
+    std::move(on_started_callback).Run();
     return;
   }
 
-  on_started_callback_ = std::move(on_started_callback);
-
-  pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kIsolatedWebAppInstallForceList,
-      base::BindRepeating(&IsolatedWebAppPolicyManager::ProcessPolicy,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          /*finished_closure=*/base::DoNothing()));
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::IsManagedGuestSession() &&
+      !base::FeatureList::IsEnabled(
+          features::kIsolatedWebAppManagedGuestSessionInstall)) {
+    std::move(on_started_callback).Run();
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const int pending_inits_count = GetPendingInitCount();
   SetPendingInitCount(pending_inits_count + 1);
   if (pending_inits_count <= kIsolatedWebAppForceInstallMaxRetryTreshold) {
+    ConfigureObserversOnSessionStart();
     CleanupAndProcessPolicyOnSessionStart();
   } else {
+    auto configure_observers = base::BindOnce(
+        &IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart,
+        weak_ptr_factory_.GetWeakPtr());
+    auto cleanup_and_process_policy = base::BindOnce(
+        &IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart,
+        weak_ptr_factory_.GetWeakPtr());
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart,
-            weak_ptr_factory_.GetWeakPtr()),
+        std::move(configure_observers)
+            .Then(std::move(cleanup_and_process_policy)),
         kIsolatedWebAppForceInstallEmergencyDelay);
   }
 
-  if (!on_started_callback_.is_null()) {
-    std::move(on_started_callback_).Run();
-  }
+  std::move(on_started_callback).Run();
 }
 
 void IsolatedWebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
@@ -248,12 +258,60 @@ base::Value IsolatedWebAppPolicyManager::GetDebugValue() const {
           .Set("process_logs", process_logs_.ToDebugValue()));
 }
 
-void IsolatedWebAppPolicyManager::ProcessPolicy(
-    base::OnceClosure finished_closure) {
+void IsolatedWebAppPolicyManager::ProcessPolicy() {
   CHECK(provider_);
   base::Value::Dict process_log;
   process_log.Set("start_time",
                   base::TimeFormatFriendlyDateAndTime(base::Time::Now()));
+
+  auto* key_provider = IwaKeyDistributionInfoProvider::GetInstance();
+  if (!key_provider->Ready()) {
+    // Will be signalled via `OnComponentUpdateSuccess()`.
+    process_log.Set("info", "Iwa Key Distribution component is not ready");
+    process_logs_.AppendCompletedStep(std::move(process_log));
+    return;
+  }
+
+  if (process_policy_fallback_timer_.IsRunning()) {
+    process_log.Set(
+        "info",
+        "running an on-demand update for the IWA Distribution component");
+    process_logs_.AppendCompletedStep(std::move(process_log));
+    return;
+  }
+
+  // This branch will be called at most once during the lifetime of the
+  // browser process. We delay the initial processing of the policy by 15
+  // seconds to give the system a chance to pull the latest component data (this
+  // only makes sense if the policy is not empty). If the component gets updated
+  // quicker, then the policy processor will be called from
+  // `OnComponentUpdateSuccess()`.
+  if (base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate) &&
+      !profile_->GetPrefs()
+           ->GetList(prefs::kIsolatedWebAppInstallForceList)
+           .empty() &&
+      key_provider->MaybeQueueComponentUpdateOnce(
+          base::PassKey<IsolatedWebAppPolicyManager>())) {
+    CHECK(key_distribution_info_observation_.IsObserving());
+
+    process_log.Set(
+        "info",
+        base::StringPrintf(
+            "running an on-demand update for the IWA Distribution "
+            "component; ProcessPolicy() will be delayed by %lld seconds",
+            kComponentUpdatePolicyProcessingDelay.Get().InSeconds()));
+    process_logs_.AppendCompletedStep(std::move(process_log));
+
+    // More specifically, if the currently used component data comes from the
+    // bundled (preloaded) component, then we request an on-demand update once
+    // on session startup (this branch will be called at most once during the
+    // lifetime of the browser process).
+    CHECK(!process_policy_fallback_timer_.IsRunning());
+    process_policy_fallback_timer_.Start(
+        FROM_HERE, kComponentUpdatePolicyProcessingDelay.Get(), this,
+        &IsolatedWebAppPolicyManager::ProcessPolicy);
+    return;
+  }
 
   // Ensure that only one policy resolution can happen at one time.
   if (policy_is_being_processed_) {
@@ -262,39 +320,31 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
                     "policy is already being processed - waiting for "
                     "processing to finish.");
     process_logs_.AppendCompletedStep(std::move(process_log));
-    std::move(finished_closure).Run();
     return;
   }
 
   policy_is_being_processed_ = true;
   current_process_log_ = std::move(process_log);
 
-  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
-    current_process_log_.Set(
-        "error",
-        "policy is ignored because isolated web apps are not enabled.");
-    OnPolicyProcessed();
-    std::move(finished_closure).Run();
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::IsManagedGuestSession() &&
-      !base::FeatureList::IsEnabled(
-          features::kIsolatedWebAppManagedGuestSessionInstall)) {
-    current_process_log_.Set(
-        "error", "IWA installation in managed guest sessions is disabled.");
-    OnPolicyProcessed();
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   provider_->scheduler().ScheduleCallback<AllAppsLock>(
       "IsolatedWebAppPolicyManager::ProcessPolicy", AllAppsLockDescription(),
       base::BindOnce(&IsolatedWebAppPolicyManager::DoProcessPolicy,
                      weak_ptr_factory_.GetWeakPtr()),
       /*on_complete=*/
-      std::move(finished_closure));
+      initial_policy_processing_finished_cb_
+          ? std::move(initial_policy_processing_finished_cb_)
+          : base::DoNothing());
+}
+
+void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
+  key_distribution_info_observation_.Observe(
+      IwaKeyDistributionInfoProvider::GetInstance());
+
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::BindRepeating(&IsolatedWebAppPolicyManager::ProcessPolicy,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart() {
@@ -304,8 +354,9 @@ void IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart() {
                      weak_ptr_factory_.GetWeakPtr(),
                      /*pending_count=*/0));
 
+  initial_policy_processing_finished_cb_ = finished_barrier;
   CleanupOrphanedBundles(/*finished_closure=*/finished_barrier);
-  ProcessPolicy(/*finished_closure=*/finished_barrier);
+  ProcessPolicy();
 }
 
 int IsolatedWebAppPolicyManager::GetPendingInitCount() {
@@ -556,8 +607,7 @@ void IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IsolatedWebAppPolicyManager::ProcessPolicy,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*finished_closure=*/base::DoNothing()),
+                     weak_ptr_factory_.GetWeakPtr()),
       install_retry_backoff_entry_.GetTimeUntilRelease());
 }
 
@@ -573,16 +623,10 @@ void IsolatedWebAppPolicyManager::OnPolicyProcessed() {
 
   policy_is_being_processed_ = false;
 
-  if (!on_started_callback_.is_null()) {
-    std::move(on_started_callback_).Run();
-  }
-
   if (reprocess_policy_needed_) {
     reprocess_policy_needed_ = false;
-    ProcessPolicy(/*finished_closure=*/base::DoNothing());
+    ProcessPolicy();
   }
-  // TODO (peletskyi): Check policy compliance here as in theory
-  // more race conditions are possible.
 }
 
 void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
@@ -597,10 +641,8 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
     const base::Version& version,
     bool is_preloaded) {
-  if (is_preloaded) {
-    return;
-  }
-  ProcessPolicy(/*finished_closure=*/base::DoNothing());
+  process_policy_fallback_timer_.Stop();
+  ProcessPolicy();
 }
 
 IsolatedWebAppPolicyManager::ProcessLogs::ProcessLogs() = default;

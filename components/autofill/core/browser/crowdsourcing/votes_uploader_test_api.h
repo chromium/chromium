@@ -17,6 +17,10 @@ class VotesUploaderTestApi {
   explicit VotesUploaderTestApi(VotesUploader* votes_uploader)
       : votes_uploader_(*votes_uploader) {}
 
+  base::SequencedTaskRunner& vote_upload_task_runner() {
+    return votes_uploader_->vote_upload_task_runner();
+  }
+
   // Blocks until all pending votes have been emitted. This fails if either a
   // timeout is hit or if the BrowserAutofillManager::vote_upload_task_runner_
   // has not been initialized yet.

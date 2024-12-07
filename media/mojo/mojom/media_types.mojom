@@ -402,8 +402,6 @@ struct VideoFrameMetadata {
 
   bool power_efficient;
 
-  bool texture_origin_is_top_left;
-
   bool has_device_scale_factor;
   double device_scale_factor;
 
@@ -612,6 +610,18 @@ enum RendererType {
   kCastStreaming = 9,    // CastStreamingRendererFactory
   kContentEmbedderDefined = 10,  // Defined by the content embedder
   kTest= 11,             // Renderer implementations used in tests
+};
+
+// See media/base/demuxer.h for description.
+enum DemuxerType {
+  kUnknownDemuxer = 0,
+  kMockDemuxer = 1,
+  kFFmpegDemuxer = 2,
+  kChunkDemuxer = 3,
+  kMediaUrlDemuxer = 4,
+  kFrameInjectingDemuxer = 5,
+  kStreamProviderDemuxer = 6,
+  kManifestDemuxer = 7,
 };
 
 // See media::CreateCdmStatus

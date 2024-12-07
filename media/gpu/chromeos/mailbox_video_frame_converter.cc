@@ -123,8 +123,6 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage) override {
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
@@ -139,8 +137,7 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
     CHECK(shared_image_interface);
 
     return shared_image_interface->CreateSharedImage(
-        {format, size, color_space, surface_origin, alpha_type, usage,
-         "MailboxVideoFrameConverter"},
+        {format, size, color_space, usage, "MailboxVideoFrameConverter"},
         std::move(handle));
   }
 
@@ -535,8 +532,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
       gpu_delegate_->CreateSharedImage(std::move(gpu_memory_buffer_handle),
                                        GetSharedImageFormat(*buffer_format),
                                        shared_image_size, src_color_space,
-                                       kTopLeft_GrSurfaceOrigin,
-                                       kPremul_SkAlphaType, shared_image_usage);
+                                       shared_image_usage);
   if (!client_shared_image) {
     OnError(FROM_HERE, "Failed to create shared image.");
     return false;

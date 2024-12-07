@@ -169,8 +169,10 @@ std::unique_ptr<BookmarkContextMenu> ContextMenuFromNodes(
     }
   }
 
-  return std::make_unique<BookmarkContextMenu>(
-      browser, embedder, bookmarks, source, shopping_list_controller);
+  return bookmarks.empty() ? nullptr
+                           : std::make_unique<BookmarkContextMenu>(
+                                 browser, embedder, bookmarks, source,
+                                 shopping_list_controller);
 }
 
 }  // namespace

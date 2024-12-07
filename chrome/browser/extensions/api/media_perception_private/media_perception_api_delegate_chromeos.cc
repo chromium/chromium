@@ -79,7 +79,8 @@ void OnLoadComponent(
 MediaPerceptionAPIDelegateChromeOS::MediaPerceptionAPIDelegateChromeOS() =
     default;
 
-MediaPerceptionAPIDelegateChromeOS::~MediaPerceptionAPIDelegateChromeOS() {}
+MediaPerceptionAPIDelegateChromeOS::~MediaPerceptionAPIDelegateChromeOS() =
+    default;
 
 void MediaPerceptionAPIDelegateChromeOS::LoadCrOSComponent(
     const extensions::api::media_perception_private::ComponentType& type,

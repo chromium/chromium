@@ -29,7 +29,7 @@ struct SystemIndicatorInfo : public Extension::ManifestData {
   ExtensionIconSet icon_set;
 };
 
-SystemIndicatorInfo::SystemIndicatorInfo() {}
+SystemIndicatorInfo::SystemIndicatorInfo() = default;
 SystemIndicatorInfo::~SystemIndicatorInfo() = default;
 
 }  // namespace

@@ -97,6 +97,7 @@ class TouchToFillPaymentMethodViewBinder {
             if (!visibilityChangeSuccessful && model.get(VISIBLE)) {
                 assert (model.get(DISMISS_HANDLER) != null);
                 model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
+                view.destroy();
             }
         } else if (propertyKey == SHEET_ITEMS) {
             TouchToFillPaymentMethodCoordinator.setUpCardItems(model, view);

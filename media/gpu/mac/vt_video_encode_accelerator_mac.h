@@ -143,6 +143,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   std::optional<gfx::ColorSpace> encoder_color_space_;
   bool can_set_encoder_color_space_ = true;
 
+  bool encoder_produces_svc_spec_compliant_bitstream_ = false;
+
   // Monotonically-growing timestamp that will be assigned to the next frame
   base::TimeDelta next_timestamp_;
 

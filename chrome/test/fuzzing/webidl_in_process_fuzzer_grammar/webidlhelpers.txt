@@ -1,0 +1,35 @@
+<void> =
+<object> = {}
+<undefined> = undefined
+<any> = <object>
+<byte> = '<char>'
+<octet> = '<char>'
+<short> = <int min=-32768 max=32767>
+<unsigned_short> = <int min=0 max=65536>
+<bigint> = <int>
+<boolean> = false
+<boolean> = true
+<DOMString> = "<string>"
+<ByteString> = "<string>"
+<USVString> = "<string>"
+<ArrayBuffer> = new ArrayBuffer()
+<ArrayBufferView> = <ArrayBuffer>
+# <SharedArray> =
+<Int8Array> = new Int8Array()
+<Int16Array> = new Int16Array()
+<Int32Array> = new Int32Array()
+<Uint8Array> = new Uint8Array()
+<Uint16Array> = new Uint16Array()
+<Uint32Array> = new Uint32Array()
+<Uint8ClampedArray> = new Uint8ClampedArray()
+<BigInt64Array> = new BigInt64Array()
+<BigUint64Array> = new BigUint64Array()
+#<Float16Array> =
+<Float32Array> = new Float32Array()
+<Float64Array> = new Float64Array()
+<DataView> = new DataView(<ArrayBuffer>)
+<Internals> = internals
+<Navigator> = window.navigator
+<Document> = document
+<Window> = window
+<null> = null

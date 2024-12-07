@@ -158,6 +158,8 @@ component("net") {
     "base/backoff_entry.h",
     "base/backoff_entry_serializer.cc",
     "base/backoff_entry_serializer.h",
+    "base/base64.cc",
+    "base/base64.h",
     "base/cache_type.h",
     "base/chunked_upload_data_stream.cc",
     "base/chunked_upload_data_stream.h",
@@ -1107,6 +1109,7 @@ component("net") {
     "//components/miracle_parameter/common",
     "//components/network_time/time_tracker",
     "//net/http:transport_security_state_generated_files",
+    "//third_party/simdutf:simdutf",
   ]
 
   public_deps = [
@@ -2621,6 +2624,7 @@ target(_test_target_type, "net_unittests") {
     "base/address_list_unittest.cc",
     "base/backoff_entry_serializer_unittest.cc",
     "base/backoff_entry_unittest.cc",
+    "base/base64_unittest.cc",
     "base/chunked_upload_data_stream_unittest.cc",
     "base/data_url_unittest.cc",
     "base/datagram_buffer_unittest.cc",
@@ -3047,6 +3051,7 @@ target(_test_target_type, "net_unittests") {
     "//third_party/abseil-cpp:absl",
     "//third_party/anonymous_tokens:anonymous_tokens_tests",
     "//third_party/protobuf:protobuf_lite",
+    "//third_party/simdutf:simdutf",
     "//third_party/zlib",
     "//url",
     "//url:buildflags",

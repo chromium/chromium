@@ -10,6 +10,9 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "url/mojom/url.mojom";
 
+[EnableIf=enterprise_watermark]
+import "components/enterprise/watermarking/mojom/watermark.mojom";
+
 [ServiceSandbox=sandbox.mojom.Sandbox.kPrintCompositor]
 interface PrintCompositor {
   // The status of composition and conversion execution.
@@ -108,7 +111,9 @@ interface PrintCompositor {
   // Sets the title of the document.
   SetTitle(string title);
 
-  // Sets the enterprise watermark text. No watermark is drawn if an empty
-  // string is provided.
-  SetWatermarkText(string watermark_text);
+  // Sets watermark block data. This value is optional and defaults to null.
+  // Setting this value to null (or not initializing it with a non-null value)
+  // clears the watermark.
+  [EnableIf=enterprise_watermark]
+  SetWatermarkBlock(watermark.mojom.WatermarkBlock? watermark_block);
 };

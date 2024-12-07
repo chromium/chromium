@@ -1236,6 +1236,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3229277193950731405">Kopjo vargun e versionit</translation>
 <translation id="323107829343500871">Shkruaj kodin CVC për <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Zbulo gjithmonë përmbajtje të rëndësishme në këtë sajt</translation>
+<translation id="323585066388831737">E kuqe e çelur</translation>
 <translation id="3236212803136366317">Përfitimet e kartave</translation>
 <translation id="3238395604961564389">Hape lidhjen në një dritare të fshehtë</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar pamjen e shfletuesit tënd</translation>
@@ -1854,6 +1855,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4277937682389409325">Adresë lokale</translation>
 <translation id="4278090321534187713">Kartat që nuk pranohen nga ky tregtar janë të çaktivizuara</translation>
 <translation id="4278390842282768270">Të lejuara</translation>
+<translation id="4281245629646759298">E verdhë e çelur</translation>
 <translation id="4281998142035485137">{0,plural, =1{Të hapet skedari konfidencial?}other{Të hapen skedarët konfidencialë?}}</translation>
 <translation id="4282280603030594840">Blerje automjetesh</translation>
 <translation id="4282346679996504092">Sinjalizimet për këtë produkt janë çaktivizuar dhe faqeshënuesi është hequr</translation>
@@ -2743,6 +2745,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5969199813874624822">Gjej dhe gjurmo çmimet</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Ruli i gjashtë</translation>
+<translation id="5974745851230707809">Opsionet e pagesës me kalimin e kohës</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
 <translation id="5984570616552610254">Lagështia e dhomës</translation>
@@ -4305,6 +4308,7 @@ Detaje shtesë:
 <translation id="8767765348545497220">Mbyll flluskën e ndihmës</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 mënyrë pagese}other{# mënyra pagese}}</translation>
 <translation id="8768225988514678921">Butoni "Krijo prezantim". Aktivizoje për të krijuar me shpejtësi një prezantim të ri të Google te "Diapozitivat"</translation>
+<translation id="8769662576926275897">Detajet e kartës</translation>
 <translation id="8770286973007342895">Korrëse bari</translation>
 <translation id="8772387130037509473">Joga dhe pilate</translation>
 <translation id="877348612833018844">{0,plural, =1{Të zhvendoset skedari konfidencial?}other{Të zhvendosen skedarët konfidencialë?}}</translation>
@@ -4333,6 +4337,7 @@ Detaje shtesë:
 <translation id="882338992931677877">Foleja manuale</translation>
 <translation id="8830320733681313421">Hagaki (kartolinë)</translation>
 <translation id="8830565333350631528">Shiko skedarët te "<ph name="CLOUD_PROVIDER" />"</translation>
+<translation id="8831783793142731637">Ofrohen për blerjet mbi <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Lavatriçe dhe tharëse</translation>
 <translation id="8834962751196791179">Po e shikon këtë paralajmërim sepse ky sajt nuk e mbështet protokollin HTTPS dhe je në modalitetin "I fshehtë". <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Shfaqje televizive fantastiko-shkencore dhe fantazie</translation>

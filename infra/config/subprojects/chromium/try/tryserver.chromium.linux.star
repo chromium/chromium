@@ -46,7 +46,7 @@ try_.builder(
     # TODO: crbug.com/370594503 - Add documents for compile-size.
     description_html = "Measures and prevents unexpected compile input size " +
                        "growth. See docs for details.",
-    executable = "recipe:build_size_trybot",
+    executable = "recipe:compile_size_trybot",
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
@@ -57,8 +57,7 @@ try_.builder(
             "x64",
         ],
     ),
-    # TODO: crbug.com/40190002 - Make builderful before productionizing.
-    builderless = True,
+    builderless = False,
     cores = 8,
     contact_team_email = "build@chromium.org",
     properties = {
@@ -71,6 +70,11 @@ try_.builder(
             ],
         },
     },
+    # TODO: crbug.com/40190002 - make this required once confirming there are
+    # no false rejections.
+    tryjob = try_.job(
+        experiment_percentage = 100,
+    ),
 )
 
 try_.builder(

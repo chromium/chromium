@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningPropert
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.prefs.PrefService;
@@ -318,7 +317,7 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testGetAccountDisplayNameReturnsFullName() {
-        AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        AccountInfo account = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))

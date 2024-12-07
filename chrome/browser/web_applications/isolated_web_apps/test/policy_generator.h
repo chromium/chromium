@@ -24,7 +24,8 @@ class PolicyGenerator {
       const web_package::SignedWebBundleId& web_bundle_id,
       const GURL& update_manifest_url,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt);
+      const std::optional<base::Version>& pinned_version = std::nullopt,
+      bool allow_downgrades = false);
 
   base::Value Generate();
 

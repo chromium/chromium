@@ -23,6 +23,15 @@ BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
              "AutofillAcrossIframesIosTriggerFormExtraction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature flag to control displaying of Autofill suggestions on
+// unclassified fields based on prefix matching. These suggestions are displayed
+// after the user typed a certain number of characters that match some data
+// stored in the user's profile.
+// TODO(crbug.com/381994105): Cleanup when launched.
+BASE_FEATURE(kAutofillAddressSuggestionsOnTyping,
+             "AutofillAddressSuggestionsOnTyping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature flag to control the displaying of an ongoing hats survey that
 // measures users perception of Autofill. Differently from other surveys,
 // the Autofill user perception survey will not have a specific target
@@ -236,7 +245,7 @@ BASE_FEATURE(kAutofillFixCurrentValueInImport,
 // `cached_form->autofill_count() != 0`.
 BASE_FEATURE(kAutofillDecoupleAutofillCountFromCache,
              "AutofillDecoupleAutofillCountFromCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Gives precedence to local heuristics if they indicate that a field is an
 // EMAIL_ADDRESS field and the server believes that it is a USERNAME or
@@ -674,6 +683,17 @@ BASE_FEATURE(kAutofillGreekRegexes,
 COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kAutofillInferLabelFromDefaultSelectText,
              "AutofillInferLabelFromDefaultSelectText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, votes are uploaded already when the AutofillDriver becomes
+// inactive, i.e., the underlying frame enters the bfcache. Otherwise, a
+// bfcached AutofillDriver and its votes may stay around until the WebContents
+// is destroyed, by which time it's too late to send the votes because of its
+// asynchronicity.
+// TODO(crbug.com/374086145): Remove when launched.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillVoteWhenInactive,
+             "AutofillVoteWhenInactive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the successful first time creation

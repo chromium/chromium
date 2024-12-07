@@ -457,8 +457,10 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
       assertWithMatcher:grey_notNil()];
 }
 
+// TODO(crbug.com/382480026): Deflake this test.
+//
 // Tests that a tab can be moved to another tab group.
-- (void)testTabStripMoveTabToGroup {
+- (void)FLAKY_testTabStripMoveTabToGroup {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }

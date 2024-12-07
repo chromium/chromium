@@ -31,7 +31,6 @@ class SequenceManagerForTest : public internal::SequenceManagerImpl {
       // by default in the test SequenceManager, as opposed to production code.
       SequenceManager::Settings settings =
           SequenceManager::Settings::Builder()
-              .SetRandomisedSamplingEnabled(true)
               .Build());
 
   // Creates SequenceManagerForTest using the provided ThreadController.
@@ -39,7 +38,6 @@ class SequenceManagerForTest : public internal::SequenceManagerImpl {
       std::unique_ptr<internal::ThreadController> thread_controller,
       SequenceManager::Settings settings =
           SequenceManager::Settings::Builder()
-              .SetRandomisedSamplingEnabled(true)
               .Build());
 
   static std::unique_ptr<SequenceManagerForTest> CreateOnCurrentThread(

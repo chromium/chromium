@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"

@@ -1,7 +1,6 @@
 {
   "description": "Aggregatable named budgets",
   "api_config": {
-    "needs_aggregatable_debug": true,
     "needs_aggregatable_named_budgets": true
   },
   "input": {

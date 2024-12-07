@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/browser_action_queue.h"
 #include "chrome/browser/ash/crosapi/browser_manager_feature.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -28,7 +26,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
-#include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler_observer.h"
@@ -52,11 +49,6 @@ class CloudPolicyCore;
 
 namespace crosapi {
 
-namespace mojom {
-enum class CreationResult;
-}  // namespace mojom
-
-class BrowserAction;
 class BrowserLoader;
 
 using ash::standalone_browser::LacrosSelection;
@@ -83,19 +75,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   BrowserManager& operator=(const BrowserManager&) = delete;
 
   ~BrowserManager() override;
-
-  // NOTE on callbacks:
-  // An action's callback (e.g. the last parameter to NewWindowForDetachingTab
-  // below) will never be invoked with a CreationResult value of
-  // kBrowserShutdown. In the case of a Lacros shutdown (rather than system
-  // shutdown), BrowserManager will try to perform the action again later.
-
-  // If there's already a tab opening the URL in lacros-chrome, in some window
-  // of the primary profile, activate the tab. Otherwise, opens a tab for
-  // the given URL. `path_behavior` will be assigned to the variable of the same
-  // name in the `NavigateParams` struct that's used to perform the actual
-  // navigation downstream.
-  void SwitchToTab(const GURL& url, NavigateParams::PathBehavior path_behavior);
 
   // Initialize resources and start Lacros.
   //
@@ -176,16 +155,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                            NewWindowReloadsWhenUpdateAvailable);
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, OnLacrosUserDataDirRemoved);
 
-  // Processes the action depending on the current state.
-  // Ignoring a few exceptional cases, the logic is as follows:
-  // - If Lacros is ready, the action is performed.
-  // - If Lacros is not ready and the action is queueable, the action is queued
-  //   (and Lacros started if necessary).
-  // - Otherwise, the action is cancelled.
-  void PerformOrEnqueue(std::unique_ptr<BrowserAction> action);
-
-  void OnActionPerformed(std::unique_ptr<BrowserAction> action, bool retry);
-
   // Remembers lacros launch mode by calling `SetLacrosLaunchMode()`, then kicks
   // off the daily reporting for the metrics.
   void RecordLacrosLaunchMode();
@@ -215,13 +184,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnRefreshSchedulerDestruction(
       policy::CloudPolicyRefreshScheduler* scheduler) override;
 
-  // Shared implementation of OpenUrl and SwitchToTab.
-  void OpenUrlImpl(
-      const GURL& url,
-      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
-      crosapi::mojom::OpenUrlFrom from,
-      NavigateParams::PathBehavior path_behavior);
-
   // Sending the LaunchMode state at least once a day.
   // multiple events will get de-duped on the server side.
   void OnDailyLaunchModeTimer();
@@ -246,9 +208,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
   // new or existing lacros startup tasks are not executed during shutdown.
   bool shutdown_requested_ = false;
-
-  // The queue of actions to be performed when Lacros becomes ready.
-  BrowserActionQueue pending_actions_;
 
   // The timer used to periodically check if the daily event should be
   // triggered.

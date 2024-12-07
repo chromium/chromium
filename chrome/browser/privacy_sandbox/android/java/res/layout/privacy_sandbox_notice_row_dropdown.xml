@@ -109,7 +109,7 @@ found in the LICENSE file.
         style="@style/TextAppearance.TextMedium.Secondary" />
 
     <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_description_5_v2_no_link"
+        android:id="@+id/privacy_sandbox_m1_notice_row_learn_more_description_5_v2"
         android:visibility="gone"
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"

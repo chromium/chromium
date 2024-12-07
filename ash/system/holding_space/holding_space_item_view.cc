@@ -443,8 +443,7 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
     const bool success = holding_space_util::ExecuteInProgressCommand(
-        item(), HoldingSpaceCommandId::kCancelItem,
-        holding_space_metrics::EventSource::kHoldingSpaceItem);
+        item(), HoldingSpaceCommandId::kCancelItem);
     CHECK(success);
     return;
   }
@@ -457,11 +456,9 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
   // Unpinning `item()` may result in the destruction of this view.
   auto weak_ptr = weak_factory_.GetWeakPtr();
   if (is_item_pinned) {
-    HoldingSpaceController::Get()->client()->UnpinItems(
-        {item()}, holding_space_metrics::EventSource::kHoldingSpaceItem);
+    HoldingSpaceController::Get()->client()->UnpinItems({item()});
   } else {
-    HoldingSpaceController::Get()->client()->PinItems(
-        {item()}, holding_space_metrics::EventSource::kHoldingSpaceItem);
+    HoldingSpaceController::Get()->client()->PinItems({item()});
   }
 
   if (weak_ptr)

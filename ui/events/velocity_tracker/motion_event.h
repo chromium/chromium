@@ -87,6 +87,9 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual int GetFlags() const = 0;
   virtual base::TimeTicks GetEventTime() const = 0;
   virtual base::TimeTicks GetLatestEventTime() const;
+  // Returns the event time (in milliseconds) of first down in the input
+  // sequence.
+  virtual base::TimeTicks GetDownTime() const;
 
   virtual Classification GetClassification() const;
 

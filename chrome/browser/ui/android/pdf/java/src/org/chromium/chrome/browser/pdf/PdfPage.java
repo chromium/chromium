@@ -118,8 +118,12 @@ public class PdfPage extends BasicNativePage {
         return mPdfCoordinator.findInPage();
     }
 
-    /** Build structured data including content uri and grant permission. */
-    public String requestAssistContent() {
-        return mPdfCoordinator.requestAssistContent(getTitle());
+    /**
+     * Build structured data including content uri and grant permission.
+     *
+     * @param isWorkProfile Whether Chrome is running in the Android work profile.
+     */
+    public String requestAssistContent(boolean isWorkProfile) {
+        return mPdfCoordinator.requestAssistContent(getTitle(), isWorkProfile);
     }
 }

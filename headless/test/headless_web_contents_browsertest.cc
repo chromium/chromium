@@ -665,6 +665,12 @@ class BlockDevToolsEmbedding : public HeadlessDevTooledBrowserTest {
     FinishAsynchronousTest();
   }
 
+  bool ShouldEnableSitePerProcess() override {
+    // Currently this test seg faults with OOPIF enabled.
+    // https://crbug.com/382703193.
+    return false;
+  }
+
  private:
   int port_ = 10000 + (rand() % 60000);
 };

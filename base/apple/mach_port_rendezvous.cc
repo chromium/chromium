@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/apple/mach_port_rendezvous.h"
 
 #include <mach/mig.h>
@@ -17,6 +12,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -35,6 +31,7 @@
 #include <bsm/libbsm.h>
 #include <servers/bootstrap.h>
 
+#include "base/apple/scoped_dispatch_object.h"
 #include "base/environment.h"
 #include "base/mac/info_plist_data.h"
 #include "base/strings/string_number_conversions.h"
@@ -248,7 +245,8 @@ std::unique_ptr<uint8_t[]> MachPortRendezvousServerBase::CreateReplyMessage(
   const size_t buffer_size =
       CalculateResponseSize(port_count, additional_data.size());
   auto buffer = std::make_unique<uint8_t[]>(buffer_size);
-  BufferIterator<uint8_t> iterator(buffer.get(), buffer_size);
+  auto iterator =
+      UNSAFE_TODO(BufferIterator<uint8_t>(buffer.get(), buffer_size));
 
   auto* message = iterator.MutableObject<mach_msg_base_t>();
   message->header.msgh_bits =
@@ -324,6 +322,19 @@ MachPortRendezvousServerIOS::~MachPortRendezvousServerIOS() = default;
 #endif
 
 #if BUILDFLAG(IS_MAC)
+
+struct MachPortRendezvousServerMac::ClientData {
+  ClientData();
+  ClientData(ClientData&&);
+  ~ClientData();
+
+  // A DISPATCH_SOURCE_TYPE_PROC / DISPATCH_PROC_EXIT dispatch source. When
+  // the source is triggered, it calls OnClientExited().
+  apple::ScopedDispatchObject<dispatch_source_t> exit_watcher;
+
+  MachPortsForRendezvous ports;
+  std::optional<mac::ProcessRequirement> requirement;
+};
 
 // static
 MachPortRendezvousServerMac* MachPortRendezvousServerMac::GetInstance() {
@@ -406,6 +417,10 @@ MachPortRendezvousServerMac::MachPortRendezvousServerMac() {
 }
 
 MachPortRendezvousServerMac::~MachPortRendezvousServerMac() = default;
+
+void MachPortRendezvousServerMac::ClearClientDataForTesting() {
+  client_data_.clear();
+}
 
 std::optional<MachPortsForRendezvous>
 MachPortRendezvousServerMac::PortsForClient(audit_token_t audit_token) {
@@ -494,7 +509,8 @@ bool MachPortRendezvousClient::SendRequest(
                             additional_response_data_size) +
       sizeof(mach_msg_audit_trailer_t);
   auto buffer = std::make_unique<uint8_t[]>(buffer_size);
-  BufferIterator<uint8_t> iterator(buffer.get(), buffer_size);
+  auto iterator =
+      UNSAFE_TODO(BufferIterator<uint8_t>(buffer.get(), buffer_size));
 
   // Perform a send and receive mach_msg.
   auto* message = iterator.MutableObject<mach_msg_base_t>();

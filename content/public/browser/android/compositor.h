@@ -50,12 +50,10 @@ class CONTENT_EXPORT Compositor {
   // instance can be used. This should be called only once.
   static void Initialize();
 
-  // Creates a GL context for the provided |handle|. If a null handle is passed,
-  // an offscreen context is created. This must be called on the UI thread.
+  // Creates an offscreen GL context. This must be called on the UI thread.
   using ContextProviderCallback =
       base::OnceCallback<void(scoped_refptr<viz::ContextProvider>)>;
   static void CreateContextProvider(
-      gpu::SurfaceHandle handle,
       gpu::SharedMemoryLimits shared_memory_limits,
       ContextProviderCallback callback);
 

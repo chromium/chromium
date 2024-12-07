@@ -69,6 +69,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -364,6 +365,7 @@ class BookmarkManagerMediator
     private final BookmarkImageFetcher mBookmarkImageFetcher;
     private final ShoppingService mShoppingService;
     private final SnackbarManager mSnackbarManager;
+    private final BooleanSupplier mCanShowSigninPromo;
     private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
     private final Set<PowerBookmarkType> mCurrentPowerFilter = new HashSet<>();
     private final CallbackController mCallbackController = new CallbackController();
@@ -405,6 +407,7 @@ class BookmarkManagerMediator
             BookmarkImageFetcher bookmarkImageFetcher,
             ShoppingService shoppingService,
             SnackbarManager snackbarManager,
+            BooleanSupplier canShowSigninPromo,
             Consumer<OnScrollListener> onScrollListenerConsumer,
             BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager) {
         mContext = context;
@@ -431,6 +434,7 @@ class BookmarkManagerMediator
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mShoppingService = shoppingService;
         mSnackbarManager = snackbarManager;
+        mCanShowSigninPromo = canShowSigninPromo;
         mPromoHeaderManager =
                 new BookmarkPromoHeader(
                         mContext, mProfile.getOriginalProfile(), this::updateHeader);
@@ -545,6 +549,10 @@ class BookmarkManagerMediator
             }
         }
         return false;
+    }
+
+    void onPromoVisibilityChange() {
+        updateHeader();
     }
 
     /** See BookmarkManager(Coordinator)#setBasicNativePage. */
@@ -1074,6 +1082,12 @@ class BookmarkManagerMediator
         final @BookmarkUiMode int currentUiState = getCurrentUiMode();
         if (currentUiState != BookmarkUiMode.FOLDER) {
             return ViewType.INVALID;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            return mCanShowSigninPromo.getAsBoolean()
+                    ? ViewType.PERSONALIZED_SIGNIN_PROMO
+                    : ViewType.INVALID;
         }
 
         final @SyncPromoState int promoState = mPromoHeaderManager.getPromoState();

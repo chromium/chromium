@@ -113,6 +113,31 @@ source_set("onc") {
   }
 }
 
+source_set("system_features_disable_list") {
+  sources = []
+
+  if (is_chromeos) {
+    sources += [
+      "system_features_disable_list_policy_handler.cc",
+      "system_features_disable_list_policy_handler.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//components/policy/core/browser",
+      "//components/prefs",
+    ]
+
+    deps = [
+      "//ash/constants",
+      "//build:chromeos_buildflags",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/common:common_constants",
+    ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -198,7 +223,6 @@ source_set("policy_specific_browser_tests") {
     "site_isolation_policy_browsertest.cc",
     "test/back_forward_cache_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
-    "test/css_custom_state_deprecated_syntax_policy_browsertest.cc",
     "test/force_permission_policy_unload_default_enabled_policy_browsertest.cc",
     "test/hsts_policy_browsertest.cc",
     "test/keyboard_focusable_scollers_policy_browsertest.cc",
@@ -413,6 +437,7 @@ source_set("browser_tests") {
     ]
 
     deps += [
+      ":system_features_disable_list",
       "//ash/components/arc:arc_test_support",
       "//ash/components/arc:prefs",
       "//ash/components/arc/session:session",

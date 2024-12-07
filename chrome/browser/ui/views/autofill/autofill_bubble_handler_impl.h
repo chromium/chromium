@@ -61,9 +61,9 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
       content::WebContents* contents,
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) override;
-  AutofillBubbleBase* ShowSaveAutofillPredictionImprovementsBubble(
+  AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
-      SaveAutofillPredictionImprovementsController* controller) override;
+      autofill_ai::SaveAutofillAiDataController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* web_contents,
       std::unique_ptr<SaveAddressBubbleController> controller,

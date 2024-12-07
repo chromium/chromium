@@ -46,8 +46,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   // Creates ResourceRequestBody that holds a copy of |bytes|.
   static scoped_refptr<ResourceRequestBody> CreateFromCopyOfBytes(
       base::span<const uint8_t> bytes);
-  static scoped_refptr<ResourceRequestBody> CreateFromBytes(const char* bytes,
-                                                            size_t length);
 
   // Move version of above, that avoid a copy.
   static scoped_refptr<ResourceRequestBody> CreateFromBytes(
@@ -55,7 +53,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
 
   void AppendBytes(std::vector<uint8_t>&& bytes);
   void AppendCopyOfBytes(base::span<const uint8_t> bytes);
-  void AppendBytes(const char* bytes, int bytes_len);
   void AppendFileRange(const base::FilePath& file_path,
                        uint64_t offset,
                        uint64_t length,

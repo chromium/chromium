@@ -56,6 +56,7 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     @CalledByNative
     private void destroy() {
         mNativeView = 0;
+        mTouchToFillComponent.cleanUp();
     }
 
     @CalledByNative

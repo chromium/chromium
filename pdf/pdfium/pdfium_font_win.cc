@@ -69,7 +69,7 @@ class SkiaFontMapper {
   // `FPDF_SYSFONTINFO` functions.
   using FontId = void*;
 
-  SkiaFontMapper() { manager_ = skia::DefaultFontMgr(); }
+  SkiaFontMapper() : manager_(skia::DefaultFontMgr()) {}
 
   ~SkiaFontMapper() = delete;
 
@@ -306,7 +306,7 @@ class SkiaFontMapper {
     return nullptr;
   }
 
-  sk_sp<SkFontMgr> manager_;
+  sk_sp<SkFontMgr> const manager_;
   base::flat_map<FontId, sk_sp<SkTypeface>> id_to_typeface_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -324,7 +324,7 @@ void* MapFont(FPDF_SYSFONTINFO*,
               int pitch,
               const char* face,
               int* exact) {
-  // Exit early if pdfium was specifically configured in kNoMapping mode.
+  // Exit early if PDFium was specifically configured in `kNoMapping` mode.
   if (PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink) {
     CHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kNoMapping);
     return nullptr;

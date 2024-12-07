@@ -51,7 +51,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoNthLastOfType:
     case CSSSelector::kPseudoPart:
     case CSSSelector::kPseudoState:
-    case CSSSelector::kPseudoStateDeprecatedSyntax:
     case CSSSelector::kPseudoLink:
     case CSSSelector::kPseudoVisited:
     case CSSSelector::kPseudoAny:
@@ -149,7 +148,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoMultiSelectFocus:
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
     case CSSSelector::kPseudoOpen:
-    case CSSSelector::kPseudoClosed:
     case CSSSelector::kPseudoDialogInTopLayer:
     case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoPopoverInTopLayer:
@@ -1625,7 +1623,6 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoReadOnly:
       case CSSSelector::kPseudoReadWrite:
       case CSSSelector::kPseudoState:
-      case CSSSelector::kPseudoStateDeprecatedSyntax:
       case CSSSelector::kPseudoUserInvalid:
       case CSSSelector::kPseudoUserValid:
       case CSSSelector::kPseudoValid:
@@ -1648,7 +1645,6 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoOutOfRange:
       case CSSSelector::kPseudoDefined:
       case CSSSelector::kPseudoOpen:
-      case CSSSelector::kPseudoClosed:
       case CSSSelector::kPseudoPopoverOpen:
       case CSSSelector::kPseudoVideoPersistent:
       case CSSSelector::kPseudoVideoPersistentAncestor:

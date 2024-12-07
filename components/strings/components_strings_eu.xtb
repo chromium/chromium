@@ -1233,6 +1233,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3229277193950731405">Kopiatu bertsioaren katea</translation>
 <translation id="323107829343500871">Idatzi <ph name="CREDIT_CARD" /> txartelaren CVCa</translation>
 <translation id="3234666976984236645">Hauteman beti webgune honetako eduki garrantzitsua</translation>
+<translation id="323585066388831737">Gorri argia</translation>
 <translation id="3236212803136366317">Txartelaren abantailak</translation>
 <translation id="3238395604961564389">Ireki esteka ezkutuko moduko leiho batean</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla arakatzailearen itxura pertsonalizatzeko</translation>
@@ -1850,6 +1851,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4277937682389409325">Tokiko helbidea</translation>
 <translation id="4278090321534187713">Saltzaileak onartzen ez dituen txartelak desgaituta daude</translation>
 <translation id="4278390842282768270">Baimenduta</translation>
+<translation id="4281245629646759298">Hori argia</translation>
 <translation id="4281998142035485137">{0,plural, =1{Isilpeko fitxategia ireki nahi duzu?}other{Isilpeko fitxategiak ireki nahi dituzu?}}</translation>
 <translation id="4282280603030594840">Ibilgailuen erosketa</translation>
 <translation id="4282346679996504092">Desaktibatu dira produktuari buruzko alertak, eta kendu da haren laster-marka</translation>
@@ -2739,6 +2741,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5969199813874624822">Gorde eta egin prezioaren jarraipena</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Seigarren arrabola</translation>
+<translation id="5974745851230707809">Epeka ordaintzeko aukerak</translation>
 <translation id="5975083100439434680">Txikitu</translation>
 <translation id="5979084224081478209">Egiaztatu pasahitzak</translation>
 <translation id="5984570616552610254">Gelako hezetasuna</translation>
@@ -4301,6 +4304,7 @@ Xehetasun gehiago:
 <translation id="8767765348545497220">Itxi laguntza-burbuila</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 ordainketa-metodo}other{# ordainketa-metodo}}</translation>
 <translation id="8768225988514678921">Aurkezpen bat sortzeko botoia: aktiba ezazu Aurkezpenak zerbitzuan Google-ko aurkezpen bat bizkor sortzeko</translation>
+<translation id="8769662576926275897">Txartelaren xehetasunak</translation>
 <translation id="8770286973007342895">Belarra mozteko makinak</translation>
 <translation id="8772387130037509473">Yoga eta pilatesa</translation>
 <translation id="877348612833018844">{0,plural, =1{Isilpeko fitxategia mugitu nahi duzu?}other{Isilpeko fitxategiak mugitu nahi dituzu?}}</translation>
@@ -4329,6 +4333,7 @@ Xehetasun gehiago:
 <translation id="882338992931677877">Eskuzko erretilua</translation>
 <translation id="8830320733681313421">Hagaki postala (Japonia)</translation>
 <translation id="8830565333350631528">Ikusi fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzuan</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> baino gehiagoko erosketetarako erabilgarri</translation>
 <translation id="8833007469711500369">Garbigailuak eta lehorgailuak</translation>
 <translation id="8834962751196791179">Webgunea HTTPS protokoloarekin bateragarria ez delako eta zu ezkutuko moduan zaudelako erakutsi dizugu abisu hau. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Zientzia-fikziozko eta fantasiazko saioak</translation>

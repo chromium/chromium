@@ -292,8 +292,9 @@ ukm::UkmRecorder* GraphImpl::GetUkmRecorder() const {
 
 NodeDataDescriberRegistry* GraphImpl::GetNodeDataDescriberRegistry() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!describer_registry_)
+  if (!describer_registry_) {
     describer_registry_ = std::make_unique<NodeDataDescriberRegistryImpl>();
+  }
 
   return describer_registry_.get();
 }
@@ -402,6 +403,8 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node_in_transition_ = node;
   node_in_transition_state_ = NodeState::kLeavingGraph;
   DispatchNodeRemovedNotifications(node);
+  node_in_transition_state_ = NodeState::kUninitializing;
+  node->OnUninitializing();
   node->RemoveNodeAttachedData();
   node->LeaveGraph();
   node_in_transition_ = nullptr;
@@ -425,8 +428,9 @@ void GraphImpl::NotifyFrameNodeTearingDown(const FrameNode* frame_node) {
 
 size_t GraphImpl::NodeDataDescriberCountForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!describer_registry_)
+  if (!describer_registry_) {
     return 0;
+  }
   auto* registry = static_cast<const NodeDataDescriberRegistryImpl*>(
       describer_registry_.get());
   return registry->size();
@@ -446,8 +450,9 @@ NodeState GraphImpl::GetNodeState(const NodeBase* node) const {
   DCHECK_EQ(this, node->graph());
   // If this is a transitioning node (being added to or removed from the graph)
   // then return the appropriate state.
-  if (node == node_in_transition_)
+  if (node == node_in_transition_) {
     return node_in_transition_state_;
+  }
   // Otherwise, this is a node at steady state.
   return NodeState::kActiveInGraph;
 }
@@ -583,11 +588,13 @@ void GraphImpl::BeforeProcessPidChange(ProcessNodeImpl* process,
   // unregistration will only unregister the current holder of the PID.
   if (process->GetProcessId() != base::kNullProcessId) {
     auto it = processes_by_pid_.find(process->GetProcessId());
-    if (it != processes_by_pid_.end() && it->second == process)
+    if (it != processes_by_pid_.end() && it->second == process) {
       processes_by_pid_.erase(it);
+    }
   }
-  if (new_pid != base::kNullProcessId)
+  if (new_pid != base::kNullProcessId) {
     processes_by_pid_[new_pid] = process;
+  }
 }
 
 void GraphImpl::RegisterFrameNodeForId(RenderProcessHostId render_process_id,

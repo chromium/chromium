@@ -1237,6 +1237,7 @@
 <translation id="3229277193950731405">Хувилбарын мөрийг хуулах</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-н карт баталгаажуулалтын кодыг оруулна уу</translation>
 <translation id="3234666976984236645">Чухал агуулга бүхий мэдээллийг үргэлж илрүүлэх</translation>
+<translation id="323585066388831737">Цайвар улаан</translation>
 <translation id="3236212803136366317">Картын үр өгөөж</translation>
 <translation id="3238395604961564389">Холбоосыг нууцлалтай цонхонд нээх</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Хөтчийнхөө харагдах байдлыг өөрчлөхийн тулд tab, дараа нь Enter дээр дарна уу</translation>
@@ -1855,6 +1856,7 @@
 <translation id="4277937682389409325">Орон нутгийн хаяг</translation>
 <translation id="4278090321534187713">Энэ худалдаачны зөвшөөрдөггүй картуудыг идэвхгүй болгосон</translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
+<translation id="4281245629646759298">Цайвар шар</translation>
 <translation id="4281998142035485137">{0,plural, =1{Нууцлалтай файлыг нээх үү?}other{Нууцлалтай файлуудыг нээх үү?}}</translation>
 <translation id="4282280603030594840">Тээврийн хэрэгслийн худалдаа</translation>
 <translation id="4282346679996504092">Энэ бүтээгдэхүүний сэрэмжлүүлгийг унтраасан бөгөөд хавчуургыг хассан</translation>
@@ -2744,6 +2746,7 @@
 <translation id="5969199813874624822">Үнийг хадгалж, хянах</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Зургаа дахь хуйлмал</translation>
+<translation id="5974745851230707809">Цагийн явцад төлөх сонголтууд</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
 <translation id="5979084224081478209">Нууц үгийг шалгах</translation>
 <translation id="5984570616552610254">Танхимын чийгшил</translation>
@@ -4306,6 +4309,7 @@
 <translation id="8767765348545497220">Тусламжийн бөмбөлгийг хаах</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 төлбөрийн хэрэгсэл}other{# төлбөрийн хэрэгсэл}}</translation>
 <translation id="8768225988514678921">Үзүүлэн үүсгэх товчлуур, Үзүүлэнд шинэ Google үзүүлэн шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
+<translation id="8769662576926275897">Картны мэдээлэл</translation>
 <translation id="8770286973007342895">Өвс хадагчид</translation>
 <translation id="8772387130037509473">Иог болон пилатес</translation>
 <translation id="877348612833018844">{0,plural, =1{Нууцлалтай файлыг зөөх үү?}other{Нууцлалтай файлуудыг зөөх үү?}}</translation>
@@ -4334,6 +4338,7 @@
 <translation id="882338992931677877">Гараар оруулах оролт</translation>
 <translation id="8830320733681313421">Хагаки ил захидал</translation>
 <translation id="8830565333350631528">Файлуудыг <ph name="CLOUD_PROVIDER" />-д харах</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" />-с дээш үнэтэй худалдан авалтад боломжтой</translation>
 <translation id="8833007469711500369">Угаалгын машин болон хатаагчид</translation>
 <translation id="8834962751196791179">Энэ сайт HTTPS-г дэмждэггүй бөгөөд та Нууцлалын горимд байгаа тул энэ сануулгыг харж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">ТВ-ийн шинжлэх ухааны уран зөгнөлт, уран зөгнөлт шоунууд</translation>

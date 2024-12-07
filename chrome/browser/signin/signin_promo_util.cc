@@ -37,6 +37,8 @@ using signin_util::SignedInState;
 constexpr int kSigninPromoShownThreshold = 5;
 constexpr int kSigninPromoDismissedThreshold = 2;
 
+enum class AutofillSignInPromoType { kPassword, kAddress };
+
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -138,6 +140,44 @@ bool ShouldShowSignInPromoCommon(Profile& profile) {
   // Only show the promo if explicit browser signin is enabled.
   return switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
 }
+
+bool ShouldShowPromoBasedOnImpressionCount(Profile& profile,
+                                           AutofillSignInPromoType type) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile);
+
+  // Show the promo if the user is sign in pending, regardless of impression
+  // count.
+  if (signin_util::IsSigninPending(identity_manager)) {
+    return true;
+  }
+
+  // Don't show the promo again if it has already been shown
+  // `kSigninPromoShownThreshold` times.
+  AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(identity_manager);
+
+  int show_count = 0;
+  switch (type) {
+    case AutofillSignInPromoType::kAddress:
+      show_count =
+          account.IsEmpty()
+              ? profile.GetPrefs()->GetInteger(
+                    prefs::kAddressSignInPromoShownCountPerProfile)
+              : SigninPrefs(*profile.GetPrefs())
+                    .GetAddressSigninPromoImpressionCount(account.gaia);
+      break;
+    case AutofillSignInPromoType::kPassword:
+      show_count =
+          account.IsEmpty()
+              ? profile.GetPrefs()->GetInteger(
+                    prefs::kPasswordSignInPromoShownCountPerProfile)
+              : SigninPrefs(*profile.GetPrefs())
+                    .GetPasswordSigninPromoImpressionCount(account.gaia);
+  }
+
+  return show_count < kSigninPromoShownThreshold;
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
@@ -170,26 +210,8 @@ bool ShouldShowPasswordSignInPromo(Profile& profile) {
     return false;
   }
 
-  IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(&profile);
-
-  // Show the promo if the user is sign in pending, regardless of impression
-  // count.
-  if (signin_util::IsSigninPending(identity_manager)) {
-    return true;
-  }
-
-  // Don't show the promo again if it has already been shown 5 times.
-  AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(identity_manager);
-  int show_count =
-      account.gaia.empty()
-          ? profile.GetPrefs()->GetInteger(
-                prefs::kPasswordSignInPromoShownCountPerProfile)
-          : SigninPrefs(*profile.GetPrefs())
-                .GetPasswordSigninPromoImpressionCount(account.gaia);
-
-  if (show_count >= kSigninPromoShownThreshold) {
+  if (!ShouldShowPromoBasedOnImpressionCount(
+          profile, AutofillSignInPromoType::kPassword)) {
     return false;
   }
 
@@ -220,7 +242,10 @@ bool ShouldShowAddressSignInPromo(Profile& profile,
     return false;
   }
 
-  // TODO (crbug.com/5776109): Check for impression count.
+  if (!ShouldShowPromoBasedOnImpressionCount(
+          profile, AutofillSignInPromoType::kAddress)) {
+    return false;
+  }
 
   return true;
 #else

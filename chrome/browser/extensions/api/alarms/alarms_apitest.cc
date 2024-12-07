@@ -67,7 +67,6 @@ class AlarmsApiTest : public AlarmsApiTestBase {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that an alarm created by an extension with incognito split mode is
 // only triggered in the browser context it was created in.
 // TODO(crbug.com/381140149): This test crashes waiting for the incognito
@@ -76,8 +75,8 @@ class AlarmsApiTest : public AlarmsApiTestBase {
 IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
-  Profile* incognito_profile =
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  Profile* incognito_profile = GetOrCreateIncognitoProfile();
+
   ResultCatcher catcher_incognito;
   catcher_incognito.RestrictToBrowserContext(incognito_profile);
   ResultCatcher catcher;
@@ -103,7 +102,6 @@ IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSplit) {
   EXPECT_TRUE(catcher.GetNextResult());
   EXPECT_TRUE(catcher_incognito.GetNextResult());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that the behavior for an alarm created in incognito context should be
 // the same if incognito is in spanning mode.

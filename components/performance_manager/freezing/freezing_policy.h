@@ -112,19 +112,30 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
     base::flat_map<url::Origin, uint64_t> per_origin_pmf_after_freezing_kb;
   };
 
-  // Returns pages connected to `page`, including `page` itself. See
-  // meta-comment above this class for a definition of "connected".
+  // Returns pages connected to `page`, including `page` itself. If
+  // `frame_being_removed` is non-null, it's ignored when calculating the
+  // browsing instances of a page, because this is being called from
+  // OnBeforeFrameNodeRemoved(). See meta-comment above this class for a
+  // definition of "connected".
   base::flat_set<raw_ptr<const PageNode>> GetConnectedPages(
-      const PageNode* page);
+      const PageNode* page,
+      const FrameNode* frame_being_removed = nullptr);
 
-  // Returns browsing instance id(s) for `page`.
+  // Returns browsing instance id(s) for `page`. If`frame_being_removed` is
+  // non-null, it's ignored when calculating the browsing instances, because
+  // this is being called from OnBeforeFrameNodeRemoved().
   base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
-      const PageNode* page) const;
+      const PageNode* page,
+      const FrameNode* frame_being_removed = nullptr) const;
 
   // Update frozen state for all pages connected to `page`. Connected pages
   // (including `page_node`) are added to `connected_pages_out` if not nullptr.
+  // If `frame_being_removed` is non-null, it's ignored when calculating the
+  // browsing instances of a page, because this is being called from
+  // OnBeforeFrameNodeRemoved().
   void UpdateFrozenState(
       const PageNode* page_node,
+      const FrameNode* frame_being_removed = nullptr,
       base::flat_set<raw_ptr<const PageNode>>* connected_pages_out = nullptr);
 
   // Helper to add or remove a `CannotFreezeReason` for `page_node`.

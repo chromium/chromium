@@ -32,14 +32,10 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/browser_context.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/ui/startup/silent_sync_enabler.h"
-#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 bool IsFirstRunEligibleProfile(Profile* profile) {
@@ -53,24 +49,10 @@ bool IsFirstRunEligibleProfile(Profile* profile) {
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Skip for users without Gaia account (e.g. Active Directory, Kiosk, Guest…)
-  if (!profiles::SessionHasGaiaAccount()) {
-    return false;
-  }
-
-  // Having secondary profiles implies that the user already used Chrome and so
-  // should not have to see the FRE. So we never want to run it for these.
-  if (!profile->IsMainProfile()) {
-    return false;
-  }
-#endif
-
   return true;
 }
 
 bool IsFirstRunEligibleProcess() {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros we want to run the FRE beyond the strict first run as defined by
   // `IsChromeFirstRun()` for a few reasons:
   // - Migrated profiles will have their first run sentinel imported from the
@@ -82,7 +64,6 @@ bool IsFirstRunEligibleProcess() {
   if (!first_run::IsChromeFirstRun()) {
     return false;
   }
-#endif
 
   // TODO(crbug.com/40232971): `IsChromeFirstRun()` should be a sufficient check
   // for Dice platforms. We currently keep this because some tests add
@@ -98,11 +79,6 @@ enum class PolicyEffect {
 
   // The First Run experience should not run.
   kDisabled,
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The profile should be set up and opted-in to sync silently if possible.
-  kSilenced,
-#endif
 };
 
 PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
@@ -117,7 +93,6 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
     return PolicyEffect::kDisabled;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // The BrowserSignin policy is not supported on Lacros
 
   if (signin_util::IsForceSigninEnabled()) {
@@ -133,18 +108,6 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
     // Corresponding policy: BrowserSignin=0
     return PolicyEffect::kDisabled;
   }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile.GetPrefs()->GetBoolean(prefs::kEnableSyncConsent)) {
-    // Corresponding policy: EnableSyncConsent=false
-    return PolicyEffect::kSilenced;
-  }
-
-  if (chromeos::BrowserParamsProxy::Get()->IsCurrentUserEphemeral()) {
-    return PolicyEffect::kSilenced;
-  }
-#endif
 
   return PolicyEffect::kNone;
 }
@@ -213,40 +176,15 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
   }
 
   bool has_set_up_profile =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Indicates that the profile was likely migrated from pre-Lacros Ash.
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
-#else
       // The Dice FRE focuses on identity and offering the user to sign in. If
       // the profile already has an account (e.g. the sentinel file was deleted
       // or `--force-first-run` was passed), this ensures we still skip it and
       // avoid having to handle too strange states later.
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-#endif
   if (has_set_up_profile) {
     FinishFirstRun(FinishedReason::kProfileAlreadySetUp);
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  switch (policy_effect) {
-    case PolicyEffect::kDisabled:
-      if (!enterprise_util::UserAcceptedAccountManagement(&profile_.get())) {
-        // Management had to be accepted to create the session. Normally this
-        // gets set during the FRE (TurnSyncOn flow), but since it is skipped,
-        // set the flag here.
-        enterprise_util::SetUserAcceptedAccountManagement(&profile_.get(),
-                                                          true);
-      }
-      break;
-    case PolicyEffect::kSilenced:
-      StartSilentSync(scoped_closure_runner.Release());
-      break;
-    case PolicyEffect::kNone:
-      // Do nothing.
-      break;
-  }
-#endif
 
   if (policy_effect != PolicyEffect::kNone) {
     FinishFirstRun(FinishedReason::kSkippedByPolicies);
@@ -256,26 +194,6 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
   // Fallthrough: let the FRE be shown when the user opens a browser UI for the
   // first time.
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void FirstRunService::StartSilentSync(base::OnceClosure callback) {
-  // We should not be able to re-enter here as the FRE should be marked
-  // already finished.
-  DCHECK(!silent_sync_enabler_);
-
-  auto reset_enabler_callback = base::BindOnce(
-      &FirstRunService::ClearSilentSyncEnabler, weak_ptr_factory_.GetWeakPtr());
-  silent_sync_enabler_ =
-      std::make_unique<SilentSyncEnabler>(*profile_, *identity_manager_);
-  silent_sync_enabler_->StartAttempt(
-      callback ? std::move(reset_enabler_callback).Then(std::move(callback))
-               : std::move(reset_enabler_callback));
-}
-
-void FirstRunService::ClearSilentSyncEnabler() {
-  silent_sync_enabler_.reset();
-}
-#endif
 
 // `resume_task_callback_` should be run to allow the caller to resume what
 // they were trying to do before they stopped to show the FRE.
@@ -295,9 +213,6 @@ void FirstRunService::OnFirstRunHasExited(
       proceed = true;
       should_mark_fre_finished = true;
       break;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    case ProfilePicker::FirstRunExitStatus::kQuitEarly:
-#endif
     case ProfilePicker::FirstRunExitStatus::kAbortTask:
       proceed = false;
       should_mark_fre_finished = false;
@@ -326,12 +241,6 @@ void FirstRunService::OnFirstRunHasExited(
 
 void FirstRunService::FinishFirstRun(FinishedReason reason) {
   SetFirstRunFinished(reason);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (reason == FinishedReason::kForceSignin) {
-    NOTREACHED() << "Force Signin policy value is not active on Lacros.";
-  }
-#endif
 
   // If the reason is `FinishedReason::kForceSignin` the profile is already
   // signed in and finalized. It should not finish the setup again.
@@ -449,25 +358,7 @@ FirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
       *profile, *IdentityManagerFactory::GetForProfile(profile));
   base::UmaHistogramBoolean("ProfilePicker.FirstRun.ServiceCreated", true);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Check if we should turn Sync on from the background and skip the FRE.
-  // If we don't manage to set it, we will just have to defer silent or visual
-  // handling of the FRE to when the user attempts to open a browser UI. So
-  // we don't need to do anything when the attempt finishes.
-  instance->TryMarkFirstRunAlreadyFinished(base::OnceClosure());
-#endif
-
   return instance;
-}
-
-bool FirstRunServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // We want the service to be created early, even if the browser is created in
-  // the background, so we can check whether we need to enable Sync silently.
-  return true;
-#else
-  return false;
-#endif
 }
 
 // Helpers ---------------------------------------------------------------------

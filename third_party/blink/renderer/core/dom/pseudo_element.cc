@@ -517,10 +517,8 @@ bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
 // Keep in sync with CanGeneratePseudoElement.
 bool PseudoElement::CanHaveNestedPseudoElement() const {
   switch (GetPseudoId()) {
-    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdPickerIcon:
     case kPseudoIdColumn:
       return true;
     default:
@@ -531,10 +529,8 @@ bool PseudoElement::CanHaveNestedPseudoElement() const {
 // Keep in sync with CanHaveNestedPseudoElement.
 bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   switch (GetPseudoId()) {
-    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdPickerIcon:
       if (pseudo_id != kPseudoIdMarker)
         return false;
       break;

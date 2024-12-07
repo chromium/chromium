@@ -22,7 +22,7 @@ enum PaymentComplete {
 
     readonly attribute DOMString requestId;
     readonly attribute DOMString methodName;
-    [CallWith=ScriptState] readonly attribute object details;
+    readonly attribute object details;
     readonly attribute PaymentAddress? shippingAddress;
     readonly attribute DOMString? shippingOption;
     readonly attribute DOMString? payerName;

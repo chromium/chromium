@@ -172,6 +172,7 @@ public class SingleWebFeedStreamTest {
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
         when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
+        when(mRenderer.getAdapter()).thenReturn(mAdapter);
 
         setFeatureOverrides(/* feedLoadingPlaceholderOn= */ true);
 

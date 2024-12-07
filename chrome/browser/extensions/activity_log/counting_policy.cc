@@ -174,7 +174,7 @@ CountingPolicy::CountingPolicy(Profile* profile)
   }
 }
 
-CountingPolicy::~CountingPolicy() {}
+CountingPolicy::~CountingPolicy() = default;
 
 bool CountingPolicy::InitDatabase(sql::Database* db) {
   if (!string_table_.Initialize(db))

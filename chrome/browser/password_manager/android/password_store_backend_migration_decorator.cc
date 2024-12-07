@@ -163,23 +163,6 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginAsync(
   }
 }
 
-void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  active_backend()->RemoveLoginsByURLAndTimeAsync(
-      location, url_filter, delete_begin, delete_end,
-      std::move(sync_completion), std::move(callback));
-  if (UsesSplitStoresAndUPMForLocal(prefs_)) {
-    built_in_backend_->RemoveLoginsByURLAndTimeAsync(
-        location, url_filter, delete_begin, delete_end, base::NullCallback(),
-        base::DoNothing());
-  }
-}
-
 void PasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,

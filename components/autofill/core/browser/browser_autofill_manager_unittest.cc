@@ -1131,8 +1131,9 @@ class BrowserAutofillManagerTest : public testing::Test {
     } else if (const CreditCard* card =
                    personal_data().payments_data_manager().GetCreditCardByGUID(
                        guid)) {
-      manager().AuthenticateThenFillCreditCardForm(form, field.global_id(),
-                                                   *card, trigger_source);
+      manager().FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill,
+                                            form, field.global_id(), *card,
+                                            trigger_source);
     }
   }
 
@@ -1223,9 +1224,9 @@ class BrowserAutofillManagerTest : public testing::Test {
     card.SetNetworkForMaskedCard(kVisaCard);
 
     EXPECT_CALL(driver(), ApplyFormAction).Times(AtLeast(1));
-    manager().AuthenticateThenFillCreditCardForm(
-        *form, form->fields()[0].global_id(), card,
-        AutofillTriggerSource::kPopup);
+    manager().FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill,
+                                          *form, form->fields()[0].global_id(),
+                                          card, AutofillTriggerSource::kPopup);
   }
 
   void OnDidGetRealPan(
@@ -3174,6 +3175,27 @@ TEST_F(BrowserAutofillManagerTest,
               testing::Optional(filled_card.instrument_id()));
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       OnCreditCardFetchedSuccessfully_CardInfoRetrievalEnrolledCard) {
+  CreditCard filled_card = test::WithCvc(test::GetFullServerCard());
+  filled_card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  using Options = FilledCardInformationBubbleOptions;
+  EXPECT_CALL(
+      payments_client(),
+      OnCardDataAvailable(
+          AllOf(Field(&Options::masked_card_name,
+                      filled_card.CardNameForAutofillDisplay()),
+                Field(&Options::masked_card_number_last_four,
+                      filled_card.ObfuscatedNumberWithVisibleLastFourDigits()),
+                Field(&Options::cvc, filled_card.cvc()),
+                Field(&Options::filled_card, filled_card))));
+
+  manager().OnCreditCardFetchedSuccessfully(filled_card);
+  EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
+              testing::Optional(filled_card.instrument_id()));
+}
+
 // Test that the importing logic is called on form submit.
 TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
@@ -4575,7 +4597,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDifferentFields) {
 
   // Simulate form submission.
   FormSubmitted(form);
-  EXPECT_EQ(signature, manager().votes_uploader().submitted_form_signature());
+  EXPECT_EQ(signature, client().GetVotesUploader().submitted_form_signature());
 }
 
 // Test that we do not save form data when submitted fields contain default
@@ -4744,7 +4766,8 @@ TEST_F(BrowserAutofillManagerTest,
     test_api(form).field(i).set_value(expected_values[i]);
   }
 
-  manager().votes_uploader().set_expected_submitted_field_types(expected_types);
+  client().GetVotesUploader().set_expected_submitted_field_types(
+      expected_types);
   FormSubmitted(form);
 }
 
@@ -4792,8 +4815,9 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
 
   // We will expect these types in the upload and no observed submission (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  manager().votes_uploader().set_expected_submitted_field_types(expected_types);
-  manager().votes_uploader().set_expected_observed_submission(false);
+  client().GetVotesUploader().set_expected_submitted_field_types(
+      expected_types);
+  client().GetVotesUploader().set_expected_observed_submission(false);
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
@@ -4842,8 +4866,9 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  manager().votes_uploader().set_expected_submitted_field_types(expected_types);
-  manager().votes_uploader().set_expected_observed_submission(false);
+  client().GetVotesUploader().set_expected_submitted_field_types(
+      expected_types);
+  client().GetVotesUploader().set_expected_observed_submission(false);
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
@@ -4893,8 +4918,9 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  manager().votes_uploader().set_expected_submitted_field_types(expected_types);
-  manager().votes_uploader().set_expected_observed_submission(false);
+  client().GetVotesUploader().set_expected_submitted_field_types(
+      expected_types);
+  client().GetVotesUploader().set_expected_observed_submission(false);
 
   // Form was autofilled with user data.
   test_api(form).field(0).set_value(u"Elvis");
@@ -6572,16 +6598,15 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
   EXPECT_CALL(delegate, HasDataStored)
       .WillOnce(RunOnceCallback<0>(AutofillAiDelegate::HasData(true)));
   EXPECT_CALL(delegate, GetSuggestions)
-      .WillOnce(Return(std::vector<Suggestion>{Suggestion(
-          u"Autocomplete", SuggestionType::kRetrievePredictionImprovements)}));
+      .WillOnce(Return(std::vector<Suggestion>{
+          Suggestion(u"Autocomplete", SuggestionType::kRetrieveAutofillAi)}));
 
   OnAskForValuesToFill(
       form, form.fields().front(),
       AutofillSuggestionTriggerSource::kPredictionImprovements);
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      ElementsAre(Field(&Suggestion::type,
-                        Eq(SuggestionType::kRetrievePredictionImprovements))));
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(Field(&Suggestion::type,
+                                Eq(SuggestionType::kRetrieveAutofillAi))));
 }
 
 // Tests that the Autofill AI IPH is shown when the user and form are eligible
@@ -7382,6 +7407,34 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
             .GetObservationTypesForFieldType(field->Type().GetStorableType())
             .empty();
       }));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       AddressSuggestionOnTyping_ShownWhenNoOtherSuggestionExists) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAddressSuggestionsOnTyping};
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  const std::u16string address_home_line1 = u"sherman wallaby 42 sidney";
+  profile.SetInfo(ADDRESS_HOME_LINE1, address_home_line1, "en-US");
+  personal_data().test_address_data_manager().ClearProfiles();
+  personal_data().test_address_data_manager().AddProfile(profile);
+
+  FormData form;
+  form.set_name(u"NothingSpecial");
+  // Note the value is the first 3 characters of the `ADDRESS_HOME_LINE1` value.
+  form.set_fields({CreateTestFormField("Something", "something", "she",
+                                       FormControlType::kInputText)});
+  // Autocomplete suggestions (and all others for that matter) should be empty
+  // in order to `SuggestionType::kAddressEntryOnTyping` to exist.
+  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(Return(false));
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAddressEntryOnTyping, address_home_line1)));
 }
 
 class BrowserAutofillManagerPlusAddressTest

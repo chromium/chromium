@@ -11,7 +11,9 @@
 #if (DCHECK_IS_ON() || !defined(OFFICIAL_BUILD)) && BUILDFLAG(USE_BLINK)
 // Enable fast fails on clusterfuzz and other builds used to debug Chrome,
 // in order to help narrow down illegal states more quickly.
-#define AX_FAIL_FAST_BUILD
+#define AX_FAIL_FAST_BUILD() (1)
+#else
+#define AX_FAIL_FAST_BUILD() (0)
 #endif
 
 // SANITIZER_CHECK's use case is severe, but recoverable situations that need
@@ -20,7 +22,7 @@
 // TODO(pbos): Transition callers to CHECK/NOTREACHED with base::NotFatalUntil
 // parameters as that provides non-fatal ways of generating bug reports with
 // better diagnostics until a problem has been resolved.
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD() && !DCHECK_IS_ON()
 #define SANITIZER_CHECK(val) CHECK(val)
 #define SANITIZER_CHECK_EQ(val1, val2) CHECK_EQ(val1, val2)
 #define SANITIZER_CHECK_NE(val1, val2) CHECK_NE(val1, val2)
@@ -48,6 +50,6 @@ inline bool SanitizerNotreachedInternalAlwaysFalse() {
 #define SANITIZER_CHECK_GE(val1, val2) DCHECK_GE(val1, val2)
 #define SANITIZER_CHECK_GT(val1, val2) DCHECK_GT(val1, val2)
 #define SANITIZER_NOTREACHED() DCHECK(false)
-#endif  // AX_FAIL_FAST_BUILD && !DCHECK_IS_ON()
+#endif  // AX_FAIL_FAST_BUILD() && !DCHECK_IS_ON()
 
 #endif  // UI_ACCESSIBILITY_AX_COMMON_H_

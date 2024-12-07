@@ -49,6 +49,7 @@ export interface AppHandlerEntry {
   protocol_display_name: string;
   spec: string;
   app_id: string;
+  app_name?: string;
 }
 
 export interface AppProtocolEntry {
@@ -304,6 +305,14 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     this.actionMenuModel_ = event.model.item;
     this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
         event.target as HTMLElement);
+  }
+
+  private getNameCssClass_(item: AppHandlerEntry): string {
+    return item.app_name ? '' : 'url-directionality';
+  }
+
+  private getNameText_(item: AppHandlerEntry): string {
+    return item.app_name || item.host;
   }
 }
 

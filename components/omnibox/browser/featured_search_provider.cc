@@ -44,8 +44,6 @@
 
 namespace {
 
-constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
-
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
     case IphType::kNone:
@@ -236,8 +234,7 @@ void FeaturedSearchProvider::AddStarterPackMatch(
       match.fill_into_edit.substr(input.text().length());
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  if (kIsDesktop &&
-      input.current_page_classification() !=
+  if (input.current_page_classification() !=
           metrics::OmniboxEventProto::NTP_REALBOX &&
       template_url.keyword().starts_with(u'@')) {
     // The Gemini provider doesn't follow the "Search X" pattern and should
@@ -351,8 +348,8 @@ void FeaturedSearchProvider::RegisterDisplayedMatches(
 void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
     const TemplateURL& template_url,
     const AutocompleteInput& input) {
-  if (!kIsDesktop || input.current_page_classification() ==
-                         metrics::OmniboxEventProto::NTP_REALBOX) {
+  if (input.current_page_classification() ==
+      metrics::OmniboxEventProto::NTP_REALBOX) {
     return;
   }
 
@@ -473,10 +470,10 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsSettingsPromoIphMatch() {
                         u" ";
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT);
-  GURL link_url = GURL(base::FeatureList::IsEnabled(
-                           optimization_guide::features::kAiSettingsPageRefresh)
-                           ? "chrome://settings/ai/historySearch"
-                           : "chrome://settings/historySearch");
+  GURL link_url =
+      GURL(optimization_guide::features::IsAiSettingsPageRefreshEnabled()
+               ? "chrome://settings/ai/historySearch"
+               : "chrome://settings/historySearch");
   AddIPHMatch(IphType::kHistoryEmbeddingsSettingsPromo, text, u"", link_text,
               link_url, true);
 }
@@ -496,10 +493,10 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsDisclaimerIphMatch() {
       u" ";
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT);
-  GURL link_url = GURL(base::FeatureList::IsEnabled(
-                           optimization_guide::features::kAiSettingsPageRefresh)
-                           ? "chrome://settings/ai/historySearch"
-                           : "chrome://settings/historySearch");
+  GURL link_url =
+      GURL(optimization_guide::features::IsAiSettingsPageRefreshEnabled()
+               ? "chrome://settings/ai/historySearch"
+               : "chrome://settings/historySearch");
   AddIPHMatch(IphType::kHistoryEmbeddingsDisclaimer, text, u"", link_text,
               link_url, false);
 }

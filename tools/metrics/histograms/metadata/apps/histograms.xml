@@ -51,14 +51,12 @@ chromium-metrics-reviews@google.com.
   <variant name="Arc" summary="Android apps"/>
   <variant name="Borealis" summary="Borealis apps"/>
   <variant name="Bruschetta" summary="Bruschetta apps"/>
-  <variant name="BuiltIn" summary="BuiltIn apps"/>
   <variant name="ChromeApp" summary="Chrome apps"/>
   <variant name="ChromeBrowser" summary="Chrome browsers"/>
   <variant name="Crostini" summary="Crostini apps"/>
   <variant name="Extension" summary="Browser extensions"/>
   <variant name="PluginVm" summary="Plugin VM app"/>
   <variant name="RemoteApp" summary="Remote apps"/>
-  <variant name="StandaloneBrowser" summary="Standalone browsers"/>
   <variant name="SystemWebApp" summary="System web apps"/>
   <variant name="WebApp" summary="Web apps"/>
 </variants>
@@ -67,7 +65,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Arc" summary="Android apps"/>
   <variant name="Borealis" summary="Borealis apps"/>
   <variant name="Bruschetta" summary="Bruschetta apps"/>
-  <variant name="BuiltIn" summary="BuiltIn apps"/>
   <variant name="ChromeAppTab" summary="Chrome apps opened in tabs"/>
   <variant name="ChromeAppWindow"
       summary="Chrome apps opened in standalone windows"/>
@@ -76,7 +73,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Extension" summary="Browser extensions"/>
   <variant name="PluginVm" summary="Plugin VM app"/>
   <variant name="RemoteApp" summary="Remote apps"/>
-  <variant name="StandaloneBrowser" summary="Standalone browsers"/>
   <variant name="SystemWebApp" summary="System web apps"/>
   <variant name="WebAppTab" summary="Web apps opened in tabs"/>
   <variant name="WebAppWindow" summary="Web apps opened in standalone windows"/>

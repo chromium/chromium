@@ -57,9 +57,6 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
     std::vector<base::test::FeatureRef> required_features = {
         network::features::kReporting, network::features::kNetworkErrorLogging,
         features::kCrashReporting};
-    if (UseDocumentReporting()) {
-      required_features.push_back(net::features::kDocumentReporting);
-    }
     scoped_feature_list_.InitWithFeatures(
         // enabled_features
         required_features,

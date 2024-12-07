@@ -80,10 +80,13 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   void Trace(Visitor*) const {}
 
   StringView OriginalText() const {
+    // SAFETY: See AdditionalBytes() in Create().
     if (is_8bit_) {
-      return StringView(reinterpret_cast<const LChar*>(this + 1), length_);
+      return StringView(UNSAFE_BUFFERS(
+          base::span(reinterpret_cast<const LChar*>(this + 1), length_)));
     } else {
-      return StringView(reinterpret_cast<const UChar*>(this + 1), length_);
+      return StringView(UNSAFE_BUFFERS(
+          base::span(reinterpret_cast<const UChar*>(this + 1), length_)));
     }
   }
 

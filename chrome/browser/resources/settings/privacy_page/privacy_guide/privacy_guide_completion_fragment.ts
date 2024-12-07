@@ -61,6 +61,13 @@ export class PrivacyGuideCompletionFragmentElement extends
         computed: 'computeSubheader_(isNoLinkLayout)',
       },
 
+      shouldShowAiSettings_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableAiSettingsInPrivacyGuide') &&
+            loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
+      },
+
       shouldShowPrivacySandbox_: {
         type: Boolean,
         value: () => !loadTimeData.getBoolean('isPrivacySandboxRestricted') ||
@@ -157,6 +164,17 @@ export class PrivacyGuideCompletionFragmentElement extends
     // TODO(crbug.com/40162029): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot!.querySelector<HTMLAnchorElement>('#privacySandboxLink')!
         .dispatchEvent(new MouseEvent('click'));
+  }
+
+  private onAiRowClick_() {
+    this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
+        PrivacyGuideInteractions.AI_SETTINGS_COMPLETION_LINK);
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.CompletionAiSettingsClick');
+    // TODO(crbug.com/40162029): Replace this with an ordinary OpenWindowProxy
+    // call.
+    this.shadowRoot!.querySelector<HTMLAnchorElement>(
+                        '#aiRowLink')!.dispatchEvent(new MouseEvent('click'));
   }
 
   private onWaaClick_() {

@@ -103,9 +103,10 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
  protected:
   // virtual for testing.
   virtual void OnHeaderProcessed(const url::Origin& request_origin) {}
-  virtual void OnMethodFinished(const url::Origin& request_origin,
-                                MethodWithOptionsPtr method_with_options,
-                                const std::string& error_message) {}
+  virtual void OnBatchUpdateFinished(
+      const url::Origin& request_origin,
+      std::vector<MethodWithOptionsPtr> methods_with_options,
+      const std::string& error_message) {}
 
  private:
   PermissionsPolicyDoubleCheckStatus DoPermissionsPolicyDoubleCheck(

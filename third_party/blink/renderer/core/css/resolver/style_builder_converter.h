@@ -273,6 +273,9 @@ class StyleBuilderConverter {
       bool for_visited_link = false);
   static GapDataList<int> ConvertGapDecorationWidthDataList(StyleResolverState&,
                                                             const CSSValue&);
+  static GapDataList<EBorderStyle> ConvertGapDecorationStyleDataList(
+      StyleResolverState&,
+      const CSSValue&);
   static ShadowData ConvertShadow(const CSSToLengthConversionData&,
                                   StyleResolverState*,
                                   const CSSValue&);

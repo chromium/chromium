@@ -1057,8 +1057,9 @@ suite('<settings-device-page>', () => {
 
       test('toggle click', async () => {
         const mockController = new MockController();
-        const refreshVoiceIsolationState = mockController.createFunctionMock(
-            crosAudioConfig, 'refreshVoiceIsolationState');
+        const recordVoiceIsolationEnabledChange =
+            mockController.createFunctionMock(
+                crosAudioConfig, 'recordVoiceIsolationEnabledChange');
 
         // Set system properties with Style Transfer.
         crosAudioConfig.setAudioSystemProperties(
@@ -1071,7 +1072,7 @@ suite('<settings-device-page>', () => {
         assertTrue(voiceIsolationToggleSection.checked);
         assertEquals(
             /* expected_call_count */ 1,
-            refreshVoiceIsolationState['calls_'].length);
+            recordVoiceIsolationEnabledChange['calls_'].length);
 
         // Toggle off
         await voiceIsolationToggleSection.click();
@@ -1079,7 +1080,7 @@ suite('<settings-device-page>', () => {
         assertFalse(voiceIsolationToggleSection.checked);
         assertEquals(
             /* expected_call_count */ 2,
-            refreshVoiceIsolationState['calls_'].length);
+            recordVoiceIsolationEnabledChange['calls_'].length);
       });
 
       test('system properties change', async () => {

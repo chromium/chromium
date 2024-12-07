@@ -33,6 +33,17 @@ struct ProfilesToSuggestOptions {
   const bool deduplicate_suggestions = true;
 };
 
+// Generates `SuggestionType::kAddressEntryOnTyping` suggestions based on prefix
+// matching on unclassified fields. The suggestions returned will contain
+// profile data whose prefix matches what the user has typed. As for now, only
+// use the top profile to generate suggestions.
+// TODO(crbug.com/381994105): Use more than one profile to build suggestions.
+// `field_contents` is the string contained in the triggering field.
+// TODO(crbug.com/381994105): Add "Manage addresses" footer suggestion.
+std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
+    const AddressDataManager& adress_data_manager,
+    const std::u16string& field_contents);
+
 // Generates suggestions for a form containing the given `field_types`. It
 // considers all available profiles, deduplicates them based on the types and
 // returns one suggestion per remaining profile.

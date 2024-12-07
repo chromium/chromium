@@ -1292,10 +1292,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
   RunSettingsTest("os_bluetooth_page/os_paired_bluetooth_list_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPage) {
-  RunSettingsTest("os_files_page/os_files_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageGoogleDrivePage) {
   RunSettingsTest("os_files_page/google_drive_page_test.js");
 }

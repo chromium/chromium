@@ -26,20 +26,23 @@ template <class Iter>
 base::span<const uint8_t> BufferGetSomeData(Iter& iter,
                                             size_t& position_of_block,
                                             size_t position) {
-  for (size_t size_of_block = iter.size(); size_of_block != 0;
-       position_of_block += size_of_block, size_of_block = iter.size()) {
+  auto current_span = *iter;
+  for (size_t size_of_block = current_span.size(); size_of_block != 0;
+       position_of_block += size_of_block,
+              size_of_block = current_span.size()) {
     DCHECK_LE(position_of_block, position);
 
     if (position_of_block + size_of_block > position) {
       // |position| is in this block.
       const size_t position_in_block = position - position_of_block;
-      return base::span(iter.data(), iter.size()).subspan(position_in_block);
+      return current_span.subspan(position_in_block);
     }
 
     // Move to next block.
     if (!iter.Next()) {
       break;
     }
+    current_span = *iter;
   }
   return {};
 }
@@ -47,11 +50,12 @@ base::span<const uint8_t> BufferGetSomeData(Iter& iter,
 template <class Iter>
 sk_sp<SkData> BufferCopyAsSkData(Iter iter, size_t available) {
   sk_sp<SkData> data = SkData::MakeUninitialized(available);
-  char* dst = static_cast<char*>(data->writable_data());
+  auto dst =
+      base::span(static_cast<uint8_t*>(data->writable_data()), available);
   do {
-    size_t size = iter.size();
-    memcpy(dst, iter.data(), size);
-    dst += size;
+    auto src = *iter;
+    dst.copy_prefix_from(src);
+    dst = dst.subspan(src.size());
   } while (iter.Next());
   return data;
 }
@@ -188,7 +192,7 @@ base::span<const uint8_t> ROBufferSegmentReader::GetSomeData(
 
   auto data = BufferGetSomeData(iter_, position_of_block_, position);
 
-  if (!iter_.data()) {
+  if ((*iter_).empty()) {
     // Reset to the beginning, so future calls can succeed.
     iter_.Reset(ro_buffer_.get());
     position_of_block_ = 0;
@@ -214,7 +218,8 @@ sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
   if (!multiple_blocks) {
     // Contiguous data. No need to copy.
     ro_buffer_->AddRef();
-    return SkData::MakeWithProc(iter.data(), iter.size(), &UnrefROBuffer,
+    auto data = *iter;
+    return SkData::MakeWithProc(data.data(), data.size(), &UnrefROBuffer,
                                 ro_buffer_.get());
   }
 

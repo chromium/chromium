@@ -1473,7 +1473,7 @@ void LayerTreeHost::SetVisualDeviceViewportSize(
 }
 
 void LayerTreeHost::SetMaxSafeAreaInsets(
-    const gfx::Insets& max_safe_area_insets) {
+    const gfx::InsetsF& max_safe_area_insets) {
   if (pending_commit_state()->max_safe_area_insets == max_safe_area_insets) {
     return;
   }
@@ -1565,11 +1565,19 @@ void LayerTreeHost::SetDisplayColorSpaces(
       pending_commit_state()->display_color_spaces, display_color_spaces);
   pending_commit_state()->display_color_spaces = display_color_spaces;
 
+  // Some layers needs to re-display when HDR headroom changes (e.g, any layer
+  // containing an HDR image needs to re-raster, and layers with HDR video will
+  // require re-tone-mapping).
+  bool did_set_needs_display = false;
   for (auto* layer : *this) {
     if (!only_hdr_changed ||
         layer->RequiresSetNeedsDisplayOnHdrHeadroomChange()) {
       layer->SetNeedsDisplay();
+      did_set_needs_display = true;
     }
+  }
+  if (did_set_needs_display) {
+    SetNeedsCommit();
   }
 }
 

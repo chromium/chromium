@@ -408,10 +408,13 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForTesting(
     ui::ElementIdentifier anchor_element_id,
     int body_text_string_id,
     PromoType type,
-    PromoSubtype subtype) {
+    PromoSubtype subtype,
+    CustomActionCallback custom_action_callback) {
   FeaturePromoSpecification result(&feature, type, anchor_element_id,
                                    body_text_string_id);
   result.set_promo_subtype_for_testing(subtype);  // IN-TEST
+  CHECK_EQ(!custom_action_callback.is_null(), type == PromoType::kCustomAction);
+  result.custom_action_callback_ = std::move(custom_action_callback);
   return result;
 }
 

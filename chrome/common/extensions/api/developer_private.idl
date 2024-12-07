@@ -155,6 +155,7 @@ namespace developerPrivate {
     boolean custodianApprovalRequired;
     boolean parentDisabledPermissions;
     boolean unsupportedManifestVersion;
+    boolean unsupportedDeveloperExtension;
   };
 
   dictionary OptionsPage {

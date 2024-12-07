@@ -285,7 +285,7 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
 
   auto shared_image_mapping = shared_image_interface->CreateSharedImage(
       {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "CanvasResourceSharedBitmap"});
+       gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "CanvasResourceSharedBitmap"});
   shared_image_ = std::move(shared_image_mapping.shared_image);
   shared_mapping_ = std::move(shared_image_mapping.mapping);
   sync_token_ = shared_image_interface->GenVerifiedSyncToken();
@@ -419,10 +419,10 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   if (!is_accelerated_) {
-    // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE to the shared image
-    // usage flag here since mailbox will be used for CPU writes
-    // by the client. But doing that stops us from using CompoundImagebacking as
-    // many backings do not support SHARED_IMAGE_USAGE_CPU_WRITE.
+    // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
+    // image usage flag here since mailbox will be used for CPU writes by the
+    // client. But doing that stops us from using CompoundImagebacking as many
+    // backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY.
     // TODO(crbug.com/1478238): Add that usage flag back here once the issue is
     // resolved.
 
@@ -663,14 +663,12 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   auto client_shared_image = GetClientSharedImage();
   uint32_t texture_target = client_shared_image->GetTextureTarget();
 
-  CHECK_EQ(client_shared_image->surface_origin(), kTopLeft_GrSurfaceOrigin);
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_shared_image), GetSyncToken(), texture_id_for_image,
-      image_info, texture_target, /*is_origin_top_left=*/true,
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback), supports_display_compositing_,
-      is_overlay_candidate_);
+      image_info, texture_target, context_provider_wrapper_, owning_thread_ref_,
+      owning_thread_task_runner_, std::move(release_callback),
+      supports_display_compositing_, is_overlay_candidate_);
 
   DCHECK(image);
   return image;
@@ -809,6 +807,7 @@ void CanvasResourceSharedImage::OnMemoryDump(
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     scoped_refptr<gpu::ClientSharedImage> client_si,
     const viz::TransferableResource& transferable_resource,
+    viz::TransferableResource::ResourceSource resource_source,
     viz::ReleaseCallback release_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider) {
@@ -816,8 +815,9 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
   CHECK(client_si);
   CHECK(client_si->mailbox() == transferable_resource.mailbox());
   auto resource = AdoptRef(new ExternalCanvasResource(
-      std::move(client_si), transferable_resource, std::move(release_callback),
-      std::move(context_provider_wrapper), std::move(provider)));
+      std::move(client_si), transferable_resource, resource_source,
+      std::move(release_callback), std::move(context_provider_wrapper),
+      std::move(provider)));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -863,15 +863,12 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       },
       base::RetainedRef(this));
 
-  const bool is_origin_top_left =
-      client_si_->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
-      CreateSkImageInfo(), client_si_->GetTextureTarget(), is_origin_top_left,
+      CreateSkImageInfo(), client_si_->GetTextureTarget(),
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback),
-      /*supports_display_compositing=*/true,
-      transferable_resource_.is_overlay_candidate);
+      /*supports_display_compositing=*/true, is_overlay_candidate_);
 }
 
 const gpu::SyncToken
@@ -918,14 +915,12 @@ bool ExternalCanvasResource::
   GenOrFlushSyncToken();
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      transferable_resource_.mailbox(), transferable_resource_.texture_target(),
-      transferable_resource_.sync_token(), transferable_resource_.size,
-      transferable_resource_.format,
-      transferable_resource_.is_overlay_candidate,
-      transferable_resource_.resource_source);
+      client_si_, client_si_->GetTextureTarget(),
+      transferable_resource_.sync_token(), client_si_->size(),
+      client_si_->format(), is_overlay_candidate_, resource_source_);
   out_resource->color_space = transferable_resource_.color_space;
   out_resource->hdr_metadata = transferable_resource_.hdr_metadata;
-  out_resource->origin = transferable_resource_.origin;
+  out_resource->origin = client_si_->surface_origin();
 
   return true;
 }
@@ -933,6 +928,7 @@ bool ExternalCanvasResource::
 ExternalCanvasResource::ExternalCanvasResource(
     scoped_refptr<gpu::ClientSharedImage> client_si,
     const viz::TransferableResource& transferable_resource,
+    viz::TransferableResource::ResourceSource resource_source,
     viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
@@ -944,6 +940,9 @@ ExternalCanvasResource::ExternalCanvasResource(
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       transferable_resource_(transferable_resource),
+      resource_source_(resource_source),
+      is_overlay_candidate_(
+          client_si_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
       release_callback_(std::move(out_callback)) {
   CHECK(client_si_);
   CHECK(client_si_->mailbox() == transferable_resource_.mailbox());
@@ -1021,8 +1020,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, image_info,
-      back_buffer_shared_image_->GetTextureTarget(),
-      true /*is_origin_top_left*/, context_provider_wrapper_,
+      back_buffer_shared_image_->GetTextureTarget(), context_provider_wrapper_,
       owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
       /*is_overlay_candidate=*/true);

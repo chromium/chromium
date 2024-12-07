@@ -143,11 +143,11 @@ bool CryptoKey::extractable() const {
   return key_.Extractable();
 }
 
-ScriptValue CryptoKey::algorithm(ScriptState* script_state) {
+ScriptObject CryptoKey::algorithm(ScriptState* script_state) {
   V8ObjectBuilder object_builder(script_state);
   DictionaryBuilder dictionary_builder(object_builder);
   key_.Algorithm().WriteToDictionary(&dictionary_builder);
-  return object_builder.GetScriptValue();
+  return object_builder.ToScriptObject();
 }
 
 // FIXME: This creates a new javascript array each time. What should happen

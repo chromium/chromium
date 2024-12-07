@@ -28,7 +28,7 @@ export function getHtml(this: ChromeSigninAppElement) {
             src="${this.interceptionParameters_.pictureUrl}">
         <div class="managed-user-badge"
             ?hidden="${!this.interceptionParameters_.managedUserBadge.length}">
-          <cr-icon class="icon"
+          <cr-icon class="icon" aria-label="${this.interceptionParameters_.userBadgeAltText}"
               icon="${this.interceptionParameters_.managedUserBadge}"></cr-icon>
         </div>
       </div>

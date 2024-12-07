@@ -524,16 +524,16 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Starts bidding and scoring phase of the auction.
   //
-  // `on_seller_receiver_callback`, if non-null, is invoked once the seller
-  // worklet has been received, or if the seller worklet is no longer needed
-  // (e.g., if all bidders fail to bid before the seller worklet has
-  // been received). This is needed so that in the case of component auctions,
-  // the top-level seller worklet will only be requested once all component
-  // seller worklets have been received, to prevent deadlock (the top-level
-  // auction could be waiting on a bid from a seller, while the top-level
-  // seller worklet being is blocking a component seller worklet from being
-  // created, due to the process limit). Unlike other callbacks,
-  // `on_seller_receiver_callback` may be called synchronously.
+  // `on_seller_process_assigned_callback`, if non-null, is invoked once the
+  // seller process has been received, or if the seller process is no longer
+  // needed (e.g., if all bidders fail to bid before the seller process has been
+  // received). This is needed so that in the case of component auctions, the
+  // top-level seller worklet will only be requested once all component seller
+  // processes have been received, to prevent deadlock (the top-level auction
+  // could be waiting on a bid from a seller, while the top-level seller worklet
+  // being is blocking a component seller worklet from being created, due to the
+  // process limit). Unlike other callbacks,
+  // `on_seller_process_assigned_callback` may be called synchronously.
   //
   // `bidding_and_scoring_phase_callback` is invoked asynchronously when
   // either the auction has failed to produce a winner, or the auction has a
@@ -541,7 +541,7 @@ class CONTENT_EXPORT InterestGroupAuction
   void StartBiddingAndScoringPhase(
       std::optional<DebugReportLockoutAndCooldowns>
           debug_report_lockout_and_cooldowns,
-      base::OnceClosure on_seller_receiver_callback,
+      base::OnceClosure on_seller_process_assigned_callback,
       AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
 
   // Handles the server response for an auction.
@@ -970,6 +970,10 @@ class CONTENT_EXPORT InterestGroupAuction
            !bid_states_for_additional_bids_.empty();
   }
 
+  // Called when a seller process has been assigned to a seller worklet request.
+  // Informs parent auction the event, if needed.
+  void OnSellerProcessAssigned();
+
   // Called when RequestSellerWorklet() returns. Starts scoring bids, if there
   // are any and config has been resolved.
   void OnSellerWorkletReceived();
@@ -1375,9 +1379,9 @@ class CONTENT_EXPORT InterestGroupAuction
   // Time at which we began decoding the additional bids.
   base::TimeTicks decode_additional_bids_start_time_;
 
-  // Invoked in the bidding and scoring phase, once the seller worklet has
-  // loaded. May be null.
-  base::OnceClosure on_seller_receiver_callback_;
+  // Invoked in the bidding and scoring phase, once a process has been assigned
+  // to the seller worklet request.
+  base::OnceClosure on_seller_process_assigned_callback_;
 
   // The number of buyers and component auctions with pending interest group
   // loads from storage. Decremented each time either the interest groups for

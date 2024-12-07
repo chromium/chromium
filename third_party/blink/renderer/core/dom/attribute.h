@@ -81,9 +81,7 @@ class Attribute {
   Attribute();
 #endif
 
-  bool operator==(const Attribute& other) const {
-    return name_ == other.name_ && value_ == other.value_;
-  }
+  bool operator==(const Attribute& other) const = default;
 
  private:
   QualifiedName name_;
@@ -93,10 +91,9 @@ static_assert(sizeof(Attribute) == sizeof(QualifiedName) + sizeof(AtomicString),
               "AttributeHash() assumes Attribute has no padding");
 
 inline bool Attribute::Matches(const QualifiedName& qualified_name) const {
-  if (qualified_name.LocalName() != LocalName())
-    return false;
-  return qualified_name.Prefix() == g_star_atom ||
-         qualified_name.NamespaceURI() == NamespaceURI();
+  return (qualified_name.LocalName() == LocalName()) &&
+         (qualified_name.Prefix() == g_star_atom ||
+          qualified_name.NamespaceURI() == NamespaceURI());
 }
 
 inline bool Attribute::MatchesCaseInsensitive(

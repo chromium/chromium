@@ -436,6 +436,20 @@ class SharedStorageRequestHelperProcessHeaderTest
 
 }  // namespace
 
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, EmptyHeader) {
+  const std::string kHeader = "";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
+  EXPECT_TRUE(observer_->headers_received().front().second.empty());
+}
+
 TEST_F(SharedStorageRequestHelperProcessHeaderTest,
        ClearSetAppendDelete_TokensStringsBytes_HeaderReceived) {
   const std::string kHeader(
@@ -559,7 +573,6 @@ TEST_F(SharedStorageRequestHelperProcessHeaderMultiConnectionTest,
       "clear, invalid?item",       // Unparsable item
       "append;key=key=a;value=b",  // Unparsable parameter
       "set=a/dict, delete=a/key",  // Dictionary
-      "",                          // Empty header
   });
 
   RegisterSharedStorageMultipleHandlerAndStartServer(invalid_headers);

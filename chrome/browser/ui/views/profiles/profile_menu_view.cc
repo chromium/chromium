@@ -804,8 +804,8 @@ void ProfileMenuView::BuildSyncInfo() {
       show_account_card ? account_info_for_promos : AccountInfo());
 }
 
-ProfileMenuView::IdentitySectionParams
-ProfileMenuView::GetIdentitySectionParams() {
+ProfileMenuViewBase::IdentitySectionParams
+ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   CHECK(switches::IsImprovedSigninUIOnDesktopEnabled());
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
@@ -816,11 +816,25 @@ ProfileMenuView::GetIdentitySectionParams() {
       IdentityManagerFactory::GetForProfile(profile);
   const bool is_sync_feature_enabled =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  CoreAccountInfo primary_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const AccountInfo primary_extended_account_info =
+      identity_manager->FindExtendedAccountInfo(primary_account_info);
+
   IdentitySectionParams params;
+  params.title = GetProfileIdentifier(entry.GetLocalProfileName(),
+                                      primary_extended_account_info.given_name);
+  profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = true,
+                                                       .has_background = false};
+  params.profile_image = ui::ImageModel::FromImage(
+      primary_extended_account_info.account_image.IsEmpty()
+          ? entry.GetAvatarIcon(kIdentityInfoImageSize,
+                                /*use_high_res_file=*/true, icon_params)
+          : primary_extended_account_info.account_image);
 
   // Sync error.
   if (error.has_value()) {
-    params.description =
+    params.subtitle =
         GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled);
     params.button_text = GetSyncErrorButtonText(error.value());
     params.button_action =
@@ -832,15 +846,13 @@ ProfileMenuView::GetIdentitySectionParams() {
   ActionableItem button_type = ActionableItem::kSigninAccountButton;
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
-  CoreAccountInfo primary_account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   switch (signin_util::GetSignedInState(identity_manager)) {
     case signin_util::SignedInState::kSignedOut:
       if (profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
         button_type = ActionableItem::kSigninButton;
         access_point = signin_metrics::AccessPoint::
             ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
-        params.description = l10n_util::GetStringUTF16(
+        params.subtitle = l10n_util::GetStringUTF16(
             IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
         params.button_text =
             l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
@@ -851,7 +863,7 @@ ProfileMenuView::GetIdentitySectionParams() {
           ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
       AccountInfo account_info_for_promos =
           signin_ui_util::GetSingleAccountForPromos(identity_manager);
-      params.description =
+      params.subtitle =
           l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
       params.button_text = l10n_util::GetStringFUTF16(
           IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
@@ -882,20 +894,17 @@ ProfileMenuView::GetIdentitySectionParams() {
       break;
     }
     case signin_util::SignedInState::kSignedIn:
-      params.description =
-          l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
+      params.subtitle = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
       params.button_text =
           l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
       break;
     case signin_util::SignedInState::kSyncing:
       // No button.
-      params.description = base::UTF8ToUTF16(
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .email);
+      params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
       break;
     case signin_util::SignedInState::kSignInPending:
       button_type = ActionableItem::kSigninReauthButton;
-      params.description =
+      params.subtitle =
           l10n_util::GetStringUTF16(IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE);
       params.button_text =
           l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
@@ -916,36 +925,15 @@ ProfileMenuView::GetIdentitySectionParams() {
 
 void ProfileMenuView::BuildIdentityWithCallToAction() {
   Profile* profile = browser()->profile();
-  ProfileAttributesEntry* profile_attributes =
+  ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile->GetPath());
-  if (!profile_attributes) {
+  if (!entry) {
     // May happen if the profile is being deleted. https://crbug.com/1040079
     return;
   }
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  const CoreAccountInfo account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  const AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfo(account);
-  const IdentitySectionParams params = GetIdentitySectionParams();
-  profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = true,
-                                                       .has_background = false};
-  ui::ImageModel profile_image = ui::ImageModel::FromImage(
-      !account_info.IsEmpty() ? account_info.account_image
-                              : profile_attributes->GetAvatarIcon(
-                                    kIdentityInfoImageSize,
-                                    /*use_high_res_file=*/true, icon_params));
-  std::u16string title = GetProfileIdentifier(
-      profile_attributes->GetLocalProfileName(), account_info.given_name);
-
-  SetProfileIdentityWithCallToAction(
-      profile_attributes->GetProfileThemeColors().profile_highlight_color,
-      profile_image, title, params.description, params.button_text,
-      params.button_image, params.button_action);
+  SetProfileIdentityWithCallToAction(GetIdentitySectionParams(*entry));
 }
 
 void ProfileMenuView::BuildAutofillSettingsButton() {

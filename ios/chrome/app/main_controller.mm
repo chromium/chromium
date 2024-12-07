@@ -960,6 +960,14 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
         // Nothing to do.
         break;
     }
+
+    if (fromInitStage == ProfileInitStage::kFirstRun) {
+      // Clear -isFirstRun once the first profile is done presenting the FRE
+      // (it should not be presented if e.g. the user sign-in with a managed
+      // profile on their first run of the app after completing the FRE on
+      // the personal profile).
+      _isFirstRun = NO;
+    }
   }
 }
 
@@ -1724,15 +1732,30 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
                   localState:(PrefService*)localState {
   const std::string sceneID =
       base::SysNSStringToUTF8(sceneState.sceneSessionID);
+
+  // The logic to determine which profile to use for the scene is:
+  //  1. use the profile recorded in ProfileAttributesStorageIOS,
+  //  2. if there is no mapping, use kLastUsedProfile,
+  //  3. if kLastUsedProfile is unset, generate a new profile.
   std::string profileName = storage->GetProfileNameForSceneID(sceneID);
   if (profileName.empty()) {
     profileName = localState->GetString(prefs::kLastUsedProfile);
     if (profileName.empty()) {
       profileName = manager->ReserveNewProfileName();
-      localState->SetString(prefs::kLastUsedProfile, profileName);
+      DCHECK(!profileName.empty());
     }
+
+    // Store the mapping between the SceneID and the profile in the
+    // ProfileAttributesStorageIOS so that it is accessible the next
+    // time the window is open.
+    storage->SetProfileNameForSceneID(sceneID, profileName);
   }
-  DCHECK(!profileName.empty());
+
+  // Update kLastUsedProfile, to ensure that new window will use the same
+  // profile (this also make sure that opening a second window will not
+  // create a profile for users upgrading from M-132 or ealier where the
+  // kLastUsedProfile was sometimes not correctly updated).
+  localState->SetString(prefs::kLastUsedProfile, profileName);
 
   auto iterator = _profileControllers.find(profileName);
   if (iterator == _profileControllers.end()) {

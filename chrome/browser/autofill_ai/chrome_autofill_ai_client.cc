@@ -19,7 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -187,9 +187,8 @@ void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
         form_annotation_response,
     user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller =
-          autofill::SaveAutofillPredictionImprovementsController::GetOrCreate(
-              &*web_contents_)) {
+  if (auto* controller = autofill_ai::SaveAutofillAiDataController::GetOrCreate(
+          &*web_contents_)) {
     controller->OfferSave(
         std::move(form_annotation_response->to_be_upserted_entries),
         std::move(prompt_acceptance_callback),

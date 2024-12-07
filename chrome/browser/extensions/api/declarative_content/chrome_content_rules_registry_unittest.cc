@@ -136,7 +136,7 @@ std::vector<std::unique_ptr<ContentPredicateEvaluator>> CreateTestEvaluator(
 
 class DeclarativeChromeContentRulesRegistryTest : public testing::Test {
  public:
-  DeclarativeChromeContentRulesRegistryTest() {}
+  DeclarativeChromeContentRulesRegistryTest() = default;
 
   DeclarativeChromeContentRulesRegistryTest(
       const DeclarativeChromeContentRulesRegistryTest&) = delete;

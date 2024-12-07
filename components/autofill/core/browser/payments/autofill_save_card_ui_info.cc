@@ -90,6 +90,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
   ui_info.is_for_upload = is_for_upload;
   ui_info.logo_icon_id = logo_icon_id;
   ui_info.issuer_icon_id = CreditCard::IconResourceId(card.network());
+  ui_info.card_network = card.NetworkForDisplay();
   ui_info.legal_message_lines = legal_message_lines;
   ui_info.card_label = card.CardNameAndLastFourDigits();
   ui_info.card_sub_label = card.AbbreviatedExpirationDateForDisplay(false);

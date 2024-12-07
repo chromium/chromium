@@ -75,7 +75,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(strings);
 }
 
-SigninEmailConfirmationUI::~SigninEmailConfirmationUI() {}
+SigninEmailConfirmationUI::~SigninEmailConfirmationUI() = default;
 
 void SigninEmailConfirmationUI::Close() {
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();

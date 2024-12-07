@@ -256,9 +256,9 @@ class InsecureDelegate : public CookieAccessDelegate {
     return CookieAccessSemantics::UNKNOWN;
   }
 
-  CookieLegacyScope GetAccessForLegacyCookieScope(
+  CookieScopeSemantics GetScopeSemantics(
       const CanonicalCookie& cookie) const override {
-    return CookieLegacyScope::UNKNOWN;
+    return CookieScopeSemantics::UNKNOWN;
   }
   // Returns whether a cookie should be attached regardless of its SameSite
   // value vs the request context.

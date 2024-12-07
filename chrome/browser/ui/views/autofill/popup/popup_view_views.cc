@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
@@ -699,8 +699,7 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
   CHECK(controller(), base::NotFatalUntil::M134);
   if (controller() &&
       base::Contains(controller()->GetSuggestions(),
-                     SuggestionType::kPredictionImprovementsFeedback,
-                     &Suggestion::type)) {
+                     SuggestionType::kAutofillAiFeedback, &Suggestion::type)) {
     a11y_announcer_.Run(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
@@ -1032,10 +1031,9 @@ void PopupViewViews::CreateSuggestionViews() {
                   suggestions[current_line_number])));
           break;
 
-        case SuggestionType::kPredictionImprovementsLoadingState:
+        case SuggestionType::kAutofillAiLoadingState:
           rows_.push_back(body_container->AddChildView(
-              std::make_unique<autofill_prediction_improvements::
-                                   PredictionImprovementsLoadingStateView>(
+              std::make_unique<autofill_ai::AutofillAiLoadingStateView>(
                   suggestions[current_line_number])));
           break;
 
@@ -1057,16 +1055,16 @@ void PopupViewViews::CreateSuggestionViews() {
 
           // Set element identifiers for tests.
           if (suggestions[current_line_number].type ==
-              SuggestionType::kRetrievePredictionImprovements) {
+              SuggestionType::kRetrieveAutofillAi) {
             row_view->SetProperty(
                 views::kElementIdentifierKey,
                 kAutofillPredictionImprovementsTriggerElementId);
           } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kFillPredictionImprovements) {
+                     SuggestionType::kFillAutofillAi) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillPredictionImprovementsFillElementId);
           } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kPredictionImprovementsError) {
+                     SuggestionType::kAutofillAiError) {
             row_view->SetProperty(
                 views::kElementIdentifierKey,
                 kAutofillPredictionImprovementsErrorElementId);
@@ -1441,9 +1439,7 @@ void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
   RowPointer first_row = rows_[0];
   views::View* view_to_focus = nullptr;
   if (auto* loading_view =
-          absl::get_if<autofill_prediction_improvements::
-                           PredictionImprovementsLoadingStateView*>(
-              &first_row)) {
+          absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(&first_row)) {
     view_to_focus = *loading_view;
   } else if (auto* warning_view = absl::get_if<PopupWarningView*>(&first_row)) {
     view_to_focus = *warning_view;

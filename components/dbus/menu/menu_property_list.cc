@@ -15,39 +15,39 @@
 #include "ui/base/accelerators/menu_label_accelerator_util_linux.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/gfx/image/image.h"
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"       // nogncheck
-#include "ui/ozone/public/platform_menu_utils.h"  // nogncheck
-#endif
 
 namespace {
 
 std::string ToDBusKeySym(ui::KeyboardCode code) {
-#if BUILDFLAG(IS_OZONE)
-  if (const auto* const platorm_menu_utils =
-          ui::OzonePlatform::GetInstance()->GetPlatformMenuUtils()) {
-    return platorm_menu_utils->ToDBusKeySym(code);
+  const uint16_t c =
+      DomCodeToUsLayoutCharacter(UsLayoutKeyboardCodeToDomCode(code), 0);
+  if (!c) {
+    return std::string();
   }
-#endif
-  return {};
+  return base::UTF16ToUTF8(std::u16string(1, c));
 }
 
 std::vector<DbusString> GetDbusMenuShortcut(ui::Accelerator accelerator) {
   auto dbus_key_sym = ToDBusKeySym(accelerator.key_code());
-  if (dbus_key_sym.empty())
+  if (dbus_key_sym.empty()) {
     return {};
+  }
 
   std::vector<DbusString> parts;
-  if (accelerator.IsCtrlDown())
+  if (accelerator.IsCtrlDown()) {
     parts.emplace_back("Control");
-  if (accelerator.IsAltDown())
+  }
+  if (accelerator.IsAltDown()) {
     parts.emplace_back("Alt");
-  if (accelerator.IsShiftDown())
+  }
+  if (accelerator.IsShiftDown()) {
     parts.emplace_back("Shift");
-  if (accelerator.IsCmdDown())
+  }
+  if (accelerator.IsCmdDown()) {
     parts.emplace_back("Super");
+  }
   parts.emplace_back(dbus_key_sym);
   return parts;
 }
@@ -68,10 +68,12 @@ MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
         ui::ConvertAcceleratorsFromWindowsStyle(base::UTF16ToUTF8(label))));
   }
 
-  if (!menu->IsEnabledAt(i))
+  if (!menu->IsEnabledAt(i)) {
     properties["enabled"] = MakeDbusVariant(DbusBoolean(false));
-  if (!menu->IsVisibleAt(i))
+  }
+  if (!menu->IsVisibleAt(i)) {
     properties["visible"] = MakeDbusVariant(DbusBoolean(false));
+  }
 
   ui::ImageModel icon = menu->GetIconAt(i);
   if (icon.IsImage()) {
@@ -133,8 +135,9 @@ void ComputeMenuPropertyChanges(const MenuItemProperties& old_properties,
     const std::string& key = pair.first;
     auto new_it = new_properties.find(key);
     if (new_it != new_properties.end()) {
-      if (new_it->second != pair.second)
+      if (new_it->second != pair.second) {
         item_updated_props->push_back(key);
+      }
     } else {
       item_removed_props->push_back(key);
     }
@@ -142,7 +145,8 @@ void ComputeMenuPropertyChanges(const MenuItemProperties& old_properties,
   // Compute added properties.
   for (const auto& pair : new_properties) {
     const std::string& key = pair.first;
-    if (!base::Contains(old_properties, key))
+    if (!base::Contains(old_properties, key)) {
       item_updated_props->push_back(key);
+    }
   }
 }

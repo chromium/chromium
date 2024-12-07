@@ -67,18 +67,18 @@ gfx::Size DecorationIconTitle::calculateSize(int icon_width) {
 
 void DecorationIconTitle::handleIconResource(
     ui::AndroidResourceType resource_type) {
-  if (icon_resource_id_ != -1) {
+  if (icon_resource_id_ != ui::Resource::kInvalidResourceId) {
     ui::Resource* icon_resource =
         resource_manager_->GetResource(resource_type, icon_resource_id_);
     if (icon_resource) {
       layer_icon_->SetUIResourceId(icon_resource->ui_resource()->id());
       icon_size_ = icon_resource->size();
     } else {
-      layer_icon_->SetUIResourceId(0);
+      layer_icon_->SetUIResourceId(ui::Resource::kInvalidResourceId);
     }
     layer_icon_->SetTransform(gfx::Transform());
   } else {
-    layer_icon_->SetUIResourceId(0);
+    layer_icon_->SetUIResourceId(ui::Resource::kInvalidResourceId);
     icon_size_ = gfx::Size(0, 0);
   }
 }
@@ -93,7 +93,7 @@ void DecorationIconTitle::setBounds(const gfx::Size& bounds) {
   int icon_space = icon_size_.width() + icon_start_padding_ + icon_end_padding_;
   float icon_offset_y = (size_.height() - icon_size_.height()) / 2.f;
   bool sys_rtl = l10n_util::IsLayoutRtl();
-  if (icon_resource_id_ != -1) {
+  if (icon_resource_id_ != ui::Resource::kInvalidResourceId) {
     int icon_x = icon_start_padding_;
     if (sys_rtl) {
       icon_x = bounds.width() - icon_size_.width() - icon_start_padding_;

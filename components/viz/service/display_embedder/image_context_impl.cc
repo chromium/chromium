@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -16,6 +17,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "skia/buildflags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -27,6 +29,36 @@
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CreateFallbackImageResult {
+  kSuccess = 0,
+  kFailedPrefersExternalSampler = 1,
+  kFailedYcbcrMismatch = 2,
+  kFailedExternalTexture = 3,
+  kFailedInvalidTextureInfo = 4,
+  kFailedCreateTexture = 5,
+  kMaxValue = kFailedCreateTexture
+};
+
+const char* CreateFallbackImageResultToString(
+    CreateFallbackImageResult result) {
+  switch (result) {
+    case CreateFallbackImageResult::kSuccess:
+      return "Success";
+    case CreateFallbackImageResult::kFailedPrefersExternalSampler:
+      return "FailedPrefersExternalSampler";
+    case CreateFallbackImageResult::kFailedYcbcrMismatch:
+      return "FailedYcbcrMismatch";
+    case CreateFallbackImageResult::kFailedExternalTexture:
+      return "FailedExternalTexture";
+    case CreateFallbackImageResult::kFailedInvalidTextureInfo:
+      return "FailedInvalidTextureInfo";
+    case CreateFallbackImageResult::kFailedCreateTexture:
+      return "FailedCreateTexture";
+  }
+}
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
 bool DawnYCbCrVkDescriptorsAreEqual(wgpu::YCbCrVkDescriptor left,
@@ -170,10 +202,18 @@ void ImageContextImpl::DeleteFallbackTextures() {
 void ImageContextImpl::CreateFallbackImage(
     gpu::SharedContextState* context_state) {
   const int num_planes = format().NumberOfPlanes();
+  TRACE_EVENT_BEGIN("viz", "ImageContextImpl::CreateFallbackImage");
+
+  CreateFallbackImageResult result = CreateFallbackImageResult::kSuccess;
+  absl::Cleanup record_results = [&result] {
+    base::UmaHistogramEnumeration("Viz.CreateFallbackImageResult", result);
+    TRACE_EVENT_END("viz", "result", CreateFallbackImageResultToString(result));
+  };
 
   if (format().PrefersExternalSampler()) {
     // Skia can't allocate a fallback texture since the original texture was
     // externally allocated.
+    result = CreateFallbackImageResult::kFailedPrefersExternalSampler;
     return;
   }
 
@@ -181,6 +221,7 @@ void ImageContextImpl::CreateFallbackImage(
     // It is not possible to allocate a fallback texture if the failure was due
     // to a mismatch in YCBCr info between the promise image and the
     // fulfillment texture.
+    result = CreateFallbackImageResult::kFailedYcbcrMismatch;
     return;
   }
 
@@ -192,6 +233,7 @@ void ImageContextImpl::CreateFallbackImage(
         })) {
       DLOG(ERROR) << "Invalid Graphite texture infos for format: "
                   << format().ToString();
+      result = CreateFallbackImageResult::kFailedInvalidTextureInfo;
       return;
     }
 
@@ -202,6 +244,7 @@ void ImageContextImpl::CreateFallbackImage(
     if (success && dawn_info.fFormat == wgpu::TextureFormat::External) {
       // Skia can't allocate a fallback texture since the original texture was
       // externally allocated.
+      result = CreateFallbackImageResult::kFailedExternalTexture;
       return;
     }
 #endif
@@ -225,6 +268,7 @@ void ImageContextImpl::CreateFallbackImage(
       if (!sk_surface) {
         DLOG(ERROR) << "Failed to create fallback graphite backend texture";
         DeleteFallbackTextures();
+        result = CreateFallbackImageResult::kFailedCreateTexture;
         return;
       }
       sk_surface->getCanvas()->clear(
@@ -239,6 +283,7 @@ void ImageContextImpl::CreateFallbackImage(
   // and leave it null.
   const auto& formats = backend_formats();
   if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal) {
+    result = CreateFallbackImageResult::kFailedExternalTexture;
     return;
   }
 
@@ -257,6 +302,7 @@ void ImageContextImpl::CreateFallbackImage(
     if (!fallback_texture.isValid()) {
       DeleteFallbackTextures();
       DLOG(ERROR) << "Could not create backend texture.";
+      result = CreateFallbackImageResult::kFailedCreateTexture;
       return;
     }
     auto promise_texture = GrPromiseImageTexture::Make(fallback_texture);

@@ -60,10 +60,8 @@ source_set("model") {
     "//base",
     "//components/browser_sync",
     "//components/content_settings/core/browser",
-    "//components/content_settings/core/browser:cookie_settings",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/metrics",
     "//components/policy/core/common:common_constants",
@@ -298,6 +296,7 @@ source_set("fake_system_identity_manager") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
+    "//ios/chrome/browser/ui/authentication/signin:interruptible_chrome_coordinator",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -465,6 +464,7 @@ source_set("unit_tests") {
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//components/signin/public/identity_manager/ios:test_support",
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",

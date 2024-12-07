@@ -168,6 +168,21 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     QueueReport(url, group, "document-policy-violation", std::move(body));
   }
 
+  void QueueCSPHashReport(const GURL& url,
+                          const std::string& endpoint,
+                          const std::string& subresource_url,
+                          const std::string& integrity_hash,
+                          const std::string& type,
+                          const std::string& destination) override {
+    base::Value::Dict body;
+    body.Set("documentURL", url.spec());
+    body.Set("subresourceURL", subresource_url);
+    body.Set("hash", integrity_hash);
+    body.Set("type", type);
+    body.Set("destination", destination);
+    QueueReport(url, endpoint, "csp-hash", std::move(body));
+  }
+
   int render_process_id() const { return render_process_id_; }
 
  private:

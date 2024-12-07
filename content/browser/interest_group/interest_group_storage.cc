@@ -5455,7 +5455,8 @@ InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
       max_owner_storage_size_(MaxOwnerStorageSize()),
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
-      db_(std::make_unique<sql::Database>(GetDatabaseOptions())),
+      db_(std::make_unique<sql::Database>(GetDatabaseOptions(),
+                                          "InterestGroups")),
       db_maintenance_timer_(FROM_HERE,
                             kIdlePeriod,
                             this,
@@ -5491,10 +5492,10 @@ bool InterestGroupStorage::EnsureDBInitialized() {
 bool InterestGroupStorage::InitializeDB() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  db_ = std::make_unique<sql::Database>(GetDatabaseOptions());
+  db_ = std::make_unique<sql::Database>(GetDatabaseOptions(),
+                                        /*tag=*/"InterestGroups");
   db_->set_error_callback(base::BindRepeating(
       &InterestGroupStorage::DatabaseErrorCallback, base::Unretained(this)));
-  db_->set_histogram_tag("InterestGroups");
 
   if (path_to_database_.empty()) {
     if (!db_->OpenInMemory()) {

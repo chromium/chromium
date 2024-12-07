@@ -215,6 +215,14 @@ void ProfileOAuth2TokenServiceDelegate::FireAuthErrorChanged(
                                 update_refresh_token_source_);
 }
 
+#if BUILDFLAG(IS_IOS)
+void ProfileOAuth2TokenServiceDelegate::FireAccountsOnDeviceChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountsOnDeviceChanged();
+  }
+}
+#endif
+
 std::string ProfileOAuth2TokenServiceDelegate::GetTokenForMultilogin(
     const CoreAccountId& account_id) const {
   return std::string();

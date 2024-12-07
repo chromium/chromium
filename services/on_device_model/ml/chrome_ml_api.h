@@ -116,6 +116,9 @@ struct ChromeMLAdaptationDescriptor {
   // The default value 0 will be treated not set, and in that case the original
   // `max_tokens` set by the base model will be used.
   uint32_t max_tokens;
+
+  // Whether this model will handle InputPieces containing images.
+  bool enable_image_input;
 };
 
 // A status value included with each output chunk.

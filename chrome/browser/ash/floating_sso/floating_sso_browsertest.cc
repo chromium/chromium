@@ -215,8 +215,9 @@ class FloatingSsoTest : public policy::PolicyTest {
   }
 
   void EnableFloatingWorkspace() {
-    policy::PolicyTest::SetPolicy(
-        &policies_, policy::key::kFloatingWorkspaceEnabled, base::Value(true));
+    policy::PolicyTest::SetPolicy(&policies_,
+                                  policy::key::kFloatingWorkspaceV2Enabled,
+                                  base::Value(true));
     provider_.UpdateChromePolicy(policies_);
     ASSERT_TRUE(ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled());
   }

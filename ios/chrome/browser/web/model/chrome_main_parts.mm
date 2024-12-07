@@ -24,7 +24,6 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_tick_clock.h"
 #import "build/blink_buildflags.h"
-#import "components/content_settings/core/browser/cookie_settings.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/reporter_running_ios.h"

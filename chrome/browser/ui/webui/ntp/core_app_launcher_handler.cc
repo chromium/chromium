@@ -16,9 +16,9 @@
 #include "extensions/common/manifest.h"
 #include "url/gurl.h"
 
-CoreAppLauncherHandler::CoreAppLauncherHandler() {}
+CoreAppLauncherHandler::CoreAppLauncherHandler() = default;
 
-CoreAppLauncherHandler::~CoreAppLauncherHandler() {}
+CoreAppLauncherHandler::~CoreAppLauncherHandler() = default;
 
 void CoreAppLauncherHandler::HandleRecordAppLaunchByUrl(
     const base::Value::List& args) {

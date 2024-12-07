@@ -33,13 +33,19 @@
 
 #if !BUILDFLAG(IS_MAC)
 #include <unicode/uset.h>
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+#include <ostream>
+#include <string_view>
+
+#include "base/check.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
-static void AddAllCodePoints(USet* smart_set, const String& string) {
-  for (wtf_size_t i = 0; i < string.length(); i++)
+static void AddAllCodePoints(USet* smart_set, std::string_view string) {
+  for (size_t i = 0; i < string.length(); i++) {
     uset_add(smart_set, string[i]);
+  }
 }
 
 // This is mostly a port of the code in
@@ -51,12 +57,11 @@ static USet* GetSmartSet(bool is_previous_character) {
   USet* smart_set = is_previous_character ? pre_smart_set : post_smart_set;
   if (!smart_set) {
     // Whitespace and newline (kCFCharacterSetWhitespaceAndNewline)
-    static const UChar* kWhitespaceAndNewLine = reinterpret_cast<const UChar*>(
-        u"[[:WSpace:] [\\u000A\\u000B\\u000C\\u000D\\u0085]]");
+    static constexpr std::u16string_view kWhitespaceAndNewLine{
+        u"[[:WSpace:] [\\u000A\\u000B\\u000C\\u000D\\u0085]]"};
     UErrorCode ec = U_ZERO_ERROR;
-    smart_set = uset_openPattern(
-        kWhitespaceAndNewLine,
-        LengthOfNullTerminatedString(kWhitespaceAndNewLine), &ec);
+    smart_set = uset_openPattern(kWhitespaceAndNewLine.data(),
+                                 kWhitespaceAndNewLine.size(), &ec);
     DCHECK(U_SUCCESS(ec)) << ec;
 
     // CJK ranges
@@ -91,12 +96,10 @@ static USet* GetSmartSet(bool is_previous_character) {
       AddAllCodePoints(smart_set, ")].,;:?\'!\"%*-/}");
 
       // Punctuation (kCFCharacterSetPunctuation)
-      static const UChar* kPunctuationClass =
-          reinterpret_cast<const UChar*>(u"[:P:]");
+      static constexpr std::u16string_view kPunctuationClass{u"[:P:]"};
       ec = U_ZERO_ERROR;
-      USet* icu_punct = uset_openPattern(
-          kPunctuationClass, LengthOfNullTerminatedString(kPunctuationClass),
-          &ec);
+      USet* icu_punct = uset_openPattern(kPunctuationClass.data(),
+                                         kPunctuationClass.size(), &ec);
       DCHECK(U_SUCCESS(ec)) << ec;
       uset_addAll(smart_set, icu_punct);
       uset_close(icu_punct);
@@ -110,6 +113,7 @@ static USet* GetSmartSet(bool is_previous_character) {
 bool IsCharacterSmartReplaceExempt(UChar32 c, bool is_previous_character) {
   return uset_contains(GetSmartSet(is_previous_character), c);
 }
-}
+
+}  // namespace blink
 
 #endif  // !BUILDFLAG(IS_MAC)

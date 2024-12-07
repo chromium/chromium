@@ -1,6 +1,6 @@
 [
     RuntimeEnabled=TranslationAPI,
-    Exposed=(Window),
+    Exposed=(Window,Worker),
     SecureContext
 ]
 interface AITranslatorFactory {

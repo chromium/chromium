@@ -325,6 +325,17 @@ WebDataServiceBase::Handle AutofillWebDataService::GetPaymentInstruments(
       consumer);
 }
 
+WebDataServiceBase::Handle
+AutofillWebDataService::GetPaymentInstrumentCreationOptions(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &AutofillWebDataBackendImpl::GetPaymentInstrumentCreationOptions,
+          autofill_backend_),
+      consumer);
+}
+
 void AutofillWebDataService::ClearAllCreditCardBenefits() {
   wdbs_->ScheduleDBTask(
       FROM_HERE,

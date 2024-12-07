@@ -159,14 +159,14 @@ class AutofillAgentTests : public web::WebTest {
 
   std::unique_ptr<web::FakeWebFrame> CreateMainWebFrame() {
     std::unique_ptr<web::FakeWebFrame> frame =
-        web::FakeWebFrame::CreateMainWebFrame(GURL());
+        web::FakeWebFrame::CreateMainWebFrame();
     frame->set_browser_state(GetBrowserState());
     return frame;
   }
 
   std::unique_ptr<web::FakeWebFrame> CreateChildWebFrame() {
     std::unique_ptr<web::FakeWebFrame> frame =
-        web::FakeWebFrame::CreateChildWebFrame(GURL());
+        web::FakeWebFrame::CreateChildWebFrame();
     frame->set_browser_state(GetBrowserState());
     return frame;
   }

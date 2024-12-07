@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
@@ -21,6 +22,9 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
@@ -55,9 +59,6 @@ const char KioskIwaManager::kIwaKioskDictionaryName[] = "iwa-kiosk";
 
 // static
 void KioskIwaManager::RegisterPrefs(PrefRegistrySimple* registry) {
-  if (!ash::features::IsIsolatedWebAppKioskEnabled()) {
-    return;
-  }
   registry->RegisterDictionaryPref(kIwaKioskDictionaryName);
 }
 
@@ -107,6 +108,19 @@ const KioskIwaData* KioskIwaManager::GetApp(const AccountId& account_id) const {
   return iter->get();
 }
 
+void KioskIwaManager::UpdateApp(const AccountId& account_id,
+                                const std::string& title,
+                                const GURL& /*start_url*/,
+                                const web_app::IconBitmaps& icon_bitmaps) {
+  for (auto& iwa_data : isolated_web_apps_) {
+    if (iwa_data->account_id() == account_id) {
+      iwa_data->Update(title, icon_bitmaps);
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 const std::optional<AccountId>& KioskIwaManager::GetAutoLaunchAccountId()
     const {
   return auto_launch_id_;
@@ -115,6 +129,14 @@ const std::optional<AccountId>& KioskIwaManager::GetAutoLaunchAccountId()
 void KioskIwaManager::OnKioskSessionStarted(const KioskAppId& app_id) {
   CHECK_EQ(app_id.type, KioskAppType::kIsolatedWebApp);
   NotifySessionInitialized();
+}
+
+void KioskIwaManager::StartObservingAppUpdate(Profile* profile,
+                                              const AccountId& account_id) {
+  app_update_observer_ = std::make_unique<chromeos::KioskWebAppUpdateObserver>(
+      profile, account_id, KioskIwaData::kIconSize,
+      base::BindRepeating(&KioskIwaManager::UpdateApp,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void KioskIwaManager::UpdateAppsFromPolicy() {
@@ -164,7 +186,7 @@ void KioskIwaManager::CancelCryptohomeRemovalsForCurrentApps() {
 }
 
 void KioskIwaManager::RemoveApps(const KioskIwaDataMap& previous_apps) const {
-  std::vector<KioskAppDataBase*> apps_to_remove;
+  std::vector<const KioskAppDataBase*> apps_to_remove;
   base::ranges::transform(previous_apps, std::back_inserter(apps_to_remove),
                           [](const auto& kv) { return kv.second.get(); });
   ClearRemovedApps(apps_to_remove);
@@ -188,8 +210,8 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
   const std::string& web_bundle_id = account.kiosk_iwa_info.web_bundle_id();
   const GURL update_manifest_url(account.kiosk_iwa_info.update_manifest_url());
 
-  auto new_iwa_data =
-      KioskIwaData::Create(account.user_id, web_bundle_id, update_manifest_url);
+  auto new_iwa_data = KioskIwaData::Create(account.user_id, web_bundle_id,
+                                           update_manifest_url, *this);
 
   if (!new_iwa_data) {
     LOG(WARNING) << "Cannot create Kiosk IWA data for account "
@@ -209,12 +231,14 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
     if (new_iwa_data->update_manifest_url() !=
         previous_iwa_data->update_manifest_url()) {
       isolated_web_apps_.push_back(std::move(new_iwa_data));
+      isolated_web_apps_.back()->LoadFromCache();
     } else {
       isolated_web_apps_.push_back(std::move(previous_iwa_data));
     }
   } else {
     // Add a new IWA entry (no existing matches).
     isolated_web_apps_.push_back(std::move(new_iwa_data));
+    isolated_web_apps_.back()->LoadFromCache();
   }
 
   MaybeSetAutoLaunchInfo(account.account_id,

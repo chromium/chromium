@@ -586,11 +586,11 @@ TEST(SiteSearchPolicyHandlerTest, EmptyRequiredField) {
 
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
-                           IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY)));
+                           IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_IS_EMPTY)));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
-                           IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY)));
+                           IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY)));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
-                           IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY)));
+                           IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY)));
 }
 
 TEST(SiteSearchPolicyHandlerTest, UnknownField) {
@@ -652,7 +652,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
        it != std::end(kShortcutWithSpacesTestProviders); ++it) {
     EXPECT_THAT(&errors,
                 HasValidationError(l10n_util::GetStringFUTF16(
-                    IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE,
+                    IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_CONTAINS_SPACE,
                     base::UTF8ToUTF16(it->shortcut))));
   }
 }
@@ -679,7 +679,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
   EXPECT_THAT(
       &errors,
       HasValidationError(l10n_util::GetStringFUTF16(
-          IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT,
+          IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_STARTS_WITH_AT,
           base::UTF8ToUTF16(kShortcutStartsWithAtTestProviders[0].shortcut))));
 
   handler.ApplyPolicySettings(policies, &prefs);
@@ -717,7 +717,7 @@ TEST(SiteSearchPolicyHandlerTest, InvalidUrl) {
     EXPECT_THAT(
         &errors,
         HasValidationError(l10n_util::GetStringFUTF16(
-            IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT,
+            IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT,
             base::UTF8ToUTF16(it->url))));
   }
 }
@@ -826,7 +826,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors,
               HasValidationError(l10n_util::GetStringFUTF16(
-                  IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
+                  IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
                   base::UTF8ToUTF16(
                       kShortcutSameAsDSPKeywordTestProviders[0].shortcut))));
 
@@ -860,7 +860,7 @@ TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors,
               HasValidationError(l10n_util::GetStringFUTF16(
-                  IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+                  IDS_SEARCH_POLICY_SETTINGS_URL_NOT_HTTPS,
                   base::UTF8ToUTF16(kNonHttpsUrlTestProviders[0].url))));
 
   handler.ApplyPolicySettings(policies, &prefs);
@@ -888,7 +888,7 @@ TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {
 
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
-                           IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER)));
+                           IDS_SEARCH_POLICY_SETTINGS_NO_VALID_PROVIDER)));
 }
 
 TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {

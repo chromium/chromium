@@ -323,7 +323,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   return selection_rects;
 }
 
-const DOMRectReadOnly* TextMetrics::getActualBoundingBox(
+DOMRectReadOnly* TextMetrics::getActualBoundingBox(
     uint32_t start,
     uint32_t end,
     ExceptionState& exception_state) {

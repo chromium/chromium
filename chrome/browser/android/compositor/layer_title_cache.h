@@ -78,10 +78,6 @@ class LayerTitleCache {
                   jint tab_id,
                   jint icon_resource_id);
 
-  void ClearExcept(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
-                   jint except_id);
-
   // Returns the layer that represents the title of tab of tab_id.
   // Returns NULL if no layer can be found.
   DecorationTabTitle* GetTitleLayer(int tab_id);

@@ -7,7 +7,6 @@ import 'chrome://print/print_preview.js';
 import type {PrintPreviewPagesPerSheetSettingsElement} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
@@ -28,12 +27,11 @@ suite('PagesPerSheetSettingsTest', function() {
   });
 
   // Tests that setting the setting updates the UI.
-  test('set setting', async () => {
+  test('set setting', () => {
     const select = pagesPerSheetSection.shadowRoot!.querySelector('select')!;
     assertEquals('1', select.value);
 
     pagesPerSheetSection.setSetting('pagesPerSheet', 4);
-    await eventToPromise('process-select-change', pagesPerSheetSection);
     assertEquals('4', select.value);
   });
 

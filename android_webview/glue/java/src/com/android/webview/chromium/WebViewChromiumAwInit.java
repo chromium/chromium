@@ -184,8 +184,15 @@ public class WebViewChromiumAwInit {
     private static final int INIT_NOT_STARTED = 0;
     private static final int INIT_STARTED = 1;
     private static final int INIT_FINISHED = 2;
-    // Read/write protected by mLock
-    private int mInitState;
+    // We do not need to hold `mLock` to read it but we need to hold `mLock` to write into it.
+    // For example, we should write `INIT_FINISHED` into it only when Chromium startup has fully
+    // completed with `mLock` held.
+    // We are not guarding the read by `mLock` to prevent the need for us to hold the lock when the
+    // state is accessed, i.e. if we wanted to read the init state when `startChromiumLocked` is
+    // running, we will have had to wait till the function completes, which is not performant.
+    // A value of `INIT_FINISHED` means that all the fields that are updated in
+    // `startChromiumLocked` are written into.
+    private volatile int mInitState;
 
     private final WebViewChromiumFactoryProvider mFactory;
     private final WebViewStartUpDiagnostics mWebViewStartUpDiagnostics =
@@ -361,8 +368,6 @@ public class WebViewChromiumAwInit {
                 mSharedStatics.setWebContentsDebuggingEnabledUnconditionally(true);
             }
 
-            mInitState = INIT_FINISHED;
-
             RecordHistogram.recordSparseHistogram(
                     "Android.WebView.TargetSdkVersion",
                     context.getApplicationInfo().targetSdkVersion);
@@ -371,16 +376,16 @@ public class WebViewChromiumAwInit {
                     ScopedSysTraceEvent.scoped(
                             "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
                 // Initialize thread-unsafe singletons.
-                AwBrowserContext defaultBrowserContext = getDefaultBrowserContextOnUiThread();
+                mDefaultBrowserContext = AwBrowserContext.getDefault();
                 mDefaultGeolocationPermissions =
                         new GeolocationPermissionsAdapter(
-                                mFactory, defaultBrowserContext.getGeolocationPermissions());
+                                mFactory, mDefaultBrowserContext.getGeolocationPermissions());
                 mDefaultWebStorage =
                         new WebStorageAdapter(
-                                mFactory, defaultBrowserContext.getQuotaManagerBridge());
+                                mFactory, mDefaultBrowserContext.getQuotaManagerBridge());
                 mAwTracingController = new AwTracingController();
                 mDefaultServiceWorkerController =
-                        defaultBrowserContext.getServiceWorkerController();
+                        mDefaultBrowserContext.getServiceWorkerController();
                 mAwProxyController = new AwProxyController();
             }
 
@@ -422,6 +427,8 @@ public class WebViewChromiumAwInit {
                 totalTimeTaken,
                 /* callSite= */ callSite,
                 /* fromUIThread= */ triggeredFromUIThread);
+        // Must happen right after Chromium initialization is complete.
+        mInitState = INIT_FINISHED;
     }
 
     /**
@@ -468,7 +475,7 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    boolean hasStarted() {
+    boolean isChromiumInitialized() {
         return mInitState == INIT_FINISHED;
     }
 
@@ -600,15 +607,10 @@ public class WebViewChromiumAwInit {
 
     // Only on UI thread.
     AwBrowserContext getDefaultBrowserContextOnUiThread() {
-        assert mInitState == INIT_FINISHED;
-
+        assert (mDefaultBrowserContext != null);
         if (BuildConfig.ENABLE_ASSERTS && !ThreadUtils.runningOnUiThread()) {
             throw new RuntimeException(
                     "getBrowserContextOnUiThread called on " + Thread.currentThread());
-        }
-
-        if (mDefaultBrowserContext == null) {
-            mDefaultBrowserContext = AwBrowserContext.getDefault();
         }
         return mDefaultBrowserContext;
     }
@@ -751,17 +753,13 @@ public class WebViewChromiumAwInit {
             throw new IllegalStateException(
                     "startUpWebView should not be called on the Android main looper");
         }
-        if (!shouldRunUiThreadStartUpTasks) {
+        if (!shouldRunUiThreadStartUpTasks || isChromiumInitialized()) {
             callback.onSuccess(mWebViewStartUpDiagnostics);
             return;
         }
+        mWebViewStartUpCallbackRunQueue.addTask(
+                () -> callback.onSuccess(mWebViewStartUpDiagnostics));
         synchronized (mLock) {
-            if (mInitState == INIT_FINISHED) {
-                callback.onSuccess(mWebViewStartUpDiagnostics);
-                return;
-            }
-            mWebViewStartUpCallbackRunQueue.addTask(
-                    () -> callback.onSuccess(mWebViewStartUpDiagnostics));
             ensureChromiumStartupHappensSoon(true, CallSite.ASYNC_WEBVIEW_STARTUP);
         }
     }

@@ -821,7 +821,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
     auto* sbi = static_cast<StaticBitmapImage*>(image.get());
     gpu::MailboxHolder mailbox_holder = sbi->GetMailboxHolder();
-    const bool is_origin_top_left = sbi->IsOriginTopLeft();
 
     // The sync token needs to be updated when |frame| is released, but
     // AcceleratedStaticBitmapImage::UpdateSyncToken() is not thread-safe.
@@ -839,9 +838,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         format, std::move(client_shared_image), mailbox_holder.sync_token,
         std::move(release_cb), coded_size, parsed_init.visible_rect,
         parsed_init.display_size, timestamp);
-
-    if (frame)
-      frame->metadata().texture_origin_is_top_left = is_origin_top_left;
 
     // Note: We could add the StaticBitmapImage to the VideoFrameHandle so we
     // can round trip through VideoFrame back to canvas w/o any copies, but

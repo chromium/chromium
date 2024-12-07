@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_STORAGE_DEVICE_STORAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_STORAGE_DEVICE_STORAGE_HANDLER_H_
 
+#include <array>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -121,8 +122,8 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   std::bitset<SizeCalculator::kCalculationTypeCount> calculation_state_;
 
   // Keeps track of the size of each storage item.
-  int64_t storage_items_total_bytes_[SizeCalculator::kCalculationTypeCount] = {
-      0};
+  std::array<int64_t, SizeCalculator::kCalculationTypeCount>
+      storage_items_total_bytes_{0};
 
   const raw_ptr<Profile> profile_;
   const std::string source_name_;

@@ -18,22 +18,13 @@ class CORE_EXPORT PerformancePaintTiming final : public PerformanceEntry {
   enum class PaintType { kFirstPaint, kFirstContentfulPaint };
 
   PerformancePaintTiming(PaintType,
-                         DOMHighResTimeStamp start_time,
-                         DOMHighResTimeStamp rendering_update_end_time,
+                         const DOMPaintTimingInfo& paint_timing_info,
                          DOMWindow* source,
                          bool is_triggered_by_soft_navigation);
   ~PerformancePaintTiming() override;
 
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
-  DOMHighResTimeStamp paintTime() const { return rendering_update_end_time_; }
-  DOMHighResTimeStamp presentationTime() const { return startTime(); }
-
- protected:
-  void BuildJSONValue(V8ObjectBuilder&) const override;
-
- private:
-  DOMHighResTimeStamp rendering_update_end_time_;
 };
 
 }  // namespace blink

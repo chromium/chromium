@@ -161,7 +161,7 @@ public class PdfPageUnitTest {
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
         Assert.assertNull(
                 "Assist content cannot be generated when the pdf is not ready to load",
-                pdfPage.requestAssistContent());
+                pdfPage.requestAssistContent(/*isWorkProfile*/ false));
 
         // Simulate download complete
         pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
@@ -180,7 +180,7 @@ public class PdfPageUnitTest {
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
-        String jsonString = pdfPage.requestAssistContent();
+        String jsonString = pdfPage.requestAssistContent(/*isWorkProfile*/ false);
         Assert.assertNotNull(
                 "Assist content should be generated when the pdf is ready to load", jsonString);
         JSONObject jsonObject = new JSONObject(jsonString);

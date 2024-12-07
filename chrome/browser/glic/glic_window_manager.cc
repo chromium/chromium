@@ -5,6 +5,8 @@
 #include "chrome/browser/glic/glic_window_manager.h"
 
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 
 namespace glic {
 GlicWindowManager* GlicWindowManager::GetInstance() {
@@ -24,6 +26,11 @@ void GlicWindowManager::ShowGlicWindowForProfile(Profile* profile) {
 
   service->LaunchUI();
   glic_window_controller_ = service->window_controller()->GetWeakPtr();
+}
+
+void GlicWindowManager::ShowGlicWindowForPinnedProfile() {
+  // TODO(crbug.com/380298150): Use pinned profile instead of last used.
+  ShowGlicWindowForProfile(ProfileManager::GetLastUsedProfileAllowedByPolicy());
 }
 
 void GlicWindowManager::CloseGlicWindow() {

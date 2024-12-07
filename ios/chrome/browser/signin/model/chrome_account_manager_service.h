@@ -42,10 +42,16 @@ class ChromeAccountManagerService : public KeyedService,
     Observer& operator=(const Observer&) = delete;
     ~Observer() override {}
 
-    // Handles identity list changed events.
+    // Handles change events for per-profile identity list.
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
+    // TODO(crbug.com/368409110): Rename to OnIdentitiesPerProfileChanged.
     virtual void OnIdentityListChanged() {}
+
+    // Handles change events for on-device identity list.
+    // Notifications with no account list update are possible, this has to be
+    // handled by the observer.
+    virtual void OnIdentitiesOnDeviceChanged() {}
 
     // Called when the identity is updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
@@ -144,6 +150,7 @@ class ChromeAccountManagerService : public KeyedService,
 
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() override;
+  void OnIdentitiesOnDeviceChanged() override;
   void OnIdentityUpdated(id<SystemIdentity> identity) override;
   void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) override;
   void OnIdentityAccessTokenRefreshFailed(

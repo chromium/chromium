@@ -6,21 +6,14 @@
 
 namespace blink {
 
-constexpr const char ReportType::kCSPViolation[];
-constexpr const char ReportType::kCoopAccessViolation[];
-constexpr const char ReportType::kDeprecation[];
-constexpr const char ReportType::kDocumentPolicyViolation[];
-constexpr const char ReportType::kPermissionsPolicyViolation[];
-constexpr const char ReportType::kIntervention[];
-
-ScriptValue Report::toJSON(ScriptState* script_state) const {
+ScriptObject Report::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.AddString("type", type());
   builder.AddString("url", url());
   V8ObjectBuilder body_builder(script_state);
   body()->BuildJSONValue(body_builder);
   builder.Add("body", body_builder);
-  return builder.GetScriptValue();
+  return builder.ToScriptObject();
 }
 
 unsigned Report::MatchId() const {

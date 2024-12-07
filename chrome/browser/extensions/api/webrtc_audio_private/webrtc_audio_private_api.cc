@@ -105,9 +105,9 @@ void WebrtcAudioPrivateEventService::SignalEvent() {
   }
 }
 
-WebrtcAudioPrivateFunction::WebrtcAudioPrivateFunction() {}
+WebrtcAudioPrivateFunction::WebrtcAudioPrivateFunction() = default;
 
-WebrtcAudioPrivateFunction::~WebrtcAudioPrivateFunction() {}
+WebrtcAudioPrivateFunction::~WebrtcAudioPrivateFunction() = default;
 
 url::Origin WebrtcAudioPrivateFunction::GetExtensionOrigin() const {
   return url::Origin::Create(source_url());

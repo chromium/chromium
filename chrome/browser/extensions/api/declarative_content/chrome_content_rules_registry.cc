@@ -156,7 +156,7 @@ ChromeContentRulesRegistry::ContentRule::ContentRule(
       actions(std::move(actions)),
       priority(priority) {}
 
-ChromeContentRulesRegistry::ContentRule::~ContentRule() {}
+ChromeContentRulesRegistry::ContentRule::~ContentRule() = default;
 
 std::unique_ptr<const ChromeContentRulesRegistry::ContentRule>
 ChromeContentRulesRegistry::CreateRule(

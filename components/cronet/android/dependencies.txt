@@ -62,6 +62,7 @@
 //third_party/modp_b64
 //third_party/protobuf
 //third_party/rust
+//third_party/simdutf
 //third_party/zlib
 //third_party/zstd
 //tools/android/errorprone_plugin

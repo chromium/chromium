@@ -10,15 +10,17 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
 class AccountTrackerService;
-class DeviceAccountsProvider;
 class SigninClient;
 
 class ProfileOAuth2TokenServiceIOSDelegate
-    : public ProfileOAuth2TokenServiceDelegate {
+    : public ProfileOAuth2TokenServiceDelegate,
+      public DeviceAccountsProvider::Observer {
  public:
   ProfileOAuth2TokenServiceIOSDelegate(
       SigninClient* client,
@@ -55,6 +57,9 @@ class ProfileOAuth2TokenServiceIOSDelegate
   // the auth error state of |account_id| if it exists. Fires
   // |OnRefreshTokenAvailable| if the account info is updated.
   virtual void AddOrUpdateAccount(const CoreAccountId& account_id);
+
+  // DeviceAccountsProvider::Observer:
+  void OnAccountsOnDeviceChanged() override;
 
  protected:
   // Removes |account_id| from |accounts_|. Fires |OnRefreshTokenRevoked|
@@ -93,5 +98,8 @@ class ProfileOAuth2TokenServiceIOSDelegate
   SigninClient* client_ = nullptr;
   std::unique_ptr<DeviceAccountsProvider> provider_;
   AccountTrackerService* account_tracker_service_;
+  base::ScopedObservation<DeviceAccountsProvider,
+                          ProfileOAuth2TokenServiceIOSDelegate>
+      device_accounts_provider_observation_{this};
 };
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_IOS_H_

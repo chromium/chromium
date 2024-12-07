@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("passage_embeddings") {
+  sources = [
+    "passage_embeddings_features.cc",
+    "passage_embeddings_features.h",
+    "passage_embeddings_service_controller.cc",
+    "passage_embeddings_service_controller.h",
+    "passage_embeddings_types.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//mojo/public/cpp/bindings",
+    "//services/passage_embeddings/public/mojom",
+  ]
+}

@@ -466,7 +466,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   DCHECK(root_manager) << "Cannot have detached document here, as "
                           "CanFireEvents() must return false in that case.";
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   AXTreeID parent_id = GetParentTreeID();
   bool has_parent_id = parent_id != AXTreeIDUnknown();
   BrowserAccessibilityManager* parent_manager =

@@ -239,7 +239,13 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   blink_observer_list->RemoveObserver(&mock_blink_observer);
 }
 
-TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
+// TODO(crbug.com/382551028): Test is flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SetFromPMSequence DISABLED_SetFromPMSequence
+#else
+#define MAYBE_SetFromPMSequence SetFromPMSequence
+#endif
+TEST_P(PerformanceScenariosTest, MAYBE_SetFromPMSequence) {
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
   RunInGraph([&] {

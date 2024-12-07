@@ -323,10 +323,10 @@ int64_t File::lastModified() const {
   return (LastModifiedTime() - base::Time::UnixEpoch()).InMilliseconds();
 }
 
-ScriptValue File::lastModifiedDate(ScriptState* script_state) const {
+ScriptObject File::lastModifiedDate(ScriptState* script_state) const {
   // lastModifiedDate returns a Date instance,
   // http://www.w3.org/TR/FileAPI/#dfn-lastModifiedDate
-  return ScriptValue(
+  return ScriptObject(
       script_state->GetIsolate(),
       ToV8Traits<IDLNullable<IDLDate>>::ToV8(
           script_state, std::optional<base::Time>(LastModifiedTime())));

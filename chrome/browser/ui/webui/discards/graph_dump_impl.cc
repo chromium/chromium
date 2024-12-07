@@ -104,7 +104,7 @@ void DiscardsGraphDumpImpl::FaviconRequestHelper::FaviconDataAvailable(
   std::move(on_favicon_available).Run(result.bitmap_data);
 }
 
-DiscardsGraphDumpImpl::DiscardsGraphDumpImpl() {}
+DiscardsGraphDumpImpl::DiscardsGraphDumpImpl() = default;
 
 DiscardsGraphDumpImpl::~DiscardsGraphDumpImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

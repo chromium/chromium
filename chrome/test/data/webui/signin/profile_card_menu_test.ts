@@ -38,6 +38,7 @@ suite('ProfileCardMenuTest', function() {
       userName: `User@gmail.com`,
       avatarIcon: `AvatarUrl`,
       avatarBadge: ``,
+      profileCardButtonLabel: ``,
     };
     profileCardMenuElement.profileState = testProfileState;
     document.body.appendChild(profileCardMenuElement);

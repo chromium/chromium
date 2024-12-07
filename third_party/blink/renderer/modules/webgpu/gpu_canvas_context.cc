@@ -246,7 +246,8 @@ bool GPUCanvasContext::PushFrame() {
   transferable_resource.origin = client_si->surface_origin();
 
   auto canvas_resource = ExternalCanvasResource::Create(
-      std::move(client_si), transferable_resource, std::move(release_callback),
+      std::move(client_si), transferable_resource,
+      transferable_resource.resource_source, std::move(release_callback),
       GetContextProviderWeakPtr(), /*resource_provider=*/nullptr);
   if (!canvas_resource)
     return false;
@@ -327,13 +328,11 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
       texture_descriptor_.size.width, texture_descriptor_.size.height,
       sk_color_type, kPremul_SkAlphaType);
 
-  CHECK_EQ(client_si->surface_origin(), kTopLeft_GrSurfaceOrigin);
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
           std::move(client_si), sk_image_sync_token,
           /* shared_image_texture_id = */ 0, sk_image_info,
-          transferable_resource.texture_target(),
-          /* is_origin_top_left = */ true, GetContextProviderWeakPtr(),
+          transferable_resource.texture_target(), GetContextProviderWeakPtr(),
           base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback),

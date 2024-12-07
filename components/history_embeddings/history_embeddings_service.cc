@@ -106,7 +106,8 @@ void FinishSearchResultWithHistory(
 // don't), then 0.9 will be used. This allows finch and command line to override
 // the threshold if necessary while ensuring different users with different
 // models are all using the correct threshold for their model.
-float GetScoreThreshold(const EmbedderMetadata& embedder_metadata) {
+float GetScoreThreshold(
+    const passage_embeddings::EmbedderMetadata& embedder_metadata) {
   if (GetFeatureParameters().search_score_threshold >= 0) {
     return GetFeatureParameters().search_score_threshold;
   }
@@ -369,14 +370,14 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(
 }
 
 void HistoryEmbeddingsService::OnEmbedderMetadataReady(
-    EmbedderMetadata metadata) {
+    passage_embeddings::EmbedderMetadata metadata) {
   subscription_ = os_crypt_async_->GetInstance(
       base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
                      weak_ptr_factory_.GetWeakPtr(), metadata));
 }
 
 void HistoryEmbeddingsService::OnOsCryptAsyncReady(
-    EmbedderMetadata metadata,
+    passage_embeddings::EmbedderMetadata metadata,
     os_crypt_async::Encryptor encryptor,
     bool success) {
   embedder_metadata_ = metadata;
@@ -461,8 +462,9 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResult result,
     std::vector<std::string> query_passages,
     std::vector<Embedding> query_embeddings,
-    ComputeEmbeddingsStatus status) {
-  bool succeeded = status == ComputeEmbeddingsStatus::SUCCESS;
+    passage_embeddings::ComputeEmbeddingsStatus status) {
+  bool succeeded =
+      status == passage_embeddings::ComputeEmbeddingsStatus::KSuccess;
   base::UmaHistogramBoolean("History.Embeddings.QueryEmbeddingSucceeded",
                             succeeded);
 
@@ -667,25 +669,19 @@ HistoryEmbeddingsService::Storage::Storage(const base::FilePath& storage_dir)
     : sql_database(storage_dir) {}
 
 void HistoryEmbeddingsService::Storage::SetEmbedderMetadata(
-    EmbedderMetadata metadata,
+    passage_embeddings::EmbedderMetadata metadata,
     os_crypt_async::Encryptor encryptor) {
   sql_database.SetEmbedderMetadata(metadata, std::move(encryptor));
 }
 
 void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
-    UrlData url_passages,
-    std::vector<Embedding> embeddings) {
-  UrlData url_data(url_passages.url_id, url_passages.visit_id,
-                   url_passages.visit_time);
-  // Construct embeddings, including some information from passages.
-  url_data.embeddings = std::move(embeddings);
-  CHECK_EQ(url_passages.passages.passages_size(),
+    UrlData url_data) {
+  CHECK_EQ(url_data.passages.passages_size(),
            static_cast<int>(url_data.embeddings.size()));
-  for (int i = 0; i < url_passages.passages.passages_size(); i++) {
+  for (int i = 0; i < url_data.passages.passages_size(); i++) {
     url_data.embeddings[i].SetPassageWordCount(
-        CountWords(url_passages.passages.passages(i)));
+        CountWords(url_data.passages.passages(i)));
   }
-  url_data.passages = std::move(url_passages.passages);
 
   // Store all embeddings and passages.
   vector_database.AddUrlData(std::move(url_data));
@@ -830,7 +826,7 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
     UrlData url_passages,
     std::vector<std::string> passages,
     std::vector<Embedding> embeddings,
-    ComputeEmbeddingsStatus status) {
+    passage_embeddings::ComputeEmbeddingsStatus status) {
   // Merge new and cached embeddings, expanding the `embeddings`
   // vector to fit the passages structure of `url_passages.passages`.
   size_t passages_index = 0;
@@ -860,8 +856,9 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
   CHECK_EQ(embeddings_index,
            static_cast<size_t>(url_passages.passages.passages_size()));
 
+  url_passages.embeddings = std::move(embeddings);
   storage_.AsyncCall(&Storage::ProcessAndStorePassages)
-      .WithArgs(url_passages, std::move(embeddings))
+      .WithArgs(url_passages)
       .Then(base::BindOnce(passages_stored_callback_for_tests_, url_passages));
 }
 

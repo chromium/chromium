@@ -91,12 +91,15 @@ namespace {
 }  // namespace
 
 SqlDatabase::SqlDatabase(const base::FilePath& storage_dir)
-    : storage_dir_(storage_dir), weak_ptr_factory_(this) {}
+    : storage_dir_(storage_dir),
+      db_(/*tag=*/"HistoryEmbeddings"),
+      weak_ptr_factory_(this) {}
 
 SqlDatabase::~SqlDatabase() = default;
 
-void SqlDatabase::SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
-                                      os_crypt_async::Encryptor encryptor) {
+void SqlDatabase::SetEmbedderMetadata(
+    passage_embeddings::EmbedderMetadata embedder_metadata,
+    os_crypt_async::Encryptor encryptor) {
   embedder_metadata_ = embedder_metadata;
   CHECK(!encryptor_.has_value()) << "Cannot call SetEmbedderMetadata twice.";
   encryptor_.emplace(std::move(encryptor));
@@ -126,7 +129,6 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir,
                                           bool force_init_for_deletion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  db_.set_histogram_tag("HistoryEmbeddings");
   // base::Unretained is okay because `this` owns and outlives `db_`.
   db_.set_error_callback(base::BindRepeating(
       &SqlDatabase::DatabaseErrorCallback, base::Unretained(this)));

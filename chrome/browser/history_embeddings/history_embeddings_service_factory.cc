@@ -8,10 +8,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/chrome_history_embeddings_service.h"
-#include "chrome/browser/history_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -155,6 +155,6 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
       optimization_guide_keyed_service,
       std::make_unique<history_embeddings::MlEmbedder>(
           optimization_guide_keyed_service,
-          history_embeddings::ChromePassageEmbeddingsServiceController::Get()),
+          passage_embeddings::ChromePassageEmbeddingsServiceController::Get()),
       std::move(answerer), std::move(intent_classifier));
 }

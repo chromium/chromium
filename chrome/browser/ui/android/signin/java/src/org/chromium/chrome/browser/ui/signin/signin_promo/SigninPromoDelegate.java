@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 /** A delegate object that provides necessary information to customize sign-in promo. */
 public abstract class SigninPromoDelegate {
@@ -62,7 +63,7 @@ public abstract class SigninPromoDelegate {
     /**
      * Whether the promo can be shown. Subclasses should implement their particular show logic here.
      */
-    abstract boolean canShowPromo();
+    abstract boolean canShowPromo(@Nullable CoreAccountInfo visibleAccount);
 
     boolean shouldHideSecondaryButton() {
         return false;

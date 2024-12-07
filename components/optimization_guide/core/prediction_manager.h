@@ -135,6 +135,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
   std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>
   GetDownloadedModelsInfoForWebUI() const;
 
+  base::flat_map<std::string, bool> GetOnDeviceSupplementaryModelsInfoForWebUI()
+      const;
+
   // Initialize the model metadata fetching and downloads.
   void MaybeInitializeModelDownloads(
       download::BackgroundDownloadService* background_download_service);

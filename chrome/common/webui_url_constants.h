@@ -17,7 +17,6 @@
 #include "base/strings/cstring_view.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/url_constants.h"
@@ -54,8 +53,6 @@ inline constexpr char kChromeUIBatchUploadHost[] = "batch-upload";
 inline constexpr char kChromeUIBatchUploadURL[] = "chrome://batch-upload/";
 #endif
 inline constexpr char kChromeUIBluetoothInternalsHost[] = "bluetooth-internals";
-inline constexpr char kChromeUIBluetoothInternalsURL[] =
-    "chrome://bluetooth-internals";
 inline constexpr char kChromeUIBookmarksHost[] = "bookmarks";
 inline constexpr char kChromeUIBookmarksURL[] = "chrome://bookmarks/";
 inline constexpr char kChromeUIBrowsingTopicsInternalsHost[] =
@@ -89,7 +86,6 @@ inline constexpr char kChromeUIDataSharingInternalsHost[] =
 inline constexpr char kChromeUIDefaultHost[] = "version";
 inline constexpr char kChromeUIDelayedHangUIHost[] = "delayeduithreadhang";
 inline constexpr char kChromeUIDeviceLogHost[] = "device-log";
-inline constexpr char kChromeUIDeviceLogUrl[] = "chrome://device-log";
 inline constexpr char kChromeUIDevToolsBlankPath[] = "blank";
 inline constexpr char kChromeUIDevToolsBundledPath[] = "bundled";
 inline constexpr char kChromeUIDevToolsCustomPath[] = "custom";
@@ -110,7 +106,6 @@ inline constexpr char kChromeUIDownloadInternalsHost[] = "download-internals";
 inline constexpr char kChromeUIDownloadsHost[] = "downloads";
 inline constexpr char kChromeUIDownloadsURL[] = "chrome://downloads/";
 inline constexpr char kChromeUIDriveInternalsHost[] = "drive-internals";
-inline constexpr char kChromeUIDriveInternalsUrl[] = "chrome://drive-internals";
 inline constexpr char kChromeUIEDUCoexistenceLoginURLV2[] =
     "chrome://chrome-signin/edu-coexistence";
 inline constexpr char kChromeUIExtensionIconHost[] = "extension-icon";
@@ -118,8 +113,6 @@ inline constexpr char kChromeUIExtensionIconURL[] = "chrome://extension-icon/";
 inline constexpr char kChromeUIExtensionsHost[] = "extensions";
 inline constexpr char kChromeUIExtensionsInternalsHost[] =
     "extensions-internals";
-inline constexpr char kChromeUIExtensionsInternalsURL[] =
-    "chrome://extensions-internals";
 inline constexpr char kChromeUIExtensionsURL[] = "chrome://extensions/";
 inline constexpr char kChromeUIFamilyLinkUserInternalsHost[] =
     "family-link-user-internals";
@@ -152,8 +145,6 @@ inline constexpr char kChromeUIInterstitialHost[] = "interstitials";
 inline constexpr char kChromeUIInterstitialURL[] = "chrome://interstitials/";
 inline constexpr char kChromeUIKillHost[] = "kill";
 inline constexpr char kChromeUILauncherInternalsHost[] = "launcher-internals";
-inline constexpr char kChromeUILauncherInternalsURL[] =
-    "chrome://launcher-internals";
 inline constexpr char kChromeUILocalStateHost[] = "local-state";
 inline constexpr char kChromeUILocationInternalsHost[] = "location-internals";
 inline constexpr char kChromeUIManagementHost[] = "management";
@@ -166,7 +157,6 @@ inline constexpr char kChromeUIMemoryInternalsHost[] = "memory-internals";
 inline constexpr char kChromeUIMetricsInternalsHost[] = "metrics-internals";
 inline constexpr char kChromeUINaClHost[] = "nacl";
 inline constexpr char kChromeUINetExportHost[] = "net-export";
-inline constexpr char kChromeUINetExportURL[] = "chrome://net-export";
 inline constexpr char kChromeUINetInternalsHost[] = "net-internals";
 inline constexpr char kChromeUINetInternalsURL[] = "chrome://net-internals/";
 inline constexpr char kChromeUINewTabHost[] = "newtab";
@@ -202,7 +192,6 @@ inline constexpr char kChromeUIPolicyTestURL[] = "chrome://policy/test";
 inline constexpr char kChromeUIPolicyURL[] = "chrome://policy/";
 inline constexpr char kChromeUIPredictorsHost[] = "predictors";
 inline constexpr char kChromeUIPrefsInternalsHost[] = "prefs-internals";
-inline constexpr char kChromeUIPrefsInternalsURL[] = "chrome://prefs-internals";
 inline constexpr char kChromeUIPrintURL[] = "chrome://print/";
 inline constexpr char kChromeUIPrivacySandboxDialogCombinedPath[] = "combined";
 inline constexpr char kChromeUIPrivacySandboxDialogHost[] =
@@ -236,7 +225,6 @@ inline constexpr char kChromeUISafetyPixelSlateURL[] =
 inline constexpr char kChromeUISegmentationInternalsHost[] =
     "segmentation-internals";
 inline constexpr char kChromeUISensorInfoHost[] = "sensor-info";
-inline constexpr char kChromeUISensorInfoURL[] = "chrome://sensor-info/";
 inline constexpr char kChromeUISettingsHost[] = "settings";
 inline constexpr char16_t kChromeUISettingsHost16[] = u"settings";
 inline constexpr char kChromeUISettingsURL[] = "chrome://settings/";
@@ -248,8 +236,6 @@ inline constexpr char kChromeUISigninEmailConfirmationURL[] =
 inline constexpr char kChromeUISigninErrorHost[] = "signin-error";
 inline constexpr char kChromeUISigninErrorURL[] = "chrome://signin-error/";
 inline constexpr char kChromeUISignInInternalsHost[] = "signin-internals";
-inline constexpr char kChromeUISignInInternalsUrl[] =
-    "chrome://signin-internals";
 inline constexpr char kChromeUISigninReauthHost[] = "signin-reauth";
 inline constexpr char kChromeUISigninReauthURL[] = "chrome://signin-reauth/";
 inline constexpr char kChromeUISiteDataDeprecatedPath[] = "/siteData";
@@ -260,14 +246,12 @@ inline constexpr char kChromeUISuggestInternalsURL[] =
 inline constexpr char kChromeUISupervisedUserPassphrasePageHost[] =
     "managed-user-passphrase";
 inline constexpr char kChromeUISupportToolHost[] = "support-tool";
-inline constexpr char kChromeUISupportToolURL[] = "chrome://support-tool";
 inline constexpr char kChromeUISyncConfirmationHost[] = "sync-confirmation";
 inline constexpr char kChromeUISyncConfirmationLoadingPath[] = "loading";
 inline constexpr char kChromeUISyncConfirmationURL[] =
     "chrome://sync-confirmation/";
 inline constexpr char kChromeUISyncHost[] = "sync";
 inline constexpr char kChromeUISyncInternalsHost[] = "sync-internals";
-inline constexpr char kChromeUISyncInternalsUrl[] = "chrome://sync-internals";
 inline constexpr char kChromeUISystemInfoHost[] = "system";
 inline constexpr char kChromeUITermsHost[] = "terms";
 inline constexpr char kChromeUITermsURL[] = "chrome://terms/";
@@ -316,8 +300,6 @@ inline constexpr char kChromeUIWebApksHost[] = "webapks";
 inline constexpr char kAdPrivacySubPagePath[] = "/adPrivacy";
 inline constexpr char kChromeUIAppServiceInternalsHost[] =
     "app-service-internals";
-inline constexpr char kChromeUIAppServiceInternalsURL[] =
-    "chrome://app-service-internals";
 inline constexpr char kChromeUIBookmarksSidePanelHost[] =
     "bookmarks-side-panel.top-chrome";
 inline constexpr char kChromeUIBookmarksSidePanelURL[] =
@@ -340,8 +322,6 @@ inline constexpr char kChromeUILensOverlayHost[] = "lens-overlay";
 inline constexpr char kChromeUILensOverlayUntrustedURL[] =
     "chrome-untrusted://lens-overlay/";
 inline constexpr char kChromeUINearbyInternalsHost[] = "nearby-internals";
-inline constexpr char kChromeUINearbyInternalsURL[] =
-    "chrome://nearby-internals";
 inline constexpr char kChromeUINearbyShareHost[] = "nearby";
 inline constexpr char kChromeUINearbyShareURL[] = "chrome://nearby/";
 inline constexpr char kChromeUIOnDeviceInternalsHost[] = "on-device-internals";
@@ -367,8 +347,6 @@ inline constexpr char kChromeUIUntrustedReadAnythingSidePanelURL[] =
 inline constexpr char kChromeUIUntrustedWebUITestURL[] =
     "chrome-untrusted://webui-test/";
 inline constexpr char kChromeUIWebAppInternalsHost[] = "web-app-internals";
-inline constexpr char kChromeUIWebAppInternalsURL[] =
-    "chrome://web-app-internals";
 inline constexpr char kChromeUIWebUIJsErrorHost[] = "webuijserror";
 inline constexpr char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
 inline constexpr char kChromeUIWebUITestHost[] = "webui-test";
@@ -376,7 +354,7 @@ inline constexpr char kCookiesSubPagePath[] = "/cookies";
 inline constexpr char kTrackingProtectionSubPagePath[] = "/trackingProtection";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // NOTE: If you add a URL/host please check if it should be added to
 // IsSystemWebUIHost().
 inline constexpr char kChromeUIAccountManagerErrorHost[] =
@@ -396,11 +374,7 @@ inline constexpr char kChromeUIAppInstallDialogURL[] =
     "chrome://app-install-dialog/";
 inline constexpr char kChromeUIArcOverviewTracingHost[] =
     "arc-overview-tracing";
-inline constexpr char kChromeUIArcOverviewTracingURL[] =
-    "chrome://arc-overview-tracing/";
 inline constexpr char kChromeUIArcPowerControlHost[] = "arc-power-control";
-inline constexpr char kChromeUIArcPowerControlURL[] =
-    "chrome://arc-power-control/";
 inline constexpr char kChromeUIAssistantOptInHost[] = "assistant-optin";
 inline constexpr char kChromeUIAssistantOptInURL[] =
     "chrome://assistant-optin/";
@@ -410,8 +384,6 @@ inline constexpr char kChromeUIBluetoothPairingHost[] = "bluetooth-pairing";
 inline constexpr char kChromeUIBluetoothPairingURL[] =
     "chrome://bluetooth-pairing/";
 inline constexpr char kChromeUIBorealisCreditsHost[] = "borealis-credits";
-inline constexpr char kChromeUIBorealisCreditsURL[] =
-    "chrome://borealis-credits/";
 inline constexpr char kChromeUIBorealisInstallerHost[] = "borealis-installer";
 inline constexpr char kChromeUIBorealisInstallerUrl[] =
     "chrome://borealis-installer";
@@ -421,11 +393,7 @@ inline constexpr char kChromeUIConfirmPasswordChangeHost[] =
     "confirm-password-change";
 inline constexpr char kChromeUIConfirmPasswordChangeUrl[] =
     "chrome://confirm-password-change";
-inline constexpr char kChromeUIConnectivityDiagnosticsAppURL[] =
-    "chrome://connectivity-diagnostics";
 inline constexpr char kChromeUICrostiniCreditsHost[] = "crostini-credits";
-inline constexpr char kChromeUICrostiniCreditsURL[] =
-    "chrome://crostini-credits/";
 inline constexpr char16_t kChromeUICrostiniCreditsURL16[] =
     u"chrome://crostini-credits/";
 inline constexpr char kChromeUICrostiniInstallerHost[] = "crostini-installer";
@@ -435,25 +403,16 @@ inline constexpr char kChromeUICrostiniUpgraderHost[] = "crostini-upgrader";
 inline constexpr char kChromeUICrostiniUpgraderUrl[] =
     "chrome://crostini-upgrader";
 inline constexpr char kChromeUICryptohomeHost[] = "cryptohome";
-inline constexpr char kChromeUICryptohomeURL[] = "chrome://cryptohome";
 inline constexpr char kChromeUIDeviceEmulatorHost[] = "device-emulator";
-inline constexpr char kChromeUIDeviceEmulatorURL[] = "chrome://device-emulator";
-inline constexpr char kChromeUIDiagnosticsAppURL[] = "chrome://diagnostics";
 inline constexpr char kChromeUIEmojiPickerHost[] = "emoji-picker";
 inline constexpr char kChromeUIEmojiPickerURL[] = "chrome://emoji-picker/";
 inline constexpr char kChromeUIEnterpriseReportingHost[] =
     "enterprise-reporting";
-inline constexpr char kChromeUIEnterpriseReportingURL[] =
-    "chrome://enterprise-reporting";
 inline constexpr char kChromeUIExtendedUpdatesDialogHost[] =
     "extended-updates-dialog";
 inline constexpr char kChromeUIExtendedUpdatesDialogURL[] =
     "chrome://extended-updates-dialog";
-inline constexpr char kChromeUIFirmwareUpdaterAppURL[] =
-    "chrome://accessory-update";
 inline constexpr char kChromeUIHealthdInternalsHost[] = "healthd-internals";
-inline constexpr char kChromeUIHealthdInternalsURL[] =
-    "chrome://healthd-internals";
 inline constexpr char kChromeUIInternetConfigDialogHost[] =
     "internet-config-dialog";
 inline constexpr char kChromeUIInternetConfigDialogURL[] =
@@ -478,16 +437,11 @@ inline constexpr char kChromeUIMobileSetupHost[] = "mobilesetup";
 inline constexpr char kChromeUIMobileSetupURL[] = "chrome://mobilesetup/";
 inline constexpr char kChromeUIMultiDeviceInternalsHost[] =
     "multidevice-internals";
-inline constexpr char kChromeUIMultiDeviceInternalsURL[] =
-    "chrome://multidevice-internals";
 inline constexpr char kChromeUIMultiDeviceSetupHost[] = "multidevice-setup";
 inline constexpr char kChromeUIMultiDeviceSetupUrl[] =
     "chrome://multidevice-setup";
 inline constexpr char kChromeUINetworkHost[] = "network";
-inline constexpr char kChromeUINetworkUrl[] = "chrome://network";
 inline constexpr char kChromeUINotificationTesterHost[] = "notification-tester";
-inline constexpr char kChromeUINotificationTesterURL[] =
-    "chrome://notification-tester";
 inline constexpr char kChromeUIOfficeFallbackHost[] = "office-fallback";
 inline constexpr char kChromeUIOfficeFallbackURL[] =
     "chrome://office-fallback/";
@@ -501,13 +455,9 @@ inline constexpr char kChromeUIParentAccessURL[] = "chrome://parent-access/";
 inline constexpr char kChromeUIPasswordChangeHost[] = "password-change";
 inline constexpr char kChromeUIPasswordChangeUrl[] = "chrome://password-change";
 inline constexpr char kChromeUIPowerHost[] = "power";
-inline constexpr char kChromeUIPowerUrl[] = "chrome://power";
-inline constexpr char kChromeUIPrintManagementUrl[] =
-    "chrome://print-management";
 inline constexpr char kChromeUIRemoteManagementCurtainHost[] =
     "security-curtain";
 inline constexpr char kChromeUISanitizeAppURL[] = "chrome://sanitize";
-inline constexpr char kChromeUIScanningAppURL[] = "chrome://scanning";
 inline constexpr char kChromeUISetTimeHost[] = "set-time";
 inline constexpr char kChromeUISetTimeURL[] = "chrome://set-time/";
 inline constexpr char kChromeUISlowHost[] = "slow";
@@ -519,7 +469,6 @@ inline constexpr char kChromeUISmbCredentialsURL[] =
 inline constexpr char kChromeUISmbShareHost[] = "smb-share-dialog";
 inline constexpr char kChromeUISmbShareURL[] = "chrome://smb-share-dialog/";
 inline constexpr char kChromeUISysInternalsHost[] = "sys-internals";
-inline constexpr char kChromeUISysInternalsUrl[] = "chrome://sys-internals";
 inline constexpr char kChromeUIUntrustedCroshHost[] = "crosh";
 inline constexpr char kChromeUIUntrustedCroshURL[] =
     "chrome-untrusted://crosh/";
@@ -531,24 +480,17 @@ inline constexpr char kChromeUIUrgentPasswordExpiryNotificationHost[] =
 inline constexpr char kChromeUIUrgentPasswordExpiryNotificationUrl[] =
     "chrome://urgent-password-expiry-notification/";
 inline constexpr char kChromeUIUserImageHost[] = "userimage";
-inline constexpr char kChromeUIUserImageURL[] = "chrome://userimage/";
 inline constexpr char kChromeUIVcTrayTesterHost[] = "vc-tray-tester";
 inline constexpr char kChromeUIVcTrayTesterURL[] = "chrome://vc-tray-tester";
 inline constexpr char kChromeUIVmHost[] = "vm";
-inline constexpr char kChromeUIVmUrl[] = "chrome://vm";
 
 // Returns true if this web UI is part of the "system UI". Generally this is
 // UI that opens in a window (not a browser tab) and that on other operating
 // systems would be considered part of the OS or window manager.
 bool IsSystemWebUIHost(std::string_view host);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kChromeUIAppDisabledURL[] = "chrome://app-disabled";
 inline constexpr char kChromeUIDlpInternalsHost[] = "dlp-internals";
-inline constexpr char kChromeUIDlpInternalsURL[] = "chrome://dlp-internals";
-inline constexpr char kChromeUIGpuURL[] = "chrome://gpu";
 inline constexpr char kChromeUIHistogramsURL[] = "chrome://histograms";
 inline constexpr char kChromeUIKerberosInBrowserHost[] = "kerberos-in-browser";
 inline constexpr char kChromeUIKerberosInBrowserURL[] =
@@ -559,26 +501,10 @@ inline constexpr char kChromeUIOsFlagsAppURL[] = "chrome://flags/";
 inline constexpr char kChromeUIOSSettingsHost[] = "os-settings";
 inline constexpr char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
 inline constexpr char kChromeUIOsUrlAppURL[] = "chrome://internal/";
-inline constexpr char kChromeUISystemURL[] = "chrome://system";
-inline constexpr char16_t kChromeUISystemURL16[] = u"chrome://system";
-inline constexpr char kOsUIComponentsURL[] = "os://components";
-inline constexpr char kOsUIConnectivityDiagnosticsAppURL[] =
-    "os://connectivity-diagnostics";
-inline constexpr char16_t kOsUIDeviceLogURL[] = u"os://device-log";
-inline constexpr char kOsUIDiagnosticsAppURL[] = "os://diagnostics";
-inline constexpr char kOsUIFirmwareUpdaterAppURL[] = "os://accessory-update";
-inline constexpr char kOsUIFlagsURL[] = "os://flags";
-inline constexpr char kOsUIHelpAppURL[] = "os://help-app";
-inline constexpr char kOsUIPrintManagementAppURL[] = "os://print-management";
-inline constexpr char kOsUIScanningAppURL[] = "os://scanning";
-inline constexpr char kOsUIShortcutCustomizationAppURL[] =
-    "os://shortcut-customization";
-inline constexpr char16_t kOsUISystemURL[] = u"os://system";
-inline constexpr char kOsUIVersionURL[] = "os://version";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kChromeUIConnectorsInternalsHost[] =
     "connectors-internals";
 #endif
@@ -605,10 +531,7 @@ inline constexpr char kChromeUILinuxProxyConfigHost[] = "linux-proxy-config";
 inline constexpr char kChromeUISandboxHost[] = "sandbox";
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 inline constexpr char kChromeUIBrowserSwitchHost[] = "browser-switch";
 inline constexpr char kChromeUIBrowserSwitchURL[] = "chrome://browser-switch/";
 inline constexpr char kChromeUIIntroDefaultBrowserSubPage[] = "default-browser";

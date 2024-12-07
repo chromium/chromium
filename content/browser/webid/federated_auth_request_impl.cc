@@ -732,7 +732,8 @@ void FederatedAuthRequestImpl::RequestToken(
            idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive)
               ? RpMode::kActive
               : RpMode::kPassive,
-          /*use_other_account_result=*/std::nullopt);
+          /*use_other_account_result=*/std::nullopt,
+          /*verifying_dialog_result=*/std::nullopt);
 
       AddDevToolsIssue(
           blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
@@ -2253,6 +2254,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   }
 
   CHECK(idp_info.data);
+
+  has_sent_token_request_ = true;
   network_manager_->SendTokenRequest(
       idp_info.endpoints.token, account_id_,
       ComputeUrlEncodedTokenPostData(
@@ -2338,6 +2341,13 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  if (has_sent_token_request_) {
+    verifying_dialog_result_ =
+        identity_selection_type_ == kExplicit
+            ? FedCmVerifyingDialogResult::kCancelExplicit
+            : FedCmVerifyingDialogResult::kCancelAutoReauthn;
+  }
+
   if (dialog_type_ == kContinueOnPopup) {
     fedcm_metrics_->RecordContinueOnPopupResult(
         FedCmContinueOnPopupResult::kWindowClosed);
@@ -2509,6 +2519,11 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::TokenResult result) {
   CHECK(result.token.empty() || !result.error);
+
+  verifying_dialog_result_ =
+      identity_selection_type_ == kExplicit
+          ? FedCmVerifyingDialogResult::kSuccessExplicit
+          : FedCmVerifyingDialogResult::kSuccessAutoReauthn;
 
   bool should_show_error_ui =
       result.error ||
@@ -2686,9 +2701,17 @@ void FederatedAuthRequestImpl::CompleteRequest(
           ComputeUseOtherAccountResult(result, selected_idp_config_url);
     }
 
+    if (!verifying_dialog_result_ && has_sent_token_request_) {
+      verifying_dialog_result_ =
+          identity_selection_type_ == kExplicit
+              ? FedCmVerifyingDialogResult::kDestroyExplicit
+              : FedCmVerifyingDialogResult::kDestroyAutoReauthn;
+    }
+
     fedcm_metrics_->RecordRequestTokenStatus(
         *token_status, mediation_requirement_, idp_order_, num_idps_mismatch,
-        selected_idp_config_url, rp_mode_, use_other_account_result);
+        selected_idp_config_url, rp_mode_, use_other_account_result,
+        verifying_dialog_result_);
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {

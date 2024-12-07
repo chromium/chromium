@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(AddressSignInPromoView::kBubbleFrameViewId, std::string(),
-                 "5776109"),
+                 "5860426"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(AddressSignInPromoView::kBubbleFrameViewId, std::string(),
-                 "5776109"),
+                 "5860426"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
@@ -629,8 +629,16 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
               testing::ElementsAre(AddressMatches(address)));
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AddressSignInPromoWithAccountSignInPending \
+  DISABLED_AddressSignInPromoWithAccountSignInPending
+#else
+#define MAYBE_AddressSignInPromoWithAccountSignInPending \
+  AddressSignInPromoWithAccountSignInPending
+#endif
+
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
-                       AddressSignInPromoWithAccountSignInPending) {
+                       MAYBE_AddressSignInPromoWithAccountSignInPending) {
   // Sign in with an account, and put its refresh token into an error
   // state. This simulates the "sign in pending" state.
   AccountInfo info = signin::MakePrimaryAccountAvailable(
@@ -670,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(AddressSignInPromoView::kBubbleFrameViewId, std::string(),
-                 "5776109"),
+                 "5860426"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),

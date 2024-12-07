@@ -335,6 +335,8 @@ void GetWindowClients(
     return;
   }
 
+  const url::Origin controller_origin =
+      url::Origin::Create(controller->script_url());
   for (const auto& it : clients_info) {
     blink::mojom::ServiceWorkerClientInfoPtr info =
         GetWindowClientInfo(std::get<0>(it), std::get<1>(it), std::get<2>(it));
@@ -347,12 +349,13 @@ void GetWindowClients(
       continue;
     DCHECK(!info->client_uuid.empty());
 
-    // We can get info for a frame that was navigating end ended up with a
+    // We can get info for a frame that was navigating and ended up with a
     // different URL than expected. In such case, we should make sure to not
     // expose cross-origin WindowClient.
-    if (info->url.DeprecatedGetOriginAsURL() !=
-        controller->script_url().DeprecatedGetOriginAsURL())
+    auto* rfh = RenderFrameHostImpl::FromID(std::get<0>(it));
+    if (!controller_origin.IsSameOriginWith(rfh->GetLastCommittedOrigin())) {
       continue;
+    }
 
     clients.push_back(std::move(info));
   }
@@ -487,15 +490,9 @@ void OpenWindow(const GURL& url,
           ? WindowOpenDisposition::NEW_POPUP
           : WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true /* is_renderer_initiated */);
-  // Disable the hack that always opens pwa windows if navigation capturing
-  // (reimplementation) is enabled.
-  if (!base::FeatureList::IsEnabled(features::kPwaNavigationCapturing) ||
-      (features::kNavigationCapturingDefaultState.Get() !=
-           features::CapturingState::kReimplDefaultOn &&
-       features::kNavigationCapturingDefaultState.Get() !=
-           features::CapturingState::kReimplDefaultOff)) {
-    params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
-  }
+  // TODO(https://crbug.com/382542907): Remove `open_pwa_window_if_possible` or
+  // make it IWA-specific.
+  params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
   params.initiator_origin =
       url::Origin::Create(script_url.DeprecatedGetOriginAsURL());
 

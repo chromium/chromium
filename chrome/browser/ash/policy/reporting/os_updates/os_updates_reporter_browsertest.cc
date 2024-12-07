@@ -150,7 +150,7 @@ class OsUpdatesReporterBrowserErrorTest
     : public OsUpdatesReporterBrowserTest,
       public ::testing::WithParamInterface<OsUpdatesReporterBrowserTestCase> {
  protected:
-  OsUpdatesReporterBrowserErrorTest() {}
+  OsUpdatesReporterBrowserErrorTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_P(OsUpdatesReporterBrowserErrorTest, ReportErrorEvent) {

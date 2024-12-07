@@ -13,7 +13,7 @@ namespace scheduler {
 
 class PLATFORM_EXPORT CompositorMetricsHelper : public MetricsHelper {
  public:
-  explicit CompositorMetricsHelper(bool has_cpu_timing_for_each_task);
+  CompositorMetricsHelper();
   CompositorMetricsHelper(const CompositorMetricsHelper&) = delete;
   CompositorMetricsHelper& operator=(const CompositorMetricsHelper&) = delete;
   ~CompositorMetricsHelper();

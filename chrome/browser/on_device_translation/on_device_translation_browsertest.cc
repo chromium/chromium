@@ -39,6 +39,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/test/test_util.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -120,6 +121,13 @@ std::string_view GetCanCreateTranslatorResultString(
   }
 }
 
+// An implementation of SupportsUserData to be used in tests.
+class TestSupportsUserData : public base::SupportsUserData {
+ public:
+  TestSupportsUserData() = default;
+  ~TestSupportsUserData() override = default;
+};
+
 }  // namespace
 
 class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
@@ -162,11 +170,18 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
     // Call CanCreateTranslator() via mojo interface to verify the detailed
     // result.
     mojo::Remote<blink::mojom::TranslationManager> remote;
-    TranslationManagerImpl::Create(browser()
-                                       ->tab_strip_model()
-                                       ->GetActiveWebContents()
-                                       ->GetPrimaryMainFrame(),
-                                   remote.BindNewPipeAndPassReceiver());
+    TestSupportsUserData fake_user_data;
+    TranslationManagerImpl::Bind(browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetBrowserContext(),
+                                 &fake_user_data,
+                                 browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetPrimaryMainFrame()
+                                     ->GetLastCommittedOrigin(),
+                                 remote.BindNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     remote->CanCreateTranslator(
         TranslatorLanguageCode::New(std::string(sourceLang)),

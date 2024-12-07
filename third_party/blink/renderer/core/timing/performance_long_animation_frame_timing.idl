@@ -13,3 +13,5 @@ interface PerformanceLongAnimationFrameTiming : PerformanceEntry {
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
+
+PerformanceLongAnimationFrameTiming includes PaintTimingMixin;

@@ -85,6 +85,7 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
   }
 
   static size_t quota_limit() { return FilePathWatcher::quota_limit(); }
+  virtual size_t current_usage() const;
 
  protected:
   virtual void Initialize(

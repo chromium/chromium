@@ -701,8 +701,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private updateTabsContentPage_() {
-    this.tabsContentPage_ = (this.selectedPage_ === Page.HISTORY_CLUSTERS &&
-                             this.historyClustersEnabled_) ?
+    this.tabsContentPage_ =
+        (this.selectedPage_ === Page.HISTORY_CLUSTERS &&
+         this.historyClustersEnabled_ && this.historyClustersVisible_) ?
         Page.HISTORY_CLUSTERS :
         Page.HISTORY;
   }

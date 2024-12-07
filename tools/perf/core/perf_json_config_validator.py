@@ -127,8 +127,7 @@ def _ValidateBrowserType(builder_name, test_config):
         'android-trichrome-chrome-64-32-bundle',
         'android-trichrome-chrome-google-64-32-bundle',
         'exact',
-        # TODO(https://crbug.com/378731077): Remove below.
-        'android-trichrome-bundle')
+    )
     if browser_options.browser not in android_browsers:
       raise ValueError( 'The browser type for %s must be one of %s' % (
           builder_name, ', '.join(android_browsers)))

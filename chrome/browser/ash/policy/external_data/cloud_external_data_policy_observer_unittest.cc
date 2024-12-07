@@ -216,7 +216,8 @@ CloudExternalDataPolicyObserverTest::CloudExternalDataPolicyObserverTest()
           DeviceLocalAccountType::kPublicSession)),
       profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
-CloudExternalDataPolicyObserverTest::~CloudExternalDataPolicyObserverTest() {}
+CloudExternalDataPolicyObserverTest::~CloudExternalDataPolicyObserverTest() =
+    default;
 
 void CloudExternalDataPolicyObserverTest::SetUp() {
   ash::DeviceSettingsTestBase::SetUp();

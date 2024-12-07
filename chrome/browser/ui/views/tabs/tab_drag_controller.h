@@ -463,14 +463,18 @@ class TabDragController : public views::WidgetObserver,
   // coordinates.
   DetachPosition GetDetachPosition(const gfx::Point& point_in_screen);
 
-  // Attach the dragged tabs to the specified TabDragContext. If
-  // |set_capture| is true, the newly attached context will have capture.
-  // This can only be used to pass ownership of |this| through |controller|.
-  // |controller| must be nullptr if |attached_context| already owns |this|.
-  void Attach(TabDragContext* attached_context,
-              const gfx::Point& point_in_screen,
-              std::unique_ptr<TabDragController> controller,
-              bool set_capture = true);
+  // Begin the drag session by attaching to `source_context_`.
+  void StartDrag();
+
+  // Insert the dragged tabs into `attached_context` and attach the drag session
+  // to it. The newly attached context will have capture, and will take
+  // ownership of `controller` (which must be `this`).
+  void AttachToNewContext(TabDragContext* attached_context,
+                          std::unique_ptr<TabDragController> controller);
+
+  // Sets up dragging in `attached_context_`. The dragged tabs must already
+  // be present.
+  void AttachImpl();
 
   // Detach the dragged tabs from the current TabDragContext. Returns
   // ownership of the owned controller, which must be |this|, if
@@ -483,9 +487,7 @@ class TabDragController : public views::WidgetObserver,
   // |this| from |attached_context_| (which must own |this|) to
   // |target_context|.
   void DetachAndAttachToNewContext(ReleaseCapture release_capture,
-                                   TabDragContext* target_context,
-                                   const gfx::Point& point_in_screen,
-                                   bool set_capture = true);
+                                   TabDragContext* target_context);
 
   // Detaches the tabs being dragged, creates a new Browser to contain them and
   // runs a nested move loop.
@@ -631,18 +633,6 @@ class TabDragController : public views::WidgetObserver,
   [[nodiscard]] Liveness GetLocalProcessWindow(const gfx::Point& screen_point,
                                                bool exclude_dragged_view,
                                                gfx::NativeWindow* window);
-
-  // Sets the dragging info for the current dragged context. On Chrome OS, the
-  // dragging info include two window properties: one is to indicate if the
-  // tab-dragging process starts/stops, and the other is to indicate which
-  // window initiates the dragging. This function is supposed to be called
-  // whenever the dragged tabs are attached to a new tabstrip.
-  void SetTabDraggingInfo();
-
-  // Clears the tab dragging info for the current dragged context. This
-  // function is supposed to be called whenever the dragged tabs are detached
-  // from the old context or the tab dragging is ended.
-  void ClearTabDraggingInfo();
 
   // Tests whether a drag can be attached to a |window|.  Drags may be
   // disallowed for reasons such as the target: does not support tabs, is

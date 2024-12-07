@@ -41,10 +41,10 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
       const url::Origin& origin,
       content::DigitalIdentityInterstitialType interstitial_type,
       DigitalIdentityInterstitialCallback callback) override;
-  void Request(content::WebContents* web_contents,
-               const url::Origin& origin,
-               const base::Value request,
-               DigitalIdentityCallback callback) override;
+  void Get(content::WebContents* web_contents,
+           const url::Origin& origin,
+           base::ValueView request,
+           DigitalIdentityCallback callback) override;
   void Create(content::WebContents* web_contents,
               const url::Origin& origin,
               base::ValueView request,

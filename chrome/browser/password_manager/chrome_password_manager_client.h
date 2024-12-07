@@ -189,9 +189,9 @@ class ChromePasswordManagerClient
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;
   void NotifyStorePasswordCalled() override;
-#if BUILDFLAG(IS_ANDROID)
   void NotifyOnSuccessfulLogin(
       const std::u16string& submitted_username) override;
+#if BUILDFLAG(IS_ANDROID)
   void StartSubmissionTrackingAfterTouchToFill(
       const std::u16string& filled_username) override;
   void ResetSubmissionTrackingAfterTouchToFill() override;
@@ -321,6 +321,7 @@ class ChromePasswordManagerClient
       base::i18n::TextDirection text_direction,
       const GURL& domain,
       const std::u16string& password_hostname,
+      bool show_warning_text,
       base::OnceClosure confirmation_callback) override;
   void ShowCredentialsInAmbientBubble(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,

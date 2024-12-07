@@ -22,9 +22,6 @@ import java.util.List;
  */
 @Deprecated
 public interface NotificationManagerProxy extends BaseNotificationManagerProxy {
-    // Implemented by NotificationManagerCompat and thus available on all API levels.
-    boolean areNotificationsEnabled();
-
     @RequiresApi(Build.VERSION_CODES.O)
     List<NotificationChannel> getNotificationChannels();
 

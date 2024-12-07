@@ -11,38 +11,42 @@ namespace {
 
 TEST(PaymentLinkValidatorTest, validUrls) {
   PaymentLinkValidator validator;
-  const std::vector<std::string> kValidUrls = {
-      "duitnow://paynet.com.my?path=fake_path",
-      "shopeepay://shopeepay.com.my?path=fake_path",
-      "tngd://tngdigital.com.my?path=fake_path"};
+  const std::vector<GURL> kValidUrls = {
+      GURL("duitnow://paynet.com.my?path=fake_path"),
+      GURL("shopeepay://shopeepay.com.my?path=fake_path"),
+      GURL("tngd://tngdigital.com.my?path=fake_path")};
 
   for (const auto& link : kValidUrls) {
-    EXPECT_TRUE(validator.IsValid(link)) << "Failed for: " << link;
+    EXPECT_NE(validator.GetScheme(link), PaymentLinkValidator::Scheme::kInvalid)
+        << "Failed for: " << link.spec();
   }
 }
 
 TEST(PaymentLinkValidatorTest, InvalidUrls) {
   PaymentLinkValidator validator;
-  const std::vector<std::string> kInvalidUrls = {
-      "duitnow://invalid.com", "https://www.google.com",
-      "shopeepay://wrongdomain.com/order",
-      "duitnow://"  // Empty after scheme
+  const std::vector<GURL> kInvalidUrls = {
+      GURL("duitnow://invalid.com"), GURL("https://www.google.com"),
+      GURL("shopeepay://wrongdomain.com/order"),
+      GURL("duitnow://")  // Empty after scheme
   };
 
   for (const auto& link : kInvalidUrls) {
-    EXPECT_FALSE(validator.IsValid(link)) << "Failed for: " << link;
+    EXPECT_EQ(validator.GetScheme(link), PaymentLinkValidator::Scheme::kInvalid)
+        << "Failed for: " << link.spec();
   }
 }
 
 // Additional Tests (consider edge cases)
 TEST(PaymentLinkValidatorTest, EmptyLink) {
   PaymentLinkValidator validator;
-  EXPECT_FALSE(validator.IsValid(""));
+  GURL link("");
+  EXPECT_EQ(validator.GetScheme(link), PaymentLinkValidator::Scheme::kInvalid);
 }
 
 TEST(PaymentLinkValidatorTest, CaseSensitive) {
   PaymentLinkValidator validator;
-  EXPECT_FALSE(validator.IsValid("tngd://TNGDIGITAL.COM.MY/abc1234"));
+  GURL link("tngd://TNGDIGITAL.COM.MY/abc1234");
+  EXPECT_EQ(validator.GetScheme(link), PaymentLinkValidator::Scheme::kInvalid);
 }
 
 }  // namespace

@@ -104,6 +104,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/gfx/geometry/insets_conversions.h"
 
 namespace blink {
 
@@ -938,48 +939,62 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
     return;
   }
 
-  gfx::Insets new_safe_area = gfx::Insets::TLBR(
-      max_safe_area_insets_.top(), max_safe_area_insets_.left(),
-      max_safe_area_insets_.bottom(), max_safe_area_insets_.right());
-  if (max_safe_area_insets_.bottom() > 0) {
+  gfx::InsetsF new_scaled_safe_area(scaled_max_safe_area_insets_);
+
+  // The calculation is done in the unit of physical pixel.
+  if (scaled_max_safe_area_insets_.bottom() > 0) {
     // Adjust the top / left / right is not needed, since they are set when
     // display insets was received at |SetSafeArea()|.
-    int inset_bottom = max_safe_area_insets_.bottom();
+    float inset_bottom = scaled_max_safe_area_insets_.bottom();
     int bottom_controls_full_height = browser_controls.BottomHeight();
     float control_ratio = browser_controls.BottomShownRatio();
-    float dip_scale = chrome_client_->GetScreenInfo(*DeprecatedLocalMainFrame())
-                          .device_scale_factor;
 
     // As control_ratio decrease, safe_area_inset_bottom will be added to the
     // web page to keep the bottom element out from the display cutout area.
     float safe_area_inset_bottom = std::max(
-        0.f,
-        inset_bottom - control_ratio * bottom_controls_full_height / dip_scale);
+        0.f, inset_bottom - control_ratio * bottom_controls_full_height);
 
-    new_safe_area.set_bottom(safe_area_inset_bottom);
+    new_scaled_safe_area.set_bottom(safe_area_inset_bottom);
   }
 
-  if (new_safe_area != applied_safe_area_insets_ || force_update) {
-    applied_safe_area_insets_ = new_safe_area;
+  if (new_scaled_safe_area != applied_safe_area_insets_ || force_update) {
+    applied_safe_area_insets_ = new_scaled_safe_area;
+
+    // TODO: Need to account for the browser zoom factor here. Convert the
+    // safe area to CSS pixels instead of DIPs for SetSafeAreaEnvVariables().
+    float dip_scale = chrome_client_->GetScreenInfo(*DeprecatedLocalMainFrame())
+                          .device_scale_factor;
+    gfx::Insets new_safe_area =
+        ToRoundedInsets(ScaleInsets(new_scaled_safe_area, 1.0f / dip_scale));
     SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
   }
 }
 
 void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
-  bool sai_changed = max_safe_area_insets_ != max_safe_area;
-  max_safe_area_insets_ = max_safe_area;
+  // Update |scaled_max_safe_area_insets_| first.
+  if (setter->IsMainFrame()) {
+    float dip_scale =
+        chrome_client_->GetScreenInfo(*setter).device_scale_factor;
+    gfx::InsetsF scaled_max_safe_area_insets =
+        ScaleInsets(gfx::InsetsF(max_safe_area), dip_scale);
+
+    if (scaled_max_safe_area_insets_ != scaled_max_safe_area_insets) {
+      scaled_max_safe_area_insets_ = scaled_max_safe_area_insets;
+
+      // Update Chrome client CC for MaxSafeAreaInsets change.
+      GetChromeClient().DidUpdateMaxSafeAreaInsets(scaled_max_safe_area_insets);
+    }
+  }
 
   // When the SAI is changed when DynamicSafeAreaInsetsEnabled, the SAI for the
   // main frame needs to be set per browser controls state.
   if (GetSettings().GetDynamicSafeAreaInsetsEnabled() &&
       setter->IsMainFrame()) {
+    // |scaled_max_safe_area_insets_| should be updated before
+    // UpdateSafeAreaInsetWithBrowserControls() is called.
     UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(), true);
   } else {
     SetSafeAreaEnvVariables(setter, max_safe_area);
-  }
-  // Update Chrome client CC for MaxSafeAreaInsets change.
-  if (setter->IsMainFrame() && sai_changed) {
-    GetChromeClient().DidUpdateMaxSafeAreaInsets(max_safe_area);
   }
 }
 

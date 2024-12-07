@@ -43,7 +43,7 @@ void EmojiSearchProxy::LoadEmojiLanguages(
   search_->LoadEmojiLanguages(language_codes);
 }
 
-EmojiSearchProxy::~EmojiSearchProxy() {}
+EmojiSearchProxy::~EmojiSearchProxy() = default;
 
 void EmojiSearchProxy::SearchEmoji(
     const std::string& query,

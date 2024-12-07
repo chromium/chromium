@@ -153,7 +153,7 @@ void TabListSceneLayer::PutBackgroundLayer(
     jint top_offset) {
   int ui_resource_id = resource_manager_->GetUIResourceId(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC, resource_id);
-  if (ui_resource_id == 0) {
+  if (ui_resource_id == ui::Resource::kInvalidResourceId) {
     return;
   }
 

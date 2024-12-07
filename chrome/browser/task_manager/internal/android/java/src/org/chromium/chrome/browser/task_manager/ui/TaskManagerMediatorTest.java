@@ -143,6 +143,36 @@ public class TaskManagerMediatorTest {
 
     @Test
     @SmallTest
+    public void testCycleSortOrderAscending() {
+        when(mBridge.getTitle(1)).thenReturn("A");
+        when(mBridge.getTitle(2)).thenReturn("C");
+        when(mBridge.getTitle(3)).thenReturn("B");
+
+        mObserver.onTaskAdded(1);
+        mObserver.onTaskAdded(2);
+        mObserver.onTaskAdded(3);
+
+        mMediator.cycleSortOrder(TASK_NAME); // asc
+
+        assertEquals(mTasks.get(0).model.get(TASK_NAME), "A");
+        assertEquals(mTasks.get(1).model.get(TASK_NAME), "B");
+        assertEquals(mTasks.get(2).model.get(TASK_NAME), "C");
+
+        mMediator.cycleSortOrder(TASK_NAME); // desc
+
+        assertEquals(mTasks.get(0).model.get(TASK_NAME), "C");
+        assertEquals(mTasks.get(1).model.get(TASK_NAME), "B");
+        assertEquals(mTasks.get(2).model.get(TASK_NAME), "A");
+
+        mMediator.cycleSortOrder(TASK_NAME); // unspecified
+
+        assertEquals(mTasks.get(0).model.get(TASK_NAME), "C");
+        assertEquals(mTasks.get(1).model.get(TASK_NAME), "B");
+        assertEquals(mTasks.get(2).model.get(TASK_NAME), "A");
+    }
+
+    @Test
+    @SmallTest
     public void testTasksRefreshed() {
         when(mBridge.getMemoryFootprintUsage(1)).thenReturn(1_000_000L);
         mObserver.onTaskAdded(1);

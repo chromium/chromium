@@ -21,6 +21,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,6 +47,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.settings.ButtonPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -74,6 +76,11 @@ public class TracingSettingsTest {
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
+    }
+
+    @After
+    public void tearDown() {
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     /**
@@ -266,7 +273,7 @@ public class TracingSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testNotificationsDisabledMessage() throws Exception {
-        mMockNotificationManager.setNotificationsEnabled(false);
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
         final PreferenceFragmentCompat fragment = mSettingsActivityTestRule.getFragment();
@@ -281,8 +288,6 @@ public class TracingSettingsTest {
         Assert.assertFalse(startTracingButton.isEnabled());
         Assert.assertEquals(
                 TracingSettings.MSG_NOTIFICATIONS_DISABLED, statusPreference.getTitle());
-
-        mMockNotificationManager.setNotificationsEnabled(true);
     }
 
     public static class CategoryParams implements ParameterProvider {

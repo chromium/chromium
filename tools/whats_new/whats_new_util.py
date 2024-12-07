@@ -13,6 +13,26 @@ import subprocess
 import shutil
 
 BASE_DIR = Path(__file__).parents[1]
+CHROME_ICON_FILENAME = 'ios/chrome/browser/shared/ui/symbols/symbol_names.mm'
+DEFAULT_SF_SYMBOLS_PATH = '/Applications/SF Symbols.app/'
+
+
+class ValidIcons(object):
+    """Metadata about valid icon names.
+
+    Attributes:
+        valid_custom: Set of the valid custom icon names from Chrome constants.
+        valid_default: Set of the currently valid default icon names from Chrome
+            constants.
+        full_default: Set of all available default icon names from
+            SF Symbols.app, even ones that currently do not exist as constants
+            in Chrome.
+    """
+
+    def __init__(self, valid_custom, valid_default, full_default):
+        self.valid_custom = valid_custom
+        self.valid_default = valid_default
+        self.full_default = full_default
 
 
 def UpdateWhatsNewItemAndGetNewTypeValue(feature_dict: dict[str, str]) -> int:
@@ -100,12 +120,14 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str],
       feature_dict: Data for the new What's New feature.
       feature_type: Newly added WhatsNewType for the new What's New feature.
   """
-    instruction_steps = feature_dict['Instructions'].splitlines()
+
+    # Format and clean up the instructions text field ID.
+    instruction_steps = StripWhitespacesAndEmptyLines(feature_dict['Instructions'])
     serialized_animation_texts = feature_dict['Animation texts'].splitlines()
     animation_text_dict = {}
     for animation_text_string in serialized_animation_texts:
         animations_text = json.loads(animation_text_string)
-        animation_text_dict[animations_text['key']] = animations_text['value']
+        animation_text_dict[animations_text['key'].strip()] = StripWhitespacesAndEmptyLines(animations_text['value'])
     new_entry = {
         'Type': feature_type,
         'Title': feature_dict['Title'],
@@ -115,7 +137,7 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str],
         'IconImageName': feature_dict['Icon name'],
         'IconBackgroundColor': feature_dict['Icon background color'],
         'IsSymbol': True,
-        'IsSystemSymbol': True,
+        'IsSystemSymbol': feature_dict['Icon Type'] == 'Default',
         'InstructionSteps': instruction_steps,
         'PrimaryAction': _GetPrimaryAction(feature_dict['Primary action']),
         'LearnMoreUrlString': feature_dict['Help url']
@@ -137,8 +159,7 @@ def UpdateWhatsNewUtils(feature_dict: dict[str, str]) -> None:
       feature_dict: Data for the new What's New feature.
   """
     feature_name = feature_dict['Feature name']
-    whats_new_util_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new/whats_new_util.mm')
+    whats_new_util_file = os.path.join(BASE_DIR, '..', CHROME_ICON_FILENAME)
     with open(whats_new_util_file, 'r+', encoding='utf-8', newline='') as file:
         read_data = file.read()
         whats_new_type_error_regex = r'case WhatsNewType::kError:'
@@ -290,9 +311,9 @@ def UploadScreenshots(feature_dict: dict[str, str],
     titles.append(feature_dict['Title'])
     titles.append(feature_dict['Subtitle'])
     feature_screenshot = feature_dict['Feature screenshot']
-    titles.extend(feature_dict['Instructions'].splitlines())
+    titles.extend(StripWhitespacesAndEmptyLines(feature_dict['Instructions']))
     animation_texts_string = feature_dict['Animation texts'].splitlines()
-    titles.extend(json.loads(a)['value'] for a in animation_texts_string)
+    titles.extend("".join(StripWhitespacesAndEmptyLines(json.loads(a)['value'])) for a in animation_texts_string)
     screenshot_dir = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings',
         milestone + '_strings_grdp')
@@ -412,3 +433,90 @@ def RemoveAnimationAssetsForMilestone(milestone: str) -> None:
         file.seek(0)
         file.write(data)
         file.truncate()
+
+
+def LoadValidIconNames() -> ValidIcons:
+    """Loads the valid icon names from the src code.
+
+      Returns:
+        ValidIcons instance representing all the different valid icon names
+    """
+    valid_custom_icons = set()
+    valid_default_icons = set()
+
+    icon_name_regex = re.compile(r"@\"(.*)\";")
+
+    valid_icons_file = os.path.join(
+        BASE_DIR, '../ios/chrome/browser/shared/ui/symbols/symbol_names.mm')
+    found_default_icons = False
+    with open(valid_icons_file, 'r', encoding='utf-8', newline='') as file:
+        # The icons file starts with custom icons until reaching the comment
+        # "// Default symbol names."
+        for line in file:
+            if "// Default symbol names." in line:
+                found_default_icons = True
+                continue
+            match = icon_name_regex.search(line)
+            if not match:
+                continue
+
+            icon_name = match.group(1)
+            if found_default_icons:
+                valid_default_icons.add(icon_name)
+            else:
+                valid_custom_icons.add(icon_name)
+
+    # Open SF Symbols.app to find all possible icon names.
+    sf_symbols_path = os.path.join(
+        DEFAULT_SF_SYMBOLS_PATH,
+        'Contents/Resources/Metadata/name_availability.plist')
+
+    if os.path.exists(sf_symbols_path):
+        with open(sf_symbols_path, 'rb') as file:
+            sf_symbols_data = plistlib.load(file)
+        all_icons = set(sf_symbols_data['symbols'].keys())
+    else:
+        print('Missing SF Symbols.app in /Applications')
+        all_icons = set()
+
+    return ValidIcons(valid_custom_icons, valid_default_icons, all_icons)
+
+
+def ValidateWhatsNewData(feature_dict: dict[str, str],
+                         valid_icons: ValidIcons) -> str:
+    """Validates the provided data represents a valid What's New feature.
+
+      Args:
+        feature_dict: Data for the new What's New feature
+        valid_icons: A ValidIcons instance representing which icons are valid
+      Returns:
+        A string error message if the data is not valid, and an empty
+        string if the data is valid.
+    """
+
+    icon_name = feature_dict['Icon name']
+
+    if (feature_dict['Icon Type'] == 'Custom'
+            and icon_name not in valid_icons.valid_custom):
+        return f'Invalid Custom icon name: {icon_name}'
+    elif icon_name not in valid_icons.valid_default:
+        if icon_name not in valid_icons.full_default:
+            return f'Invalid Default icon name: {icon_name}'
+        else:
+            return (f'Default icon {icon_name} not present '
+                    f'in //{CHROME_ICON_FILENAME}')
+
+    return ""
+
+def StripWhitespacesAndEmptyLines(text: str) -> list[str]:
+    """Strips all whitespace and empty lines from text including whitespace
+    between words.
+
+    Args:
+        text: The raw string.
+
+    Returns:
+        A formatted string with no whitespace or empty lines.
+    """
+    lines = text.splitlines()
+    return ["".join(line.split()) for line in lines if line.strip()]

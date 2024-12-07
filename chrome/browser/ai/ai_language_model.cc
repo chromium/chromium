@@ -15,8 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
-#include "chrome/browser/ai/ai_manager_keyed_service.h"
-#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -165,11 +164,13 @@ AILanguageModel::AILanguageModel(
     base::WeakPtr<content::BrowserContext> browser_context,
     mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote,
     AIContextBoundObjectSet& context_bound_object_set,
+    AIManager& ai_manager,
     const std::optional<const Context>& context)
     : AIContextBoundObject(context_bound_object_set),
       session_(std::move(session)),
       browser_context_(browser_context),
       context_bound_object_set_(context_bound_object_set),
+      ai_manager_(ai_manager),
       pending_remote_(std::move(pending_remote)),
       receiver_(this, pending_remote_.InitWithNewPipeAndPassReceiver()) {
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -355,12 +356,11 @@ void AILanguageModel::Fork(
   const optimization_guide::SamplingParams sampling_param =
       session_->GetSamplingParams();
 
-  AIManagerKeyedServiceFactory::GetAIManagerKeyedService(browser_context_.get())
-      ->CreateLanguageModelForCloning(
-          base::PassKey<AILanguageModel>(),
-          blink::mojom::AILanguageModelSamplingParams::New(
-              sampling_param.top_k, sampling_param.temperature),
-          context_bound_object_set_.get(), *context_, std::move(client_remote));
+  ai_manager_->CreateLanguageModelForCloning(
+      base::PassKey<AILanguageModel>(),
+      blink::mojom::AILanguageModelSamplingParams::New(
+          sampling_param.top_k, sampling_param.temperature),
+      context_bound_object_set_.get(), *context_, std::move(client_remote));
 }
 
 void AILanguageModel::Destroy() {

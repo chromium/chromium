@@ -71,7 +71,6 @@ class IDispatchImpl
         hr_load_typelib_(InitializeTypeInfo()) {}
   IDispatchImpl(const IDispatchImpl&) = default;
   IDispatchImpl& operator=(const IDispatchImpl&) = default;
-  ~IDispatchImpl() override = default;
 
   // IUnknown override.
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {

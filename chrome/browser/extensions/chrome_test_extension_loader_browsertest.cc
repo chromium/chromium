@@ -24,8 +24,8 @@ namespace extensions {
 
 class ChromeTestExtensionLoaderUnitTest : public ExtensionApiTest {
  public:
-  ChromeTestExtensionLoaderUnitTest() {}
-  ~ChromeTestExtensionLoaderUnitTest() override {}
+  ChromeTestExtensionLoaderUnitTest() = default;
+  ~ChromeTestExtensionLoaderUnitTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();

@@ -74,7 +74,6 @@ class CustomLogPrinter : public testing::TestEventListener {
  public:
   // Takes ownership of impl.
   explicit CustomLogPrinter(testing::TestEventListener* impl) : impl_(impl) {}
-  ~CustomLogPrinter() override = default;
   CustomLogPrinter(const CustomLogPrinter&) = delete;
   CustomLogPrinter& operator=(const CustomLogPrinter&) = delete;
 

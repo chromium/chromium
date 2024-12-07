@@ -227,8 +227,11 @@ base::Value::Dict GetNetConstants() {
   {
     base::Value::Dict dict;
 
-    for (const auto& error : kNetErrors)
+    // Zero represents OK.
+    dict.Set("net::OK", 0);
+    for (const auto& error : kNetErrors) {
       dict.Set(ErrorToShortString(error), error);
+    }
 
     constants_dict.Set("netError", std::move(dict));
   }

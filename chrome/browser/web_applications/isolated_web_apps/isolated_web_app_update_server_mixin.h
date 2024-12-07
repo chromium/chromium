@@ -44,7 +44,8 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
   base::Value::Dict CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt) const;
+      const std::optional<base::Version>& pinned_version = std::nullopt,
+      const bool allow_downgrades = false) const;
 
   // Adds a bundle to the update server and starts tracking it in the
   // corresponding update manifest.

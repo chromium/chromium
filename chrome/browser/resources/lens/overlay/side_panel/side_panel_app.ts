@@ -10,12 +10,15 @@ import './side_panel_ghost_loader.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
+import {handleEscapeSearchbox, onEscapeKeyPressed, onSearchboxKeydown} from '../searchbox_utils.js';
 
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
@@ -31,6 +34,7 @@ export interface LensSidePanelAppElement {
     results: HTMLIFrameElement,
     ghostLoader: SidePanelGhostLoaderElement,
     networkErrorPage: HTMLDivElement,
+    searchbox: SearchboxElement,
   };
 }
 
@@ -106,14 +110,18 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   // Public for use in browser tests.
   isBackArrowVisible: boolean;
+  // Whether the user is currently focused into the searchbox.
+  isSearchboxFocused: boolean;
+  // Whether to purposely suppress the ghost loader. Done when escaping from
+  // the searchbox when there's text or when page bytes aren't successfully
+  // uploaded.
+  suppressGhostLoader: boolean;
   private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side
   // panel can open before a navigation has started.
   private isLoadingResults: boolean;
-  private isSearchboxFocused: boolean;
   private isContextualSearchbox: boolean;
-  private suppressGhostLoader: boolean;
   private showErrorState: boolean;
   // The URL for the loading image shown when results frame is loading a new
   // page.
@@ -125,6 +133,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private listenerIds: number[];
   private pageHandler: LensSidePanelPageHandlerInterface;
   private wasBackArrowAvailable: boolean;
+  private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
     super();
@@ -142,13 +151,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   override ready() {
     super.ready();
 
-    const searchbox =
-        this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox');
-    if (searchbox) {
-      searchbox.addEventListener('focusin', () => this.onSearchboxFocusIn_());
-      searchbox.addEventListener('focusout', () => this.onSearchboxFocusOut_());
-      this.registerHelpBubble('kLensSidePanelSearchBoxElementId', searchbox);
-    }
+    this.registerHelpBubble(
+        'kLensSidePanelSearchBoxElementId', this.$.searchbox);
   }
 
   override connectedCallback() {
@@ -166,6 +170,21 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       this.browserProxy.callbackRouter.updateGhostLoaderState.addListener(
           this.updateGhostLoaderState.bind(this)),
     ];
+
+    this.eventTracker_.add(this.$.searchbox, 'focusin', () => {
+      this.onSearchboxFocusIn_();
+    });
+    this.eventTracker_.add(this.$.searchbox, 'focusout', () => {
+      this.onSearchboxFocusOut_();
+    });
+    this.eventTracker_.add(document, 'keydown', (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' && this.isSearchboxFocused) {
+        onSearchboxKeydown(this, this.$.searchbox);
+      }
+      if (event.key === 'Escape') {
+        onEscapeKeyPressed(this, event);
+      }
+    });
   }
 
   override disconnectedCallback() {
@@ -174,6 +193,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+    this.eventTracker_.removeAll();
   }
 
   private onBackArrowClick() {
@@ -206,6 +226,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         ?.blur();
   }
 
+  private handleEscapeSearchbox(e: CustomEvent) {
+    handleEscapeSearchbox(this, this.$.searchbox, e);
+  }
+
   private setBackArrowVisible(visible: boolean) {
     this.isBackArrowVisible = visible;
     this.wasBackArrowAvailable = visible;
@@ -218,6 +242,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onSearchboxFocusIn_() {
     this.isBackArrowVisible = false;
+    this.suppressGhostLoader = false;
     this.isSearchboxFocused = true;
     this.notifyHelpBubbleAnchorCustomEvent(
         'kLensSidePanelSearchBoxElementId',

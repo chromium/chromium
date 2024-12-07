@@ -13,7 +13,6 @@
 
 #include "base/functional/overloaded.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
-#include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 
@@ -108,30 +107,18 @@ class EnterpriseCompanionStatus {
 
   std::string description() const;
 
+  static EnterpriseCompanionStatus FromPersistedError(PersistedError error) {
+    return error.space == 0 ? Success()
+                            : EnterpriseCompanionStatus(StatusVariant(error));
+  }
+
   mojom::StatusPtr ToMojomStatus() const {
     return mojom::Status::New(space(), code(), description());
   }
 
-  proto::Status ToProtoStatus() const {
-    proto::Status status;
-    status.set_space(space());
-    status.set_code(code());
-    return status;
-  }
-
   static EnterpriseCompanionStatus FromMojomStatus(mojom::StatusPtr status) {
-    return status->space == 0
-               ? Success()
-               : EnterpriseCompanionStatus(StatusVariant(PersistedError(
-                     status->space, status->code, status->description)));
-  }
-
-  static EnterpriseCompanionStatus FromProtoStatus(
-      const proto::Status& status) {
-    return status.space() == 0
-               ? Success()
-               : EnterpriseCompanionStatus(StatusVariant(PersistedError(
-                     status.space(), status.code(), "<missing description>")));
+    return FromPersistedError(
+        PersistedError(status->space, status->code, status->description));
   }
 
   bool operator==(const EnterpriseCompanionStatus& other) const {

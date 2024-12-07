@@ -52,7 +52,7 @@ LocalStateValueWaiter::LocalStateValueWaiter(const std::string& pref,
   pref_change_registrar_.Init(g_browser_process->local_state());
 }
 
-LocalStateValueWaiter::~LocalStateValueWaiter() {}
+LocalStateValueWaiter::~LocalStateValueWaiter() = default;
 
 bool LocalStateValueWaiter::ExpectedValueFound() {
   const base::Value& pref_value =
@@ -84,7 +84,7 @@ DictionaryLocalStateValueWaiter::DictionaryLocalStateValueWaiter(
     const std::string& key)
     : LocalStateValueWaiter(pref, base::Value(expected_value)), key_(key) {}
 
-DictionaryLocalStateValueWaiter::~DictionaryLocalStateValueWaiter() {}
+DictionaryLocalStateValueWaiter::~DictionaryLocalStateValueWaiter() = default;
 
 bool DictionaryLocalStateValueWaiter::ExpectedValueFound() {
   const base::Value::Dict& pref =
@@ -94,7 +94,7 @@ bool DictionaryLocalStateValueWaiter::ExpectedValueFound() {
   return actual_value && *actual_value == expected_value_.GetString();
 }
 
-DevicePolicyCrosBrowserTest::DevicePolicyCrosBrowserTest() {}
+DevicePolicyCrosBrowserTest::DevicePolicyCrosBrowserTest() = default;
 
 DevicePolicyCrosBrowserTest::~DevicePolicyCrosBrowserTest() = default;
 

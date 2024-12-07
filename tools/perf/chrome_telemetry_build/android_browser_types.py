@@ -38,10 +38,10 @@ else:
       '_android_clank_monochrome',
       '_android_clank_monochrome_64_32_bundle',
       '_android_clank_monochrome_bundle',
-      '_android_clank_trichrome_chrome_google_64_32_bundle',
-      '_android_clank_trichrome_bundle',
       '_android_clank_trichrome_webview',
       '_android_clank_trichrome_webview_bundle',
       '_android_clank_webview',
       '_android_clank_webview_bundle',
+      '_android_trichrome_chrome_google_64_32_bundle',
+      '_android_trichrome_chrome_google_bundle',
   ]

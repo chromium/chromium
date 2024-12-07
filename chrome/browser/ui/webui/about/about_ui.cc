@@ -130,7 +130,7 @@ class ChromeOSTermsHandler
         // Previously we were using "initial locale" http://crbug.com/145142
         locale_(g_browser_process->GetApplicationLocale()) {}
 
-  virtual ~ChromeOSTermsHandler() {}
+  virtual ~ChromeOSTermsHandler() = default;
 
   void StartOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -216,7 +216,7 @@ class ChromeOSCreditsHandler
                          const base::FilePath& prefix)
       : path_(path), callback_(std::move(callback)), prefix_(prefix) {}
 
-  virtual ~ChromeOSCreditsHandler() {}
+  virtual ~ChromeOSCreditsHandler() = default;
 
   void StartOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -324,7 +324,7 @@ class CrostiniCreditsHandler
                          content::URLDataSource::GotDataCallback callback)
       : path_(path), callback_(std::move(callback)), profile_(profile) {}
 
-  virtual ~CrostiniCreditsHandler() {}
+  virtual ~CrostiniCreditsHandler() = default;
 
   void StartOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -569,7 +569,7 @@ AboutUIHTMLSource::AboutUIHTMLSource(const std::string& source_name,
     : source_name_(source_name),
       profile_(profile) {}
 
-AboutUIHTMLSource::~AboutUIHTMLSource() {}
+AboutUIHTMLSource::~AboutUIHTMLSource() = default;
 
 std::string AboutUIHTMLSource::GetSource() {
   return source_name_;

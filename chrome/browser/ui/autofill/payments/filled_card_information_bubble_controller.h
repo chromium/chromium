@@ -62,9 +62,9 @@ class FilledCardInformationBubbleController {
   virtual const FilledCardInformationBubbleOptions& GetBubbleOptions()
       const = 0;
 
-  // Returns the text used to show that the card entity in the bubble is a
-  // virtual card.
-  virtual std::u16string GetVirtualCardIndicatorLabel() const = 0;
+  // Returns 'Virtual Card' if it is a virtual card, returns expiration date if
+  // it is a server card.
+  virtual std::u16string GetCardIndicatorLabel() const = 0;
 
   // Returns the text used in the learn more link.
   virtual std::u16string GetLearnMoreLinkText() const = 0;

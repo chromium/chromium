@@ -19,13 +19,10 @@ TEST(V8ObjectBuilderTest, addNull) {
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
   builder.AddNull("null_check");
-  ScriptValue json_object = builder.GetScriptValue();
-  EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(scope.GetContext(),
-                          json_object.V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(), builder.V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
 
@@ -40,13 +37,10 @@ TEST(V8ObjectBuilderTest, addBoolean) {
   V8ObjectBuilder builder(script_state);
   builder.AddBoolean("b1", true);
   builder.AddBoolean("b2", false);
-  ScriptValue json_object = builder.GetScriptValue();
-  EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(scope.GetContext(),
-                          json_object.V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(), builder.V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
 
@@ -61,13 +55,10 @@ TEST(V8ObjectBuilderTest, addNumber) {
   V8ObjectBuilder builder(script_state);
   builder.AddNumber("n1", 123);
   builder.AddNumber("n2", 123.456);
-  ScriptValue json_object = builder.GetScriptValue();
-  EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(scope.GetContext(),
-                          json_object.V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(), builder.V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
 
@@ -90,13 +81,10 @@ TEST(V8ObjectBuilderTest, addString) {
   builder.AddString("test2", test2);
   builder.AddStringOrNull("test3", test3);
   builder.AddStringOrNull("test4", test4);
-  ScriptValue json_object = builder.GetScriptValue();
-  EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(scope.GetContext(),
-                          json_object.V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(), builder.V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
 
@@ -115,15 +103,10 @@ TEST(V8ObjectBuilderTest, add) {
   builder.AddNumber("n1", 123);
   builder.AddNumber("n2", 123.456);
   result.Add("builder", builder);
-  ScriptValue builder_json_object = builder.GetScriptValue();
-  ScriptValue result_json_object = result.GetScriptValue();
-  EXPECT_TRUE(builder_json_object.IsObject());
-  EXPECT_TRUE(result_json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(scope.GetContext(),
-                          result_json_object.V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(), result.V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
 

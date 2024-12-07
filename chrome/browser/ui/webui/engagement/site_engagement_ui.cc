@@ -48,7 +48,7 @@ class SiteEngagementDetailsProviderImpl
   SiteEngagementDetailsProviderImpl& operator=(
       const SiteEngagementDetailsProviderImpl&) = delete;
 
-  ~SiteEngagementDetailsProviderImpl() override {}
+  ~SiteEngagementDetailsProviderImpl() override = default;
 
   // site_engagement::mojom::SiteEngagementDetailsProvider overrides:
   void GetSiteEngagementDetails(
@@ -113,7 +113,7 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SiteEngagementUI)
 
-SiteEngagementUI::~SiteEngagementUI() {}
+SiteEngagementUI::~SiteEngagementUI() = default;
 
 void SiteEngagementUI::BindInterface(
     mojo::PendingReceiver<site_engagement::mojom::SiteEngagementDetailsProvider>

@@ -210,12 +210,9 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
   int rgba_stide = result->stride(media::VideoFrame::Plane::kARGB);
   DCHECK_GT(rgba_stide, 0);
 
-  auto origin = txt_frame->metadata().texture_origin_is_top_left
-                    ? kTopLeft_GrSurfaceOrigin
-                    : kBottomLeft_GrSurfaceOrigin;
-
   gfx::Point src_point;
   auto shared_image = txt_frame->shared_image();
+  auto origin = shared_image->surface_origin();
   ri->WaitSyncTokenCHROMIUM(txt_frame->acquire_sync_token().GetConstData());
 
   gfx::Size texture_size = txt_frame->coded_size();
@@ -289,11 +286,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
 
   SkImageInfo info = GetImageInfoForFrame(*txt_frame, src_rect.size());
   gfx::Point src_point = src_rect.origin();
-  auto origin = txt_frame->metadata().texture_origin_is_top_left
-                    ? kTopLeft_GrSurfaceOrigin
-                    : kBottomLeft_GrSurfaceOrigin;
-
   auto shared_image = txt_frame->shared_image();
+  auto origin = shared_image->surface_origin();
   ri->WaitSyncTokenCHROMIUM(txt_frame->acquire_sync_token().GetConstData());
 
   gfx::Size texture_size = txt_frame->coded_size();

@@ -881,7 +881,6 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   bool precise_scrolling_deltas = true;
   bool scroll_by_page = false;
   bool cursor_visible = true;
-  bool scroll_by_percentage = false;
   // It should be one or multiple values in the |Modifiers| in the function
   // ToKeyModifiers, multiple values are expressed as a string
   // separated by comma.
@@ -903,7 +902,6 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
       !GetOptionalArg(args, &precise_scrolling_deltas) ||
       !GetOptionalArg(args, &scroll_by_page) ||
       !GetOptionalArg(args, &cursor_visible) ||
-      !GetOptionalArg(args, &scroll_by_percentage) ||
       !GetOptionalArg(args, &keys_value) ||
       !GetOptionalArg(args, &buttons_value) ||
       !GetOptionalArg(args, &vsync_offset_ms) ||
@@ -921,12 +919,6 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
          gesture_source_type ==
              GestureSourceTypeAsInt(
                  content::mojom::GestureSourceType::kMouseInput));
-  // The percent-based scrolling feature is deprecated. Passing
-  // scroll_by_percentage doesn't do anything. Code deletion is tracked in
-  // crbug.com/359747082. Since the catapult/ is using the parameter when
-  // calling chrome.gpuBenchmarking.smoothScrollBy(), it will be removed in a
-  // separate CL.
-  DCHECK(!scroll_by_percentage);
 
   gfx::Vector2dF distances(pixels_to_scroll_x, pixels_to_scroll_y);
   gfx::Vector2dF fling_velocity(0, 0);

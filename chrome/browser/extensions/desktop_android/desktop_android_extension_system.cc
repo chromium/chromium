@@ -204,6 +204,10 @@ const Extension* DesktopAndroidExtensionSystem::LoadExtensionFromDirectory(
 
 void DesktopAndroidExtensionSystem::InitForRegularProfile(
     bool extensions_enabled) {
+  if (is_ready()) {
+    return;
+  }
+
   registrar_delegate_ =
       std::make_unique<DesktopAndroidExtensionRegistrarDelegate>(
           browser_context_);

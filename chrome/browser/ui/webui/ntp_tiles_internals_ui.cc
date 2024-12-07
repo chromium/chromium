@@ -139,4 +139,4 @@ NTPTilesInternalsUI::NTPTilesInternalsUI(content::WebUI* web_ui)
               profile, ServiceAccessType::EXPLICIT_ACCESS)));
 }
 
-NTPTilesInternalsUI::~NTPTilesInternalsUI() {}
+NTPTilesInternalsUI::~NTPTilesInternalsUI() = default;

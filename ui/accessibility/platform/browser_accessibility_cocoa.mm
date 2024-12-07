@@ -519,7 +519,6 @@ bool ui::IsNSRange(id value) {
     NSString* attribute;
     NSString* methodName;
   } attributeToMethodNameContainer[] = {
-      {NSAccessibilityChildrenAttribute, @"children"},
       {NSAccessibilityColumnsAttribute, @"columns"},
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
       {NSAccessibilityContentsAttribute, @"contents"},
@@ -532,13 +531,10 @@ bool ui::IsNSRange(id value) {
       {NSAccessibilityExpandedAttribute, @"expanded"},
       {NSAccessibilityHeaderAttribute, @"header"},
       {NSAccessibilityIndexAttribute, @"index"},
-      {NSAccessibilityInsertionPointLineNumberAttribute,
-       @"insertionPointLineNumber"},
       {NSAccessibilityLanguageAttribute, @"language"},
       {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
       {NSAccessibilityMaxValueAttribute, @"maxValue"},
       {NSAccessibilityMinValueAttribute, @"minValue"},
-      {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
       {NSAccessibilityOrientationAttribute, @"orientation"},
       {NSAccessibilityPositionAttribute, @"position"},
       {NSAccessibilityRoleAttribute, @"role"},
@@ -549,8 +545,6 @@ bool ui::IsNSRange(id value) {
       // NSAccessibilityServesAsTitleForUIElementsAttribute
       {NSAccessibilityStartTextMarkerAttribute, @"startTextMarker"},
       {NSAccessibilitySelectedChildrenAttribute, @"selectedChildren"},
-      {NSAccessibilitySelectedTextAttribute, @"selectedText"},
-      {NSAccessibilitySelectedTextRangeAttribute, @"selectedTextRange"},
       {NSAccessibilitySelectedTextMarkerRangeAttribute,
        @"selectedTextMarkerRange"},
       {NSAccessibilitySortDirectionAttribute, @"sortDirection"},
@@ -565,7 +559,6 @@ bool ui::IsNSRange(id value) {
       // Not currently supported by Chrome -- mismatch of types supported:
       // {NSAccessibilityValueAutofillTypeAttribute, @"valueAutofillType"},
       {NSAccessibilityValueDescriptionAttribute, @"valueDescription"},
-      {NSAccessibilityVisibleCharacterRangeAttribute, @"visibleCharacterRange"},
       {NSAccessibilityVisibleCellsAttribute, @"visibleCells"},
       {NSAccessibilityVisibleChildrenAttribute, @"visibleChildren"},
       {NSAccessibilityVisibleColumnsAttribute, @"visibleColumns"},
@@ -598,13 +591,9 @@ bool ui::IsNSRange(id value) {
   [super detach];
 }
 
-- (NSArray*)AXChildren {
-  return [self children];
-}
-
 // Returns an array of BrowserAccessibilityCocoa objects, representing the
 // accessibility children of this object.
-- (NSArray*)children {
+- (NSArray*)AXChildren {
   if (![self instanceActive])
     return nil;
   if (_needsToUpdateChildren) {
@@ -639,9 +628,9 @@ bool ui::IsNSRange(id value) {
 }
 
 - (void)childrenChanged {
-  // This function may be called in the middle of children() if this node adds
-  // extra mac nodes while its children are being requested. If _gettingChildren
-  // is true, we don't need to do anything here.
+  // This function may be called in the middle of -accessibilityChildren if
+  // this node adds extra mac nodes while its children are being requested. If
+  // _gettingChildren is true, we don't need to do anything here.
   if (![self instanceActive] || _gettingChildren)
     return;
   _needsToUpdateChildren = true;
@@ -664,6 +653,7 @@ bool ui::IsNSRange(id value) {
   return nil;
 }
 
+// LINT.IfChange(accessibilityColumns)
 - (NSArray*)columns {
   if (![self instanceActive])
     return nil;
@@ -674,6 +664,7 @@ bool ui::IsNSRange(id value) {
   }
   return ret;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityColumns)
 
 - (BrowserAccessibility*)containingTable {
   BrowserAccessibility* table = _owner;
@@ -846,11 +837,51 @@ bool ui::IsNSRange(id value) {
   return false;
 }
 
-- (NSNumber*)AXInsertionPointLineNumber {
-  return [self insertionPointLineNumber];
-}
+// LINT.IfChange
+- (NSInteger)accessibilityInsertionPointLineNumber {
+  if (![self instanceActive]) {
+    return NSNotFound;
+  }
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return NSNotFound;
+  }
 
-- (NSNumber*)insertionPointLineNumber {
+  const AXRange range = GetSelectedRange(*_owner);
+
+  // If the selection is not collapsed, then there is no visible caret.
+  if (!range.IsCollapsed()) {
+    return NSNotFound;
+  }
+
+  // "ax::mojom::MoveDirection" is only relevant on platforms that use object
+  // replacement characters in the accessibility tree. Mac is not one of them.
+  const AXPosition caretPosition = range.focus()->LowestCommonAncestorPosition(
+      *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
+  DCHECK(!caretPosition->IsNullPosition())
+      << "Calling HasVisibleCaretOrSelection() should have ensured that there "
+         "is a valid selection focus inside the current object.";
+  const std::vector<int> lineStarts =
+      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
+
+  // Find the text offset that starts the next line after the current caret
+  // position, then subtract 1 to get the current line number.
+  auto iterator =
+      std::upper_bound(lineStarts.begin(), lineStarts.end(),
+                       caretPosition->AsTextPosition()->text_offset());
+
+  // If the caret is on a single line and the line is empty, then
+  // the iterator will be equal to lineStarts.begin() because the lineStarts
+  // vector will be empty. The line number should be 0 in this case.
+  if (iterator == lineStarts.begin()) {
+    return 0;
+  }
+
+  return std::distance(lineStarts.begin(), std::prev(iterator));
+}
+// LINT.ThenChange(AXInsertionPointLineNumber)
+
+// LINT.IfChange
+- (NSNumber*)AXInsertionPointLineNumber {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -886,6 +917,7 @@ bool ui::IsNSRange(id value) {
 
   return @(std::distance(lineStarts.begin(), std::prev(iterator)));
 }
+// LINT.ThenChange(accessibilityInsertionPointLineNumber)
 
 - (NSString*)language {
   if (![self instanceActive])
@@ -967,15 +999,29 @@ bool ui::IsNSRange(id value) {
   return @"";
 }
 
-- (NSNumber*)AXNumberOfCharacters {
-  return [self numberOfCharacters];
-}
+// LINT.IfChange
+- (NSInteger)accessibilityNumberOfCharacters {
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (![self instanceActive] || !_owner->IsTextField()) {
+    return 0;
+  }
 
-- (NSNumber*)numberOfCharacters {
-  if ([self instanceActive] && _owner->IsTextField())
-    return @(static_cast<int>(_owner->GetValueForControl().size()));
-  return nil;
+  return static_cast<int>(_owner->GetValueForControl().size());
 }
+// LINT.ThenChange(AXNumberOfCharacters)
+
+// LINT.IfChange
+- (NSNumber*)AXNumberOfCharacters {
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (![self instanceActive] || !_owner->IsTextField()) {
+    return nil;
+  }
+
+  return @(static_cast<int>(_owner->GetValueForControl().size()));
+}
+// LINT.ThenChange(accessibilityNumberOfCharacters)
 
 - (id)accessibilityParent {
   if (![self instanceActive]) {
@@ -1132,6 +1178,7 @@ bool ui::IsNSRange(id value) {
   return cocoa_role;
 }
 
+// LINT.IfChange(accessibilityRowHeaderUIElements)
 - (NSArray*)rowHeaders {
   if (![self instanceActive]) {
     return nil;
@@ -1188,6 +1235,7 @@ bool ui::IsNSRange(id value) {
 
   return [rowHeaders count] ? rowHeaders : nil;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityRowHeaderUIElements)
 
 - (NSValue*)rowIndexRange {
   // Note: keep in sync with accessibilityRowIndexRange.
@@ -1251,11 +1299,26 @@ bool ui::IsNSRange(id value) {
   return ret;
 }
 
-- (NSString*)AXSelectedText {
-  return [self selectedText];
-}
+// LINT.IfChange
+- (NSString*)accessibilitySelectedText {
+  if (![self instanceActive]) {
+    return nil;
+  }
 
-- (NSString*)selectedText {
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return nil;
+  }
+
+  const AXRange range = GetSelectedRange(*_owner);
+  if (range.IsNull()) {
+    return nil;
+  }
+  return base::SysUTF16ToNSString(range.GetText());
+}
+// LINT.ThenChange(AXSelectedText)
+
+// LINT.IfChange
+- (NSString*)AXSelectedText {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -1266,16 +1329,43 @@ bool ui::IsNSRange(id value) {
     return nil;
   return base::SysUTF16ToNSString(range.GetText());
 }
+// LINT.ThenChange(accessibilitySelectedText)
 
-- (NSValue*)AXSelectedTextRange {
-  return [self selectedTextRange];
+// LINT.IfChange
+- (NSRange)accessibilitySelectedTextRange {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
+
+  if (!_owner->HasVisibleCaretOrSelection()) {
+    return NSMakeRange(0, 0);
+  }
+
+  const AXRange range = GetSelectedRange(*_owner).AsForwardRange();
+  if (range.IsNull()) {
+    return NSMakeRange(0, 0);
+  }
+
+  // "ax::mojom::MoveDirection" is only relevant on platforms that use object
+  // replacement characters in the accessibility tree. Mac is not one of them.
+  const AXPosition startPosition = range.anchor()->LowestCommonAncestorPosition(
+      *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
+  DCHECK(!startPosition->IsNullPosition())
+      << "Calling HasVisibleCaretOrSelection() should have ensured that there "
+         "is a valid selection anchor inside the current object.";
+  int selectionStart = startPosition->AsTextPosition()->text_offset();
+  DCHECK_GE(selectionStart, 0);
+  int selectionLength = range.GetText().length();
+  return NSMakeRange(selectionStart, selectionLength);
 }
+// LINT.ThenChange(AXSelectedTextRange)
 
 // Returns range of text under the current object that is selected.
 //
 // Example, caret at offset 5:
 // NSRange:  “pos=5 len=0”
-- (NSValue*)selectedTextRange {
+// LINT.IfChange
+- (NSValue*)AXSelectedTextRange {
   if (![self instanceActive])
     return nil;
   if (!_owner->HasVisibleCaretOrSelection())
@@ -1297,6 +1387,7 @@ bool ui::IsNSRange(id value) {
   int selLength = range.GetText().length();
   return [NSValue valueWithRange:NSMakeRange(selStart, selLength)];
 }
+// LINT.ThenChange(accessibilitySelectedTextRange)
 
 - (void)setAccessibilitySelectedTextRange:(NSRange)range {
   if (![self instanceActive])
@@ -1386,22 +1477,24 @@ bool ui::IsNSRange(id value) {
 }
 
 // Returns all tabs in this subtree.
+// LINT.IfChange(accessibilityTabs)
 - (NSArray*)tabs {
-  if (![self instanceActive])
+  if (![self instanceActive]) {
     return nil;
+  }
+
   NSMutableArray* tabSubtree = [[NSMutableArray alloc] init];
 
   if ([self internalRole] == ax::mojom::Role::kTab)
     [tabSubtree addObject:self];
 
-  for (uint i = 0; i < [[self children] count]; ++i) {
-    NSArray* tabChildren = [[[self children] objectAtIndex:i] tabs];
-    if ([tabChildren count] > 0)
-      [tabSubtree addObjectsFromArray:tabChildren];
+  for (id child in [self accessibilityChildren]) {
+    [tabSubtree addObjectsFromArray:[child tabs]];
   }
 
   return tabSubtree;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityTabs)
 
 - (id)AXValue {
   return [self value];
@@ -1510,20 +1603,34 @@ bool ui::IsNSRange(id value) {
       _owner->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
-- (NSValue*)AXVisibleCharacterRange {
-  return [self visibleCharacterRange];
-}
+// LINT.IfChange
+- (NSRange)accessibilityVisibleCharacterRange {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
+  // TODO(crbug.com/363275809): Why do we limit support to text fields here, but
+  // not in `AXPlatformNodeCocoa`?
+  if (!_owner->IsTextField() || _owner->IsPasswordField()) {
+    return NSMakeRange(0, 0);
+  }
 
-- (NSValue*)visibleCharacterRange {
+  return NSMakeRange(
+      0, static_cast<NSUInteger>(_owner->GetValueForControl().size()));
+}
+// LINT.ThenChange(AXVisibleCharacterRange)
+
+// LINT.IfChange
+- (NSValue*)AXVisibleCharacterRange {
   if ([self instanceActive] && _owner->IsTextField() &&
       !_owner->IsPasswordField()) {
     return [NSValue
         valueWithRange:NSMakeRange(0,
-                                   static_cast<int>(
+                                   static_cast<NSUInteger>(
                                        _owner->GetValueForControl().size()))];
   }
   return nil;
 }
+// LINT.ThenChange(accessibilityVisibleCharacterRange)
 
 // LINT.IfChange(accessibilityVisibleCells)
 - (NSArray*)visibleCells {
@@ -1543,7 +1650,7 @@ bool ui::IsNSRange(id value) {
 - (NSArray*)visibleChildren {
   if (![self instanceActive])
     return nil;
-  return [self children];
+  return [self accessibilityChildren];
 }
 
 // LINT.IfChange(accessibilityVisibleColumns)

@@ -51,6 +51,7 @@ class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
 class WebContentsManager;
+class WebAppProfileDeletionManager;
 
 #if BUILDFLAG(IS_CHROMEOS)
 class WebAppRunOnOsLoginManager;
@@ -266,6 +267,7 @@ class WebAppProvider : public KeyedService {
   scoped_refptr<FileUtilsWrapper> file_utils_;
   std::unique_ptr<VisitedManifestManager> visited_manifest_manager_;
   std::unique_ptr<NavigationCapturingLog> navigation_capturing_log_;
+  std::unique_ptr<WebAppProfileDeletionManager> profile_deletion_manager_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

@@ -83,6 +83,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private int mRendererTopContentOffset;
     private int mRendererTopControlsMinHeightOffset;
     private int mRendererBottomControlsMinHeightOffset;
+    private boolean mRendererTopControlsMinHeightChanged;
+    private boolean mRendererBottomControlsMinHeightChanged;
+
     private float mControlOffsetRatio;
     private ActivityTabTabObserver mActiveTabObserver;
 
@@ -687,6 +690,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             return;
         }
 
+        mRendererTopControlsMinHeightChanged =
+                mRendererTopControlsMinHeightOffset != topControlsMinHeightOffset;
+        mRendererBottomControlsMinHeightChanged =
+                mRendererBottomControlsMinHeightOffset != bottomControlsMinHeightOffset;
         mRendererTopControlOffset = rendererTopControlOffset;
         mRendererBottomControlOffset = rendererBottomControlOffset;
         mRendererTopControlsMinHeightOffset = topControlsMinHeightOffset;
@@ -708,10 +715,13 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 mControlContainer.getView().setTranslationY(getTopControlOffset());
             }
 
-            // Whether we need the compositor to draw again to update our animation.
-            // Should be |false| when the browser controls are only moved through the page
-            // scrolling.
-            boolean needsAnimate = shouldShowAndroidControls();
+            // Explicitly tell the compositor to draw again. Should be |true| only when the android
+            // views for the browser controls are visible, or when the android browser controls are
+            // being moved by a browser driven animation. Browser driven animations refer to
+            // situations where composited views do not exist. Note: requestNewFrame can be false,
+            // and a new browser compositor frame could still be produced if other observers make
+            // changes to the layer tree.
+            boolean requestNewFrame = shouldShowAndroidControls();
 
             // With BCIV enabled, renderer scrolling will not update the control offsets of the
             // browser's compositor frame, but we still want this update to happen if the browser
@@ -725,9 +735,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 obs.onControlsOffsetChanged(
                         getTopControlOffset(),
                         getTopControlsMinHeightOffset(),
+                        mRendererTopControlsMinHeightChanged,
                         getBottomControlOffset(),
                         getBottomControlsMinHeightOffset(),
-                        needsAnimate,
+                        mRendererBottomControlsMinHeightChanged,
+                        requestNewFrame,
                         isVisibilityForced);
             }
         }

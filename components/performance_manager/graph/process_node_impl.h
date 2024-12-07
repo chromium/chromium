@@ -209,7 +209,7 @@ class ProcessNodeImpl
 
   // NodeBase:
   void OnJoiningGraph() override;
-  void OnBeforeLeavingGraph() override;
+  void OnUninitializing() override;
   void RemoveNodeAttachedData() override;
 
   // Receiver for renderer-only messages.

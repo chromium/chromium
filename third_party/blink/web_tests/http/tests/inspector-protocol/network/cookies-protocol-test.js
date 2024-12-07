@@ -256,7 +256,7 @@
       dp.Network.onResponseReceivedExtraInfo(listenForResponsePartitionKey);
 
       await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php?opaque');
-      logCookies((await dp.Network.getCookies()).result);
+      await logCookies((await dp.Network.getCookies()).result);
 
       dp.Network.offRequestWillBeSentExtraInfo(
         listenForSiteHasCookieInOtherPartition);

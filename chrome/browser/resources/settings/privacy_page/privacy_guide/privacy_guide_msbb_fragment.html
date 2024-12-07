@@ -19,40 +19,47 @@
   <div class="settings-columned-section">
     <div class="column">
       <h3 class="description-header">
-        $i18n{privacyGuideFeatureDescriptionHeader}
+        $i18n{columnHeadingWhenOn}
       </h3>
-      <div role="list">
-        <privacy-guide-description-item
-            role="listitem"
-            icon="settings20:flash-on"
-            label="$i18n{privacyGuideMsbbFeatureDescription1}">
-        </privacy-guide-description-item>
-        <privacy-guide-description-item
-            role="listitem"
-            icon="settings20:lightbulb"
-            label="$i18n{privacyGuideMsbbFeatureDescription2}">
-        </privacy-guide-description-item>
-        <privacy-guide-description-item
-            role="listitem"
-            icon="settings20:notification-add"
-            label="$i18n{privacyGuideMsbbFeatureDescription3}">
-        </privacy-guide-description-item>
-      </div>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:flash-on" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideMsbbFeatureDescription1}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:lightbulb" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideMsbbFeatureDescription2}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:notification-add" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideMsbbFeatureDescription3}
+          </div>
+        </li>
+      </ul>
     </div>
     <div class="column">
-      <h3 class="description-header">$i18n{privacyGuideThingsToConsider}</h3>
-      <div role="list">
-        <privacy-guide-description-item
-            role="listitem"
-            icon="settings20:link"
-            label="$i18n{privacyGuideMsbbPrivacyDescription1}">
-        </privacy-guide-description-item>
-        <privacy-guide-description-item
-            role="listitem"
-            icon="settings20:data-connectors-system"
-            label="$i18n{privacyGuideMsbbPrivacyDescription2}">
-        </privacy-guide-description-item>
-      </div>
+      <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:link" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideMsbbPrivacyDescription1}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:data-connectors-system" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideMsbbPrivacyDescription2}
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </div>

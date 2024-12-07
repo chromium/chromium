@@ -1126,7 +1126,6 @@ ci.builder(
         "upload_directory": "asan",
     },
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_linking = True,
 )
 
 ci.builder(

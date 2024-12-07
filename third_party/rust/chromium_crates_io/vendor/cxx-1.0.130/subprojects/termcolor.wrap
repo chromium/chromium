@@ -1,6 +1,0 @@
-[wrap-file]
-directory = termcolor-1.4.1
-source_url = https://static.crates.io/crates/termcolor/1.4.1/download
-source_filename = termcolor-1.4.1.tar.gz
-source_hash = 06794f8f6c5c898b3275aebefa6b8a1cb24cd2c6c79397ab15774837a0bc5755
-patch_directory = termcolor

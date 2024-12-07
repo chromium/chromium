@@ -33,7 +33,6 @@ class MainThreadSchedulerImpl;
 class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
  public:
   MainThreadMetricsHelper(MainThreadSchedulerImpl* main_thread_scheduler,
-                          bool has_cpu_timing_for_each_task,
                           base::TimeTicks now,
                           bool renderer_backgrounded);
   MainThreadMetricsHelper(const MainThreadMetricsHelper&) = delete;

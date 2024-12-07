@@ -1,0 +1,7 @@
+# crbug.com/377643975
+-All/AndroidFrameSinkManagerTest.EmbeddedRenderInputRouters/InputOnViz_Enabled
+-All/AndroidFrameSinkManagerTest.RWHIERLifecycleDiffWebContents/InputOnViz_Enabled
+-All/AndroidFrameSinkManagerTest.RWHIERLifecycleSameWebContents/InputOnViz_Enabled
+-All/AndroidFrameSinkManagerTest.RenderInputRouterLifecycle/InputOnViz_Enabled
+-All/AndroidFrameSinkManagerTest.RenderInputRouterSupportTraversals/InputOnViz_Enabled
+-All/AndroidFrameSinkManagerTest.VizRIRDelegateLifecycle/InputOnViz_Enabled

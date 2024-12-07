@@ -68,6 +68,7 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
                            float tick_multiplier,
                            base::TimeTicks oldest_event_time,
                            base::TimeTicks latest_event_time,
+                           base::TimeTicks cached_down_time_ms,
                            int android_action,
                            int pointer_count,
                            int history_size,

@@ -119,6 +119,11 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       network::mojom::SharedStorageModifierMethodWithOptionsPtr
           method_with_options,
       SharedStorageUpdateCallback callback) override;
+  void SharedStorageBatchUpdate(
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      const std::optional<std::string>& with_lock,
+      SharedStorageBatchUpdateCallback callback) override;
   void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;
   void SharedStorageKeys(

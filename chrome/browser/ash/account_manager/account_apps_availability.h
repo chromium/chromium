@@ -118,7 +118,7 @@ class AccountAppsAvailability
   // with the resulted account or with `nullopt` if requested account is not in
   // Account Manager.
   void FindAccountByGaiaId(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       base::OnceCallback<void(const std::optional<account_manager::Account>&)>
           callback);
 

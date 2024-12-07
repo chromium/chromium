@@ -19,10 +19,18 @@
     label="Dictionary name"
     type="text"
     on-change="saveName_"></cr-input>
-    <cr-icon-button class="delete-icon"
-      iron-icon="cr:delete"
-      on-click="deleteDictionary_"
-      title="DeleteDictionary"></cr-icon-button>
+    <div>
+      <cr-icon-button class="delete-icon"
+        iron-icon="cr:delete"
+        on-click="deleteDictionary_"
+        title="DeleteDictionary"></cr-icon-button>
+      <cr-button on-click="exportDictionary_">
+        <!-- TODO(crbug.com/382344109): Translate UI strings -->
+        <span>
+          Export
+        </span>
+      </cr-button>
+    </div>
   </div>
   <template is="dom-repeat" items="[[dict.entries]]" as="entry">
     <os-japanese-dictionary-entry-row

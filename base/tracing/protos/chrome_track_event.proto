@@ -1390,6 +1390,7 @@ message LocalSurfaceId {
 }
 
 message ChromeGraphicsPipeline {
+  // Next id: 26
   enum StepName {
     STEP_UNKNOWN = 0;
     STEP_DID_NOT_PRODUCE_FRAME = 1;
@@ -1442,6 +1443,18 @@ message ChromeGraphicsPipeline {
     STEP_BACKEND_SEND_BUFFER_SWAP = 18;
     STEP_BACKEND_SEND_BUFFER_POST_SUBMIT = 19;
     STEP_BACKEND_FINISH_BUFFER_SWAP = 20;
+
+    // Send viz.mojom.CompositorFrameSinkClient::OnBeginFrame Mojo message from
+    // Viz to a renderer's compositor.
+    STEP_SEND_ON_BEGIN_FRAME_MOJO_MESSAGE = 23;
+
+    // Send viz.mojom.BeginFrameObserver::OnStandaloneBeginFrame Mojo message
+    // from Viz to the browser main thread (for flings).
+    STEP_SEND_ON_STANDALONE_BEGIN_FRAME_MOJO_MESSAGE = 24;
+
+    // Send viz.mojom.CompositorFrameSink::SubmitCompositorFrame Mojo message
+    // from a renderer's compositor to Viz.
+    STEP_SEND_SUBMIT_COMPOSITOR_FRAME_MOJO_MESSAGE = 25;
   }
   enum FrameSkippedReason {
     SKIPPED_REASON_UNKNOWN = 0;
@@ -2035,7 +2048,7 @@ message CurrentTask {
 message ChromeLatencyInfo2 {
   optional int64 trace_id = 1;
 
-  // NEXT ID: 15
+  // NEXT ID: 16
   // All step are optional but the enum is ordered (not by number) below in the
   // order we expect them to appear if they are emitted in trace in a blocking
   // fashion.
@@ -2043,6 +2056,10 @@ message ChromeLatencyInfo2 {
     STEP_UNSPECIFIED = 0;
     // Emitted on the browser main thread.
     STEP_SEND_INPUT_EVENT_UI = 3;
+    // The browser main thread sends a
+    // blink.mojom.WidgetInputHandler::DispatchEvent Mojo message to the
+    // renderer's compositor.
+    STEP_SEND_DISPATCH_EVENT_MOJO_MESSAGE = 15;
     // Happens on the renderer's compositor.
     STEP_HANDLE_INPUT_EVENT_IMPL = 5;
     STEP_RESAMPLE_SCROLL_EVENTS = 14;

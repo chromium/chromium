@@ -172,6 +172,15 @@ enum CookieAccessSemantics {
   LEGACY,
 };
 
+// Keep in sync with net/cookies/cookie_constants.h.
+// LINT.IfChange(CookieScopeSemanticsMojom)
+enum CookieScopeSemantics {
+  UNKNOWN = -1,
+  NONLEGACY = 0,
+  LEGACY = 1,
+};
+// LINT.ThenChange(/net/cookies/cookie_constants.h:CookieScopeSemantics)
+
 // Keep defaults here in sync with net/cookies/cookie_options.cc.
 struct CookieOptions {
   bool exclude_httponly = true;
@@ -237,6 +246,7 @@ struct CookieOrLineWithAccessResult {
 struct CookieAccessResult {
   CookieEffectiveSameSite effective_same_site;
   CookieAccessSemantics access_semantics;
+  CookieScopeSemantics scope_semantics;
   CookieInclusionStatus status;
   bool is_allowed_to_access_secure_cookies;
 };

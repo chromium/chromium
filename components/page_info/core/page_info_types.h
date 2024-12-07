@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_INFO_CORE_PAGE_INFO_TYPES_H_
 #define COMPONENTS_PAGE_INFO_CORE_PAGE_INFO_TYPES_H_
 
+#include "base/functional/callback.h"
 #include "url/gurl.h"
 
 namespace page_info {
@@ -23,6 +24,9 @@ struct MerchantData {
   GURL page_url;
   std::string reviews_summary;
 };
+
+using MerchantDataCallback =
+    base::OnceCallback<void(const GURL&, std::optional<MerchantData>)>;
 }  // namespace page_info
 
 #endif  // COMPONENTS_PAGE_INFO_CORE_PAGE_INFO_TYPES_H_

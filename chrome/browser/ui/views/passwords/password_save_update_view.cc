@@ -201,18 +201,6 @@ const PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController()
   return &controller_;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-bool PasswordSaveUpdateView::OnCloseRequested(
-    views::Widget::ClosedReason close_reason) {
-  if (is_signin_promo_bubble_ &&
-      (close_reason == views::Widget::ClosedReason::kCloseButtonClicked ||
-       close_reason == views::Widget::ClosedReason::kEscKeyPressed)) {
-    AutofillBubbleSignInPromoView::RecordSignInPromoDismissed(web_contents());
-  }
-  return true;
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Close the bubble if the sign in promo should not be shown.
@@ -267,7 +255,6 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   // Notify the screen reader that the bubble changed.
   AnnounceBubbleChange();
 
-  is_signin_promo_bubble_ = true;
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kPasswordBubble);
 

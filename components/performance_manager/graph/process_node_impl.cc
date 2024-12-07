@@ -139,16 +139,18 @@ void ProcessNodeImpl::OnV8ContextDetached(
     const blink::V8ContextToken& v8_context_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  if (auto* tracker = v8_memory::V8ContextTracker::GetFromGraph(graph()))
+  if (auto* tracker = v8_memory::V8ContextTracker::GetFromGraph(graph())) {
     tracker->OnV8ContextDetached(PassKey(), this, v8_context_token);
+  }
 }
 
 void ProcessNodeImpl::OnV8ContextDestroyed(
     const blink::V8ContextToken& v8_context_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  if (auto* tracker = v8_memory::V8ContextTracker::GetFromGraph(graph()))
+  if (auto* tracker = v8_memory::V8ContextTracker::GetFromGraph(graph())) {
     tracker->OnV8ContextDestroyed(PassKey(), this, v8_context_token);
+  }
 }
 
 void ProcessNodeImpl::OnRemoteIframeAttached(
@@ -455,13 +457,14 @@ void ProcessNodeImpl::OnJoiningGraph() {
   NodeAttachedDataStorage::Create(this);
 }
 
-void ProcessNodeImpl::OnBeforeLeavingGraph() {
+void ProcessNodeImpl::OnUninitializing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Make as if we're transitioning to the null PID before we die to clear this
   // instance from the PID map.
-  if (process_id_ != base::kNullProcessId)
+  if (process_id_ != base::kNullProcessId) {
     graph()->BeforeProcessPidChange(this, base::kNullProcessId);
+  }
 
   // All child frames should have been removed before the process is removed.
   DCHECK(frame_nodes_.empty());

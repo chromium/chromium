@@ -183,6 +183,7 @@ source_set("popup_icon") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:symbols_views",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//url",
   ]
@@ -208,6 +209,7 @@ source_set("popup_internal") {
     "//ios/chrome/browser/omnibox/ui_bundled:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",

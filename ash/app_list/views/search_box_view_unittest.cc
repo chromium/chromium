@@ -144,7 +144,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
       : views::test::WidgetTest(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
   }
 
   SearchBoxViewTest(const SearchBoxViewTest&) = delete;
@@ -280,7 +279,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
   bool CanSelectSearchResults() override { return true; }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   AshColorProvider ash_color_provider_;
   raw_ptr<AppListSearchView, DanglingUntriaged> search_view_ = nullptr;
   AppListTestViewDelegate view_delegate_;
@@ -800,9 +798,8 @@ TEST_F(SearchBoxViewAssistantButtonTest,
 class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
  public:
   SearchBoxViewFilterButtonTest() {
-    scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kJelly, features::kLauncherSearchControl,
+        {features::kLauncherSearchControl,
          features::kFeatureManagementLocalImageSearch},
         {});
   }
@@ -810,6 +807,9 @@ class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
   SearchBoxViewFilterButtonTest& operator=(
       const SearchBoxViewFilterButtonTest&) = delete;
   ~SearchBoxViewFilterButtonTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the filter button is invisible by default.
@@ -825,10 +825,7 @@ TEST_F(SearchBoxViewFilterButtonTest, FilterButtonVisibleAfterTyping) {
 
 class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
  public:
-  SearchBoxViewAutocompleteTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
+  SearchBoxViewAutocompleteTest() = default;
   SearchBoxViewAutocompleteTest(const SearchBoxViewAutocompleteTest&) = delete;
   SearchBoxViewAutocompleteTest& operator=(
       const SearchBoxViewAutocompleteTest&) = delete;

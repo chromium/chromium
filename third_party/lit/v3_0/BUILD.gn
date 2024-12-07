@@ -48,6 +48,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/browser/resources/profile_internals:build_ts",
     "//chrome/browser/resources/search_engine_choice:build_ts",
+    "//chrome/browser/resources/settings:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
     "//chrome/browser/resources/side_panel/customize_chrome:build_ts",
     "//chrome/browser/resources/side_panel/history_clusters:build_ts",
@@ -76,6 +77,7 @@ ts_library("build_ts") {
     "//components/commerce/core/internals/resources:build_ts",
     "//components/download/resources/download_internals:build_ts",
     "//components/flags_ui/resources:build_ts",
+    "//components/neterror/resources:build_ts",
     "//components/ntp_tiles/webui/resources:build_ts",
     "//components/signin/core/browser/resources:build_ts",
     "//content/browser/resources/indexed_db:build_ts",
@@ -188,6 +190,14 @@ bundle_js("build_bundle") {
 }
 
 minify_js("build_min_js") {
+  visibility = [
+    ":build_grdp",
+
+    # Expose target to //components/neterror only, which needs to include the
+    # Lit bundle in its own bundle unlike WebUIs that exclude it and therefore
+    # don't need to depend on this target.
+    "//components/neterror/resources:bundle_js",
+  ]
   deps = [ ":build_bundle" ]
   in_folder = "$target_gen_dir/bundled"
   in_files = [ "lit.rollup.js" ]

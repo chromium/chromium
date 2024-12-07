@@ -76,8 +76,8 @@ function doubleClickAction()
 
 async function wheelAction(initialButtons)
 {
-  let targetDiv = document.getElementById('target');  
-  let buttons = []; 
+  let targetDiv = document.getElementById('target');
+  let buttons = [];
   initialButtons.forEach(function(item) {
     if (item == L)
       buttons.push(Buttons.LEFT);
@@ -91,7 +91,6 @@ async function wheelAction(initialButtons)
                            GestureSourceType.MOUSE_INPUT, SPEED_INSTANT,
                            true /* precise_scrolling_deltas */,
                            false /* scroll_by_page */, true /* cursor_visible */,
-                           false /* scroll_by_percentage */,
                            "" /* modifier_keys */, buttons.join(','));
 }
 

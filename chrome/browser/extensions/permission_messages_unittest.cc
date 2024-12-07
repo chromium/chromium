@@ -61,7 +61,7 @@ class PermissionMessagesUnittest : public testing::Test {
   PermissionMessagesUnittest& operator=(const PermissionMessagesUnittest&) =
       delete;
 
-  ~PermissionMessagesUnittest() override {}
+  ~PermissionMessagesUnittest() override = default;
 
  protected:
   void CreateAndInstallExtensionWithPermissions(
@@ -255,7 +255,7 @@ class USBDevicePermissionMessagesTest : public testing::Test {
  public:
   USBDevicePermissionMessagesTest()
       : message_provider_(new ChromePermissionMessageProvider()) {}
-  ~USBDevicePermissionMessagesTest() override {}
+  ~USBDevicePermissionMessagesTest() override = default;
 
   PermissionMessages GetMessages(const PermissionIDSet& permissions) {
     return message_provider_->GetPermissionMessages(permissions);

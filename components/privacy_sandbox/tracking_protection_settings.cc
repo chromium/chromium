@@ -117,19 +117,11 @@ bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
 }
 
 void TrackingProtectionSettings::AddTrackingProtectionException(
-    const GURL& first_party_url,
-    bool is_user_bypass_exception) {
-  content_settings::ContentSettingConstraints constraints;
-  if (is_user_bypass_exception) {
-    constraints.set_lifetime(
-        content_settings::features::kUserBypassUIExceptionExpiration.Get());
-  }
-
+    const GURL& first_party_url) {
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url),
-      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW,
-      constraints);
+      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW);
 }
 
 void TrackingProtectionSettings::RemoveTrackingProtectionException(

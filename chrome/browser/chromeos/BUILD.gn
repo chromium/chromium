@@ -6,7 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_extensions)
 assert(is_chromeos)
@@ -38,7 +37,6 @@ group("unit_tests") {
     "//chrome/browser/chromeos/reporting/network:unit_tests",
     "//chrome/browser/chromeos/reporting/websites:unit_tests",
     "//chrome/browser/chromeos/tablet_mode:unit_tests",
-    "//chrome/browser/chromeos/tast_support:unit_tests",
     "//chrome/browser/chromeos/video_conference:unit_tests",
   ]
 
@@ -79,11 +77,4 @@ if (!is_chromeos_device) {
 
     deps = [ "//chrome/browser/chromeos/policy/dlp:interactive_ui_tests" ]
   }
-}
-
-proto_library("system_stack_sampled_metrics_status_proto") {
-  sources = [ "//third_party/cros_system_api/proto/stack_sampled_metrics_status//stack_sampled_metrics_status.proto" ]
-
-  proto_out_dir =
-      "third_party/cros_system_api/proto/stack_sampled_metrics_status"
 }

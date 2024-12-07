@@ -402,6 +402,10 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
+        // Make sure that prerendering navigation has the Sec-Purpose header.
+        HashMap<String, String> headers = mTestServer.getRequestHeadersForUrl(PRERENDER_URL);
+        Assert.assertEquals("prefetch;prerender", headers.get("Sec-Purpose"));
+
         activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
 
         // Wait until the navigation activates the prerendered page.
@@ -547,6 +551,29 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Wait until the navigation activates the prerendered page.
         mActivationCallbackHelper.waitForCallback(currentCallCount);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests WebView prerendering trigger with null activation callback.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testNullActivationCallback() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(
+                        /* additionalHeaders= */ null,
+                        /* noVarySearchData= */ null,
+                        /* isJavascriptEnabled= */ true);
+        startPrerenderingAndWait(
+                mPrerenderingUrl, prefetchParameters, /* activationCallback= */ null);
+
+        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 

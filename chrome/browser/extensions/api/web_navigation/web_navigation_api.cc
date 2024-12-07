@@ -43,7 +43,7 @@ namespace web_navigation = api::web_navigation;
 // WebNavigtionEventRouter -------------------------------------------
 
 WebNavigationEventRouter::PendingWebContents::PendingWebContents() = default;
-WebNavigationEventRouter::PendingWebContents::~PendingWebContents() {}
+WebNavigationEventRouter::PendingWebContents::~PendingWebContents() = default;
 
 void WebNavigationEventRouter::PendingWebContents::Set(
     int source_tab_id,
@@ -179,7 +179,7 @@ WebNavigationTabObserver::WebNavigationTabObserver(
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<WebNavigationTabObserver>(*web_contents) {}
 
-WebNavigationTabObserver::~WebNavigationTabObserver() {}
+WebNavigationTabObserver::~WebNavigationTabObserver() = default;
 
 // static
 WebNavigationTabObserver* WebNavigationTabObserver::Get(
@@ -658,7 +658,7 @@ WebNavigationAPI::WebNavigationAPI(content::BrowserContext* context)
                                  web_navigation::OnTabReplaced::kEventName);
 }
 
-WebNavigationAPI::~WebNavigationAPI() {}
+WebNavigationAPI::~WebNavigationAPI() = default;
 
 void WebNavigationAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);

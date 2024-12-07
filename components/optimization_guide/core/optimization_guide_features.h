@@ -82,14 +82,13 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOnDeviceModelValidation);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup);
-
-#if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAiSettingsPageRefresh);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacyGuideAiSettings);
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<bool> kShowAiSettingsForTesting;
-#endif
 
 // Comma-separated list of performance classes (e.g. "3,4,5") that should
 // download the base model. Use "*" if there is no performance class
@@ -532,6 +531,14 @@ int GetOnDeviceModelValidationAttemptCount();
 // Returns whether the icon view should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldEnableOptimizationGuideIconView();
+
+// Whether Ai settings page refresh or any dependent feature is enabled.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsAiSettingsPageRefreshEnabled();
+
+// Whether Ai settings page integration with Privacy Guide is enabled.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsPrivacyGuideAiSettingsEnabled();
 
 }  // namespace features
 }  // namespace optimization_guide

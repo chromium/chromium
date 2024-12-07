@@ -76,13 +76,13 @@ public class SensitiveContentClientUnitTest {
         when(mWebContents.getViewAndroidDelegate())
                 .thenAnswer(invocation -> mSecondViewAndroidDelegate);
 
-        mClient.setContentSensitivity(/* contentIsSensitive= */ true);
-        verify(mContentSensitivitySetter).setContentSensitivity(mThirdContainerView, true);
+        mClient.onViewAndroidDelegateSet();
+        verify(mContentSensitivitySetter).setContentSensitivity(mThirdContainerView, false);
 
         mSecondViewAndroidDelegate.setContainerView(mSecondContainerView);
-        verify(mContentSensitivitySetter).setContentSensitivity(mSecondContainerView, true);
+        verify(mContentSensitivitySetter).setContentSensitivity(mSecondContainerView, false);
 
-        verify(mContentSensitivitySetter, never()).setContentSensitivity(any(), eq(false));
+        verify(mContentSensitivitySetter, never()).setContentSensitivity(any(), eq(true));
         verify(mContentSensitivitySetter, never())
                 .setContentSensitivity(eq(mFirstContainerView), anyBoolean());
     }

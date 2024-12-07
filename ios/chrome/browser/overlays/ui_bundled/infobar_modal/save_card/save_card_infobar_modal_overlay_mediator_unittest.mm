@@ -57,6 +57,7 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 // Prefs passed in setupModalViewControllerWithPrefs:.
 @property(nonatomic, copy) NSString* cardholderName;
 @property(nonatomic, strong) UIImage* cardIssuerIcon;
+@property(nonatomic, copy) NSString* cardNetwork;
 @property(nonatomic, copy) NSString* cardNumber;
 @property(nonatomic, copy) NSString* expirationMonth;
 @property(nonatomic, copy) NSString* expirationYear;
@@ -74,6 +75,7 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 - (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs {
   self.cardholderName = [prefs[kCardholderNamePrefKey] stringValue];
   self.cardIssuerIcon = prefs[kCardIssuerIconNamePrefKey];
+  self.cardNetwork = prefs[kCardNetworkPrefKey];
   self.cardNumber = prefs[kCardNumberPrefKey];
   self.expirationMonth = prefs[kExpirationMonthPrefKey];
   self.expirationYear = prefs[kExpirationYearPrefKey];

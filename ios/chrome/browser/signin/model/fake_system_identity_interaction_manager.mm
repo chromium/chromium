@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 namespace {
@@ -174,6 +175,10 @@ BOOL gUsingUnknownCapabilities;
 
 - (void)cancelAuthActivityAnimated:(BOOL)animated
                         completion:(ProceduralBlock)completion {
+  if (base::FeatureList::IsEnabled(
+          kIOSInterruptibleChromeStoppedSynchronously)) {
+    CHECK(!completion);
+  }
   NSError* error = ios::provider::CreateUserCancelledSigninError();
   [self dismissAndRunCompletionCallbackWithError:error
                                         identity:nil
@@ -221,13 +226,22 @@ BOOL gUsingUnknownCapabilities;
   }
 
   __weak FakeSystemIdentityInteractionManager* weakSelf = self;
-  [_authActivityViewController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:^{
-                           [weakSelf runCompletionCallbackWithError:error
-                                                           identity:identity
-                                                         completion:completion];
-                         }];
+  auto dismissCompletion = ^{
+    [weakSelf runCompletionCallbackWithError:error
+                                    identity:identity
+                                  completion:completion];
+  };
+  if (base::FeatureList::IsEnabled(
+          kIOSInterruptibleChromeStoppedSynchronously)) {
+    [_authActivityViewController.presentingViewController
+        dismissViewControllerAnimated:animated
+                           completion:nil];
+    dismissCompletion();
+  } else {
+    [_authActivityViewController.presentingViewController
+        dismissViewControllerAnimated:animated
+                           completion:dismissCompletion];
+  }
 }
 
 - (void)runCompletionCallbackWithError:(NSError*)error

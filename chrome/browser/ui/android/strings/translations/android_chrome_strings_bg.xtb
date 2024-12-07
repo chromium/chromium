@@ -146,8 +146,10 @@
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> предложени елемента в списъка по-долу.</translation>
 <translation id="1598163867407640634">Използвайте <ph name="SITE_ETLD_PLUS_ONE" /> за <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Когато настройката е включена, ще се използват и запазват данни в профила ви в Google. Ако е изключена, те ще се запазват само на това устройство.</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> премахна раздел</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Премахване на 1 избран елемент}other{Премахване на # избрани елемента}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 отметка и други елементи са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google (<ph name="ACCOUNT_EMAIL" />).}other{# отметки и други елементи са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> се присъедини към групата</translation>
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
 <translation id="164269334534774161">Преглеждате офлайн копие на тази страница, създадено на <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">История</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">Съдържание от Google за млади умове</translation>
 <translation id="2579297619530305344">Известието „Паролите са достъпни на всичките ви устройства“ е отворено на пълната височина</translation>
 <translation id="2581165646603367611">Така ще се изчистят „бисквитките“, кешът и другата информация от сайтове, която не е важна за Chrome.</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> добави раздел</translation>
 <translation id="2587052924345400782">Налице е по-нова версия</translation>
 <translation id="2593272815202181319">Непропорционален</translation>
 <translation id="2603212228005142861">Влезте в профила си, за да управлявате предпочитанията си</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">Остава 1 сек</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome откри повторно използвана парола, която можете да подобрите}other{Chrome откри # повторно използвани пароли, които можете да подобрите}}</translation>
+<translation id="2796651346651857052">Докоснете и задръжте адресната лента, за да промените позицията ѝ.</translation>
 <translation id="2800066122460699237">Разделът <ph name="TAB_TITLE" /> ще бъде затворен</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">Влезли сте като <ph name="EMAIL" />. Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="5304593522240415983">Това поле трябва да се попълни</translation>
 <translation id="5306014156308790439">Бутонът „Добавяне към колекция“ не е активен</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> промени цвета на групата</translation>
 <translation id="5308380583665731573">Свързване</translation>
 <translation id="5310963254742922113">Паролата е използвана.</translation>
 <translation id="5316947901395241499">Запазването на паролите е изключено от администратора ви</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507">Няма сайтове от <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
 <translation id="5364112109233799727">URL адресът на страницата, за която споделяте отзиви, ще бъде изпратен до Google и може да бъде прегледан от хора с цел подобряване на тази функция</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> промени раздел</translation>
 <translation id="5375374982898812658">Незабавно ще загубите достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всичките ви устройства</translation>
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">Излизане от режим „инкогнито“</translation>
@@ -1111,6 +1117,7 @@
 <translation id="60923314841986378">Остават <ph name="HOURS" /> часа</translation>
 <translation id="6095578583683628124">Ако Google е и търсещата ви машина по подразбиране, ще виждате по-добри и контекстуално уместни предложения</translation>
 <translation id="610630277578876674">Бързо отваряйте връзки в съобщения и др.</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> промени името на групата</translation>
 <translation id="6108923351542677676">Извършва се настройване…</translation>
 <translation id="6112702117600201073">Опресняване на страницата</translation>
 <translation id="6122831415929794347">Да се изключи ли „Безопасно сърфиране“?</translation>
@@ -1325,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 раздел}other{<ph name="NUMBER_OF_TABS" /> раздела}}</translation>
 <translation id="6929224077895306814">Всички кодове за сигурност, запазени на устройството ви и в профила ви в Google, ще бъдат изтрити</translation>
 <translation id="6937524809504266803">Персонализиране и свързване</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Псевдоним (по избор)</translation>
 <translation id="6942665639005891494">Променете стандартното местоположение за изтегляне по всяко време чрез опцията в менюто „Настройки“</translation>
 <translation id="694267552845942083">В момента персонализирате настройките си за синхронизиране. За да включите синхронизирането, докоснете бутона „Потвърждаване“ в долната част на екрана. Придвижване нагоре</translation>
@@ -1493,6 +1501,7 @@
 <translation id="7656721520530864426">Няма сайтове</translation>
 <translation id="7656862631699126784">Включване на заключването в режим „инкогнито“</translation>
 <translation id="7658239707568436148">Отказ</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> напусна групата</translation>
 <translation id="7663320421139257046">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт вашите <ph name="FIELDS_STRING" />. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
 <translation id="766587987807204883">Тук се показват статии, които можете да четете дори когато сте офлайн</translation>

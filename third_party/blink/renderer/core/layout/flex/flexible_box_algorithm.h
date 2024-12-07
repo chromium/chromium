@@ -39,7 +39,6 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/baseline_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/geometry/flex_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -147,6 +146,8 @@ class FlexItem {
 
   const FlexibleBoxAlgorithm* algorithm_;
   Member<const ComputedStyle> style_;
+  const float flex_grow_;
+  const float flex_shrink_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;
   const LayoutUnit hypothetical_main_content_size_;
@@ -327,11 +328,8 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   const ComputedStyle* Style() const { return style_.Get(); }
   const ComputedStyle& StyleRef() const { return *style_; }
 
-  const Vector<FlexLine>& FlexLines() const { return flex_lines_; }
-  Vector<FlexLine>& FlexLines() { return flex_lines_; }
-
-  // Computes the next flex line, stores it in FlexLines(), and returns a
-  // pointer to it. Returns nullptr if there are no more lines.
+  // Computes the next flex line, and returns a pointer to it.
+  // Returns nullptr if there are no more lines.
   FlexLine* ComputeNextFlexLine();
 
   bool IsHorizontalFlow() const;
@@ -350,15 +348,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   PhysicalDirection CrossAxisDirection() const;
 
   bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
-
-  // Returns the intrinsic size of this box in the block direction. Call this
-  // after all flex lines have been created and processed (ie. after the
-  // ComputeLineItemsPosition stage).
-  // For a column flexbox, this will return the max across all flex lines of
-  // the length of the line, minus any added spacing due to justification.
-  // For row flexboxes, this returns the bottom (block axis) of the last flex
-  // line. In both cases, border/padding is not included.
-  LayoutUnit IntrinsicContentBlockSize() const;
 
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
   static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);

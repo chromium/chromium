@@ -8,15 +8,19 @@ import type {DescriptionCitationElement} from 'chrome://compare/description_cita
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('DescriptionCitationTest', () => {
   let citationElement: DescriptionCitationElement;
+  let metrics: MetricsTracker;
   const mockOpenWindowProxy = TestMock.fromClass(OpenWindowProxyImpl);
 
   setup(async () => {
     OpenWindowProxyImpl.setInstance(mockOpenWindowProxy);
+    metrics = fakeMetricsPrivate();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     citationElement = document.createElement('description-citation');
@@ -72,6 +76,7 @@ suite('DescriptionCitationTest', () => {
 
     const arg = await mockOpenWindowProxy.whenCalled('openUrl');
     assertEquals(url, arg);
+    assertEquals(1, metrics.count('Commerce.Compare.CitationClicked'));
   });
 
   test('tooltip has no animation delay', async () => {

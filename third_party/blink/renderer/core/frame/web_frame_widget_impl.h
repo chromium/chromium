@@ -333,13 +333,13 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool GetMayThrottleIfUndrawnFramesForTesting();
 
   // AnimationFrameTimingMonitor::Client overrides
-  void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo* info) override;
   bool ShouldReportLongAnimationFrameTiming() const override;
   void ReportLongTaskTiming(base::TimeTicks start_time,
                             base::TimeTicks end,
                             ExecutionContext* task_context) override;
   bool RequestedMainFramePending() override;
-  void RecordRenderingUpdateEndTime(base::TimeTicks) override;
+  AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
+      base::TimeTicks) override;
   ukm::UkmRecorder* MainFrameUkmRecorder() override;
   ukm::SourceId MainFrameUkmSourceId() override;
 
@@ -582,7 +582,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // content (only clip it).
   void SetBrowserControlsParams(cc::BrowserControlsParams params);
 
-  void SetMaxSafeAreaInsets(const gfx::Insets& max_safe_area_insets);
+  void SetMaxSafeAreaInsets(const gfx::InsetsF& max_safe_area_insets);
 
   // This function provides zooming for find in page results when browsing with
   // page autosize.

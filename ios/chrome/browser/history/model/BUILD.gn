@@ -27,7 +27,6 @@ source_set("model") {
     "//components/history/core/common",
     "//components/history/ios/browser",
     "//components/history/metrics",
-    "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/prefs",

@@ -120,8 +120,7 @@ class MojoStableVideoDecoder::SharedImageHolder
     const gpu::SharedImageInfo shared_image_info(
         *shared_image_format,
         GetRectSizeFromOrigin(frame_resource->visible_rect()),
-        frame_resource->ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, shared_image_usage,
+        frame_resource->ColorSpace(), shared_image_usage,
         /*debug_label=*/"MojoStableVideoDecoder");
     scoped_refptr<gpu::ClientSharedImage> new_client_shared_image =
         sii->CreateSharedImage(shared_image_info, std::move(gmb_handle));

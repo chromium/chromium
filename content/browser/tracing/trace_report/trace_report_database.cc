@@ -84,7 +84,8 @@ ClientTraceReport::ClientTraceReport() = default;
 ClientTraceReport::~ClientTraceReport() = default;
 
 TraceReportDatabase::TraceReportDatabase()
-    : database_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128}) {
+    : database_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128},
+                /*tag=*/"LocalTraces") {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -95,9 +96,6 @@ bool TraceReportDatabase::OpenDatabase(const base::FilePath& path) {
   }
 
   db_file_path_ = path.Append(kLocalTracesDatabasePath);
-
-  // For logging memory dumps
-  database_.set_histogram_tag("LocalTraces");
 
   const base::FilePath dir = db_file_path_.DirName();
   if (!base::DirectoryExists(dir) && !base::CreateDirectory(dir)) {
@@ -220,7 +218,6 @@ bool TraceReportDatabase::UploadComplete(const base::Token& uuid,
       database_.GetCachedStatement(SQL_FROM_HERE,
                                    R"sql(UPDATE local_traces
                                    SET state=?, upload_time=?,
-                                   trace_content=NULL,
                                    system_profile=NULL
                                    WHERE uuid=?)sql"));
 
@@ -342,8 +339,8 @@ bool TraceReportDatabase::DeleteAllTraces() {
   return delete_all_traces.Run();
 }
 
-bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
-                                                  const base::Time end) {
+bool TraceReportDatabase::DeleteTracesInDateRange(base::Time start,
+                                                  base::Time end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
     return false;
@@ -376,6 +373,26 @@ bool TraceReportDatabase::DeleteTraceReportsOlderThan(base::TimeDelta age) {
 
   CHECK(delete_reports_older_than.is_valid());
 
+  return delete_reports_older_than.Run();
+}
+
+bool TraceReportDatabase::DeleteUploadedTraceContentOlderThan(
+    base::TimeDelta age) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_initialized()) {
+    return false;
+  }
+
+  sql::Statement delete_reports_older_than(
+      database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+        DELETE FROM local_traces
+        WHERE state=? AND upload_time < ?)sql"));
+
+  delete_reports_older_than.BindInt(
+      0, static_cast<int>(ReportUploadState::kUploaded));
+  delete_reports_older_than.BindTime(1, base::Time(base::Time::Now() - age));
+
+  CHECK(delete_reports_older_than.is_valid());
   return delete_reports_older_than.Run();
 }
 

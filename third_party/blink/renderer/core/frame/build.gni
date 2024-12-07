@@ -30,6 +30,8 @@ blink_core_sources_frame = [
   "csp/csp_directive_list.h",
   "csp/csp_source.cc",
   "csp/csp_source.h",
+  "csp/csp_hash_report_body.cc",
+  "csp/csp_hash_report_body.h",
   "csp/csp_violation_report_body.cc",
   "csp/csp_violation_report_body.h",
   "csp/execution_context_csp_delegate.cc",

@@ -25,7 +25,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
-#include "chrome/services/speech/soda/soda_client.h"
+#include "chrome/services/speech/soda/soda_client_impl.h"
 #include "components/soda/constants.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/audio_buffer.h"
@@ -161,12 +161,26 @@ void SpeechRecognitionRecognizerImpl::Create(
     const std::string& primary_language_name,
     const bool mask_offensive_words,
     base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service) {
+// On Chrome OS, CrosSpeechRecognitionRecognizerImpl will create its own
+// CrosSodaClient.
+#if BUILDFLAG(IS_CHROMEOS)
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SpeechRecognitionRecognizerImpl>(
           std::move(remote), std::move(options), binary_path, config_paths,
           primary_language_name, mask_offensive_words,
           speech_recognition_service),
       std::move(receiver));
+#else
+  auto receiver_ref = mojo::MakeSelfOwnedReceiver(
+      std::make_unique<SpeechRecognitionRecognizerImpl>(
+          std::move(remote), std::move(options), binary_path, config_paths,
+          primary_language_name, mask_offensive_words,
+          speech_recognition_service),
+      std::move(receiver));
+  SpeechRecognitionRecognizerImpl* recognizer =
+      static_cast<SpeechRecognitionRecognizerImpl*>(receiver_ref->impl());
+  recognizer->CreateSodaClient(binary_path);
+#endif
 }
 
 bool SpeechRecognitionRecognizerImpl::IsMultichannelSupported() {
@@ -244,17 +258,22 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
   if (speech_recognition_service_) {
     speech_recognition_service_->AddObserver(this);
   }
+}
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
-  // here because it exists at a different location. Instead,
-  // CrosSpeechRecognitionRecognizerImpl has its own CrosSodaClient.
-  DCHECK(base::PathExists(binary_path));
-  soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
+void SpeechRecognitionRecognizerImpl::CreateSodaClient(
+    const base::FilePath& binary_path) {
+  CHECK(base::PathExists(binary_path));
+  CHECK(!soda_client_);
+  soda_client_ = std::make_unique<::soda::SodaClientImpl>(binary_path);
   if (!soda_client_->BinaryLoadedSuccessfully()) {
     OnSpeechRecognitionError();
   }
-#endif
+}
+
+void SpeechRecognitionRecognizerImpl::SetSodaClientForTesting(
+    std::unique_ptr<::soda::SodaClient> soda_client) {
+  CHECK(!soda_client_);
+  soda_client_ = std::move(soda_client);
 }
 
 void SpeechRecognitionRecognizerImpl::OnClientHostDisconnected() {

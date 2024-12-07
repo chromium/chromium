@@ -127,7 +127,7 @@ std::string SiteControlsToString(
 
 class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
  public:
-  ExtensionInfoGeneratorUnitTest() {}
+  ExtensionInfoGeneratorUnitTest() = default;
 
   ExtensionInfoGeneratorUnitTest(const ExtensionInfoGeneratorUnitTest&) =
       delete;

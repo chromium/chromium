@@ -265,6 +265,13 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
         TestingBrowserProcess::GetGlobal()->local_state());
 #endif
 
+    if (features::IsToolbarPinningEnabled()) {
+      browser_view()
+          ->toolbar()
+          ->pinned_toolbar_actions_container()
+          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
+    }
+
     std::unique_ptr<ChromeLabsBubbleView> bubble_view =
         std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton(),
                                                browser());

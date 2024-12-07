@@ -696,7 +696,7 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   const char raw_data[] = "post \0\ndata";
   scoped_refptr<network::ResourceRequestBody> post_data(
       new network::ResourceRequestBody);
-  post_data->AppendBytes(raw_data, sizeof(raw_data));
+  post_data->AppendCopyOfBytes(base::byte_span_with_nul_from_cstring(raw_data));
   common_params->post_data = post_data;
 
   frame()->Navigate(std::move(common_params), DummyCommitNavigationParams());

@@ -55,19 +55,15 @@ LoginShelfButton::LoginShelfButton(PressedCallback callback,
   SetBorder(views::CreateThemedRoundedRectBorder(
       kButtonHighlightWidthDp, kButtonHighlightRadiusDp,
       ui::kColorCrosSystemHighlight));
+  UpdateTooltipText(label());
+  label()->AddDisplayTextTruncationCallback(base::BindRepeating(
+      &LoginShelfButton::UpdateTooltipText, weak_ptr_factory_.GetWeakPtr()));
 }
 
 LoginShelfButton::~LoginShelfButton() = default;
 
 int LoginShelfButton::text_resource_id() const {
   return text_resource_id_;
-}
-
-std::u16string LoginShelfButton::GetTooltipText(const gfx::Point& p) const {
-  if (label()->IsDisplayTextTruncated()) {
-    return GetText();
-  }
-  return std::u16string();
 }
 
 void LoginShelfButton::OnFocus() {
@@ -120,6 +116,14 @@ void LoginShelfButton::SetIsActive(bool is_active) {
 
 bool LoginShelfButton::GetIsActive() const {
   return is_active_;
+}
+
+void LoginShelfButton::UpdateTooltipText(views::Label* label) {
+  if (label->IsDisplayTextTruncated()) {
+    SetCachedTooltipText(GetText());
+  } else {
+    SetCachedTooltipText(std::u16string());
+  }
 }
 
 BEGIN_METADATA(LoginShelfButton)

@@ -92,7 +92,7 @@ class UserScriptListenerTest : public testing::Test {
         profile_manager_(
             new TestingProfileManager(TestingBrowserProcess::GetGlobal())) {}
 
-  ~UserScriptListenerTest() override {}
+  ~UserScriptListenerTest() override = default;
 
   UserScriptListenerTest(const UserScriptListenerTest&) = delete;
   UserScriptListenerTest& operator=(const UserScriptListenerTest&) = delete;

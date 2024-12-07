@@ -26,13 +26,15 @@ base::Value::Dict CreateForceInstallIwaPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const GURL& update_manifest_url,
     const std::optional<UpdateChannel>& update_channel,
-    const std::optional<base::Version>& pinned_version) {
+    const std::optional<base::Version>& pinned_version,
+    bool allow_downgrades) {
   return CreateForceInstallIwaPolicyEntry(
       web_bundle_id.id(), update_manifest_url.spec(),
       update_channel ? std::make_optional(update_channel->ToString())
                      : std::nullopt,
       pinned_version ? std::make_optional(pinned_version->GetString())
-                     : std::nullopt);
+                     : std::nullopt,
+      allow_downgrades);
 }
 
 // Generates a policy entry that can be appended to
@@ -41,11 +43,17 @@ base::Value::Dict CreateForceInstallIwaPolicyEntry(
     std::string_view web_bundle_id,
     std::string_view update_manifest_url,
     const std::optional<std::string>& update_channel,
-    const std::optional<std::string>& pinned_version) {
+    const std::optional<std::string>& pinned_version,
+    bool allow_downgrades) {
+  // allow_downgrades cannot be toggled on without specifying pinned_version
+  // field.
+  CHECK(!allow_downgrades || pinned_version);
+
   base::Value::Dict policy_entry =
       base::Value::Dict()
           .Set(kPolicyWebBundleIdKey, web_bundle_id)
-          .Set(kPolicyUpdateManifestUrlKey, update_manifest_url);
+          .Set(kPolicyUpdateManifestUrlKey, update_manifest_url)
+          .Set(kPolicyAllowDowngradesKey, allow_downgrades);
 
   if (update_channel) {
     policy_entry.Set(kPolicyUpdateChannelKey, *update_channel);

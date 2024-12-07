@@ -953,6 +953,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/382549182")
     public void test_navigationApi() {
         performTest("navigation-api.html", EMPTY_EXPECTATIONS_FILE);
     }

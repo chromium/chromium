@@ -40,6 +40,8 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
                                const base::Uuid& tab_id,
                                DirtyType dirty_type) override;
   void ClearDirtyMessage(const base::Uuid uuid, DirtyType dirty_type) override;
+  std::vector<collaboration_pb::Message> GetDirtyMessages(
+      DirtyType dirty_type) override;
   std::vector<collaboration_pb::Message> GetDirtyMessagesForGroup(
       const data_sharing::GroupId& collaboration_id,
       DirtyType dirty_type) override;

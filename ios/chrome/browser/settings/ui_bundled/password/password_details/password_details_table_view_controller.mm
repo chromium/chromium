@@ -576,6 +576,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                        : [UIColor colorNamed:kBlueColor];
   item.enabled = !self.tableView.editing;
   item.accessibilityIdentifier = kMovePasswordToAccountButtonID;
+  item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
 }
 

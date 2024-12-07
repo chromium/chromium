@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
@@ -249,11 +248,10 @@ class OptimizationGuideKeyedService
   // Initializes |this|.
   void Initialize();
 
+  void InitializeModelExecution(Profile* profile);
+
   // Virtualized for testing.
   virtual optimization_guide::ChromeHintsManager* GetHintsManager();
-
-  // Return model status data to be displayed in the on device internals page.
-  mojom::OnDeviceInternalsDataPtr GetOnDeviceInternalsModelData();
 
   optimization_guide::TopHostProvider* GetTopHostProvider() {
     return top_host_provider_.get();
@@ -261,6 +259,15 @@ class OptimizationGuideKeyedService
 
   optimization_guide::PredictionManager* GetPredictionManager() {
     return prediction_manager_.get();
+  }
+
+  optimization_guide::OnDeviceModelComponentStateManager*
+  GetComponentManager() {
+    return on_device_component_manager_.get();
+  }
+
+  optimization_guide::ModelExecutionManager* GetModelExecutionManager() {
+    return model_execution_manager_.get();
   }
 
   // Notifies |hints_manager_| that the navigation associated with

@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -132,24 +131,17 @@ IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
   CloseWebContents();
 }
 
-// The feature |media_router::kGlobalMediaControlsCastStartStop| is supported
-// on MAC, Linux and Windows only.
+// Global Media Controls are supported on Mac, Linux and Windows only.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 class GlobalMediaControlsDialogTest
     : public MediaRouterDialogControllerViewsTest {
  public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {media_router::kGlobalMediaControlsCastStartStop}, {});
-    MediaRouterDialogControllerViewsTest::SetUp();
-  }
+  GlobalMediaControlsDialogTest() = default;
+  ~GlobalMediaControlsDialogTest() override = default;
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialog) {

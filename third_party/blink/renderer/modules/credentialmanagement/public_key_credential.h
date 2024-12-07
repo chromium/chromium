@@ -77,7 +77,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
       const PublicKeyCredentialRequestOptionsJSON*,
       ExceptionState&);
 
-  v8::Local<v8::Value> toJSON(ScriptState*) const;
+  v8::Local<v8::Object> toJSON(ScriptState*) const;
 
   static ScriptPromise<IDLUndefined> signalUnknownCredential(
       ScriptState*,

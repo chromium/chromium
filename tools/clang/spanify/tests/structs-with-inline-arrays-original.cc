@@ -37,7 +37,7 @@ void fct() {
   // struct TestCases {
   //   int val;
   // };
-  // const auto kTestCases = std::to_array<TestCases, 4>({{1}, {2}, {3}, {4}});
+  // const std::array<TestCases, 4> kTestCases = {{{1}, {2}, {3}, {4}}};
   const struct {
     int val;
   } kTestCases[4] = {{1}, {2}, {3}, {4}};
@@ -47,7 +47,7 @@ void fct() {
   // struct GTestCases {
   //   int val;
   // };
-  // const auto gTestCases = std::to_array<GTestCases, 4>({{1}, {2}, {3}, {4}});
+  // const std::array<GTestCases, 4> gTestCases = {{{1}, {2}, {3}, {4}}};
   const struct {
     int val;
   } gTestCases[4] = {{1}, {2}, {3}, {4}};
@@ -57,7 +57,7 @@ void fct() {
   // struct Knights {
   //   int val;
   // };
-  // const auto knights = std::to_array<Knights, 4>({{1}, {2}, {3}, {4}});
+  // const std::array<Knights, 4> knights = {{{1}, {2}, {3}, {4}}};
   const struct {
     int val;
   } knights[4] = {{1}, {2}, {3}, {4}};

@@ -37,7 +37,7 @@ ResetReportUploader::ResetReportUploader(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(std::move(url_loader_factory)) {}
 
-ResetReportUploader::~ResetReportUploader() {}
+ResetReportUploader::~ResetReportUploader() = default;
 
 void ResetReportUploader::DispatchReport(
     const reset_report::ChromeResetReport& report) {

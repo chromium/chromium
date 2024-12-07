@@ -145,7 +145,7 @@ class MenuBuilder {
   MenuBuilder(const MenuBuilder&) = delete;
   MenuBuilder& operator=(const MenuBuilder&) = delete;
 
-  ~MenuBuilder() {}
+  ~MenuBuilder() = default;
 
   std::unique_ptr<ExtensionContextMenuModel> BuildMenu() {
     return std::make_unique<ExtensionContextMenuModel>(
@@ -298,7 +298,7 @@ class ExtensionContextMenuModelTest : public ExtensionServiceTestBase {
   display::test::TestScreen test_screen_;
 };
 
-ExtensionContextMenuModelTest::ExtensionContextMenuModelTest() {}
+ExtensionContextMenuModelTest::ExtensionContextMenuModelTest() = default;
 
 const Extension* ExtensionContextMenuModelTest::AddExtension(
     const std::string& name,

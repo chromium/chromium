@@ -1126,6 +1126,19 @@ const PermissionsPolicy* FrameFetchContext::GetPermissionsPolicy() const {
                    : nullptr;
 }
 
+HashSet<HashAlgorithm> FrameFetchContext::CSPHashesToReport() const {
+  return GetContentSecurityPolicy()->HashesToReport();
+}
+
+void FrameFetchContext::AddCSPHashReport(
+    const String& url,
+    const HashMap<HashAlgorithm, String>& integrity_hashes) {
+  LocalFrame* frame = document_->GetFrame();
+  CHECK(frame);
+  GetContentSecurityPolicy()->AddHashReportIfNeeded(frame, url,
+                                                    integrity_hashes);
+}
+
 const ClientHintsPreferences FrameFetchContext::GetClientHintsPreferences()
     const {
   if (GetResourceFetcherProperties().IsDetached())

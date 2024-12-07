@@ -21,5 +21,5 @@ enum TrackDefaultType { "audio", "video", "text" };
     // have it had getKinds() instead of |kinds|. Use an object here to avoid
     // WebIDL arrays (which no longer exist) while not breaking compatibility
     // See also: https://crbug.com/619665.
-    [CallWith=ScriptState] readonly attribute object kinds;
+    [CallWith=ScriptState] readonly attribute object? kinds;
 };

@@ -215,7 +215,7 @@ device::mojom::XRLightProbePtr GetLightProbe(
       arcore_session, arcore_light_estimate,
       light_probe->spherical_harmonics->coefficients.data()->components);
 
-  float main_light_direction[3] = {0};
+  float main_light_direction[3] = {};
   ArLightEstimate_getEnvironmentalHdrMainLightDirection(
       arcore_session, arcore_light_estimate, main_light_direction);
   light_probe->main_light_direction.set_x(main_light_direction[0]);

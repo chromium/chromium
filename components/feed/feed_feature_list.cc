@@ -123,6 +123,10 @@ BASE_FEATURE(kFeedLowMemoryImprovement,
              "FeedLowMemoryImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFeedRecyclerBinderUnmountOnDetach,
+             "FeedRecyclerBinderUnmountOnDetach",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsWebFeedEnabledForLocale(const std::string& country) {
   const std::vector<std::string> launched_countries = {"AU", "CA", "GB",
                                                        "NZ", "US", "ZA"};

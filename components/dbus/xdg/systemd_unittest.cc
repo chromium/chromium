@@ -70,9 +70,54 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInSnap) {
   EXPECT_EQ(status, SystemdUnitStatus::kUnitNotNecessary);
 }
 
+TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NoSystemdService) {
+  scoped_refptr<dbus::MockBus> bus =
+      base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  auto mock_dbus_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+
+  EXPECT_CALL(
+      *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+
+  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
+      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseCallback* callback) {
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendBool(false);
+        std::move(*callback).Run(response.get());
+      }));
+
+  std::optional<SystemdUnitStatus> status;
+
+  SetSystemdScopeUnitNameForXdgPortal(
+      bus.get(), base::BindLambdaForTesting(
+                     [&](SystemdUnitStatus result) { status = result; }));
+
+  EXPECT_EQ(status, SystemdUnitStatus::kNoSystemdService);
+}
+
 TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
   scoped_refptr<dbus::MockBus> bus =
       base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  auto mock_dbus_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+
+  EXPECT_CALL(
+      *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+
+  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
+      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseCallback* callback) {
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendBool(true);
+        std::move(*callback).Run(response.get());
+      }));
 
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
@@ -105,6 +150,22 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
   scoped_refptr<dbus::MockBus> bus =
       base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
 
+  auto mock_dbus_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+
+  EXPECT_CALL(
+      *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+
+  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
+      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseCallback* callback) {
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendBool(true);
+        std::move(*callback).Run(response.get());
+      }));
+
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
 
@@ -131,6 +192,22 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
 TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
   scoped_refptr<dbus::MockBus> bus =
       base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  auto mock_dbus_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+
+  EXPECT_CALL(
+      *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+
+  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
+      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseCallback* callback) {
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendBool(true);
+        std::move(*callback).Run(response.get());
+      }));
 
   base::ScopedEnvironmentVariableOverride env_override("CHROME_VERSION_EXTRA",
                                                        "beta");

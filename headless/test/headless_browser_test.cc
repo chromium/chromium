@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "gin/v8_initializer.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -55,6 +56,14 @@ void HeadlessBrowserTest::SetUp() {
   command_line->AppendSwitch(switches::kUseGpuInTests);
   SetUpCommandLine(command_line);
   BrowserTestBase::SetUp();
+}
+
+void HeadlessBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
+  BrowserTestBase::SetUpCommandLine(command_line);
+
+  if (ShouldEnableSitePerProcess()) {
+    command_line->AppendSwitch(::switches::kSitePerProcess);
+  }
 }
 
 void HeadlessBrowserTest::SetUpWithoutGPU() {
@@ -112,6 +121,11 @@ HeadlessBrowser* HeadlessBrowserTest::browser() const {
 
 HeadlessBrowser::Options* HeadlessBrowserTest::options() const {
   return HeadlessContentMainDelegate::GetInstance()->browser()->options();
+}
+
+bool HeadlessBrowserTest::ShouldEnableSitePerProcess() {
+  // Make sure the navigations spawn new processes by default.
+  return true;
 }
 
 void HeadlessBrowserTest::RunAsynchronousTest() {

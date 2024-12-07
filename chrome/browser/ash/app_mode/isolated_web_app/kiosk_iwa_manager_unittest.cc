@@ -197,10 +197,7 @@ TEST_F(KioskIwaManagerFeatureOffTest, ReturnsEmptyResults) {
 }
 
 class KioskIwaManagerTest : public KioskIwaManagerBaseTest {
-  void SetUp() override {
-    EnableFeatureSwitch();
-    KioskIwaManager::RegisterPrefs(registry());
-  }
+  void SetUp() override { EnableFeatureSwitch(); }
 };
 
 TEST_F(KioskIwaManagerTest, GetInstance) {

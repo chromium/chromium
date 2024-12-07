@@ -103,9 +103,7 @@ bool Profile::OTRProfileID::AllowsBrowserWindows() const {
   // Non-Primary OTR profiles are not supposed to create Browser windows.
   // DevTools::BrowserContext, MediaRouter::Presentation, and
   // CaptivePortal::Signin are exceptions to this ban.
-  if (*this == PrimaryID() ||
-      base::StartsWith(profile_id_, kDevToolsOTRProfileIDPrefix,
-                       base::CompareCase::SENSITIVE) ||
+  if (*this == PrimaryID() || IsDevTools() ||
       base::StartsWith(profile_id_, kMediaRouterOTRProfileIDPrefix,
                        base::CompareCase::SENSITIVE)) {
     return true;
@@ -117,6 +115,11 @@ bool Profile::OTRProfileID::AllowsBrowserWindows() const {
   }
 #endif
   return false;
+}
+
+bool Profile::OTRProfileID::IsDevTools() const {
+  return base::StartsWith(profile_id_, kDevToolsOTRProfileIDPrefix,
+                          base::CompareCase::SENSITIVE);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -429,6 +432,10 @@ bool Profile::IsSystemProfile() const {
 bool Profile::IsPrimaryOTRProfile() const {
   return otr_profile_id_.has_value() &&
          otr_profile_id_.value() == OTRProfileID::PrimaryID();
+}
+
+bool Profile::IsDevToolsOTRProfile() const {
+  return otr_profile_id_.has_value() && otr_profile_id_->IsDevTools();
 }
 
 bool Profile::CanUseDiskWhenOffTheRecord() {

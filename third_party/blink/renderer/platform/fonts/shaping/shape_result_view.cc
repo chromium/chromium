@@ -77,7 +77,6 @@ struct ShapeResultView::InitData {
   STACK_ALLOCATED();
 
  public:
-  const SimpleFontData* primary_font = nullptr;
   unsigned start_index = 0;
   unsigned char_index_offset = 0;
   TextDirection direction = TextDirection::kLtr;
@@ -142,7 +141,6 @@ struct ShapeResultView::InitData {
 
   template <typename ShapeResultType>
   void PopulateFromShapeResult(const ShapeResultType& result) {
-    primary_font = result.primary_font_;
     direction = result.Direction();
     if (IsLtr()) {
       DCHECK_EQ(start_index, 0u);
@@ -174,8 +172,7 @@ struct ShapeResultView::InitData {
 };
 
 ShapeResultView::ShapeResultView(const InitData& data)
-    : primary_font_(data.primary_font),
-      start_index_(data.start_index),
+    : start_index_(data.start_index),
       num_glyphs_(0),
       direction_(static_cast<unsigned>(data.direction)),
       has_vertical_offsets_(data.has_vertical_offsets),
@@ -183,8 +180,7 @@ ShapeResultView::ShapeResultView(const InitData& data)
 
 ShapeResult* ShapeResultView::CreateShapeResult() const {
   ShapeResult* new_result = MakeGarbageCollected<ShapeResult>(
-      primary_font_, start_index_ + char_index_offset_, num_characters_,
-      Direction());
+      start_index_ + char_index_offset_, num_characters_, Direction());
   new_result->runs_.ReserveInitialCapacity(parts_.size());
   for (const auto& part : RunsOrParts()) {
     auto* new_run = MakeGarbageCollected<ShapeResult::RunInfo>(

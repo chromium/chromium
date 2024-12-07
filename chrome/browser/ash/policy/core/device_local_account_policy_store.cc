@@ -38,7 +38,7 @@ DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
       session_manager_client_(session_manager_client),
       device_settings_service_(device_settings_service) {}
 
-DeviceLocalAccountPolicyStore::~DeviceLocalAccountPolicyStore() {}
+DeviceLocalAccountPolicyStore::~DeviceLocalAccountPolicyStore() = default;
 
 void DeviceLocalAccountPolicyStore::Load() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

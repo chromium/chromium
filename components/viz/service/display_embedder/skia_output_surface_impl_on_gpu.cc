@@ -165,6 +165,13 @@ void FailedSkiaFlush(std::string_view msg) {
   LOG(ERROR) << msg;
 }
 
+void RecordInsertRenderPassRecording(bool success) {
+  UMA_HISTOGRAM_BOOLEAN("GPU.OutputSurface.InsertRenderPassRecording", success);
+  if (!success) {
+    TRACE_EVENT_INSTANT("viz", "Failed To Insert Recording");
+  }
+}
+
 #if BUILDFLAG(ENABLE_VULKAN)
 // Returns whether SkiaOutputDeviceX11 can be instantiated on this platform.
 bool MayFallBackToSkiaOutputDeviceX11() {
@@ -479,10 +486,9 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     promise_image_access_helper_.BeginAccess(std::move(image_contexts),
                                              /*begin_semaphores=*/nullptr,
                                              /*end_semaphores=*/nullptr);
-    if (!scoped_output_device_paint_->Draw(std::move(graphite_recording),
-                                           std::move(on_finished))) {
-      FailedSkiaFlush("Graphite insertRecording failed.");
-    }
+    bool draw_success = scoped_output_device_paint_->Draw(
+        std::move(graphite_recording), std::move(on_finished));
+    RecordInsertRenderPassRecording(draw_success);
     return;
   }
 
@@ -696,7 +702,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     if (on_finished) {
       gpu::AddCleanupTaskForGraphiteRecording(std::move(on_finished), &info);
     }
-    graphite_context()->insertRecording(info);
+    bool insert_success = graphite_context()->insertRecording(info);
+    RecordInsertRenderPassRecording(insert_success);
     if (local_scoped_access &&
         local_scoped_access->NeedGraphiteContextSubmit()) {
       graphite_context()->submit();

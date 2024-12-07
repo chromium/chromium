@@ -82,6 +82,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
@@ -114,6 +115,7 @@ using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using signin::AccountConsistencyMethod;
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -1675,8 +1677,8 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest,
   // Set a max-age so that it's persisted on disk.
   std::string gaia_cookie = base::StrCat(
       {GaiaConstants::kGaiaSigninCookieName, "=foo; secure; max-age=1000"});
-  content::SetCookie(browser()->profile(), GURL("https://google.com/"),
-                     gaia_cookie);
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 GURL("https://google.com/"), gaia_cookie));
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(

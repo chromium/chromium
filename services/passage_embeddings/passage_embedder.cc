@@ -11,7 +11,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
 
@@ -57,16 +56,21 @@ void RecordEmbeddingsDurationMetrics(
 namespace passage_embeddings {
 
 PassageEmbedder::PassageEmbedder(
-    mojo::PendingReceiver<mojom::PassageEmbedder> receiver)
+    mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
+    mojom::PassageEmbedderParamsPtr embedder_params)
     : receiver_(this, std::move(receiver)),
-      embeddings_cache_(
-          history_embeddings::GetFeatureParameters().embedder_cache_size) {}
+      embeddings_cache_(embedder_params->embedder_cache_size),
+      user_initiated_priority_num_threads_(
+          embedder_params->user_initiated_priority_num_threads),
+      passive_priority_num_threads_(
+          embedder_params->passive_priority_num_threads) {}
 
 PassageEmbedder::~PassageEmbedder() = default;
 
 bool PassageEmbedder::LoadModels(
     base::File* embeddings_model_file,
     base::File* sp_file,
+    uint32_t embeddings_input_window_size,
     std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
   UnloadModelFiles();
 
@@ -95,11 +99,9 @@ bool PassageEmbedder::LoadModels(
       "History.Embeddings.Embedder.SentencePieceModelLoadDuration",
       sp_timer.Elapsed());
 
-  return true;
-}
+  embeddings_input_window_size_ = embeddings_input_window_size;
 
-void PassageEmbedder::SetEmbeddingsModelInputWindowSize(uint32_t size) {
-  embeddings_input_window_size_ = size;
+  return true;
 }
 
 bool PassageEmbedder::LoadSentencePieceModelFile(base::File* sp_file) {
@@ -167,11 +169,10 @@ bool PassageEmbedder::BuildExecutionTask() {
   int num_threads;
   switch (current_priority_) {
     case mojom::PassagePriority::kUserInitiated:
-      num_threads =
-          history_embeddings::GetFeatureParameters().embedder_num_threads;
+      num_threads = user_initiated_priority_num_threads_;
       break;
     case mojom::PassagePriority::kPassive:
-      num_threads = 1;
+      num_threads = passive_priority_num_threads_;
       break;
     case mojom::PassagePriority::kUnknown:
       return false;

@@ -242,7 +242,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
                 List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.leave_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 
-        mMenuCoordinator.dismissForTesting();
+        mMenuCoordinator.dismiss();
     }
 
     @Test
@@ -260,7 +260,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
                 List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.delete_shared_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 
-        mMenuCoordinator.dismissForTesting();
+        mMenuCoordinator.dismiss();
     }
 
     private void assertListMenuItemsAre(ModelList modelList, List<Integer> menuIds) {

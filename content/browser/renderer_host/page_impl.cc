@@ -184,12 +184,16 @@ void PageImpl::OnTextAutosizerPageInfoChanged(
             text_autosizer_page_info_.Clone());
       };
 
-  main_document_->frame_tree()
-      ->root()
-      ->render_manager()
-      ->ExecuteRemoteFramesBroadcastMethod(
-          std::move(remote_frames_broadcast_callback),
-          main_document_->GetSiteInstance()->group());
+  {
+    TRACE_EVENT("navigation",
+                "PageImpl::OnTextAutosizerPageInfoChanged broadcast");
+    main_document_->frame_tree()
+        ->root()
+        ->render_manager()
+        ->ExecuteRemoteFramesBroadcastMethod(
+            std::move(remote_frames_broadcast_callback),
+            main_document_->GetSiteInstance()->group());
+  }
 }
 
 void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {

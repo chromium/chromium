@@ -166,7 +166,7 @@ EvictionHandler::CreateTransferableResourceFromCopyOutputResult(
 
     auto [shared_image, mapping] = sii->CreateSharedImage(
         {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
          "CopyOutputResultAsSoftwareSharedImage"});
     if (!shared_image) {
       return std::nullopt;

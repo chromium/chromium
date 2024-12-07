@@ -24,7 +24,7 @@ PaymentAddress::PaymentAddress(
 
 PaymentAddress::~PaymentAddress() = default;
 
-ScriptValue PaymentAddress::toJSONForBinding(ScriptState* script_state) const {
+ScriptObject PaymentAddress::toJSONForBinding(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddString("country", country());
   result.AddVector<IDLString>("addressLine", addressLine());
@@ -36,7 +36,7 @@ ScriptValue PaymentAddress::toJSONForBinding(ScriptState* script_state) const {
   result.AddString("organization", organization());
   result.AddString("recipient", recipient());
   result.AddString("phone", phone());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 }  // namespace blink

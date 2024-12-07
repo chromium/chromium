@@ -257,9 +257,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
   SkColor background_color_ = gfx::kPlaceholderColor;
   float corner_radius_ = 0.0f;
   views::HighlightBorder::Type highlight_border_type_ =
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder1;
+      views::HighlightBorder::Type::kHighlightBorderNoShadow;
 };
 
 }  // namespace
@@ -813,16 +811,8 @@ void ShelfWidget::OnHotseatStateChanged(HotseatState old_state,
     return;
   hotseat_transition_animator_->OnHotseatStateChanged(old_state, new_state);
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    delegate_view_->opaque_background()->SetBorderType(
-        views::HighlightBorder::Type::kHighlightBorderNoShadow);
-  } else if (new_state == HotseatState::kExtended) {
-    delegate_view_->opaque_background()->SetBorderType(
-        views::HighlightBorder::Type::kHighlightBorder2);
-  } else {
-    delegate_view_->opaque_background()->SetBorderType(
-        views::HighlightBorder::Type::kHighlightBorder1);
-  }
+  delegate_view_->opaque_background()->SetBorderType(
+      views::HighlightBorder::Type::kHighlightBorderNoShadow);
 }
 
 void ShelfWidget::OnBackgroundTypeChanged(ShelfBackgroundType background_type,

@@ -25,8 +25,8 @@ AtomicString TrackDefault::TextKeyword() {
   return AtomicString("text");
 }
 
-ScriptValue TrackDefault::kinds(ScriptState* script_state) const {
-  return ScriptValue(
+ScriptObject TrackDefault::kinds(ScriptState* script_state) const {
+  return ScriptObject(
       script_state->GetIsolate(),
       ToV8Traits<IDLSequence<IDLString>>::ToV8(script_state, kinds_));
 }

@@ -128,7 +128,6 @@
 <translation id="2586406160782125153">Дані веб-перегляду буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Отримуйте доступ до своїх даних у веб-переглядачі Chrome через обліковий запис <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Не вдалося кешувати завантажену програму встановлення. Помилка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome не може перевірити наявність оновлень. Перевірте інтернет-з'єднання.</translation>
 <translation id="2632707915638608719">Отримуйте більше можливостей завдяки розширенням для Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome регулярно перевіряє, чи достатньо надійні налаштування вашого веб-переглядача. Ми повідомимо, якщо потрібно буде вжити заходів.</translation>
@@ -162,7 +161,6 @@
 <translation id="2926676257163822632">Ненадійні паролі можна легко вгадати. Тому радимо <ph name="BEGIN_LINK" />створювати й зберігати безпечні паролі<ph name="END_LINK" /> в Chrome.</translation>
 <translation id="2926952073016206995">Веб-переглядачу Chrome потрібен доступ до камери для цього сайту</translation>
 <translation id="2928420929544864228">Встановлення завершено.</translation>
-<translation id="2929907241665500097">Не вдалось оновити веб-переглядач Chrome. <ph name="BEGIN_LINK" />Вирішіть проблеми з оновленням Chrome.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Сталася помилка. Не вдалося розпочати встановлення.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вхід у мережу – Chrome</translation>
 <translation id="2970681950995291301">Щоб вилучити обліковий запис Google, вийдіть із Chrome на сторінці налаштувань</translation>
@@ -172,7 +170,6 @@
 <translation id="3037838751736561277">Google Chrome у фоновому режимі.</translation>
 <translation id="3038232873781883849">Очікується встановлення…</translation>
 <translation id="3045032126857188731">Мова перекладу: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Безпечний перегляд вимкнено. Chrome радить увімкнути його.</translation>
 <translation id="306179102415443347">Швидко відкривайте Google Менеджер паролів за допомогою ярлика. Ви можете перемістити ярлик на головний екран або панель запуску додатків комп’ютера.</translation>
 <translation id="3065168410429928842">Chrome</translation>
 <translation id="3080151273017101988">Продовжувати роботу фонових програм, коли Google Chrome закрито</translation>
@@ -239,7 +236,6 @@
 <translation id="383928141529488001">Для пошуку пристроїв із Bluetooth вебпереглядачу
 Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Закрийте всі вікна Google Chrome і повторіть спробу.</translation>
-<translation id="3865754807470779944">Chrome версії <ph name="PRODUCT_VERSION" /> встановлено</translation>
 <translation id="3873044882194371212">Відкрити посилання в аноні&amp;мному вікні Chrome</translation>
 <translation id="3885770153807205175">Засіб вибору мови</translation>
 <translation id="3889417619312448367">Видалити Google Chrome</translation>
@@ -279,12 +275,10 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4328355335528187361">Версія Google Chrome для розробників (mDNS-In)</translation>
 <translation id="4329315893554541805">Щоб користуватися персоналізацією і іншими можливостями, включіть Chrome в історію додатків і вебпошуку й зв’язані сервіси Google</translation>
 <translation id="4334294535648607276">Завантажено.</translation>
-<translation id="4335235004908507846">Chrome захищає від порушень безпеки даних, шкідливих розширень тощо</translation>
 <translation id="4343195214584226067">Розширення <ph name="EXTENSION_NAME" /> додано в Chrome</translation>
 <translation id="4348548358339558429">Щоб користуватися персоналізацією, включіть Chrome в історію додатків і вебпошуку</translation>
 <translation id="436060642166082913">Вебпереглядач Chrome заблокував завантаження, оскільки цей файл може зашкодити вашим особистим обліковим записам і обліковим записам у соціальних мережах</translation>
 <translation id="4367027658822022112">Ви можете закріпити Google Об’єктив для швидкого доступу. Для цього вгорі бічної панелі натисніть кнопку "Закріпити".</translation>
-<translation id="4384570495110188418">Chrome не може перевірити паролі, оскільки ви не ввійшли в обліковий запис</translation>
 <translation id="4389991535395284064">У режимі анонімного перегляду Chrome показуватиме попередження, перш ніж завантажити сайт через незахищене з’єднання</translation>
 <translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
 <translation id="4434353761996769206">Помилка програми встановлення: <ph name="INSTALLER_ERROR" /></translation>

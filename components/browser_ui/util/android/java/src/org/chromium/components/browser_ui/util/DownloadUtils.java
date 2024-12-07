@@ -10,10 +10,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.core.app.NotificationManagerCompat;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -88,8 +87,7 @@ public class DownloadUtils {
         Context context = ContextUtils.getApplicationContext();
         DownloadManager manager =
                 (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        boolean useSystemNotification = !notificationManager.areNotificationsEnabled();
+        boolean useSystemNotification = !NotificationProxyUtils.areNotificationsEnabled();
         try {
             // OriginalUri has to be null or non-empty http(s) scheme.
             Uri originalUri = parseOriginalUrl(originalUrl.getSpec());

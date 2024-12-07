@@ -108,6 +108,8 @@ static_library("test_support") {
     "dummy_screen_android.h",
     "fake_modal_dialog_manager_bridge.cc",
     "fake_modal_dialog_manager_bridge.h",
+    "test_view_android_delegate.cc",
+    "test_view_android_delegate.h",
   ]
 
   deps = [
@@ -426,6 +428,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/text/SpanApplier.java",
     "java/src/org/chromium/ui/util/AccessibilityUtil.java",
     "java/src/org/chromium/ui/util/AttrUtils.java",
+    "java/src/org/chromium/ui/util/ColorBlendAnimationFactory.java",
     "java/src/org/chromium/ui/util/ColorUtils.java",
     "java/src/org/chromium/ui/util/StyleUtils.java",
     "java/src/org/chromium/ui/util/TokenHolder.java",
@@ -536,6 +539,7 @@ android_library("ui_java_test_support") {
     "javatests/src/org/chromium/ui/test/util/MockitoHelper.java",
     "javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java",
     "javatests/src/org/chromium/ui/test/util/RenderTestRule.java",
+    "javatests/src/org/chromium/ui/test/util/TestViewAndroidDelegate.java",
     "javatests/src/org/chromium/ui/test/util/UiDisableIfSkipCheck.java",
     "javatests/src/org/chromium/ui/test/util/UiRestriction.java",
     "javatests/src/org/chromium/ui/test/util/ViewUtils.java",
@@ -626,6 +630,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/resources/dynamics/ViewResourceAdapterTest.java",
     "junit/src/org/chromium/ui/shadows/ShadowAppCompatResourcesTest.java",
     "junit/src/org/chromium/ui/text/SpanApplierTest.java",
+    "junit/src/org/chromium/ui/util/ColorBlendAnimationFactoryTest.java",
     "junit/src/org/chromium/ui/util/ColorUtilsTest.java",
     "junit/src/org/chromium/ui/util/StyleUtilsTest.java",
     "junit/src/org/chromium/ui/util/TokenHolderTest.java",
@@ -776,6 +781,7 @@ generate_jni("ui_javatest_jni_headers") {
 
   sources = [
     "javatests/src/org/chromium/ui/base/ClipboardAndroidTestSupport.java",
+    "javatests/src/org/chromium/ui/test/util/TestViewAndroidDelegate.java",
     "javatests/src/org/chromium/ui/test/util/modaldialog/FakeModalDialogManager.java",
   ]
 }

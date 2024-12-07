@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 
+#include <array>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -192,12 +188,11 @@ ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
   if (level == -1)
     return ui::ImageModel();
 
-  constexpr int kSignalStrengthLevelImageIds[5] = {
+  static constexpr std::array kSignalStrengthLevelImageIds{
       IDR_SIGNAL_0_BAR, IDR_SIGNAL_1_BAR, IDR_SIGNAL_2_BAR, IDR_SIGNAL_3_BAR,
       IDR_SIGNAL_4_BAR};
   DCHECK_GE(level, 0);
-  DCHECK_LT(static_cast<size_t>(level),
-            std::size(kSignalStrengthLevelImageIds));
+  DCHECK_LT(static_cast<size_t>(level), kSignalStrengthLevelImageIds.size());
   return ui::ImageModel::FromImageSkia(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           kSignalStrengthLevelImageIds[level]));

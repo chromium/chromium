@@ -315,10 +315,13 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   // legacy (where cookies that don't have a specific same-site access policy
   // and not secure will not be included), and legacy mode.
   cookie_access_semantics = net::CookieAccessSemantics::UNKNOWN;
+  net::CookieScopeSemantics cookie_scope_semantics =
+      net::CookieScopeSemantics::UNKNOWN;
 
   // No extra trustworthy URLs.
   bool delegate_treats_url_as_trustworthy = false;
   net::CookieAccessParams params = {cookie_access_semantics,
+                                    cookie_scope_semantics,
                                     delegate_treats_url_as_trustworthy};
   return canonical_cookie->IncludeForRequestURL(url, options, params)
       .status.IsInclude();

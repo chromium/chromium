@@ -381,6 +381,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabId) {
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabSelected) {
   auto* env = AttachCurrentThread();
+  // Select a tab that is part of a group.
   LocalTabID tab_id = 5;
 
   EXPECT_CALL(tab_group_sync_service_,
@@ -389,6 +390,14 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabSelected) {
       AttachCurrentThread(), j_test_,
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_),
       tab_id);
+
+  // Select a tab that isn't part of a group.
+  LocalTabID non_grouped_tab_id = 6;
+  EXPECT_CALL(tab_group_sync_service_,
+              OnTabSelected(Eq(std::nullopt), Eq(non_grouped_tab_id)));
+  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabSelected(
+      AttachCurrentThread(), j_test_, ScopedJavaLocalRef<jobject>(),
+      non_grouped_tab_id);
 }
 
 }  // namespace tab_groups

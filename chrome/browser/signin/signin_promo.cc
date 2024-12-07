@@ -171,6 +171,8 @@ void RegisterProfilePrefs(
       prefs::kAutofillSignInPromoDismissCountPerProfile, 0);
   registry->RegisterIntegerPref(prefs::kPasswordSignInPromoShownCountPerProfile,
                                 0);
+  registry->RegisterIntegerPref(prefs::kAddressSignInPromoShownCountPerProfile,
+                                0);
 }
 
 }  // namespace signin

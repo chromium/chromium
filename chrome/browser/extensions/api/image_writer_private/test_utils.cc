@@ -71,7 +71,7 @@ MockOperationManager::MockOperationManager(content::BrowserContext* context)
 MockOperationManager::~MockOperationManager() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
-FakeDiskMountManager::FakeDiskMountManager() {}
+FakeDiskMountManager::FakeDiskMountManager() = default;
 FakeDiskMountManager::~FakeDiskMountManager() = default;
 
 void FakeDiskMountManager::UnmountDeviceRecursively(

@@ -43,7 +43,7 @@ BASE_FEATURE(kBlockRepeatedNotificationPermissionPrompts,
 
 BASE_FEATURE(kOneTimePermission,
              "OneTimePermission",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kKeyboardAndPointerLockPrompt,
@@ -99,12 +99,6 @@ BASE_FEATURE(kAllowMultipleOriginsForWebKioskPermissions,
 
 #if BUILDFLAG(IS_ANDROID)
 
-// When enabled, blocks notifications permission prompt when Chrome doesn't
-// have app level Notification permission.
-BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
-             "BlockNotificationPromptsIfDisabledOnAppLevel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
              "PermissionDedicatedCpssSettingAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -157,13 +151,13 @@ BASE_FEATURE(kCpssUseTfliteSignatureRunner,
 namespace feature_params {
 
 const base::FeatureParam<bool> kUseStrongerPromptLanguage{
-    &features::kOneTimePermission, "use_stronger_prompt_language", false};
+    &features::kOneTimePermission, "use_stronger_prompt_language", true};
 
 const base::FeatureParam<bool> kUseWhileVisitingLanguage{
-    &features::kOneTimePermission, "use_while_visiting_language", false};
+    &features::kOneTimePermission, "use_while_visiting_language", true};
 
 const base::FeatureParam<bool> kShowAllowAlwaysAsFirstButton{
-    &features::kOneTimePermission, "show_allow_always_as_first_button", false};
+    &features::kOneTimePermission, "show_allow_always_as_first_button", true};
 
 const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout{
     &features::kOneTimePermission, "one_time_permission_timeout",

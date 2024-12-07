@@ -115,12 +115,10 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)
-  if (base::FeatureList::IsEnabled(net::features::kDocumentReporting)) {
-    if (std::optional<std::string> reporting_endpoints =
-            headers->GetNormalizedHeader("Reporting-Endpoints")) {
-      parsed_headers->reporting_endpoints =
-          net::ParseReportingEndpoints(*reporting_endpoints);
-    }
+  if (std::optional<std::string> reporting_endpoints =
+          headers->GetNormalizedHeader("Reporting-Endpoints")) {
+    parsed_headers->reporting_endpoints =
+        net::ParseReportingEndpoints(*reporting_endpoints);
   }
 #endif
 

@@ -184,7 +184,7 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
   source->DisableTrustedTypesCSP();
 }
 
-InternetDetailDialogUI::~InternetDetailDialogUI() {}
+InternetDetailDialogUI::~InternetDetailDialogUI() = default;
 
 void InternetDetailDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>

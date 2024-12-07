@@ -13,8 +13,8 @@
 namespace media {
 
 // Setting some default usage in order to get a mappable shared image.
-constexpr auto si_usage =
-    gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
 CameraBufferFactory::CameraBufferFactory() = default;
 

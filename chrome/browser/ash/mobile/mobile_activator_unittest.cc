@@ -49,7 +49,7 @@ class TestMobileActivator : public MobileActivator {
   TestMobileActivator(const TestMobileActivator&) = delete;
   TestMobileActivator& operator=(const TestMobileActivator&) = delete;
 
-  ~TestMobileActivator() override {}
+  ~TestMobileActivator() override = default;
 
   MOCK_METHOD3(ChangeState,
                void(const NetworkState*,
@@ -107,7 +107,7 @@ class MobileActivatorTest : public testing::Test {
   MobileActivatorTest(const MobileActivatorTest&) = delete;
   MobileActivatorTest& operator=(const MobileActivatorTest&) = delete;
 
-  ~MobileActivatorTest() override {}
+  ~MobileActivatorTest() override = default;
 
  protected:
   void TearDown() override {

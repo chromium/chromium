@@ -2214,64 +2214,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
   EXPECT_EQ(phone_name, kNewSyncedPhoneName);
 }
 
-// Tests that if GPM passkeys change during a conditional UI request, the
-// request is restarted.
-TEST_F(AuthenticatorRequestDialogControllerTest,
-       ConditionalUIPhonePasskeyUpdated) {
-  auto model =
-      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  auto controller = std::make_unique<AuthenticatorRequestDialogController>(
-      model.get(), main_rfh());
-  TransportAvailabilityInfo transport_info;
-  transport_info.attestation_conveyance_preference =
-      device::AttestationConveyancePreference::kNone;
-  controller->set_ui_presentation(UIPresentation::kAutofill);
-  controller->StartFlow(std::move(transport_info));
-  ASSERT_EQ(model->step(), Step::kPasskeyAutofill);
-  testing::NiceMock<MockDialogModelObserver> mock_observer;
-  model->observers.AddObserver(&mock_observer);
-
-  // Notifying that passkeys changed during a conditional request should restart
-  // it.
-  EXPECT_CALL(mock_observer, OnStartOver());
-  static_cast<webauthn::PasskeyModel::Observer*>(controller.get())
-      ->OnPasskeysChanged({});
-  testing::Mock::VerifyAndClearExpectations(&mock_observer);
-
-  // Notifying that passkeys changed during any other step should be ignored.
-  controller->SetCurrentStepForTesting(Step::kUsbInsertAndActivate);
-  static_cast<webauthn::PasskeyModel::Observer*>(controller.get())
-      ->OnPasskeysChanged({});
-  EXPECT_CALL(mock_observer, OnStartOver()).Times(0);
-  model->observers.RemoveObserver(&mock_observer);
-}
-
-// Tests that if the transport availability is updated during a conditional UI
-// request, the list of passkeys is updated.
-TEST_F(AuthenticatorRequestDialogControllerTest,
-       ConditionalUITransportAvailabilityUpdated) {
-  NavigateAndCommit(GURL("rp.com"));
-  ChromeWebAuthnCredentialsDelegate* delegate =
-      ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
-          ->GetDelegateForFrame(web_contents()->GetPrimaryMainFrame());
-  ASSERT_TRUE(delegate);
-
-  auto model =
-      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  auto controller = std::make_unique<AuthenticatorRequestDialogController>(
-      model.get(), main_rfh());
-  TransportAvailabilityInfo transports_info;
-  transports_info.request_type = device::FidoRequestType::kGetAssertion;
-  transports_info.recognized_credentials = {};
-  controller->set_ui_presentation(UIPresentation::kAutofill);
-  controller->StartFlow(transports_info);
-  EXPECT_TRUE(delegate->GetPasskeys()->empty());
-
-  transports_info.recognized_credentials = {kCred1};
-  controller->OnTransportAvailabilityChanged(transports_info);
-  EXPECT_FALSE(delegate->GetPasskeys()->empty());
-}
-
 // Tests that if the stored preference for the most recently used phone is not
 // valid base64, the value is ignored.
 TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {

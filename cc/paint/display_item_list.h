@@ -160,8 +160,7 @@ class CC_PAINT_EXPORT DisplayItemList
   }
   size_t OpBytesUsed() const { return paint_op_buffer_.paint_ops_size(); }
 
-  scoped_refptr<DiscardableImageMap> GenerateDiscardableImageMap(
-      const ScrollOffsetMap& raster_inducing_scroll_offsets) const;
+  scoped_refptr<DiscardableImageMap> GenerateDiscardableImageMap() const;
 
   void EmitTraceSnapshot() const;
 

@@ -16,7 +16,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
@@ -80,10 +79,7 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
 
 // Validates the URL whether it is allowed to be opened at launching. Dangerous
 // schemes are excluded to prevent untrusted external applications from opening
-// them except on Lacros where URLs coming from untrusted applications are
-// checked in a different layer (such as the dbus UrlHandlerService and the
-// ArcIntentHelperBridge). Thus, chrome:// URLs are allowed on Lacros so that
-// trusted calls in Ash can open them.
+// them.
 // Headless mode also allows chrome:// URLs if the user explicitly allowed it.
 bool ValidateUrl(const GURL& url) {
   if (!url.is_valid())
@@ -104,10 +100,7 @@ bool ValidateUrl(const GURL& url) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool url_scheme_is_chrome = false;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // In ChromeOS, allow any URL pattern that matches chrome:// scheme.
-  url_scheme_is_chrome = url.SchemeIs(content::kChromeUIScheme);
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // In Headless mode, allow any URL pattern that matches chrome:// scheme if
   // the user explicitly allowed it.
   if (headless::IsHeadlessMode() && url.SchemeIs(content::kChromeUIScheme)) {

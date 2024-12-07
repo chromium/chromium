@@ -665,10 +665,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Test that the Show Original banner dismisses with a longer delay since it is
 // a high priority banner.
 - (void)testInfobarAcceptedBannerDismissWithHighPriorityDelay {
-  // TODO(b/338250535): Test is failing on iPad simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
-  }
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));

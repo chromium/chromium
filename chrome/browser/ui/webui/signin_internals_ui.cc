@@ -40,13 +40,6 @@ void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::span<const webui::ResourcePath>(kSigninInternalsResources),
       IDR_SIGNIN_INTERNALS_SIGNIN_INDEX_HTML);
-
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate lit-html-desktop;");
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

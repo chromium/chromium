@@ -71,12 +71,11 @@ std::vector<TranscriptBuilder::Result> TranscriptBuilder::GetTranscripts(
   for (auto& result : current_results) {
     results.push_back(std::move(result));
   }
-  Update(std::move(message->current_transcript));
   return results;
 }
 
 std::vector<TranscriptBuilder::Result> TranscriptBuilder::MaybeMergeTranscript(
-    const mojom::TranscriptPartPtr& transcript_part,
+    mojom::TranscriptPartPtr transcript_part,
     bool is_previous) {
   std::vector<Result> results;
   if (transcript_part->transcript_id == transcript_id_ && !is_final_) {
@@ -103,6 +102,9 @@ std::vector<TranscriptBuilder::Result> TranscriptBuilder::MaybeMergeTranscript(
   }
   results.emplace_back(transcript_part->text, transcript_part->is_final,
                        transcript_part->language);
+  if (!is_previous) {
+    Update(std::move(transcript_part));
+  }
   return results;
 }
 

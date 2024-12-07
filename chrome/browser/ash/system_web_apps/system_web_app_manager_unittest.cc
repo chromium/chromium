@@ -182,11 +182,9 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   bool IsInstalled(const GURL& install_url) {
-    return provider().registrar_unsafe().IsInstallState(
-        web_app::GenerateAppId(/*manifest_id=*/std::nullopt, install_url),
-        {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-         web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-         web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+    return provider().registrar_unsafe().GetInstallState(web_app::GenerateAppId(
+               /*manifest_id=*/std::nullopt, install_url)) ==
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
   }
 
   void StartAndWaitForAppsToSynchronize() {

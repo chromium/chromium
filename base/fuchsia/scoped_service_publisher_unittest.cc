@@ -56,9 +56,10 @@ TEST_F(ScopedServicePublisherTest, OutgoingDirectory) {
 TEST_F(ScopedServicePublisherTest, PseudoDir) {
   vfs::PseudoDir directory;
   fidl::InterfaceHandle<fuchsia::io::Directory> directory_handle;
-  directory.Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                      fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                  directory_handle.NewRequest().TakeChannel());
+  directory.Serve(
+      fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+      fidl::ServerEnd<fuchsia_io::Directory>(
+          directory_handle.NewRequest().TakeChannel()));
   sys::ServiceDirectory services(std::move(directory_handle));
 
   fidl::InterfacePtr<testfidl::TestInterface> client_a;

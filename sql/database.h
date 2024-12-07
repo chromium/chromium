@@ -280,10 +280,10 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Most operations on the new instance will fail until Open() / OpenInMemory()
   // is called.
-  explicit Database(DatabaseOptions options);
+  explicit Database(DatabaseOptions options, std::string_view tag = {});
 
   // Convenience constructor for callers that use default options.
-  Database();
+  explicit Database(std::string_view tag = {});
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;
@@ -331,13 +331,6 @@ class COMPONENT_EXPORT(SQL) Database {
   }
   void reset_error_callback() { error_callback_.Reset(); }
   bool has_error_callback() const { return !error_callback_.is_null(); }
-
-  // Developer-friendly database ID used in logging output and memory dumps.
-  void set_histogram_tag(const std::string& histogram_tag) {
-    DCHECK(!is_open());
-    histogram_tag_ = histogram_tag;
-    tracing_track_name_ = "Database: " + histogram_tag;
-  }
 
   const std::string& histogram_tag() const { return histogram_tag_; }
 
@@ -735,6 +728,27 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
 
+  // A scoped utility to setup error reporting during the `Open()` operation
+  class ScopedOpenErrorReporter {
+   public:
+    // db: the database to instrument. Must outlive `this`
+    // histogram: the histogram to record the error code into. Will
+    // automatically be suffixed with `Database::histogram_tag()` if it's
+    // specified, "NoTag" otherwise.
+    ScopedOpenErrorReporter(Database* db, std::string_view histogram);
+    ~ScopedOpenErrorReporter();
+
+   private:
+    // The callback that will be invoked by the database in case of an error.
+    void OnErrorDuringOpen(SqliteResultCode code);
+
+    raw_ptr<Database> db_;
+    std::string_view histogram_;
+  };
+
+  // Invoke `open_error_reporting_callback_` if it's set.
+  void MaybeReportErrorDuringOpen(SqliteResultCode code);
+
   // Implements Open(), OpenInMemory().
   //
   // `db_file_path` is a UTF-8 path to the file storing the database pages. If
@@ -1038,6 +1052,11 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;
+
+  // If set, this callback will be invoked when an sqlite error is triggered
+  // during `OpenInternal` or `Execute`s triggered from `Open`.
+  base::RepeatingCallback<void(SqliteResultCode)>
+      open_error_reporting_callback_;
 
   // Vends WeakPtr<Database> for internal scoping helpers.
   base::WeakPtrFactory<Database> weak_factory_{this};

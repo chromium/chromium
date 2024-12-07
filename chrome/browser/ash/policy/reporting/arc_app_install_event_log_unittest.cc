@@ -42,7 +42,7 @@ class ArcAppInstallEventLogTest : public testing::Test {
       delete;
 
  protected:
-  ArcAppInstallEventLogTest() {}
+  ArcAppInstallEventLogTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

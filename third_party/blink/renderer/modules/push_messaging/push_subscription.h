@@ -54,7 +54,7 @@ class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
   DOMArrayBuffer* getKey(const V8PushEncryptionKeyName& name) const;
   ScriptPromise<IDLBoolean> unsubscribe(ScriptState* script_state);
 
-  ScriptValue toJSONForBinding(ScriptState* script_state);
+  ScriptObject toJSONForBinding(ScriptState* script_state);
 
   void Trace(Visitor* visitor) const override;
 

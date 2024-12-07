@@ -151,6 +151,16 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED"/>
 </enum>
 
+<enum name="CreateFallbackImageResult">
+  <summary>Result of creating fallback shared image</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="FailedPrefersExternalSampler"/>
+  <int value="2" label="FailedYcbcrMismatch"/>
+  <int value="3" label="FailedExternalTexture"/>
+  <int value="4" label="FailedInvalidTextureInfo"/>
+  <int value="5" label="FailedCreateTexture"/>
+</enum>
+
 <enum name="D3D11FeatureLevel">
   <int value="0" label="Unknown"/>
   <int value="1" label="No D3D11 DLL"/>
@@ -1227,7 +1237,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Insufficient remaining bytes in Read(PaintShader) for
              color_bytes"/>
   <int value="7"
-      label="Insufficient remaining bytes in Read(PaintShader) for color_size"/>
+      label="Insufficient remaining bytes in Read(PaintShader) for color_size
+             (obsolete)"/>
   <int value="8"
       label="Insufficient remaining bytes in Read(PaintShader) for positions"/>
   <int value="9" label="Insufficient remaining bytes in Read(SkData)"/>

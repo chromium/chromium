@@ -29,7 +29,6 @@ TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
     : BrowserAutofillManager(driver) {
   test_api(*this).set_form_filler(
       std::make_unique<TestFormFiller>(*this, log_manager()));
-  test_api(*this).set_votes_uploader(std::make_unique<TestVotesUploader>(this));
 }
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
@@ -178,10 +177,6 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
   BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                                trigger_source);
   ASSERT_TRUE(waiter_.Wait(0));
-}
-
-TestVotesUploader& TestBrowserAutofillManager::votes_uploader() {
-  return static_cast<TestVotesUploader&>(test_api(*this).votes_uploader());
 }
 
 }  // namespace autofill

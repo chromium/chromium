@@ -302,7 +302,7 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<BrowserSwitchHandler> weak_ptr_factory_{this};
 };
 
-BrowserSwitchHandler::BrowserSwitchHandler() {}
+BrowserSwitchHandler::BrowserSwitchHandler() = default;
 
 BrowserSwitchHandler::~BrowserSwitchHandler() = default;
 

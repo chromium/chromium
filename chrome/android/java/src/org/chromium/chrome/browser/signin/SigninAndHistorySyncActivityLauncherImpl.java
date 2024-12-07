@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
@@ -65,16 +66,28 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             @AccessPoint int accessPoint,
             @Nullable CoreAccountId selectedCoreAccountId) {
 
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                noAccountSigninMode,
+                                withAccountSigninMode,
+                                historyOptInMode)
+                        .selectedCoreAccountId(selectedCoreAccountId)
+                        .build();
+
+        return createBottomSheetSigninIntentOrShowError(context, profile, config, accessPoint);
+    }
+
+    @Override
+    public @Nullable Intent createBottomSheetSigninIntentOrShowError(
+            @NonNull Context context,
+            @NonNull Profile profile,
+            @NonNull BottomSheetSigninAndHistorySyncConfig config,
+            @AccessPoint int accessPoint) {
+
         if (canStartSigninAndHistorySyncOrShowError(
-                context, profile, historyOptInMode, accessPoint)) {
-            return SigninAndHistorySyncActivity.createIntent(
-                    context,
-                    bottomSheetStrings,
-                    noAccountSigninMode,
-                    withAccountSigninMode,
-                    historyOptInMode,
-                    accessPoint,
-                    selectedCoreAccountId);
+                context, profile, config.historyOptInMode, accessPoint)) {
+            return SigninAndHistorySyncActivity.createIntent(context, config, accessPoint);
         }
 
         return null;

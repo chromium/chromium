@@ -480,6 +480,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sql.Database.Open.FirstAttempt.Error.{DatabaseTag}"
+    enum="SqliteResultCode" expires_after="2025-12-03">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports sqlite errors triggered during the first attempt at opening the
+    {DatabaseTag} database.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Open.SecondAttempt.Error.{DatabaseTag}"
+    enum="SqliteResultCode" expires_after="2025-12-03">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports sqlite errors triggered during the second attempt at opening the
+    {DatabaseTag} database. Databases can sometimes trigger a second open
+    attempt if the caller-provided error callback razes the database on open
+    failure.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
 <histogram name="Sql.Database.Success.OpenInternalTime.{DatabaseTag}"
     units="microseconds" expires_after="2025-11-15">
   <owner>anthonyvd@chromium.org</owner>
@@ -764,6 +788,18 @@ chromium-metrics-reviews@google.com.
   <owner>christinesm@chromium.org</owner>
   <summary>
     Records whether FileSystemObserver usage change caused quota to be exceeded.
+    Recorded when FileSystemAccessObserverQuotaManager is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Storage.FileSystemAccess.ObserverUsageRate" units="%"
+    expires_after="2025-07-02">
+  <owner>memmott@chromium.org</owner>
+  <owner>dslee@chromium.org</owner>
+  <owner>christinesm@chromium.org</owner>
+  <summary>
+    Records the percentage ratio of high water mark of OS-specific observer
+    resource usage over the total available quota for a given StorageKey.
     Recorded when FileSystemAccessObserverQuotaManager is destroyed.
   </summary>
 </histogram>
@@ -1512,11 +1548,21 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Measures the time from start of the call to `blink::SharedStorage::Append()`
-    to when the callback has successfully completed. Does not measure the timing
-    of calls that end in an error. Recorded in
-    `blink::SharedStorage::OnVoidOperationFinished()` via
-    `LogTimingHistogramForVoidOperation()`.
+    Measures the time taken for `sharedStorage.append()` to resolve when called
+    from a Window. Does not measure the timing of calls that end in an error.
+    Recorded at the moment the promise resolves.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.BatchUpdate" units="ms"
+    expires_after="2025-06-03">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time taken for `sharedStorage.batchUpdate()` to resolve when
+    called from a Window. Does not measure the timing of calls that end in an
+    error. Recorded at the moment the promise resolves.
   </summary>
 </histogram>
 
@@ -1526,11 +1572,9 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Measures the time from start of the call to `blink::SharedStorage::Clear()`
-    to when the callback has successfully completed. Does not measure the timing
-    of calls that end in an error. Recorded in
-    `blink::SharedStorage::OnVoidOperationFinished()` via
-    `LogTimingHistogramForVoidOperation()`.
+    Measures the time taken for `sharedStorage.clear()` to resolve when called
+    from a Window. Does not measure the timing of calls that end in an error.
+    Recorded at the moment the promise resolves.
   </summary>
 </histogram>
 
@@ -1625,11 +1669,9 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Measures the time from start of the call to `blink::SharedStorage::Set()` to
-    when the callback has successfully completed. Does not measure the timing of
-    calls that end in an error. Recorded in
-    `blink::SharedStorage::OnVoidOperationFinished()` via
-    `LogTimingHistogramForVoidOperation()`.
+    Measures the time taken for `sharedStorage.set()` to resolve when called
+    from a Window. Does not measure the timing of calls that end in an error.
+    Recorded at the moment the promise resolves.
   </summary>
 </histogram>
 
@@ -1911,12 +1953,21 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Measures the time from start of the call to
-    `shared_storage_worklet::SharedStorage::Append()` to when the callback has
-    successfully completed. Does not measure the timing of calls that end in an
-    error. Recorded in
-    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
-    `LogTimingHistogramForVoidOperation()`.
+    Measures the time taken for `sharedStorage.append()` to resolve when called
+    from a SharedStorageWorklet. Does not measure the timing of calls that end
+    in an error. Recorded at the moment the promise resolves.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.BatchUpdate" units="ms"
+    expires_after="2025-06-03">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time taken for `sharedStorage.batchUpdate()` to resolve when
+    called from a SharedStorageWorklet. Does not measure the timing of calls
+    that end in an error. Recorded at the moment the promise resolves.
   </summary>
 </histogram>
 
@@ -1926,12 +1977,9 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Measures the time from start of the call to
-    `shared_storage_worklet::SharedStorage::Clear()` to when the callback has
-    successfully completed. Does not measure the timing of calls that end in an
-    error. Recorded in
-    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
-    `LogTimingHistogramForVoidOperation()`.
+    Measures the time taken for `sharedStorage.clear()` to resolve when called
+    from a SharedStorageWorklet. Does not measure the timing of calls that end
+    in an error. Recorded at the moment the promise resolves.
   </summary>
 </histogram>
 
@@ -1941,12 +1989,9 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Measures the time from start of the call to
-    `shared_storage_worklet::SharedStorage::Delete()` to when the callback has
-    successfully completed. Does not measure the timing of calls that end in an
-    error. Recorded in
-    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
-    `LogTimingHistogramForVoidOperation()`.
+    Measures the time taken for `sharedStorage.delete()` to resolve when called
+    from a SharedStorageWorklet. Does not measure the timing of calls that end
+    in an error. Recorded at the moment the promise resolves.
   </summary>
 </histogram>
 
@@ -2043,12 +2088,9 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Measures the time from start of the call to
-    `shared_storage_worklet::SharedStorage::Set()` to when the callback has
-    successfully completed. Does not measure the timing of calls that end in an
-    error. Recorded in
-    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
-    `LogTimingHistogramForVoidOperation()`.
+    Measures the time taken for `sharedStorage.set()` to resolve when called
+    from a SharedStorageWorklet. Does not measure the timing of calls that end
+    in an error. Recorded at the moment the promise resolves.
   </summary>
 </histogram>
 

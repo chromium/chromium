@@ -101,7 +101,7 @@ class PWAMixedContentBrowserTestWithAutoupgradesDisabled
 };
 
 // Tests that creating a shortcut app but not installing a PWA is available for
-// a non-installable site, unless the universal install feature flag is enabled.
+// a non-installable site.
 IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTest,
                        ShortcutMenuOptionsForNonInstallableSite) {
   EXPECT_FALSE(
@@ -109,12 +109,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTest,
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
 
-  AppMenuCommandState expected_command_state =
-      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
-          ? kEnabled
-          : kNotPresent;
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()),
-            expected_command_state);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kEnabled);
 }
 
 // Tests that mixed content is loaded inside PWA windows.

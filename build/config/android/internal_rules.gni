@@ -3066,7 +3066,6 @@ if (enable_java_templates) {
   #    error-prone constructs in the language. If not provided, whether this is
   #    enabled depends on chromium_code and the global
   #    use_errorprone_java_compiler variable.
-  #  enable_nullaway: If True, enable @Nullable checking via NullAway.
   #  use_turbine: If True, compile headers using turbine.py.
   #  apk_name: Optional APK name. If provided, will tell compile_java.py to also
   #    generate an .apk.jar.info file under size-info/${apk_name}.apk.jar.info
@@ -3258,15 +3257,14 @@ if (enable_java_templates) {
           # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
           "//tools/android/errorprone_plugin/OWNERS",
         ]
-        if (defined(invoker.enable_nullaway) && invoker.enable_nullaway) {
+        if (defined(testonly) && testonly) {
+          args += [ "--testonly" ]
+        } else {
           inputs += [ _nullaway_jar ]
           args += [
             "--processorpath=$_rebased_nullaway_jar",
             "--enable-nullaway",
           ]
-        }
-        if (defined(testonly) && testonly) {
-          args += [ "--testonly" ]
         }
       }
       if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
@@ -3550,6 +3548,9 @@ if (enable_java_templates) {
     not_needed(invoker, [ "no_build_hooks" ])
 
     forward_variables_from(invoker, [ "testonly" ])
+
+    _target_dir = get_label_info(":any_name_here", "dir")
+
     _is_prebuilt = defined(invoker.jar_path)
     _type = invoker.type
     _is_annotation_processor = _type == "java_annotation_processor"
@@ -3568,24 +3569,11 @@ if (enable_java_templates) {
                               invoker.bypass_platform_checks
     _is_robolectric = defined(invoker.is_robolectric) && invoker.is_robolectric
 
-    _invoker_deps = []
-    if (defined(invoker.deps)) {
-      _invoker_deps += invoker.deps
-    }
-    if (defined(invoker.public_deps)) {
-      _invoker_deps += invoker.public_deps
-    }
-
-    _main_target_name = target_name
-    if (defined(invoker.main_target_name)) {
-      _main_target_name = invoker.main_target_name
-    }
-
-    _source_files = []
     if (defined(invoker.sources)) {
       _source_files = invoker.sources
+    } else {
+      _source_files = []
     }
-
     _srcjar_deps = []
     if (defined(invoker.srcjar_deps)) {
       _srcjar_deps = invoker.srcjar_deps
@@ -3595,6 +3583,33 @@ if (enable_java_templates) {
       _srcjars = invoker.srcjars
     }
     _has_sources = _source_files != [] || _srcjar_deps != [] || _srcjars != []
+
+    if (defined(invoker.chromium_code)) {
+      _chromium_code = invoker.chromium_code
+    } else {
+      # Default based on whether target is in third_party.
+      _chromium_code =
+          filter_exclude([ _target_dir ], [ "*\bthird_party\b*" ]) != []
+      if (!_chromium_code && !_is_prebuilt && _source_files != []) {
+        # Unless third_party code has an org.chromium file in it.
+        _chromium_code =
+            filter_exclude(_source_files, [ "*\bchromium\b*" ]) != _source_files
+      }
+    }
+
+    if (_chromium_code && _has_sources && _target_dir != "//build/android") {
+      _default_deps = [ "//build/android:build_java" ]
+    } else {
+      _default_deps = []
+    }
+    _invoker_deps = _default_deps
+    if (defined(invoker.deps)) {
+      _invoker_deps += invoker.deps
+    }
+    if (defined(invoker.public_deps)) {
+      _invoker_deps += invoker.public_deps
+    }
+
     if (_is_prebuilt || _has_sources) {
       # This allows us to use jar_excluded_patterns and prevent even the
       # interface jars from having these classes. This means that, with this
@@ -3625,18 +3640,10 @@ if (enable_java_templates) {
              "main_class cannot be used for target of type ${_type}")
     }
 
-    if (defined(invoker.chromium_code)) {
-      _chromium_code = invoker.chromium_code
+    if (defined(invoker.main_target_name)) {
+      _main_target_name = invoker.main_target_name
     } else {
-      # Default based on whether target is in third_party.
-      _chromium_code =
-          filter_exclude([ get_label_info(":$_main_target_name", "dir") ],
-                         [ "*\bthird_party\b*" ]) != []
-      if (!_chromium_code && !_is_prebuilt && _source_files != []) {
-        # Unless third_party code has an org.chromium file in it.
-        _chromium_code =
-            filter_exclude(_source_files, [ "*\bchromium\b*" ]) != _source_files
-      }
+      _main_target_name = target_name
     }
 
     # Define build_config_deps which will be a list of targets required to
@@ -3675,9 +3682,8 @@ if (enable_java_templates) {
         # so do not put them under obj/.
         # TODO(agrieve): I suspect it would be better to use dist_jar for java_binary
         #     rather than archiving unnecessary .jar files within lib.java.
-        _target_dir_name = get_label_info(":$_main_target_name", "dir")
         _host_processed_jar_path =
-            "$root_out_dir/lib.java$_target_dir_name/$_output_name.jar"
+            "$root_out_dir/lib.java$_target_dir/$_output_name.jar"
       }
       if (_build_device_jar) {
         _dex_path = "$target_out_dir/$_main_target_name.dex.jar"
@@ -3877,9 +3883,9 @@ if (enable_java_templates) {
 
       # Specifically avoid passing in invoker.base_module_target as one of the
       # possible_config_deps.
-      possible_config_deps = []
+      possible_config_deps = _default_deps
       if (defined(invoker.deps)) {
-        possible_config_deps = invoker.deps
+        possible_config_deps += invoker.deps
       }
       if (defined(invoker.public_deps)) {
         possible_config_public_deps = invoker.public_deps
@@ -4105,7 +4111,6 @@ if (enable_java_templates) {
         _compile_java_errorprone_target = "${_main_target_name}__errorprone"
         compile_java_helper(_compile_java_errorprone_target) {
           forward_variables_from(invoker, _compile_java_forward_variables)
-          forward_variables_from(invoker, [ "enable_nullaway" ])
           enable_errorprone = true
           if (defined(invoker.errorprone_args)) {
             if (!defined(javac_args)) {
@@ -4124,8 +4129,6 @@ if (enable_java_templates) {
           output_jar_path = "$target_out_dir/$target_name.errorprone.stamp"
         }
         _java_validate_deps += [ ":$_compile_java_errorprone_target" ]
-      } else {
-        not_needed(invoker, [ "enable_nullaway" ])
       }
     }  # _has_sources
 

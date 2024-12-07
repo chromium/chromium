@@ -2315,16 +2315,6 @@ TEST_F(LayerTreeImplTest, DebugRectHistoryLayoutShiftWithoutHud) {
   EXPECT_EQ(0u, history->debug_rects().size());
 }
 
-TEST_F(LayerTreeImplTest, MaxSafeAreaInsetsUpdate) {
-  gfx::Insets insets(1);
-  insets.set_bottom(30);
-  host_impl().SetMaxSafeAreaInsets(insets);
-  host_impl().CreatePendingTree();
-
-  EXPECT_EQ(30, host_impl().pending_tree()->MaxSafeAreaInsets().bottom());
-  EXPECT_EQ(30, host_impl().active_tree()->MaxSafeAreaInsets().bottom());
-}
-
 namespace {
 
 class PersistentSwapPromise final : public SwapPromise {
@@ -2467,11 +2457,9 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   scoped_refptr<RasterSource> raster_source1(
       FakeRasterSource::CreateFilledWithPaintWorklet(child1->bounds()));
   child1->UpdateRasterSource(raster_source1, &empty_invalidation);
-  child1->RegenerateDiscardableImageMapIfNeeded();
   scoped_refptr<RasterSource> raster_source3(
       FakeRasterSource::CreateFilledWithPaintWorklet(child3->bounds()));
   child3->UpdateRasterSource(raster_source3, &empty_invalidation);
-  child3->RegenerateDiscardableImageMapIfNeeded();
 
   // The set should correctly track which layers are in it.
   const base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>& layers =
@@ -2484,7 +2472,6 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   scoped_refptr<RasterSource> empty_raster_source(
       FakeRasterSource::CreateFilled(child1->bounds()));
   child1->UpdateRasterSource(empty_raster_source, &empty_invalidation);
-  child1->RegenerateDiscardableImageMapIfNeeded();
   EXPECT_EQ(layers.size(), 1u);
   EXPECT_FALSE(layers.contains(child1));
 

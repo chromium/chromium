@@ -94,6 +94,18 @@ class PasswordManagerDriver {
       const std::u16string& value,
       autofill::AutofillSuggestionTriggerSource suggestion_source) {}
 
+  // Tells the renderer to fill and submit a change password form, specifically
+  // `password_element_id` with `old_password` and `new_password_element_id`,
+  // `confirm_password_element_id` with `new_password`. Upon completion
+  // asynchronously returns `form_data` with filled values.
+  virtual void SubmitChangePasswordForm(
+      autofill::FieldRendererId password_element_id,
+      autofill::FieldRendererId new_password_element_id,
+      autofill::FieldRendererId confirm_password_element_id,
+      const std::u16string& old_password,
+      const std::u16string& new_password,
+      base::OnceCallback<void(const autofill::FormData&)> form_data_callback) {}
+
   // Tells the driver to fill the currently focused form with the `username` and
   // `password`.
   virtual void FillSuggestion(

@@ -12,7 +12,7 @@ class IdltestSendArrayBufferFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("idltest.sendArrayBuffer", IDLTEST_SENDARRAYBUFFER)
 
  protected:
-  ~IdltestSendArrayBufferFunction() override {}
+  ~IdltestSendArrayBufferFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -22,7 +22,7 @@ class IdltestSendArrayBufferViewFunction : public ExtensionFunction {
                              IDLTEST_SENDARRAYBUFFERVIEW)
 
  protected:
-  ~IdltestSendArrayBufferViewFunction() override {}
+  ~IdltestSendArrayBufferViewFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -31,7 +31,7 @@ class IdltestGetArrayBufferFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("idltest.getArrayBuffer", IDLTEST_GETARRAYBUFFER)
 
  protected:
-  ~IdltestGetArrayBufferFunction() override {}
+  ~IdltestGetArrayBufferFunction() override = default;
   ResponseAction Run() override;
 };
 

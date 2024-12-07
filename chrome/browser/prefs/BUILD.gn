@@ -211,6 +211,7 @@ source_set("impl") {
       "//chrome/browser/extensions/api/shared_storage",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/policy:onc",
+      "//chrome/browser/policy:system_features_disable_list",
       "//chrome/browser/ui/ash/projector",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/webui/ash/edu_coexistence",

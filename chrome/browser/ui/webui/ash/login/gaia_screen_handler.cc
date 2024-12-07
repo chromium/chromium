@@ -114,6 +114,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/net_errors.h"
@@ -152,7 +153,7 @@ bool HasLeadingOrTrailingWhitespaces(const std::string& str) {
 
 std::optional<SyncTrustedVaultKeys> GetSyncTrustedVaultKeysForUserContext(
     const base::Value::Dict& js_object,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   SyncTrustedVaultKeys parsed_keys = SyncTrustedVaultKeys::FromJs(js_object);
   if (parsed_keys.gaia_id() != gaia_id) {
     return std::nullopt;
@@ -409,7 +410,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     const bool* collect_stats_consent) {
   base::Value::Dict params;
 
-  params.Set("gaiaId", context.gaia_id);
+  params.Set("gaiaId", context.gaia_id.ToString());
   params.Set("readOnlyEmail", true);
   params.Set("email", context.email);
 
@@ -451,7 +452,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     const user_manager::User* owner_user =
         user_manager::UserManager::Get()->FindUser(owner_account_id);
     if (owner_user && owner_user->GetType() == user_manager::UserType::kChild) {
-      params.Set("obfuscatedOwnerId", owner_account_id.GetGaiaId());
+      params.Set("obfuscatedOwnerId", owner_account_id.GetGaiaId().ToString());
     }
   }
 

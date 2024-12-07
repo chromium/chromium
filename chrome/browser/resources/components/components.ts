@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
-import {$, getRequiredElement} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './component.html.js';
@@ -22,7 +22,6 @@ interface Component {
 
 export interface ComponentsData {
   components: Component[];
-  showOsLink: boolean;
 }
 
 /**
@@ -41,23 +40,7 @@ let currentComponentsData: Component[]|null = null;
  */
 function renderTemplate(componentsData: ComponentsData) {
   render(getHtml(componentsData), getRequiredElement('component-placeholder'));
-
-  // <if expr="is_chromeos">
-  const crosUrlRedirectButton = $('os-link-href');
-  if (crosUrlRedirectButton) {
-    crosUrlRedirectButton.onclick = crosUrlComponentRedirect;
-  }
-  // </if>
 }
-
-// <if expr="is_chromeos">
-/**
- * Called when the user clicks on the os-link-href button.
- */
-function crosUrlComponentRedirect() {
-  chrome.send('crosUrlComponentsRedirect');
-}
-// </if>
 
 /**
  * Asks the C++ ComponentsDOMHandler to get details about the installed
@@ -102,11 +85,6 @@ function returnComponentsData(componentsData: ComponentsData) {
         .forEach(function(element) {
           element.disabled = true;
         });
-  }
-
-  const systemFlagsLinkDiv = $('os-link-container');
-  if (systemFlagsLinkDiv) {
-    systemFlagsLinkDiv.hidden = !componentsData.showOsLink;
   }
 
   bodyContainer.style.visibility = 'visible';

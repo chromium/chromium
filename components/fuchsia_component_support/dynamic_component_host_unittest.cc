@@ -68,10 +68,9 @@ fidl::InterfaceHandle<fuchsia::io::Directory> GetSvcFromChildArgs(
     // capability.
     fidl::InterfacePtr<fuchsia::io::Directory> root_dir;
     base::ComponentContextForProcess()->outgoing()->root_dir()->Serve(
-        fuchsia::io::OpenFlags::RIGHT_READABLE |
-            fuchsia::io::OpenFlags::RIGHT_WRITABLE |
-            fuchsia::io::OpenFlags::DIRECTORY,
-        root_dir.NewRequest().TakeChannel());
+        fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+        fidl::ServerEnd<fuchsia_io::Directory>(
+            root_dir.NewRequest().TakeChannel()));
 
     // Determine the capability path, relative to the outgoing directory of
     // the calling process, and request to open it.
@@ -129,9 +128,10 @@ class DynamicComponentHostTest : public testing::Test {
             [this](fuchsia::component::decl::ChildRef,
                    fidl::InterfaceRequest<fuchsia::io::Directory> exposed_dir,
                    fuchsia::component::Realm::OpenExposedDirCallback callback) {
-              exposed_.Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                                 fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                             exposed_dir.TakeChannel());
+              exposed_.Serve(fuchsia_io::wire::kPermReadable |
+                                 fuchsia_io::wire::kPermWritable,
+                             fidl::ServerEnd<fuchsia_io::Directory>(
+                                 exposed_dir.TakeChannel()));
               callback({});
             });
   }
@@ -298,9 +298,10 @@ TEST_F(DynamicComponentHostTest, WithServiceDirectory) {
     // Create a directory handle for the service directory.
     fidl::InterfaceHandle<fuchsia::io::Directory> handle;
     vfs::PseudoDir service_directory;
-    service_directory.Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                                fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                            handle.NewRequest().TakeChannel());
+    service_directory.Serve(
+        fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+        fidl::ServerEnd<fuchsia_io::Directory>(
+            handle.NewRequest().TakeChannel()));
 
     DynamicComponentHost component(kTestCollection, kTestChildId,
                                    kTestComponentUrl, base::DoNothing(),

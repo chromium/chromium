@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
 
 #import "base/feature_list.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/features.h"
@@ -20,16 +19,16 @@
 BringAndroidTabsToIOSService*
 BringAndroidTabsToIOSServiceFactory::GetForProfile(ProfileIOS* profile) {
   DCHECK(!profile->IsOffTheRecord());
-  return static_cast<BringAndroidTabsToIOSService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<BringAndroidTabsToIOSService>(
+      profile, /*create=*/true);
 }
 
 // static
 BringAndroidTabsToIOSService*
 BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
     ProfileIOS* profile) {
-  return static_cast<BringAndroidTabsToIOSService*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<BringAndroidTabsToIOSService>(
+      profile, /*create=*/false);
 }
 
 // static
@@ -40,9 +39,7 @@ BringAndroidTabsToIOSServiceFactory::GetInstance() {
 }
 
 BringAndroidTabsToIOSServiceFactory::BringAndroidTabsToIOSServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "BringAndroidTabsToIOSService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("BringAndroidTabsToIOSService") {}
 
 BringAndroidTabsToIOSServiceFactory::~BringAndroidTabsToIOSServiceFactory() {
   DependsOn(

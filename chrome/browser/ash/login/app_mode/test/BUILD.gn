@@ -91,7 +91,6 @@ source_set("browser_tests") {
     "kiosk_sku_browsertest.cc",
     "kiosk_update_browsertest.cc",
     "web_kiosk_browser_permissions_browsertest.cc",
-    "web_kiosk_browsertest.cc",
     "web_kiosk_device_attributes_browsertest.cc",
     "web_kiosk_media_ui_browsertest.cc",
   ]

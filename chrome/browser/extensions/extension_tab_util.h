@@ -9,17 +9,22 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/extensions/window_controller.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+// gn check doesn't understand this conditional, hence the nogncheck directives
+// below.
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
-#include "components/tab_groups/tab_group_color.h"
-#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_color.h"  // nogncheck
+#include "components/tab_groups/tab_group_id.h"     // nogncheck
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
+#endif
 
 class Browser;
 class ChromeExtensionFunctionDetails;
@@ -48,6 +53,9 @@ class WindowController;
 // Provides various utility functions that help manipulate tabs.
 class ExtensionTabUtil {
  public:
+#if !BUILDFLAG(IS_ANDROID)
+  // This file is slowly being ported to Android. For now, most of it is
+  // ifdef'd out.
   static constexpr char kNoCrashBrowserError[] =
       "I'm sorry. I'm afraid I can't do that.";
   static constexpr char kCanOnlyMoveTabsWithinNormalWindowsError[] =
@@ -114,7 +122,11 @@ class ExtensionTabUtil {
 
   static int GetWindowId(const Browser* browser);
   static int GetWindowIdOfTabStripModel(const TabStripModel* tab_strip_model);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   static int GetTabId(const content::WebContents* web_contents);
+
+#if !BUILDFLAG(IS_ANDROID)
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
   static base::Value::List CreateTabList(const Browser* browser,
                                          const Extension* extension,
@@ -201,6 +213,7 @@ class ExtensionTabUtil {
   // Returns the active tab's WebContents if there is an active tab. Returns
   // null if there is no active tab.
   static content::WebContents* GetActiveTab(Browser* browser);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Any out parameter (`window`, `contents`, & `tab_index`) may be null.
   //
@@ -217,6 +230,7 @@ class ExtensionTabUtil {
                          bool include_incognito,
                          content::WebContents** contents);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Gets the extensions-specific Group ID.
   static int GetGroupId(const tab_groups::TabGroupId& id);
 
@@ -337,6 +351,7 @@ class ExtensionTabUtil {
 
   static bool TabIsInSavedTabGroup(content::WebContents* contents,
                                    TabStripModel* tab_strip_model);
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace extensions

@@ -136,6 +136,7 @@ struct App {
   std::string lang;
   std::string brand_code;
   int install_date = kDateUnknown;
+  std::string install_id;
   std::string install_source;
   std::string install_location;
   std::string fingerprint;

@@ -33,10 +33,10 @@ const int kReferrerUserGestureLimit = 2;
 // SafeBrowsingPrivateGetReferrerChainFunction
 
 SafeBrowsingPrivateGetReferrerChainFunction::
-    SafeBrowsingPrivateGetReferrerChainFunction() {}
+    SafeBrowsingPrivateGetReferrerChainFunction() = default;
 
 SafeBrowsingPrivateGetReferrerChainFunction::
-    ~SafeBrowsingPrivateGetReferrerChainFunction() {}
+    ~SafeBrowsingPrivateGetReferrerChainFunction() = default;
 
 ExtensionFunction::ResponseAction
 SafeBrowsingPrivateGetReferrerChainFunction::Run() {

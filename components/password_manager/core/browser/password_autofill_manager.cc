@@ -332,6 +332,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                 /*password_hostname=*/
                 password_manager_util::GetHumanReadableRealm(
                     password_credential->realm),
+                /*show_warning_text=*/true,
                 /*confirmation_callback=*/
                 base::BindOnce(&PasswordAutofillManager::
                                    OnPasswordCredentialSuggestionAccepted,
@@ -575,6 +576,15 @@ void PasswordAutofillManager::FillSuggestion(
           password_and_metadata.realm)
           .IsValidAndroidFacetURI();
   metrics_util::LogFilledPasswordFromAndroidApp(is_android_credential);
+  // Emit UMA if grouped affiliation match was available for the user.
+  if (fill_data_->preferred_login.is_grouped_affiliation ||
+      base::ranges::find_if(fill_data_->additional_logins,
+                            [](const autofill::PasswordAndMetadata& login) {
+                              return login.is_grouped_affiliation;
+                            }) != fill_data_->additional_logins.end()) {
+    metrics_util::LogFillSuggestionGroupedMatchAccepted(
+        password_and_metadata.is_grouped_affiliation);
+  }
   password_manager_driver_->FillSuggestion(password_and_metadata.username_value,
                                            password_and_metadata.password_value,
                                            base::DoNothing());

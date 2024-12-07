@@ -2,20 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/sockaddr_util_posix.h"
 
 #include <stddef.h>
 #include <string.h>
-#include <stddef.h>
-
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "net/base/sockaddr_storage.h"
 
@@ -52,7 +46,8 @@ bool FillUnixAddress(const std::string& socket_path,
   // length of the structure exactly, as potentially the socket name may
   // have '\0' characters embedded (although we don't support this).
   // Note that addr.sun_path is already zero initialized.
-  memcpy(socket_addr->sun_path + 1, socket_path.c_str(), socket_path.size());
+  UNSAFE_TODO(memcpy(socket_addr->sun_path + 1, socket_path.c_str(),
+                     socket_path.size());)
   return true;
 #else
   return false;

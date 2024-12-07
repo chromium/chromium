@@ -82,6 +82,13 @@ export function getHtml(this: ItemElement) {
           <span id="blocklisted-warning" class="cr-secondary-text"><!--
             -->${this.data.blocklistText}<!-- No whitespace; use :empty in css.
        --></span>
+          <span id="unsupported-developer-extension-warning"
+              class="cr-secondary-text"
+              ?hidden="${!this.data.disableReasons.
+            unsupportedDeveloperExtension}">
+            <!--TODO(crbug.com/362756477) Replace after string is finalized.-->
+            <span>This extension is only supported in developer mode.</span>
+          </span>
         </div>` : ''}
       ${this.showMv2DeprecationWarning_() ? html`
         <div id="warnings">

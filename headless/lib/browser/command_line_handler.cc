@@ -5,6 +5,7 @@
 #include "headless/lib/browser/command_line_handler.h"
 
 #include <cstdio>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -25,21 +26,31 @@ namespace headless {
 
 namespace {
 
+void AppendSwitchMaybe(base::CommandLine& command_line,
+                       std::string_view switch_constant) {
+  if (!command_line.HasSwitch(switch_constant)) {
+    command_line.AppendSwitch(switch_constant);
+  }
+}
+
 void HandleDeterministicModeSwitch(base::CommandLine& command_line) {
   DCHECK(command_line.HasSwitch(switches::kDeterministicMode));
 
-  command_line.AppendSwitch(switches::kEnableBeginFrameControl);
+  AppendSwitchMaybe(command_line, switches::kEnableBeginFrameControl);
 
   // Compositor flags
-  command_line.AppendSwitch(::switches::kRunAllCompositorStagesBeforeDraw);
-  command_line.AppendSwitch(::switches::kDisableNewContentRenderingTimeout);
+  AppendSwitchMaybe(command_line,
+                    ::switches::kRunAllCompositorStagesBeforeDraw);
+  AppendSwitchMaybe(command_line,
+                    ::switches::kDisableNewContentRenderingTimeout);
   // Ensure that image animations don't resync their animation timestamps when
   // looping back around.
-  command_line.AppendSwitch(blink::switches::kDisableImageAnimationResync);
+  AppendSwitchMaybe(command_line,
+                    blink::switches::kDisableImageAnimationResync);
 
   // Renderer flags
-  command_line.AppendSwitch(::switches::kDisableThreadedAnimation);
-  command_line.AppendSwitch(::switches::kDisableCheckerImaging);
+  AppendSwitchMaybe(command_line, ::switches::kDisableThreadedAnimation);
+  AppendSwitchMaybe(command_line, ::switches::kDisableCheckerImaging);
 }
 
 bool HandleRemoteDebuggingPort(base::CommandLine& command_line,
@@ -161,10 +172,20 @@ base::FilePath EnsureDirectoryExists(const base::FilePath& file_path) {
 bool HandleCommandLineSwitches(base::CommandLine& command_line,
                                HeadlessBrowser::Options& options) {
   if (command_line.HasSwitch(switches::kDeterministicMode)) {
+    if (command_line.HasSwitch(::switches::kSitePerProcess)) {
+      LOG(ERROR) << "Deterministic mode is not compatible with --"
+                 << ::switches::kSitePerProcess << " switch.";
+      return false;
+    }
     HandleDeterministicModeSwitch(command_line);
   }
 
   if (command_line.HasSwitch(switches::kEnableBeginFrameControl)) {
+    if (command_line.HasSwitch(::switches::kSitePerProcess)) {
+      LOG(ERROR) << "Frame control is not compatible with --"
+                 << ::switches::kSitePerProcess << " switch.";
+      return false;
+    }
     options.enable_begin_frame_control = true;
   }
 

@@ -165,10 +165,6 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
   // Gets the DriveFS mount point. Returns true if the Drive is mounted false
   // otherwise.
-  // TODO(michelefan): Now we have both CaptureModeDelegate and ProjectorClient
-  // expose the GetDriveFsMountPointPath. Add the APIs in ShellDelegate which is
-  // implemented by ChromeShellDelegate in chrome and TestShellDelegate in
-  // ash_unittests to reduce the duplication.
   virtual bool GetDriveFsMountPointPath(base::FilePath* path) const = 0;
 
   // Returns the absolute path for the user's Android Play files.

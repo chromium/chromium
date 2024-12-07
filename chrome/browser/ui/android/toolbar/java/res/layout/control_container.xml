@@ -50,12 +50,4 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/find_in_page_popup_margin_end"
         android:layout_gravity="end|top"
         android:layout="@layout/find_toolbar" />
-
-    <ViewStub
-        android:id="@+id/target_view_stub"
-        android:inflatedId="@+id/toolbar_drag_drop_target_view"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/tab_strip_height"
-        android:layout_height="@dimen/toolbar_height_no_shadow"
-        android:layout="@layout/drag_drop_target_view" />
 </org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer>

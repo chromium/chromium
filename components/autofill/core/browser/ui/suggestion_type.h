@@ -135,22 +135,22 @@ enum class SuggestionType {
   // suggestions with country names as main text mean.
   kDevtoolsTestAddressByCountry = 51,
 
-  // Trigger for retrieving prediction improvements. Part of the footer.
-  kRetrievePredictionImprovements = 53,
-  // Loading indicator shown while retrieving prediction improvements.
-  kPredictionImprovementsLoadingState = 54,
-  // Fill prediction improvements.
-  kFillPredictionImprovements = 55,
+  // Trigger for retrieving Autofill AI suggestions. Part of the footer.
+  kRetrieveAutofillAi = 53,
+  // Loading indicator shown while retrieving Autofill AI suggestions.
+  kAutofillAiLoadingState = 54,
+  // Autofill AI filling suggestion.
+  kFillAutofillAi = 55,
   // Suggestion that provides users the possibility to give feedback about
-  // predictions improvements.
-  kPredictionImprovementsFeedback = 56,
+  // Autofill AI.
+  kAutofillAiFeedback = 56,
   // DEPRECATED due to UX changes.
-  // Allows the users to navigate to more details about improved predictions.
+  // Allows the users to navigate to more details about Autofill AI.
   // kPredictionImprovementsDetails = 58,
-  // Suggestion displayed when there is an error with prediction improvements.
-  kPredictionImprovementsError = 59,
-  // Suggestion displayed when there is an error with prediction improvements.
-  kEditPredictionImprovementsInformation = 60,
+  // Suggestion displayed when there is an error with Autofill AI.
+  kAutofillAiError = 59,
+  // Suggestion for editing Autofill AI information.
+  kEditAutofillAiData = 60,
 
   kMaxValue = kAddressEntryOnTyping
 };

@@ -95,16 +95,25 @@ void FileSystemAccessLocalPathWatcher::Initialize(
           base::BindPostTaskToCurrentDefault(
               std::move(on_usage_change_callback)))
       .Then(base::BindOnce(
-          [](base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          [](base::WeakPtr<FileSystemAccessLocalPathWatcher> self,
+             base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                  callback,
-             bool result) {
-            std::move(callback).Run(
-                result ? file_system_access_error::Ok()
-                       : file_system_access_error::FromStatus(
-                             blink::mojom::FileSystemAccessStatus::
-                                 kOperationFailed));
+             std::optional<size_t> current_usage) {
+            if (!current_usage.has_value()) {
+              std::move(callback).Run(file_system_access_error::FromStatus(
+                  blink::mojom::FileSystemAccessStatus::kOperationFailed));
+              return;
+            }
+
+            self->current_usage_ = current_usage.value();
+            std::move(callback).Run(file_system_access_error::Ok());
           },
-          std::move(on_source_initialized)));
+          weak_factory_.GetWeakPtr(), std::move(on_source_initialized)));
+}
+
+size_t FileSystemAccessLocalPathWatcher::current_usage() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return current_usage_;
 }
 
 void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
@@ -165,6 +174,14 @@ void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
 
 void FileSystemAccessLocalPathWatcher::OnUsageChange(size_t old_usage,
                                                      size_t new_usage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK_EQ(current_usage_, old_usage);
+  if (new_usage == current_usage_) {
+    return;
+  }
+
+  current_usage_ = new_usage;
   NotifyOfUsageChange(old_usage, new_usage);
 }
 

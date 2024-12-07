@@ -75,13 +75,8 @@ SharedStorageDeleteMethod::SharedStorageDeleteMethod(
           std::move(method), std::move(with_lock));
 }
 
-network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr
-SharedStorageDeleteMethod::TakeMojomMethod() {
-  return std::move(method_with_options_);
-}
-
 void SharedStorageDeleteMethod::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
+  SharedStorageModifierMethod::Trace(visitor);
 }
 
 }  // namespace blink

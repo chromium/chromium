@@ -448,13 +448,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Other error"/>
 </enum>
 
-<enum name="EnterpriseCloudUserAffiliationStatus">
-  <summary>Cloud user affiliation status.</summary>
-  <int value="0" label="Only user managed"/>
-  <int value="1" label="Device and user managed and unaffiliated"/>
-  <int value="2" label="Device and user managed and affiliated"/>
-</enum>
-
 <enum name="EnterpriseCrdSessionResultCode">
   <summary>Types of CRD sessions connection request result code.</summary>
   <int value="0" label="SUCCESS"/>

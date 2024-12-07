@@ -89,13 +89,15 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
       table_manager_(base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
           db_task_runner)),
       db_task_runner_(db_task_runner),
-      backing_database_(std::make_unique<sql::Database>(sql::DatabaseOptions{
-          .page_size = 4096,
-          .cache_size = 500,
-          // TODO(pwnall): Add a meta table and remove this option.
-          .mmap_alt_status_discouraged = true,
-          .enable_views_discouraged = true,  // Required by mmap_alt_status.
-      })),
+      backing_database_(std::make_unique<sql::Database>(
+          sql::DatabaseOptions{
+              .page_size = 4096,
+              .cache_size = 500,
+              // TODO(pwnall): Add a meta table and remove this option.
+              .mmap_alt_status_discouraged = true,
+              .enable_views_discouraged = true,  // Required by mmap_alt_status.
+          },
+          /*tag=*/"TrustTokens")),
       issuer_table_(
           std::make_unique<sqlite_proto::KeyValueTable<TrustTokenIssuerConfig>>(
               kIssuerTableName)),
@@ -125,9 +127,6 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
               issuer_toplevel_pair_table_.get(),
               /*max_num_entries=*/std::nullopt,
               flush_delay_for_writes)) {
-  // This line is boilerplate copied from predictor_database.cc.
-  backing_database_->set_histogram_tag("TrustTokens");
-
   // Because TrustTokenDatabaseOwners are only constructed through an
   // asynchronous factory method, they are impossible to delete prior to their
   // initialization concluding.

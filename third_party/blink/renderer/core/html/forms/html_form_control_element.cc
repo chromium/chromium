@@ -312,7 +312,7 @@ FocusableState HTMLFormControlElement::SupportsFocus(UpdateBehavior) const {
                                  : FocusableState::kFocusable;
 }
 
-bool HTMLFormControlElement::IsKeyboardFocusable(
+bool HTMLFormControlElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   // Form control elements are always keyboard focusable if they are focusable
   // at all, and don't have a negative tabindex set.

@@ -8151,16 +8151,9 @@ void WebContentsImpl::OnDidBlockNavigation(
     const GURL& blocked_url,
     const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDidBlockNavigation",
-                        "details", [&](perfetto::TracedValue context) {
-                          // TODO(crbug.com/40751990): Replace this with passing
-                          // more parameters to TRACE_EVENT directly when
-                          // available.
-                          auto dict = std::move(context).WriteDictionary();
-                          dict.Add("blocked_url", blocked_url);
-                          dict.Add("initiator_url", initiator_url);
-                          dict.Add("reason", reason);
-                        });
+  OPTIONAL_TRACE_EVENT("content", "WebContentsImpl::OnDidBlockNavigation",
+                       "blocked_url", blocked_url, "initiator_url",
+                       initiator_url, "reason", reason);
   if (delegate_) {
     delegate_->OnDidBlockNavigation(this, blocked_url, reason);
   }
@@ -11242,17 +11235,10 @@ void WebContentsImpl::RenderFrameHostStateChanged(
     LifecycleState old_state,
     LifecycleState new_state) {
   DCHECK_NE(old_state, new_state);
-  OPTIONAL_TRACE_EVENT2("content",
-                        "WebContentsImpl::RenderFrameHostStateChanged",
-                        "render_frame_host", render_frame_host, "states",
-                        [&](perfetto::TracedValue context) {
-                          // TODO(crbug.com/40751990): Replace this with passing
-                          // more parameters to TRACE_EVENT directly when
-                          // available.
-                          auto dict = std::move(context).WriteDictionary();
-                          dict.Add("old", old_state);
-                          dict.Add("new", new_state);
-                        });
+  OPTIONAL_TRACE_EVENT("content",
+                       "WebContentsImpl::RenderFrameHostStateChanged",
+                       "render_frame_host", render_frame_host, "old_state",
+                       old_state, "new_state", new_state);
 
 #if BUILDFLAG(IS_ANDROID)
   if (old_state == LifecycleState::kActive && !render_frame_host->GetParent()) {

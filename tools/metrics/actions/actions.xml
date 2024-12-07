@@ -7009,11 +7009,27 @@ should be able to be added at any place in this file.
   <description>Triggered when the user adds a product to cart.</description>
 </action>
 
+<action name="Commerce.Compare.BuyingOptionsClicked">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the buying option link in the compare table is clicked.
+  </description>
+</action>
+
 <action name="Commerce.Compare.CandidateClusterRejected">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>
     Records when we filter out a cluster because it was rejected by the backend.
+  </description>
+</action>
+
+<action name="Commerce.Compare.CitationClicked">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when any citation link in the compare table is clicked.
   </description>
 </action>
 
@@ -7092,6 +7108,15 @@ should be able to be added at any place in this file.
   <owner>chrome-shopping@google.com</owner>
   <description>
     Records when the compare proactive entry point has shown.
+  </description>
+</action>
+
+<action name="Commerce.Compare.ReopenedProductPage">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when user clicks on the OpenTab button to open or switch to the tab
+    of this item in the compare table.
   </description>
 </action>
 
@@ -27382,7 +27407,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MultiWindowResizerClick">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the multi window resize widget is clicked on.
@@ -27390,7 +27415,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MultiWindowResizerClick_TwoWindowsSnapped">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the multi window resize widget is clicked on when two windows
@@ -27399,7 +27424,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MultiWindowResizerShow">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the resize widget shows on mouse hover on the ResizeWindows.
@@ -27407,7 +27432,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MultiWindowResizerShow_TwoWindowsSnapped">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the resize widget shows on mouse hover on the ResizeWindows
@@ -34839,6 +34864,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacyGuide.CompletionAiSettingsClick">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the AI settings link on the completion step of Privacy guide.
+  </description>
+</action>
+
 <action name="Settings.PrivacyGuide.CompletionPSClick">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
@@ -40003,7 +40037,6 @@ should be able to be added at any place in this file.
 
 <action name="SnapGroups_ActivateViaKeyboard">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the divider is activated via the keyboard.
@@ -40017,7 +40050,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SnapGroups_DoubleTapWindowSwapAttempts">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
   <description>
     Tracks the number of times users attempt to swap windows within a Snap Group
@@ -40026,7 +40059,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SnapGroups_DoubleTapWindowSwapSuccess">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
   <description>
     Recorded when two windows in a Snap Group are successfully swapped via
@@ -40082,7 +40115,6 @@ should be able to be added at any place in this file.
 
 <action name="SnapGroups_ResizeViaKeyboard">
   <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the divider is resized via the keyboard.
@@ -40239,7 +40271,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SplitView_SwapWindowsButtonSwapWindows">
-  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <description>
     Recorded when the user clicks on the swap windows button in the expanded

@@ -78,7 +78,7 @@ class WebstoreReinstallerBrowserTest : public WebstoreInstallerTest {
     scoped_feature_list_.InitAndDisableFeature(
         extensions_features::kUseItemSnippetsAPI);
   }
-  ~WebstoreReinstallerBrowserTest() override {}
+  ~WebstoreReinstallerBrowserTest() override = default;
 
   void OnInstallCompletion(base::OnceClosure quit_closure,
                            bool success,

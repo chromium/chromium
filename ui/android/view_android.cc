@@ -107,6 +107,7 @@ void ViewAndroid::SetDelegate(const JavaRef<jobject>& delegate) {
   // available parent's delegate.
   JNIEnv* env = base::android::AttachCurrentThread();
   delegate_ = JavaObjectWeakGlobalRef(env, delegate);
+  observer_list_.Notify(&ViewAndroidObserver::OnDelegateSet);
 }
 
 void ViewAndroid::UpdateFrameInfo(const FrameInfo& frame_info) {

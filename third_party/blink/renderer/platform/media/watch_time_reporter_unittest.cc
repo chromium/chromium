@@ -290,6 +290,7 @@ class WatchTimeReporterTest
     void SetContainerName(
         media::container_names::MediaContainerName container_name) override {}
     void SetRendererType(media::RendererType renderer_type) override {}
+    void SetDemuxerType(media::DemuxerType demuxer_type) override {}
     void SetKeySystem(const std::string& key_system) override {}
     void SetHasWaitingForKey() override {}
     void SetIsHardwareSecure() override {}

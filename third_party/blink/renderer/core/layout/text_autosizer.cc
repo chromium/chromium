@@ -63,6 +63,21 @@ namespace blink {
 
 namespace {
 
+struct FingerprintSourceData {
+  STACK_ALLOCATED();
+
+ public:
+  unsigned parent_hash_ = 0;
+  unsigned qualified_name_hash_ = 0;
+  // Style specific selection of signals
+  unsigned packed_style_properties_ = 0;
+  unsigned column_ = 0;
+  float width_ = 0;
+};
+// Ensures efficient hashing using StringHasher.
+static_assert(!(sizeof(FingerprintSourceData) % sizeof(UChar)),
+              "sizeof(FingerprintSourceData) must be a multiple of UChar");
+
 inline int GetLayoutInlineSize(const Document& document,
                                const LocalFrameView& main_frame_view) {
   gfx::Size size = main_frame_view.GetLayoutSize();

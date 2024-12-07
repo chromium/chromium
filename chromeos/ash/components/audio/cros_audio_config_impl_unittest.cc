@@ -229,13 +229,18 @@ class CrosAudioConfigImplTest : public testing::Test {
 
   void SimulateRefreshVoiceIsolationState() {
     // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
-    remote_->RefreshVoiceIsolationState();
+    cras_audio_handler_->RefreshVoiceIsolationState();
+    remote_->RecordVoiceIsolationEnabledChange();
     base::RunLoop().RunUntilIdle();
   }
 
   void SimulateRefreshVoiceIsolationPreferredEffect() {
     // TODO(crbug.com/376009846): Replace RunUntilIdle with Run and QuitClosure.
-    remote_->RefreshVoiceIsolationPreferredEffect();
+    cras_audio_handler_->RefreshVoiceIsolationPreferredEffect();
+    uint32_t preferred_effect =
+        cras_audio_handler_->GetVoiceIsolationPreferredEffect();
+    remote_->RecordVoiceIsolationPreferredEffectChange(
+        static_cast<mojom::AudioEffectType>(preferred_effect));
     base::RunLoop().RunUntilIdle();
   }
 

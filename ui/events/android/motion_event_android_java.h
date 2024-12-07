@@ -57,6 +57,7 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          jfloat tick_multiplier,
                          base::TimeTicks oldest_event_time,
                          base::TimeTicks latest_event_time,
+                         base::TimeTicks down_time_ms,
                          jint android_action,
                          jint pointer_count,
                          jint history_size,

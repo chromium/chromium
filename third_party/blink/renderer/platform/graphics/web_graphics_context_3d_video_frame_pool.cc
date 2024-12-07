@@ -55,8 +55,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       const viz::SharedImageFormat& si_format,
       const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
@@ -64,8 +62,8 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       return nullptr;
     }
     auto client_shared_image = sii->CreateSharedImage(
-        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
-         alpha_type, usage, "WebGraphicsContext3DVideoFramePool"},
+        {si_format, gpu_memory_buffer->GetSize(), color_space, usage,
+         "WebGraphicsContext3DVideoFramePool"},
         gpu_memory_buffer->CloneHandle());
     CHECK(client_shared_image);
     sync_token = sii->GenVerifiedSyncToken();
@@ -77,18 +75,16 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       gfx::BufferUsage buffer_usage,
       const viz::SharedImageFormat& si_format,
       const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
     if (!sii) {
       return nullptr;
     }
-    auto client_shared_image = sii->CreateSharedImage(
-        {si_format, size, color_space, surface_origin, alpha_type, usage,
-         "WebGraphicsContext3DVideoFramePool"},
-        gpu::kNullSurfaceHandle, buffer_usage);
+    auto client_shared_image =
+        sii->CreateSharedImage({si_format, size, color_space, usage,
+                                "WebGraphicsContext3DVideoFramePool"},
+                               gpu::kNullSurfaceHandle, buffer_usage);
     if (!client_shared_image) {
       return nullptr;
     }

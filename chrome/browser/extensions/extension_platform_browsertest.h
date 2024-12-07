@@ -57,6 +57,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   // tab.
   content::WebContents* GetActiveWebContents();
 
+  // Returns incognito profile. Creates the profile if it doesn't exist.
+  Profile* GetOrCreateIncognitoProfile();
+
   // Opens `url` in an incognito browser window with the incognito profile of
   // `profile`, blocking until the navigation finishes.
   void PlatformOpenURLOffTheRecord(Profile* profile, const GURL& url);

@@ -51,7 +51,6 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/security/crw_cert_verification_controller.h"
 #import "ios/web/security/crw_ssl_status_updater.h"
-#import "ios/web/text_fragments/text_fragments_manager_impl.h"
 #import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
@@ -243,7 +242,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
     _certVerificationController = [[CRWCertVerificationController alloc]
         initWithBrowserState:browserState];
     web::JavaScriptFindInPageManagerImpl::CreateForWebState(_webStateImpl);
-    web::TextFragmentsManagerImpl::CreateForWebState(_webStateImpl);
 
     if (!browserState->IsOffTheRecord()) {
       web::AnnotationsTextManager::CreateForWebState(_webStateImpl);

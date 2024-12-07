@@ -26,8 +26,9 @@ class FastCheckoutPersonalDataHelperImpl
   // FastCheckoutPersonalDataHelper:
   std::vector<const autofill::AutofillProfile*> GetProfilesToSuggest()
       const override;
-  std::vector<autofill::CreditCard*> GetCreditCardsToSuggest() const override;
-  std::vector<autofill::CreditCard*> GetValidCreditCards() const override;
+  std::vector<const autofill::CreditCard*> GetCreditCardsToSuggest()
+      const override;
+  std::vector<const autofill::CreditCard*> GetValidCreditCards() const override;
   std::vector<const autofill::AutofillProfile*> GetValidAddressProfiles()
       const override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;

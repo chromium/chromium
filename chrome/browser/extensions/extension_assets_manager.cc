@@ -52,8 +52,8 @@ class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
  private:
   friend struct base::DefaultSingletonTraits<ExtensionAssetsManagerImpl>;
 
-  ExtensionAssetsManagerImpl() {}
-  ~ExtensionAssetsManagerImpl() override {}
+  ExtensionAssetsManagerImpl() = default;
+  ~ExtensionAssetsManagerImpl() override = default;
 };
 
 }  // namespace

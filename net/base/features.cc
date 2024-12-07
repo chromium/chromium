@@ -202,12 +202,6 @@ extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMax(
     "TimeoutTcpConnectAttemptMax",
     base::Seconds(30));
 
-#if BUILDFLAG(ENABLE_REPORTING)
-BASE_FEATURE(kDocumentReporting,
-             "DocumentReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-
 BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
              "CookieSameSiteConsidersRedirectChain",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -593,6 +587,14 @@ BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
 
 BASE_FEATURE(kOptimizeParsingDataUrls,
              "OptimizeParsingDataUrls",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSimdutfBase64Support,
+             "SimdutfBase64Support",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFurtherOptimizeParsingDataUrls,
+             "FurtherOptimizeParsingDataUrls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/347047841): Remove this flag when we branch for M131 or later,

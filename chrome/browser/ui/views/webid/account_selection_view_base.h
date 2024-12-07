@@ -28,10 +28,6 @@
 
 class FedCmAccountSelectionView;
 
-namespace content {
-class IdentityRequestAccount;
-}  // namespace content
-
 namespace fedcm {
 
 // The radius used for the corner of the "Continue as" button.
@@ -217,15 +213,14 @@ class AccountSelectionViewBase {
       bool is_choose_an_account) = 0;
 
   // Updates the FedCM dialog to show the "verifying" sheet.
-  virtual void ShowVerifyingSheet(
-      const content::IdentityRequestAccount& account,
-      const std::u16string& title) = 0;
+  virtual void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
+                                  const std::u16string& title) = 0;
 
   // Updates to show a single account. On widget mode, used when showing the
   // account confirmation dialog after the user picks one of multiple accounts.
   // On button mode, used for the user to pick the single account.
   virtual void ShowSingleAccountConfirmDialog(
-      const content::IdentityRequestAccount& account,
+      const IdentityRequestAccountPtr& account,
       bool show_back_button) = 0;
 
   // Updates the FedCM dialog to show the "failure" sheet.
@@ -241,8 +236,7 @@ class AccountSelectionViewBase {
 
   // Updates the FedCM dialog to show the "request permission" sheet.
   virtual void ShowRequestPermissionDialog(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data) = 0;
+      const IdentityRequestAccountPtr& account) = 0;
 
   // Updates to show a single account along with a button to show all options.
   // Currently used when there are multiple IDPs and exactly one returning
@@ -271,7 +265,7 @@ class AccountSelectionViewBase {
   // HoverButton, and in that case the number is the 0-based position of that
   // account in the overall dialog.
   std::unique_ptr<views::View> CreateAccountRow(
-      const content::IdentityRequestAccount& account,
+      const IdentityRequestAccountPtr& account,
       std::optional<int> clickable_position,
       bool should_include_idp,
       bool is_modal_dialog = false,

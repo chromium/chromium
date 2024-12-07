@@ -381,7 +381,10 @@ BOOL IsIdentityInCoreAccountInfos(
           showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
                                        userEmail:_identityToSignIn.userEmail
                                   viewController:_presentingViewController
-                                         browser:_browser];
+                                         browser:_browser
+                       skipBrowsingDataMigration:_accessPoint ==
+                                                 signin_metrics::AccessPoint::
+                                                     ACCESS_POINT_START_PAGE];
       return;
     }
 
@@ -615,7 +618,7 @@ BOOL IsIdentityInCoreAccountInfos(
   [self handleAuthenticationError:flowError];
 }
 
-- (void)didAcceptManagedConfirmation {
+- (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate {
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     // Only show the dialog once per account.
     signin::GaiaIdHash gaiaIDHash = signin::GaiaIdHash::FromGaiaId(
@@ -625,7 +628,8 @@ BOOL IsIdentityInCoreAccountInfos(
                                      gaiaIDHash, base::Value(true));
   }
   if (AreSeparateProfilesForManagedAccountsEnabled() &&
-      _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE) {
+      (!keepBrowsingDataSeparate ||
+       _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE)) {
     GetApplicationContext()
         ->GetAccountProfileMapper()
         ->MakePersonalProfileManagedWithGaiaID(

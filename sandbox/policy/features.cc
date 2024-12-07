@@ -49,16 +49,6 @@ BASE_FEATURE(kWinSboxDisableExtensionPoints,
              "WinSboxDisableExtensionPoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables GPU AppContainer sandbox on Windows.
-BASE_FEATURE(kGpuAppContainer,
-             "GpuAppContainer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables GPU Low Privilege AppContainer when combined with kGpuAppContainer.
-BASE_FEATURE(kGpuLPAC,
-             "GpuLPAC",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Print Compositor Low Privilege AppContainer. Note, this might be
 // overridden and disabled by policy.
 BASE_FEATURE(kPrintCompositorLPAC,

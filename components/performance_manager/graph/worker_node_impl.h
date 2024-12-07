@@ -90,7 +90,7 @@ class WorkerNodeImpl
   friend class WorkerNodeImplDescriber;
 
   void OnJoiningGraph() override;
-  void OnBeforeLeavingGraph() override;
+  void OnUninitializing() override;
   void RemoveNodeAttachedData() override;
 
   // Rest of WorkerNode implementation. These are private so that users of the

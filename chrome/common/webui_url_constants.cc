@@ -9,7 +9,6 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/nacl/common/buildflags.h"
@@ -25,8 +24,7 @@ namespace chrome {
 // Note: Add hosts to `ChromeURLHosts()` at the bottom of this file to be listed
 // by chrome://chrome-urls (about:about) and the built-in AutocompleteProvider.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsSystemWebUIHost(std::string_view host) {
   // Compares host instead of full URL for performance (the strings are
   // shorter).
@@ -68,7 +66,7 @@ bool IsSystemWebUIHost(std::string_view host) {
 
   return kHosts.contains(host);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Add hosts here to be included in chrome://chrome-urls (about:about).
 // These hosts will also be suggested by BuiltinProvider.
@@ -87,7 +85,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       commerce::kChromeUICommerceInternalsHost,
       kChromeUICrashesHost,
       kChromeUICreditsHost,
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_CHROMEOS) && !defined(OFFICIAL_BUILD)
       kChromeUIDeviceEmulatorHost,
 #endif
       kChromeUIDeviceLogHost,
@@ -178,7 +176,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUISnippetsInternalsHost,
       kChromeUIWebApksHost,
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       kChromeUIBorealisCreditsHost,
       kChromeUICertificateManagerHost,
       kChromeUICrostiniCreditsHost,
@@ -196,11 +194,8 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIAssistantOptInHost,
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
-      kChromeUIConnectorsInternalsHost,
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+      kChromeUIConnectorsInternalsHost,
       kChromeUIDiscardsHost,
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

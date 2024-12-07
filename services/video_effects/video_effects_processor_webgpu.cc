@@ -42,8 +42,8 @@ scoped_refptr<gpu::ClientSharedImage> CreateSharedImageRGBA(
     gpu::SharedImageUsageSet gpu_usage) {
   scoped_refptr<gpu::ClientSharedImage> destination = sii->CreateSharedImage(
       {viz::SinglePlaneFormat::kRGBA_8888, frame_info.coded_size,
-       frame_info.color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-       gpu_usage, "VideoEffectsProcessorIntermediateSharedImage"},
+       frame_info.color_space, gpu_usage,
+       "VideoEffectsProcessorIntermediateSharedImage"},
       gpu::kNullSurfaceHandle);
   CHECK(destination);
   CHECK(!destination->mailbox().IsZero());

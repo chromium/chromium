@@ -146,8 +146,10 @@
 <translation id="1594635596540195766">ធាតុដែលបានណែនាំ <ph name="SUGGESTIONS_COUNT" /> នៅក្នុងបញ្ជីខាងក្រោម។</translation>
 <translation id="1598163867407640634">ប្រើប្រាស់ <ph name="SITE_ETLD_PLUS_ONE" /> ដោយ​ប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">នៅពេលបើក សូមប្រើ និងរក្សាទុក​ទិន្នន័យ​នៅក្នុង​គណនី Google របស់អ្នក។ នៅពេលបិទ ទិន្នន័យ​ត្រូវបានរក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះតែ​ប៉ុណ្ណោះ។</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> បានដក​ផ្ទាំងចេញ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{លុបធាតុដែលបានជ្រើសរើស 1}other{លុបធាតុដែលបានជ្រើសរើស #}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{ចំណាំ 1 និង​ធាតុផ្សេងទៀត​ត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះ​តែប៉ុណ្ណោះ។ ដើម្បីប្រើ​ពួកវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​របស់អ្នក សូម​រក្សាទុក​ពួកវា​នៅក្នុង​គណនី Google របស់អ្នក <ph name="ACCOUNT_EMAIL" />។}other{ចំណាំ # និង​ធាតុផ្សេងទៀត​ត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះ​តែប៉ុណ្ណោះ។ ដើម្បីប្រើ​ពួកវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​របស់អ្នក សូម​រក្សាទុក​ពួកវា​នៅក្នុង​គណនី Google របស់អ្នក <ph name="ACCOUNT_EMAIL" />។}}</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> បានចូលរួម​ក្រុម</translation>
 <translation id="1641113438599504367">ការរុករកសុវត្ថិភាព</translation>
 <translation id="164269334534774161">អ្នកកំពុងមើលច្បាប់ចម្លងក្រៅបណ្តាញនៃទំព័រនេះដែលបានបង្កើតឡើងនៅថ្ងៃ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
@@ -347,6 +349,7 @@
 <translation id="2578337197553672982">ខ្លឹមសារ​ដោយ Google សម្រាប់មនុស្ស​វ័យក្មេង</translation>
 <translation id="2579297619530305344">ពាក្យ​សម្ងាត់​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក​ត្រូវបានបើក​ពេញ​អេក្រង់</translation>
 <translation id="2581165646603367611">វានឹងជម្រះខុកឃី ឃ្លាំងសម្ងាត់ និងទិន្នន័យផ្សេងទៀតនៃគេហទំព័រដែល Chrome គិតថាមិនសំខាន់។</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> បានបញ្ចូល​ផ្ទាំង</translation>
 <translation id="2587052924345400782">មានផ្តល់ជូនកំណែថ្មី</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2603212228005142861">ចូលគណនី​ដើម្បី​គ្រប់គ្រង​ចំណូលចិត្ត​របស់​អ្នក</translation>
@@ -392,6 +395,7 @@
 <translation id="2781151931089541271">នៅសល់ 1 វិនាទីទៀត</translation>
 <translation id="2789486458103222910">យល់ព្រម</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome បាន​រកឃើញ​ពាក្យសម្ងាត់​ដែលប្រើ​ឡើងវិញ​ដែលអ្នក​អាចធ្វើឱ្យ​ប្រសើរឡើង​បាន}other{Chrome បាន​រកឃើញ​ពាក្យសម្ងាត់​ដែលប្រើ​ឡើងវិញ​ចំនួន # ដែលអ្នក​អាចធ្វើឱ្យ​ប្រសើរឡើង​បាន}}</translation>
+<translation id="2796651346651857052">ចុច​របារអាសយដ្ឋាន​ឱ្យជាប់ ដើម្បីប្ដូរ​ទីតាំង​របស់វា។</translation>
 <translation id="2800066122460699237">ផ្ទាំង <ph name="TAB_TITLE" /> នឹងត្រូវបានបិទ</translation>
 <translation id="2805756323405976993">កម្មវិធី</translation>
 <translation id="281504910091592009">មើល និងគ្រប់គ្រង​ពាក្យសម្ងាត់​ដែលបាន​រក្សាទុក​នៅក្នុង<ph name="BEGIN_LINK" />គណនី Google<ph name="END_LINK" /> របស់អ្នក</translation>
@@ -937,6 +941,7 @@
 <translation id="5301876394151419436">អ្នក​បានចូល​គណនីជា <ph name="EMAIL" />។ អ្នកអាច​បញ្ឈប់​ការធ្វើ​សមកាលកម្ម​នៅពេលណាក៏បាន​នៅក្នុង​ការកំណត់។ Google អាច​កំណត់​ម៉ាស៊ីន​ស្វែងរក និង​សេវាកម្ម​ផ្សេង​ទៀតឱ្យមាន​លក្ខណៈ​ផ្ទាល់​ខ្លួន​ ផ្អែក​តាម​ប្រវត្តិ​របស់​អ្នក។</translation>
 <translation id="5304593522240415983">ប្រអប់នេះមិនអាចចន្លោះទេ</translation>
 <translation id="5306014156308790439">បានបិទ "បញ្ចូល​ទៅបណ្ដុំ"</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> បានប្ដូរ​ពណ៌ក្រុម</translation>
 <translation id="5308380583665731573">ភ្ជាប់</translation>
 <translation id="5310963254742922113">បានប្រើ​ពាក្យ​សម្ងាត់។</translation>
 <translation id="5316947901395241499">ការរក្សាទុកពាក្យសម្ងាត់ត្រូវបានបិទដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
@@ -948,6 +953,7 @@
 <translation id="534580735623577507">មិនមាន​គេហទំព័រ​ពីរយៈពេល <ph name="TIME_PERIOD" />ទេ</translation>
 <translation id="5355191726083956201">ការការពារបន្ថែម​ត្រូវបានបើក</translation>
 <translation id="5364112109233799727">URL នៃទំព័រ​ដែលអ្នក​កំពុង​ផ្ដល់មតិកែលម្អ​នឹងត្រូវបាន​បញ្ជូនទៅ Google និងអាច​ត្រូវបាន​ត្រួតពិនិត្យ​ដោយមនុស្ស ដើម្បី​កែលម្អ​មុខងារនេះ</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> បានប្ដូរ​ផ្ទាំង</translation>
 <translation id="5375374982898812658">អ្នកនឹង​បាត់បង់​សិទ្ធិចូលប្រើ​ក្រុមផ្ទាំង “<ph name="GROUP_NAME" />” ភ្លាមៗ ហើយ​វានឹងត្រូវបាន​លុបចេញពី​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
 <translation id="5375577065097716013">ស្វែងរករូបភាពដោយប្រើ Google Lens <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="5394331612381306435">ចេញ​ពីមុខងារឯកជន</translation>
@@ -1007,6 +1013,7 @@
 <translation id="562289928968387744">គ្រប់គ្រងប្រតិកម្ម</translation>
 <translation id="5626134646977739690">ឈ្មោះ៖</translation>
 <translation id="5628604359369369630">មិនទាន់អាន - អាចប្រើបាន​ពេលគ្មាន​អ៊ីនធឺណិត</translation>
+<translation id="5631483240431073854">គ្រប់គ្រង​ផ្ទាំង​ដែលបើក</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />ប្រវត្តិ​ស្វែងរក<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />ទម្រង់សកម្មភាព​ផ្សេងទៀត<ph name="END_LINK2" />អាចត្រូវបានរក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="5648166631817621825">7 ថ្ងៃមុន</translation>
 <translation id="5655963694829536461">ស្វែងរក​ការទាញយក​របស់អ្នក</translation>
@@ -1110,6 +1117,7 @@
 <translation id="60923314841986378">នៅសល់ <ph name="HOURS" /> ម៉ោងទៀត</translation>
 <translation id="6095578583683628124">ប្រសិនបើ Google ក៏ជាម៉ាស៊ីន​ស្វែងរកលំនាំដើមរបស់អ្នកដែរ អ្នកនឹងមើលឃើញការណែនាំដែលពាក់ព័ន្ធតាមបរិបទកាន់តែប្រសើរ</translation>
 <translation id="610630277578876674">បើកតំណ​នៅក្នុង​សារ និង​អ្វីៗជា​ច្រើនទៀត​យ៉ាងរហ័ស</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> បានប្ដូរ​ឈ្មោះក្រុម</translation>
 <translation id="6108923351542677676">ការដំឡើងកំពុងដំណើរការ…</translation>
 <translation id="6112702117600201073">កំពុងធ្វើឲ្យទំព័រថ្មីឡើងវិញ</translation>
 <translation id="6122831415929794347">បិទការរុករក​ដោយសុវត្ថិភាពឬ?</translation>
@@ -1324,6 +1332,7 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ផ្ទាំង}other{<ph name="NUMBER_OF_TABS" /> ផ្ទាំង}}</translation>
 <translation id="6929224077895306814">លេខកូដ​សុវត្ថិភាព​ទាំងអស់​ដែលបានរក្សាទុក​នៅលើ​ឧបករណ៍​របស់អ្នក និង​នៅក្នុង​គណនី Google របស់អ្នក​នឹងត្រូវបានលុប</translation>
 <translation id="6937524809504266803">ការកំណត់ឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន និងការភ្ជាប់</translation>
+<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ឈ្មោះ​ហៅក្រៅ (មិនតម្រូវ)</translation>
 <translation id="6942665639005891494">ប្ដូរ​ទីតាំង​ទាញយក​លំនាំដើម​បាន​គ្រប់ពេល​ដោយ​ប្រើ​ជម្រើ​សម៉ឺនុយ​​ការកំណត់</translation>
 <translation id="694267552845942083">បច្ចុប្បន្ន អ្នកកំពុងប្ដូរ​ការកំណត់​ការធ្វើសមកាលកម្ម​តាមបំណង​របស់អ្នក។ ដើម្បីបញ្ចប់ការបើក​សមកាលកម្ម សូមចុចប៊ូតុង "បញ្ជាក់" នៅជិតផ្នែកខាងក្រោម​នៃអេក្រង់។ រំកិលឡើងលើ</translation>
@@ -1492,6 +1501,7 @@
 <translation id="7656721520530864426">មិនមាន​គេហទំព័រ</translation>
 <translation id="7656862631699126784">បើក​សោ​ឯកជន</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> បាន​ចាកចេញ​ពី​ក្រុម</translation>
 <translation id="7663320421139257046">ដើម្បី​បន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹង​ចែករំលែក<ph name="FIELDS_STRING" />របស់អ្នក​ជាមួយ​គេហទំព័រ​នេះ។ សូមមើល<ph name="BEGIN_LINK1" />គោលការណ៍​ឯកជនភាព<ph name="END_LINK1" />របស់​គេហទំព័រ​នេះ។</translation>
 <translation id="7665369617277396874">បន្ថែមគណនី</translation>
 <translation id="766587987807204883">អត្ថបទបង្ហាញ​នៅទីនេះ ដែលអ្នកអាច​អានបាន ទោះបីជាគ្មាន​អ៊ីនធឺណិត​ក៏ដោយ</translation>

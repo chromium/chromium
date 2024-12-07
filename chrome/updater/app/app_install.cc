@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -24,6 +25,7 @@
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/lock.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/ping_configurator.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
@@ -31,9 +33,11 @@
 #include "chrome/updater/tag.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
+#include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/protocol_definition.h"
 
 namespace updater {
 
@@ -61,6 +65,7 @@ class AppInstallControllerImpl : public AppInstallController {
     }
     if (tag_args) {
       request.brand_code = tag_args->brand_code;
+      request.install_id = tag_args->installation_id;
     }
     update_service_->Install(request, GetDecodedInstallDataFromAppArgs(app_id),
                              GetInstallDataIndexFromAppArgs(app_id),
@@ -86,10 +91,9 @@ class AppInstallControllerImpl : public AppInstallController {
     update_service_ = update_service;
   }
 
- protected:
+ private:
   ~AppInstallControllerImpl() override = default;
 
- private:
   scoped_refptr<UpdateService> update_service_;
 };
 
@@ -111,7 +115,49 @@ AppInstall::AppInstall(AppInstallController::Maker app_install_controller_maker)
 
 AppInstall::~AppInstall() = default;
 
-void AppInstall::Shutdown(int exit_code) {
+void AppInstall::SendPing(int exit_code, base::OnceClosure callback) {
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives()})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::OnceClosure callback, UpdaterScope scope,
+                 int exit_code) {
+                if (exit_code == kErrorOk || !AreRawUsageStatsEnabled(scope)) {
+                  std::move(callback).Run();
+                  return;
+                }
+
+                update_client::CrxComponent ping_data;
+                ping_data.app_id = kUpdaterAppId;
+                ping_data.version = base::Version(kUpdaterVersion);
+                ping_data.requires_network_encryption = false;
+                update_client::UpdateClientFactory(CreatePingConfigurator())
+                    ->SendPing(
+                        ping_data,
+                        {
+                            .event_type =
+                                update_client::protocol_request::kEventInstall,
+                            .result = 1,
+                            .error_code = exit_code,
+                        },
+                        base::BindOnce(
+                            [](base::OnceClosure callback,
+                               update_client::Error) {
+                              std::move(callback).Run();
+                            },
+                            std::move(callback)));
+              },
+              base::BindPostTaskToCurrentDefault(std::move(callback)),
+              updater_scope(), exit_code));
+}
+
+void AppInstall::PingAndShutdown(int exit_code) {
+  app_install_controller_->Exit(exit_code);
+  SendPing(exit_code, base::BindOnce(&AppInstall::Shutdown, this, exit_code));
+}
+
+void AppInstall::ShutdownNow(int exit_code) {
   app_install_controller_->Exit(exit_code);
   App::Shutdown(exit_code);
 }
@@ -133,13 +179,13 @@ void AppInstall::FirstTaskRun() {
             << (updater_scope() == UpdaterScope::kSystem
                     ? "Did you mean to run as admin/root?"
                     : "Did you mean to run as a non-admin/non-root user?");
-    Shutdown(kErrorWrongUser);
+    PingAndShutdown(kErrorWrongUser);
     return;
   }
 
   if (!setup_lock_) {
     VLOG(0) << "Failed to acquire setup mutex; shutting down.";
-    Shutdown(kErrorFailedToLockSetupMutex);
+    PingAndShutdown(kErrorFailedToLockSetupMutex);
     return;
   }
 
@@ -147,7 +193,7 @@ void AppInstall::FirstTaskRun() {
 
   // A tag parsing error is handled as an fatal error.
   if (tag_parsing_result.error != tagging::ErrorCode::kSuccess) {
-    Shutdown(kErrorTagParsing);
+    PingAndShutdown(kErrorTagParsing);
     return;
   }
   const tagging::TagArgs tag_args =
@@ -190,7 +236,7 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result != 0) {
-    Shutdown(result);
+    PingAndShutdown(result);
     return;
   }
 
@@ -243,7 +289,7 @@ void AppInstall::FetchPolicies() {
       [](scoped_refptr<AppInstall> app_install, int result) {
         if (result != kErrorOk) {
           LOG(ERROR) << "FetchPolicies failed: " << result;
-          app_install->Shutdown(result);
+          app_install->PingAndShutdown(result);
           return;
         }
 
@@ -263,7 +309,7 @@ void AppInstall::RegisterUpdater() {
                    [](scoped_refptr<AppInstall> app_install, int result) {
                      if (result != kRegistrationSuccess) {
                        VLOG(2) << "Updater registration failed: " << result;
-                       app_install->Shutdown(kErrorRegistrationFailed);
+                       app_install->PingAndShutdown(kErrorRegistrationFailed);
                        return;
                      }
                      app_install->MaybeInstallApp();
@@ -274,9 +320,10 @@ void AppInstall::RegisterUpdater() {
 void AppInstall::MaybeInstallApp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (app_id_.empty()) {
-    Shutdown(kErrorOk);
+    ShutdownNow(kErrorOk);
     return;
   }
+
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(kOfflineDirSwitch)) {
     // Presence of "offlinedir" in command line indicates this is an offline
@@ -284,11 +331,10 @@ void AppInstall::MaybeInstallApp() {
     // because `base::CommandLine::HasSwitch()` recognizes switches that
     // begin with '/' on Windows.
     app_install_controller_->InstallAppOffline(
-        app_id_, app_name_, base::BindOnce(&AppInstall::Shutdown, this));
-
+        app_id_, app_name_, base::BindOnce(&AppInstall::ShutdownNow, this));
   } else {
     app_install_controller_->InstallApp(
-        app_id_, app_name_, base::BindOnce(&AppInstall::Shutdown, this));
+        app_id_, app_name_, base::BindOnce(&AppInstall::ShutdownNow, this));
   }
 }
 

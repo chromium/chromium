@@ -11,18 +11,15 @@ source_set("model") {
   ]
   public_deps = [
     "//base",
-    "//components/keyed_service/ios",
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
     ":context",
     "//components/data_sharing/internal",
     "//components/data_sharing/public",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",

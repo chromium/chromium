@@ -5,7 +5,6 @@
 #include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 
 namespace content {
@@ -21,8 +20,11 @@ FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
 // TODO(crbug.com/338457523): Inform the watcher manager to remove this
 // from the quota manager map entry for this storage key.
 FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
+  CHECK(quota_limit_ > 0);
   base::UmaHistogramCounts100000("Storage.FileSystemAccess.ObserverUsage",
                                  high_water_mark_usage_);
+  base::UmaHistogramPercentage("Storage.FileSystemAccess.ObserverUsageRate",
+                               100 * high_water_mark_usage_ / quota_limit_);
   base::UmaHistogramBoolean(
       "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
       reached_quota_limit_);
@@ -43,10 +45,7 @@ FileSystemAccessObserverQuotaManager::OnUsageChange(size_t old_usage,
   CHECK_GE(total_usage_, old_usage);
 
   size_t updated_total_usage = total_usage_ + new_usage - old_usage;
-  size_t quota_limit = quota_limit_for_testing_ > 0
-                           ? quota_limit_for_testing_
-                           : FileSystemAccessChangeSource::quota_limit();
-  if (updated_total_usage > quota_limit) {
+  if (updated_total_usage > quota_limit_) {
     total_usage_ -= old_usage;
     reached_quota_limit_ = true;
     return UsageChangeResult::kQuotaUnavailable;

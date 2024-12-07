@@ -684,3 +684,8 @@ for issues related to Blink tools, include the web test runner.
 * If QuickTime is not installed, the plugin tests
   `fast/dom/object-embed-plugin-scripting.html` and
   `plugins/embed-attributes-setting.html` are expected to fail.
+* Fluent scrollbar rendering has some tweaks to geometry and behavior that are
+  just for web tests. These are described in the
+  [Fluent Scrollbars Visual Spec](https://bit.ly/fluent-scrollbars-visual-spec)
+  under "Special rendering - Web tests". We'd like to remove them eventually
+  ([crbug.com/382298324](https://crbug.com/382298324)).

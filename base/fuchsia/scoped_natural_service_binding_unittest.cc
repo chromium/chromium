@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/fuchsia/scoped_service_binding.h"
-
 #include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/fuchsia/process_context.h"
+#include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_interface_natural_impl.h"
 #include "base/run_loop.h"
@@ -74,9 +73,10 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectDebugService) {
       fidl::CreateEndpoints<fuchsia_io::Directory>();
   ASSERT_TRUE(debug_directory_endpoints.is_ok())
       << debug_directory_endpoints.status_string();
-  debug_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                       fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                   debug_directory_endpoints->server.TakeChannel());
+  debug_dir->Serve(
+      fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+      fidl::ServerEnd<fuchsia_io::Directory>(
+          debug_directory_endpoints->server.TakeChannel()));
 
   // Attempt to connect via the "debug" directory.
   auto debug_stub =

@@ -28,7 +28,7 @@ UsageTimeStateNotifier::UsageTimeState GetCurrentState() {
 UsageTimeStateNotifier::UsageTimeStateNotifier()
     : last_state_(GetCurrentState()) {}
 
-UsageTimeStateNotifier::~UsageTimeStateNotifier() {}
+UsageTimeStateNotifier::~UsageTimeStateNotifier() = default;
 
 // static
 UsageTimeStateNotifier* UsageTimeStateNotifier::GetInstance() {

@@ -25,11 +25,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "bidding_and_auction_server_key_fetcher.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "net/base/isolation_info.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_response.h"
@@ -335,36 +338,40 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 
 void TrustedSignalsFetcher::FetchBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    std::string_view hostname,
+    const url::Origin& main_frame_origin,
+    base::UnguessableToken network_partition_nonce,
     const url::Origin& script_origin,
     const GURL& trusted_bidding_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, script_origin, trusted_bidding_signals_url,
-      bidding_and_auction_key,
-      BuildSignalsRequestBody(hostname, compression_groups),
+      url_loader_factory, main_frame_origin, network_partition_nonce,
+      script_origin, trusted_bidding_signals_url, bidding_and_auction_key,
+      BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
       std::move(callback));
 }
 
 void TrustedSignalsFetcher::FetchScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    std::string_view hostname,
+    const url::Origin& main_frame_origin,
+    base::UnguessableToken network_partition_nonce,
     const url::Origin& script_origin,
     const GURL& trusted_scoring_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, script_origin, trusted_scoring_signals_url,
-      bidding_and_auction_key,
-      BuildSignalsRequestBody(hostname, compression_groups),
+      url_loader_factory, main_frame_origin, network_partition_nonce,
+      script_origin, trusted_scoring_signals_url, bidding_and_auction_key,
+      BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
       std::move(callback));
 }
 
 void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    const url::Origin& main_frame_origin,
+    base::UnguessableToken network_partition_nonce,
     const url::Origin& script_origin,
     const GURL& trusted_signals_url,
     const BiddingAndAuctionServerKey& bidding_and_auction_key,
@@ -395,10 +402,29 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   resource_request->mode = network::mojom::RequestMode::kCors;
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->headers.SetHeader("Accept", kResponseMediaType);
+  resource_request->trusted_params =
+      std::make_optional<network::ResourceRequest::TrustedParams>();
+  // IsolationInfos usually use main frame origin and frame origin, to separate
+  // the disk cache, and prevent frames from spying on each other's cache
+  // entries. These requests aren't cached (due to being POSTs), and use their
+  // own nonce, so no frames can pull the responses from the cache, even the
+  // main frame.
+  //
+  // The frame origin is also used to populate a cross-origin bit in the
+  // NetworkIsolationKey, to separate out other network resources for connection
+  // spying. The nonce similarly makes that sort of spying not useful
+  // - the only leak is the run time of entire auction, which leaks minimal
+  // information about whether there's a pre-existing connection. There's no way
+  // for frames to probe in depth connection info more directly, since they
+  // can't make network requests directly using the `network_partition_nonce`.
+  resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      /*top_frame_origin=*/main_frame_origin,
+      /*frame_origin=*/main_frame_origin, net::SiteForCookies(),
+      network_partition_nonce);
 
-  // TODO(crbug.com/333445540): Set reasonable initiator, isolation info, client
-  // security state, and credentials mode, and select reasonable maximum body
-  // size. Also hook up to devtools.
+  // TODO(crbug.com/333445540): Set reasonable client security state and select
+  // reasonable maximum body size. Also hook up to devtools.
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);

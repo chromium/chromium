@@ -51,7 +51,7 @@ std::u16string GetFullNamePattern(bool name_has_cjk_characteristics) {
 std::u16string GetAlternativeFullNamePattern(
     bool name_has_cjk_characteristics) {
   if (name_has_cjk_characteristics) {
-    return u"${ALTERNATIVE_FAMILY_NAME}${ALTERNATIVE_GIVEN_NAME}";
+    return u"${ALTERNATIVE_FAMILY_NAME} ${ALTERNATIVE_GIVEN_NAME}";
   }
   return u"${ALTERNATIVE_GIVEN_NAME} ${ALTERNATIVE_FAMILY_NAME}";
 }

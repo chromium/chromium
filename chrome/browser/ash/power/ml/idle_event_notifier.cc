@@ -41,7 +41,7 @@ struct IdleEventNotifier::ActivityDataInternal {
   std::optional<TimeSinceBoot> video_end_time;
 };
 
-IdleEventNotifier::ActivityData::ActivityData() {}
+IdleEventNotifier::ActivityData::ActivityData() = default;
 
 IdleEventNotifier::ActivityData::ActivityData(const ActivityData& input_data) {
   last_activity_day = input_data.last_activity_day;

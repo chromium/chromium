@@ -49,9 +49,6 @@ const char kNoZygoteSandbox[] = "no-zygote-sandbox";
 // mitigation policy on Win10+. Also has other effects in ELF.
 const char kAllowThirdPartyModules[] = "allow-third-party-modules";
 
-// Add additional capabilities to the AppContainer sandbox on the GPU process.
-const char kAddGpuAppContainerCaps[] = "add-gpu-appcontainer-caps";
-
 // Add additional capabilities to the AppContainer sandbox used for XR
 // compositing.
 const char kAddXrAppContainerCaps[] = "add-xr-appcontainer-caps";

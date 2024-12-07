@@ -75,16 +75,6 @@ void HeadlessProtocolBrowserTest::SetUpCommandLine(
   command_line->AppendSwitchASCII(::network::switches::kHostResolverRules,
                                   "MAP *.test 127.0.0.1");
   HeadlessDevTooledBrowserTest::SetUpCommandLine(command_line);
-
-  if (RequiresSitePerProcess()) {
-    // Make sure the navigations spawn new processes. We run test harness
-    // in one process (harness.test) and tests in another.
-    command_line->AppendSwitch(::switches::kSitePerProcess);
-  }
-}
-
-bool HeadlessProtocolBrowserTest::RequiresSitePerProcess() {
-  return true;
 }
 
 base::Value::Dict HeadlessProtocolBrowserTest::GetPageUrlExtraParams() {
@@ -561,7 +551,7 @@ class HeadlessProtocolBrowserTestWithoutSiteIsolation
   HeadlessProtocolBrowserTestWithoutSiteIsolation() = default;
 
  protected:
-  bool RequiresSitePerProcess() override { return false; }
+  bool ShouldEnableSitePerProcess() override { return false; }
 };
 
 HEADLESS_PROTOCOL_TEST_CLASS(
@@ -612,6 +602,27 @@ class HeadlessProtocolBrowserTestWithExposeGC
 HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTestWithExposeGC,
                              GetDOMCountersForLeakDetection,
                              "sanity/get-dom-counters-for-leak-detection.js")
+
+class HeadlessProtocolBrowserTestSitePerProcess
+    : public HeadlessProtocolBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool ShouldEnableSitePerProcess() override { return GetParam(); }
+
+  base::Value::Dict GetPageUrlExtraParams() override {
+    base::Value::Dict params;
+    params.Set("sitePerProcessEnabled", ShouldEnableSitePerProcess());
+    return params;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         HeadlessProtocolBrowserTestSitePerProcess,
+                         ::testing::Bool());
+
+HEADLESS_PROTOCOL_TEST_P(HeadlessProtocolBrowserTestSitePerProcess,
+                         SitePerProcess,
+                         "sanity/site-per-process.js")
 
 #define HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(              \
     TEST_NAME, SCRIPT_NAME, COMMAND_LINE_EXTRAS)                      \

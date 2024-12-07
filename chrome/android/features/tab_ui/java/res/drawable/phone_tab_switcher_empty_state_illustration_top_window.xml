@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:autoMirrored="true"
+    android:height="130dp"
+    android:viewportHeight="130"
+    android:viewportWidth="130"
+    android:width="130dp">
+  <path
+      android:fillColor="@color/empty_state_icon_bg_color"
+      android:pathData="M84,31L84,89A3,3 0,0 1,81 92L40,92A3,3 0,0 1,37 89L37,31A3,3 0,0 1,40 28L81,28A3,3 0,0 1,84 31z"
+      android:strokeColor="@color/empty_state_icon_color"
+      android:strokeWidth="2"/>
+  <path
+      android:fillColor="@color/empty_state_icon_color"
+      android:fillType="evenOdd"
+      android:pathData="M40,27C37.79,27 36,28.79 36,31V35H85V31C85,28.79 83.21,27 81,27H40Z"/>
+  <path
+      android:fillColor="@macro/default_bg_color_elev_0"
+      android:pathData="M40,29L42,29A1,1 0,0 1,43 30L43,32A1,1 0,0 1,42 33L40,33A1,1 0,0 1,39 32L39,30A1,1 0,0 1,40 29z"/>
+  <path
+      android:pathData="M81,30L79,32"
+      android:strokeColor="@macro/default_bg_color_elev_0"
+      android:strokeLineCap="round"
+      android:strokeWidth="2"/>
+  <path
+      android:pathData="M79,30L81,32"
+      android:strokeColor="@macro/default_bg_color_elev_0"
+      android:strokeLineCap="round"
+      android:strokeWidth="2"/>
+</vector>

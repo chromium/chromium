@@ -48,14 +48,12 @@ class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
  public:
   MOCK_METHOD0(Initialize, bool());
   MOCK_METHOD0(GetCapabilities, std::optional<gpu::SharedImageCapabilities>());
-  MOCK_METHOD7(
+  MOCK_METHOD5(
       CreateSharedImage,
       scoped_refptr<gpu::ClientSharedImage>(gfx::GpuMemoryBufferHandle handle,
                                             viz::SharedImageFormat format,
                                             const gfx::Size& size,
                                             const gfx::ColorSpace& color_space,
-                                            GrSurfaceOrigin surface_origin,
-                                            SkAlphaType alpha_type,
                                             gpu::SharedImageUsageSet usage));
   MOCK_METHOD1(UpdateSharedImage,
                std::optional<gpu::SyncToken>(const gpu::Mailbox& mailbox));
@@ -221,7 +219,7 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
           CreateSharedImage(
               /*handle=*/_, shared_image_format,
               /*size=*/needs_detiling ? kCodedSize : kVisibleRect.size(),
-              /*color_space=*/_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+              /*color_space=*/_,
               /*usage=*/_))
           .WillOnce([&mailboxes_seen_by_gpu_delegate, i]() {
             auto shared_image = gpu::ClientSharedImage::CreateForTesting();

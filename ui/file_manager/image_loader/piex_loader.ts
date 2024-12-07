@@ -563,7 +563,8 @@ class ImageBuffer {
    *
    */
   private createImageDataArray_(
-      view: Uint8Array, preview: PiexWasmPreviewImageMetadata): Uint8Array {
+      view: Uint8Array,
+      preview: PiexWasmPreviewImageMetadata): Uint8Array<ArrayBuffer> {
     const jpeg = view.byteLength > 2 && view[0] === 0xff && view[1] === 0xd8;
 
     if (jpeg && preview.colorSpace === 'adobeRgb') {

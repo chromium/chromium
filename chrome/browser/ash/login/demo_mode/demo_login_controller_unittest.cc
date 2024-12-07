@@ -28,6 +28,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -121,10 +122,11 @@ class DemoLoginControllerTest : public testing::Test {
 
   // Mock a setup response return provided `gaia_id`. Verify that setup request
   // gets triggered and login is success.
-  void MockSuccessSetupResponseAndVerifyLogin(const std::string& gaia_id) {
+  void MockSuccessSetupResponseAndVerifyLogin(const GaiaId& gaia_id) {
     // Mock a setup request will be success.
     test_url_loader_factory_.AddResponse(
-        GetSetupUrl().spec(), base::StringPrintf(kValidGaiaCreds, gaia_id));
+        GetSetupUrl().spec(),
+        base::StringPrintf(kValidGaiaCreds, gaia_id.ToString()));
     // Expect login if after clean up success.
     base::RunLoop loop;
     EXPECT_CALL(login_display_host(), CompleteLogin)
@@ -184,9 +186,10 @@ class DemoLoginControllerTest : public testing::Test {
 };
 
 TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
-  const std::string gaia_id = "123";
+  const GaiaId gaia_id("123");
   test_url_loader_factory_.AddResponse(
-      GetSetupUrl().spec(), base::StringPrintf(kValidGaiaCreds, gaia_id));
+      GetSetupUrl().spec(),
+      base::StringPrintf(kValidGaiaCreds, gaia_id.ToString()));
   EXPECT_TRUE(g_browser_process->local_state()
                   ->GetString(prefs::kDemoModeSessionIdentifier)
                   .empty());

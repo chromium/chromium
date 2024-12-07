@@ -38,12 +38,12 @@ constexpr int kCompatibleVersion = 1;
 
 }  // namespace
 
-PermissionAuditingDatabase::PermissionAuditingDatabase() = default;
+PermissionAuditingDatabase::PermissionAuditingDatabase()
+    : db_(/*tag=*/"PermissionAuditingLogs") {}
 
 PermissionAuditingDatabase::~PermissionAuditingDatabase() = default;
 
 bool PermissionAuditingDatabase::Init(const base::FilePath& path) {
-  db_.set_histogram_tag("Permission Auditing Logs");
   if (!db_.Open(path)) {
     return false;
   }

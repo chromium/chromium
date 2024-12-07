@@ -40,8 +40,7 @@ void DecorationTabTitle::SetUIResourceIds() {
 
   if (!is_loading_) {
     handleIconResource(ui::ANDROID_RESOURCE_TYPE_DYNAMIC_BITMAP);
-  } else if (spinner_resource_id_ != -1 &&
-             spinner_incognito_resource_id_ != -1) {
+  } else if (spinner_resource_id_ != 0 && spinner_incognito_resource_id_ != 0) {
     int resource_id =
         is_incognito_ ? spinner_incognito_resource_id_ : spinner_resource_id_;
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
@@ -431,14 +432,14 @@ void OmniboxPopupViewViews::OnDragCanceled() {
 }
 
 void OmniboxPopupViewViews::GetPopupAccessibleNodeData(
-    ui::AXNodeData* node_data) {
+    ui::AXNodeData* node_data) const {
   return GetViewAccessibility().GetAccessibleNodeData(node_data);
 }
 
 std::u16string OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
-    size_t line) {
-  if (OmniboxResultView* result_view = result_view_at(line)) {
-    return static_cast<views::LabelButton*>(
+    size_t line) const {
+  if (const OmniboxResultView* result_view = result_view_at(line)) {
+    return static_cast<const views::LabelButton*>(
                result_view->GetActiveAuxiliaryButtonForAccessibility())
         ->GetText();
   }
@@ -608,6 +609,10 @@ OmniboxHeaderView* OmniboxPopupViewViews::header_view_at(size_t i) {
 }
 
 OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
+  return const_cast<OmniboxResultView*>(std::as_const(*this).result_view_at(i));
+}
+
+const OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) const {
   if (i >= children().size()) {
     return nullptr;
   }

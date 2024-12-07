@@ -317,7 +317,7 @@ InlineSigninHelper::InlineSigninHelper(
       auth_code_, signin_scoped_device_id);
 }
 
-InlineSigninHelper::~InlineSigninHelper() {}
+InlineSigninHelper::~InlineSigninHelper() = default;
 
 void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
   if (is_force_sign_in_with_usermanager_) {
@@ -486,7 +486,7 @@ void InlineSigninHelper::OnClientOAuthFailure(
 InlineLoginHandlerImpl::InlineLoginHandlerImpl()
     : confirm_untrusted_signin_(false) {}
 
-InlineLoginHandlerImpl::~InlineLoginHandlerImpl() {}
+InlineLoginHandlerImpl::~InlineLoginHandlerImpl() = default;
 
 // static
 void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
@@ -645,7 +645,7 @@ InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
     const FinishCompleteLoginParams& other) = default;
 
 InlineLoginHandlerImpl::FinishCompleteLoginParams::
-    ~FinishCompleteLoginParams() {}
+    ~FinishCompleteLoginParams() = default;
 
 // static
 void InlineLoginHandlerImpl::FinishCompleteLogin(

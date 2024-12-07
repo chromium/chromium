@@ -28,6 +28,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import type {AudioDevice, AudioSystemProperties} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import {AudioDeviceType, AudioEffectState, AudioEffectType, AudioSystemPropertiesObserverReceiver, MuteState} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import type {VoiceIsolationUIAppearance} from '../mojom-webui/cros_audio_config.mojom-webui.js';
@@ -522,11 +523,25 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   private onVoiceIsolationRowClicked_(): void {
-    this.crosAudioConfig_.refreshVoiceIsolationState();
+    // The pref change will be handled by
+    // CrasAudioHandler::OnVoiceIsolationPrefChanged().
+    // See also AudioDevicesPrefHandlerImpl::InitializePrefObservers().
+    this.crosAudioConfig_.recordVoiceIsolationEnabledChange();
   }
 
   private onVoiceIsolationEffectModeChanged_(): void {
-    this.crosAudioConfig_.refreshVoiceIsolationPreferredEffect();
+    // The pref change will be handled by
+    // CrasAudioHandler::OnVoiceIsolationPrefChanged().
+    // See also AudioDevicesPrefHandlerImpl::InitializePrefObservers().
+
+    // The pref value might not be updated yet, so only getting
+    // the UI value here to record to UMA.
+    const voiceIsolationEffectModes = strictQuery(
+        '#voiceIsolationEffectModeOptions', this.shadowRoot,
+        SettingsRadioGroupElement);
+    const selected: number = +voiceIsolationEffectModes.selected;
+    this.crosAudioConfig_.recordVoiceIsolationPreferredEffectChange(
+        selected as AudioEffectType);
   }
 
   private onSpatialAudioRowClicked_(): void {

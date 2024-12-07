@@ -10,6 +10,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "ios/web/public/js_messaging/web_frame.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace web {
 
@@ -27,16 +29,40 @@ class FakeWebFrame : public WebFrame {
   // hexadecimal number.
   static std::unique_ptr<FakeWebFrame> Create(const std::string& frame_id,
                                               bool is_main_frame,
-                                              GURL security_origin);
+                                              GURL security_origin_gurl);
+  static std::unique_ptr<FakeWebFrame> Create(
+      const std::string& frame_id,
+      bool is_main_frame,
+      url::Origin security_origin = url::Origin());
 
   // Creates a web frame representing the main frame with a frame id of
   // `kMainFakeFrameId`.
-  static std::unique_ptr<FakeWebFrame> CreateMainWebFrame(GURL security_origin);
-
+  static std::unique_ptr<FakeWebFrame> CreateMainWebFrame();
   // Creates a web frame representing the main frame with a frame id of
+  // `kMainFakeFrameId` and security origin `security_origin`.
+  // NOTE: This exists only to ease the transition to the following
+  // method which takes a `url::Origin` instead of a `GURL` and will be removed
+  // once all call sites have transitioned.
+  static std::unique_ptr<FakeWebFrame> CreateMainWebFrame(GURL security_origin);
+  // Creates a web frame representing the main frame with a frame id of
+  // `kMainFakeFrameId` and security origin `security_origin`.
+  static std::unique_ptr<FakeWebFrame> CreateMainWebFrame(
+      url::Origin security_origin);
+
+  // Creates a web frame representing a child frame with a frame id of
   // `kChildFakeFrameId`.
+  static std::unique_ptr<FakeWebFrame> CreateChildWebFrame();
+  // Creates a web frame representing a child frame with a frame id of
+  // `kChildFakeFrameId` and security origin `security_origin`.
+  // NOTE: This exists only to ease the transition to the following
+  // method which takes a `url::Origin` instead of a `GURL` and will be removed
+  // once all call sites have transitioned.
   static std::unique_ptr<FakeWebFrame> CreateChildWebFrame(
       GURL security_origin);
+  // Creates a web frame representing a child frame with a frame id of
+  // `kChildFakeFrameId` and security origin `security_origin`.
+  static std::unique_ptr<FakeWebFrame> CreateChildWebFrame(
+      url::Origin security_origin);
 
   // Returns the most recent JavaScript call made to this frame.
   virtual std::u16string GetLastJavaScriptCall() const = 0;

@@ -18,6 +18,7 @@ enum class COMPONENT_EXPORT(COMPONENTS_DBUS) SystemdUnitStatus {
   kUnitStarted,
   kUnitNotNecessary,
   kInvalidPid,
+  kNoSystemdService,
   kFailedToStart,
 };
 

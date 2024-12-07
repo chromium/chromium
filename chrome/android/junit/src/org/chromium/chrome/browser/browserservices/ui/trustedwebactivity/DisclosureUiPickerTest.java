@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDe
 import android.app.NotificationChannel;
 import android.os.Build;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /** Tests for {@link DisclosureUiPicker}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,6 +72,11 @@ public class DisclosureUiPickerTest {
                         () -> mNotification,
                         mIntentDataProvider,
                         mLifecycleDispatcher);
+    }
+
+    @After
+    public void tearDown() {
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     @Test
@@ -135,7 +142,7 @@ public class DisclosureUiPickerTest {
     }
 
     private void setNotificationsEnabled(boolean enabled) {
-        when(mNotificationManager.areNotificationsEnabled()).thenReturn(enabled);
+        NotificationProxyUtils.setNotificationEnabledForTest(enabled);
     }
 
     private void setChannelEnabled(String channelId, boolean enabled) {

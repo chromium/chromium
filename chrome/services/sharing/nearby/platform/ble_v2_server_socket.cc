@@ -40,7 +40,7 @@ BleV2Socket::BleV2Socket() {
   input_stream_ = std::make_unique<BleV2InputStream>();
   output_stream_ = std::make_unique<BleV2OutputStream>();
 }
-BleV2Socket::~BleV2Socket() {}
+BleV2Socket::~BleV2Socket() = default;
 
 InputStream& BleV2Socket::GetInputStream() {
   // Left deliberately unimplemented.
@@ -65,9 +65,9 @@ Exception BleV2Socket::Close() {
 }
 
 // =================BleV2ServerSocket=================
-BleV2ServerSocket::BleV2ServerSocket() {}
+BleV2ServerSocket::BleV2ServerSocket() = default;
 
-BleV2ServerSocket::~BleV2ServerSocket() {}
+BleV2ServerSocket::~BleV2ServerSocket() = default;
 
 std::unique_ptr<::nearby::api::ble_v2::BleSocket> BleV2ServerSocket::Accept() {
   // This implementation of Accept intentionally blocks on the calling thread

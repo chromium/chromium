@@ -250,6 +250,7 @@ bool PrivateAggregationHost::BindNewReceiver(
   if (!network::IsOriginPotentiallyTrustworthy(worklet_origin)) {
     return false;
   }
+
   if (context_id.has_value() &&
       context_id.value().size() > kMaxContextIdLength) {
     return false;
@@ -267,10 +268,8 @@ bool PrivateAggregationHost::BindNewReceiver(
     return false;
   }
 
-  // Timeouts should only be set for deterministic reports.
-  // TODO(alexmt): Consider requiring timeouts for deterministic reports.
-  if (timeout.has_value() &&
-      !PrivateAggregationManager::ShouldSendReportDeterministically(
+  if (timeout.has_value() !=
+      PrivateAggregationManager::ShouldSendReportDeterministically(
           context_id, filtering_id_max_bytes)) {
     return false;
   }
@@ -559,6 +558,12 @@ void PrivateAggregationHost::OnReceiverDisconnected() {
       base::TimeTicks::Now();
 
   if (remaining_timeout.is_negative()) {
+    remaining_timeout = base::TimeDelta();
+  }
+
+  // Speed up tests when developer mode is enabled by ignoring the remaining
+  // timeout. See https://crbug.com/362901607#comment7 for context.
+  if (should_not_delay_reports_) {
     remaining_timeout = base::TimeDelta();
   }
 

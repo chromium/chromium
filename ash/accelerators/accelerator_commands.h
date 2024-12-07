@@ -111,6 +111,8 @@ ASH_EXPORT bool CanWindowSnap();
 
 ASH_EXPORT bool CanResizePipWindow();
 
+ASH_EXPORT bool CanToggleGeminiApp();
+
 //////////////////////////////////////////////////////////////////////////////
 // Accelerator commands.
 // Note: These functions should be independent and not depend on ui::Accelerator
@@ -326,6 +328,9 @@ ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
 // `accelerator_timestamp` is the timestamp associated with the accelerator that
 // triggered Quick Insert.
 ASH_EXPORT void ToggleQuickInsert(base::TimeTicks accelerator_timestamp);
+
+// Toggles Gemini.
+ASH_EXPORT void ToggleGeminiApp();
 
 // Enables Select to Speak if the feature is currently disabled. Does nothing if
 // the feature is currently enabled.

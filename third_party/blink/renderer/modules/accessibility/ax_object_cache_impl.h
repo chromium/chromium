@@ -660,7 +660,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // AXObjectCacheImpl that a serialization was sent.
   void OnSerializationStartSend() override;
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // This is called after a node's included status changes, to update the
   // included_node_count_ which is used to debug tree mismatches between the the
   // AXObjectCache and AXTreeSerializer.
@@ -678,7 +678,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // TODO(accessibility) Use for more things that have 0% false positives, such
   // as focusable objects requiring a name.
   bool IsInternalUICheckerOn(const AXObject& obj) const;
-#endif  // defined(AX_FAIL_FAST_BUILD)
+#endif  // AX_FAIL_FAST_BUILD()
 
   // Used to turn on accessibility checks for internal Web UI, e.g. history,
   // preferences, etc. Will trigger DCHECKS so that WebUI with basic a11y errors
@@ -982,7 +982,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
   HeapHashMap<Member<AbstractInlineTextBox>, AXID>
       inline_text_box_object_mapping_;
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   size_t included_node_count_ = 0;
   size_t plugin_included_node_count_ = 0;
 #endif
@@ -1012,7 +1012,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // If > 0, tree is frozen.
   int frozen_count_ = 0;  // Used with Freeze(), Thaw() and IsFrozen() above.
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   bool updating_layout_and_ax_ = false;
   int tree_check_counter_ = 0;
   base::Time last_tree_check_time_stamp_ = base::Time::Now();

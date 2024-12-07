@@ -302,6 +302,19 @@ enum WebDXFeature {
   kLocaleInfoFunctions = 244,
   kViewTransitionClass = 245,
   kDRAFT_ReferenceTarget = 246,
+  kFedcm = 247,
+  kWebOtp = 248,
+  kPreservesPitch = 249,
+  kViewportUnitVariants = 250,
+  kPromiseTry = 251,
+  kStringReplaceall = 252,
+  kStringWellformed = 253,
+  kWeakReferences = 254,
+  kRemotePlayback = 255,
+  kVerticalFormControls = 256,
+  kPdfViewer = 257,
+  kFileSystemAccess = 258,
+  kClosewatcher = 259,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

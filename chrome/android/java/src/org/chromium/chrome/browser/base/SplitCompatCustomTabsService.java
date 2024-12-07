@@ -16,7 +16,6 @@ import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.browser.customtabs.ExperimentalPrefetch;
 import androidx.browser.customtabs.PrefetchOptions;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.List;
@@ -34,11 +33,13 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     }
 
     @Override
-    protected void attachBaseContext(Context unused) {
-        Context splitContext = SplitCompatApplication.createChromeContext();
-        mImpl = (Impl) BundleUtils.newInstance(splitContext, mServiceClassName);
+    protected void attachBaseContext(Context baseContext) {
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContextChrome(
+                                baseContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(splitContext);
+        super.attachBaseContext(baseContext);
     }
 
     @Override

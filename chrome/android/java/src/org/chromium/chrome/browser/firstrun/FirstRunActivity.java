@@ -21,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
@@ -43,6 +44,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.metrics.LowEntropySource;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -284,7 +286,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         //
         // To solve this, we apply Theme.Chromium.TabbedMode on Tablet and Automotive here, to use
         // the same window background as other tabbed mode activities using the same theme.
-        if (SigninUtils.isTabletOrAuto(this)) {
+        boolean isTabletOrAuto =
+                BuildInfo.getInstance().isAutomotive
+                        || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
+        if (isTabletOrAuto) {
             setTheme(R.style.Theme_Chromium_TabbedMode);
         } else if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
             // For consistency with tablets, the status bar should be black on phones with large

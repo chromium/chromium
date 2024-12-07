@@ -31,7 +31,7 @@ ExtensionErrorController::ExtensionErrorController(
     : browser_context_(context),
       is_first_run_(is_first_run) {}
 
-ExtensionErrorController::~ExtensionErrorController() {}
+ExtensionErrorController::~ExtensionErrorController() = default;
 
 void ExtensionErrorController::ShowErrorIfNeeded() {
   if (error_ui_.get()) {

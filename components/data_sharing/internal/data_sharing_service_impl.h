@@ -79,9 +79,10 @@ class DataSharingServiceImpl : public DataSharingService,
   std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
       const GaiaId& member_gaia_id) override;
-  void ReadGroup(const GroupId& group_id,
-                 base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
-                     callback) override;
+  void ReadGroupDeprecated(
+      const GroupId& group_id,
+      base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
+      override;
   void ReadNewGroup(const GroupToken& token,
                     base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
                         callback) override;

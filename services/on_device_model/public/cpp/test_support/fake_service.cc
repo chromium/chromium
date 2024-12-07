@@ -4,13 +4,17 @@
 
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace on_device_model {
 
@@ -49,16 +53,33 @@ std::string CtxToString(const mojom::InputOptions& input) {
   return context + suffix;
 }
 
+const re2::RE2& LangExprRE() {
+  static base::NoDestructor<re2::RE2> re("lang:(\\w+)=(\\d+\\.\\d+)");
+  return *re;
+}
+
+mojom::LanguageDetectionResultPtr DummyDetectLanguage(std::string_view text) {
+  if (text.find("esperanto") != std::string::npos) {
+    return mojom::LanguageDetectionResult::New("eo", 1.0);
+  }
+  std::array<std::string_view, 3> matches;
+  if (LangExprRE().Match(text, 0, text.length(), re2::RE2::UNANCHORED,
+                         matches.data(), matches.size())) {
+    double score = 0.0;
+    base::StringToDouble(matches[2], &score);
+    return mojom::LanguageDetectionResult::New(std::string(matches[1]), score);
+  };
+  return nullptr;
+}
+
 }  // namespace
 
 FakeOnDeviceServiceSettings::FakeOnDeviceServiceSettings() = default;
 FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
 
-FakeOnDeviceSession::FakeOnDeviceSession(
-    FakeOnDeviceServiceSettings* settings,
-    FakeOnDeviceModel* model)
-    : settings_(settings),
-      model_(model) {}
+FakeOnDeviceSession::FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
+                                         FakeOnDeviceModel* model)
+    : settings_(settings), model_(model) {}
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
 
@@ -232,20 +253,15 @@ void FakeTsModel::ClassifyTextSafety(const std::string& text,
   safety_info->class_scores.emplace_back(has_reasonable ? 0.2 : 0.8);
 
   if (has_language_model_) {
-    if (text.find("esperanto") != std::string::npos) {
-      safety_info->language = mojom::LanguageDetectionResult::New("eo", 1.0);
-    }
+    safety_info->language = DummyDetectLanguage(text);
   }
   std::move(callback).Run(std::move(safety_info));
 }
+
 void FakeTsModel::DetectLanguage(const std::string& text,
                                  DetectLanguageCallback callback) {
   CHECK(has_language_model_);
-  mojom::LanguageDetectionResultPtr language;
-  if (text.find("esperanto") != std::string::npos) {
-    language = mojom::LanguageDetectionResult::New("eo", 1.0);
-  }
-  std::move(callback).Run(std::move(language));
+  std::move(callback).Run(DummyDetectLanguage(text));
 }
 
 FakeTsHolder::FakeTsHolder() = default;

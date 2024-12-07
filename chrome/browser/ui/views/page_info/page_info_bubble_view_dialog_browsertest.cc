@@ -1172,11 +1172,13 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
                        InvokeUi_MerchantTrustMainPage) {
+  set_baseline("6070208");
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
                        InvokeUi_MerchantTrustAndAboutThisSite) {
+  set_baseline("6070208");
   ShowAndVerifyUi();
 }
 

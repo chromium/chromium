@@ -134,7 +134,12 @@ enum class NavigationRequestSecurityLevel {
   // Request was for a URL with non-default ports.
   kNonDefaultPorts = 12,
 
-  kMaxValue = kNonDefaultPorts,
+  // The hostname was in the HTTPS-enforcement list because of the HFM+SE
+  // heuristic. Recorded regardless of whether there was a fallback navigation
+  // or an interstitial. Not recorded if the hostname is allowlisted.
+  kHttpsEnforcedOnHostname = 13,
+
+  kMaxValue = kHttpsEnforcedOnHostname,
 };
 
 // Recorded by the Site Engagement Heuristic logic, recording whether HFM should

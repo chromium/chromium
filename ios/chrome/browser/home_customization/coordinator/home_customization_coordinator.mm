@@ -64,6 +64,9 @@ CGFloat const kSheetCornerRadius = 30;
                               ->GetPrefs()];
   _mediator.navigationDelegate = self;
 
+  // The Customization menu consists of a stack of presenting view controllers.
+  // Since the `baseViewController` is at the root of this stack, it is set as
+  // the first page.
   _currentPageViewController = self.baseViewController;
 
   [super start];
@@ -115,8 +118,10 @@ CGFloat const kSheetCornerRadius = 30;
                        UIAccessibilityScreenChangedNotification, menuPage);
                  }];
 
-  self.currentPageViewController.view.accessibilityElementsHidden = YES;
   self.currentPageViewController = menuPage;
+
+  // Set the currently presented modal as the interactable one for voiceover.
+  self.currentPageViewController.view.accessibilityViewIsModal = YES;
 }
 
 - (void)dismissMenuPage {
@@ -130,7 +135,10 @@ CGFloat const kSheetCornerRadius = 30;
                                                        completion:nil];
     self.currentPageViewController =
         self.currentPageViewController.presentingViewController;
-    self.currentPageViewController.view.accessibilityElementsHidden = NO;
+
+    // The presented page was closed, so the presenting page should become
+    // interactable.
+    self.currentPageViewController.view.accessibilityViewIsModal = YES;
   }
 }
 

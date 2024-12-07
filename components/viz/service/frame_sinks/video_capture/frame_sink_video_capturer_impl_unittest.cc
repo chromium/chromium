@@ -767,13 +767,11 @@ class TestGmbVideoFramePoolContext
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       const SharedImageFormat& si_format,
       const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     return context_provider_->SharedImageInterface()->CreateSharedImage(
-        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
-         alpha_type, usage, "FrameSinkVideoCapturerImplUnittest"},
+        {si_format, gpu_memory_buffer->GetSize(), color_space, usage,
+         "FrameSinkVideoCapturerImplUnittest"},
         gpu_memory_buffer->CloneHandle());
   }
 
@@ -782,14 +780,12 @@ class TestGmbVideoFramePoolContext
       gfx::BufferUsage buffer_usage,
       const SharedImageFormat& si_format,
       const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     context_provider_->SharedImageInterface()
         ->UseTestGMBInSharedImageCreationWithBufferUsage();
     return context_provider_->SharedImageInterface()->CreateSharedImage(
-        {si_format, size, color_space, surface_origin, alpha_type, usage,
+        {si_format, size, color_space, usage,
          "FrameSinkVideoCapturerImplUnittest"},
         gpu::kNullSurfaceHandle, buffer_usage);
   }

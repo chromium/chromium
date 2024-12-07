@@ -55,6 +55,9 @@ const CGFloat kLogoLabelFontSize = 18;
 // The margin between the bottom of the content and the collection view.
 const CGFloat kContentBottomMargin = 16;
 
+// The margin between groups of items within a section.
+const CGFloat kSectionBottomMargin = 16;
+
 // Threshold for how long a view is onscreen to count as visible.
 const base::TimeDelta kVisibleTimeThreshold = base::Milliseconds(10);
 
@@ -471,6 +474,9 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 
   NSCollectionLayoutSection* section =
       [NSCollectionLayoutSection sectionWithGroup:group];
+
+  section.interGroupSpacing = kSectionBottomMargin;
+
   return [[UICollectionViewCompositionalLayout alloc] initWithSection:section];
 }
 

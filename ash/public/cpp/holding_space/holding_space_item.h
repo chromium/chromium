@@ -31,10 +31,6 @@ namespace ash {
 
 class HoldingSpaceImage;
 
-namespace holding_space_metrics {
-enum class EventSource;
-}  // namespace holding_space_metrics
-
 // Contains data needed to display a single item in the holding space UI.
 class ASH_PUBLIC_EXPORT HoldingSpaceItem {
  public:
@@ -43,10 +39,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // secondary actions on the item's view itself.
   struct InProgressCommand {
    public:
-    using Handler = base::RepeatingCallback<void(
-        const HoldingSpaceItem* item,
-        HoldingSpaceCommandId command_id,
-        holding_space_metrics::EventSource event_source)>;
+    using Handler =
+        base::RepeatingCallback<void(const HoldingSpaceItem* item,
+                                     HoldingSpaceCommandId command_id)>;
 
     InProgressCommand(HoldingSpaceCommandId command_id,
                       int label_id,

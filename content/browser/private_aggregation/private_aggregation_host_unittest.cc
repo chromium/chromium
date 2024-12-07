@@ -569,20 +569,67 @@ TEST_F(PrivateAggregationHostTest, BindReceiverWithTooLongContextId_Fails) {
 }
 
 TEST_F(PrivateAggregationHostTest, TimeoutSetWithoutDeterministicReport_Fails) {
+  constexpr size_t kNonDefaultFilteringIdMaxBytes = 3;
+  static_assert(kNonDefaultFilteringIdMaxBytes !=
+                PrivateAggregationHost::kDefaultFilteringIdMaxBytes);
+
+  const struct {
+    std::string description;
+    std::optional<base::TimeDelta> timeout;
+    std::optional<std::string> context_id;
+    size_t filtering_id_max_bytes =
+        PrivateAggregationHost::kDefaultFilteringIdMaxBytes;
+    bool expect_should_send_deterministically = false;
+  } kTestCases[] = {
+      {
+          .description = "Timeout set, but should not send deterministically",
+          .timeout = base::Seconds(1),
+          .expect_should_send_deterministically = false,
+      },
+      {
+          .description = "Timeout not set, but should send deterministically "
+                         "due to contextId",
+          .timeout = std::nullopt,
+          .context_id = "example_context_id",
+          .expect_should_send_deterministically = true,
+      },
+      {
+          .description = "Timeout not set, but should send deterministically "
+                         "due to filteringIdMaxBytes",
+          .timeout = std::nullopt,
+          .filtering_id_max_bytes = kNonDefaultFilteringIdMaxBytes,
+          .expect_should_send_deterministically = true,
+      },
+  };
+
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_FALSE(host_->BindNewReceiver(
-      kExampleOrigin, kMainFrameOrigin,
-      PrivateAggregationCallerApi::kProtectedAudience,
-      /*context_id=*/std::nullopt,
-      /*timeout=*/base::Minutes(1),
-      /*aggregation_coordinator_origin=*/std::nullopt,
-      PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
-      remote.BindNewPipeAndPassReceiver()));
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+
+    EXPECT_EQ(PrivateAggregationManager::ShouldSendReportDeterministically(
+                  test_case.context_id, test_case.filtering_id_max_bytes),
+              test_case.expect_should_send_deterministically);
+
+    for (const auto api : {PrivateAggregationCallerApi::kProtectedAudience,
+                           PrivateAggregationCallerApi::kSharedStorage}) {
+      SCOPED_TRACE(testing::Message()
+                   << "API = " << PrivateAggregationCallerApiToString(api));
+
+      mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+      EXPECT_FALSE(host_->BindNewReceiver(
+          kExampleOrigin, kMainFrameOrigin,
+          PrivateAggregationCallerApi::kProtectedAudience,
+          /*context_id=*/std::nullopt,
+          /*timeout=*/base::Minutes(1),
+          /*aggregation_coordinator_origin=*/std::nullopt,
+          PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
+          remote.BindNewPipeAndPassReceiver()));
+    }
+  }
 }
 
 TEST_F(PrivateAggregationHostTest, TimeoutSetWithContextId_Succeeds) {
@@ -1179,7 +1226,7 @@ TEST_F(PrivateAggregationHostTest, ContextIdSet_ReflectedInSingleReport) {
   EXPECT_TRUE(host_->BindNewReceiver(
       kExampleOrigin, kMainFrameOrigin,
       PrivateAggregationCallerApi::kProtectedAudience, "example_context_id",
-      /*timeout=*/std::nullopt,
+      /*timeout=*/base::Seconds(1),
       /*aggregation_coordinator_origin=*/std::nullopt,
       PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
       remote.BindNewPipeAndPassReceiver()));
@@ -1249,7 +1296,7 @@ TEST_F(PrivateAggregationHostTest,
     EXPECT_TRUE(host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
         PrivateAggregationCallerApi::kProtectedAudience, "example_context_id",
-        /*timeout=*/std::nullopt,
+        /*timeout=*/base::Seconds(5),
         /*aggregation_coordinator_origin=*/std::nullopt,
         PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
         remote.BindNewPipeAndPassReceiver()));
@@ -1307,7 +1354,7 @@ TEST_F(
         kExampleOrigin, kMainFrameOrigin,
         PrivateAggregationCallerApi::kProtectedAudience,
         /*context_id=*/std::nullopt,
-        /*timeout=*/std::nullopt,
+        /*timeout=*/base::Seconds(1),
         /*aggregation_coordinator_origin=*/std::nullopt,
         /*filtering_id_max_bytes=*/3u, remote.BindNewPipeAndPassReceiver()));
 
@@ -1504,7 +1551,11 @@ TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
     bool bind_result = host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
         PrivateAggregationCallerApi::kProtectedAudience,
-        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
+        /*context_id=*/std::nullopt,
+        /*timeout=*/test_case.filtering_id_max_bytes ==
+                PrivateAggregationHost::kDefaultFilteringIdMaxBytes
+            ? std::nullopt
+            : std::make_optional(base::Seconds(1)),
         /*aggregation_coordinator_origin=*/std::nullopt,
         /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
         remote.BindNewPipeAndPassReceiver());
@@ -1585,7 +1636,11 @@ TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
     bool bind_result = host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
         PrivateAggregationCallerApi::kProtectedAudience,
-        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
+        /*context_id=*/std::nullopt,
+        /*timeout=*/test_case.filtering_id_max_bytes ==
+                PrivateAggregationHost::kDefaultFilteringIdMaxBytes
+            ? std::nullopt
+            : std::make_optional(base::Seconds(1)),
         /*aggregation_coordinator_origin=*/std::nullopt,
         /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
         remote.BindNewPipeAndPassReceiver());
@@ -2363,7 +2418,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
 }
 
 TEST_F(PrivateAggregationHostDeveloperModeTest,
-       TimeoutSet_ScheduledReportTimeIsAtTimeout) {
+       TimeoutSet_ScheduledReportTimeIsNotDelayed) {
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -2373,7 +2428,8 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   EXPECT_TRUE(host_->BindNewReceiver(
       kExampleOrigin, kMainFrameOrigin,
       PrivateAggregationCallerApi::kProtectedAudience,
-      /*context_id=*/"example_context_id", /*timeout=*/base::Seconds(30),
+      /*context_id=*/"example_context_id",
+      /*timeout=*/base::Seconds(30),
       /*aggregation_coordinator_origin=*/std::nullopt,
       PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
       remote.BindNewPipeAndPassReceiver()));
@@ -2397,10 +2453,11 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
 
   ASSERT_TRUE(validated_request);
 
-  // We're using `MOCK_TIME` so we can be sure no time has advanced.
-  EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
-            base::Time::Now() + base::Seconds(30) +
-                PrivateAggregationHost::kTimeForLocalProcessing);
+  // We're using `MOCK_TIME` so we can be sure no time has advanced. The
+  // requested timeout is ignored because developer mode is enabled.
+  EXPECT_EQ(
+      validated_request->shared_info().scheduled_report_time,
+      base::Time::Now() + PrivateAggregationHost::kTimeForLocalProcessing);
 }
 
 }  // namespace

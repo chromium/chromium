@@ -39,6 +39,94 @@
 
 using signin_util::SignedInState;
 
+namespace {
+
+constexpr int kTitleMaxWidth = 218;
+
+int GetSubtitleID(signin_metrics::AccessPoint access_point,
+                  SignedInState signed_in_state,
+                  int default_subtitle_id) {
+  if (access_point ==
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE) {
+    switch (signed_in_state) {
+      case SignedInState::kSignedOut:
+      case SignedInState::kWebOnlySignedIn:
+        return IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD;
+      case SignedInState::kSignInPending:
+        return IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_PASSWORD;
+      default:
+        break;
+    }
+  }
+
+  if (access_point ==
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE) {
+    switch (signed_in_state) {
+      case SignedInState::kSignedOut:
+      case SignedInState::kWebOnlySignedIn:
+        return IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_ADDRESS;
+      case SignedInState::kSignInPending:
+        return IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_ADDRESS;
+      default:
+        break;
+    }
+  }
+
+  return default_subtitle_id;
+}
+
+std::u16string GetButtonText(bool is_autofill_promo,
+                             SignedInState signed_in_state,
+                             const std::string& name) {
+  if (is_autofill_promo) {
+    switch (signed_in_state) {
+      case SignedInState::kSignedOut:
+        return l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
+      case SignedInState::kWebOnlySignedIn:
+        return l10n_util::GetStringFUTF16(
+            IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
+            {base::UTF8ToUTF16(name)});
+      case SignedInState::kSignInPending:
+        return l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
+      default:
+        break;
+    }
+  }
+
+  return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+}
+
+std::u16string GetAccessibilityText(bool is_autofill_promo,
+                                    SignedInState signed_in_state,
+                                    const std::string& email) {
+  if (is_autofill_promo && signed_in_state == SignedInState::kWebOnlySignedIn) {
+    return l10n_util::GetStringFUTF16(
+        IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL,
+        {base::UTF8ToUTF16(email)});
+  }
+
+  return std::u16string();
+}
+
+signin_metrics::PromoAction GetPromoAction(bool is_autofill_promo,
+                                           SignedInState signed_in_state) {
+  if (is_autofill_promo) {
+    switch (signed_in_state) {
+      case SignedInState::kSignedOut:
+        return signin_metrics::PromoAction::
+            PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
+      case SignedInState::kWebOnlySignedIn:
+        return signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
+      default:
+        break;
+    }
+  }
+
+  return signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+}
+
+}  // namespace
+
 BubbleSignInPromoView::BubbleSignInPromoView(
     Profile* profile,
     BubbleSignInPromoDelegate* delegate,
@@ -71,51 +159,20 @@ BubbleSignInPromoView::BubbleSignInPromoView(
                                views::MaximumFlexSizeRule::kPreferred, true));
   SetLayoutManager(std::move(layout));
 
-  // Show the accounts sync promo message by default.
-  int title_resource_id = accounts_promo_message_resource_id;
-  std::u16string button_text =
-      l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
-  const int title_max_width = 218;
-  std::u16string accessibility_text;
+  SignedInState signed_in_state =
+      signin_util::GetSignedInState(identity_manager);
 
+  // Set the parameters depending on the signed in state and type of promo.
+  int title_resource_id = GetSubtitleID(access_point, signed_in_state,
+                                        accounts_promo_message_resource_id);
+  std::u16string button_text =
+      GetButtonText(is_autofill_promo, signed_in_state, account.given_name);
+  std::u16string accessibility_text =
+      GetAccessibilityText(is_autofill_promo, signed_in_state, account.email);
   signin_metrics::PromoAction promo_action =
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+      GetPromoAction(is_autofill_promo, signed_in_state);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (is_autofill_promo) {
-    SignedInState bubble_version =
-        signin_util::GetSignedInState(identity_manager);
-    switch (bubble_version) {
-      case SignedInState::kSignedIn:
-      case SignedInState::kSyncing:
-      case SignedInState::kSyncPaused:
-        // No signin promo to be shown in those states.
-        return;
-      case SignedInState::kSignedOut:
-        title_resource_id = IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD;
-        button_text =
-            l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
-        promo_action = signin_metrics::PromoAction::
-            PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
-        break;
-      case SignedInState::kWebOnlySignedIn:
-        title_resource_id = IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD;
-        button_text = l10n_util::GetStringFUTF16(
-            IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
-            {base::UTF8ToUTF16(account.given_name)});
-        accessibility_text = l10n_util::GetStringFUTF16(
-            IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL,
-            {base::UTF8ToUTF16(account.email)});
-        promo_action = signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
-        break;
-      case SignedInState::kSignInPending:
-        title_resource_id = IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_PASSWORD;
-        button_text =
-            l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
-        break;
-    }
-  }
-
   if (access_point ==
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE) {
     if (extensions::sync_util::IsExtensionsExplicitSigninEnabled()) {
@@ -138,7 +195,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
     title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     title->SetMultiLine(true);
     if (orientation == views::LayoutOrientation::kHorizontal) {
-      title->SetMaximumWidth(title_max_width);
+      title->SetMaximumWidth(kTitleMaxWidth);
     } else {
       title->SetProperty(
           views::kMarginsKey,

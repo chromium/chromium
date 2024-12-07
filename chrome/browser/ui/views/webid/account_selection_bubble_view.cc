@@ -250,9 +250,9 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
 }
 
 void AccountSelectionBubbleView::ShowVerifyingSheet(
-    const content::IdentityRequestAccount& account,
+    const IdentityRequestAccountPtr& account,
     const std::u16string& title) {
-  UpdateHeader(account.identity_provider->idp_metadata, title,
+  UpdateHeader(account->identity_provider->idp_metadata, title,
                /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -266,7 +266,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(fedcm::kTopBottomPadding, fedcm::kLeftRightPadding)));
-  CHECK(!account.is_filtered_out);
+  CHECK(!account->is_filtered_out);
   row->AddChildView(CreateAccountRow(account,
                                      /*clickable_position=*/std::nullopt,
                                      /*should_include_idp=*/false));
@@ -276,13 +276,13 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 }
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
-    const content::IdentityRequestAccount& account,
+    const IdentityRequestAccountPtr& account,
     bool show_back_button) {
   std::u16string title = webid::GetTitle(
       rp_for_display_,
-      base::UTF8ToUTF16(account.identity_provider->idp_for_display),
+      base::UTF8ToUTF16(account->identity_provider->idp_for_display),
       rp_context_);
-  UpdateHeader(account.identity_provider->idp_metadata, title,
+  UpdateHeader(account->identity_provider->idp_metadata, title,
                show_back_button);
 
   RemoveNonHeaderChildViews();
@@ -409,8 +409,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
 }
 
 void AccountSelectionBubbleView::ShowRequestPermissionDialog(
-    const content::IdentityRequestAccount& account,
-    const content::IdentityProviderData& idp_data) {
+    const IdentityRequestAccountPtr& account) {
   NOTREACHED() << "ShowRequestPermissionDialog is only implemented for "
                   "AccountSelectionModalView";
 }
@@ -566,35 +565,34 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateSingleAccountChooser(
-    const content::IdentityRequestAccount& account) {
+    const IdentityRequestAccountPtr& account) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(0, fedcm::kLeftRightPadding), fedcm::kVerticalSpacing));
-  CHECK(!account.is_filtered_out);
+  CHECK(!account->is_filtered_out);
   row->AddChildView(CreateAccountRow(account,
                                      /*clickable_position=*/std::nullopt,
                                      /*should_include_idp=*/false));
 
   // Prefer using the given name if it is provided, otherwise fallback to name.
   const std::string display_name =
-      account.given_name.empty() ? account.name : account.given_name;
-  const content::IdentityProviderData& idp_data = *account.identity_provider;
+      account->given_name.empty() ? account->name : account->given_name;
+  const content::IdentityProviderData& idp_data = *account->identity_provider;
   const content::IdentityProviderMetadata& idp_metadata = idp_data.idp_metadata;
   // We can pass crefs to OnAccountSelected because the `observer_` owns the
   // data.
   auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
-                          base::Unretained(owner_), std::cref(account),
-                          std::cref(idp_data)),
+                          base::Unretained(owner_), account),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)),
-      this, idp_metadata, base::UTF8ToUTF16(account.email));
+      this, idp_metadata, base::UTF8ToUTF16(account->email));
   continue_button_ = row->AddChildView(std::move(button));
 
   // Do not add disclosure text if this is a sign in or if we were requested
   // to skip it.
-  if (account.login_state == Account::LoginState::kSignIn ||
+  if (account->login_state == Account::LoginState::kSignIn ||
       idp_data.disclosure_fields.empty()) {
     return row;
   }
@@ -754,7 +752,7 @@ void AccountSelectionBubbleView::AddAccounts(
   if (!is_multi_idp) {
     for (const auto& account : accounts) {
       accounts_content->AddChildView(
-          CreateAccountRow(*account, /*clickable_position=*/out_position++,
+          CreateAccountRow(account, /*clickable_position=*/out_position++,
                            /*should_include_idp=*/false));
     }
     return;
@@ -785,7 +783,7 @@ void AccountSelectionBubbleView::AddAccounts(
       }
     }
     accounts_content->AddChildView(
-        CreateAccountRow(*account, /*clickable_position=*/out_position++,
+        CreateAccountRow(account, /*clickable_position=*/out_position++,
                          /*should_include_idp=*/true, /*is_modal_dialog=*/false,
                          /*additional_vertical_padding=*/0, last_used_string));
   }
@@ -821,7 +819,7 @@ AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
                 IDS_MULTI_IDP_ACCOUNT_LAST_USED_ON_THIS_SITE))
           : std::nullopt;
   CHECK(!accounts[0]->is_filtered_out);
-  content->AddChildView(CreateAccountRow(*accounts[0],
+  content->AddChildView(CreateAccountRow(accounts[0],
                                          /*clickable_position=*/0,
                                          /*should_include_idp=*/true,
                                          /*is_modal_dialog=*/false,

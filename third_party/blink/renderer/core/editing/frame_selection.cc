@@ -398,6 +398,10 @@ void FrameSelection::SetSelectionForAccessibility(
 
 void FrameSelection::DidChangeChildren(
     const ContainerNode::ChildrenChange& change) {
+  if (!document_) {
+    return;  // ContextDestroyed() was already called
+  }
+
   selection_editor_->DidChangeChildren(change);
 }
 
@@ -405,11 +409,17 @@ void FrameSelection::DidMergeTextNodes(
     const Text& merged_node,
     const NodeWithIndex& node_to_be_removed_with_index,
     unsigned old_length) {
+  if (!document_) {
+    return;  // ContextDestroyed() was already called
+  }
   selection_editor_->DidMergeTextNodes(
       merged_node, node_to_be_removed_with_index, old_length);
 }
 
 void FrameSelection::DidSplitTextNode(const Text& text) {
+  if (!document_) {
+    return;  // ContextDestroyed() was already called
+  }
   selection_editor_->DidSplitTextNode(text);
 }
 
@@ -417,11 +427,18 @@ void FrameSelection::DidUpdateCharacterData(CharacterData* data,
                                             unsigned offset,
                                             unsigned old_length,
                                             unsigned new_length) {
+  if (!document_) {
+    return;  // ContextDestroyed() was already called
+  }
   selection_editor_->DidUpdateCharacterData(data, offset, old_length,
                                             new_length);
 }
 
 void FrameSelection::NodeChildrenWillBeRemoved(ContainerNode& container) {
+  if (!document_) {
+    return;  // ContextDestroyed() was already called
+  }
+
   selection_editor_->NodeChildrenWillBeRemoved(container);
 
   if (container.InActiveDocument()) {
@@ -432,6 +449,10 @@ void FrameSelection::NodeChildrenWillBeRemoved(ContainerNode& container) {
 }
 
 void FrameSelection::NodeWillBeRemoved(Node& node) {
+  if (!document_) {
+    return;  // ContextDestroyed() was already called
+  }
+
   selection_editor_->NodeWillBeRemoved(node);
 
   // There can't be a selection inside a fragment, so if a fragment's node is

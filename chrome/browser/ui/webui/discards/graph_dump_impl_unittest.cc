@@ -43,7 +43,7 @@ class TestChangeStream : public discards::mojom::GraphChangeStream {
   using WorkerMap = std::map<int64_t, discards::mojom::WorkerInfoPtr>;
   using IdSet = std::set<int64_t>;
 
-  TestChangeStream() {}
+  TestChangeStream() = default;
 
   mojo::PendingRemote<discards::mojom::GraphChangeStream> GetRemote() {
     mojo::PendingRemote<discards::mojom::GraphChangeStream> remote;

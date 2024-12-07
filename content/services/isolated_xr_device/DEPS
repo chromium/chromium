@@ -1,5 +1,6 @@
 include_rules = [
   "+components/viz/common/gpu/context_provider.h",
+  "+components/webxr/xr_test_hook_wrapper.h",
   "+device/base",
   "+device/vr",
   "+mojo/public",

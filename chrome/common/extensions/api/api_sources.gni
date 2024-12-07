@@ -12,7 +12,10 @@ assert(enable_extensions_core)
 # APIs and features included in both normal desktop builds and the experimental
 # desktop-android build.
 # TODO(https://crbug.com/356905053): Continue moving more here.
-schema_sources_ = [ "notifications.idl" ]
+schema_sources_ = [
+  "cookies.json",
+  "notifications.idl",
+]
 
 # Schemas that should be used only to auto-generate the C++ types.
 # In many cases, this includes schemas used to generate types used in manifest
@@ -21,6 +24,16 @@ uncompiled_sources_ = [
   "browsing_data.json",
   "extension.json",
 ]
+
+# Some APIs (e.g. cookies) rely on types and headers from other APIs.
+types_only_schema_sources_ = []
+
+if (enable_desktop_android_extensions) {
+  types_only_schema_sources_ += [
+    "tabs.json",
+    "windows.json",
+  ]
+}
 
 if (enable_extensions) {
   schema_sources_ += [
@@ -36,7 +49,6 @@ if (enable_extensions) {
     "command_line_private.json",
     "content_settings.json",
     "context_menus.json",
-    "cookies.json",
     "debugger.json",
     "desktop_capture.json",
     "developer_private.idl",
@@ -170,6 +182,9 @@ if (enable_extensions) {
 }
 
 chrome_extensions_api_schema_sources = get_path_info(schema_sources_, "abspath")
+
+chrome_extensions_types_only_schema_sources =
+    get_path_info(types_only_schema_sources_, "abspath")
 
 chrome_extensions_manifest_only_schema_sources =
     get_path_info([

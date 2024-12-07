@@ -102,7 +102,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -1100,7 +1099,7 @@ public class ManageSyncSettingsTest {
     public void testSigninSettingsTopAvatarWithNonDisplayableEmail() throws Exception {
         mSyncTestRule
                 .getSigninTestRule()
-                .addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+                .addAccountThenSignin(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
@@ -1118,8 +1117,7 @@ public class ManageSyncSettingsTest {
     public void testSigninSettingsTopAvatarWithNonDisplayableEmailAndNoName() throws Exception {
         mSyncTestRule
                 .getSigninTestRule()
-                .addAccountThenSignin(
-                        AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
+                .addAccountThenSignin(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));

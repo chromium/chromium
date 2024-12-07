@@ -170,6 +170,7 @@ class OnDeviceModelServiceController
   friend class FakeOnDeviceModelServiceController;
   friend class OnDeviceModelAdaptationController;
   friend class OnDeviceModelClient;
+  friend class OnDeviceModelExecutionEnabledBrowserTest;
   friend class OnDeviceModelServiceAdaptationControllerTest;
   friend class OnDeviceModelServiceControllerIOS;
   friend class OnDeviceModelServiceControllerTest;

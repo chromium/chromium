@@ -148,15 +148,10 @@ suite('PagesSettingsTest', function() {
     await selectOption(pagesSection, PagesValue.ODDS.toString());
     assertEquals(PagesValue.ODDS.toString(), select.value);
 
-    let whenValueChanged =
-        eventToPromise('process-select-change', pagesSection);
     pagesSection.pageCount = 1;
-    await whenValueChanged;
     assertEquals(PagesValue.ALL.toString(), select.value);
 
-    whenValueChanged = eventToPromise('process-select-change', pagesSection);
     pagesSection.pageCount = 2;
-    await whenValueChanged;
     assertEquals(PagesValue.ODDS.toString(), select.value);
   });
 

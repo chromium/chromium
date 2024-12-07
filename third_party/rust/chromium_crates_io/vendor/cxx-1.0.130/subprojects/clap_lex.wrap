@@ -1,6 +1,0 @@
-[wrap-file]
-directory = clap_lex-0.7.2
-source_url = https://static.crates.io/crates/clap_lex/0.7.2/download
-source_filename = clap_lex-0.7.2.tar.gz
-source_hash = 1462739cb27611015575c0c11df5df7601141071f07518d56fcc1be504cbec97
-patch_directory = clap_lex

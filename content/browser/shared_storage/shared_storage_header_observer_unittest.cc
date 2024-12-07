@@ -585,7 +585,7 @@ TEST_P(SharedStorageHeaderObserverTest, SharedStorageNotAllowed) {
 
   // No operations are invoked because we've simulated shared storage being
   // disabled in user preferences.
-  RunHeaderReceived(kOrigin1, std::move(methods_with_options));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options));
   EXPECT_TRUE(observer_->header_results().empty());
   EXPECT_TRUE(observer_->operations().empty());
   EXPECT_EQ(Length(kOrigin1), 0);
@@ -614,7 +614,7 @@ TEST_P(SharedStorageHeaderObserverTest, Append_NoCapacity) {
 
   methods_with_options.push_back(MojomAppendMethod(key, /*value=*/u"a"));
 
-  RunHeaderReceived(kOrigin1, std::move(methods_with_options));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options));
 
   if (!ExpectSuccess()) {
     EXPECT_TRUE(observer_->header_results().empty());
@@ -629,10 +629,10 @@ TEST_P(SharedStorageHeaderObserverTest, Append_NoCapacity) {
 
   // Expect that the database attempted the 'append' method but failed. This is
   // due to insufficient capacity for the origin.
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(OperationAndResult(
-                  kOrigin1, MojomAppendMethod(key, /*value=*/u"a"),
-                  /*success=*/false)));
+  EXPECT_EQ(observer_->operations()[0],
+            OperationAndResult(kOrigin1,
+                               CloneSharedStorageMethods(methods_with_options),
+                               /*success=*/false));
 
   EXPECT_EQ(GetExistingValue(kOrigin1, base::UTF16ToUTF8(key)),
             base::UTF16ToUTF8(value));
@@ -658,7 +658,7 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
                                                 /*ignore_if_present=*/false));
   methods_with_options.push_back(MojomDeleteMethod(/*key=*/u"key2"));
 
-  RunHeaderReceived(kOrigin1, std::move(methods_with_options));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options));
 
   if (!ExpectSuccess()) {
     EXPECT_TRUE(observer_->header_results().empty());
@@ -670,32 +670,11 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
   ASSERT_EQ(observer_->header_results().size(), 1u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin1);
 
-  observer_->WaitForOperations(6);
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          OperationAndResult(kOrigin1, MojomClearMethod(),
-                             /*success=*/true),
-          OperationAndResult(
-              kOrigin1,
-              MojomSetMethod(/*key=*/u"key1", /*value=*/u"value1",
-                             /*ignore_if_present=*/false),
-              /*success=*/true),
-          OperationAndResult(
-              kOrigin1, MojomAppendMethod(/*key=*/u"key1", /*value=*/u"value1"),
-              /*success=*/true),
-          OperationAndResult(
-              kOrigin1,
-              MojomSetMethod(/*key=*/u"key1", /*value=*/u"value2",
-                             /*ignore_if_present=*/true),
-              /*success=*/true),
-          OperationAndResult(
-              kOrigin1,
-              MojomSetMethod(/*key=*/u"key2", /*value=*/u"value2",
-                             /*ignore_if_present=*/false),
-              /*success=*/true),
-          OperationAndResult(kOrigin1, MojomDeleteMethod(/*key=*/u"key2"),
-                             /*success=*/true)));
+  observer_->WaitForOperations(1);
+  EXPECT_EQ(observer_->operations()[0],
+            OperationAndResult(kOrigin1,
+                               CloneSharedStorageMethods(methods_with_options),
+                               /*success=*/true));
 
   EXPECT_EQ(GetExistingValue(kOrigin1, "key1"), "value1value1");
   EXPECT_TRUE(ValueNotFound(kOrigin1, "key2"));
@@ -720,11 +699,13 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   std::vector<MethodWithOptionsPtr> methods_with_options3;
   methods_with_options3.push_back(MojomDeleteMethod(/*key=*/u"a"));
 
-  RunHeaderReceived(kOrigin1, std::move(methods_with_options1));
+  RunHeaderReceived(kOrigin1, CloneSharedStorageMethods(methods_with_options1));
 
   if (!ExpectSuccess()) {
-    RunHeaderReceived(kOrigin2, std::move(methods_with_options2));
-    RunHeaderReceived(kOrigin3, std::move(methods_with_options3));
+    RunHeaderReceived(kOrigin2,
+                      CloneSharedStorageMethods(methods_with_options2));
+    RunHeaderReceived(kOrigin3,
+                      CloneSharedStorageMethods(methods_with_options3));
     EXPECT_TRUE(observer_->header_results().empty());
     EXPECT_TRUE(observer_->operations().empty());
     EXPECT_EQ(Length(kOrigin1), 0);
@@ -736,28 +717,27 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   ASSERT_EQ(observer_->header_results().size(), 1u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin1);
 
-  RunHeaderReceived(kOrigin2, std::move(methods_with_options2));
+  RunHeaderReceived(kOrigin2, CloneSharedStorageMethods(methods_with_options2));
   ASSERT_EQ(observer_->header_results().size(), 2u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin2);
 
-  RunHeaderReceived(kOrigin3, std::move(methods_with_options3));
+  RunHeaderReceived(kOrigin3, CloneSharedStorageMethods(methods_with_options3));
   ASSERT_EQ(observer_->header_results().size(), 3u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin3);
 
   observer_->WaitForOperations(3);
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          OperationAndResult(kOrigin1,
-                             MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                                            /*ignore_if_present=*/false),
-                             /*success=*/true),
-          OperationAndResult(kOrigin2,
-                             MojomSetMethod(/*key=*/u"a", /*value=*/u"c",
-                                            /*ignore_if_present=*/true),
-                             /*success=*/true),
-          OperationAndResult(kOrigin3, MojomDeleteMethod(/*key=*/u"a"),
-                             /*success=*/true)));
+  EXPECT_EQ(observer_->operations()[0],
+            OperationAndResult(kOrigin1,
+                               CloneSharedStorageMethods(methods_with_options1),
+                               /*success=*/true));
+  EXPECT_EQ(observer_->operations()[1],
+            OperationAndResult(kOrigin2,
+                               CloneSharedStorageMethods(methods_with_options2),
+                               /*success=*/true));
+  EXPECT_EQ(observer_->operations()[2],
+            OperationAndResult(kOrigin3,
+                               CloneSharedStorageMethods(methods_with_options3),
+                               /*success=*/true));
 
   // Operations on different origins don't affect each other.
   EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");

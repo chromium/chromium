@@ -2264,6 +2264,27 @@ experimental domain CSS
       # Computed style for the specified DOM node.
       array of CSSComputedStyleProperty computedStyle
 
+  # Resolve the specified values in the context of the provided element.
+  # For example, a value of '1em' is evaluated according to the computed
+  # 'font-size' of the element and a value 'calc(1px + 2px)' will be
+  # resolved to '3px'.
+  command resolveValues
+    parameters
+      # Substitution functions (var()/env()/attr()) and cascade-dependent
+      # keywords (revert/revert-layer) do not work.
+      array of string values
+      # Id of the node in whose context the expression is evaluated
+      DOM.NodeId nodeId
+      # Only longhands and custom property names are accepted.
+      optional string propertyName
+      # Pseudo element type, only works for pseudo elements that generate
+      # elements in the tree, such as ::before and ::after.
+      experimental optional DOM.PseudoType pseudoType
+      # Pseudo element custom ident.
+      experimental optional string pseudoIdentifier
+    returns
+      array of string results
+
   # Returns the styles defined inline (explicitly in the "style" attribute and implicitly, using DOM
   # attributes) for a DOM node identified by `nodeId`.
   command getInlineStylesForNode
@@ -7293,6 +7314,9 @@ domain Network
       # are represented by the invalid cookie line string instead of a proper cookie.
       array of BlockedSetCookieWithReason blockedCookies
       # Raw response headers as they were received over the wire.
+      # Duplicate headers in the response are represented as a single key with their values
+      # concatentated using `\n` as the separator.
+      # See also `headersText` that contains verbatim text for HTTP/1.*.
       Headers headers
       # The IP address space of the resource. The address space can only be determined once the transport
       # established the connection, so we can't send it in `requestWillBeSentExtraInfo`.
@@ -7321,6 +7345,9 @@ domain Network
       # Request identifier. Used to match this information to another responseReceived event.
       RequestId requestId
       # Raw response headers as they were received over the wire.
+      # Duplicate headers in the response are represented as a single key with their values
+      # concatentated using `\n` as the separator.
+      # See also `headersText` that contains verbatim text for HTTP/1.*.
       Headers headers
 
   # Fired exactly once for each Trust Token operation. Depending on
@@ -12424,6 +12451,15 @@ experimental domain Preload
       array of RuleSetId ruleSetIds
       array of DOM.BackendNodeId nodeIds
 
+  # Chrome manages different types of preloads together using a
+  # concept of preloading pipeline. For example, if a site uses a
+  # SpeculationRules for prerender, Chrome first starts a prefetch and
+  # then upgrades it to prerender.
+  #
+  # CDP events for them are emitted separately but they share
+  # `PreloadPipelineId`.
+  type PreloadPipelineId extends string
+
   command enable
 
   command disable
@@ -12580,6 +12616,7 @@ experimental domain Preload
   event prefetchStatusUpdated
     parameters
       PreloadingAttemptKey key
+      PreloadPipelineId pipelineId
       # The frame id of the frame initiating prefetch.
       Page.FrameId initiatingFrameId
       string prefetchUrl
@@ -12598,6 +12635,7 @@ experimental domain Preload
   event prerenderStatusUpdated
     parameters
       PreloadingAttemptKey key
+      PreloadPipelineId pipelineId
       PreloadingStatus status
       optional PrerenderFinalStatus prerenderStatus
       # This is used to give users more information about the name of Mojo interface

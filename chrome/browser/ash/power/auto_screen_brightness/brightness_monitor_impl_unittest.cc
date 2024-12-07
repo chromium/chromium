@@ -22,7 +22,7 @@ namespace {
 
 class TestObserver : public BrightnessMonitor::Observer {
  public:
-  TestObserver() {}
+  TestObserver() = default;
 
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
@@ -77,7 +77,7 @@ class BrightnessMonitorImplTest : public testing::Test {
   BrightnessMonitorImplTest& operator=(const BrightnessMonitorImplTest&) =
       delete;
 
-  ~BrightnessMonitorImplTest() override {}
+  ~BrightnessMonitorImplTest() override = default;
 
   // testing::Test:
   void SetUp() override { chromeos::PowerManagerClient::InitializeFake(); }

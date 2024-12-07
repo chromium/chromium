@@ -54,7 +54,7 @@ UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
                                                   account_id,
                                                   user_policy_key_dir)) {}
 
-UserCloudPolicyStoreAsh::~UserCloudPolicyStoreAsh() {}
+UserCloudPolicyStoreAsh::~UserCloudPolicyStoreAsh() = default;
 
 void UserCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

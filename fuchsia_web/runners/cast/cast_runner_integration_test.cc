@@ -226,10 +226,9 @@ class TestCastComponent {
         // Create a `fuchsia.io.Directory` connected to the directory of fake
         // services.
         zx_status_t status = services_->services.Serve(
-            fuchsia::io::OpenFlags::RIGHT_READABLE |
-                fuchsia::io::OpenFlags::RIGHT_WRITABLE |
-                fuchsia::io::OpenFlags::DIRECTORY,
-            services.NewRequest().TakeChannel());
+            fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
+            fidl::ServerEnd<fuchsia_io::Directory>(
+                services.NewRequest().TakeChannel()));
         ZX_CHECK(status == ZX_OK, status) << "Serve()";
       }
     }

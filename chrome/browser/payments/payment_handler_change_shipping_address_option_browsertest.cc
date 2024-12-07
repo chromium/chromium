@@ -45,7 +45,7 @@ struct TestCase {
         expected_output(expected_output),
         change_type(change_type) {}
 
-  ~TestCase() {}
+  ~TestCase() = default;
 
   const std::string init_test_code;
   const std::string expected_output;

@@ -292,4 +292,4 @@ ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(ManagementUIHandler::Create(profile));
 }
 
-ManagementUI::~ManagementUI() {}
+ManagementUI::~ManagementUI() = default;

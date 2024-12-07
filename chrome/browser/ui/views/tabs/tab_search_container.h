@@ -23,7 +23,7 @@
 
 enum class Edge;
 class BrowserWindowInterface;
-class TabOrganizationButton;
+class TabStripNudgeButton;
 class TabOrganizationService;
 class TabSearchButton;
 class TabStripController;
@@ -76,7 +76,7 @@ class TabSearchContainer : public views::View,
     enum class AnimationSessionType { SHOW, HIDE };
 
     TabOrganizationAnimationSession(
-        TabOrganizationButton* button,
+        TabStripNudgeButton* button,
         TabSearchContainer* container,
         AnimationSessionType session_type,
         base::OnceCallback<void()> on_animation_ended);
@@ -90,13 +90,13 @@ class TabSearchContainer : public views::View,
     void ResetAnimationForTesting(double value);
 
     void Hide();
-    TabOrganizationButton* button() { return button_; }
+    TabStripNudgeButton* button() { return button_; }
 
    private:
     base::TimeDelta GetAnimationDuration(base::TimeDelta duration);
     void ShowOpacityAnimation();
     void Show();
-    raw_ptr<TabOrganizationButton> button_;
+    raw_ptr<TabStripNudgeButton> button_;
     raw_ptr<TabSearchContainer> container_;
 
     gfx::SlideAnimation expansion_animation_;
@@ -130,13 +130,11 @@ class TabSearchContainer : public views::View,
   TabSearchContainer& operator=(const TabSearchContainer&) = delete;
   ~TabSearchContainer() override;
 
-  TabOrganizationButton* auto_tab_group_button() {
+  TabStripNudgeButton* auto_tab_group_button() {
     return auto_tab_group_button_;
   }
 
-  TabOrganizationButton* tab_declutter_button() {
-    return tab_declutter_button_;
-  }
+  TabStripNudgeButton* tab_declutter_button() { return tab_declutter_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
@@ -148,10 +146,10 @@ class TabSearchContainer : public views::View,
     return tab_organization_service_;
   }
 
-  void ShowTabOrganization(TabOrganizationButton* button);
-  void HideTabOrganization(TabOrganizationButton* button);
+  void ShowTabOrganization(TabStripNudgeButton* button);
+  void HideTabOrganization(TabStripNudgeButton* button);
   void SetLockedExpansionModeForTesting(LockedExpansionMode mode,
-                                        TabOrganizationButton* button);
+                                        TabStripNudgeButton* button);
 
   void OnAutoTabGroupButtonClicked();
   void OnAutoTabGroupButtonDismissed();
@@ -159,7 +157,7 @@ class TabSearchContainer : public views::View,
   void OnTabDeclutterButtonClicked();
   void OnTabDeclutterButtonDismissed();
 
-  void OnOrganizeButtonTimeout(TabOrganizationButton* button);
+  void OnOrganizeButtonTimeout(TabStripNudgeButton* button);
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
@@ -177,19 +175,19 @@ class TabSearchContainer : public views::View,
 
  private:
   void SetLockedExpansionMode(LockedExpansionMode mode,
-                              TabOrganizationButton* button);
-  void ExecuteShowTabOrganization(TabOrganizationButton* button);
-  void ExecuteHideTabOrganization(TabOrganizationButton* button);
+                              TabStripNudgeButton* button);
+  void ExecuteShowTabOrganization(TabStripNudgeButton* button);
+  void ExecuteHideTabOrganization(TabStripNudgeButton* button);
 
   void OnAnimationSessionEnded();
 
-  std::unique_ptr<TabOrganizationButton> CreateAutoTabGroupButton(
+  std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton(
       TabStripController* tab_strip_controller,
       bool tab_search_before_chips);
-  std::unique_ptr<TabOrganizationButton> CreateTabDeclutterButton(
+  std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton(
       TabStripController* tab_strip_controller,
       bool tab_search_before_chips);
-  void SetupButtonProperties(TabOrganizationButton* button,
+  void SetupButtonProperties(TabStripNudgeButton* button,
                              bool tab_search_before_chips);
   DeclutterTriggerCTRBucket GetDeclutterTriggerBucket(bool clicked);
   void LogDeclutterTriggerBucket(bool clicked);
@@ -200,10 +198,10 @@ class TabSearchContainer : public views::View,
   raw_ptr<View, DanglingUntriaged> locked_expansion_view_;
 
   // The button currently holding the lock to be shown/hidden.
-  raw_ptr<TabOrganizationButton> locked_expansion_button_ = nullptr;
-  raw_ptr<TabOrganizationButton, DanglingUntriaged> auto_tab_group_button_ =
+  raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
+  raw_ptr<TabStripNudgeButton, DanglingUntriaged> auto_tab_group_button_ =
       nullptr;
-  raw_ptr<TabOrganizationButton> tab_declutter_button_ = nullptr;
+  raw_ptr<TabStripNudgeButton> tab_declutter_button_ = nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
   raw_ptr<TabOrganizationService, DanglingUntriaged> tab_organization_service_ =
       nullptr;

@@ -38,12 +38,12 @@ namespace {
 
 class DeviceLogMessageHandler : public content::WebUIMessageHandler {
  public:
-  DeviceLogMessageHandler() {}
+  DeviceLogMessageHandler() = default;
 
   DeviceLogMessageHandler(const DeviceLogMessageHandler&) = delete;
   DeviceLogMessageHandler& operator=(const DeviceLogMessageHandler&) = delete;
 
-  ~DeviceLogMessageHandler() override {}
+  ~DeviceLogMessageHandler() override = default;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override {

@@ -199,7 +199,7 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
     // Setting some default usage in order to get a mappable shared image.
-    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE |
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
     scoped_refptr<VideoFrame> video_frame;
@@ -446,6 +446,8 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
       supported_rc_modes = supported_profile.rate_control_modes;
       gpu_supported_pixel_formats =
           supported_profile.gpu_supported_pixel_formats;
+      supports_gpu_shared_images_ =
+          supported_profile.supports_gpu_shared_images;
       break;
     }
   }
@@ -590,8 +592,10 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
   // Try using a frame with GPU buffer both are true:
   // 1. the frame already has GPU buffer
   // 2. frame doesn't need resizing or can be resized by GPU encoder.
-  bool use_gpu_buffer = frame->HasMappableGpuBuffer() &&
-                        (!frame_needs_resizing || gpu_resize_supported_);
+  bool use_gpu_buffer =
+      (frame->HasMappableGpuBuffer() ||
+       (frame->HasSharedImage() && supports_gpu_shared_images_)) &&
+      (!frame_needs_resizing || gpu_resize_supported_);
 
   // Currently configured encoder's preference takes precedence overe heuristic
   // above.
@@ -990,8 +994,12 @@ void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   supports_frame_size_change_ = info.supports_frame_size_change;
+
+  VideoEncoderInfo adjusted_info = info;
+  adjusted_info.supports_gpu_shared_images = supports_gpu_shared_images_;
+  adjusted_info.gpu_supported_pixel_formats = gpu_supported_pixel_formats_;
   if (info_cb_) {
-    info_cb_.Run(info);
+    info_cb_.Run(adjusted_info);
   }
 }
 
@@ -1127,7 +1135,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
       base::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
       gpu_supported_pixel_formats_.end();
 
-  if (src_frame->HasMappableGpuBuffer() &&
+  if ((src_frame->HasMappableGpuBuffer() || src_frame->HasSharedImage()) &&
       (src_frame->format() == PIXEL_FORMAT_NV12 || is_gpu_supported_format) &&
       (gpu_resize_supported_ || src_frame->coded_size() == dest_coded_size)) {
     // Nothing to do here, the input frame is already what we need

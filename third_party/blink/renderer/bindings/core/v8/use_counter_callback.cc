@@ -438,6 +438,18 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kExtendingNonExtensibleWithPrivate:
       blink_feature = WebFeature::kV8ExtendingNonExtensibleWithPrivate;
       break;
+    case v8::Isolate::kPromiseTry:
+      webdx_feature = WebDXFeature::kPromiseTry;
+      break;
+    case v8::Isolate::kStringReplaceAll:
+      webdx_feature = WebDXFeature::kStringReplaceall;
+      break;
+    case v8::Isolate::kStringWellFormed:
+      webdx_feature = WebDXFeature::kStringWellformed;
+      break;
+    case v8::Isolate::kWeakReferences:
+      webdx_feature = WebDXFeature::kWeakReferences;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

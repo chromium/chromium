@@ -442,10 +442,6 @@ class WTF_EXPORT String {
   void AppendTo(BufferType&,
                 unsigned start = 0,
                 unsigned length = UINT_MAX) const;
-  template <typename BufferType>
-  void PrependTo(BufferType&,
-                 unsigned start = 0,
-                 unsigned length = UINT_MAX) const;
 
   // Convert the string into a number.
 
@@ -681,15 +677,6 @@ void String::AppendTo(BufferType& result,
   if (!impl_)
     return;
   impl_->AppendTo(result, position, length);
-}
-
-template <typename BufferType>
-void String::PrependTo(BufferType& result,
-                       unsigned position,
-                       unsigned length) const {
-  if (!impl_)
-    return;
-  impl_->PrependTo(result, position, length);
 }
 
 template <typename T>

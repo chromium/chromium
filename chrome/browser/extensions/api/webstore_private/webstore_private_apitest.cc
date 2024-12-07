@@ -135,7 +135,7 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
   ExtensionWebstorePrivateApiTest& operator=(
       const ExtensionWebstorePrivateApiTest&) = delete;
 
-  ~ExtensionWebstorePrivateApiTest() override {}
+  ~ExtensionWebstorePrivateApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedExtensionApiTest::SetUpCommandLine(command_line);

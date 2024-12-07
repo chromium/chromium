@@ -890,6 +890,14 @@ BASE_FEATURE(kOomIntervention,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Changes behavior of App Launch Prefetch to ignore chrome browser launches
+// after acquiry of the singleton.
+BASE_FEATURE(kOverridePrefetchOnSingleton,
+             "OverridePrefetchOnSingleton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables or disables the page content opt-in and setting.
 BASE_FEATURE(kPageContentOptIn,
              "PageContentOptIn",
@@ -1468,11 +1476,6 @@ BASE_FEATURE(kWebAppSyncGeneratedIconRetroactiveFix,
 BASE_FEATURE(kWebAppSyncGeneratedIconUpdateFix,
              "WebAppSyncGeneratedIconUpdateFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebAppUniversalInstall,
-             "WebAppUniversalInstall",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,

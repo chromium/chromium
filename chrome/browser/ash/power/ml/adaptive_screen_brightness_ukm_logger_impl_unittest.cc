@@ -22,7 +22,7 @@ namespace ml {
 class AdaptiveScreenBrightnessUkmLoggerImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  AdaptiveScreenBrightnessUkmLoggerImplTest() {}
+  AdaptiveScreenBrightnessUkmLoggerImplTest() = default;
 
   AdaptiveScreenBrightnessUkmLoggerImplTest(
       const AdaptiveScreenBrightnessUkmLoggerImplTest&) = delete;

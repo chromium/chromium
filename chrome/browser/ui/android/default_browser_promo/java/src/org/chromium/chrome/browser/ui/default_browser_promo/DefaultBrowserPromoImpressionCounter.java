@@ -30,8 +30,6 @@ public class DefaultBrowserPromoImpressionCounter {
 
     @VisibleForTesting static final String PROMO_SESSION_INTERVAL_PARAM = "promo_session_interval";
 
-    static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
-
     DefaultBrowserPromoImpressionCounter() {}
 
     int getPromoCount() {

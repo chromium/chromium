@@ -221,13 +221,13 @@ namespace network_ui {
 
 class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  public:
-  NetworkConfigMessageHandler() {}
+  NetworkConfigMessageHandler() = default;
 
   NetworkConfigMessageHandler(const NetworkConfigMessageHandler&) = delete;
   NetworkConfigMessageHandler& operator=(const NetworkConfigMessageHandler&) =
       delete;
 
-  ~NetworkConfigMessageHandler() override {}
+  ~NetworkConfigMessageHandler() override = default;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override {

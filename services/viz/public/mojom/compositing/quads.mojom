@@ -93,6 +93,7 @@ struct TextureQuadState {
   gfx.mojom.PointF uv_top_left;
   gfx.mojom.PointF uv_bottom_right;
   skia.mojom.SkColor4f background_color;
+  cc.mojom.DynamicRangeLimit dynamic_range_limit;
   bool nearest_neighbor;
   bool secure_output_only;
   bool is_stream_video;

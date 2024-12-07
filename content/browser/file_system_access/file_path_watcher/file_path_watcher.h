@@ -247,11 +247,13 @@ class CONTENT_EXPORT FilePathWatcher {
 
   // Same as above, but `callback` includes more information about the change,
   // if known. On platforms for which change information is not supported,
-  // `callback` is called with a dummy `ChangeInfo`.
-  bool WatchWithChangeInfo(const base::FilePath& path,
-                           const WatchOptions& options,
-                           const CallbackWithChangeInfo& callback,
-                           const UsageChangeCallback& usage_callback);
+  // `callback` is called with a dummy `ChangeInfo`. It returns the current
+  // usage on success and std::nullopt on failure.
+  std::optional<size_t> WatchWithChangeInfo(
+      const base::FilePath& path,
+      const WatchOptions& options,
+      const CallbackWithChangeInfo& callback,
+      const UsageChangeCallback& usage_callback);
 
 #if BUILDFLAG(IS_WIN)
   // Gets the Lock associated with the content::FilePathWatcher implementation's

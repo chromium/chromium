@@ -1164,6 +1164,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD"  desc="This is the body text of a confirmation message and means that the password was only saved locally to the user's device (not in their Google Account). It appears when the user is not signed in to Chrome and is after the 'Password saved to this device' string. If the user wants to save this data to their Google Account, they can click the 'Sign in to Chrome' button at the bottom of this message. The tone should be motivating.">
           To get your passwords and more on all your devices, sign in to Chrome. This password will be saved in your Google Account after you sign in.
         </message>
+        <message name="IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_ADDRESS" desc="This is the body text of a confirmation message and means that the address was only saved locally to the user's device (not in their Google Account). It appears when the user is not signed in to Chromium and is after the 'Address saved to this device' string. If the user wants to save this data to their Google Account, they can click the 'Sign in to Chrome' button at the bottom of this message. The tone should be motivating.">
+          To get your addresses and more on all your devices, sign in to Chrome. This address will be saved in your Google Account after you sign in.
+        </message>
       </if>
 
       <if expr="not chromeos_ash and not is_android">

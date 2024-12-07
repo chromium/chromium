@@ -43,7 +43,7 @@ OobeDisplayChooser::OobeDisplayChooser() {
       cros_display_config_.BindNewPipeAndPassReceiver());
 }
 
-OobeDisplayChooser::~OobeDisplayChooser() {}
+OobeDisplayChooser::~OobeDisplayChooser() = default;
 
 void OobeDisplayChooser::TryToPlaceUiOnTouchDisplay() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

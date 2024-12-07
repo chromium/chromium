@@ -783,7 +783,7 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
   if (!shared_bitmap) {
     auto shared_image_mapping = shared_image_interface->CreateSharedImage(
         {viz::SinglePlaneFormat::kBGRA_8888, pixel_image_size,
-         gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+         gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
          "PepperGraphics2DSharedBitmap"});
 
     shared_bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(

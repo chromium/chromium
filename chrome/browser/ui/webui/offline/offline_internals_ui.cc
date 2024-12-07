@@ -42,4 +42,4 @@ OfflineInternalsUI::OfflineInternalsUI(content::WebUI* web_ui)
       std::make_unique<offline_internals::OfflineInternalsUIMessageHandler>());
 }
 
-OfflineInternalsUI::~OfflineInternalsUI() {}
+OfflineInternalsUI::~OfflineInternalsUI() = default;

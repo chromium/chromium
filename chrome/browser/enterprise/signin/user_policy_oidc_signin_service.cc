@@ -59,8 +59,13 @@ bool IsOidcManagedProfile(Profile* profile) {
                     ->GetProfileAttributesStorage()
                     .GetProfileAttributesWithPath(profile->GetPath());
 
-  return entry && !entry->GetProfileManagementOidcTokens().auth_token.empty() &&
-         !entry->GetProfileManagementOidcTokens().id_token.empty();
+  if (!entry) {
+    return false;
+  }
+  auto oidc_token = entry->GetProfileManagementOidcTokens();
+
+  return (oidc_token.is_token_encrypted || !oidc_token.auth_token.empty()) &&
+         !oidc_token.id_token.empty();
 }
 
 bool IsDasherlessProfile(Profile* profile) {

@@ -738,8 +738,9 @@ def main(argv):
       # See: https://github.com/uber/NullAway/wiki/Configuration
       # Treat these packages as @NullMarked by default.
       # These apply to both .jars in classpath as well as code being compiled.
+      # Chrome classes rely on the presence of @NullMarked.
       errorprone_flags += [
-          '-XepOpt:NullAway:AnnotatedPackages=android,java,org.chromium'
+          '-XepOpt:NullAway:AnnotatedPackages=android,androidx'
       ]
       # Detect "assert foo != null" as a null check.
       errorprone_flags += ['-XepOpt:NullAway:AssertsEnabled=true']

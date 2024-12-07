@@ -473,50 +473,6 @@ ci.thin_tester(
     list_view = "chromium.gpu.experimental",
 )
 
-ci.thin_tester(
-    name = "Android FYI Release (Motorola Moto G Power 5G)",
-    description_html = "Runs GPU tests on Motorola Moto G Power 5G phones",
-    triggered_by = ["GPU FYI Android arm64 Builder"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "arm64_builder_rel_mb",
-        ),
-        run_tests_serially = True,
-    ),
-    targets = targets.bundle(
-        targets = [
-            "gpu_noop_sleep_telemetry_test",
-        ],
-        mixins = [
-            "has_native_resultdb_integration",
-            "motorola_moto_g_power_5g",
-            "limited_capacity_bot",
-        ],
-    ),
-    targets_settings = targets.settings(
-        browser_config = targets.browser_config.ANDROID_CHROMIUM,
-        os_type = targets.os_type.ANDROID,
-        use_android_merge_script_by_default = False,
-    ),
-    # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Android|T64|IMG",
-    #     short_name = "MGP",
-    # ),
-    list_view = "chromium.gpu.experimental",
-)
-
 # TODO(crbug.com/40282670): Add a trybot for this builder when there's capacity.
 ci.thin_tester(
     name = "Android FYI Release (Samsung A13)",
@@ -2285,44 +2241,14 @@ ci.thin_tester(
             "mac_pro_amd_gpu",
         ],
         per_test_modifications = {
-            "context_lost_metal_passthrough_graphite_tests": targets.per_test_modification(
-                mixins = targets.mixin(
-                    args = [
-                        # TODO(crbug.com/379737179): Either remove or try with
-                        # some (but less aggressive than default)
-                        # parallelization depending on whether this improves
-                        # stability or not.
-                        "--jobs=1",
-                    ],
-                ),
-                replacements = targets.replacements(
-                    args = {
-                        # Magic substitution happens after regular replacement, so remove it
-                        # now since we are manually applying the number of jobs above.
-                        targets.magic_args.GPU_PARALLEL_JOBS: None,
-                    },
-                ),
-            ),
             "services_unittests": targets.remove(
                 reason = "The face and barcode detection tests fail on the Mac Pros.",
             ),
             "webgl2_conformance_metal_passthrough_graphite_tests": targets.per_test_modification(
-                mixins = targets.mixin(
-                    args = [
-                        # TODO(crbug.com/379737179): Either remove or try with
-                        # some (but less aggressive than default)
-                        # parallelization depending on whether this improves
-                        # stability or not.
-                        "--jobs=1",
-                    ],
-                ),
                 replacements = targets.replacements(
                     args = {
                         # Causes problems on older hardware. crbug.com/1499911.
                         "--enable-metal-debug-layers": None,
-                        # Magic substitution happens after regular replacement, so remove it
-                        # now since we are manually applying the number of jobs above.
-                        targets.magic_args.GPU_PARALLEL_JOBS: None,
                     },
                 ),
             ),
@@ -2624,6 +2550,44 @@ ci.thin_tester(
             "limited_capacity_bot",
             "win10_nvidia_gtx_1660_experimental",
         ],
+        per_test_modifications = {
+            # TODO(crbug.com/380431384): Re-enable when fixed
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = [
+                    "crbug.com/380431384 flaky crashes in random tests",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,

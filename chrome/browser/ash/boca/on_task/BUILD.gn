@@ -109,5 +109,6 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/ui/wm",
   ]
 }

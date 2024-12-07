@@ -20,6 +20,7 @@
 
 #include "base/base_paths_win.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -195,7 +196,7 @@ AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
   return app_command_runners;
 }
 
-HRESULT AppCommandRunner::Run(const std::vector<std::wstring>& substitutions,
+HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
                               base::Process& process) const {
   if (executable_.empty() || process.IsValid()) {
     return E_UNEXPECTED;
@@ -276,7 +277,7 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
 // static
 std::optional<std::wstring> AppCommandRunner::FormatParameter(
     const std::wstring& parameter,
-    const std::vector<std::wstring>& substitutions) {
+    base::span<const std::wstring> substitutions) {
   return base::internal::DoReplaceStringPlaceholders(
       /*format_string=*/parameter, /*subst=*/substitutions,
       /*placeholder_prefix=*/L'%',
@@ -287,7 +288,7 @@ std::optional<std::wstring> AppCommandRunner::FormatParameter(
 // static
 std::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
     const std::vector<std::wstring>& parameters,
-    const std::vector<std::wstring>& substitutions) {
+    base::span<const std::wstring> substitutions) {
   std::wstring formatted_command_line;
   for (size_t i = 0; i < parameters.size(); ++i) {
     std::optional<std::wstring> formatted_parameter =
@@ -318,7 +319,7 @@ std::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
 HRESULT AppCommandRunner::ExecuteAppCommand(
     const base::FilePath& executable,
     const std::vector<std::wstring>& parameters,
-    const std::vector<std::wstring>& substitutions,
+    base::span<const std::wstring> substitutions,
     base::Process& process) {
   VLOG(2) << __func__ << ": " << executable << ": "
           << base::JoinString(parameters, L",") << " : "

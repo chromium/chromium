@@ -335,8 +335,7 @@ class WebCrypto {
                                       WebCryptoKeyType,
                                       bool extractable,
                                       WebCryptoKeyUsageMask,
-                                      const unsigned char* key_data,
-                                      unsigned key_data_size,
+                                      base::span<const unsigned char> key_data,
                                       WebCryptoKey&) {
     return false;
   }

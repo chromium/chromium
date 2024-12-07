@@ -90,9 +90,7 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
       "fetch the resource with CORS disabled.";
 
   using CorsError = network::mojom::CorsError;
-  const StringView hint(
-      status.failed_parameter.data(),
-      base::checked_cast<wtf_size_t>(status.failed_parameter.size()));
+  const StringView hint(base::as_byte_span(status.failed_parameter));
 
   builder.Append("Access blocked by CORS policy: ");
   if (IsPreflightError(status.cors_error)) {
@@ -283,9 +281,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
       "fetch the resource with CORS disabled.";
 
   using CorsError = network::mojom::CorsError;
-  const StringView hint(
-      status.failed_parameter.data(),
-      base::checked_cast<wtf_size_t>(status.failed_parameter.size()));
+  const StringView hint(base::as_byte_span(status.failed_parameter));
 
   const char* resource_kind_raw =
       Resource::ResourceTypeToString(resource_type, initiator_name);

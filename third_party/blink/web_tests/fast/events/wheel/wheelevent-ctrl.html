@@ -117,7 +117,6 @@ promise_test(async () => {
                          true /* precise_scrolling_deltas */,
                          false /* scroll_by_page */,
                          true /* cursor_visible */,
-                         false /* scroll_by_percentage */,
                          Modifiers.CONTROL);
   const event  =
       await Promise.all([ gesturePromise, wheelPromise, scrollPromise ])

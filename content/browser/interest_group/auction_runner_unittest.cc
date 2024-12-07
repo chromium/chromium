@@ -1728,16 +1728,16 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
   // Contains all parameters for a single bidding signals request to the cache.
   struct BidderRequestInfo {
-    std::string hostname;
+    url::Origin main_frame_origin;
     url::Origin script_origin;
     GURL trusted_bidding_signals_url;
 
     std::map<int, std::vector<BiddingPartitionInfo>> compression_groups;
 
     bool operator<(const BidderRequestInfo& other) const {
-      return std::tie(hostname, script_origin, trusted_bidding_signals_url,
-                      compression_groups) <
-             std::tie(other.hostname, other.script_origin,
+      return std::tie(main_frame_origin, script_origin,
+                      trusted_bidding_signals_url, compression_groups) <
+             std::tie(other.main_frame_origin, other.script_origin,
                       other.trusted_bidding_signals_url,
                       other.compression_groups);
     }
@@ -1761,16 +1761,16 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
   // Contains all parameters for a single scoring signals request to the cache.
   struct SellerRequestInfo {
-    std::string hostname;
+    url::Origin main_frame_origin;
     url::Origin script_origin;
     GURL trusted_scoring_signals_url;
 
     std::map<int, std::vector<ScoringPartitionInfo>> compression_groups;
 
     bool operator<(const SellerRequestInfo& other) const {
-      return std::tie(hostname, script_origin, trusted_scoring_signals_url,
-                      compression_groups) <
-             std::tie(other.hostname, other.script_origin,
+      return std::tie(main_frame_origin, script_origin,
+                      trusted_scoring_signals_url, compression_groups) <
+             std::tie(other.main_frame_origin, other.script_origin,
                       other.trusted_scoring_signals_url,
                       other.compression_groups);
     }
@@ -1842,14 +1842,15 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
-        std::string_view hostname,
+        const url::Origin& main_frame_origin,
+        base::UnguessableToken /*network_partition_nonce*/,
         const url::Origin& script_origin,
         const GURL& trusted_bidding_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<BiddingPartition>>& compression_groups,
         Callback callback) override {
       BidderRequestInfo request_info;
-      request_info.hostname = hostname;
+      request_info.main_frame_origin = main_frame_origin;
       request_info.script_origin = script_origin;
       request_info.trusted_bidding_signals_url = trusted_bidding_signals_url;
       for (const auto& compression_group : compression_groups) {
@@ -1875,14 +1876,15 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
-        std::string_view hostname,
+        const url::Origin& main_frame_origin,
+        base::UnguessableToken /*network_partition_nonce*/,
         const url::Origin& script_origin,
         const GURL& trusted_scoring_signals_url,
         const BiddingAndAuctionServerKey& bidding_and_auction_key,
         const std::map<int, std::vector<ScoringPartition>>& compression_groups,
         Callback callback) override {
       SellerRequestInfo request_info;
-      request_info.hostname = hostname;
+      request_info.main_frame_origin = main_frame_origin;
       request_info.script_origin = script_origin;
       request_info.trusted_scoring_signals_url = trusted_scoring_signals_url;
       for (const auto& compression_group : compression_groups) {
@@ -3917,7 +3919,7 @@ class AuctionRunnerTrustedSignalsTest
         compression_groups;
     compression_groups.try_emplace(0, std::move(partitions));
     return MockTrustedSignalsCacheImpl::BidderRequestInfo{
-        top_frame_origin_.host(), kBidder1, kBidder1TrustedSignalsUrl,
+        top_frame_origin_, kBidder1, kBidder1TrustedSignalsUrl,
         std::move(compression_groups)};
   }
 
@@ -3935,7 +3937,7 @@ class AuctionRunnerTrustedSignalsTest
         compression_groups;
     compression_groups.try_emplace(0, std::move(partitions));
     return MockTrustedSignalsCacheImpl::BidderRequestInfo{
-        top_frame_origin_.host(), kBidder2, kBidder2TrustedSignalsUrl,
+        top_frame_origin_, kBidder2, kBidder2TrustedSignalsUrl,
         std::move(compression_groups)};
   }
 
@@ -3983,7 +3985,7 @@ class AuctionRunnerTrustedSignalsTest
         compression_groups;
     compression_groups.emplace(0, std::move(partitions));
     return MockTrustedSignalsCacheImpl::SellerRequestInfo{
-        top_frame_origin_.host(), url::Origin::Create(kSellerUrl),
+        top_frame_origin_, url::Origin::Create(kSellerUrl),
         *trusted_scoring_signals_url_, std::move(compression_groups)};
   }
 
@@ -4002,7 +4004,7 @@ class AuctionRunnerTrustedSignalsTest
         compression_groups;
     compression_groups.emplace(0, std::move(partitions));
     return MockTrustedSignalsCacheImpl::SellerRequestInfo{
-        top_frame_origin_.host(), url::Origin::Create(kSellerUrl),
+        top_frame_origin_, url::Origin::Create(kSellerUrl),
         *trusted_scoring_signals_url_, std::move(compression_groups)};
   }
 
@@ -27342,6 +27344,109 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
 
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+}
+
+// In the case of a component auction with a cross origin trusted signals
+// request, when KVv2 trusted signals are required, make sure the top-level
+// worklet load starts once a process is assigned to the component auction,
+// rather than waiting for the component auction to finish loading its script.
+TEST_P(
+    AuctionRunnerTrustedSignalsTest,
+    CrossOriginTrustedSignalsComponentAuctionTopLevelSellerOnProcessAssigned) {
+  // This test is only really interesting in the KVv2 case.
+  if (!UsingKVv2Signals()) {
+    return;
+  }
+
+  // Manually set up trusted signals cache, and retain raw pointer. This test
+  // can't use the AddScoringSignalsCacheResult() helper used by most tests,
+  // since it only adds a result after starting the auction.
+  trusted_signals_cache_impl_ = std::make_unique<MockTrustedSignalsCacheImpl>();
+  raw_ptr<MockTrustedSignalsCacheImpl> trusted_signals_cache_impl =
+      trusted_signals_cache_impl_.get();
+
+  const GURL kComponentScoringSignalsUrl("https://cross-origin.test/");
+
+  interest_group_buyers_.reset();
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, /*buyers=*/{{kBidder1}}));
+  component_auctions_.front()
+      .non_shared_params.trusted_scoring_signals_coordinator =
+      coordinator_origin_;
+  component_auctions_.front().trusted_scoring_signals_url =
+      kComponentScoringSignalsUrl;
+
+  // Bidder response doesn't matter.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kComponentSeller1, /*bid=*/"1", "https://ad1.com/",
+                    /*num_ad_components=*/2, kBidder1, kBidder1Name));
+
+  StartStandardAuction(/*request_trusted_bidding_signals=*/false);
+
+  // Both the component auction seller script URL and top-level seller script
+  // URL should be requested. There should be no scoring signals cache request,
+  // however, until there's a response for the component seller URL granting
+  // permissions to access it. Note that KVv2 scoring signals requests are
+  // mocked out at the TrustedSignalsCache layer, which fails if it sees an
+  // unexpected request, so there's no need to check anything here.
+  url_loader_factory_.WaitForRequest(kComponentSeller1Url);
+  url_loader_factory_.WaitForRequest(kSellerUrl);
+
+  // Make sure there's no pending request to the TrustedSignalsCache.
+  task_environment()->RunUntilIdle();
+
+  // Inject mock request/response pair into the TrustedSignalsCache. It's just
+  // like the default bidder1 request, except for the origin and signals URL in
+  // the request.
+  std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo> partitions;
+  partitions.emplace_back(MockTrustedSignalsCacheImpl::ScoringPartitionInfo{
+      /*partition_id=*/0,
+      /*render_url=*/GURL("https://ad1.com/"),
+      /*component_render_urls=*/{GURL("https://ad1.com-component1.com")},
+      /*additional_params=*/base::Value::Dict()});
+  std::map<int, std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
+      compression_groups;
+  compression_groups.emplace(0, std::move(partitions));
+  trusted_signals_cache_impl->AddSellerSignalsResult(
+      MockTrustedSignalsCacheImpl::SellerRequestInfo(
+          top_frame_origin_, kComponentSeller1, kComponentScoringSignalsUrl,
+          std::move(compression_groups)),
+      MakeCompressionGroupMapForOneGroup(kBidder1ScoringSignalsKVv2Json));
+
+  // Component scoreAd() script that only accepts bids where the scoring signals
+  // of the `renderURL` is "accept".
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url, std::string(R"(
+function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                 browserSignals, directFromSellerSignals,
+                 crossOriginTrustedSignals) {
+  let signal = crossOriginTrustedSignals["https://cross-origin.test"].
+      renderURL[browserSignals.renderURL];
+  // 2 * bid is expected by the BidderWorklet ReportWin() script.
+  if (signal == "accept")
+    return {desirability: 2 * bid, allowComponentAuction: true};
+  throw "incorrect trustedScoringSignals";
+}
+
+function reportResult(auctionConfig, browserSignals) {
+  return browserSignals;
+}
+                                                    )"),
+      /*extra_headers=*/
+      std::string("Ad-Auction-Allow-Trusted-Scoring-Signals-From:"
+                  " \"https://cross-origin.test/\""));
+
+  // Minimal top-level scoring script.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      std::string(kMinimumDecisionScript) + kBasicReportResult);
+
+  // Wait for auction to complete.
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 }
 
 }  // namespace

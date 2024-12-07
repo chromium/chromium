@@ -144,6 +144,7 @@ void Label::SetText(const std::u16string& new_text) {
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   MaybeRefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  OnDisplayTextTruncation();
 }
 
 void Label::AdjustAccessibleName(std::u16string& new_name,
@@ -375,6 +376,7 @@ void Label::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   MaybeRefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  OnDisplayTextTruncation();
 }
 
 gfx::VerticalAlignment Label::GetVerticalAlignment() const {
@@ -461,6 +463,7 @@ void Label::SetObscured(bool obscured) {
   ax_name_used_to_compute_offsets_.clear();
   MaybeRefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  OnDisplayTextTruncation();
 }
 
 bool Label::IsDisplayTextClipped() const {
@@ -526,6 +529,7 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
   ax_name_used_to_compute_offsets_.clear();
   MaybeRefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  OnDisplayTextTruncation();
 }
 
 std::u16string Label::GetTooltipText() const {
@@ -930,6 +934,7 @@ void Label::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   MaybeRefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  OnDisplayTextTruncation();
 }
 
 void Label::OnPaint(gfx::Canvas* canvas) {
@@ -1259,6 +1264,11 @@ void Label::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
+void Label::AddDisplayTextTruncationCallback(
+    base::RepeatingCallback<void(Label*)> callback) {
+  on_display_text_truncation_changed_callback_ = callback;
+}
+
 bool Label::GetAcceleratorForCommandId(int command_id,
                                        ui::Accelerator* accelerator) const {
   switch (command_id) {
@@ -1488,6 +1498,12 @@ void Label::UpdateFullTextElideBehavior() {
   // elision to properly calculate the text size. Otherwise, it is not elided.
   full_text_->SetElideBehavior(max_width_single_line_ > 0 ? elide_behavior_
                                                           : gfx::NO_ELIDE);
+}
+
+void Label::OnDisplayTextTruncation() {
+  if (on_display_text_truncation_changed_callback_) {
+    on_display_text_truncation_changed_callback_.Run(this);
+  }
 }
 
 BEGIN_METADATA(Label)

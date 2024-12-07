@@ -297,7 +297,7 @@ void KioskChromeAppManager::AddAppForTest(
   }
 
   apps_.emplace_back(KioskAppData::CreateForTest(
-      this, app_id, account_id, update_url, required_platform_version));
+      *this, app_id, account_id, update_url, required_platform_version));
 }
 
 std::string KioskChromeAppManager::GetAutoLaunchAppRequiredPlatformVersion()
@@ -582,14 +582,14 @@ void KioskChromeAppManager::UpdateAppsFromPolicy() {
       GetCachedCrx(device_local_account.kiosk_app_id, &cached_crx, &version);
 
       apps_.push_back(std::make_unique<KioskAppData>(
-          this, device_local_account.kiosk_app_id, account_id,
+          *this, device_local_account.kiosk_app_id, account_id,
           GURL(device_local_account.kiosk_app_update_url), cached_crx));
       apps_.back()->Load();
     }
     KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);
   }
 
-  std::vector<KioskAppDataBase*> apps_to_remove;
+  std::vector<const KioskAppDataBase*> apps_to_remove;
   std::vector<std::string> app_ids_to_remove;
   for (auto& entry : old_apps) {
     apps_to_remove.emplace_back(entry.second.get());

@@ -41,10 +41,13 @@ void TestShareKitService::PrimaryAccountChanged() {
   // No-op for testing.
 }
 
-void TestShareKitService::ShareGroup(ShareKitShareGroupConfiguration* config) {
+void TestShareKitService::CancelSession(NSString* session_id) {}
+
+NSString* TestShareKitService::ShareTabGroup(
+    ShareKitShareGroupConfiguration* config) {
   const TabGroup* tab_group = config.tabGroup;
   if (!tab_group) {
-    return;
+    return nil;
   }
   tab_groups::LocalTabGroupID tab_group_id = tab_group->tab_group_id();
 
@@ -64,9 +67,11 @@ void TestShareKitService::ShareGroup(ShareKitShareGroupConfiguration* config) {
   [config.baseViewController presentViewController:navController
                                           animated:NO
                                         completion:nil];
+  return @"sharedFlow";
 }
 
-void TestShareKitService::ManageGroup(ShareKitManageConfiguration* config) {
+NSString* TestShareKitService::ManageTabGroup(
+    ShareKitManageConfiguration* config) {
   FakeShareKitFlowViewController* viewController =
       [[FakeShareKitFlowViewController alloc] init];
   viewController.view.accessibilityIdentifier = kFakeManageFlowIdentifier;
@@ -76,9 +81,10 @@ void TestShareKitService::ManageGroup(ShareKitManageConfiguration* config) {
   [config.baseViewController presentViewController:navController
                                           animated:NO
                                         completion:nil];
+  return @"manageFlow";
 }
 
-void TestShareKitService::JoinGroup(ShareKitJoinConfiguration* config) {
+NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
   FakeShareKitFlowViewController* viewController =
       [[FakeShareKitFlowViewController alloc] init];
   viewController.view.accessibilityIdentifier = kFakeJoinFlowIdentifier;
@@ -89,6 +95,7 @@ void TestShareKitService::JoinGroup(ShareKitJoinConfiguration* config) {
   [config.baseViewController presentViewController:navController
                                           animated:NO
                                         completion:nil];
+  return @"joinFlow";
 }
 
 UIViewController* TestShareKitService::FacePile(

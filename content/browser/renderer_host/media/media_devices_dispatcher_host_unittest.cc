@@ -188,7 +188,7 @@ class MediaDevicesDispatcherHostTest
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         origin_(url::Origin::Create(GURL(GetParam()))) {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kPreferredAudioOutputDevices);
+        blink::features::kPreferredAudioOutputDevices);
 
     // Make sure we use fake devices to avoid long delays.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(

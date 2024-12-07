@@ -18,8 +18,9 @@ namespace whats_new {
 class WhatsNewRegistry;
 #endif
 }  // namespace whats_new
-
+namespace glic {
 class GlicBackgroundModeManager;
+}
 
 // This class owns the core controllers for features that are globally
 // scoped on desktop. It can be subclassed by tests to perform
@@ -54,7 +55,7 @@ class GlobalFeatures {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  GlicBackgroundModeManager* glic_background_mode_manager() {
+  glic::GlicBackgroundModeManager* glic_background_mode_manager() {
     return glic_background_mode_manager_.get();
   }
 #endif
@@ -83,7 +84,8 @@ class GlobalFeatures {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  std::unique_ptr<GlicBackgroundModeManager> glic_background_mode_manager_;
+  std::unique_ptr<glic::GlicBackgroundModeManager>
+      glic_background_mode_manager_;
 #endif
 };
 

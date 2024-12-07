@@ -8,13 +8,25 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 
 namespace {
+
+// Spacing applied at the top of the alert screen if there is no navigation bar.
 constexpr CGFloat kCustomSpacingAtTopIfNoNavigationBar = 32;
+
+// Spacing applied after the image when no animation is shown.
 constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
+
+// Default spacing applied between elements in the alert screen layout.
 constexpr CGFloat kCustomSpacing = 8;
+
+// Offset to raise the alertScreen's top anchor for devices with a regular
+// size class.
+constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
+
 }  // namespace
 
 @interface AnimatedPromoViewController ()
@@ -70,13 +82,9 @@ constexpr CGFloat kCustomSpacing = 8;
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitUserInterfaceStyle.class, UITraitVerticalSizeClass.class ]);
-    __weak __typeof(self) weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      [weakSelf updateUIOnTraitChange:previousCollection];
-    };
-    [self registerForTraitChanges:traits withHandler:handler];
+        @[ UITraitVerticalSizeClass.class, UITraitUserInterfaceStyle.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateUIOnTraitChange)];
   }
 }
 
@@ -89,7 +97,7 @@ constexpr CGFloat kCustomSpacing = 8;
     return;
   }
 
-  [self updateUIOnTraitChange:previousTraitCollection];
+  [self updateUIOnTraitChange];
 }
 #endif
 
@@ -153,13 +161,21 @@ constexpr CGFloat kCustomSpacing = 8;
 // Called when the screen rotates, or in the initial layout.
 - (void)updateAlertScreenTopAnchorConstraint {
   _alertScreenTopAnchorConstraint.active = NO;
+
+  CGFloat topOffset = 0;
+  if (IsRegularXRegularSizeClass(_alertScreen)) {
+    topOffset = kCustomTopOffsetForRegularSizeClass;
+  }
+
   if ([self shouldShowAnimation]) {
     _alertScreenTopAnchorConstraint = [_alertScreen.view.topAnchor
-        constraintEqualToAnchor:self.view.centerYAnchor];
+        constraintEqualToAnchor:self.view.centerYAnchor
+                       constant:topOffset];
   } else {
     _alertScreenTopAnchorConstraint = [_alertScreen.view.topAnchor
         constraintEqualToAnchor:self.view.topAnchor];
   }
+
   _alertScreenTopAnchorConstraint.active = YES;
 }
 
@@ -220,7 +236,7 @@ constexpr CGFloat kCustomSpacing = 8;
 
 // Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
 // the animations accordingly.
-- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+- (void)updateUIOnTraitChange {
   BOOL darkModeEnabled =
       (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
   BOOL hidden = ![self shouldShowAnimation];

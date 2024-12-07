@@ -194,6 +194,7 @@ bool Session::ShouldDeferRequest(URLRequest* request) const {
   options.set_do_not_update_access_time();
 
   CookieAccessParams params{CookieAccessSemantics::NONLEGACY,
+                            CookieScopeSemantics::UNKNOWN,
                             // DBSC only affects secure URLs
                             false};
 

@@ -77,7 +77,7 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
 #endif
 }
 
-PrivacySandboxInternalsUI::~PrivacySandboxInternalsUI() {}
+PrivacySandboxInternalsUI::~PrivacySandboxInternalsUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PrivacySandboxInternalsUI)
 

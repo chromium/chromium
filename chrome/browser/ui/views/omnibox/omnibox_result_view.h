@@ -53,7 +53,7 @@ class OmniboxResultView : public views::View {
 
   // Static method to share logic about how to set backgrounds of popup cells.
   static std::unique_ptr<views::Background> GetPopupCellBackground(
-      views::View* view,
+      const views::View* view,
       OmniboxPartState part_state);
 
   // Updates the match used to paint the contents of this result view. We copy
@@ -74,6 +74,7 @@ class OmniboxResultView : public views::View {
 
   // Returns the focused button or nullptr if none exists for this suggestion.
   views::Button* GetActiveAuxiliaryButtonForAccessibility();
+  const views::Button* GetActiveAuxiliaryButtonForAccessibility() const;
 
   OmniboxPartState GetThemeState() const;
 

@@ -19,7 +19,7 @@ rather than the code.
   </outputs>
   <release seq="1">
     <messages fallback_to_english="true">
-      <!-- Ideally, these would be empty strings, but Grit skips empty messages.
+      <!-- Ideally, these would be empty strings, but GRIT skips empty messages.
       So instead, use a dash as a placeholder, which we manually interpret as
       an empty string in the cpp code. -->
       <message name="IDS_NEW_METRICS_SERVER_URL" translateable="false">

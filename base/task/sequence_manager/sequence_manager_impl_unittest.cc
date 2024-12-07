@@ -229,7 +229,6 @@ class FixtureWithMockTaskRunner final : public Fixture {
             mock_tick_clock(),
             SequenceManager::Settings::Builder()
                 .SetMessagePumpType(MessagePumpType::DEFAULT)
-                .SetRandomisedSamplingEnabled(false)
                 .SetTickClock(mock_tick_clock())
                 .SetPrioritySettings(SequenceManager::PrioritySettings(
                     TestQueuePriority::kQueuePriorityCount,
@@ -318,7 +317,6 @@ class FixtureWithMockMessagePump : public Fixture {
     pump_ = pump.get();
     auto settings = SequenceManager::Settings::Builder()
                         .SetMessagePumpType(MessagePumpType::DEFAULT)
-                        .SetRandomisedSamplingEnabled(false)
                         .SetTickClock(mock_tick_clock())
                         .SetPrioritySettings(SequenceManager::PrioritySettings(
                             TestQueuePriority::kQueuePriorityCount,

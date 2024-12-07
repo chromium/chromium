@@ -369,9 +369,10 @@ void HTMLFrameOwnerElement::SetSandboxFlags(
   }
 }
 
-bool HTMLFrameOwnerElement::IsKeyboardFocusable(
+bool HTMLFrameOwnerElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  return content_frame_ && HTMLElement::IsKeyboardFocusable(update_behavior);
+  return content_frame_ &&
+         HTMLElement::IsKeyboardFocusableSlow(update_behavior);
 }
 
 void HTMLFrameOwnerElement::DisposePluginSoon(WebPluginContainerImpl* plugin) {

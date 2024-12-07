@@ -62,7 +62,7 @@ class CONTENT_EXPORT SharedStorageLockManager
   void SharedStorageBatchUpdate(
       std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
           methods_with_options,
-      std::optional<std::string> with_lock,
+      const std::optional<std::string>& with_lock,
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,

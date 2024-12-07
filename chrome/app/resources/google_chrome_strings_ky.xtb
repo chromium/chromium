@@ -132,7 +132,6 @@
 <translation id="2586406160782125153">Ушуну менен бул түзмөктөн серептөө дайын-даректериңиз өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2597976513418770460">Chrome серепчисиндеги нерселерге <ph name="ACCOUNT_EMAIL" /> аккаунту менен өтүңүз</translation>
 <translation id="259935314519650377">Жүктөлүп алынган орноткучтун кеши түзүлбөй калды. Ката: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome жаңыртууларды текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="2632707915638608719">Chrome'го арналган кеңейтүүлөр менен көбүрөөк жумуш бүтүрүңүз</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome серепчинин параметрлеринин коопсуздугун такай текшерип турат. Бир нерсеге көңүл бурушуңуз керек болсо, кабарлап коёбуз.</translation>
@@ -166,7 +165,6 @@
 <translation id="2926676257163822632">Начар сырсөздөрдү билип алуу оңой. Chrome'го <ph name="BEGIN_LINK" />сиз үчүн татаал сырсөздөрдү түзүп, эстеп калууга<ph name="END_LINK" /> уруксат бериңиз.</translation>
 <translation id="2926952073016206995">Chrome'го бул сайтта камераны колдонууга уруксат бериңиз</translation>
 <translation id="2928420929544864228">Орнотулду.</translation>
-<translation id="2929907241665500097">Chrome жаңырган жок. Бир жерден ката кетти. <ph name="BEGIN_LINK" />Chrome'догу жаңыртуу маселелерин оңдоңуз.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Орнотуу катасы: Орнотуу процесси башталган жок.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Тармакка кирүү – Chrome</translation>
 <translation id="2970681950995291301">Google аккаунтуңузду Chrome'дон өчүрүү үчүн Параметрлер барагынан Chrome'дон чыгыңыз</translation>
@@ -176,7 +174,6 @@
 <translation id="3037838751736561277">Google Chrome фондук режимде.</translation>
 <translation id="3038232873781883849">Орнотулушу күтүлүүдө...</translation>
 <translation id="3045032126857188731">Которулган тил: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Коопсуз серептөө өчүк. Chrome аны күйгүзүүнү сунуштайт.</translation>
 <translation id="306179102415443347">Сырсөздөрдү башкаргычка тез өтүү үчүн ыкчам баскычты колдонуңуз. Ыкчам баскычты компьютердин башкы экранына же колдонмолорду ишке киргизгичке жылдыра аласыз.</translation>
 <translation id="3065168410429928842">Chrome өтмөгү</translation>
 <translation id="3080151273017101988">Google Chrome жабылганда фондук колдонмолор иштей берсин</translation>
@@ -243,7 +240,6 @@
 <translation id="383928141529488001">Google Chrome 
 Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайдаланууга уруксат алышы керек. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Бардык Google Chrome терезелерин жаап, дагы бир жолу аракет кылыңыз.</translation>
-<translation id="3865754807470779944"><ph name="PRODUCT_VERSION" /> Chrome версиясы орнотулду</translation>
 <translation id="3873044882194371212">Шилтемени Chrome'дун жашы&amp;руун терезесинде ачуу</translation>
 <translation id="3885770153807205175">Тил тандоо</translation>
 <translation id="3889417619312448367">Google Chrome'ду орнотуудан чыгаруу</translation>
@@ -283,12 +279,10 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Жекелештирүүнү жана башка функцияларды пайдалануу үчүн Chrome'ду Колдонмолор жана Интернеттеги аракеттер таржымалына жана байланышкан Google кызматтарына кошуңуз</translation>
 <translation id="4334294535648607276">Жүктөп алуу аяктады.</translation>
-<translation id="4335235004908507846">Chrome сырсөздөрүңүздү коопсуз сактоого, кооптуу кеңейтүүлөрдөн жана башкалардан коргоого жардам берет</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chrome'го кошулду</translation>
 <translation id="4348548358339558429">Жекелештирүүнү пайдалануу үчүн Chrome'ду Колдонмолор жана Интернеттеги аракеттер таржымалына кошуңуз</translation>
 <translation id="436060642166082913">Бул файл жеке жана социалдык тармак аккаунттарыңызга зыян келтириши мүмкүн болгондуктан, Chrome бул жүктөп алууну бөгөттөдү</translation>
 <translation id="4367027658822022112">Оңой колдонуу үчүн Google Lens функциясын кадап койсоңуз болот; капталдагы тилкенин жогору жагындагы Кадап коюу баскычын басыңыз</translation>
-<translation id="4384570495110188418">Chrome сырсөздөрүңүздү текшере албайт, анткени аккаунтуңузга кирген жоксуз</translation>
 <translation id="4389991535395284064">Жашыруун режимде серептеп жатканда, Chrome сиз кооптуу туташуу аркылуу сайтты жүктөөдөн мурун эскертет</translation>
 <translation id="4427306783828095590">Өркүндөтүлгөн коргоо параметри фишинг жана кесепеттүү программалардан жакшыраак коргойт</translation>
 <translation id="4434353761996769206">Орнотуу катасы: <ph name="INSTALLER_ERROR" /></translation>

@@ -49,6 +49,9 @@ network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomDeleteMethod(
 network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomClearMethod(
     std::optional<std::string> with_lock = std::nullopt);
 
+std::vector<MethodWithOptionsPtr> CloneSharedStorageMethods(
+    const std::vector<MethodWithOptionsPtr>& methods_with_options);
+
 SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
     StoragePartition* storage_partition);
 
@@ -73,18 +76,23 @@ size_t GetKeepAliveSharedStorageWorkletHostsCount(
 RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
                                    const FencedFrameNavigationTarget& target);
 
-// In order to use gmock matchers, it's necessary to wrap `method_with_options`
-// into a copyable struct. We also bundle them with the `request_origin` and
+// Bundles the request (`request_origin` and `with_lock`) with the result
 // `success`.
 struct SharedStorageWriteOperationAndResult {
-  SharedStorageWriteOperationAndResult(const url::Origin& request_origin,
-                                       MethodWithOptionsPtr method_with_options,
-                                       bool success);
+  SharedStorageWriteOperationAndResult(
+      const url::Origin& request_origin,
+      std::vector<MethodWithOptionsPtr> methods_with_options,
+      bool success);
 
   SharedStorageWriteOperationAndResult(
-      const SharedStorageWriteOperationAndResult& other);
+      const SharedStorageWriteOperationAndResult& other) = delete;
   SharedStorageWriteOperationAndResult& operator=(
-      const SharedStorageWriteOperationAndResult& other);
+      const SharedStorageWriteOperationAndResult& other) = delete;
+
+  SharedStorageWriteOperationAndResult(
+      SharedStorageWriteOperationAndResult&& other);
+  SharedStorageWriteOperationAndResult& operator=(
+      SharedStorageWriteOperationAndResult&& other);
 
   ~SharedStorageWriteOperationAndResult();
 
@@ -93,12 +101,16 @@ struct SharedStorageWriteOperationAndResult {
       default;
 
   url::Origin request_origin;
-  MethodWithOptionsPtr method_with_options;
+  std::vector<MethodWithOptionsPtr> methods_with_options;
   bool success;
 };
 
 std::ostream& operator<<(std::ostream& os,
                          const SharedStorageWriteOperationAndResult& op);
+
+SharedStorageWriteOperationAndResult HeaderOperationSuccess(
+    const url::Origin& request_origin,
+    std::vector<MethodWithOptionsPtr> methods_with_options);
 
 PrivateAggregationHost::PipeResult
 GetPrivateAggregationHostPipeReportSuccessValue();

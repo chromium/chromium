@@ -935,7 +935,6 @@ TEST(VideoFrameMetadata, MergeMetadata) {
 TEST(VideoFrameMetadata, ClearTextureMetadata) {
   VideoFrameMetadata reference_md = GetFullVideoFrameMetadata();
   reference_md.is_webgpu_compatible = true;
-  reference_md.texture_origin_is_top_left = false;
   reference_md.read_lock_fences_enabled = true;
 
   VideoFrameMetadata copy_md;
@@ -943,11 +942,9 @@ TEST(VideoFrameMetadata, ClearTextureMetadata) {
 
   copy_md.ClearTextureFrameMetadata();
   EXPECT_FALSE(copy_md.is_webgpu_compatible);
-  EXPECT_TRUE(copy_md.texture_origin_is_top_left);
   EXPECT_FALSE(copy_md.read_lock_fences_enabled);
 
   reference_md.is_webgpu_compatible = false;
-  reference_md.texture_origin_is_top_left = true;
   reference_md.read_lock_fences_enabled = false;
   VerifyVideoFrameMetadataEquality(copy_md, reference_md);
 }
@@ -964,7 +961,6 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   partial_metadata.reference_time = kTempTicks;
   partial_metadata.processing_time = kTempDelta;
   partial_metadata.allow_overlay = false;
-  partial_metadata.texture_origin_is_top_left = false;
 
   // Merging partial metadata into full metadata partially override it.
   full_metadata.MergeMetadataFrom(partial_metadata);
@@ -973,7 +969,6 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   EXPECT_EQ(partial_metadata.reference_time, kTempTicks);
   EXPECT_EQ(partial_metadata.processing_time, kTempDelta);
   EXPECT_EQ(partial_metadata.allow_overlay, false);
-  EXPECT_EQ(partial_metadata.texture_origin_is_top_left, false);
 }
 
 TEST(VideoFrame, AccessPlaneDataSpans) {

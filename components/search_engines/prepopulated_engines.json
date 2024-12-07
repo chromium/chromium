@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// To propose any changes (additions, updates, or removals),
+// please send an email to chrome-search-engine-update-requests@google.com
+// with the details of your request.
+//
+// Chrome engineers will review, verify, and apply the proposed changes
+// to ensure obligations and compliance with regulatory requirements.
+//
+// Do not modify this file directly without following the above process.
+
 // This file is used during build to generate prepopulated_engines.h/cc.
 // For more details see tools/json_to_struct/json_to_struct.py.
 

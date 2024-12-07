@@ -35,7 +35,7 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
     virtual void PointingStickExists(bool exists) = 0;
 
    protected:
-    Observer() {}
+    Observer() = default;
     virtual ~Observer();
   };
   void AddObserver(Observer* observer);

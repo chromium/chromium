@@ -7,15 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/authentication/enterprise/managed_profile_creation/managed_profile_creation_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // Delegate of Managed profile creation view controller.
 @protocol ManagedProfileCreationViewControllerDelegate <
     PromoStyleViewControllerDelegate>
+- (void)showMergeBrowsingDataScreen;
 @end
 
 // View controller of managed profile creation screen.
-@interface ManagedProfileCreationViewController : PromoStyleViewController
+@interface ManagedProfileCreationViewController
+    : PromoStyleViewController <ManagedProfileCreationConsumer>
 
 @property(nonatomic, weak) id<ManagedProfileCreationViewControllerDelegate>
     managedProfileCreationViewControllerPresentationDelegate;

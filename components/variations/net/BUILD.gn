@@ -15,7 +15,6 @@ static_library("net") {
   ]
 
   public_deps = [
-    ":omnibox_http_headers",
     "//components/variations",
     "//net",
     "//services/network/public/cpp:cpp",
@@ -41,33 +40,5 @@ static_library("net") {
       "//components/variations:variations_mojom",
       "//third_party/blink/public/common",
     ]
-  }
-}
-
-component("omnibox_http_headers") {
-  output_name = "omnibox_http_headers"
-
-  defines = [ "IS_OMNIBOX_HTTP_HEADERS_IMPL" ]
-
-  sources = [
-    "omnibox_http_headers.cc",
-    "omnibox_http_headers.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/google/core/common",
-    "//net",
-    "//services/network/public/cpp:cpp",
-    "//services/network/public/cpp:cpp_base",
-    "//url",
-  ]
-
-  if (use_blink) {
-    sources += [
-      "omnibox_url_loader_throttle.cc",
-      "omnibox_url_loader_throttle.h",
-    ]
-    deps += [ "//third_party/blink/public/common" ]
   }
 }

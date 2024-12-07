@@ -644,6 +644,9 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   info->disable_reasons.unsupported_manifest_version =
       (disable_reasons &
        disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION) != 0;
+  info->disable_reasons.unsupported_developer_extension =
+      (disable_reasons &
+       disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION) != 0;
 
   // Error collection.
   bool error_console_enabled =

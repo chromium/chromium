@@ -60,6 +60,9 @@ Reference = Tuple[str, Relation]
 FuzzyRange = Tuple[int, int]
 FuzzyParameters = Tuple[Optional[FuzzyRange], Optional[FuzzyRange]]
 
+TestType = Literal['crashtest', 'manual', 'print-reftest', 'reftest',
+                   'testharness', 'wdspec']
+
 
 class _Test(NamedTuple):
     """A container for per-test information."""

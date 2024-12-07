@@ -314,8 +314,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
           font_description, character, fallback_priority_with_emoji_text);
 
   // Fall through to running the API-based fallback.
-  if (RuntimeEnabledFeatures::LegacyWindowsDWriteFontFallbackEnabled() ||
-      !hardcoded_list_fallback_font) {
+  if (!hardcoded_list_fallback_font) {
     return GetDWriteFallbackFamily(font_description, character,
                                    fallback_priority_with_emoji_text);
   }

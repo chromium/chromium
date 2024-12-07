@@ -261,6 +261,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   RenderProcessHost* GetProcess() override;
   int GetRoutingID() final;
   RenderWidgetHostViewBase* GetView() override;
+  const RenderWidgetHostViewBase* GetView() const override;
   bool IsCurrentlyUnresponsive() override;
   bool SynchronizeVisualProperties() override;
   void AddKeyPressEventCallback(const KeyPressEventCallback& callback) override;

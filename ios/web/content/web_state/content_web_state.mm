@@ -30,7 +30,6 @@
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
-#import "ios/web/text_fragments/text_fragments_manager_impl.h"
 #import "ios/web/web_view/content_type_util.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
@@ -140,7 +139,6 @@ ContentWebState::ContentWebState(const CreateParams& params,
 
   // These should be moved when the are removed from CRWWebController.
   web::JavaScriptFindInPageManagerImpl::CreateForWebState(this);
-  web::TextFragmentsManagerImpl::CreateForWebState(this);
 
   session_storage_ = session_storage;
   if (session_storage) {

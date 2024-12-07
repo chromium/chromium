@@ -169,7 +169,7 @@ class DeviceDisplayResolutionTestBase
   }
 
  protected:
-  DeviceDisplayResolutionTestBase() {}
+  DeviceDisplayResolutionTestBase() = default;
 
   void SetPolicy(PolicyValue policy, bool recommended) {
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
@@ -181,7 +181,7 @@ class DeviceDisplayResolutionTestBase
 
 class DeviceDisplayResolutionTest : public DeviceDisplayResolutionTestBase {
  public:
-  DeviceDisplayResolutionTest() {}
+  DeviceDisplayResolutionTest() = default;
 
   DeviceDisplayResolutionTest(const DeviceDisplayResolutionTest&) = delete;
   DeviceDisplayResolutionTest& operator=(const DeviceDisplayResolutionTest&) =
@@ -387,7 +387,7 @@ INSTANTIATE_TEST_SUITE_P(PolicyDeviceDisplayResolution,
 class DeviceDisplayResolutionRecommendedTest
     : public DeviceDisplayResolutionTestBase {
  public:
-  DeviceDisplayResolutionRecommendedTest() {}
+  DeviceDisplayResolutionRecommendedTest() = default;
 
   DeviceDisplayResolutionRecommendedTest(
       const DeviceDisplayResolutionRecommendedTest&) = delete;

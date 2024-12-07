@@ -143,12 +143,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                AutofillTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,
-              AuthenticateThenFillCreditCardForm,
-              (const FormData& form,
-               const FieldGlobalId& field,
-               const CreditCard& credit_card,
-               AutofillTriggerSource trigger_source));
-  MOCK_METHOD(void,
               DidShowSuggestions,
               (DenseSet<SuggestionType> shown_suggestion_types,
                const FormData& form,
@@ -477,7 +471,7 @@ class TouchToFillDelegateAndroidImplCreditCardUnitTest
   }
 
   static std::vector<CreditCard> GetCardsToSuggest(
-      std::vector<CreditCard*> credit_cards) {
+      std::vector<const CreditCard*> credit_cards) {
     std::vector<CreditCard> cards_to_suggest;
     cards_to_suggest.reserve(credit_cards.size());
     for (const CreditCard* card : credit_cards) {
@@ -720,7 +714,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   autofill_client_.GetPersonalDataManager()
       .payments_data_manager()
       .AddCreditCard(expired_card);
-  std::vector<CreditCard*> credit_cards =
+  std::vector<const CreditCard*> credit_cards =
       autofill_client_.GetPersonalDataManager()
           .payments_data_manager()
           .GetCreditCardsToSuggest();
@@ -876,7 +870,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   autofill_client_.GetPersonalDataManager()
       .payments_data_manager()
       .AddCreditCard(credit_card2);
-  std::vector<CreditCard*> credit_cards =
+  std::vector<const CreditCard*> credit_cards =
       autofill_client_.GetPersonalDataManager()
           .payments_data_manager()
           .GetCreditCardsToSuggest();
@@ -955,7 +949,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*browser_autofill_manager_, AuthenticateThenFillCreditCardForm);
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
   touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
                                                         false);
 }
@@ -973,7 +967,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(*browser_autofill_manager_, AuthenticateThenFillCreditCardForm);
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
   touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
                                                         true);
 }

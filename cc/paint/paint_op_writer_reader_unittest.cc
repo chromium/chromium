@@ -69,12 +69,12 @@ TEST(PaintOpWriterReaderTest, Vector) {
                        /*enable_security_constraints*/ true);
 
   std::vector<float> float_vec;
-  reader.Read(&float_vec);
+  reader.Read(float_vec);
   EXPECT_EQ(float_vec, std::vector<float>{});
-  reader.Read(&float_vec);
+  reader.Read(float_vec);
   EXPECT_EQ(float_vec, std::vector<float>({1, 2}));
   std::vector<uint32_t> uint_vec;
-  reader.Read(&uint_vec);
+  reader.Read(uint_vec);
   EXPECT_EQ(uint_vec, std::vector<uint32_t>({1, 2, 3}));
 }
 

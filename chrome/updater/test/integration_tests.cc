@@ -140,9 +140,13 @@ void ExpectPingRequest(
       {request::GetUpdaterUserAgentMatcher(version),
        request::GetContentMatcher({base::StringPrintf(
            R"(.*"appid":"%s".*"errorcode":%d,"eventresult":%d,"eventtype":%d,)"
-           R"("extracode1":%d,.*)",
+           R"(%s.*)",
            app_id.c_str(), ping_params.error_code, ping_params.result,
-           ping_params.event_type, ping_params.extra_code1)})},
+           ping_params.event_type,
+           ping_params.extra_code1 ? base::StringPrintf(R"("extracode1":%d,)",
+                                                        ping_params.extra_code1)
+                                         .c_str()
+                                   : "")})},
       base::StringPrintf(")]}'\n"
                          R"({"response":{)"
                          R"(  "protocol":"3.1",)"
@@ -208,10 +212,6 @@ struct TestApp {
 }  // namespace
 
 class IntegrationTest : public ::testing::Test {
- public:
-  IntegrationTest() : test_commands_(CreateIntegrationTestCommands()) {}
-  ~IntegrationTest() override = default;
-
  protected:
   void SetUp() override {
     logging::SetLogItems(/*enable_process_id=*/true,
@@ -770,7 +770,8 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->UninstallEnterpriseCompanionApp();
   }
 
-  scoped_refptr<IntegrationTestCommands> test_commands_;
+  scoped_refptr<IntegrationTestCommands> test_commands_ =
+      CreateIntegrationTestCommands();
 
 #if BUILDFLAG(IS_WIN)
   static constexpr char kGlobalPolicyKey[] = "";
@@ -2000,10 +2001,6 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
 }
 
 class IntegrationTestDeviceManagementBase : public IntegrationTest {
- public:
-  IntegrationTestDeviceManagementBase() = default;
-  ~IntegrationTestDeviceManagementBase() override = default;
-
  protected:
   void SetUp() override {
     IntegrationTest::SetUp();
@@ -3001,9 +2998,6 @@ TEST_F(IntegrationTestDeviceManagementBase, PublicKeyRotation) {
 // Tests that interact with state in both system and user updater configuration
 // are run as part of the system-scope tests.
 class IntegrationTestUserInSystem : public IntegrationTest {
- public:
-  ~IntegrationTestUserInSystem() override = default;
-
  protected:
   void SetUp() override {
     if (SkipTest()) {
@@ -4396,13 +4390,21 @@ TEST_F(IntegrationTest, OfflineInstallOemMode) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, ExpectErrorUIWhenGetSetupLockFails) {
+TEST_F(IntegrationTest, ExpectPingAndErrorUIWhenGetSetupLockFails) {
   ScopedServer test_update_server(test_commands_);
   const std::string kAppId("googletest");
   const base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_update_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), v1));
+
+  const update_client::UpdateClient::PingParams ping_params{
+      .event_type = update_client::protocol_request::kEventInstall,
+      .result = 1,
+      .error_code = kErrorFailedToLockSetupMutex,
+  };
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectPingRequest(&test_update_server, kUpdaterAppId, ping_params));
 
   // The test runs the installer twice. One installer succeeds, and the other
   // installer times out on the setup lock.
@@ -4435,10 +4437,6 @@ TEST_F(IntegrationTest, ExpectErrorUIWhenGetSetupLockFails) {
 class IntegrationLegacyUpdate3WebNewInstallTest
     : public ::testing::WithParamInterface<TestUpdaterVersion>,
       public IntegrationTest {
- public:
-  IntegrationLegacyUpdate3WebNewInstallTest() = default;
-  ~IntegrationLegacyUpdate3WebNewInstallTest() override = default;
-
  protected:
   void SetUp() override {
     if (!::IsUserAnAdmin() && IsSystemInstall(GetUpdaterScopeForTesting())) {
@@ -4521,10 +4519,6 @@ TEST_P(IntegrationLegacyUpdate3WebNewInstallTest, Install) {
 class IntegrationLegacyUpdate3WebTest
     : public ::testing::WithParamInterface<TestUpdaterVersion>,
       public IntegrationTest {
- public:
-  IntegrationLegacyUpdate3WebTest() = default;
-  ~IntegrationLegacyUpdate3WebTest() override = default;
-
  protected:
   void SetUp() override {
     IntegrationTest::SetUp();
@@ -4631,9 +4625,6 @@ TEST_P(IntegrationLegacyUpdate3WebTest, Install) {
 }
 class IntegrationTestMsi : public IntegrationTest {
  public:
-  IntegrationTestMsi() = default;
-  ~IntegrationTestMsi() override = default;
-
   static constexpr char kMsiAppId[] = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}";
 
  protected:
@@ -4843,11 +4834,24 @@ INSTANTIATE_TEST_SUITE_P(
             },
 
             // Silent install with a launch command, InstallerResult::kSuccess,
-            // will
-            // not run `more.com` since silent install.
+            // will not run `more.com` since silent install.
             {
                 false,
                 "INSTALLER_RESULT=0 "
+                "REGISTER_LAUNCH_COMMAND=more.com",
+                UpdateService::ErrorCategory::kNone,
+                0,
+                {},
+                "more.com",
+                {},
+            },
+
+            // Silent install with a launch command, InstallerResult::kExitCode
+            // with a zero exit code, will not run `more.com` since silent
+            // install.
+            {
+                false,
+                "INSTALLER_RESULT=4 "
                 "REGISTER_LAUNCH_COMMAND=more.com",
                 UpdateService::ErrorCategory::kNone,
                 0,
@@ -4892,6 +4896,20 @@ INSTANTIATE_TEST_SUITE_P(
             {
                 true,
                 "INSTALLER_RESULT=0 "
+                "REGISTER_LAUNCH_COMMAND=more.com",
+                UpdateService::ErrorCategory::kNone,
+                0,
+                {},
+                "more.com",
+                {},
+            },
+
+            // Interactive install via the command line with a launch command,
+            // InstallerResult::kExitCode with a zero exit code, will run
+            // `more.com` since success exit code and interactive install.
+            {
+                true,
+                "INSTALLER_RESULT=4 "
                 "REGISTER_LAUNCH_COMMAND=more.com",
                 UpdateService::ErrorCategory::kNone,
                 0,
@@ -5112,6 +5130,13 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
 
 TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
   if (GetTestCase().interactive_install) {
+    GTEST_SKIP();
+  }
+
+  // TODO(crbug.com/382059245): remove this `if` once the older versions are
+  // updated to a version that supports a success `kExitCode`.
+  if (base::StartsWith(GetTestCase().command_line_args, "INSTALLER_RESULT=4") &&
+      (GetSetup().version != base::Version(kUpdaterVersion))) {
     GTEST_SKIP();
   }
 

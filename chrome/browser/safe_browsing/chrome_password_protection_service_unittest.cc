@@ -50,6 +50,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -87,6 +88,7 @@ using PasswordReuseDialogInteraction =
 using PasswordReuseEvent =
     safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 using PasswordReuseLookup = GaiaPasswordReuse::PasswordReuseLookup;
+using signin::constants::kNoHostedDomainFound;
 using ::testing::_;
 using ::testing::Return;
 using ::testing::WithArg;
@@ -737,7 +739,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyCanSendSamplePing) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// prefs::kEnterpriseCustomLabel is only registered on Windows, Mac, and Linux.
+// prefs::kEnterpriseCustomLabelForProfile is only registered on Windows, Mac,
+// and Linux.
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationPrefEmpty) {
   feature_list_.InitWithFeatures(
       {safe_browsing::kEnterprisePasswordReuseUiRefresh}, {});
@@ -748,7 +751,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationPrefEmpty) {
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationPrefNonEmpty) {
   feature_list_.InitWithFeatures(
       {safe_browsing::kEnterprisePasswordReuseUiRefresh}, {});
-  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabel,
+  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabelForProfile,
                                    "Mini Corp Ltd");
   ReusedPasswordAccountType reused_password_type;
   EXPECT_EQ("Mini Corp Ltd",
@@ -764,7 +767,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationTypeGmail) {
 }
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationTypeGSuite) {
-  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabel,
+  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabelForProfile,
                                    "example.com");
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
   SetUpSyncAccount("example.com", account_info);
@@ -1505,9 +1508,9 @@ TEST_F(ChromePasswordProtectionServiceTest,
   CoreAccountInfo core_account_info = SetPrimaryAccount(kTestEmail);
   SetUpSyncAccount(std::string("example.com"), core_account_info);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // prefs::kEnterpriseCustomLabel is only registered on Windows, Mac, and
-  // Linux.
-  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabel,
+  // prefs::kEnterpriseCustomLabelForProfile is only registered on Windows, Mac,
+  // and Linux.
+  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabelForProfile,
                                    "example.com");
   EXPECT_EQ(warning_text_with_org_name,
             service_->GetWarningDetailText(reused_password_type));

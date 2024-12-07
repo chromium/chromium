@@ -236,6 +236,19 @@ public class BundleUtils {
     }
 
     /**
+     * Constructs a new instance of the given class name. We create the classloader (or use a cached
+     * copy) of the split with the name passed in.
+     */
+    public static Object newInstance(String className, String splitName) {
+        ClassLoader classLoader = getOrCreateSplitClassLoader(splitName);
+        try {
+            return classLoader.loadClass(className).newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw JavaUtils.throwUnchecked(e);
+        }
+    }
+
+    /**
      * Creates a context which can access classes from the specified split, but inherits theme
      * resources from the passed in context. This is useful if a context is needed to inflate
      * layouts which reference classes from a split.

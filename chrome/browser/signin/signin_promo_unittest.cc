@@ -231,9 +231,8 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
       *profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
-// TODO (crbug.com/319411636): Add the same test for addresses.
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
-       DoNotShowPromoAfterFiveTimesShown) {
+       DoNotShowPasswordPromoAfterFiveTimesShown) {
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
 
   profile()->GetPrefs()->SetInteger(
@@ -241,6 +240,17 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
 
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       DoNotShowAddressPromoAfterFiveTimesShown) {
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kAddressSignInPromoShownCountPerProfile, 5);
+
+  EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
 }
 
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,

@@ -28,7 +28,7 @@
 - (void)didFailFetchManagedStatus:(NSError*)error;
 
 // Indicates that the user accepted signing in to a managed account.
-- (void)didAcceptManagedConfirmation;
+- (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate;
 
 // Indicates that the user cancelled signing in to a managed account.
 - (void)didCancelManagedConfirmation;

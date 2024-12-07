@@ -39,6 +39,8 @@ class CompositedTouchHandleDrawable : public ui::TouchHandleDrawable {
   void SetAlpha(float alpha) override;
   gfx::RectF GetVisibleBounds() const override;
   float GetDrawableHorizontalPaddingRatio() const override;
+  void OnUpdateNativeViewTree(gfx::NativeView parent_native_view,
+                              cc::slim::Layer* parent_layer) override;
 
  private:
   void DetachLayer();

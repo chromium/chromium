@@ -41,7 +41,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
       base::OnceClosure initialized_callback,
       PageInfoClosingCallback closing_callback,
       bool allow_about_this_site,
-      std::optional<ContentSettingsType> type = std::nullopt);
+      std::optional<ContentSettingsType> type = std::nullopt,
+      bool open_merchant_trust_page = false);
 
   // PageInfoNavigationHandler:
   void OpenMainPage(base::OnceClosure initialized_callback) override;

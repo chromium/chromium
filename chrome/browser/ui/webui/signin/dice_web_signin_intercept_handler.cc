@@ -29,6 +29,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -38,6 +39,8 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -256,13 +259,17 @@ DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   parameters.Set("pictureUrl",
                  signin::GetAccountPictureUrl(intercepted_account()));
 
-  std::string_view managed_user_badge = "";
+  std::string managed_user_badge;
+  std::string managed_user_badge_alt_text;
   if (IsSupervisedUser(intercepted_account().capabilities) &&
       base::FeatureList::IsEnabled(
           supervised_user::kShowKiteForSupervisedUsers)) {
     managed_user_badge = kSupervisedBadgeSource;
+    managed_user_badge_alt_text =
+        l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
   }
   parameters.Set("managedUserBadge", managed_user_badge);
+  parameters.Set("userBadgeAltText", managed_user_badge_alt_text);
   return parameters;
 }
 
@@ -290,6 +297,12 @@ DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
 
   parameters.Set("headerTextColor",
                  color_utils::SkColorToRgbaString(GetProfileForegroundTextColor(
+                     bubble_parameters_.profile_highlight_color)));
+  parameters.Set("primaryProfileBadgeColor",
+                 color_utils::SkColorToRgbaString(GetProfileForegroundIconColor(
+                     GetProfileHighlightColor(Profile::FromWebUI(web_ui())))));
+  parameters.Set("interceptedProfileBadgeColor",
+                 color_utils::SkColorToRgbaString(GetProfileForegroundIconColor(
                      bubble_parameters_.profile_highlight_color)));
   return parameters;
 }

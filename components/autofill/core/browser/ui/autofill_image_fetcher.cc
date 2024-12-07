@@ -57,6 +57,8 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
 
 }  // namespace
 
+AutofillImageFetcher::~AutofillImageFetcher() = default;
+
 void AutofillImageFetcher::FetchImagesForURLs(
     base::span<const GURL> image_urls,
     base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused,
@@ -98,6 +100,8 @@ gfx::Image AutofillImageFetcher::ResolveCardArtImage(
   return card_art_image;
 }
 
+AutofillImageFetcher::AutofillImageFetcher() = default;
+
 void AutofillImageFetcher::OnCardArtImageFetched(
     base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
         barrier_callback,
@@ -107,16 +111,24 @@ void AutofillImageFetcher::OnCardArtImageFetched(
     const image_fetcher::RequestMetadata& metadata) {
   CHECK(fetch_image_request_timestamp.has_value());
 
-  AutofillMetrics::LogImageFetcherRequestLatency(
-      base::TimeTicks::Now() - *fetch_image_request_timestamp);
-
-  AutofillMetrics::LogImageFetchResult(/*succeeded=*/!card_art_image.IsEmpty());
-
   // Allow subclasses to specialize the card art image if desired.
   gfx::Image resolved_image = ResolveCardArtImage(card_art_url, card_art_image);
 
   std::move(barrier_callback)
       .Run(std::make_unique<CreditCardArtImage>(card_art_url, resolved_image));
+
+  // Log metrics on card fetch success/failure. We only log metrics on either
+  // the first attempt to fetch a given URL (whether it succeeded or failed) or
+  // on the first success after a previously failed fetch. The goal is to
+  // minimize bias in the metrics due to repeated fetches.
+  bool succeeded = !card_art_image.IsEmpty();
+  if (!url_to_image_fetch_result_map_.contains(card_art_url.spec()) ||
+      (!url_to_image_fetch_result_map_[card_art_url.spec()] && succeeded)) {
+    url_to_image_fetch_result_map_[card_art_url.spec()] = succeeded;
+    AutofillMetrics::LogImageFetcherRequestLatency(
+        base::TimeTicks::Now() - *fetch_image_request_timestamp);
+    AutofillMetrics::LogImageFetchResult(succeeded);
+  }
 }
 
 void AutofillImageFetcher::FetchImageForURL(

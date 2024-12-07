@@ -28,6 +28,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/session/session_observer.h"
+#else
+#include "extensions/browser/extension_registry_observer.h"
 #endif
 
 namespace content {
@@ -87,6 +89,7 @@ class ReadAnythingUntrustedPageHandler :
     public ash::SessionObserver,
 #else
     public content::UpdateLanguageStatusDelegate,
+    public extensions::ExtensionRegistryObserver,
 #endif
     public ui::AXActionHandlerObserver,
     public read_anything::mojom::UntrustedPageHandler,
@@ -139,6 +142,10 @@ class ReadAnythingUntrustedPageHandler :
   void OnUpdateLanguageStatus(const std::string& lang,
                               content::LanguageInstallStatus install_status,
                               const std::string& error) override;
+  // extensions::ExtensionRegistryObserver implementation.
+  void OnExtensionInstalled(content::BrowserContext* browser_context,
+                            const extensions::Extension* extension,
+                            bool is_update) override;
 #endif
 
   // TranslateDriver::LanguageDetectionObserver:

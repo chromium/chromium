@@ -52,6 +52,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
@@ -1665,20 +1666,6 @@ WebFrameWidgetImpl::AllocateNewLayerTreeFrameSink() {
   return nullptr;
 }
 
-void WebFrameWidgetImpl::ReportLongAnimationFrameTiming(
-    AnimationFrameTimingInfo* timing_info) {
-  WebSecurityOrigin root_origin = local_root_->GetSecurityOrigin();
-  ForEachLocalFrameControlledByWidget(
-      local_root_->GetFrame(), [&](WebLocalFrameImpl* local_frame) {
-        if (local_frame == local_root_ ||
-            !local_frame->GetSecurityOrigin().IsSameOriginWith(root_origin)) {
-          DOMWindowPerformance::performance(
-              *local_frame->GetFrame()->DomWindow())
-              ->ReportLongAnimationFrameTiming(timing_info);
-        }
-      });
-}
-
 void WebFrameWidgetImpl::ReportLongTaskTiming(base::TimeTicks start_time,
                                               base::TimeTicks end_time,
                                               ExecutionContext* task_context) {
@@ -1709,16 +1696,16 @@ void WebFrameWidgetImpl::OnTaskCompletedForFrame(
   }
 }
 
-void WebFrameWidgetImpl::RecordRenderingUpdateEndTime(
+AnimationFrameTimingInfo* WebFrameWidgetImpl::RecordRenderingUpdateEndTime(
     base::TimeTicks rendering_update_time) {
   if (!animation_frame_timing_monitor_) {
-    return;
+    return nullptr;
   }
 
   LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
   CHECK(local_root_frame);
   CHECK(local_root_frame->DomWindow());
-  animation_frame_timing_monitor_->RecordRenderingUpdateEndTime(
+  return animation_frame_timing_monitor_->RecordRenderingUpdateEndTime(
       *local_root_frame->DomWindow(), rendering_update_time);
 }
 
@@ -2172,7 +2159,7 @@ void WebFrameWidgetImpl::SetBrowserControlsParams(
 }
 
 void WebFrameWidgetImpl::SetMaxSafeAreaInsets(
-    const gfx::Insets& max_safe_area_insets) {
+    const gfx::InsetsF& max_safe_area_insets) {
   widget_base_->LayerTreeHost()->SetMaxSafeAreaInsets(max_safe_area_insets);
 }
 
@@ -3670,6 +3657,7 @@ void WebFrameWidgetImpl::NotifySwapAndPresentationTimeForTesting(
 void WebFrameWidgetImpl::NotifyPresentationTime(
     base::OnceCallback<void(const viz::FrameTimingDetails&)>
         presentation_callback) {
+  CHECK(IsMainThread());
   NotifySwapAndPresentationTime(
       {.presentation_time_callback = std::move(presentation_callback)});
 }

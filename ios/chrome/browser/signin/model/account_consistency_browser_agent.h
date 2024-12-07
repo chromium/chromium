@@ -58,6 +58,14 @@ class AccountConsistencyBrowserAgent
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
 
+  // Returns whether it makes sense to show the browser's account menu instead
+  // of starting an "add account" flow or showing the "manage accounts" screen.
+  bool ShouldShowAccountMenu() const;
+
+  // Opens the account menu, offering to switch to a different account (even one
+  // that's in a different profile).
+  void ShowAccountMenu();
+
   UIViewController* base_view_controller_;
   id<ApplicationCommands> application_handler_;
   id<SettingsCommands> settings_handler_;

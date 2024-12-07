@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
@@ -68,7 +70,9 @@
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
@@ -84,6 +88,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -1866,6 +1871,90 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
                                .setValue(it.value->CssText())
                                .build());
   }
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorCSSAgent::resolveValues(
+    std::unique_ptr<protocol::Array<String>> values,
+    int node_id,
+    std::optional<String> property_name_optional,
+    std::optional<protocol::DOM::PseudoType> pseudo_type,
+    std::optional<String> pseudo_identifier,
+    std::unique_ptr<protocol::Array<String>>* results) {
+  protocol::Response response = AssertEnabled();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  Node* node = nullptr;
+  response = dom_agent_->AssertNode(node_id, node);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return protocol::Response::ServerError("Node is not an element.");
+  }
+
+  Document& document = element->GetDocument();
+  CSSParserContext* parser_context =
+      MakeGarbageCollected<CSSParserContext>(document);
+  ExecutionContext* execution_context = element->GetExecutionContext();
+
+  if (pseudo_type.has_value()) {
+    AtomicString view_transition_name = pseudo_identifier.has_value()
+                                            ? AtomicString(*pseudo_identifier)
+                                            : g_null_atom;
+    element = element->GetStyledPseudoElement(
+        InspectorDOMAgent::ProtocolPseudoTypeToPseudoId(*pseudo_type),
+        view_transition_name);
+    if (!element) {
+      return protocol::Response::ServerError(
+          "Could not retrieve pseudo element.");
+    }
+  }
+
+  // TODO(moonira): Handle cases when property_name is null.
+  const String property_name_str = property_name_optional.has_value()
+                                       ? *property_name_optional
+                                       : g_empty_string;
+
+  std::optional<CSSPropertyName> property_name =
+      CSSPropertyName::From(execution_context, property_name_str);
+  if (!property_name.has_value()) {
+    return protocol::Response::ServerError("Could not resolve property name.");
+  }
+
+  *results = std::make_unique<protocol::Array<String>>();
+  for (auto value : *values) {
+    const CSSValue* parsed_value = nullptr;
+    if (property_name->IsCustomProperty()) {
+      CustomProperty custom_property(property_name->ToAtomicString(), document);
+      auto local_context = CSSParserLocalContext();
+      parsed_value =
+          custom_property.Parse(value, *parser_context, local_context);
+    } else {
+      parsed_value = CSSParser::ParseSingleValue(property_name->Id(), value,
+                                                 parser_context);
+    }
+
+    if (!parsed_value) {
+      (*results)->emplace_back(String());
+      continue;
+    }
+
+    const CSSValue* computed_value =
+        StyleResolver::ComputeValue(element, *property_name, *parsed_value);
+
+    if (!computed_value) {
+      (*results)->emplace_back(String());
+      continue;
+    }
+
+    (*results)->emplace_back(computed_value->CssText());
+  }
+
   return protocol::Response::Success();
 }
 

@@ -127,7 +127,7 @@ class FullRestoreTestHelper {
  public:
   FullRestoreTestHelper(
       const std::string& email,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       FakeChromeUserManager* fake_user_manager,
       TestingProfileManager* profile_manager,
       sync_preferences::TestingPrefServiceSyncable* pref_service) {

@@ -19,29 +19,33 @@
   <div class="settings-columned-section">
     <div class="column">
       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
-      <div role="list">
-        <privacy-guide-description-item role="listitem"
-            icon="settings20:history"
-            label="$i18n{privacyGuideAdTopicsWhenOnBullet1}">
-        </privacy-guide-description-item>
-        <privacy-guide-description-item role="listitem"
-            icon="settings20:security"
-            label="$i18n{privacyGuideAdTopicsWhenOnBullet2}">
-        </privacy-guide-description-item>
-      </div>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:history" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{privacyGuideAdTopicsWhenOnBullet1}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:security" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{privacyGuideAdTopicsWhenOnBullet2}</div>
+        </li>
+      </ul>
     </div>
     <div class="column">
       <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
-      <div role="list">
-        <privacy-guide-description-item role="listitem"
-            icon="settings20:auto-delete"
-            label="$i18n{privacyGuideAdTopicsThingsToConsiderBullet1}">
-        </privacy-guide-description-item>
-        <privacy-guide-description-item role="listitem"
-            icon="settings20:rule-folder"
-            label="$i18n{privacyGuideAdTopicsThingsToConsiderBullet2}">
-        </privacy-guide-description-item>
-      </div>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:auto-delete" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideAdTopicsThingsToConsiderBullet1}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:rule-folder" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{privacyGuideAdTopicsThingsToConsiderBullet2}
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </div>

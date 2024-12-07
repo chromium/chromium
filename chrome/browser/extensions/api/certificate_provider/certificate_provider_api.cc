@@ -274,7 +274,7 @@ const int api::certificate_provider::kMaxClosedDialogsPerMinute = 10;
 const int api::certificate_provider::kMaxClosedDialogsPer10Minutes = 30;
 
 CertificateProviderInternalReportCertificatesFunction::
-    ~CertificateProviderInternalReportCertificatesFunction() {}
+    ~CertificateProviderInternalReportCertificatesFunction() = default;
 
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportCertificatesFunction::Run() {
@@ -394,7 +394,7 @@ void CertificateProviderStopPinRequestFunction::OnPinRequestStopped() {
 }
 
 CertificateProviderRequestPinFunction::
-    ~CertificateProviderRequestPinFunction() {}
+    ~CertificateProviderRequestPinFunction() = default;
 
 bool CertificateProviderRequestPinFunction::ShouldSkipQuotaLimiting() const {
   chromeos::CertificateProviderService* const service =
@@ -565,7 +565,7 @@ CertificateProviderSetCertificatesFunction::Run() {
 }
 
 CertificateProviderInternalReportSignatureFunction::
-    ~CertificateProviderInternalReportSignatureFunction() {}
+    ~CertificateProviderInternalReportSignatureFunction() = default;
 
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportSignatureFunction::Run() {

@@ -150,7 +150,7 @@ TEST_F(DisplayItemListTest, SingleUnpairedRange) {
   blue_flags.setColor(SK_ColorBLUE);
   PaintFlags red_paint;
   red_paint.setColor(SK_ColorRED);
-  unsigned char pixels[4 * 100 * 100] = {0};
+  unsigned char pixels[4 * 100 * 100] = {};
   auto list = base::MakeRefCounted<DisplayItemList>();
 
   gfx::Point offset(8, 9);
@@ -167,7 +167,7 @@ TEST_F(DisplayItemListTest, SingleUnpairedRange) {
   DrawDisplayList(pixels, layer_rect, list);
 
   SkBitmap expected_bitmap;
-  unsigned char expected_pixels[4 * 100 * 100] = {0};
+  unsigned char expected_pixels[4 * 100 * 100] = {};
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   expected_bitmap.installPixels(info, expected_pixels, info.minRowBytes());
@@ -212,7 +212,7 @@ TEST_F(DisplayItemListTest, ClipPairedRange) {
   blue_flags.setColor(SK_ColorBLUE);
   PaintFlags red_paint;
   red_paint.setColor(SK_ColorRED);
-  unsigned char pixels[4 * 100 * 100] = {0};
+  unsigned char pixels[4 * 100 * 100] = {};
   auto list = base::MakeRefCounted<DisplayItemList>();
 
   gfx::Point first_offset(8, 9);
@@ -261,7 +261,7 @@ TEST_F(DisplayItemListTest, ClipPairedRange) {
   DrawDisplayList(pixels, layer_rect, list);
 
   SkBitmap expected_bitmap;
-  unsigned char expected_pixels[4 * 100 * 100] = {0};
+  unsigned char expected_pixels[4 * 100 * 100] = {};
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   expected_bitmap.installPixels(info, expected_pixels, info.minRowBytes());
@@ -286,7 +286,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
   blue_flags.setColor(SK_ColorBLUE);
   PaintFlags red_paint;
   red_paint.setColor(SK_ColorRED);
-  unsigned char pixels[4 * 100 * 100] = {0};
+  unsigned char pixels[4 * 100 * 100] = {};
   auto list = base::MakeRefCounted<DisplayItemList>();
 
   gfx::Point first_offset(8, 9);
@@ -333,7 +333,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
   DrawDisplayList(pixels, layer_rect, list);
 
   SkBitmap expected_bitmap;
-  unsigned char expected_pixels[4 * 100 * 100] = {0};
+  unsigned char expected_pixels[4 * 100 * 100] = {};
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(layer_rect.width(), layer_rect.height());
   expected_bitmap.installPixels(info, expected_pixels, info.minRowBytes());
@@ -355,7 +355,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
 TEST_F(DisplayItemListTest, FilterPairedRange) {
   gfx::Rect layer_rect(100, 100);
   FilterOperations filters;
-  unsigned char pixels[4 * 100 * 100] = {0};
+  unsigned char pixels[4 * 100 * 100] = {};
   auto list = base::MakeRefCounted<DisplayItemList>();
 
   sk_sp<SkSurface> source_surface =
@@ -428,7 +428,7 @@ TEST_F(DisplayItemListTest, FilterPairedRange) {
   DrawDisplayList(pixels, layer_rect, list);
 
   SkBitmap expected_bitmap;
-  unsigned char expected_pixels[4 * 100 * 100] = {0};
+  unsigned char expected_pixels[4 * 100 * 100] = {};
   PaintFlags paint;
   paint.setColor(SkColorSetRGB(64, 64, 64));
   SkImageInfo info =

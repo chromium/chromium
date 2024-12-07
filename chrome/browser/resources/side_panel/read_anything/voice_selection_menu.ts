@@ -379,22 +379,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
         !voiceDropdown.previewActuallyPlaying);
   }
 
-  protected previewAriaLabel_(previewInitiated: boolean, voiceName: string):
-      string {
-    let nameSuffix = '';
-    if (voiceName.length > 0) {
-      nameSuffix = ' ' + voiceName;
-    }
-    if (previewInitiated) {
-      return loadTimeData.getString('stopLabel') + nameSuffix;
-    } else {
-      return loadTimeData.getStringF(
-          'previewVoiceAccessibilityLabel', nameSuffix);
-    }
-  }
-
-  protected selectedAriaLabel_(selected: boolean) {
-    return selected ? loadTimeData.getString('selected') : '';
+  protected voiceLabel_(selected: boolean, voiceName: string) {
+    const selectedPrefix = selected ? loadTimeData.getString('selected') : '';
+    return selectedPrefix + ' ' +
+        loadTimeData.getStringF('readingModeLanguageMenuItemLabel', voiceName);
   }
 
   protected shouldDisableButton_(voiceDropdown: VoiceDropdownItem) {

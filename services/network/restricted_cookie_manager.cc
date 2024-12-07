@@ -297,6 +297,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
              .IncludeForRequestURL(
                  url_, options_,
                  net::CookieAccessParams{change.access_result.access_semantics,
+                                         change.access_result.scope_semantics,
                                          delegate_treats_url_as_trustworthy})
              .status.IsInclude()) {
       return;

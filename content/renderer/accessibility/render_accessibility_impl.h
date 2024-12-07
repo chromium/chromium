@@ -90,7 +90,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // RenderAccessibility implementation.
   bool HasActiveDocument() const override;
   ui::AXMode GetAXMode() const override;
-  void RecordInaccessiblePdfUkm() override;
   void SetPluginAXTreeActionTargetAdapter(
       PluginAXTreeActionTargetAdapter* adapter) override;
 #if BUILDFLAG(IS_CHROMEOS)

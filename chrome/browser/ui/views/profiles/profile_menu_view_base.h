@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -37,7 +38,6 @@ class Button;
 
 namespace ui {
 class ColorProvider;
-class ImageModel;
 }  // namespace ui
 
 // This class provides the UI for different menus that are created by user
@@ -95,6 +95,38 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     base::RepeatingClosure edit_action;
   };
 
+  // Parameters for `SetProfileIdentityWithCallToAction()`
+  struct IdentitySectionParams {
+    IdentitySectionParams();
+    ~IdentitySectionParams();
+
+    IdentitySectionParams(const IdentitySectionParams&) = delete;
+    IdentitySectionParams& operator=(const IdentitySectionParams&) = delete;
+
+    IdentitySectionParams(IdentitySectionParams&&);
+    IdentitySectionParams& operator=(IdentitySectionParams&&);
+
+    // Must not be empty.
+    ui::ImageModel profile_image;
+
+    // Must not be empty.
+    std::u16string title;
+
+    // If `subtitle` is empty, no subtitle is shown (see disclaimer below).
+    std::u16string subtitle;
+
+    // If `button_text` is empty, no button is shown.
+    // Disclaimer: This function does not support showing a button with no
+    // subtitle. If the `subtitle` is empty then `button_text` must be empty.
+    std::u16string button_text;
+
+    // If `button_image` is empty, the button has no image.
+    ui::ImageModel button_image;
+
+    // Must be valid if there is a button.
+    base::RepeatingClosure button_action;
+  };
+
   // Size of the large identity image in the Sync info section (deprecated).
   static constexpr int kIdentityImageSize = 64;
   // Size of the large identity image in the identity info section.
@@ -131,20 +163,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& management_label = std::u16string(),
       const gfx::VectorIcon* header_art_icon = nullptr);
 
-  // `profile_image` and `title` may not be empty.
-  // If `subtitle` is empty, no subtitle is shown (see disclaimer below).
-  // If `button_text` is empty, no button is shown.
-  // If `button_image` is empty, the button has no image.
-  // `action` must be valid if there is a button.
-  // Disclaimer: This function does not support showing a button with no
-  // subtitle. If the `subtitle` is empty then `button_text` must be empty.
-  void SetProfileIdentityWithCallToAction(SkColor profile_background_color,
-                                          const ui::ImageModel& profile_image,
-                                          const std::u16string& title,
-                                          const std::u16string& subtitle,
-                                          const std::u16string& button_text,
-                                          const ui::ImageModel& button_image,
-                                          const base::RepeatingClosure& action);
+  // See `IdentitySectionParams` for documentation of the parameters.
+  void SetProfileIdentityWithCallToAction(IdentitySectionParams params);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Displays the sync info section as a rounded rectangle with text on top and

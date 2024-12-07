@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">Копіювати сегмент з інформацією про версію</translation>
 <translation id="323107829343500871">Ввести код CVC картки <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Завжди виявляти важливий вміст на цьому сайті</translation>
+<translation id="323585066388831737">Світло-червоний</translation>
 <translation id="3236212803136366317">Переваги картки</translation>
 <translation id="3238395604961564389">Відкрити анонімне вікно</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб налаштувати вигляд веб-переглядача</translation>
@@ -1854,6 +1855,7 @@
 <translation id="4277937682389409325">Місцева адреса</translation>
 <translation id="4278090321534187713">Картки, які не приймає цей продавець, вимкнено</translation>
 <translation id="4278390842282768270">Дозволено</translation>
+<translation id="4281245629646759298">Світло-жовтий</translation>
 <translation id="4281998142035485137">{0,plural, =1{Відкрити конфіденційний файл?}one{Відкрити конфіденційні файли?}few{Відкрити конфіденційні файли?}many{Відкрити конфіденційні файли?}other{Відкрити конфіденційні файли?}}</translation>
 <translation id="4282280603030594840">Купівля транспортних засобів</translation>
 <translation id="4282346679996504092">Сповіщення для цього товару вимкнено, а закладку вилучено</translation>
@@ -2743,6 +2745,7 @@
 <translation id="5969199813874624822">Зберегти й відстежувати ціну</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шостий рулон</translation>
+<translation id="5974745851230707809">Варіанти оплати частинами</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5979084224081478209">Перевірити паролі</translation>
 <translation id="5984570616552610254">Вологість камери</translation>
@@ -4308,6 +4311,7 @@
 <translation id="8767765348545497220">Закрити спливаючу підказку</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 спосіб оплати}one{# спосіб оплати}few{# способи оплати}many{# способів оплати}other{# способу оплати}}</translation>
 <translation id="8768225988514678921">Кнопка "Створити презентацію"; активуйте, щоб швидко створити нову презентацію в Google Презентаціях</translation>
+<translation id="8769662576926275897">Дані картки</translation>
 <translation id="8770286973007342895">Газонокосарки</translation>
 <translation id="8772387130037509473">Йога й пілатес</translation>
 <translation id="877348612833018844">{0,plural, =1{Перемістити конфіденційний файл?}one{Перемістити конфіденційні файли?}few{Перемістити конфіденційні файли?}many{Перемістити конфіденційні файли?}other{Перемістити конфіденційні файли?}}</translation>
@@ -4336,6 +4340,7 @@
 <translation id="882338992931677877">Лоток для ручного введення</translation>
 <translation id="8830320733681313421">Уфуку Хагакі (листівка)</translation>
 <translation id="8830565333350631528">Переглянути файли в сервісі <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Для покупок на суму понад <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Пральні й сушильні машини</translation>
 <translation id="8834962751196791179">Ви бачите це попередження, оскільки сайт не підтримує HTTPS і ви ввійшли в режимі анонімного перегляду. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Науково-фантастичні й фентезі-шоу</translation>

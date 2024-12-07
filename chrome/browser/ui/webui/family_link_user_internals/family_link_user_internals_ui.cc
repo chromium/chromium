@@ -43,4 +43,4 @@ FamilyLinkUserInternalsUI::FamilyLinkUserInternalsUI(content::WebUI* web_ui)
       std::make_unique<FamilyLinkUserInternalsMessageHandler>());
 }
 
-FamilyLinkUserInternalsUI::~FamilyLinkUserInternalsUI() {}
+FamilyLinkUserInternalsUI::~FamilyLinkUserInternalsUI() = default;

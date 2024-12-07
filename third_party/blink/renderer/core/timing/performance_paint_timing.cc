@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/timing/performance_paint_timing.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -33,8 +35,7 @@ AtomicString FromPaintTypeToString(PerformancePaintTiming::PaintType type) {
 
 PerformancePaintTiming::PerformancePaintTiming(
     PaintType type,
-    DOMHighResTimeStamp start_time,
-    DOMHighResTimeStamp rendering_update_end_time,
+    const DOMPaintTimingInfo& paint_timing_info,
     DOMWindow* source,
     bool is_triggered_by_soft_navigation)
     : PerformanceEntry(
@@ -42,11 +43,12 @@ PerformancePaintTiming::PerformancePaintTiming(
           // https://w3c.github.io/paint-timing/#report-paint-timing
           // Set newEntry’s startTime attribute to the default paint timestamp
           // given paintTimingInfo.
-          start_time,
-          start_time,
+          paint_timing_info.presentation_time,
+          paint_timing_info.presentation_time,
           source,
-          is_triggered_by_soft_navigation),
-      rendering_update_end_time_(rendering_update_end_time) {}
+          is_triggered_by_soft_navigation) {
+  SetPaintTimingInfo(paint_timing_info);
+}
 
 PerformancePaintTiming::~PerformancePaintTiming() = default;
 
@@ -56,14 +58,6 @@ const AtomicString& PerformancePaintTiming::entryType() const {
 
 PerformanceEntryType PerformancePaintTiming::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kPaint;
-}
-
-void PerformancePaintTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
-  PerformanceEntry::BuildJSONValue(builder);
-  if (RuntimeEnabledFeatures::PaintTimingMixinEnabled()) {
-    builder.AddNumber("paintTime", paintTime());
-    builder.AddNumber("presentationTime", presentationTime());
-  }
 }
 
 }  // namespace blink

@@ -752,10 +752,6 @@ class FetchManifestAndInstallCommandUniversalInstallTest
   static constexpr SkColor kIconColor = SK_ColorCYAN;
   const std::u16string kPageTitle = u"Page Title";
 
-  FetchManifestAndInstallCommandUniversalInstallTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppUniversalInstall);
-  }
   ~FetchManifestAndInstallCommandUniversalInstallTest() override = default;
 
   void SetupPageTitleAndIcons() {
@@ -774,9 +770,6 @@ class FetchManifestAndInstallCommandUniversalInstallTest
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FetchManifestAndInstallCommandUniversalInstallTest, CraftedApp) {

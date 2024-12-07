@@ -379,10 +379,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ResetProfileBanner) {
   RunTest("settings/reset_profile_banner_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, SafetyCheckPage) {
-  RunTest("settings/safety_check_page_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, ScrollableMixin) {
   RunTest("settings/scrollable_mixin_test.js", "mocha.run()");
 }
@@ -652,10 +648,6 @@ IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, Performance) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('Performance')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, SafetyHubDisabled) {
-  RunTest("settings/basic_page_test.js", "runMochaSuite('SafetyHubDisabled')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, ExperimentalAdvanced) {
   RunTest("settings/basic_page_test.js",
           "runMochaSuite('ExperimentalAdvanced')");
@@ -735,6 +727,10 @@ class SettingsWithPixelOutputTest : public SettingsBrowserTest {
     SettingsBrowserTest::SetUpCommandLine(command_line);
   }
 };
+
+IN_PROC_BROWSER_TEST_F(SettingsWithPixelOutputTest, CrLottie) {
+  RunTest("settings/cr_lottie_test.js", "mocha.run()");
+}
 
 // https://crbug.com/1044390 - maybe flaky on Mac?
 #if BUILDFLAG(IS_MAC)
@@ -837,7 +833,8 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
   SettingsPrivacyGuideTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kPrivacyGuideForceAvailable,
-         content_settings::features::kTrackingProtection3pcd},
+         content_settings::features::kTrackingProtection3pcd,
+         optimization_guide::features::kPrivacyGuideAiSettings},
         {});
   }
 
@@ -907,27 +904,27 @@ IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MAYBE_Integration) {
 
 // Privacy guide fragment tests.
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, WelcomeFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_welcome_fragment_test.js",
           "runMochaSuite('WelcomeFragment')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_msbb_fragment_test.js",
           "runMochaSuite('MsbbFragment')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, HistorySyncFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_history_sync_fragment_test.js",
           "runMochaSuite('HistorySyncFragment')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SafeBrowsingFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_safe_browsing_fragment_test.js",
           "runMochaSuite('SafeBrowsingFragment')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_cookies_fragment_test.js",
           "runMochaSuite('CookiesFragment')");
 }
 
@@ -954,6 +951,13 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
                        CompletionFragmentWithAdTopicsCard) {
   RunTest("settings/privacy_guide_completion_fragment_test.js",
           "runMochaSuite('CompletionFragmentWithAdTopicsCard')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
+                       CompletionFragmentAiSettingsInPrivacyGuideDisabled) {
+  RunTest(
+      "settings/privacy_guide_completion_fragment_test.js",
+      "runMochaSuite('CompletionFragmentAiSettingsInPrivacyGuideDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, AdTopicsFragment) {
@@ -1211,10 +1215,6 @@ IN_PROC_BROWSER_TEST_F(SettingsRouteTest, SafetyHubReachable) {
   RunTest("settings/route_test.js", "runMochaSuite('SafetyHubReachable')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsRouteTest, SafetyHubNotReachable) {
-  RunTest("settings/route_test.js", "runMochaSuite('SafetyHubNotReachable')");
-}
-
 // Copied from Polymer 2 test:
 // Failing on ChromiumOS dbg. https://crbug.com/709442
 #if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)) && !defined(NDEBUG)
@@ -1225,26 +1225,6 @@ IN_PROC_BROWSER_TEST_F(SettingsRouteTest, SafetyHubNotReachable) {
 IN_PROC_BROWSER_TEST_F(SettingsRouteTest, MAYBE_NonExistentRoute) {
   RunTest("settings/route_test.js", "runMochaSuite('NonExistentRoute')");
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-class SettingsSafetyCheckPermissionsTest : public SettingsBrowserTest {
- protected:
-  SettingsSafetyCheckPermissionsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            content_settings::features::kSafetyCheckUnusedSitePermissions,
-        },
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsSafetyCheckPermissionsTest, All) {
-  RunTest("settings/safety_check_permissions_test.js", "mocha.run()");
-}
-#endif
 
 class SettingsSafetyHubTest : public SettingsBrowserTest {
  protected:

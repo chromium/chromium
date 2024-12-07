@@ -3010,6 +3010,7 @@ media::PipelineStatus WebMediaPlayerImpl::OnDemuxerCreated(
     attempting_suspended_start_ = true;
   }
 
+  media_metrics_provider_->SetDemuxerType(demuxer->GetDemuxerType());
   pipeline_controller_->Start(start_type, demuxer, this, is_streaming,
                               is_static);
   return media::OkStatus();

@@ -46,6 +46,17 @@ bool HasUnsafeScores(
   return false;
 }
 
+template <class T>
+double GetLanguageReliabilityThreshold(const T& check, bool is_complete) {
+  if (!check.has_language_check()) {
+    return features::GetOnDeviceModelLanguageDetectionMinimumReliability();
+  }
+  if (is_complete || !check.language_check().has_partial_threshold()) {
+    return check.language_check().confidence_threshold();
+  }
+  return check.language_check().partial_threshold();
+}
+
 using CheckTemplate =
     google::protobuf::RepeatedPtrField<proto::SubstitutedString>;
 
@@ -103,13 +114,15 @@ bool SafetyConfig::CanCheckPartialOutput(
 }
 
 bool SafetyConfig::IsTextInUnsupportedOrUndeterminedLanguage(
-    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
+    const on_device_model::mojom::SafetyInfoPtr& safety_info,
+    double reliability_threshold) const {
+  auto& allowed_languages = proto_->allowed_languages();
   if (!proto_) {
     // No safety config, so no language requirements.
     return false;
   }
 
-  if (proto_->allowed_languages().empty()) {
+  if (allowed_languages.empty() || reliability_threshold <= 0.0) {
     // No language requirements.
     return false;
   }
@@ -120,30 +133,18 @@ bool SafetyConfig::IsTextInUnsupportedOrUndeterminedLanguage(
     return true;
   }
 
-  if (!base::Contains(proto_->allowed_languages(),
-                      safety_info->language->code)) {
+  if (!base::Contains(allowed_languages, safety_info->language->code)) {
     // Unsupported language.
     return true;
   }
 
-  if (safety_info->language->reliability <
-      features::GetOnDeviceModelLanguageDetectionMinimumReliability()) {
+  if (safety_info->language->reliability < reliability_threshold) {
     // Unreliable language detection. Treat as an unsupported language.
     return true;
   }
 
   // Language was detected reliably and is supported.
   return false;
-}
-
-bool SafetyConfig::IsUnsafeText(
-    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
-  if (!proto_) {
-    // If no safety config and we are allowed here, that means we don't care
-    // about the safety scores so just mark the content as safe.
-    return false;
-  }
-  return HasUnsafeScores(proto_->safety_category_thresholds(), safety_info);
 }
 
 int SafetyConfig::NumRequestChecks() const {
@@ -161,11 +162,6 @@ bool SafetyConfig::IsRequestCheckLanguageOnly(int check_idx) const {
   return proto_->request_check(check_idx).check_language_only();
 }
 
-bool SafetyConfig::ShouldIgnoreLanguageResultForRequestCheck(
-    int check_idx) const {
-  return proto_->request_check(check_idx).ignore_language_result();
-}
-
 bool SafetyConfig::IsRequestUnsafe(
     int check_idx,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
@@ -179,6 +175,18 @@ bool SafetyConfig::IsRequestUnsafe(
   return HasUnsafeScores(thresholds, safety_info);
 }
 
+bool SafetyConfig::IsRequestUnsupportedLanguage(
+    int check_idx,
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
+  const auto& check = proto_->request_check(check_idx);
+  if (check.ignore_language_result()) {
+    return false;
+  }
+  double threshold =
+      GetLanguageReliabilityThreshold(check, /*is_complete*/ true);
+  return IsTextInUnsupportedOrUndeterminedLanguage(safety_info, threshold);
+}
+
 bool SafetyConfig::HasRawOutputCheck() const {
   return proto_.has_value() && NumResponseChecks() == 0;
 }
@@ -190,13 +198,26 @@ std::optional<SubstitutionResult> SafetyConfig::GetRawOutputCheckInput(
   return CreateSubstitutions(message, GetRawOutputCheckTemplate(*proto_));
 }
 
-int SafetyConfig::NumResponseChecks() const {
-  return proto_ ? proto_->response_check_size() : 0;
+bool SafetyConfig::IsRawOutputUnsafe(
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
+  if (!proto_) {
+    // If no safety config and we are allowed here, that means we don't care
+    // about the safety scores so just mark the content as safe.
+    return false;
+  }
+  return HasUnsafeScores(proto_->safety_category_thresholds(), safety_info);
 }
 
-bool SafetyConfig::ShouldIgnoreLanguageResultForResponseCheck(
-    int check_idx) const {
-  return proto_->response_check(check_idx).ignore_language_result();
+bool SafetyConfig::IsRawOutputUnsupportedLanguage(
+    bool is_complete,
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
+  const auto& check = proto_->raw_output_check();
+  double threshold = GetLanguageReliabilityThreshold(check, is_complete);
+  return IsTextInUnsupportedOrUndeterminedLanguage(safety_info, threshold);
+}
+
+int SafetyConfig::NumResponseChecks() const {
+  return proto_ ? proto_->response_check_size() : 0;
 }
 
 bool SafetyConfig::IsResponseUnsafe(
@@ -207,6 +228,18 @@ bool SafetyConfig::IsResponseUnsafe(
                                ? proto_->safety_category_thresholds()
                                : check.safety_category_thresholds();
   return HasUnsafeScores(thresholds, safety_info);
+}
+
+bool SafetyConfig::IsResponseUnsupportedLanguage(
+    int check_idx,
+    bool is_complete,
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
+  const auto& check = proto_->response_check(check_idx);
+  if (check.ignore_language_result()) {
+    return false;
+  }
+  double threshold = GetLanguageReliabilityThreshold(check, is_complete);
+  return IsTextInUnsupportedOrUndeterminedLanguage(safety_info, threshold);
 }
 
 std::optional<SubstitutionResult> SafetyConfig::GetResponseCheckInput(

@@ -30,6 +30,7 @@ component("user_manager") {
     "//base",
     "//components/account_id",
     "//components/prefs",
+    "//google_apis",
     "//ui/gfx",
   ]
 

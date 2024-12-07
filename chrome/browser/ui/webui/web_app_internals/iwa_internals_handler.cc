@@ -171,6 +171,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
         /*update_channel=*/
         isolation_data.update_channel().value_or(
             UpdateChannel::default_channel()),
+        /*allow_downgrades=*/false,
         /*pinned_version=*/std::nullopt,
         /*dev_mode=*/true);
   }

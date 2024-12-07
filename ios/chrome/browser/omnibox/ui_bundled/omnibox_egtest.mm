@@ -930,13 +930,7 @@ void FocusFakebox() {
 // displayed. Paste button should be hidden when pasteboard is empty otherwise
 // it should be displayed. Select & SelectAll buttons should be hidden when the
 // omnibox is empty.
-// TODO(crbug.com/325908456): This test fails on iPad device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testEmptyOmnibox testEmptyOmnibox
-#else
-#define MAYBE_testEmptyOmnibox DISABLED_testEmptyOmnibox
-#endif
-- (void)MAYBE_testEmptyOmnibox {
+- (void)testEmptyOmnibox {
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -986,33 +980,14 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_longPress()];
 
-  // SelectAll the omnibox field.
-  GREYCondition* SelectAllButtonIsDisplayed = [GREYCondition
-      conditionWithName:@"SelectAll button display condition"
-                  block:^BOOL {
-                    NSError* error = nil;
-                    [[EarlGrey selectElementWithMatcher:SelectAllButton()]
-                        performAction:grey_tap()
-                                error:&error];
-                    return error == nil;
-                  }];
-  GREYAssertTrue([SelectAllButtonIsDisplayed
-                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
-                 @"SelectAll button display failed");
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SelectAllButton()];
 
-  // Cut the text.
-  GREYCondition* CutButtonIsDisplayed = [GREYCondition
-      conditionWithName:@"Cut button display condition"
-                  block:^BOOL {
-                    NSError* error = nil;
-                    [[EarlGrey selectElementWithMatcher:CutButton()]
-                        assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  GREYAssertTrue([CutButtonIsDisplayed
-                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
-                 @"Cut button display failed");
+  [[EarlGrey selectElementWithMatcher:SelectAllButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CutButton()];
+
+  // Cut the text
   [[EarlGrey selectElementWithMatcher:CutButton()] performAction:grey_tap()];
 
   // Long pressing should allow pasting.
@@ -1020,22 +995,10 @@ void FocusFakebox() {
       performAction:grey_longPress()];
   // Verify that system text selection callout is displayed (Search Copied
   // Text).
-  GREYCondition* searchCopiedTextButtonIsDisplayed = [GREYCondition
-      conditionWithName:@"Search Copied Text button display condition"
-                  block:^BOOL {
-                    NSError* error = nil;
-                    [[EarlGrey
-                        selectElementWithMatcher:SearchCopiedTextButton()]
-                        assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  GREYAssertTrue([searchCopiedTextButtonIsDisplayed
-                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
-                 @"Search Copied Text button display failed");
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SearchCopiedTextButton()];
+
   // Verify that system text selection callout is displayed (Paste).
-  [[EarlGrey selectElementWithMatcher:PasteButton()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:PasteButton()];
 }
 
 // Select & SelectAll buttons should be displayed when the omnibox is not empty
@@ -1043,13 +1006,7 @@ void FocusFakebox() {
 // fied, Select button should be hidden & SelectAll button should be displayed.
 // If the selected text is the entire omnibox field, select & SelectAll button
 // should be hidden.
-// TODO(crbug.com/325908456): This test fails on iPad device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSelection testSelection
-#else
-#define MAYBE_testSelection DISABLED_testSelection
-#endif
-- (void)MAYBE_testSelection {
+- (void)testSelection {
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1062,41 +1019,16 @@ void FocusFakebox() {
       performAction:grey_longPress()];
 
   // Pressing should allow select and selectAll.
-  // Wait for UIMenuController to appear or timeout after 2 seconds.
-  GREYCondition* SelectButtonIsDisplayed = [GREYCondition
-      conditionWithName:@"Select button display condition"
-                  block:^BOOL {
-                    NSError* error = nil;
-                    [[EarlGrey selectElementWithMatcher:SelectButton()]
-                        assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  // Verify that system text selection callout is displayed.
-  GREYAssertTrue([SelectButtonIsDisplayed
-                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
-                 @"Select button display failed");
-  [[EarlGrey selectElementWithMatcher:SelectAllButton()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SelectButton()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SelectAllButton()];
 
-  // Wait for UIMenuController to appear or timeout after 2 seconds.
-  GREYCondition* CopyButtonIsDisplayed = [GREYCondition
-      conditionWithName:@"Copy button display condition"
-                  block:^BOOL {
-                    NSError* error = nil;
-                    [[EarlGrey selectElementWithMatcher:
-                                   chrome_test_util::
-                                       SystemSelectionCalloutCopyButton()]
-                        assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
-                  }];
   // Pressing select should allow copy.
   // select should be hidden.
   [[EarlGrey selectElementWithMatcher:SelectButton()] performAction:grey_tap()];
-  GREYAssertTrue([CopyButtonIsDisplayed
-                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
-                 @"Copy button display failed");
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SystemSelectionCalloutCopyButton()];
+
   [[EarlGrey selectElementWithMatcher:SelectButton()]
       assertWithMatcher:grey_nil()];
 
@@ -1104,20 +1036,15 @@ void FocusFakebox() {
   // selectAll should be hidden.
   [[EarlGrey selectElementWithMatcher:SelectAllButton()]
       performAction:grey_tap()];
-  GREYAssertTrue([CopyButtonIsDisplayed
-                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
-                 @"Copy button display failed");
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SystemSelectionCalloutCopyButton()];
+
   [[EarlGrey selectElementWithMatcher:SelectAllButton()]
       assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/325908456): This test fails on iPad device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testNoDefaultMatch testNoDefaultMatch
-#else
-#define MAYBE_testNoDefaultMatch DISABLED_testNoDefaultMatch
-#endif
-- (void)MAYBE_testNoDefaultMatch {
+- (void)testNoDefaultMatch {
   NSString* copiedText = @"test no default match1";
 
   // Put some text in pasteboard.

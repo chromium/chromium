@@ -2224,6 +2224,9 @@ TEST_P(PasswordFormManagerTest, RecordsGroupedWebSiteMatch) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PotentialBestMatchFormType",
       PasswordFormMetricsRecorder::MatchedFormType::kGroupedWebsites, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FillSuggestionsHasGroupedMatch", /*sample=*/true, 1);
 }
 
 TEST_P(PasswordFormManagerTest, RecordsNoMatchesWhenNoCredentialsFetched) {

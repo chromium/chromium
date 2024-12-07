@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -342,15 +339,18 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
   std::unique_ptr<views::LayoutProvider> layout_provider =
       ChromeLayoutProvider::CreateLayoutProvider();
 
-  constexpr struct {
+  struct Increases {
     int context;
     int min;
     int max;
-  } kExpectedIncreases[] = {{CONTEXT_HEADLINE, 4, 8},
-                            {views::style::CONTEXT_DIALOG_TITLE, 1, 4},
-                            {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
-                            {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
-                            {views::style::CONTEXT_BUTTON_MD, -2, 1}};
+  };
+
+  static constexpr auto kExpectedIncreases =
+      std::to_array<Increases>({{CONTEXT_HEADLINE, 4, 8},
+                                {views::style::CONTEXT_DIALOG_TITLE, 1, 4},
+                                {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
+                                {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
+                                {views::style::CONTEXT_BUTTON_MD, -2, 1}});
 
   const auto& typography_provider = views::TypographyProvider::Get();
   for (size_t i = 0; i < std::size(kExpectedIncreases); ++i) {
@@ -381,15 +381,17 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
   }
 
   // Line heights from the Harmony spec.
-  constexpr int kBodyLineHeight = 20;
-  constexpr struct {
+  struct HarmonyHeight {
     int context;
     int line_height;
-  } kHarmonyHeights[] = {
-      {CONTEXT_HEADLINE, 32},
-      {views::style::CONTEXT_DIALOG_TITLE, 22},
-      {views::style::CONTEXT_DIALOG_BODY_TEXT, kBodyLineHeight},
-      {CONTEXT_DIALOG_BODY_TEXT_SMALL, kBodyLineHeight}};
+  };
+
+  constexpr int kBodyLineHeight = 20;
+  static constexpr auto kHarmonyHeights = std::to_array<HarmonyHeight>(
+      {{CONTEXT_HEADLINE, 32},
+       {views::style::CONTEXT_DIALOG_TITLE, 22},
+       {views::style::CONTEXT_DIALOG_BODY_TEXT, kBodyLineHeight},
+       {CONTEXT_DIALOG_BODY_TEXT_SMALL, kBodyLineHeight}});
 
   for (size_t i = 0; i < std::size(kHarmonyHeights); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);

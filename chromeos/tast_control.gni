@@ -92,6 +92,9 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable@volteer",
   "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable@volteer",
 
+  # b/382395695: pita.* misenabled on betty after disk resize.
+  "pita.*@betty",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 

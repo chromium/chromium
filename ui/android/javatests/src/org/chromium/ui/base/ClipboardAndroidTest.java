@@ -217,6 +217,7 @@ public class ClipboardAndroidTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @DisabledTest(message = "crbug.com/382555273")
     public void hasUrlAndGetUrlMixTextAndLinkWithoutProtocolTest() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -21,12 +21,17 @@ IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
     GURL update_manifest_url,
     web_package::SignedWebBundleId web_bundle_id,
     UpdateChannel update_channel,
+    bool allow_downgrades,
     std::optional<base::Version> pinned_version)
     : update_manifest_url_(std::move(update_manifest_url)),
       web_bundle_id_(std::move(web_bundle_id)),
-      update_channel_(update_channel),
+      update_channel_(std::move(update_channel)),
+      allow_downgrades_(allow_downgrades),
       pinned_version_(std::move(pinned_version)) {
   DCHECK(update_manifest_url_.is_valid());
+  // allow_downgrades cannot be toggled on without specifying pinned_version
+  // field.
+  CHECK(!allow_downgrades_ || pinned_version_);
 }
 
 IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
@@ -53,7 +58,8 @@ IsolatedWebAppExternalInstallOptions::Create(
   }
 
   return IsolatedWebAppExternalInstallOptions(
-      update_manifest_url, web_bundle_id, UpdateChannel::default_channel());
+      update_manifest_url, web_bundle_id, UpdateChannel::default_channel(),
+      /*allow_downgrades=*/false);
 }
 
 // static
@@ -112,13 +118,22 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
     maybe_pinned_version = std::move(pinned_version);
   }
 
+  const bool allow_downgrades =
+      entry.FindBool(kPolicyAllowDowngradesKey).value_or(false);
+
+  if (allow_downgrades && !maybe_pinned_version) {
+    return base::unexpected(
+        "Downgrades cannot be toggled on by allow_downgrades without "
+        "specifying pinned_version.");
+  }
+
   const std::string* const update_channel_raw =
       entry.FindString(kPolicyUpdateChannelKey);
 
   if (!update_channel_raw) {
     return IsolatedWebAppExternalInstallOptions(
         std::move(update_manifest_url), std::move(web_bundle_id),
-        std::move(UpdateChannel::default_channel()),
+        UpdateChannel::default_channel(), allow_downgrades,
         std::move(maybe_pinned_version));
   }
 
@@ -127,7 +142,8 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
   if (update_channel.has_value()) {
     return IsolatedWebAppExternalInstallOptions(
         std::move(update_manifest_url), std::move(web_bundle_id),
-        std::move(update_channel.value()), std::move(maybe_pinned_version));
+        std::move(update_channel.value()), allow_downgrades,
+        std::move(maybe_pinned_version));
   }
 
   return base::unexpected("Failed to create UpdateChannel from policy value");

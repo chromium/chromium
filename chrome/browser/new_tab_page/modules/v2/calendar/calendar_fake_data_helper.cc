@@ -62,28 +62,70 @@ std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents(
 }
 
 void GetFakeJsonResponse(GetResponseCallback callback) {
+  // clang-format off
   std::string response = R"(
     {"data-context": "some-context",
     "value": [
       {
         "id": "1",
-        "hasAttachments": false,
+        "hasAttachments": true,
         "subject": "Event 1",
+        "isCancelled": false,
         "isOrganizer": true,
         "webLink": "https://outlook.com",
+        "responseStatus": {
+            "response": "organizer",
+            "time": "0001-01-01T00:00:00Z"
+        },
         "onlineMeeting": {"joinUrl": "https://outlook.com"},
         "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
         "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
         "location": {"displayName": "Location Name"},
-        "attendees": [],
-        "attachments": []
+        "attendees": [
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test1@outlook.com",
+                        "address": "test1@outlook.com"
+                  }
+              },
+              {
+                  "type": "required",
+                  "status": {
+                      "response": "accepted",
+                      "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                      "name": "test2@outlook.com",
+                      "address": "test2@outlook.com"
+                  }
+              }
+        ],
+        "attachments": [
+              {
+                    "@odata.type": "#microsoft.graph.fileAttachment",
+                    "@odata.mediaContentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "id": "1-ABC",
+                    "name": "Some document.docx"
+              }
+        ]
       },
       {
         "id": "2",
         "hasAttachments": false,
         "subject": "Event 2",
+        "isCancelled": false,
         "isOrganizer": true,
         "webLink": "https://outlook.com",
+        "responseStatus": {
+            "response": "organizer",
+            "time": "0001-01-01T00:00:00Z"
+        },
         "onlineMeeting": {"joinUrl": "https://outlook.com"},
         "start": {"dateTime": "2024-11-11T18:30:00.0000000"},
         "end": {"dateTime": "2024-11-11T19:00:00.0000000"},
@@ -95,8 +137,13 @@ void GetFakeJsonResponse(GetResponseCallback callback) {
         "id": "3",
         "hasAttachments": false,
         "subject": "Event 3",
+        "isCancelled": false,
         "isOrganizer": true,
         "webLink": "https://outlook.com",
+        "responseStatus": {
+            "response": "organizer",
+            "time": "0001-01-01T00:00:00Z"
+        },
         "onlineMeeting": {"joinUrl": "https://outlook.com"},
         "start": {"dateTime": "2024-11-11T20:00:00.0000000"},
         "end": {"dateTime": "2024-11-11T21:00:00.0000000"},
@@ -104,6 +151,7 @@ void GetFakeJsonResponse(GetResponseCallback callback) {
         "attendees": [],
         "attachments": []
       }]})";
+  // clang-format on
   std::move(callback).Run(std::move(response));
 }
 

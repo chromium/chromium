@@ -478,9 +478,11 @@ public class NavigationTransitionsTest {
                                 public void onControlsOffsetChanged(
                                         int topOffset,
                                         int topControlsMinHeightOffset,
+                                        boolean topControlsMinHeightChanged,
                                         int bottomOffset,
                                         int bottomControlsMinHeightOffset,
-                                        boolean needsAnimate,
+                                        boolean bottomControlsMinHeightChanged,
+                                        boolean requestNewFrame,
                                         boolean isVisibilityForced) {
                                     // Since in 3-button mode the gesture sequence is two seconds,
                                     // the top control must have started to show during the two

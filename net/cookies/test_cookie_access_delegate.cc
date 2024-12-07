@@ -37,13 +37,13 @@ CookieAccessSemantics TestCookieAccessDelegate::GetAccessSemantics(
   return CookieAccessSemantics::UNKNOWN;
 }
 
-CookieLegacyScope TestCookieAccessDelegate::GetAccessForLegacyCookieScope(
+CookieScopeSemantics TestCookieAccessDelegate::GetScopeSemantics(
     const CanonicalCookie& cookie) const {
   auto it = expectations_legacy_.find(GetKeyForDomainValue(cookie.Domain()));
   if (it != expectations_legacy_.end()) {
     return it->second;
   }
-  return CookieLegacyScope::UNKNOWN;
+  return CookieScopeSemantics::UNKNOWN;
 }
 
 bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(

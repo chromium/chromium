@@ -55,13 +55,11 @@ interface WebClient {
   // The user has requested activation of the web client.
   // `docked_to_window_id` identifies the browser window to which the
   // panel is docked to. It is undefined if it is floating free.
-  // The promise being resolved indicates the web client is ready to receive
-  // the user's input.
   NotifyPanelOpened(int32? docked_to_window_id);
   // The user has closed the web client window. The window may be activated
   // again later. Returns when the web client has stored any needed
   // information and stopped accepting the user's input.
-  NotifyPanelClosed() => (bool success);
+  NotifyPanelClosed() => ();
 };
 
 // Information extracted from a tab.
@@ -121,4 +119,3 @@ struct Screenshot {
   // Image annotations for this screenshot.
   ImageOriginAnnotations origin_annotations;
 };
-

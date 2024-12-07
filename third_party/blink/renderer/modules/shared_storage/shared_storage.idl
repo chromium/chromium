@@ -33,6 +33,13 @@
   ] Promise<any> clear(optional SharedStorageModifierMethodOptions options);
 
   [
+    RuntimeEnabled=SharedStorageWebLocks,
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_BatchUpdate_Method
+  ] Promise<any> batchUpdate(sequence<SharedStorageModifierMethod> methods, optional SharedStorageModifierMethodOptions options);
+
+  [
     CallWith=ScriptState,
     RaisesException
   ] Promise<DOMString> get(DOMString key);

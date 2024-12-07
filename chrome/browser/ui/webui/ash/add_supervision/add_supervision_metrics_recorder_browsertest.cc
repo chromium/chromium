@@ -228,8 +228,12 @@ IN_PROC_BROWSER_TEST_P(AddSupervisionMetricsRecorderTimeTest, UserTimingTest) {
   // after GetParam() seconds.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_ =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  AddSupervisionMetricsRecorder::GetInstance()->SetClockForTesting(
-      task_runner_->GetMockTickClock());
+
+  // RAII object to set the mock clock and reset it afterwards
+  AddSupervisionMetricsRecorder::ScopedClockForTesting set_clock(
+      *AddSupervisionMetricsRecorder::GetInstance(),
+      *task_runner_->GetMockTickClock());
+
   base::TimeDelta duration(base::Seconds(GetParam()));
 
   // We need to start at some non-zero point in time or else

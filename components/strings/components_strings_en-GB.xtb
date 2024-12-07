@@ -1236,6 +1236,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3229277193950731405">Copy version string</translation>
 <translation id="323107829343500871">Enter the CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Always detect important content on this site</translation>
+<translation id="323585066388831737">Light red</translation>
 <translation id="3236212803136366317">Card benefits</translation>
 <translation id="3238395604961564389">Open link in incognito window</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to customise the look of your browser</translation>
@@ -1854,6 +1855,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4277937682389409325">Local address</translation>
 <translation id="4278090321534187713">Cards not accepted by this merchant are disabled</translation>
 <translation id="4278390842282768270">Allowed</translation>
+<translation id="4281245629646759298">Light Yellow</translation>
 <translation id="4281998142035485137">{0,plural, =1{Open confidential file?}other{Open confidential files?}}</translation>
 <translation id="4282280603030594840">Vehicle shopping</translation>
 <translation id="4282346679996504092">Alerts for this product have been turned off and the bookmark removed</translation>
@@ -2743,6 +2745,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5969199813874624822">Save and Track price</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixth roll</translation>
+<translation id="5974745851230707809">Pay over time options</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5984570616552610254">Chamber humidity</translation>
@@ -4307,6 +4310,7 @@ Additional details:
 <translation id="8767765348545497220">Close help bubble</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 payment method}other{# payment methods}}</translation>
 <translation id="8768225988514678921">Create presentation button, activate to quickly create a new Google presentation in Slides</translation>
+<translation id="8769662576926275897">Card details</translation>
 <translation id="8770286973007342895">Lawnmowers</translation>
 <translation id="8772387130037509473">Yoga and Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Move confidential file?}other{Move confidential files?}}</translation>
@@ -4335,6 +4339,7 @@ Additional details:
 <translation id="882338992931677877">Manual slot</translation>
 <translation id="8830320733681313421">Hagaki Postcard</translation>
 <translation id="8830565333350631528">View files in <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Available for purchases over <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Washers and Dryers</translation>
 <translation id="8834962751196791179">You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">TV sci-fi and fantasy shows</translation>

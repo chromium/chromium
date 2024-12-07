@@ -151,7 +151,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateOrigins);
 CONTENT_EXPORT extern const char kIsolateOriginsFieldTrialParamName[];
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyInitializeMediaControls);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLegacyTechReportEnableCookieIssueReports);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kLegacyWindowsDWriteFontFallback);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLogJsConsoleMessages);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMainThreadCompositingPriority);
@@ -323,12 +322,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacImeLiveConversionFix);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSyscallSandbox);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSonomaAccessibilityActivationRefinements);
 #endif  // BUILDFLAG(IS_MAC)
-
-#if defined(WEBRTC_USE_PIPEWIRE)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebRtcPipeWireCapturer);
-#endif  // defined(WEBRTC_USE_PIPEWIRE)
-
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreferredAudioOutputDevices);
 
 // Number of days to "store" IPH guardrails for navigation captured app launches
 // till they are cleared.

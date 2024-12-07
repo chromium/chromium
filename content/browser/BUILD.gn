@@ -2407,6 +2407,8 @@ source_set("browser") {
     sources += [
       "memory_pressure/user_level_memory_pressure_signal_generator.cc",
       "memory_pressure/user_level_memory_pressure_signal_generator.h",
+      "renderer_host/input/touch_selection_controller_input_observer.cc",
+      "renderer_host/input/touch_selection_controller_input_observer.h",
     ]
   }
 

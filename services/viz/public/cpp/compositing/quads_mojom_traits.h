@@ -458,6 +458,13 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->nearest_neighbor;
   }
 
+  static cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit(
+      const viz::DrawQuad& input) {
+    const viz::TextureDrawQuad* quad =
+        viz::TextureDrawQuad::MaterialCast(&input);
+    return quad->dynamic_range_limit;
+  }
+
   static bool secure_output_only(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);

@@ -29,7 +29,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -43,67 +42,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
  * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
-    // TODO(crbug.com/372670018) Move remaining test accounts to {@link
-    // org.chromium.components.signin.test.util.TestAccounts}.
-
-    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
-            new AccountInfo.Builder(
-                            generateChildEmail("test@gmail.com"),
-                            FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
-                    .fullName("Test1 Full")
-                    .givenName("Test1 Given")
-                    .accountImage(createAvatar())
-                    .accountCapabilities(
-                            new AccountCapabilitiesBuilder()
-                                    .setCanHaveEmailAddressDisplayed(false)
-                                    .setIsSubjectToParentalControls(true)
-                                    .build())
-                    .build();
-
-    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME =
-            new AccountInfo.Builder(
-                            generateChildEmail("test@gmail.com"),
-                            FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
-                    .accountImage(createAvatar())
-                    .accountCapabilities(
-                            new AccountCapabilitiesBuilder()
-                                    .setCanHaveEmailAddressDisplayed(false)
-                                    .setIsSubjectToParentalControls(true)
-                                    .build())
-                    .build();
-
-    private static final AccountCapabilities MINOR_MODE_NOT_REQUIRED =
-            new AccountCapabilitiesBuilder()
-                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
-                    .build();
-
-    private static final AccountCapabilities MINOR_MODE_REQUIRED =
-            new AccountCapabilitiesBuilder()
-                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                    .build();
-
-    public static final AccountInfo AADC_MINOR_ACCOUNT =
-            new AccountInfo.Builder(
-                            "aadc.minor.account@gmail.com",
-                            FakeAccountManagerFacade.toGaiaId("aadc.minor.account@gmail.com"))
-                    .fullName("AADC Minor")
-                    .givenName("AADC Minor Account")
-                    .accountImage(createAvatar())
-                    .accountCapabilities(MINOR_MODE_REQUIRED)
-                    .build();
-
-    public static final AccountInfo AADC_ADULT_ACCOUNT =
-            new AccountInfo.Builder(
-                            "aadc.adult.account@gmail.com",
-                            FakeAccountManagerFacade.toGaiaId("aadc.adult.account@gmail.com"))
-                    .fullName("AADC Adult")
-                    .givenName("AADC Adult Account")
-                    .accountImage(createAvatar())
-                    .accountCapabilities(MINOR_MODE_NOT_REQUIRED)
-                    .build();
-
-    public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = TestAccounts.ACCOUNT1;
-
     // The matcher for the add account button in the fake add account activity.
     public static final Matcher<View> ADD_ACCOUNT_BUTTON_MATCHER =
             withId(FakeAccountManagerFacade.AddAccountActivityStub.OK_BUTTON_ID);
@@ -257,18 +195,10 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Creates an email used to identify child accounts in tests. A child-specific prefix will be
-     * appended to the base name so that the created account will be considered as {@link
-     * ChildAccountStatus#REGULAR_CHILD} in {@link FakeAccountManagerFacade}.
-     */
-    public static String generateChildEmail(String baseName) {
-        return FakeAccountManagerFacade.generateChildEmail(baseName);
-    }
-
-    /**
      * Returns an avatar image created from test resource.
      *
-     * <p>TODO(crbug.com/372670018): Remove this after migrating the rest of test accounts.
+     * <p>TODO(crbug.com/40890215): Remove this after deleting the deprecated `addAccount` overload
+     * which calls it.
      */
     private static Bitmap createAvatar() {
         Drawable drawable =
@@ -291,7 +221,7 @@ public class AccountManagerTestRule implements TestRule {
      */
     public void resolveMinorModeToRestricted(CoreAccountId accountId) {
         // TODO(b/343384614): append instead of overriding
-        overrideCapabilities(accountId, MINOR_MODE_REQUIRED);
+        overrideCapabilities(accountId, TestAccounts.MINOR_MODE_REQUIRED);
     }
 
     private void overrideCapabilities(CoreAccountId accountId, AccountCapabilities capabilities) {

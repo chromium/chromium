@@ -307,16 +307,16 @@ const MLOperatorOptions* MLOperator::Options() const {
   return options_.Get();
 }
 
-const HeapVector<Member<const MLOperand>>& MLOperator::Inputs() const {
+const HeapVector<Member<MLOperand>>& MLOperator::Inputs() const {
   return inputs_;
 }
 
-const HeapVector<Member<const MLOperand>>& MLOperator::Outputs() const {
+const HeapVector<Member<MLOperand>>& MLOperator::Outputs() const {
   return outputs_;
 }
 
 void MLOperator::Connect(HeapVector<Member<MLOperand>> inputs,
-                         HeapVector<Member<const MLOperand>> outputs) {
+                         HeapVector<Member<MLOperand>> outputs) {
   DCHECK(!inputs.empty());
   DCHECK(!outputs.empty());
   for (auto& input : inputs) {

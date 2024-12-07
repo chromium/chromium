@@ -9,6 +9,8 @@ import java.util.concurrent.Executor;
 /** Boundary interface for WebViewStartUpConfig. */
 public interface WebViewStartUpConfigBoundaryInterface {
     Executor getBackgroundExecutor();
-
+    /**
+     * Whether to run only parts of startup that doesn't block the UI thread.
+     */
     boolean shouldRunUiThreadStartUpTasks();
 }

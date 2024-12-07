@@ -37,9 +37,12 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   ~HoldingSpaceItemChipView() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HoldingSpaceItemViewsSectionTest,
+                           HoldingSpaceItemChipViewTooltipText);
+  FRIEND_TEST_ALL_PREFIXES(HoldingSpaceItemViewsSectionTest,
+                           HoldingSpaceItemChipViewTooltipTextAccessibility);
   // HoldingSpaceItemView:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  std::u16string GetTooltipText(const gfx::Point& point) const override;
   void OnHoldingSpaceItemUpdated(
       const HoldingSpaceItem* item,
       const HoldingSpaceItemUpdatedFields& updated_fields) override;
@@ -47,6 +50,8 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   void OnSelectionUiChanged() override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnThemeChanged() override;
+
+  void UpdateTooltipText();
 
   // Invoked during `label`'s paint sequence to paint its optional mask. Note
   // that `label` is only masked when the `primary_action_container()` is
@@ -74,6 +79,14 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
 
   base::CallbackListSubscription image_skia_changed_subscription_;
   base::CallbackListSubscription progress_ring_animation_changed_subscription_;
+  base::CallbackListSubscription primary_label_text_changed_subscription_;
+  base::CallbackListSubscription secondary_label_text_changed_subscription_;
+  base::CallbackListSubscription
+      primary_label_tooltiptext_changed_subscription_;
+  base::CallbackListSubscription
+      secondary_label_tooltiptext_changed_subscription_;
+
+  base::WeakPtrFactory<HoldingSpaceItemChipView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

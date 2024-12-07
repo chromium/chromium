@@ -23,6 +23,7 @@ import './site_permissions/site_permissions_by_site.js';
 import './toolbar.js';
 
 import {CrContainerShadowMixinLit} from 'chrome://resources/cr_elements/cr_container_shadow_mixin_lit.js';
+import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -33,6 +34,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 import type {ExtensionsDetailViewElement} from './detail_view.js';
 import type {ExtensionsItemListElement} from './item_list.js';
+import {TOAST_DURATION_MS} from './item_util.js';
 import {getCss} from './manager.css.js';
 import {getHtml} from './manager.html.js';
 import type {PageState} from './navigation_helper.js';
@@ -334,6 +336,20 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
           this.updateItem_(listId, currentIndex, eventData.extensionInfo);
         } else {
           this.addItem_(listId, eventData.extensionInfo);
+        }
+
+        // This is likely to trigger multiple times (one for each extension
+        // that's disabled. That's fine; we'll only show the toast for the first
+        // one, since we check first if it's open.
+        const toastManager = getToastManager();
+        if (this.showUnsupportedDeveloperExtensionDisabledToast_(
+                eventData.event_type, eventData.extensionInfo) &&
+            !toastManager.isToastOpen) {
+          toastManager.duration = TOAST_DURATION_MS;
+          // TODO(crbug.com/362756477): Replace temporary string with disable
+          // unsupported developer string once ready.
+          toastManager.show(
+              'Developer Mode Off. Some extensions are disabled.');
         }
         break;
       case EventType.UNINSTALLED:
@@ -717,6 +733,24 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   protected onInstallWarningsDialogClose_() {
     this.installWarnings_ = null;
     this.showInstallWarningsDialog_ = false;
+  }
+
+  /**
+   * Show a toast when an unpacked extension becomes disabled when the user is
+   * not in developer mode.
+   */
+  private showUnsupportedDeveloperExtensionDisabledToast_(
+      eventType: chrome.developerPrivate.EventType,
+      extensionInfo: chrome.developerPrivate.ExtensionInfo): boolean {
+    if (eventType !== chrome.developerPrivate.EventType.UNLOADED) {
+      return false;
+    }
+
+    return !this.inDevMode &&
+        extensionInfo.state ===
+        chrome.developerPrivate.ExtensionState.DISABLED &&
+        extensionInfo.location === chrome.developerPrivate.Location.UNPACKED &&
+        extensionInfo.disableReasons.unsupportedDeveloperExtension;
   }
 }
 

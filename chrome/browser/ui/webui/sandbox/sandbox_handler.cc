@@ -79,8 +79,6 @@ base::Value::Dict FeatureToValue(const base::Feature& feature) {
 
 base::Value::List FetchSandboxFeatures() {
   base::Value::List features;
-  features.Append(FeatureToValue(sandbox::policy::features::kGpuAppContainer));
-  features.Append(FeatureToValue(sandbox::policy::features::kGpuLPAC));
   features.Append(
       FeatureToValue(sandbox::policy::features::kNetworkServiceSandbox));
   features.Append(

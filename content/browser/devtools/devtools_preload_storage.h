@@ -23,6 +23,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
   ~DevToolsPreloadStorage() override;
 
   void UpdatePrefetchStatus(const GURL& prefetch_url,
+                            const base::UnguessableToken& preload_pipeline_id,
                             PreloadingTriggeringOutcome outcome,
                             PrefetchStatus status,
                             const std::string& request_id);
@@ -30,6 +31,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
   void UpdatePrerenderStatus(
       const GURL& prerender_url,
       std::optional<blink::mojom::SpeculationTargetHint>,
+      const base::UnguessableToken& preload_pipeline_id,
       PreloadingTriggeringOutcome outcome,
       std::optional<PrerenderFinalStatus> status,
       const std::optional<std::string>& disallowed_mojo_interface,
@@ -40,6 +42,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
 
   using PrefetchKey = GURL;
   struct PrefetchData {
+    base::UnguessableToken preload_pipeline_id;
     PreloadingTriggeringOutcome outcome;
     PrefetchStatus status;
     std::string request_id;
@@ -54,6 +57,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
     PrerenderData(const PrerenderData& other);
     ~PrerenderData();
 
+    base::UnguessableToken preload_pipeline_id;
     PreloadingTriggeringOutcome outcome;
     std::optional<PrerenderFinalStatus> status;
     std::optional<std::string> disallowed_mojo_interface;

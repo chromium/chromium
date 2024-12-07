@@ -2020,10 +2020,10 @@ void BaseRenderingContext2D::placeElement(Element* element,
                                           double x,
                                           double y,
                                           ExceptionState& exception_state) {
-  HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
-  DCHECK(canvas);
+  HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
+  DCHECK(canvas_element);
 
-  if (element->parentElement() != canvas) {
+  if (element->parentElement() != canvas_element) {
     exception_state.ThrowTypeError(
         "Only immediate children of the <canvas> element can be used with "
         "placeElement().");
@@ -2036,15 +2036,20 @@ void BaseRenderingContext2D::placeElement(Element* element,
     return;
   }
 
+  cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
+  if (!paint_canvas) {
+    return;
+  }
+
   // TODO(crbug.com/380277045): Only taint for x-origin content.
   SetOriginTaintedByContent();
 
-  if (!canvas->HasPlacedElements()) {
+  if (!canvas_element->HasPlacedElements()) {
     // If this is the first time placeElement() is called, its possible that the
     // canvas contains fallback content that has been ignored and needs to be
     // laid out.
-    canvas->SetForceReattachLayoutTree();
-    canvas->SetNeedsStyleRecalc(
+    canvas_element->SetForceReattachLayoutTree();
+    canvas_element->SetNeedsStyleRecalc(
         StyleChangeType::kLocalStyleChange,
         StyleChangeReasonForTracing::Create("placeElement"));
   }
@@ -2074,7 +2079,7 @@ void BaseRenderingContext2D::placeElement(Element* element,
   WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
 
-  GetOrCreatePaintCanvas()->drawImage(paint_image, x, y);
+  paint_canvas->drawImage(paint_image, x, y);
 }
 
 void BaseRenderingContext2D::drawImage(const V8CanvasImageSource* image_source,

@@ -121,7 +121,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* MinWidthOrMinHeightAuto(const ComputedStyle&);
   static CSSValue* ValueForPositionOffset(const ComputedStyle&,
                                           const CSSProperty&,
-                                          const LayoutObject*);
+                                          const LayoutObject*,
+                                          CSSValuePhase);
   static CSSValue* ValueForItemPositionWithOverflowAlignment(
       const StyleSelfAlignmentData&);
   static cssvalue::CSSContentDistributionValue*
@@ -270,6 +271,10 @@ class CORE_EXPORT ComputedStyleUtils {
       CSSValuePhase);
   static const CSSValue* ValueForGapDecorationWidthDataList(
       const GapDataList<int>&,
+      const ComputedStyle&,
+      CSSValuePhase);
+  static const CSSValue* ValueForGapDecorationStyleDataList(
+      const GapDataList<EBorderStyle>&,
       const ComputedStyle&,
       CSSValuePhase);
   static CSSValue* ValueForShadowData(const ShadowData&,

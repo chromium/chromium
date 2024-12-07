@@ -712,6 +712,7 @@ void DidUpdatePrefetchStatus(
     FrameTreeNode* ftn,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prefetch_url,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
     PrefetchStatus prefetch_status,
     const std::string& request_id) {
@@ -723,13 +724,15 @@ void DidUpdatePrefetchStatus(
   // sessions, to persist the latest status update.
   DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
       ftn->current_frame_host())
-      ->UpdatePrefetchStatus(prefetch_url, status, prefetch_status, request_id);
+      ->UpdatePrefetchStatus(prefetch_url, preload_pipeline_id, status,
+                             prefetch_status, request_id);
 
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrefetchStatus,
                    initiator_devtools_navigation_token, initiating_frame_id,
-                   prefetch_url, status, prefetch_status, request_id);
+                   prefetch_url, preload_pipeline_id, status, prefetch_status,
+                   request_id);
 }
 
 void OnPrefetchRequestWillBeSent(
@@ -816,6 +819,7 @@ void DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
     std::optional<PrerenderFinalStatus> prerender_status,
     std::optional<std::string> disallowed_mojo_interface,
@@ -830,13 +834,13 @@ void DidUpdatePrerenderStatus(
   // sessions, to persist the latest status update.
   DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
       ftn->current_frame_host())
-      ->UpdatePrerenderStatus(prerender_url, target_hint, status,
-                              prerender_status, disallowed_mojo_interface,
-                              mismatched_headers);
+      ->UpdatePrerenderStatus(prerender_url, target_hint, preload_pipeline_id,
+                              status, prerender_status,
+                              disallowed_mojo_interface, mismatched_headers);
 
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                    initiator_devtools_navigation_token, prerender_url,
-                   target_hint, status, prerender_status,
+                   target_hint, preload_pipeline_id, status, prerender_status,
                    disallowed_mojo_interface, mismatched_headers);
 }
 

@@ -108,6 +108,22 @@ float CompositedTouchHandleDrawable::GetDrawableHorizontalPaddingRatio() const {
   return drawable_horizontal_padding_ratio_;
 }
 
+void CompositedTouchHandleDrawable::OnUpdateNativeViewTree(
+    gfx::NativeView parent_native_view,
+    cc::slim::Layer* parent_layer) {
+  if (view_ == parent_native_view) {
+    // Either `view_` is null or both `view_` and `parent_layer` are non null
+    // and `parent_layer` is already the parent of `layer_`.
+    CHECK(!view_ || (!!parent_layer && parent_layer == layer_->parent()));
+    return;
+  }
+  view_ = parent_native_view;
+  layer_->RemoveFromParent();
+  if (parent_layer) {
+    parent_layer->AddChild(layer_.get());
+  }
+}
+
 void CompositedTouchHandleDrawable::DetachLayer() {
   layer_->RemoveFromParent();
 }

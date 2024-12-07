@@ -59,7 +59,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang++",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
                 "remote": True,
                 "input_root_absolute_path": input_root_absolute_path,
@@ -74,7 +73,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
                 "remote": True,
                 "input_root_absolute_path": input_root_absolute_path,
@@ -89,7 +87,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang++",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
@@ -104,7 +101,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
@@ -119,7 +115,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang++",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang",
                 "remote": True,
@@ -135,7 +130,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang",
                 "remote": True,
@@ -151,7 +145,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang++",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang",
                 "remote": True,
@@ -167,7 +160,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang",
                 "remote": True,

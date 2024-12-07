@@ -45,9 +45,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // |texture_target| is the target that the texture should be bound to if the
   // backing is used with GL.
   //
-  // |is_origin_top_left| indicates whether the origin in texture space
-  // corresponds to the top-left content pixel.
-  //
   // |context_provider| is the context that the shared image was created with.
   // |context_thread_ref| and |context_task_runner| refer to the thread the
   // context is bound to. If the image is created on a different thread than
@@ -66,7 +63,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       GLuint shared_image_texture_id,
       const SkImageInfo& sk_image_info,
       GLenum texture_target,
-      bool is_origin_top_left,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,

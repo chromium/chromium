@@ -30,7 +30,7 @@ class LoginUIService : public KeyedService {
     virtual void FocusUI() = 0;
 
    protected:
-    virtual ~LoginUI() {}
+    virtual ~LoginUI() = default;
   };
 
   // Used when the sync confirmation UI is closed to signify which option was
@@ -59,7 +59,7 @@ class LoginUIService : public KeyedService {
         SyncConfirmationUIClosedResult result) {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   explicit LoginUIService(Profile* profile);

@@ -32,7 +32,6 @@ namespace autotestPrivate {
   // A mapping of apps::mojom::Type
   enum AppType {
     Arc,
-    BuiltIn,
     Crostini,
     Extension,
     Web,

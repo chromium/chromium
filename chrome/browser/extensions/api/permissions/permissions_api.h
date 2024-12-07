@@ -20,7 +20,7 @@ class PermissionsContainsFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("permissions.contains", PERMISSIONS_CONTAINS)
 
  protected:
-  ~PermissionsContainsFunction() override {}
+  ~PermissionsContainsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -32,7 +32,7 @@ class PermissionsGetAllFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("permissions.getAll", PERMISSIONS_GETALL)
 
  protected:
-  ~PermissionsGetAllFunction() override {}
+  ~PermissionsGetAllFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -44,7 +44,7 @@ class PermissionsRemoveFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("permissions.remove", PERMISSIONS_REMOVE)
 
  protected:
-  ~PermissionsRemoveFunction() override {}
+  ~PermissionsRemoveFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

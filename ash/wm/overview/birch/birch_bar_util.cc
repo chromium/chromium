@@ -12,6 +12,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/label.h"
@@ -114,17 +115,18 @@ TabAppSelectionHost* GetVisibleTabAppSelectionHost() {
   for (BirchBarView* bar_view : bar_views) {
     auto iter =
         base::ranges::find_if(bar_view->chips(), [](BirchChipButtonBase* chip) {
-          if (!views::IsViewClass<BirchChipButton>(chip)) {
+          CoralChipButton* coral_chip =
+              views::AsViewClass<CoralChipButton>(chip);
+          if (!coral_chip) {
             return false;
           }
 
           TabAppSelectionHost* selection_host =
-              views::AsViewClass<BirchChipButton>(chip)
-                  ->tab_app_selection_widget();
+              coral_chip->tab_app_selection_widget();
           return selection_host && selection_host->IsVisible();
         });
     if (iter != bar_view->chips().end()) {
-      return views::AsViewClass<BirchChipButton>(*iter)
+      return views::AsViewClass<CoralChipButton>(*iter)
           ->tab_app_selection_widget();
     }
   }

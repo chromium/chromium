@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
@@ -277,7 +278,7 @@ void LocationBarView::Init() {
   location_icon_view->set_drag_controller(this);
   location_icon_view_ = AddChildView(std::move(location_icon_view));
 
-  if (base::FeatureList::IsEnabled(page_info::kMerchantTrust)) {
+  if (page_info::IsMerchantTrustFeatureEnabled()) {
     merchant_trust_chip_ = AddChildView(std::make_unique<OmniboxChipButton>());
     merchant_trust_chip_controller_ =
         std::make_unique<MerchantTrustChipButtonController>(
@@ -997,7 +998,8 @@ void LocationBarView::Update(WebContents* contents) {
 
   // TODO(crbug.com/378854462): Fetch the data from the service and show when
   // there is data available.
-  if (merchant_trust_chip_controller_) {
+  if (merchant_trust_chip_controller_ && contents) {
+    merchant_trust_chip_controller_->UpdateWebContents(contents);
     merchant_trust_chip_controller_->Show();
   }
 

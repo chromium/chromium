@@ -157,7 +157,8 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const GaiaId& member_gaia_id) = 0;
 
   // Refreshes data if necessary and passes the GroupData to `callback`.
-  virtual void ReadGroup(
+  // Deprecated: use synchronous ReadGroup() above instead.
+  virtual void ReadGroupDeprecated(
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) = 0;
 

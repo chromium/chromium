@@ -67,7 +67,9 @@ std::string GetSchema(Database* db) {
 class SqlRecoveryTest : public testing::Test,
                         public testing::WithParamInterface<bool> {
  public:
-  SqlRecoveryTest() : db_(DatabaseOptions{.wal_mode = ShouldEnableWal()}) {
+  SqlRecoveryTest()
+      : db_(DatabaseOptions{.wal_mode = ShouldEnableWal()},
+            "MyFeatureDatabase") {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kEnableWALModeByDefault, ShouldEnableWal()}});
   }
@@ -75,8 +77,6 @@ class SqlRecoveryTest : public testing::Test,
   bool ShouldEnableWal() { return GetParam(); }
 
   void SetUp() override {
-    db_.set_histogram_tag("MyFeatureDatabase");
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("recovery_test.sqlite");
     ASSERT_TRUE(db_.Open(db_path_));

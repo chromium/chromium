@@ -218,7 +218,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Assume the top control is hidden and content is at the top.
         doReturn(0).when(mBrowserControlsVisibilityManager).getContentOffset();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
@@ -377,7 +378,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Assume the top control is hidden and content is at the top.
         doReturn(0).when(mBrowserControlsVisibilityManager).getContentOffset();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
@@ -601,9 +603,6 @@ public class TabStripTransitionCoordinatorUnitTest {
         doReturn(mSpyControlContainer.findToolbar)
                 .when(mSpyControlContainer)
                 .findViewById(R.id.find_toolbar);
-        doReturn(mSpyControlContainer.dropTargetView)
-                .when(mSpyControlContainer)
-                .findViewById(R.id.toolbar_drag_drop_target_view);
 
         setDeviceWidthDp(NARROW_NORMAL_WINDOW_WIDTH);
         doReturn(TEST_TOOLBAR_HEIGHT)
@@ -640,7 +639,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         int midOffset = TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT / 2;
         mTopControlsContentOffset = midOffset;
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -666,7 +666,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Push a browser control height update to kick off the height transition.
         doReturn(TEST_TOOLBAR_HEIGHT).when(mBrowserControlsVisibilityManager).getContentOffset();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertTabStripHeightForMargins(newHeight);
         assertObservedHeight(newHeight);
@@ -690,7 +691,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Push a browser control height update to kick off the height transition.
         doReturn(TEST_TOOLBAR_HEIGHT).when(mBrowserControlsVisibilityManager).getContentOffset();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertTabStripHeightForMargins(expectedHeight);
         assertObservedHeight(expectedHeight);
@@ -976,7 +978,8 @@ public class TabStripTransitionCoordinatorUnitTest {
         for (int turns = 0; turns <= 10; turns++) {
             // Simulate top controls size change from browser. Input values doesn't matter in this
             // call.
-            getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+            getBrowserControlsObserver()
+                    .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
             if (mTopControlsContentOffset == endOffset) break;
 
             assertObservedTransitionFinished(false);
@@ -1017,10 +1020,6 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Top margin is wrong for findToolbar.",
                 tabStripHeight + TEST_TOOLBAR_HEIGHT,
                 mSpyControlContainer.findToolbar.getTopMargin());
-        Assert.assertEquals(
-                "Top margin is wrong for dropTargetView.",
-                tabStripHeight,
-                mSpyControlContainer.dropTargetView.getTopMargin());
         Assert.assertEquals(
                 "Top margin is wrong for toolbarHairline.",
                 tabStripHeight + TEST_TOOLBAR_HEIGHT,
@@ -1066,8 +1065,10 @@ public class TabStripTransitionCoordinatorUnitTest {
         doReturn(TEST_TOOLBAR_HEIGHT)
                 .when(mBrowserControlsVisibilityManager)
                 .getTopControlsHeight();
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
-        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        getBrowserControlsObserver()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
         mObserver = new TestObserver();
         mCoordinator.addObserver(mObserver);
         mDelegate.reset();
@@ -1112,7 +1113,6 @@ public class TabStripTransitionCoordinatorUnitTest {
         public TestView toolbarLayout;
         public TestView toolbarHairline;
         public TestView findToolbar;
-        public TestView dropTargetView;
 
         @Nullable public View.OnLayoutChangeListener onLayoutChangeListener;
 
@@ -1129,9 +1129,6 @@ public class TabStripTransitionCoordinatorUnitTest {
             doReturn(controlContainer.findToolbar)
                     .when(controlContainer)
                     .findViewById(R.id.find_toolbar_tablet_stub);
-            doReturn(controlContainer.dropTargetView)
-                    .when(controlContainer)
-                    .findViewById(R.id.target_view_stub);
 
             doAnswer(args -> context.getResources().getDisplayMetrics().widthPixels)
                     .when(controlContainer)
@@ -1156,10 +1153,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
             toolbarLayout = Mockito.spy(new TestView(context, attrs));
             findToolbar = Mockito.spy(new TestView(context, attrs));
-            dropTargetView = Mockito.spy(new TestView(context, attrs));
             when(toolbarLayout.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
             when(findToolbar.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
-            when(dropTargetView.getHeight()).thenReturn(TEST_TOOLBAR_HEIGHT);
             toolbarHairline = new TestView(context, attrs);
 
             MarginLayoutParams sourceParams =
@@ -1173,7 +1168,6 @@ public class TabStripTransitionCoordinatorUnitTest {
             sourceParams.topMargin = TEST_TAB_STRIP_HEIGHT;
             sourceParams.height = TEST_TOOLBAR_HEIGHT;
             addView(toolbarLayout, new MarginLayoutParams(sourceParams));
-            addView(dropTargetView, new MarginLayoutParams(sourceParams));
         }
     }
 

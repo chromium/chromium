@@ -202,7 +202,7 @@ PillButton::PillButton(PressedCallback callback,
   SetImageLabelSpacing(kIconPillButtonImageLabelSpacingDp);
 
   Init();
-
+  UpdateTooltipText();
   enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
       &PillButton::UpdateBackgroundColor, base::Unretained(this)));
 }
@@ -308,12 +308,25 @@ views::PropertyEffects PillButton::UpdateStyleToIndicateDefaultStatus() {
   return views::kPropertyEffectsNone;
 }
 
-std::u16string PillButton::GetTooltipText(const gfx::Point& p) const {
-  const auto& tooltip = views::LabelButton::GetTooltipText(p);
-  if (use_label_as_default_tooltip_ && tooltip.empty()) {
-    return GetText();
+void PillButton::SetText(const std::u16string& text) {
+  std::u16string old_label_text = GetText();
+  views::LabelButton::SetText(text);
+
+  // This custom logic is necessary when the cached value for the tooltip is the
+  // label's text.
+  // Using our `UpdateTooltip()` function as-is would produce incorrect results
+  // because the cache contains a value that did not originate from the parent
+  // `LabelButton`.
+  if (use_label_as_default_tooltip_ &&
+      old_label_text == GetCachedTooltipText()) {
+    SetCachedTooltipText(GetText());
   }
-  return tooltip;
+}
+
+void PillButton::OnSetTooltipText(const std::u16string& tooltip_text) {
+  views::LabelButton::OnSetTooltipText(tooltip_text);
+  original_tooltip_text_ = GetCachedTooltipText();
+  UpdateTooltipText();
 }
 
 void PillButton::SetBackgroundColor(const SkColor background_color) {
@@ -381,6 +394,7 @@ void PillButton::SetTextWithStringId(int message_id) {
 void PillButton::SetUseLabelAsDefaultTooltip(
     bool use_label_as_default_tooltip) {
   use_label_as_default_tooltip_ = use_label_as_default_tooltip;
+  UpdateTooltipText();
 }
 
 void PillButton::Init() {
@@ -471,6 +485,18 @@ void PillButton::UpdateIconColor() {
 
 int PillButton::GetHorizontalSpacingWithIcon() const {
   return std::max(horizontal_spacing_ - padding_reduction_for_icon_, 0);
+}
+
+void PillButton::UpdateTooltipText() {
+  const auto& tooltip = GetCachedTooltipText();
+  if (use_label_as_default_tooltip_ && tooltip.empty()) {
+    SetCachedTooltipText(GetText());
+  } else {
+    // Only use the old value if we were using Label's Text as tooltip before.
+    if (tooltip == GetText()) {
+      SetCachedTooltipText(original_tooltip_text_);
+    }
+  }
 }
 
 BEGIN_METADATA(PillButton)

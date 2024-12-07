@@ -494,7 +494,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     const SharedImageInfo& si_info) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   DCHECK_EQ(si_info.meta.usage,
-            gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_WRITE));
+            gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY));
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   CHECK(!si_info.meta.format.PrefersExternalSampler());
@@ -509,14 +509,14 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       base::UnsafeSharedMemoryRegion::Create(buffer_size);
   if (!shared_memory_region.IsValid()) {
     DLOG(ERROR) << "base::UnsafeSharedMemoryRegion::Create() for SharedImage "
-                   "with SHARED_IMAGE_USAGE_CPU_WRITE fails!";
+                   "with SHARED_IMAGE_USAGE_CPU_WRITE_ONLY fails!";
     base::TerminateBecauseOutOfMemory(buffer_size);
   }
 
   shared_image_mapping.mapping = shared_memory_region.Map();
   if (!shared_image_mapping.mapping.IsValid()) {
-    DLOG(ERROR)
-        << "shared_memory_region.Map() for SHARED_IMAGE_USAGE_CPU_WRITE fails!";
+    DLOG(ERROR) << "shared_memory_region.Map() for "
+                   "SHARED_IMAGE_USAGE_CPU_WRITE_ONLY fails!";
     base::TerminateBecauseOutOfMemory(buffer_size);
   }
 

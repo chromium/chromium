@@ -10,15 +10,15 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
-#include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/save_autofill_ai_data_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
@@ -215,11 +215,10 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-AutofillBubbleBase*
-AutofillBubbleHandlerImpl::ShowSaveAutofillPredictionImprovementsBubble(
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAutofillAiDataBubble(
     content::WebContents* web_contents,
-    SaveAutofillPredictionImprovementsController* controller) {
-  return ShowBubble<SaveAutofillPredictionImprovementsBubbleView>(
+    autofill_ai::SaveAutofillAiDataController* controller) {
+  return ShowBubble<autofill_ai::SaveAutofillAiDataBubbleView>(
       toolbar_button_provider_, PageActionIconType::kAutofillAddress,
       web_contents, controller, /*is_user_gesture=*/false);
 }

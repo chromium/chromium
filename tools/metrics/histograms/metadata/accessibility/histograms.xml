@@ -368,6 +368,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.PageZoom.Usage"
+    enum="AccessibilityPageZoomUsageType" expires_after="2025-05-04">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks what type of user the current user is considered for the
+    Accessibility Page Zoom feature. The user can be in one of four buckets: a
+    user that has saved a custom zoom level on at least one site; a user that
+    has a default zoom level choice for all sites; a user that has both; a user
+    that has none. Any of the former three is considered an active user of the
+    feature. This is tracked once on browser start up.
+
+    Note: Users can move between these groups, although they can only be in one
+    group at a time.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
     enum="BooleanHit" expires_after="2025-05-04">
   <owner>mschillaci@google.com</owner>
@@ -1909,8 +1927,8 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.PDF.HasAccessibleText" enum="BooleanExists"
-    expires_after="2025-05-04">
+<histogram name="Accessibility.PDF.HasAccessibleText2" enum="BooleanExists"
+    expires_after="2025-11-04">
   <owner>dtseng@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1918,7 +1936,11 @@ even if they fit the naming pattern. -->
     When a PDF is constructed for accessibility, true if any page of the PDF
     contains any accessible text derived from a text run. Note that a PDF
     containing a mix of images and text will record true even though the images
-    may themselves contain inaccessible text.
+    may themselves contain inaccessible text. This metric (previously recorded
+    as HasAccessibleText) was affected by PDF Searchify feature before M133 as
+    when PDF searchify is enabled, all PDFs are made accessible before recording
+    the metric. It is updated in M133 to consider text availablity without
+    searchify's effect.
   </summary>
 </histogram>
 

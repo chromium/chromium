@@ -175,8 +175,9 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   void DidMoveToNewDocument(Document& old_document) override;
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
   bool ShouldHaveFocusAppearance() const override;
 
   virtual void ResetImpl() {}

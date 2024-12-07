@@ -690,6 +690,10 @@ mojom("mojom") {
           mojom = "media.mojom.RendererType"
           cpp = "::media::RendererType"
         },
+        {
+          mojom = "media.mojom.DemuxerType"
+          cpp = "::media::DemuxerType"
+        },
       ]
       traits_headers = [ "media_types_enum_mojom_traits.h" ]
     },

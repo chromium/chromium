@@ -230,7 +230,7 @@ class ServicesCustomizationExternalLoader : public extensions::ExternalLoader {
   }
 
  protected:
-  ~ServicesCustomizationExternalLoader() override {}
+  ~ServicesCustomizationExternalLoader() override = default;
 
  private:
   bool is_apps_set_ = false;
@@ -246,7 +246,7 @@ CustomizationDocument::CustomizationDocument(
     const std::string& accepted_version)
     : accepted_version_(accepted_version) {}
 
-CustomizationDocument::~CustomizationDocument() {}
+CustomizationDocument::~CustomizationDocument() = default;
 
 bool CustomizationDocument::LoadManifestFromFile(
     const base::FilePath& manifest_path) {
@@ -314,7 +314,7 @@ StartupCustomizationDocument::StartupCustomizationDocument(
   Init(statistics_provider);
 }
 
-StartupCustomizationDocument::~StartupCustomizationDocument() {}
+StartupCustomizationDocument::~StartupCustomizationDocument() = default;
 
 StartupCustomizationDocument* StartupCustomizationDocument::GetInstance() {
   return base::Singleton<

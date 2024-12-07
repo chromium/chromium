@@ -40,7 +40,7 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
 
   Switch* GetQuickShareToggle() const {
     CHECK(detailed_view_);
-    return detailed_view_->toggle_switch_;
+    return detailed_view_->quick_share_toggle_;
   }
 
   HoverHighlightView* GetYourDevicesRow() const {
@@ -51,6 +51,16 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
   HoverHighlightView* GetContactsRow() const {
     CHECK(detailed_view_);
     return detailed_view_->contacts_row_;
+  }
+
+  HoverHighlightView* GetHiddenRow() const {
+    CHECK(detailed_view_);
+    return detailed_view_->hidden_row_;
+  }
+
+  Switch* GetEveryoneToggle() const {
+    CHECK(detailed_view_);
+    return detailed_view_->everyone_toggle_;
   }
 
   size_t GetCloseBubbleCallCount() const {
@@ -150,6 +160,83 @@ TEST_F(NearbyShareDetailedViewImplTest, QuickShareV2_ToggleContacts) {
   LeftClickOn(contacts_row);
   EXPECT_EQ(::nearby_share::mojom::Visibility::kAllContacts,
             test_delegate_->GetVisibility());
+}
+
+TEST_F(NearbyShareDetailedViewImplTest, QuickShareV2_ToggleHidden) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->SetVisibility(
+      ::nearby_share::mojom::Visibility::kYourDevices);
+  SetUpDetailedView();
+  EXPECT_EQ(::nearby_share::mojom::Visibility::kYourDevices,
+            test_delegate_->GetVisibility());
+
+  HoverHighlightView* hidden_row = GetHiddenRow();
+  LeftClickOn(hidden_row);
+  EXPECT_EQ(::nearby_share::mojom::Visibility::kNoOne,
+            test_delegate_->GetVisibility());
+}
+
+TEST_F(NearbyShareDetailedViewImplTest,
+       QuickShareV2_ToggleEveryoneVisibilityOn) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->set_is_high_visibility_on(false);
+  SetUpDetailedView();
+  Switch* toggle = GetEveryoneToggle();
+  LeftClickOn(toggle);
+  EXPECT_EQ(TestNearbyShareDelegate::Method::kEnableHighVisibility,
+            test_delegate_->method_calls()[0]);
+}
+
+TEST_F(NearbyShareDetailedViewImplTest,
+       QuickShareV2_ToggleEveryoneVisibilityOff) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->set_is_high_visibility_on(true);
+  SetUpDetailedView();
+  Switch* toggle = GetEveryoneToggle();
+  LeftClickOn(toggle);
+  EXPECT_EQ(TestNearbyShareDelegate::Method::kDisableHighVisibility,
+            test_delegate_->method_calls()[0]);
+}
+
+TEST_F(
+    NearbyShareDetailedViewImplTest,
+    QuickShareV2_EveryoneVisibilityToggleEnabled_OnEnableHighVisibilityRequestActive) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->set_is_high_visibility_on(false);
+  test_delegate_->set_is_enable_high_visibility_request_active(true);
+  SetUpDetailedView();
+  Switch* toggle = GetEveryoneToggle();
+  EXPECT_TRUE(toggle->GetIsOn());
+}
+
+TEST_F(
+    NearbyShareDetailedViewImplTest,
+    QuickShareV2_NoEffect_OnEveryoneVisibilityToggleClick_WhileEnableHighVisibilityRequestActive) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->set_is_high_visibility_on(false);
+  test_delegate_->set_is_enable_high_visibility_request_active(true);
+  SetUpDetailedView();
+  Switch* toggle = GetEveryoneToggle();
+  LeftClickOn(toggle);
+
+  // Expect no calls, including En/DisableHighVisibility, have been made to
+  // NearbyShareDelegate.
+  EXPECT_EQ(0u, test_delegate_->method_calls().size());
+}
+
+TEST_F(
+    NearbyShareDetailedViewImplTest,
+    QuickShareV2_NoEffect_OnQuickShareToggleClick_WhileEnableHighVisibilityRequestActive) {
+  test_delegate_->SetEnabled(true);
+  test_delegate_->set_is_high_visibility_on(false);
+  test_delegate_->set_is_enable_high_visibility_request_active(true);
+  SetUpDetailedView();
+  Switch* toggle = GetQuickShareToggle();
+  LeftClickOn(toggle);
+
+  // Expect no calls, including En/DisableHighVisibility, have been made to
+  // NearbyShareDelegate.
+  EXPECT_EQ(0u, test_delegate_->method_calls().size());
 }
 
 }  // namespace ash

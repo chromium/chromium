@@ -37,6 +37,8 @@ class AutofillBubbleSignInPromoController {
   // clicked.
   void OnSignInToChromeClicked(const AccountInfo& account);
 
+  content::WebContents* GetWebContents() { return web_contents_.get(); }
+
  private:
   // Used to move the local data item to the account storage once the sign in
   // has been completed.

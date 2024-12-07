@@ -120,11 +120,6 @@ class AuthenticatorRequestDialogController
   void HideDialogAndDispatchToPlatformAuthenticator(
       std::optional<device::AuthenticatorType> type = std::nullopt);
 
-  // Called when the transport availability info changes.
-  void OnTransportAvailabilityChanged(
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo
-          transport_availability);
-
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
 

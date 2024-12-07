@@ -131,7 +131,6 @@
 <translation id="2586406160782125153">हे या डिव्‍हाइस मधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> वरून तुमच्या Chrome ब्राउझरवरील गोष्टी मिळवा</translation>
 <translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome अपडेट तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="2632707915638608719">Chrome ची एक्स्टेंशन वापरून आणखी बरेच काही करणे</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">तुमच्या ब्राउझरमध्ये सर्वात सुरक्षित सेटिंग्ज असल्याची खात्री करण्यासाठी Chrome नियमितपणे तपासते. तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, आम्ही तुम्हाला कळवू.</translation>
@@ -165,7 +164,6 @@
 <translation id="2926676257163822632">कमकुवत पासवर्ड ओळखणे सोपे असते. Chrome ला <ph name="BEGIN_LINK" />तुमच्यासाठी क्लिष्ट पासवर्ड तयार करून लक्षात ठेवू द्या<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome ला या साइटसाठी कॅमेराची परवानगी आवश्यक आहे</translation>
 <translation id="2928420929544864228">इंस्टॉलेशन पूर्ण झाले.</translation>
-<translation id="2929907241665500097">Chrome अपडेट झाले नाही, काहीतरी चूक झाली. <ph name="BEGIN_LINK" />Chrome अपडेट समस्या आणि अयशस्वी झालेल्या अपडेटचे निराकरण करा.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">इंस्टॉलसंबंधित एरर: इंस्टॉलर प्रक्रिया सुरू झाली नाही.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="2970681950995291301">Chrome मधून तुमचे Google खाते काढून टाकण्यासाठी, सेटिंग्ज पेजमध्ये Chrome मधून साइन आउट करा</translation>
@@ -175,7 +173,6 @@
 <translation id="3037838751736561277">Google Chrome पार्श्वभूमी मोड मध्ये आहे.</translation>
 <translation id="3038232873781883849">इंस्टॉल करण्यासाठी प्रतीक्षा करत आहे...</translation>
 <translation id="3045032126857188731">भाषांतराची भाषा: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">सुरक्षित ब्राउझिंग बंद आहे. Chrome ते सुरू करण्याची शिफारस करते.</translation>
 <translation id="306179102415443347">Google Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
 <translation id="3065168410429928842">Chrome टॅब</translation>
 <translation id="3080151273017101988">जेव्हा Google Chrome बंद असेल तेव्हा पार्श्वभूमीत ॲप्लिकेशन चालणे सुरू ठेवा</translation>
@@ -242,7 +239,6 @@
 <translation id="383928141529488001">ब्लूटूथ डिव्हाइस एक्सप्लोर करण्यासाठी Google Chrome ला 
  ब्लूटूथ चा ॲक्सेस हवा आहे. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">कृपया सर्व Google Chrome विंडो बंद करा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="3865754807470779944">Chrome आवृत्ती <ph name="PRODUCT_VERSION" /> इंस्टॉल केली आहे</translation>
 <translation id="3873044882194371212">लिंक Chrome गुप्त विंडोमध्ये उघडा</translation>
 <translation id="3885770153807205175">भाषा निवडक</translation>
 <translation id="3889417619312448367">Google Chrome अनइंस्टॉल करा</translation>
@@ -282,12 +278,10 @@
 <translation id="4328355335528187361">Google Chrome डेव्हलपर (mDNS-In)</translation>
 <translation id="4329315893554541805">पर्सनलायझेशन व इतर वैशिष्ट्ये मिळवण्यासाठी, वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी व लिंक केलेल्या Google सेवांमध्ये Chrome चा समावेश करा</translation>
 <translation id="4334294535648607276">डाउनलोड पूर्ण.</translation>
-<translation id="4335235004908507846">Chrome तुम्हाला डेटा भंग, खराब एक्स्टेंशन आणि बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> हे Chrome मध्‍ये जोडले गेले आहे</translation>
 <translation id="4348548358339558429">पर्सनलायझेशन मिळवण्यासाठी, वेब आणि ॲप ॲक्टिव्हिटीमध्ये Chrome चा समावेश करा</translation>
 <translation id="436060642166082913">Chrome ने हा डाउनलोड ब्लॉक केला आहे, कारण ही फाइल तुमच्या वैयक्तिक आणि सोशल नेटवर्क खात्यांना हानी पोहोचवू शकते</translation>
 <translation id="4367027658822022112">सोप्या अ‍ॅक्सेससाठी तुम्ही Google Lens पिन करू शकता; साइड पॅनलच्या सर्वात वरती पिन करा बटणावर क्लिक करा</translation>
-<translation id="4384570495110188418">तुम्ही साइन इन केलेले नसल्यामुळे Chrome तुमचे पासवर्ड तपासू शकत नाही</translation>
 <translation id="4389991535395284064">गुप्त मोडमध्ये ब्राउझ करताना, असुरक्षित कनेक्शन वापरून साइट लोड करण्यापूर्वी Chrome तुम्हाला चेतावणी देईल</translation>
 <translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
 <translation id="4434353761996769206">इंस्टॉलर एरर: <ph name="INSTALLER_ERROR" /></translation>

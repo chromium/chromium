@@ -100,6 +100,8 @@ class ColorPickerElementView : public views::Button {
     GetViewAccessibility().SetCheckedState(
         selected_ ? ax::mojom::CheckedState::kTrue
                   : ax::mojom::CheckedState::kFalse);
+
+    UpdateCachedTooltipText();
   }
 
   ~ColorPickerElementView() override = default;
@@ -128,9 +130,7 @@ class ColorPickerElementView : public views::Button {
     return parent()->GetSelectedViewForGroup(group);
   }
 
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return color_name_;
-  }
+  void UpdateCachedTooltipText() { SetCachedTooltipText(color_name_); }
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
@@ -165,6 +165,7 @@ class ColorPickerElementView : public views::Button {
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ColorPickerViewTest, TooltipText);
   // Paints a ring in our color circle to indicate selection or mouse hover.
   // Does nothing if not selected or hovered.
   void PaintSelectionIndicator(gfx::Canvas* canvas) {

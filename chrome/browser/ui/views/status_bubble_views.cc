@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/status_bubble_views.h"
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -450,7 +446,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   float scale = canvas->UndoDeviceScaleFactor();
   const float radius = kBubbleCornerRadius * scale;
 
-  SkScalar rad[8] = {};
+  std::array<SkScalar, 8> rad{};
   auto round_corner = [&rad, radius](gfx::RRectF::Corner c) {
     int index = base::to_underlying(c);
     rad[2 * index] = radius;
@@ -529,7 +525,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   bubble_rect.Inset(0.5);
 
   SkPath path;
-  path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad);
+  path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad.data());
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kStroke_Style);

@@ -117,7 +117,7 @@ std::string GetInterfaceSSID(const std::string& ifname) {
   struct iwreq wreq = {};
   strncpy(wreq.ifr_name, ifname.c_str(), IFNAMSIZ - 1);
 
-  char ssid[IW_ESSID_MAX_SIZE + 1] = {0};
+  char ssid[IW_ESSID_MAX_SIZE + 1] = {};
   wreq.u.essid.pointer = ssid;
   wreq.u.essid.length = IW_ESSID_MAX_SIZE;
   if (ioctl(ioctl_socket.get(), SIOCGIWESSID, &wreq) != -1)
@@ -166,7 +166,7 @@ bool GetNetworkListImpl(
         ifnames.find(it.second.ifa_index);
     std::string ifname;
     if (itname == ifnames.end()) {
-      char buffer[IFNAMSIZ] = {0};
+      char buffer[IFNAMSIZ] = {};
       ifname.assign(get_interface_name(it.second.ifa_index, buffer));
       // Ignore addresses whose interface name can't be retrieved.
       if (ifname.empty())

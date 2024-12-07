@@ -142,8 +142,8 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
   }
 
   // Setting some default usage in order to get a mappable shared image.
-  constexpr auto si_usage =
-      gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   auto shared_image = sii->CreateSharedImage(
       {kTargetSharedImageFormat, dimensions, gfx::ColorSpace(),
        gpu::SharedImageUsageSet(si_usage), "V4L2CaptureDelegateGpuHelper"},

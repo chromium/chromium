@@ -1706,12 +1706,15 @@ bool RenderProcessHostImpl::Init() {
 
   // Call this now and not in OnProcessLaunched in case any mojo calls get
   // dispatched before this.
+  uint64_t trace_id = base::Token::CreateRandom().high();
+  TRACE_EVENT("navigation", "RenderProcessHostImpl::Init",
+              perfetto::Flow::Global(trace_id));
   GetRendererInterface()->InitializeRenderer(
       GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
           browser_context_),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
-      GetContentClient()->browser()->GetOriginTrialsSettings());
+      GetContentClient()->browser()->GetOriginTrialsSettings(), trace_id);
 
   if (run_renderer_in_process()) {
     DCHECK(g_renderer_main_thread_factory);
@@ -3607,7 +3610,8 @@ bool RenderProcessHostImpl::ShutdownRequested() {
 }
 
 bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
-                                                   bool skip_unload_handlers) {
+                                                   bool skip_unload_handlers,
+                                                   bool ignore_workers) {
   base::UmaHistogramBoolean(
       "BrowserRenderProcessHost.FastShutdownIfPossible.Total", true);
   // Do not shut down the process if there are active or pending views other
@@ -3645,7 +3649,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
     return false;
   }
 
-  if (worker_ref_count_ != 0) {
+  if (!ignore_workers && worker_ref_count_ != 0) {
     LogDelayReasonForFastShutdown(DelayShutdownReason::kWorker);
     return false;
   }
@@ -5088,14 +5092,12 @@ uint64_t RenderProcessHostImpl::GetPrivateMemoryFootprint() {
   dump->platform_private_footprint =
       memory_instrumentation::mojom::PlatformPrivateFootprint::New();
 #if BUILDFLAG(IS_APPLE)
-  bool success =
-      memory_instrumentation::OSMetrics::FillOSMemoryDumpFromTaskPort(
-          ChildProcessTaskPortProvider::GetInstance()->TaskForHandle(
-              GetProcess().Handle()),
-          dump.get());
+  bool success = memory_instrumentation::OSMetrics::FillOSMemoryDump(
+      GetProcess().Handle(), ChildProcessTaskPortProvider::GetInstance(),
+      dump.get());
 #else
   bool success = memory_instrumentation::OSMetrics::FillOSMemoryDump(
-      GetProcess().Pid(), dump.get());
+      GetProcess().Handle(), dump.get());
 #endif
 
   // Failed to get private memory for the process, e.g. the process has died.

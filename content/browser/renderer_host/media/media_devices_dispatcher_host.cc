@@ -104,6 +104,8 @@ MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
       num_pending_audio_input_parameters_(0),
       authorization_handler_factory_callback_(base::BindRepeating(
           &MediaDevicesDispatcherHost::CreateAuthorizationHandler,
+          // The callback is bound to the current instance of the dispatcher
+          // host, so it is safe to pass a Unretained pointer to the callback.
           base::Unretained(this))) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(media_stream_manager_);

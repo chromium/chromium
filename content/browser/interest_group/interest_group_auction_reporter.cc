@@ -500,6 +500,7 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
       seller_info->auction_config->seller_experiment_group_id,
       seller_info->auction_config->non_shared_params
           .trusted_scoring_signals_coordinator,
+      /*process_assigned_callback=*/base::OnceClosure(),
       base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
                      base::Unretained(this), base::Unretained(seller_info),
                      top_seller_signals),
@@ -594,7 +595,11 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
 
   auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
                             winning_bid_info_.render_url);
-  if (IsKAnonForReporting(
+
+  // For B&A server components, we already checked k-anonymity on the server.
+  if ((top_level_with_components &&
+       component_seller_winning_bid_info_->saved_response.has_value()) ||
+      IsKAnonForReporting(
           winning_bid_info_.storage_interest_group, chosen_ad,
           winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     browser_signal_buyer_and_seller_reporting_id =

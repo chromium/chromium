@@ -165,6 +165,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomAppMenuEnabledState) -->
 
+<!-- LINT.IfChange(AccessibilityPageZoomUsageType)-->
+
+<enum name="AccessibilityPageZoomUsageType">
+  <summary>Track usage type for the page zoom feature.</summary>
+  <int value="0" label="No Usage"/>
+  <int value="1" label="Site-level setting"/>
+  <int value="2" label="Default zoom setting"/>
+  <int value="3" label="Both site-level and default zoom settings"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomUsageType) -->
+
 <!-- LINT.IfChange(AccessibilityTreeUnserializeError) -->
 
 <enum name="AccessibilityTreeUnserializeError">

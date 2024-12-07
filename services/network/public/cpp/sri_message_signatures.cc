@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/sri_message_signatures.h"
 
 #include "base/base64.h"
+#include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -17,13 +18,6 @@ namespace {
 
 const size_t kEd25519KeyLength = 32;
 const size_t kEd25519SigLength = 64;
-
-std::string SerializeAlgorithm(mojom::SRIMessageSignature::Algorithm alg) {
-  switch (alg) {
-    case mojom::SRIMessageSignature::Algorithm::kEd25519:
-      return "ed25519";
-  }
-}
 
 std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     const net::structured_headers::ParameterizedItem& component) {
@@ -53,6 +47,99 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
   } else {
     return std::nullopt;
   }
+}
+
+// net::StructuredHeaders doesn't expose the ability to serialize a parameter
+// list outside the context of a parameterized item. So, we'll do it ourselves
+// by serializing each individually as an Item.
+std::string SerializeParams(const net::structured_headers::Parameters params) {
+  std::stringstream param_list;
+  for (const auto& param : params) {
+    const std::string& name = param.first;
+    const net::structured_headers::Item& value = param.second;
+    param_list << ';';
+
+    // We only care about three parameter types for this specific application:
+    //
+    // 1.  Boolean for `sf` (which must be `true`).
+    // 2.  Integers for `created` and `expires`.
+    // 3.  String for everything else.
+    DCHECK((value.is_boolean() && value.GetBoolean()) || value.is_integer() ||
+           value.is_string());
+    param_list << name;
+
+    // For boolean parameters, we're done (as they wouldn't be in the list if
+    // they weren't true, and we don't serialize `?1` for parameters. For other
+    // types, we'll serialize the value:
+    if (!value.is_boolean()) {
+      std::optional<std::string> serialized_item =
+          net::structured_headers::SerializeItem(value);
+      DCHECK(serialized_item.has_value());
+      param_list << '=' << serialized_item.value();
+    }
+  }
+  return param_list.str();
+}
+
+// net::StructuredHeaders gives us the ability to serialize a list, but not an
+// inner list. This is generally pretty reasonable, but unfortunately not what
+// Section 2.3 of RFC9421 specifies for signature base serialization:
+//
+// https://www.rfc-editor.org/rfc/rfc9421#section-2.3
+std::string SerializeInnerList(
+    const std::vector<net::structured_headers::ParameterizedItem> list) {
+  std::stringstream inner_list;
+  // 1. Let the output be an empty string.
+  // 2. Determine an order for the component identifiers of the covered
+  //    components.
+  //
+  //    (We'll use the ordering as delivered in the header.)
+  //
+  // 3. Serialize the component identifiers ... as an ordered Inner List of
+  //    String values ... append this to the output.
+  inner_list << '(';
+  for (const auto& component : list) {
+    DCHECK(component.item.is_string());
+    inner_list << '"' << component.item.GetString() << '"';
+    inner_list << SerializeParams(component.params);
+
+    // Put a space between each component, avoiding an extra space at the end.
+    if (&component != &list.back()) {
+      inner_list << ' ';
+    }
+  }
+  inner_list << ')';
+  return inner_list.str();
+}
+
+// Serialize the value of a single key from a `Signature-Input` header's
+// Dictionary, as defined in Step 3 of Section 2.5 of RFC9421
+// (https://www.rfc-editor.org/rfc/rfc9421#section-2.5).
+std::string SerializeSignatureParams(
+    const net::structured_headers::ParameterizedMember& input) {
+  std::stringstream signature_params;
+
+  // 3.   Append the signature parameters component (Section 2.3) ...
+  // 3.1. Append the ... exact value `"@signature-params"`.
+  // 3.2. Append a single colon (`:`).
+  // 3.3. Append a single space (` `).
+  signature_params << "\"@signature-params\": ";
+
+  // 3.4. Append the signature parameters' canonicalized component values as
+  //      defined in Section 2.3.
+  DCHECK(input.member_is_inner_list);
+  signature_params << SerializeInnerList(input.member);
+
+  // 4. Determine an order for any signature parameters.
+  //
+  //    (We'll use the order in which they were delivered.)
+  //
+  // 5. Append the parameters to the inner list in order ... skipping
+  //    parameters that are not available or not used for this message
+  //    signature.
+  signature_params << SerializeParams(input.params);
+
+  return signature_params.str();
 }
 
 }  // namespace
@@ -133,17 +220,8 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
     }
 
     // Process the parameters, according to the validation requirements at
-    // https://wicg.github.io/signature-based-sri/#validation
-    std::string previous_param;
+    // https://wicg.github.io/signature-based-sri/#profile
     for (const auto& param : input_entry.params) {
-      // Verify that parameters were specified in alphabetical order:
-      if (param.first < previous_param) {
-        message_signature.reset();
-        break;
-      } else {
-        previous_param = param.first;
-      }
-
       if (param.first == "alg" && param.second.is_string() &&
           param.second.GetString() == "ed25519") {
         message_signature->alg =
@@ -179,6 +257,14 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
           !message_signature->tag) {
         continue;
       }
+
+      // Serialize `input_entry` as an inner list for later use in the signature
+      // base. We're doing this work at parse time, as we can simply serialize
+      // the structured field's parameterized member value that we processed
+      // above, rather than storing the ordering of the parameters for
+      // serialization later.
+      message_signature->serialized_signature_params =
+          SerializeSignatureParams(input_entry);
 
       // Otherwise, we're good! Save the signature and move on.
       parsed_headers.push_back(std::move(message_signature));
@@ -263,69 +349,16 @@ std::optional<std::string> ConstructSignatureBase(
     signature_base << component_value.value() << '\n';
   }
 
-  // 3.   Append the signature parameters component (Section 2.3) ...
-  // 3.1. Append the ... exact value `"@signature-params"`.
-  // 3.2. Append a single colon (`:`).
-  // 3.3. Append a single space (` `).
-  signature_base << "\"@signature-params\": ";
+  // 3.   Append the signature parameters component:
+  signature_base << signature->serialized_signature_params;
 
-  // 3.4. Append the signature parameters' canonicalized component values as
-  //      defined in Section 2.3 ...
-  //
-  // 1. Let the output be an empty string.
-  // 2. Determine an order for the component identifiers of the covered
-  //    components.
-  //
-  //    (We only have one component, so ordering is trivial.)
-  // 3. Serialize the component identifiers ... as an ordered Inner List of
-  //    String values ... append this to the output.
-  signature_base << '(';
-  for (const auto& component : signature->components) {
-    signature_base << '"' << component->name << '"';
-    for (auto param : component->params) {
-      switch (param) {
-        case Parameters::kStrictStructuredFieldSerialization:
-          signature_base << ";sf";
-          break;
-      }
-    }
+  // 4.   Produce an error if the output string contains non-ASCII characters.
+  //      (This shouldn't be possible given the parsing rules for this profile.)
+  std::string result = signature_base.str();
+  DCHECK(base::IsStringASCII(result));
 
-    // Put a space between each component, avoiding an extra space at the end.
-    if (&component != &signature->components.back()) {
-      signature_base << ' ';
-    }
-  }
-  signature_base << ')';
-
-  // 4. Determine an order for any signature parameters.
-  //
-  //    (SRI's validity constraints require alphabetization, so:
-  //     « "alg", "created", "expires", "keyid", "nonce", "tag" ».)
-  //
-  // 5. Append the parameters to the inner list in order ... skipping
-  //    parameters that are not available or not used for this message
-  //    signature.
-  if (signature->alg.has_value()) {
-    signature_base << ";alg=\"" << SerializeAlgorithm(signature->alg.value())
-                   << "\"";
-  }
-  if (signature->created.has_value()) {
-    signature_base << ";created=" << signature->created.value();
-  }
-  if (signature->expires.has_value()) {
-    signature_base << ";expires=" << signature->expires.value();
-  }
-  if (signature->keyid.has_value()) {
-    signature_base << ";keyid=\"" << signature->keyid.value() << "\"";
-  }
-  if (signature->nonce.has_value()) {
-    signature_base << ";nonce=\"" << signature->nonce.value() << "\"";
-  }
-  if (signature->tag.has_value()) {
-    signature_base << ";tag=\"" << signature->tag.value() << "\"";
-  }
-
-  return signature_base.str();
+  // 5.   Return the output string.
+  return result;
 }
 
 bool ValidateSRIMessageSignaturesOverHeaders(

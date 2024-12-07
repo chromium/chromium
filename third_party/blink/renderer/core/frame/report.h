@@ -11,10 +11,13 @@
 
 namespace blink {
 
+class ScriptObject;
+
 // The constants are implemented as static members of a class to have an unique
 // address and not violate ODR.
 struct CORE_EXPORT ReportType {
   static constexpr const char kCSPViolation[] = "csp-violation";
+  static constexpr const char kCSPHash[] = "csp-hash";
   static constexpr const char kCoopAccessViolation[] = "coop-access-violation";
   static constexpr const char kDeprecation[] = "deprecation";
   static constexpr const char kDocumentPolicyViolation[] =
@@ -44,7 +47,7 @@ class CORE_EXPORT Report : public ScriptWrappable {
     ScriptWrappable::Trace(visitor);
   }
 
-  ScriptValue toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state) const;
 
   // Provides a hash-like value for identifying reports with same content.
   // Collision of match id is possible.

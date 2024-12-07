@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/drive_internals/drive_internals_ui.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <fstream>
 #include <map>
 #include <memory>
@@ -79,8 +75,7 @@ constexpr char kKey[] = "key";
 constexpr char kValue[] = "value";
 constexpr char kClass[] = "class";
 
-constexpr const char* const kLogLevelName[] = {"verbose", "info", "warning",
-                                               "error"};
+constexpr std::array kLogLevelName = {"verbose", "info", "warning", "error"};
 
 size_t SeverityToLogLevelNameIndex(logging::LogSeverity severity) {
   if (severity <= logging::LOGGING_VERBOSE) {

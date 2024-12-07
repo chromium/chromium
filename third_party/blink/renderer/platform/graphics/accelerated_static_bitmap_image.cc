@@ -66,13 +66,14 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     GLuint shared_image_texture_id,
     const SkImageInfo& sk_image_info,
     GLenum texture_target,
-    bool is_origin_top_left,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
     viz::ReleaseCallback release_callback,
     bool supports_display_compositing,
     bool is_overlay_candidate) {
+  const bool is_origin_top_left =
+      shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id,
       sk_image_info, texture_target, is_origin_top_left,

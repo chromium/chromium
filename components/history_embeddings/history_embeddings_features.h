@@ -138,14 +138,6 @@ struct FeatureParameters {
   bool send_quality_log = false;
   bool send_quality_log_v2 = false;
 
-  // The number of threads to use for embeddings generation. A value of -1 means
-  // to use the default number of threads.
-  int embedder_num_threads = 4;
-
-  // The size of the cache the embedder uses to limit execution on the same
-  // passage.
-  int embedder_cache_size = 1000;
-
   // The max number of passages that can be extracted from a page. Passages over
   // this limit will be dropped by passage extraction.
   int max_passages_per_page = 30;
@@ -168,10 +160,6 @@ struct FeatureParameters {
   // Whether to enable the URL filter to skip blocked URLs to improve
   // performance.
   bool use_url_filter = false;
-
-  // The amount of time in seconds that the passage embeddings service will idle
-  // for before being torn down to reduce memory usage.
-  base::TimeDelta embeddings_service_timeout = base::Seconds(60);
 
   // Specifies whether the history clusters side panel UI also searches and
   // shows history embeddings.

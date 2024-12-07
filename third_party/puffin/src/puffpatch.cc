@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -60,32 +61,31 @@ Status DecodePatch(const uint8_t* patch,
                    uint64_t* src_puff_size,
                    uint64_t* dst_puff_size,
                    metadata::PatchHeader_PatchType* patch_type) {
-  size_t offset = 0;
   uint32_t header_size = 0;
   TEST_AND_RETURN_VALUE(patch_length >= (kMagicLength + sizeof(header_size)),
                         Status::P_BAD_PUFFIN_CORRUPT);
+  // SAFETY: Caller is required to provide at least `patch_length` valid bytes
+  // at `patch`.
+  UNSAFE_BUFFERS(const base::span patch_span(patch, patch_length));
 
-  string patch_magic(reinterpret_cast<const char*>(patch), kMagicLength);
+  const auto patch_magic =
+      base::as_string_view(patch_span.first<kMagicLength>());
   if (patch_magic != kMagic) {
     return Status::P_BAD_PUFFIN_MAGIC;
   }
-  offset += kMagicLength;
+  auto header_span = patch_span.subspan<kMagicLength>();
 
   // Read the header size from big-endian mode.
-  header_size = base::numerics::U32FromBigEndian(
-      // TODO(crbug.com/40284755): This span construction is unsound as we can't
-      // know the length of the patch allocation. The function should be
-      // accepting a span instead of a pointer.
-      UNSAFE_TODO(*base::span(patch + offset, sizeof(header_size))
-                       .to_fixed_extent<sizeof(header_size)>()));
-  offset += sizeof(header_size);
-  TEST_AND_RETURN_VALUE(header_size <= (patch_length - offset),
+  const auto header_size_span = header_span.first<sizeof header_size>();
+  header_size = base::numerics::U32FromBigEndian(header_size_span);
+  header_span = header_span.subspan<sizeof header_size>();
+  TEST_AND_RETURN_VALUE(header_size <= header_span.size(),
                         Status::P_BAD_PUFFIN_HEADER);
 
   metadata::PatchHeader header;
-  TEST_AND_RETURN_VALUE(header.ParseFromArray(patch + offset, header_size),
+  TEST_AND_RETURN_VALUE(header.ParseFromArray(header_span.data(), header_size),
                         Status::P_BAD_PUFFIN_HEADER);
-  offset += header_size;
+  header_span = header_span.subspan(header_size);
 
   CopyRpfToVector(header.src().deflates(), src_deflates, 1);
   CopyRpfToVector(header.dst().deflates(), dst_deflates, 1);
@@ -95,8 +95,8 @@ Status DecodePatch(const uint8_t* patch,
   *src_puff_size = header.src().puff_length();
   *dst_puff_size = header.dst().puff_length();
 
-  *bsdiff_patch_offset = offset;
-  *bsdiff_patch_size = patch_length - offset;
+  *bsdiff_patch_offset = patch_span.size() - header_span.size();
+  *bsdiff_patch_size = header_span.size();
 
   *patch_type = header.type();
   return Status::P_OK;

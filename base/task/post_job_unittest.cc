@@ -71,7 +71,7 @@ TEST(PostJobTest, TaskIds) {
   static constexpr size_t kNumTasksToRun = 1000;
   base::test::TaskEnvironment task_environment;
 
-  size_t concurrent_array[kNumConcurrentThreads] = {0};
+  size_t concurrent_array[kNumConcurrentThreads] = {};
   std::atomic_size_t remaining_tasks{kNumTasksToRun};
   base::JobHandle handle = base::PostJob(
       FROM_HERE, {}, BindLambdaForTesting([&](base::JobDelegate* job) {

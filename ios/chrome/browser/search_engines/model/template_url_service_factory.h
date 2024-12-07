@@ -8,7 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 class TemplateURLService;
@@ -16,7 +16,7 @@ class TemplateURLService;
 namespace ios {
 // Singleton that owns all TemplateURLServices and associates them with
 // Profile.
-class TemplateURLServiceFactory : public BrowserStateKeyedServiceFactory {
+class TemplateURLServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static TemplateURLService* GetForProfile(ProfileIOS* profile);
   static TemplateURLServiceFactory* GetInstance();
@@ -24,10 +24,6 @@ class TemplateURLServiceFactory : public BrowserStateKeyedServiceFactory {
   // Returns the default factory used to build TemplateURLServices. Can be
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
-
-  TemplateURLServiceFactory(const TemplateURLServiceFactory&) = delete;
-  TemplateURLServiceFactory& operator=(const TemplateURLServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<TemplateURLServiceFactory>;
@@ -40,9 +36,6 @@ class TemplateURLServiceFactory : public BrowserStateKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace ios

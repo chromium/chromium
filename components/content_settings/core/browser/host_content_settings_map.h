@@ -474,23 +474,15 @@ class HostContentSettingsMap : public content_settings::Observer,
   void UpdateExpiryEnforcementTimer(ContentSettingsType content_type,
                                     base::Time expiration);
 
-  // If the feature
-  // `kActiveContentSettingExpiry` is enabled,
-  // this method checks for and deletes all
-  // content setting entries which will have
-  // expired before `now() +
-  // kEagerExpiryBuffer` in any provider. It
-  // also determines the time of the next
-  // future expiry and schedules itself to run
-  // at `expiration() - kEagerExpiryBuffer` if
-  // such a closest expiry exists for other
-  // content setting entries of this type in
-  // any provider. This method can and should
-  // be called each time a new expiration
-  // metadata field may be set for the
-  // provider. It aborts and potentially
-  // reinitializes running OneShotTimers
-  // automatically in those cases.
+  // If the feature `kActiveContentSettingExpiry` is enabled, this method checks
+  // for and deletes all content setting entries for temporary allowable
+  // permissions expired before `now() + kEagerExpiryBuffer` in any provider. It
+  // also determines the time of the next future expiry and schedules itself to
+  // run at `expiration() - kEagerExpiryBuffer` if such a closest expiry exists
+  // for other content setting entries of this type in any provider. This method
+  // can and should be called each time a new expiration metadata field may be
+  // set for the provider. It aborts and potentially reinitializes running
+  // OneShotTimers automatically in those cases.
   void DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
       ContentSettingsType content_setting_type);
 
@@ -545,8 +537,8 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Maps content setting type to OneShotTimers that are used to run
   // `DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun` which checks for, and
-  // deletes expired entries of the content setting if the feature flag
-  // `kActiveContentSettingExpiry` is enabled.
+  // deletes expired entries of the temporary allowable content setting if the
+  // feature flag `kActiveContentSettingExpiry` is enabled.
   std::map<ContentSettingsType, std::unique_ptr<base::OneShotTimer>>
       expiration_enforcement_timers_;
 

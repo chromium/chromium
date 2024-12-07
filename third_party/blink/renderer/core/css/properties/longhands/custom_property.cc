@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -118,15 +119,19 @@ void CustomProperty::ApplyInherit(StyleResolverState& state) const {
 void CustomProperty::ApplyValue(StyleResolverState& state,
                                 const CSSValue& value,
                                 ValueMode value_mode) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  DCHECK(!value.IsCSSWideKeyword());
+
   // Highlight Pseudos do not allow custom property definitions.
   // Properties are copied from the originating element when the
   // style is created.
   if (state.UsesHighlightPseudoInheritance()) {
+    if (builder.StyleType() == kPseudoIdSelection) {
+      UseCounter::Count(state.GetDocument(),
+                        WebFeature::kSelectionCustomProperty);
+    }
     return;
   }
-
-  ComputedStyleBuilder& builder = state.StyleBuilder();
-  DCHECK(!value.IsCSSWideKeyword());
 
   builder.SetHasVariableDeclaration();
 

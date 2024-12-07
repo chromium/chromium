@@ -6,6 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import <array>
+#import <string>
+
+#import "base/containers/contains.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -20,10 +24,15 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
+
+/// Locales with reverse color logic (red for positive, green for negative).
+constexpr std::array<std::string_view, 4> kReverseColorLocales = {
+    "zh-CN", "zh-TW", "ja-JP", "ko-KR"};
 
 /// The color of the main text of a suggest cell.
 UIColor* SuggestionTextColor() {
@@ -46,6 +55,9 @@ UIColor* DimColorIncognito() {
 
 @implementation AutocompleteMatchFormatter {
   AutocompleteMatch _match;
+  /// Whether the current locale uses the reverse color logic (red for positive,
+  /// green for negative).
+  BOOL _isReverseColorLogic;
 }
 @synthesize suggestionSectionId;
 @synthesize actionsInSuggest;
@@ -54,6 +66,8 @@ UIColor* DimColorIncognito() {
   self = [super init];
   if (self) {
     _match = AutocompleteMatch(match);
+    _isReverseColorLogic = base::Contains(
+        kReverseColorLocales, GetApplicationContext()->GetApplicationLocale());
   }
   return self;
 }
@@ -441,18 +455,23 @@ UIColor* DimColorIncognito() {
                                                  : SuggestionTextColor();
 
   omnibox::FormattedString::ColorType color = fragment.color();
+  BOOL isFinanceMatch = _match.answer_type == omnibox::ANSWER_TYPE_FINANCE;
   switch (color) {
     case omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE:
       return @{
         NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
                                                     size:0],
-        NSForegroundColorAttributeName : [UIColor colorNamed:kGreenColor],
+        NSForegroundColorAttributeName : _isReverseColorLogic && isFinanceMatch
+            ? [UIColor colorNamed:kRedColor]
+            : [UIColor colorNamed:kGreenColor],
       };
     case omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE:
       return @{
         NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
                                                     size:0],
-        NSForegroundColorAttributeName : [UIColor colorNamed:kRedColor],
+        NSForegroundColorAttributeName : _isReverseColorLogic && isFinanceMatch
+            ? [UIColor colorNamed:kGreenColor]
+            : [UIColor colorNamed:kRedColor],
       };
     case omnibox::FormattedString::COLOR_PRIMARY: {
       // Calculate a slightly smaller font. The ratio here is somewhat

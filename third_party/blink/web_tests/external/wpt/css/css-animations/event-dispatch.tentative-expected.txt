@@ -4,3 +4,4 @@ This is a testharness.js-based test.
 [FAIL] The cancel event with an earlier position in animation list should be fired earlier
   assert_equals: expected "anim" but got "anim2"
 Harness: the test ran to completion.
+

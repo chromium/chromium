@@ -35,12 +35,18 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/fake_tab_strip_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/fake_tab_strip_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_delegate.h"
+#import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -118,6 +124,18 @@ class TabStripMediatorTest : public PlatformTest {
     SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
 
+    scene_loader_ = std::make_unique<TestSceneUrlLoadingService>();
+    scene_loader_->current_browser_ = browser_.get();
+    url_loading_delegate_ = [[FakeURLLoadingDelegate alloc] init];
+
+    // Create loaders, insertion and notifier agents.
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
+    TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
+    loader_ = UrlLoadingBrowserAgent::FromBrowser(browser_.get());
+    loader_->SetSceneService(scene_loader_.get());
+    loader_->SetDelegate(url_loading_delegate_);
+
     tab_strip_handler_ = [[FakeTabStripHandler alloc] init];
 
     consumer_ = [[FakeTabStripConsumer alloc] init];
@@ -139,6 +157,7 @@ class TabStripMediatorTest : public PlatformTest {
     mediator_.webStateList = web_state_list_;
     mediator_.browser = browser_.get();
     mediator_.tabStripHandler = tab_strip_handler_;
+    mediator_.URLLoader = loader_;
   }
 
   void AddWebState(bool pinned = false) {
@@ -179,6 +198,9 @@ class TabStripMediatorTest : public PlatformTest {
   FakeTabStripConsumer* consumer_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<tab_groups::MockTabGroupSyncService> tab_group_sync_service_;
+  std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
+  raw_ptr<UrlLoadingBrowserAgent> loader_;
+  FakeURLLoadingDelegate* url_loading_delegate_;
 };
 
 // Tests that the mediator correctly populates the consumer at startup and after

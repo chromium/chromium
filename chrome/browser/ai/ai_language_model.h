@@ -23,6 +23,8 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
 
+class AIManager;
+
 // The implementation of `blink::mojom::AILanguageModel`, which exposes the APIs
 // for model execution.
 class AILanguageModel : public AIContextBoundObject,
@@ -102,6 +104,7 @@ class AILanguageModel : public AIContextBoundObject,
       base::WeakPtr<content::BrowserContext> browser_context,
       mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote,
       AIContextBoundObjectSet& session_set,
+      AIManager& ai_manager,
       const std::optional<const Context>& context = std::nullopt);
   AILanguageModel(const AILanguageModel&) = delete;
   AILanguageModel& operator=(const AILanguageModel&) = delete;
@@ -164,9 +167,10 @@ class AILanguageModel : public AIContextBoundObject,
   base::WeakPtr<content::BrowserContext> browser_context_;
   // Holds all the input and output from the previous prompt.
   std::unique_ptr<Context> context_;
-  // It's safe to store a `raw_ref` here since `this` is owned by
-  // `context_bound_object_set_`.
+  // It's safe to store `raw_ref` here since both `this` and `ai_manager_` are
+  // owned by `context_bound_object_set_`, and they will be destroyed together.
   base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
+  base::raw_ref<AIManager> ai_manager_;
 
   bool is_streaming_chunk_by_chunk_;
   // The accumulated current response to simulate the old streaming behavior

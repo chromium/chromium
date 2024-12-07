@@ -242,10 +242,10 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
         (device: AudioDevice) => device.id === deviceId);
   }
 
-  /** Handle updating voice isolation state. */
-  refreshVoiceIsolationState(): void {}
+  /** Handle recording voice isolation state change. */
+  recordVoiceIsolationEnabledChange(): void {}
 
-  refreshVoiceIsolationPreferredEffect(): void {}
+  recordVoiceIsolationPreferredEffectChange(_: AudioEffectType): void {}
 
   /** Handle updating active input device noise cancellation state. */
   setNoiseCancellationEnabled(enabled: boolean): void {

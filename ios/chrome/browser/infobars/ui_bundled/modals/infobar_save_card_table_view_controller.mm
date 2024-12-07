@@ -61,6 +61,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, copy) NSString* cardholderName;
 // Card Issuer icon image to be displayed.
 @property(nonatomic, strong) UIImage* cardIssuerIcon;
+// Card Network for accessibility label.
+@property(nonatomic, strong) NSString* cardNetwork;
 // Card Number to be displayed.
 @property(nonatomic, copy) NSString* cardNumber;
 // Card Expiration Month to be displayed
@@ -161,6 +163,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
             textFieldValue:self.cardNumber
           textFieldEnabled:NO];
   self.cardLastDigitsItem.identifyingIcon = self.cardIssuerIcon;
+  self.cardLastDigitsItem.cellAccessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@, %@",
+                                 self.cardLastDigitsItem.fieldNameLabelText,
+                                 self.cardLastDigitsItem.textFieldValue,
+                                 self.cardNetwork];
   [model addItem:self.cardLastDigitsItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
@@ -249,6 +256,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs {
   self.cardholderName = prefs[kCardholderNamePrefKey];
   self.cardIssuerIcon = prefs[kCardIssuerIconNamePrefKey];
+  self.cardNetwork = prefs[kCardNetworkPrefKey];
   self.cardNumber = prefs[kCardNumberPrefKey];
   self.expirationMonth = prefs[kExpirationMonthPrefKey];
   self.expirationYear = prefs[kExpirationYearPrefKey];

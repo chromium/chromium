@@ -108,6 +108,7 @@ ui::ImageModel GetTabAlertIndicatorImageForPressedState(
     case TabAlertState::HID_CONNECTED:
     case TabAlertState::SERIAL_CONNECTED:
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
+    case TabAlertState::GLIC_ACCESSING:
       return AlertIndicatorButton::GetTabAlertIndicatorImage(alert_state,
                                                              button_color);
   }
@@ -426,6 +427,9 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
         icon = &vector_icons::kCardboardIcon;
       break;
+    case TabAlertState::GLIC_ACCESSING:
+      icon = &vector_icons::kFitScreenIcon;
+      break;
   }
   DCHECK(icon);
   return ui::ImageModel::FromVectorIcon(*icon, button_color, image_width);
@@ -442,6 +446,7 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
           alert_state, kColorHoverCardTabAlertMediaRecordingIcon);
     case TabAlertState::TAB_CAPTURING:
     case TabAlertState::PIP_PLAYING:
+    case TabAlertState::GLIC_ACCESSING:
       return AlertIndicatorButton::GetTabAlertIndicatorImage(
           alert_state, kColorHoverCardTabAlertPipPlayingIcon);
     case TabAlertState::AUDIO_PLAYING:

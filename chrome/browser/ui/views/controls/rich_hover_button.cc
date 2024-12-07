@@ -201,16 +201,6 @@ void RichHoverButton::SetSubtitleTextStyleAndColor(int style,
   }
 }
 
-template <typename T>
-T* RichHoverButton::AddCustomSubtitle(std::unique_ptr<T> custom_view) {
-  static_cast<views::TableLayout*>(GetLayoutManager())
-      ->AddRows(1, views::TableLayout::kFixedSize);
-  AddChildView(std::make_unique<views::View>());  // main icon column
-  auto* view = AddChildView(std::move(custom_view));
-  AddFillerViews();
-  return view;
-}
-
 const views::Label* RichHoverButton::GetTitleViewForTesting() const {
   return title_;
 }

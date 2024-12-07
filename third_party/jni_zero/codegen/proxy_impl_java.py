@@ -24,6 +24,8 @@ class _Context:
         java_types.JavaClass('org/jni_zero/CheckDiscard'),
         java_types.JavaClass('org/jni_zero/JniTestInstanceHolder'),
         java_types.JavaClass('org/jni_zero/NativeLibraryLoadedStatus'),
+        java_types.JavaClass('org/jni_zero/internal/NullUnmarked'),
+        java_types.JavaClass('org/jni_zero/internal/Nullable'),
     ]
     if not is_per_file:
       imports.append(gen_jni_class)
@@ -47,7 +49,7 @@ public {return_type_str} {native.name}({sig_params})""")
     if native.first_param_cpp_type:
       sb(f'assert {native.params[0].name} != 0;\n')
     for p in native.params:
-      if not p.java_type.nullable:
+      if not p.java_type.is_primitive() and not p.java_type.nullable:
         sb(f'assert {p.name} != null;\n')
     with sb.statement():
       if not native.return_type.is_void():
@@ -59,15 +61,15 @@ public {return_type_str} {native.name}({sig_params})""")
           plist.append(_implicit_array_class_param(native, ctx.type_resolver))
 
 
-def _native_method(sb, native, name):
-  params = native.proxy_params.to_java_declaration()
+def _native_method(sb, ctx, native, name):
+  sig_params = native.proxy_params.to_java_declaration(ctx.type_resolver)
   return_type = native.proxy_return_type.to_java()
-  sb(f'private static native {return_type} {name}({params});\n')
+  sb(f'private static native {return_type} {name}({sig_params});\n')
 
 
 def _class_body(sb, ctx):
   sb(f"""\
-private static JniTestInstanceHolder sOverride;
+private static @Nullable JniTestInstanceHolder sOverride;
 
 public static {ctx.interface_name} get() {{
   JniTestInstanceHolder holder = sOverride;
@@ -90,7 +92,7 @@ public static void setInstanceForTesting({ctx.interface_name} impl) {{
   for native in ctx.jni_obj.proxy_natives:
     if ctx.is_per_file:
       method_fqn = native.per_file_name
-      _native_method(sb, native, method_fqn)
+      _native_method(sb, ctx, native, method_fqn)
     else:
       method_fqn = f'{ctx.gen_jni_class.name}.{native.proxy_name}'
 
@@ -131,6 +133,7 @@ package {jni_obj.java_class.class_without_prefix.package_with_dots};
   class_name = ctx.proxy_class.name
   if not ctx.is_per_file:
     sb('@CheckDiscard("crbug.com/993421")\n')
+  sb('@NullUnmarked\n')
   sb(f'{visibility}class {class_name} implements {ctx.interface_name}')
   with sb.block():
     _class_body(sb, ctx)

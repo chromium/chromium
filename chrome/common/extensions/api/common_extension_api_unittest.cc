@@ -64,12 +64,12 @@ struct FeatureSessionTypesTestData {
 
 class TestExtensionAPI : public ExtensionAPI {
  public:
-  TestExtensionAPI() {}
+  TestExtensionAPI() = default;
 
   TestExtensionAPI(const TestExtensionAPI&) = delete;
   TestExtensionAPI& operator=(const TestExtensionAPI&) = delete;
 
-  ~TestExtensionAPI() override {}
+  ~TestExtensionAPI() override = default;
 
   void add_fake_schema(const std::string& name) { fake_schemas_.insert(name); }
 

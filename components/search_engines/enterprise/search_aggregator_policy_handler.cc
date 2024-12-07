@@ -40,7 +40,7 @@ bool UrlIsNotHttps(const std::string& policy_name,
     return false;
   }
 
-  errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+  errors->AddError(policy_name, IDS_SEARCH_POLICY_SETTINGS_URL_NOT_HTTPS,
                    url);
   return true;
 }

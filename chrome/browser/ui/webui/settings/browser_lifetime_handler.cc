@@ -61,9 +61,9 @@ void TriggerTPMFirmwareUpdate(
 
 }  // namespace
 
-BrowserLifetimeHandler::BrowserLifetimeHandler() {}
+BrowserLifetimeHandler::BrowserLifetimeHandler() = default;
 
-BrowserLifetimeHandler::~BrowserLifetimeHandler() {}
+BrowserLifetimeHandler::~BrowserLifetimeHandler() = default;
 
 void BrowserLifetimeHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

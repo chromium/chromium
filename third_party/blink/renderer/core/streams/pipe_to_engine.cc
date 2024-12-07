@@ -356,13 +356,11 @@ void PipeToEngine::HandleNextEvent() {
     return;
   }
 
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
-
   is_reading_ = true;
   auto* read_request = MakeGarbageCollected<PipeToReadRequest>(this);
-  ReadableStreamDefaultReader::Read(script_state_, reader_, read_request,
-                                    exception_state);
+  ReadableStreamDefaultReader::Read(
+      script_state_, reader_, read_request,
+      PassThroughException(script_state_->GetIsolate()));
 }
 
 void PipeToEngine::ReadRequestChunkStepsBody(ScriptState* script_state,
@@ -370,12 +368,10 @@ void PipeToEngine::ReadRequestChunkStepsBody(ScriptState* script_state,
   // This is needed because this method runs as an enqueued microtask, so the
   // isolate needs a current context.
   ScriptState::Scope scope(script_state);
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
   is_reading_ = false;
   const auto write = WritableStreamDefaultWriter::Write(
       script_state, writer_, chunk.Get(script_state->GetIsolate()),
-      exception_state);
+      PassThroughException(script_state_->GetIsolate()));
   write.Catch(script_state_, MakeGarbageCollected<WrappedPromiseReject>(
                                  this, &PipeToEngine::WritableError));
   last_write_ = write;

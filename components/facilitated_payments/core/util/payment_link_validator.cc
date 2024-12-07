@@ -20,10 +20,28 @@ PaymentLinkValidator::PaymentLinkValidator()
 
 PaymentLinkValidator::~PaymentLinkValidator() = default;
 
-bool PaymentLinkValidator::IsValid(std::string_view url) const {
-  return std::any_of(
-      valid_prefixes_.begin(), valid_prefixes_.end(),
-      [&url](const std::string& prefix) { return url.find(prefix) == 0; });
+PaymentLinkValidator::Scheme PaymentLinkValidator::GetScheme(
+    const GURL& payment_link_url) const {
+  if (!payment_link_url.is_valid()) {
+    return Scheme::kInvalid;
+  }
+  if (!std::any_of(valid_prefixes_.begin(), valid_prefixes_.end(),
+                   [&payment_link_url](const std::string& prefix) {
+                     return payment_link_url.spec().find(prefix) == 0;
+                   })) {
+    return Scheme::kInvalid;
+  }
+
+  if (payment_link_url.scheme() == "duitnow") {
+    return Scheme::kDuitNow;
+  }
+  if (payment_link_url.scheme() == "shopeepay") {
+    return Scheme::kShopeePay;
+  }
+  if (payment_link_url.scheme() == "tngd") {
+    return Scheme::kTngd;
+  }
+  return Scheme::kInvalid;
 }
 
 }  // namespace payments::facilitated

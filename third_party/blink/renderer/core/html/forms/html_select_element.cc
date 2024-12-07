@@ -683,6 +683,10 @@ bool HTMLSelectElement::CanSelectAll() const {
 
 LayoutObject* HTMLSelectElement::CreateLayoutObject(
     const ComputedStyle& style) {
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
+
   if (UsesMenuList()) {
     return MakeGarbageCollected<LayoutFlexibleBox>(this);
   }
@@ -910,6 +914,9 @@ void HTMLSelectElement::RecalcListItems() const {
         }
       } else if (IsA<HTMLOptionElement>(*current_html_element) ||
                  IsA<HTMLHRElement>(*current_html_element)) {
+        // Don't look for nested <option>s to match other option element
+        // traversals.
+        skip_children = true;
         list_items_.push_back(current_html_element);
       }
 

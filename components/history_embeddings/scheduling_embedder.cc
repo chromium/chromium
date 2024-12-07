@@ -44,7 +44,8 @@ void SchedulingEmbedder::ComputePassagesEmbeddings(
   // instead of waiting in line for nothing.
   if (passages.empty()) {
     std::move(callback).Run(
-        /*passages=*/{}, /*embeddings=*/{}, ComputeEmbeddingsStatus::SUCCESS);
+        /*passages=*/{}, /*embeddings=*/{},
+        passage_embeddings::ComputeEmbeddingsStatus::KSuccess);
     return;
   }
 
@@ -82,7 +83,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
       VLOG(2) << "Dropped pending query '" << jobs_.front().passages[0]
               << "'. Next query: '" << jobs_.at(1).passages[0] << "'";
       std::move(jobs_.front().callback)
-          .Run({}, {}, ComputeEmbeddingsStatus::SKIPPED);
+          .Run({}, {}, passage_embeddings::ComputeEmbeddingsStatus::KSkipped);
       jobs_.pop_front();
     }
   }
@@ -121,8 +122,9 @@ void SchedulingEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SchedulingEmbedder::OnEmbedderReady(OnEmbedderReadyCallback callback,
-                                         EmbedderMetadata metadata) {
+void SchedulingEmbedder::OnEmbedderReady(
+    OnEmbedderReadyCallback callback,
+    passage_embeddings::EmbedderMetadata metadata) {
   embedder_ready_ = metadata.model_version != 0;
   std::move(callback).Run(metadata);
 
@@ -131,9 +133,10 @@ void SchedulingEmbedder::OnEmbedderReady(OnEmbedderReadyCallback callback,
   SubmitWorkToEmbedder();
 }
 
-void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
-                                              std::vector<Embedding> embeddings,
-                                              ComputeEmbeddingsStatus status) {
+void SchedulingEmbedder::OnEmbeddingsComputed(
+    std::vector<std::string> passages,
+    std::vector<Embedding> embeddings,
+    passage_embeddings::ComputeEmbeddingsStatus status) {
   VLOG(3) << embeddings.size() << " embeddings computed for " << passages.size()
           << " passages with status " << static_cast<int>(status);
   CHECK_EQ(passages.size(), embeddings.size());

@@ -25,10 +25,6 @@
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
 
-#if !BUILDFLAG(IS_IOS)
-#include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
-#endif
-
 #if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/shim/allocator_interception_apple.h"
@@ -87,11 +83,6 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
         // && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
   StartProfilingInternal(std::move(params), std::move(callback));
-
-#if !BUILDFLAG(IS_IOS)
-  // Create trace source so that it registers itself to the tracing system.
-  HeapProfilingTraceSource::GetInstance();
-#endif
 }
 
 namespace {
@@ -226,23 +217,6 @@ void ProfilingClient::RetrieveHeapProfile(
     profile->strings.emplace(reinterpret_cast<uintptr_t>(string), string);
 
   std::move(callback).Run(std::move(profile));
-}
-
-void ProfilingClient::AddHeapProfileToTrace(
-    AddHeapProfileToTraceCallback callback) {
-#if BUILDFLAG(IS_IOS)
-  // Tracing is not supported in iOS.
-  NOTREACHED();
-#else
-  auto* profiler = base::SamplingHeapProfiler::Get();
-  std::vector<base::SamplingHeapProfiler::Sample> samples =
-      profiler->GetSamples(/*profile_id=*/0);
-
-  bool success =
-      HeapProfilingTraceSource::GetInstance()->AddToTraceIfEnabled(samples);
-
-  std::move(callback).Run(success);
-#endif
 }
 
 }  // namespace heap_profiling

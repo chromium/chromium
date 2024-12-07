@@ -155,7 +155,7 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
       ->payments_data_manager()
       .AddCreditCard(kEmptyCreditCard);
 
-  std::vector<autofill::CreditCard*> cards =
+  std::vector<const autofill::CreditCard*> cards =
       personal_data_helper()->GetCreditCardsToSuggest();
 
   EXPECT_EQ(cards.size(), 1UL);

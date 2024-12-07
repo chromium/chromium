@@ -120,7 +120,7 @@ void EmptySetterCallback(v8::Local<v8::Name> name,
 ExtensionHooksDelegate::ExtensionHooksDelegate(
     NativeRendererMessagingService* messaging_service)
     : messaging_service_(messaging_service) {}
-ExtensionHooksDelegate::~ExtensionHooksDelegate() {}
+ExtensionHooksDelegate::~ExtensionHooksDelegate() = default;
 
 RequestResult ExtensionHooksDelegate::HandleRequest(
     const std::string& method_name,

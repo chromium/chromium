@@ -5,7 +5,8 @@
 #ifndef IOS_WEB_WEB_VIEW_WK_SECURITY_ORIGIN_UTIL_H_
 #define IOS_WEB_WEB_VIEW_WK_SECURITY_ORIGIN_UTIL_H_
 
-#include "url/gurl.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 @class WKSecurityOrigin;
 
@@ -14,6 +15,10 @@ namespace web {
 // Converts WKSecurityOrigin to GURL origin.
 // Returns empty url if `origin` is nil.
 GURL GURLOriginWithWKSecurityOrigin(WKSecurityOrigin* origin);
+
+// Converts WKSecurityOrigin to url::Origin.
+// Returns a default constructed opaque Origin if `origin` is nil.
+url::Origin OriginWithWKSecurityOrigin(WKSecurityOrigin* origin);
 
 }  // namespace web
 

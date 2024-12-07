@@ -82,7 +82,7 @@ ScriptValue ProtectedAudience::queryFeatureSupport(ScriptState* script_state,
     for (const auto& kv : feature_status_) {
       features_obj.AddV8Value(kv.first, MakeV8Val(script_state, kv.second));
     }
-    return features_obj.GetScriptValue();
+    return features_obj.ToScriptObject();
   } else {
     for (const auto& kv : feature_status_) {
       if (kv.first == feature_name) {

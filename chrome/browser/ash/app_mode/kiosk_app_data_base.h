@@ -39,7 +39,7 @@ class KioskAppDataBase {
   const gfx::ImageSkia& icon() const { return icon_; }
 
   // Clears locally cached data.
-  void ClearCache();
+  void ClearCache() const;
 
  protected:
   // Helper to save name and icon to provided dictionary.

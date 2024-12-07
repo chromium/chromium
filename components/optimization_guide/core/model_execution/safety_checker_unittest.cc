@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
@@ -23,6 +24,7 @@
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -41,10 +43,11 @@ namespace optimization_guide {
 
 namespace {
 
-using testing::AllOf;
-using testing::ElementsAre;
-using testing::IsEmpty;
-using testing::ResultOf;
+using ::google::protobuf::RepeatedPtrField;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::ResultOf;
 
 const std::string& GetCheckText(
     const proto::InternalOnDeviceModelExecutionInfo& log) {
@@ -112,7 +115,7 @@ TEST(SafetyConfigTest, MissingScoreIsUnsafe) {
 
   auto safety_info = on_device_model::mojom::SafetyInfo::New();
   safety_info->class_scores = {0.1};  // Only 1 score, but expects 2.
-  EXPECT_TRUE(cfg.IsUnsafeText(safety_info));
+  EXPECT_TRUE(cfg.IsRawOutputUnsafe(safety_info));
 }
 
 TEST(SafetyConfigTest, SafeWithRequiredScores) {
@@ -124,14 +127,15 @@ TEST(SafetyConfigTest, SafeWithRequiredScores) {
 
   auto safety_info = on_device_model::mojom::SafetyInfo::New();
   safety_info->class_scores = {0.1, 0.1};  // Has score with index = 1.
-  EXPECT_FALSE(cfg.IsUnsafeText(safety_info));
+  EXPECT_FALSE(cfg.IsRawOutputUnsafe(safety_info));
 }
 
 TEST_F(SafetyCheckerTest, RawOutputCheckPassesWithTrivialConfig) {
   // When no thresholds are defined, all outputs will pass.
   SafetyClientFixture fixture([]() { return ComposeSafetyConfig(); }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("unsafe raw output", future_.GetCallback());
+  checker->RunRawOutputCheck("unsafe raw output", /*is_complete=*/true,
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -154,7 +158,8 @@ TEST_F(SafetyCheckerTest, DefaultOutputSafetyPassesOnSafeOutput) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("reasonable raw output", future_.GetCallback());
+  checker->RunRawOutputCheck("reasonable raw output", /*is_complete=*/true,
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -178,7 +183,8 @@ TEST_F(SafetyCheckerTest, DefaultOutputSafetyFailsOnUnsafeOutput) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("unsafe raw output", future_.GetCallback());
+  checker->RunRawOutputCheck("unsafe raw output", /*is_complete=*/true,
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -205,7 +211,7 @@ TEST_F(SafetyCheckerTest, OutputSafetyPassesWithMetRequiredLanguage) {
   }());
   auto checker = fixture.MakeSafetyChecker();
   checker->RunRawOutputCheck("reasonable raw output in esperanto",
-                             future_.GetCallback());
+                             /*is_complete=*/true, future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -233,7 +239,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnmetRequiredLanguage) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("reasonable raw output", future_.GetCallback());
+  checker->RunRawOutputCheck("reasonable raw output", /*is_complete=*/true,
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -260,7 +267,8 @@ TEST_F(SafetyCheckerTest,
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("reasonable raw output", future_.GetCallback());
+  checker->RunRawOutputCheck("reasonable raw output", /*is_complete=*/true,
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -272,6 +280,54 @@ TEST_F(SafetyCheckerTest,
                                  "is_raw_output_safe: reasonable raw output"),
                         ResultOf("scores", &GetScores, ElementsAre(0.2, 0.2)),
                         ResultOf("is_unsafe", &GetIsUnsafe, false))));
+}
+
+TEST_F(SafetyCheckerTest, OutputSafetyLanguageThreshold) {
+  SafetyClientFixture fixture([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.add_allowed_languages("en");
+    safety_config.mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    auto* check = safety_config.mutable_raw_output_check();
+    check->mutable_input_template()->Add(
+        FieldSubstitution("is_raw_output_safe: %s", StringValueField()));
+    check->mutable_language_check()->set_confidence_threshold(0.8);
+    check->mutable_language_check()->set_partial_threshold(0.4);
+    return safety_config;
+  }());
+  auto checker = fixture.MakeSafetyChecker();
+  {
+    checker->RunRawOutputCheck("reasonable raw output lang:en=0.3",
+                               /*is_complete=*/false, future_.GetCallback());
+    auto result = future_.Take();
+    EXPECT_FALSE(result.failed_to_run);
+    EXPECT_TRUE(result.is_unsupported_language);
+  }
+
+  {
+    checker->RunRawOutputCheck("reasonable raw output lang:en=0.6",
+                               /*is_complete=*/false, future_.GetCallback());
+    auto result = future_.Take();
+    EXPECT_FALSE(result.failed_to_run);
+    EXPECT_FALSE(result.is_unsupported_language);
+  }
+
+  {
+    checker->RunRawOutputCheck("reasonable raw output lang:en=0.6",
+                               /*is_complete=*/true, future_.GetCallback());
+    auto result = future_.Take();
+    EXPECT_FALSE(result.failed_to_run);
+    EXPECT_TRUE(result.is_unsupported_language);
+  }
+
+  {
+    checker->RunRawOutputCheck("reasonable raw output lang:en=0.9",
+                               /*is_complete=*/true, future_.GetCallback());
+    auto result = future_.Take();
+    EXPECT_FALSE(result.failed_to_run);
+    EXPECT_FALSE(result.is_unsupported_language);
+  }
 }
 
 TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnsafeOutput) {
@@ -286,7 +342,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnsafeOutput) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("unsafe raw output", future_.GetCallback());
+  checker->RunRawOutputCheck("unsafe raw output", /*is_complete=*/true,
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -571,7 +628,8 @@ TEST_F(SafetyCheckerTest, ResponseCheckPassesWithSafeResponse) {
   auto checker = fixture.MakeSafetyChecker();
   checker->RunResponseChecks(
       UrlAndInputRequest("very_", "reasonable_esperanto_"),
-      SimpleResponse("safe_output"), future_.GetCallback());
+      SimpleResponse("safe_output"), /*is_complete=*/true,
+      future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -623,7 +681,7 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeResponse) {
   auto checker = fixture.MakeSafetyChecker();
   checker->RunResponseChecks(UrlAndInputRequest("un", "reasonable_esperanto_"),
                              SimpleResponse("safe_output"),
-                             future_.GetCallback());
+                             /*is_complete=*/true, future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -675,7 +733,7 @@ TEST_F(SafetyCheckerTest, ResponseCheckFailsWithUnmetRequiredLanguge) {
   auto checker = fixture.MakeSafetyChecker();
   checker->RunResponseChecks(UrlAndInputRequest("very_", "reasonable_"),
                              SimpleResponse("safe_output"),
-                             future_.GetCallback());
+                             /*is_complete=*/true, future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -691,6 +749,92 @@ TEST_F(SafetyCheckerTest, ResponseCheckFailsWithUnmetRequiredLanguge) {
                                  "response_check2: reasonable_safe_output"),
                         ResultOf("scores", &GetScores, ElementsAre(0.2, 0.2)),
                         ResultOf("is_unsafe", &GetIsUnsafe, false))));
+}
+
+RepeatedPtrField<proto::CheckInput> PageUrlAndOutput() {
+  RepeatedPtrField<proto::CheckInput> inputs;
+  auto* i1 = inputs.Add();
+  i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+  i1->mutable_templates()->Add(
+      FieldSubstitution("response_check: %s", PageUrlField()));
+  auto* i2 = inputs.Add();
+  i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+  i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+  return inputs;
+}
+
+RepeatedPtrField<proto::CheckInput> UserInputAndOutput() {
+  RepeatedPtrField<proto::CheckInput> inputs;
+  auto* i1 = inputs.Add();
+  i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+  i1->mutable_templates()->Add(
+      FieldSubstitution("response_check2: %s", UserInputField()));
+  auto* i2 = inputs.Add();
+  i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+  i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+  return inputs;
+}
+
+TEST_F(SafetyCheckerTest, ResponseLanguageThresholds) {
+  SafetyClientFixture fixture([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.add_allowed_languages("en");
+    safety_config.mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    {
+      auto* check = safety_config.add_response_check();
+      *check->mutable_inputs() = PageUrlAndOutput();
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->mutable_language_check()->set_confidence_threshold(0.0);
+    }
+    {
+      auto* check = safety_config.add_response_check();
+      *check->mutable_inputs() = UserInputAndOutput();
+      check->mutable_language_check()->set_confidence_threshold(0.8);
+      check->mutable_language_check()->set_partial_threshold(0.4);
+    }
+    return safety_config;
+  }());
+  auto checker = fixture.MakeSafetyChecker();
+  {
+    checker->RunResponseChecks(
+        UrlAndInputRequest("unknown language", "lang:en=0.3"),
+        SimpleResponse("safe_output"),
+        /*is_complete=*/false, future_.GetCallback());
+    auto result = future_.Take();
+    EXPECT_FALSE(result.failed_to_run);
+    EXPECT_TRUE(result.is_unsupported_language);
+  }
+
+  {
+    checker->RunResponseChecks(
+        UrlAndInputRequest("unknown language", "lang:en=0.6"),
+        SimpleResponse("safe_output"),
+        /*is_complete=*/false, future_.GetCallback());
+    auto result = future_.Take();
+    EXPECT_FALSE(result.failed_to_run);
+    EXPECT_FALSE(result.is_unsupported_language);
+  }
+
+  {
+    checker->RunResponseChecks(
+        UrlAndInputRequest("unknown language", "lang:en=0.6"),
+        SimpleResponse("safe_output"),
+        /*is_complete=*/true, future_.GetCallback());
+    auto result = future_.Take();
+    EXPECT_FALSE(result.failed_to_run);
+    EXPECT_TRUE(result.is_unsupported_language);
+  }
+
+  {
+    checker->RunResponseChecks(
+        UrlAndInputRequest("unknown language", "lang:en=0.9"),
+        SimpleResponse("safe_output"),
+        /*is_complete=*/true, future_.GetCallback());
+    auto result = future_.Take();
+    EXPECT_FALSE(result.failed_to_run);
+    EXPECT_FALSE(result.is_unsupported_language);
+  }
 }
 
 }  // namespace optimization_guide

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/ct_objects_extractor.h"
 
 #include <string.h>
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -67,23 +63,23 @@ bool SkipOptionalElement(CBS* cbs, unsigned tag) {
 // must be a subset of |outer|.
 bool CopyBefore(const CBS& outer, const CBS& inner, CBB* out) {
   CHECK_LE(CBS_data(&outer), CBS_data(&inner));
-  CHECK_LE(CBS_data(&inner) + CBS_len(&inner),
-           CBS_data(&outer) + CBS_len(&outer));
+  CHECK_LE(UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
+           UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer)));
 
   return !!CBB_add_bytes(out, CBS_data(&outer),
-                         CBS_data(&inner) - CBS_data(&outer));
+                         UNSAFE_TODO(CBS_data(&inner) - CBS_data(&outer)));
 }
 
 // Copies all the bytes in |outer| which are after |inner| to |out|. |inner|
 // must be a subset of |outer|.
 bool CopyAfter(const CBS& outer, const CBS& inner, CBB* out) {
   CHECK_LE(CBS_data(&outer), CBS_data(&inner));
-  CHECK_LE(CBS_data(&inner) + CBS_len(&inner),
-           CBS_data(&outer) + CBS_len(&outer));
+  CHECK_LE(UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
+           UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer)));
 
-  return !!CBB_add_bytes(
-      out, CBS_data(&inner) + CBS_len(&inner),
-      CBS_data(&outer) + CBS_len(&outer) - CBS_data(&inner) - CBS_len(&inner));
+  return !!CBB_add_bytes(out, UNSAFE_TODO(CBS_data(&inner) + CBS_len(&inner)),
+                         UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer) -
+                                     CBS_data(&inner) - CBS_len(&inner)));
 }
 
 // Skips |tbs_cert|, which must be a TBSCertificate body, to just before the

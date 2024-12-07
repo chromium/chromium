@@ -134,6 +134,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /** Unit tests for {@link BookmarkManagerMediator}. */
@@ -180,6 +181,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BooleanSupplier mCanShowPromo;
     @Mock private PriceTrackingUtils.Natives mPriceTrackingUtilsJniMock;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
     @Mock private Consumer<OnScrollListener> mOnScrollListenerConsumer;
@@ -503,6 +505,7 @@ public class BookmarkManagerMediatorTest {
                         mBookmarkImageFetcher,
                         mShoppingService,
                         mSnackbarManager,
+                        mCanShowPromo,
                         mOnScrollListenerConsumer,
                         mBookmarkMoveSnackbarManager);
         mMediator.addUiObserver(mBookmarkUiObserver);
@@ -1013,39 +1016,6 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @DisableFeatures({
-        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-    })
-    public void testBuildImprovedBookmarkRow_Folder_Visual() {
-        finishLoading();
-        mMediator.openFolder(mFolderId1);
-        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-        assertEquals(3, mModelList.size());
-
-        ListItem item = mModelList.get(1);
-        assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, item.type);
-
-        PropertyModel model = item.model;
-        assertNotNull(model);
-        assertEquals(
-                mFolderItem2.getId(),
-                model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem().getId());
-        assertEquals(mFolderId2, model.get(BookmarkManagerProperties.BOOKMARK_ID));
-        assertEquals(mFolderItem2.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(
-                ImageVisibility.FOLDER_DRAWABLE,
-                model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
-        assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
-        assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES));
-    }
-
-    @Test
     public void testBuildImprovedBookmarkRow_readingListFolder() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
@@ -1333,33 +1303,6 @@ public class BookmarkManagerMediatorTest {
         verify(mPriceTrackingUtilsJniMock)
                 .setPriceTrackingStateForBookmark(
                         any(), anyLong(), anyBoolean(), any(), anyBoolean());
-    }
-
-    @Test
-    @DisableFeatures({
-        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-    })
-    public void testParentFolderUpdatedWhenChildDeleted() {
-        finishLoading();
-
-        doReturn(1).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
-        doReturn(2).when(mBookmarkModel).getTotalBookmarkCount(mFolderId3);
-        mMediator.openFolder(mFolderId1);
-        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-
-        assertEquals(3, mModelList.size());
-        assertEquals(
-                1, mModelList.get(1).model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
-
-        doReturn(0).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
-        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
-        mBookmarkModelObserverArgumentCaptor
-                .getValue()
-                .bookmarkNodeRemoved(mFolderItem2, 0, mBookmarkItem21, false);
-
-        assertEquals(
-                0, mModelList.get(1).model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
     }
 
     @Test

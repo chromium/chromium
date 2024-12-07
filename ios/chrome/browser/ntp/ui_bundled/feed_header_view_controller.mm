@@ -595,12 +595,7 @@ NSInteger kFeedSymbolPointSize = 17;
                        constant:kButtonHorizontalMargin],
   ]];
 
-  if (IsHomeCustomizationEnabled()) {
-    [self.feedHeaderConstraints addObjectsFromArray:@[
-      [self.segmentedControl.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.container.leadingAnchor],
-    ]];
-  } else {
+  if (!IsHomeCustomizationEnabled()) {
     [self.feedHeaderConstraints addObjectsFromArray:@[
       [self.segmentedControl.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.managementButton.leadingAnchor

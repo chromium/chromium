@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/scanner/scanner_text.h"
@@ -20,12 +21,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
-#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -48,19 +47,6 @@ constexpr SkColor kTranslatedTextBackgroundColor = SK_ColorWHITE;
 // TODO(crbug.com/374381937): Replace this with the glow pulse animation from
 // specs once motion specs are available.
 constexpr base::TimeDelta kRegionGlowPulseDuration = base::Milliseconds(600);
-
-// The minimum and maximum region glow blur amount.
-constexpr float kRegionGlowAnimationMinBlur = 16.0f;
-constexpr float kRegionGlowAnimationMaxBlur = 32.0f;
-
-// The minimum and maximum glow outset from the edge of the capture region.
-constexpr int kRegionGlowMinOutset = 0;
-constexpr int kRegionGlowMaxOutset = 6;
-
-// The damage outset from the edge of the capture region to repaint when the
-// glow animation updates.
-constexpr int kRegionGlowDamageOutset =
-    kRegionGlowMaxOutset + 2 * static_cast<int>(kRegionGlowAnimationMaxBlur);
 
 // Translates and rotates `canvas` so that `center_rotated_box` is upright and
 // centered on the canvas. The components of `center_rotated_box` should be
@@ -88,17 +74,6 @@ CaptureRegionOverlayController::CaptureRegionOverlayController() {
 }
 
 CaptureRegionOverlayController::~CaptureRegionOverlayController() = default;
-
-// static
-void CaptureRegionOverlayController::SchedulePaintForGlow(
-    ui::Layer* layer,
-    const gfx::Rect& region_bounds_in_layer) {
-  // Invalidate a bounding rect containing the maximum glow outsets and blur
-  // from the region bounds.
-  gfx::Rect glow_bounds(region_bounds_in_layer);
-  glow_bounds.Outset(kRegionGlowDamageOutset);
-  layer->SchedulePaint(glow_bounds);
-}
 
 void CaptureRegionOverlayController::OnTextDetected(
     std::optional<ScannerText> detected_text) {
@@ -155,7 +130,8 @@ void CaptureRegionOverlayController::PaintCurrentGlowState(
 
   gfx::Rect current_glow_bounds(region_bounds_in_canvas);
   current_glow_bounds.Outset(glow_animation_->CurrentValueBetween(
-      kRegionGlowMinOutset, kRegionGlowMaxOutset));
+      capture_mode::kRegionGlowMinOutsetDp,
+      capture_mode::kRegionGlowMaxOutsetDp));
   cc::PaintFlags flags;
   flags.setShader(gfx::CreateGradientShader(
       current_glow_bounds.origin(), current_glow_bounds.top_right(),
@@ -164,7 +140,8 @@ void CaptureRegionOverlayController::PaintCurrentGlowState(
   flags.setImageFilter(cc::RenderSurfaceFilters::BuildImageFilter(
       cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(
           glow_animation_->CurrentValueBetween(
-              kRegionGlowAnimationMinBlur, kRegionGlowAnimationMaxBlur))})));
+              capture_mode::kRegionGlowAnimationMinBlurDp,
+              capture_mode::kRegionGlowAnimationMaxBlurDp))})));
   canvas.DrawRect(current_glow_bounds, flags);
 }
 

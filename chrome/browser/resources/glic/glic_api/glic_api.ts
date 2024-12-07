@@ -49,8 +49,7 @@ export declare interface GlicWebClient {
   // The user has requested activation of the web client.
   // The dockedToWindowId identifies the browser window to which the
   // panel is docked to. It is undefined if it is floating free.
-  // The promise being resolved indicates the web client is ready to receive
-  // the user's input.
+  // Note: The returned promise is currently not used in the browser.
   notifyPanelOpened?(dockedToWindowId: string|undefined): Promise<void>;
 
   // The user has closed the web client window. The window may be activated

@@ -55,7 +55,7 @@ const AccountId kDeviceAccount =
     AccountId::FromUserEmailGaiaId(kPrimaryAccount, kPrimaryAccountGaiaId);
 
 ::account_manager::Account GetAccountFor(const std::string& email,
-                                         const std::string& gaia_id) {
+                                         const GaiaId& gaia_id) {
   ::account_manager::AccountKey key(gaia_id,
                                     ::account_manager::AccountType::kGaia);
   return {key, email};
@@ -63,7 +63,7 @@ const AccountId kDeviceAccount =
 
 void AddAccount(account_manager::AccountManager* account_manager,
                 const std::string& email,
-                const std::string& gaia_id) {
+                const GaiaId& gaia_id) {
   ::account_manager::AccountKey account_key(
       gaia_id, ::account_manager::AccountType::kGaia);
   account_manager->UpsertAccount(account_key, email, kValidToken);
@@ -82,7 +82,7 @@ class AccountManagerEducoexistenceControllerTest : public testing::Test {
 
   void SetUp() override;
 
-  void UpdatEduCoexistenceToSAcceptedVersion(const std::string& email,
+  void UpdatEduCoexistenceToSAcceptedVersion(const GaiaId& gaia_id,
                                              const std::string& tosVersion);
 
   void UpdateEduCoexistenceToSVersion(const std::string& new_version);
@@ -121,7 +121,7 @@ void AccountManagerEducoexistenceControllerTest::SetUp() {
 }
 
 void AccountManagerEducoexistenceControllerTest::
-    UpdatEduCoexistenceToSAcceptedVersion(const std::string& gaia_id,
+    UpdatEduCoexistenceToSAcceptedVersion(const GaiaId& gaia_id,
                                           const std::string& tosVersion) {
   edu_coexistence::UpdateAcceptedToSVersionPref(
       profile(), edu_coexistence::UserConsentInfo(gaia_id, tosVersion));

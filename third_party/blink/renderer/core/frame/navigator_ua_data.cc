@@ -263,7 +263,7 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
   return promise;
 }
 
-ScriptValue NavigatorUAData::toJSON(ScriptState* script_state) const {
+ScriptObject NavigatorUAData::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.AddVector<NavigatorUABrandVersion>("brands", brands());
   builder.AddBoolean("mobile", mobile());
@@ -276,7 +276,7 @@ ScriptValue NavigatorUAData::toJSON(ScriptState* script_state) const {
   Dactyloscoper::RecordDirectSurface(
       GetExecutionContext(), WebFeature::kNavigatorUAData_Platform, platform());
 
-  return builder.GetScriptValue();
+  return builder.ToScriptObject();
 }
 
 void NavigatorUAData::Trace(Visitor* visitor) const {

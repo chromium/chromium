@@ -95,7 +95,7 @@ bool FilePathReparsePoint::SetReparsePoint(HANDLE source,
   target_str += target_path.value();
   const wchar_t* target = target_str.c_str();
   USHORT size_target = static_cast<USHORT>(wcslen(target)) * sizeof(target[0]);
-  char buffer[2000] = {0};
+  char buffer[2000] = {};
   DWORD returned;
 
   REPARSE_DATA_BUFFER* data = reinterpret_cast<REPARSE_DATA_BUFFER*>(buffer);

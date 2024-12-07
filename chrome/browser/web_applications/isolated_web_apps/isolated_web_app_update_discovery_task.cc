@@ -105,11 +105,13 @@ constexpr auto kWebBundleDownloadTrafficAnnotation =
 IwaUpdateDiscoveryTaskParams::IwaUpdateDiscoveryTaskParams(
     const GURL& update_manifest_url,
     const UpdateChannel& update_channel,
+    bool allow_downgrades,
     const std::optional<base::Version>& pinned_version,
     const IsolatedWebAppUrlInfo& url_info,
     bool dev_mode)
     : update_manifest_url_(update_manifest_url),
       update_channel_(update_channel),
+      allow_downgrades_(allow_downgrades),
       pinned_version_(pinned_version),
       url_info_(url_info),
       dev_mode_(dev_mode) {}
@@ -172,6 +174,7 @@ IsolatedWebAppUpdateDiscoveryTask::IsolatedWebAppUpdateDiscoveryTask(
       base::Value::Dict()
           .Set("bundle_id", task_params_.url_info().web_bundle_id().id())
           .Set("update_channel", task_params_.update_channel().ToString())
+          .Set("allow_downgrades", task_params_.allow_downgrades())
           .Set("app_id", task_params_.url_info().app_id())
           .Set("update_manifest_url",
                task_params_.update_manifest_url().spec());
@@ -295,11 +298,11 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   // now and when we schedule the
   // `IsolatedWebAppUpdatePrepareAndStoreCommand`. This is not an issue, as
   // `IsolatedWebAppUpdatePrepareAndStoreCommand` will re-check that the new
-  // version is indeed newer than the currently installed version.
-  if (currently_installed_version > version_entry->version() ||
-      (currently_installed_version == version_entry->version() &&
-       !same_version_update_allowed_by_key_rotation)) {
-    // Never downgrade apps for now.
+  // version can be applied.
+  if (ShouldPreventVersionChange(version_entry->version(),
+                                 currently_installed_version,
+                                 task_params_.allow_downgrades(),
+                                 same_version_update_allowed_by_key_rotation)) {
     SucceedWith(Success::kNoUpdateFound);
     return;
   }
@@ -378,11 +381,11 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
           ? IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
                 IwaSourceBundleDevModeWithFileOp(
                     bundle_.path(), IwaSourceBundleDevFileOp::kMove),
-                expected_version)
+                expected_version, task_params_.allow_downgrades())
           : IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
                 IwaSourceBundleProdModeWithFileOp(
                     bundle_.path(), IwaSourceBundleProdFileOp::kMove),
-                expected_version);
+                expected_version, task_params_.allow_downgrades());
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
       update_info, task_params_.url_info(),

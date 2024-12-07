@@ -1350,6 +1350,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.accessibilityIdentifier =
       kPromoStyleScrollViewAccessibilityIdentifier;
+  scrollView.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentNever;
   return scrollView;
 }
 

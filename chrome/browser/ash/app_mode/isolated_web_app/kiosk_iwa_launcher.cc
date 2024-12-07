@@ -47,10 +47,7 @@ void KioskIwaLauncher::Initialize() {
 
 void KioskIwaLauncher::ContinueWithNetworkReady() {
   KioskWebAppLauncherBase::ContinueWithNetworkReady();
-
-  // TODO(crbug.com/372847595): add IWA updates in kiosk
-  // Add KioskIwaManager::Get()->StartObservingAppUpdate()
-
+  KioskIwaManager::Get()->StartObservingAppUpdate(profile(), account_id());
   InstallIsolatedWebApp();
 }
 

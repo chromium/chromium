@@ -70,6 +70,8 @@
 -external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.https.window.html*
 -external/wpt/console/console-log-large-array.any.html
 -external/wpt/content-security-policy/reporting-api/*
+-external/wpt/content-security-policy/report-hash/*
+-virtual/verify-minimal-resource-request-kill-switch/external/wpt/content-security-policy/report-hash/*
 -external/wpt/content-security-policy/securitypolicyviolation/securitypolicyviolation-block-cross-origin-image-from-script.sub.html
 # https://github.com/web-platform-tests/wpt/issues/48078
 -external/wpt/cookie-store/*
@@ -545,7 +547,7 @@
 -external/wpt/css/selectors/selectors-4/lang-024.html
 -external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has-multiple-document-elements.html
 -external/wpt/css/selectors/media/media-loading-state.html
--external/wpt/css/selectors/open-closed-pseudo.html
+-external/wpt/css/selectors/open-pseudo.html
 -external/wpt/css/selectors/remove-hovered-element.html
 -external/wpt/css/selectors/user-invalid-form-submission-invalidation.html
 -external/wpt/density-size-correction/*
@@ -620,7 +622,6 @@
 -external/wpt/fetch/stale-while-revalidate/stale-*
 -external/wpt/fledge/tentative/component-ads.https.window.html?11-15
 -external/wpt/fledge/tentative/reporting-arguments.https.window.html?16-last
--external/wpt/FileAPI/url/sandboxed-iframe.html
 -external/wpt/fs/FileSystemObserver-sync-access-handle.https.tentative.*
 -external/wpt/gyroscope/Gyroscope.https.html
 -external/wpt/gyroscope/Gyroscope-iframe-access.https.html

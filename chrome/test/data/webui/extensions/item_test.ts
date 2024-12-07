@@ -391,6 +391,18 @@ suite('ExtensionItemTest', function() {
     assertWarnings(kMv2Deprecation);
   });
 
+  test('UnsupportedDeveloperExtensionWarning', async () => {
+    assertFalse(
+        isChildVisible(item, '#unsupported-developer-extension-warning'));
+
+    const data = createExtensionInfo(item.data);
+    data.disableReasons.unsupportedDeveloperExtension = true;
+    item.data = data;
+    await microtasksFinished();
+    assertTrue(
+        isChildVisible(item, '#unsupported-developer-extension-warning'));
+  });
+
   test('SourceIndicator', async () => {
     assertFalse(isChildVisible(item, '#source-indicator'));
     let data = createExtensionInfo(item.data);
@@ -527,6 +539,17 @@ suite('ExtensionItemTest', function() {
     // 'unsupported' and extension is disabled due to unsupported manifest
     // version.
     item.mv2ExperimentStage = Mv2ExperimentStage.UNSUPPORTED;
+    await microtasksFinished();
+    testVisible(item, '#enableToggle', true);
+    assertTrue(item.$.enableToggle.disabled);
+  });
+
+  test('EnableToggleDisabledForUnsupportedDeveloperExtension', async () => {
+    assertFalse(item.$.enableToggle.disabled);
+
+    const data = createExtensionInfo(item.data);
+    data.disableReasons.unsupportedDeveloperExtension = true;
+    item.data = data;
     await microtasksFinished();
     testVisible(item, '#enableToggle', true);
     assertTrue(item.$.enableToggle.disabled);

@@ -286,7 +286,7 @@ TEST(StringViewTest, ConstructionStringView8) {
 }
 
 TEST(StringViewTest, ConstructionStringView16) {
-  StringView view16_bit = StringView(kChars16, 5);
+  StringView view16_bit = StringView(base::span_from_cstring(kCharsU));
 
   // StringView(StringView&);
   ASSERT_FALSE(StringView(view16_bit).Is8Bit());
@@ -353,12 +353,13 @@ TEST(StringViewTest, ConstructionLiteral8) {
   EXPECT_EQ(StringView("12"), StringView(kChars8, 2u));
   EXPECT_EQ("12", StringView(kChars8, 2u));
 
-  // StringView(const char* chars, unsigned length);
-  ASSERT_TRUE(StringView(kChars, 2u).Is8Bit());
-  EXPECT_FALSE(StringView(kChars, 2u).IsNull());
-  EXPECT_EQ(2u, StringView(kChars, 2u).length());
-  EXPECT_EQ(StringView("12"), StringView(kChars, 2u));
-  EXPECT_EQ("12", StringView(kChars, 2u));
+  // StringView(base::span<const LChar> chars);
+  StringView view2(base::as_byte_span(kChars).first(2u));
+  ASSERT_TRUE(view2.Is8Bit());
+  EXPECT_FALSE(view2.IsNull());
+  EXPECT_EQ(2u, view2.length());
+  EXPECT_EQ(StringView("12"), view2);
+  EXPECT_EQ("12", view2);
 }
 
 TEST(StringViewTest, ConstructionLiteral16) {
@@ -369,15 +370,15 @@ TEST(StringViewTest, ConstructionLiteral16) {
   EXPECT_EQ(5u, StringView(kChars16).length());
   EXPECT_EQ(String(kChars16), StringView(kChars16));
 
-  // StringView(const UChar* chars, unsigned length);
-  ASSERT_FALSE(StringView(kChars16, 2u).Is8Bit());
-  EXPECT_FALSE(StringView(kChars16, 2u).IsNull());
-  EXPECT_EQ(kChars16, StringView(kChars16, 2u).Characters16());
-  EXPECT_EQ(StringView("12"), StringView(kChars16, 2u));
-  EXPECT_EQ(StringView(reinterpret_cast<const UChar*>(u"12")),
-            StringView(kChars16, 2u));
-  EXPECT_EQ(2u, StringView(kChars16, 2u).length());
-  EXPECT_EQ(String("12"), StringView(kChars16, 2u));
+  // StringView(base::span<const UChar> chars);
+  StringView uchar2(base::span_from_cstring(kCharsU).first(2u));
+  ASSERT_FALSE(uchar2.Is8Bit());
+  EXPECT_FALSE(uchar2.IsNull());
+  EXPECT_EQ(kChars16, uchar2.Characters16());
+  EXPECT_EQ(StringView("12"), uchar2);
+  EXPECT_EQ(StringView(reinterpret_cast<const UChar*>(u"12")), uchar2);
+  EXPECT_EQ(2u, uchar2.length());
+  EXPECT_EQ(String("12"), uchar2);
 }
 
 TEST(StringViewTest, ConstructionSpan8) {
@@ -412,7 +413,7 @@ TEST(StringViewTest, OverflowInSet) {
 
 TEST(StringViewTest, IsEmpty) {
   EXPECT_FALSE(StringView(kChars).empty());
-  EXPECT_TRUE(StringView(kChars, 0).empty());
+  EXPECT_TRUE(StringView(base::as_byte_span(kChars).first(0u)).empty());
   EXPECT_FALSE(StringView(String(kChars)).empty());
   EXPECT_TRUE(StringView(String(kChars), 5).empty());
   EXPECT_TRUE(StringView(String(kChars), 4, 0).empty());
@@ -434,7 +435,9 @@ TEST(StringViewTest, ToAtomicString) {
   EXPECT_EQ(AtomicString("12"), StringView(kChars8, 2u).ToAtomicString());
   // AtomicString will convert to 8bit if possible when creating the string.
   EXPECT_EQ(AtomicString("12").Impl(),
-            StringView(kChars16, 2).ToAtomicString().Impl());
+            StringView(base::span_from_cstring(kCharsU).first(2u))
+                .ToAtomicString()
+                .Impl());
 }
 
 TEST(StringViewTest, ToStringImplSharing) {
@@ -556,7 +559,7 @@ TEST(StringViewTest, NextCodePointOffset) {
   EXPECT_EQ(6u, view16.NextCodePointOffset(4));
 
   const UChar kLead = 0xD800;
-  StringView broken1(&kLead, 1);
+  StringView broken1(base::span_from_ref(kLead));
   EXPECT_EQ(1u, broken1.NextCodePointOffset(0));
 
   const UChar kLeadAndNotTrail[] = {0xD800, 0x20, 0};
@@ -565,7 +568,7 @@ TEST(StringViewTest, NextCodePointOffset) {
   EXPECT_EQ(2u, broken2.NextCodePointOffset(1));
 
   const UChar kTrail = 0xDC00;
-  StringView broken3(&kTrail, 1);
+  StringView broken3(base::span_from_ref(kTrail));
   EXPECT_EQ(1u, broken3.NextCodePointOffset(0));
 }
 

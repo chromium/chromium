@@ -58,31 +58,3 @@ std::vector<uint8_t> ComputeAuthenticationTokenHash(
 std::vector<uint8_t> GenerateRandomBytes(size_t num_bytes) {
   return crypto::RandBytesAsVector(num_bytes);
 }
-
-std::unique_ptr<crypto::Encryptor> CreateNearbyShareCtrEncryptor(
-    const crypto::SymmetricKey* secret_key,
-    base::span<const uint8_t> salt) {
-  DCHECK(secret_key);
-  DCHECK_EQ(kNearbyShareNumBytesSecretKey, secret_key->key().size());
-  DCHECK_EQ(kNearbyShareNumBytesMetadataEncryptionKeySalt, salt.size());
-
-  std::unique_ptr<crypto::Encryptor> encryptor =
-      std::make_unique<crypto::Encryptor>();
-
-  // For CTR mode, the iv input to Init() must be empty. Instead, the iv is
-  // set via SetCounter().
-  if (!encryptor->Init(secret_key, crypto::Encryptor::Mode::CTR,
-                       /*iv=*/base::span<const uint8_t>())) {
-    LOG(ERROR) << "Encryptor could not be initialized.";
-    return nullptr;
-  }
-
-  std::vector<uint8_t> iv =
-      DeriveNearbyShareKey(salt, kNearbyShareNumBytesAesCtrIv);
-  if (!encryptor->SetCounter(iv)) {
-    LOG(ERROR) << "Could not set encryptor counter.";
-    return nullptr;
-  }
-
-  return encryptor;
-}

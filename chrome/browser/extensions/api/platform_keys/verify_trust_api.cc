@@ -59,7 +59,7 @@ class VerifyTrustAPI::IOPart {
 
  private:
   struct RequestState {
-    RequestState() {}
+    RequestState() = default;
 
     RequestState(const RequestState&) = delete;
     RequestState& operator=(const RequestState&) = delete;

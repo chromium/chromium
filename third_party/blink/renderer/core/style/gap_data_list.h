@@ -30,6 +30,10 @@ class CORE_EXPORT GapDataList {
     return GapDataList(kDefaultWidth);
   }
 
+  static GapDataList DefaultGapStyleDataList() {
+    return GapDataList(EBorderStyle::kNone);
+  }
+
   explicit GapDataList(GapDataVector&& gap_data_list)
       : gap_data_list_(gap_data_list) {
     CHECK(!gap_data_list_.empty());

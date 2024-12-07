@@ -2256,7 +2256,7 @@ MLOperand* MLGraphBuilder::gemm(MLOperand* a,
   return output;
 }
 
-HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
+HeapVector<Member<MLOperand>> MLGraphBuilder::gru(
     MLOperand* input,
     MLOperand* weight,
     MLOperand* recurrent_weight,
@@ -2265,7 +2265,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
     MLGruOptions* options,
     ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(),
-                            HeapVector<Member<const MLOperand>>());
+                            HeapVector<Member<MLOperand>>());
 
   HeapVector<Member<MLOperand>> inputs = {input, weight, recurrent_weight};
   if (options->hasBias()) {
@@ -2278,7 +2278,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
     inputs.push_back(options->initialHiddenState());
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
-                                 HeapVector<Member<const MLOperand>>());
+                                 HeapVector<Member<MLOperand>>());
 
   auto validated_outputs = webnn::ValidateGruAndInferOutput(
       ml_context_->GetProperties(), input->Descriptor(), weight->Descriptor(),
@@ -2291,7 +2291,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
   auto* gru =
       MakeGarbageCollected<MLGruOperator>(this, steps, hidden_size, options);
 
-  HeapVector<Member<const MLOperand>> outputs;
+  HeapVector<Member<MLOperand>> outputs;
   for (const auto& validated_output : validated_outputs.value()) {
     outputs.push_back(MLOperand::CreateOutput(this, validated_output, gru));
   }
@@ -2474,7 +2474,7 @@ MLOperand* MLGraphBuilder::linear(MLOperand* input,
       options);
 }
 
-HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
+HeapVector<Member<MLOperand>> MLGraphBuilder::lstm(
     MLOperand* input,
     MLOperand* weight,
     MLOperand* recurrent_weight,
@@ -2483,7 +2483,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
     MLLstmOptions* options,
     ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(),
-                            HeapVector<Member<const MLOperand>>());
+                            HeapVector<Member<MLOperand>>());
 
   HeapVector<Member<MLOperand>> inputs = {input, weight, recurrent_weight};
   if (options->hasBias()) {
@@ -2502,7 +2502,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
     inputs.push_back(options->initialCellState());
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
-                                 HeapVector<Member<const MLOperand>>());
+                                 HeapVector<Member<MLOperand>>());
 
   if (!options->hasActivations()) {
     // Create a default activation sequence as defined in the spec.
@@ -2527,7 +2527,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
   auto* lstm =
       MakeGarbageCollected<MLLstmOperator>(this, steps, hidden_size, options);
 
-  HeapVector<Member<const MLOperand>> outputs;
+  HeapVector<Member<MLOperand>> outputs;
   for (const auto& validated_output : validated_outputs.value()) {
     outputs.push_back(MLOperand::CreateOutput(this, validated_output, lstm));
   }
@@ -2536,7 +2536,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
   return outputs;
 }
 
-HeapVector<Member<const MLOperand>> MLGraphBuilder::lstmCell(
+HeapVector<Member<MLOperand>> MLGraphBuilder::lstmCell(
     MLOperand* input,
     MLOperand* weight,
     MLOperand* recurrent_weight,
@@ -2546,7 +2546,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstmCell(
     MLLstmCellOptions* options,
     ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(),
-                            HeapVector<Member<const MLOperand>>());
+                            HeapVector<Member<MLOperand>>());
 
   HeapVector<Member<MLOperand>> inputs = {input, weight, recurrent_weight,
                                           hidden_state, cell_state};
@@ -2560,7 +2560,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstmCell(
     inputs.push_back(options->peepholeWeight());
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
-                                 HeapVector<Member<const MLOperand>>());
+                                 HeapVector<Member<MLOperand>>());
 
   if (!options->hasActivations()) {
     // Create a default activation sequence as defined in the spec.
@@ -2586,7 +2586,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstmCell(
   auto* lstm_cell =
       MakeGarbageCollected<MLLstmCellOperator>(this, hidden_size, options);
 
-  HeapVector<Member<const MLOperand>> outputs;
+  HeapVector<Member<MLOperand>> outputs;
   CHECK_EQ(validated_outputs->size(), 2u);
   outputs.reserve(2);
   for (const auto& validated_output : validated_outputs.value()) {
@@ -3069,15 +3069,15 @@ MLOperand* MLGraphBuilder::softsign(MLOperand* input,
       options);
 }
 
-HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
+HeapVector<Member<MLOperand>> MLGraphBuilder::split(
     MLOperand* input,
     const uint32_t splits,
     const MLSplitOptions* options,
     ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(),
-                            HeapVector<Member<const MLOperand>>());
+                            HeapVector<Member<MLOperand>>());
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input),
-                                 HeapVector<Member<const MLOperand>>());
+                                 HeapVector<Member<MLOperand>>());
 
   auto validated_outputs = webnn::ValidateSplitAndInferOutput(
       ml_context_->GetProperties(), input->Descriptor(),
@@ -3090,7 +3090,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   }
 
   auto* split = MakeGarbageCollected<MLSplitOperator>(this, splits, options);
-  HeapVector<Member<const MLOperand>> outputs;
+  HeapVector<Member<MLOperand>> outputs;
   for (const auto& validated_output : validated_outputs.value()) {
     outputs.push_back(MLOperand::CreateOutput(this, validated_output, split));
   }
@@ -3098,15 +3098,15 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   return outputs;
 }
 
-HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
+HeapVector<Member<MLOperand>> MLGraphBuilder::split(
     MLOperand* input,
     const Vector<uint32_t>& splits,
     const MLSplitOptions* options,
     ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(),
-                            HeapVector<Member<const MLOperand>>());
+                            HeapVector<Member<MLOperand>>());
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input),
-                                 HeapVector<Member<const MLOperand>>());
+                                 HeapVector<Member<MLOperand>>());
 
   auto validated_outputs = webnn::ValidateSplitAndInferOutput(
       ml_context_->GetProperties(), input->Descriptor(),
@@ -3119,7 +3119,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   }
 
   auto* split = MakeGarbageCollected<MLSplitOperator>(this, splits, options);
-  HeapVector<Member<const MLOperand>> outputs;
+  HeapVector<Member<MLOperand>> outputs;
   for (const auto& validated_output : validated_outputs.value()) {
     outputs.push_back(MLOperand::CreateOutput(this, validated_output, split));
   }

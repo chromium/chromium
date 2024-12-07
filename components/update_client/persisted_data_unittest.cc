@@ -33,10 +33,14 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid.withdot"));
   EXPECT_EQ(-2, metadata->GetInstallDate("someappid"));
   EXPECT_EQ(-2, metadata->GetInstallDate("someappid.withdot"));
+  EXPECT_EQ("", metadata->GetInstallId("someappid"));
+  metadata->SetInstallId("someappid", "installation 1");
+  EXPECT_EQ("installation 1", metadata->GetInstallId("someappid"));
   std::vector<std::string> items;
   items.push_back("someappid");
   items.push_back("someappid.withdot");
   test::SetDateLastData(metadata.get(), items, 3383);
+  EXPECT_EQ("", metadata->GetInstallId("someappid"));
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid.withdot"));
   EXPECT_EQ(3383, metadata->GetInstallDate("someappid"));

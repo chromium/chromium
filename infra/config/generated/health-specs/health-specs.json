@@ -237,27 +237,6 @@
           }
         ]
       },
-      "Android FYI Release (Motorola Moto G Power 5G)": {
-        "contact_team_email": "chrome-gpu-infra@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "Android FYI Release (NVIDIA Shield TV)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [
@@ -12012,6 +11991,48 @@
       },
       "mac14-tests-dbg": {
         "contact_team_email": "bling-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "mac14-x64-updater-tester-rel": {
+        "contact_team_email": "omaha@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "mac15-arm64-updater-tester-dbg": {
+        "contact_team_email": "omaha@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

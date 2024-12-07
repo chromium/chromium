@@ -20,6 +20,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/command_line.h"
 #include "base/test/run_until.h"
@@ -315,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveAppsToNewDesk) {
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, AsyncGroupTitle) {
   // Create a test coral group with a pending title.
   std::vector<coral::mojom::GroupPtr> test_groups;
-  test_groups.push_back(CreateTestGroup({}));
+  test_groups.push_back(CreateTestGroup({{"example", "www.example.com"}}));
   OverrideTestResponse(std::move(test_groups));
 
   // Set up a callback for a birch data fetch.
@@ -330,19 +331,19 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, AsyncGroupTitle) {
   birch_data_fetch_waiter.Run();
 
   // The birch bar is created with a single chip.
-  BirchChipButton* coral_chip =
-      static_cast<BirchChipButton*>(GetBirchChipButton());
+  CoralChipButton* coral_chip =
+      views::AsViewClass<CoralChipButton>(GetBirchChipButton());
   ASSERT_TRUE(coral_chip);
 
   // The chip should hide title with title pending.
   ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
-  ASSERT_FALSE(coral_chip->title_->GetVisible());
+  ASSERT_FALSE(coral_chip->title()->GetVisible());
 
   // When the group title gets updated, the chip title will be shown with
   // updated title.
   BirchCoralProvider::Get()->TitleUpdated(base::Token(), "Updated Title");
-  ASSERT_TRUE(coral_chip->title_->GetVisible());
-  EXPECT_EQ(coral_chip->title_->GetText(), u"Updated Title");
+  ASSERT_TRUE(coral_chip->title()->GetVisible());
+  EXPECT_EQ(coral_chip->title()->GetText(), u"Updated Title");
 }
 
 // Tests that the chip will show placeholder title when corresponding group
@@ -350,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, AsyncGroupTitle) {
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, GroupTitleLoadingFail) {
   // Create a test coral group with a pending title.
   std::vector<coral::mojom::GroupPtr> test_groups;
-  test_groups.push_back(CreateTestGroup({}));
+  test_groups.push_back(CreateTestGroup({{"example", "www.example.com"}}));
   OverrideTestResponse(std::move(test_groups));
 
   // Set up a callback for a birch data fetch.
@@ -365,19 +366,19 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, GroupTitleLoadingFail) {
   birch_data_fetch_waiter.Run();
 
   // The birch bar is created with a single chip.
-  BirchChipButton* coral_chip =
-      static_cast<BirchChipButton*>(GetBirchChipButton());
+  CoralChipButton* coral_chip =
+      views::AsViewClass<CoralChipButton>(GetBirchChipButton());
   ASSERT_TRUE(coral_chip);
 
   // The chip should show placeholder title when receiving an empty title.
   ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
-  ASSERT_FALSE(coral_chip->title_->GetVisible());
+  ASSERT_FALSE(coral_chip->title()->GetVisible());
 
   // When the group title gets updated, the chip title will be shown with
   // updated title.
   BirchCoralProvider::Get()->TitleUpdated(base::Token(), "");
-  ASSERT_TRUE(coral_chip->title_->GetVisible());
-  EXPECT_EQ(coral_chip->title_->GetText(), u"Suggested Group");
+  ASSERT_TRUE(coral_chip->title()->GetVisible());
+  EXPECT_EQ(coral_chip->title()->GetText(), u"Suggested Group");
 }
 
 // Tests that the coral chip gets updated while corresponding tab/app items are

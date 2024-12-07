@@ -97,7 +97,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
                EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX},
           {net::CookieInclusionStatus::
                WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT}),
-      net::CookieAccessSemantics::LEGACY,
+      net::CookieAccessSemantics::LEGACY, net::CookieScopeSemantics::LEGACY,
       true /* is_allowed_to_access_secure_cookies */);
   net::CookieAccessResult copied;
 
@@ -520,10 +520,10 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
 
   net::CookieChangeInfo original(
       *original_cookie,
-      net::CookieAccessResult(net::CookieEffectiveSameSite::UNDEFINED,
-                              net::CookieInclusionStatus(),
-                              net::CookieAccessSemantics::LEGACY,
-                              false /* is_allowed_to_access_secure_cookies */),
+      net::CookieAccessResult(
+          net::CookieEffectiveSameSite::UNDEFINED, net::CookieInclusionStatus(),
+          net::CookieAccessSemantics::LEGACY, net::CookieScopeSemantics::LEGACY,
+          false /* is_allowed_to_access_secure_cookies */),
       net::CookieChangeCause::EXPLICIT);
 
   net::CookieChangeInfo copied;
@@ -546,6 +546,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   EXPECT_EQ(original.cookie.SourceType(), copied.cookie.SourceType());
   EXPECT_EQ(original.access_result.access_semantics,
             copied.access_result.access_semantics);
+  EXPECT_EQ(original.access_result.scope_semantics,
+            copied.access_result.scope_semantics);
   EXPECT_EQ(original.cause, copied.cause);
 }
 

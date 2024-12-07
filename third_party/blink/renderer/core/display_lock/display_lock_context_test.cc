@@ -851,7 +851,7 @@ TEST_F(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   // We start off as being focusable.
   ASSERT_TRUE(GetDocument()
                   .getElementById(AtomicString("textfield"))
-                  ->IsKeyboardFocusable());
+                  ->IsKeyboardFocusableSlow());
   ASSERT_TRUE(
       GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
   ASSERT_TRUE(
@@ -880,7 +880,7 @@ TEST_F(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
   // The input should not be focusable now.
   EXPECT_FALSE(GetDocument()
                    .getElementById(AtomicString("textfield"))
-                   ->IsKeyboardFocusable());
+                   ->IsKeyboardFocusableSlow());
   EXPECT_FALSE(
       GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
   EXPECT_FALSE(
@@ -907,7 +907,7 @@ TEST_F(DisplayLockContextTest, LockedElementAndDescendantsAreNotFocusable) {
             0);
   EXPECT_TRUE(GetDocument()
                   .getElementById(AtomicString("textfield"))
-                  ->IsKeyboardFocusable());
+                  ->IsKeyboardFocusableSlow());
   EXPECT_TRUE(
       GetDocument().getElementById(AtomicString("textfield"))->IsFocusable());
   EXPECT_TRUE(
@@ -1047,7 +1047,7 @@ TEST_F(DisplayLockContextTest,
       "paint;'><slot></slot></div>");
 
   UpdateAllLifecyclePhasesForTest();
-  ASSERT_TRUE(text_field->IsKeyboardFocusable());
+  ASSERT_TRUE(text_field->IsKeyboardFocusableSlow());
   ASSERT_TRUE(text_field->IsFocusable());
 
   auto* element = shadow_root.getElementById(AtomicString("container"));
@@ -1065,7 +1065,7 @@ TEST_F(DisplayLockContextTest,
             1);
 
   // The input should not be focusable now.
-  EXPECT_FALSE(text_field->IsKeyboardFocusable());
+  EXPECT_FALSE(text_field->IsKeyboardFocusableSlow());
   EXPECT_FALSE(text_field->IsFocusable());
 
   // Calling explicit focus() should also not focus the element.

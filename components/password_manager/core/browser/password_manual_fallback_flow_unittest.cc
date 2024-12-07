@@ -169,6 +169,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                base::i18n::TextDirection text_direction,
                const GURL& domain,
                const std::u16string& password_hostname,
+               bool show_warning_text,
                base::OnceClosure confirmation_callback),
               (override));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
@@ -1027,7 +1028,7 @@ TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
   EXPECT_CALL(password_manager_client(),
               ShowCrossDomainConfirmationPopup(
                   element_bounds, text_direction, domain,
-                  base::UTF8ToUTF16(password_hostname), _));
+                  base::UTF8ToUTF16(password_hostname), _, _));
   EXPECT_CALL(driver(), FillField).Times(0);
 
   Suggestion suggestion =

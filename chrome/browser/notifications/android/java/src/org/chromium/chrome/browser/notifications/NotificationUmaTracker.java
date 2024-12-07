@@ -4,19 +4,16 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.Manifest;
 import android.app.Notification;
-import android.content.pm.PackageManager;
+import android.app.NotificationChannel;
 import android.os.Build;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -24,6 +21,9 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -343,7 +343,7 @@ public class NotificationUmaTracker {
 
     // Cached objects.
     private final SharedPreferencesManager mSharedPreferences;
-    private final NotificationManagerCompat mNotificationManager;
+    private final NotificationManagerProxy mNotificationManager;
 
     public static NotificationUmaTracker getInstance() {
         return LazyHolder.INSTANCE;
@@ -351,7 +351,7 @@ public class NotificationUmaTracker {
 
     private NotificationUmaTracker() {
         mSharedPreferences = ChromeSharedPreferences.getInstance();
-        mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
+        mNotificationManager = NotificationManagerProxyImpl.getInstance();
     }
 
     /**
@@ -529,25 +529,9 @@ public class NotificationUmaTracker {
     /**
      * Records the result of an OS prompt for notification permissions.
      *
-     * @param permissions List of permissions requested, the only element should be the notification
-     *     permission.
-     * @param grantResults List of grant results.
+     * @param isPermissionGranted Whether permission is granted.
      */
-    public void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
-        if (permissions == null
-                || permissions.length != 1
-                || grantResults.length != 1
-                || !permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)) {
-            assert permissions != null : "Parameter permissions should not be null";
-            assert permissions.length == 1 : "A single permission should have been requested";
-            assert grantResults.length == 1 : "A single result should have been returned";
-            assert permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)
-                    : "The requested permission should be for notifications";
-            return;
-        }
-
-        boolean isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
+    public void recordNotificationPermissionRequestResult(boolean isPermissionGranted) {
         RecordHistogram.recordBooleanHistogram(
                 "Mobile.SystemNotification.Permission.OSPromptResult", isPermissionGranted);
     }
@@ -667,7 +651,7 @@ public class NotificationUmaTracker {
     private void logNotificationShown(
             @SystemNotificationType int type,
             @ChromeChannelDefinitions.ChannelId String channelId) {
-        if (!mNotificationManager.areNotificationsEnabled()) {
+        if (!NotificationProxyUtils.areNotificationsEnabled()) {
             logPotentialBlockedCause();
             recordHistogram("Mobile.SystemNotification.Blocked", type);
             return;
@@ -684,8 +668,7 @@ public class NotificationUmaTracker {
 
     @RequiresApi(26)
     private boolean isChannelBlocked(@ChromeChannelDefinitions.ChannelId String channelId) {
-        NotificationChannelCompat channel =
-                mNotificationManager.getNotificationChannelCompat(channelId);
+        NotificationChannel channel = mNotificationManager.getNotificationChannel(channelId);
         return channel != null
                 && channel.getImportance() == NotificationManagerCompat.IMPORTANCE_NONE;
     }

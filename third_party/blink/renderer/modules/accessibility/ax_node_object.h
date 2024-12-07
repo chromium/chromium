@@ -420,6 +420,17 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void CheckValidChild(AXObject* child);
 #endif
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // TODO(crbug.com/382235118): Remove temporary DCHECKS between current and
+  // AxBlockFlowIterator algorithm. Returns true if the DCHECKS that compare the
+  // old AxInlineTextBox creation algorithm with the new AxBlockFlowIterator
+  // approach should be skipped. Some cases should be skipped because the
+  // current algorithm produces results that should be investigated further
+  // before we mirror the behavior in the new algorithm.
+  bool ShouldSkipAxBlockFlowIteratorComparison() const;
+
+#endif
+
   ax::mojom::blink::TextPosition GetTextPositionFromRole() const;
 
   static bool IsNameFromLabelElement(HTMLElement* control);

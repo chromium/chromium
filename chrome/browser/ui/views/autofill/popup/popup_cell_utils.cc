@@ -20,7 +20,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/prediction_improvements_icon_image_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
@@ -408,8 +408,7 @@ std::unique_ptr<views::ImageView> GetIconImageView(
   }
   std::unique_ptr<views::ImageView> icon_image_view =
       (suggestion.icon == Suggestion::Icon::kAutofillPredictionImprovements)
-          ? autofill_prediction_improvements::
-                CreateSmallPredictionImprovementsIconImageView()
+          ? autofill_ai::CreateSmallAutofillAiIconImageView()
           : ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
                                     suggestion.HasDeactivatedStyle());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,

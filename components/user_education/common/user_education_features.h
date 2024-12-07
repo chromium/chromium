@@ -84,6 +84,15 @@ extern int GetNewBadgeFeatureUsedCount();
 // being displayed after this period.
 extern base::TimeDelta GetNewBadgeDisplayWindow();
 
+// Returns timeouts for high, medium, and low-priority promos in the queue for
+// User Education 2.5.
+extern base::TimeDelta GetHighPriorityTimeout();
+extern base::TimeDelta GetMediumPriorityTimeout();
+extern base::TimeDelta GetLowPriorityTimeout();
+
+// Returns the polling interval for the promo controller for User Education 2.5.
+extern base::TimeDelta GetPromoControllerPollingInterval();
+
 }  // namespace user_education::features
 
 #endif  // COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_

@@ -28,7 +28,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 
@@ -111,6 +110,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void UpdatePendingEventTimingsWithFallbackTime(base::TimeTicks fallback_time);
 
+  // Set render start time for all pending events that have finished processing.
+  void SetRenderStartTimeForPendingEvents(base::TimeTicks render_start_time);
+
   void OnPaintFinished();
 
   void AddElementTiming(const AtomicString& name,
@@ -124,7 +126,16 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                         Element*);
 
   void OnBodyLoadFinished(int64_t encoded_body_size, int64_t decoded_body_size);
-  void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo*);
+  void QueueLongAnimationFrameTiming(
+      AnimationFrameTimingInfo*,
+      std::optional<DOMPaintTimingInfo> paint_timing_info = std::nullopt);
+  void AddFirstPaintTiming(const DOMPaintTimingInfo& paint_timing_info,
+                           bool is_triggered_by_soft_navigation);
+
+  void AddFirstContentfulPaintTiming(
+      const DOMPaintTimingInfo& paint_timing_info,
+      bool is_triggered_by_soft_navigation);
+
   // PerformanceMonitor::Client implementation.
   void ReportLongTask(base::TimeTicks start_time,
                       base::TimeTicks end_time,
@@ -168,6 +179,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void OnPageScroll();
   bool IsAutoscrollActive();
   void ResetAutoscroll() { autoscroll_active_ = false; }
+  void QueueEntryWithPaintTiming(
+      base::OnceCallback<void(WindowPerformance*, const DOMPaintTimingInfo&)>
+          callback,
+      const DOMPaintTimingInfo&);
 
  private:
   static std::pair<AtomicString, DOMWindow*> SanitizedAttribution(
@@ -180,6 +195,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void ReportAllPendingEventTimingsOnPageHidden();
 
   void FlushEventTimingsOnPageHidden();
+  void AddLongAnimationFrameEntry(PerformanceEntry*);
 
   void OnPresentationPromiseResolved(
       uint64_t presentation_index,
@@ -204,6 +220,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
 
   void ReportFirstInputTiming(PerformanceEventTiming* event_timing_entry);
+
+  void SchedulePendingRenderCoarsenedEntries(base::TimeTicks target_time);
+  void FlushPendingRenderCoarsenedEntries();
 
   // The last time the page visibility was changed.
   base::TimeTicks last_hidden_timestamp_;
@@ -251,6 +270,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   Member<ResponsivenessMetrics> responsiveness_metrics_;
   // The event we are currently processing.
   WeakMember<const Event> current_event_;
+
+  Vector<std::pair<base::OnceClosure, base::TimeTicks>>
+      pending_entry_operations_with_render_coarsening_;
 };
 
 }  // namespace blink

@@ -64,7 +64,7 @@ bool IsTimezoneAutomaticDetectionUserEditable() {
 
 }  // namespace
 
-DateTimeHandler::DateTimeHandler() {}
+DateTimeHandler::DateTimeHandler() = default;
 
 DateTimeHandler::~DateTimeHandler() = default;
 

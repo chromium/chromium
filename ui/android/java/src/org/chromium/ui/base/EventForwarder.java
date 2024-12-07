@@ -290,6 +290,7 @@ public class EventForwarder {
                                     event,
                                     oldestEventTime,
                                     latestEventTime,
+                                    event.getDownTime(),
                                     eventAction,
                                     pointerCount,
                                     historySize,
@@ -751,7 +752,8 @@ public class EventForwarder {
                         mNativeEventForwarder,
                         EventForwarder.this,
                         event,
-                        MotionEventUtils.getEventTimeNanos(event));
+                        MotionEventUtils.getEventTimeNanos(event),
+                        event.getDownTime());
     }
 
     /**
@@ -847,6 +849,7 @@ public class EventForwarder {
                 MotionEvent event,
                 long oldestEventTimeNs,
                 long latestEventTimeNs,
+                long downTimeMs,
                 int action,
                 int pointerCount,
                 int historySize,
@@ -913,7 +916,11 @@ public class EventForwarder {
                 float delta);
 
         boolean onGenericMotionEvent(
-                long nativeEventForwarder, EventForwarder caller, MotionEvent event, long timeNs);
+                long nativeEventForwarder,
+                EventForwarder caller,
+                MotionEvent event,
+                long timeNs,
+                long downTimeMs);
 
         void onMouseWheelEvent(
                 long nativeEventForwarder,

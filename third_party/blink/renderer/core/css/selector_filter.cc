@@ -42,7 +42,7 @@ namespace {
 
 // Salt to separate otherwise identical string hashes so a class-selector like
 // .article won't match <article> elements.
-enum { kTagNameSalt = 13, kIdSalt = 17, kClassSalt = 19, kAttributeSalt = 23 };
+enum { kTagNameSalt = 1, kIdSalt = 3, kClassSalt = 5, kAttributeSalt = 7 };
 
 inline bool IsExcludedAttribute(const AtomicString& name) {
   return name == html_names::kClassAttr.LocalName() ||
@@ -81,12 +81,12 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
     const CSSSelector* selector,
     CSSSelector::RelationType relation,
     const StyleScope* style_scope,
-    Vector<unsigned>& hashes);
+    Vector<uint16_t>& hashes);
 
 inline void CollectDescendantSelectorIdentifierHashes(
     const CSSSelector& selector,
     const StyleScope* style_scope,
-    Vector<unsigned>& hashes) {
+    Vector<uint16_t>& hashes) {
   switch (selector.Match()) {
     case CSSSelector::kId:
       if (!selector.Value().empty()) {
@@ -159,7 +159,7 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
     const CSSSelector* selector,
     CSSSelector::RelationType relation,
     const StyleScope* style_scope,
-    Vector<unsigned>& hashes) {
+    Vector<uint16_t>& hashes) {
   // Skip the rightmost compound. It is handled quickly by the rule hashes.
   bool skip_over_subselectors = true;
   for (const CSSSelector* current = selector; current;
@@ -226,28 +226,19 @@ void SelectorFilter::PushParent(Element& parent) {
   parent_stack_.push_back(parent);
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
   // The filter is used for fast rejection of child and descendant selectors.
-  CollectElementIdentifierHashes(
-      parent, [this](unsigned hash) { ancestor_identifier_filter_.Add(hash); });
-}
-
-void SelectorFilter::PopParent(Element& parent) {
-  DCHECK(ParentStackIsConsistent(&parent));
-  DCHECK(!parent_stack_.empty());
-  CollectElementIdentifierHashes(*parent_stack_.back(), [this](unsigned hash) {
-    ancestor_identifier_filter_.Remove(hash);
+  CollectElementIdentifierHashes(parent, [this](unsigned hash) {
+    hash &= kFilterMask;
+    if (!ancestor_identifier_filter_.test(hash)) {
+      ancestor_identifier_filter_.set(hash);
+      set_bits_.push_back(hash);
+    }
   });
-  parent_stack_.pop_back();
-  if (parent_stack_.empty()) {
-#if DCHECK_IS_ON()
-    DCHECK(ancestor_identifier_filter_.LikelyEmpty());
-#endif
-  }
 }
 
 void SelectorFilter::CollectIdentifierHashes(
     const CSSSelector& selector,
     const StyleScope* style_scope,
-    Vector<unsigned>& bloom_hash_backing) {
+    Vector<uint16_t>& bloom_hash_backing) {
   CollectDescendantCompoundSelectorIdentifierHashes(
       selector.NextSimpleSelector(), selector.Relation(), style_scope,
       bloom_hash_backing);

@@ -47,11 +47,12 @@ class SavedTabGroupButton : public views::MenuButton,
   ~SavedTabGroupButton() override;
 
   // views::MenuButton:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
   void OnThemeChanged() override;
+
+  void UpdateCachedTooltipText();
 
   // views::View
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -80,6 +81,7 @@ class SavedTabGroupButton : public views::MenuButton,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarUnitTest, AccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarUnitTest, TooltipText);
   std::u16string GetAccessibleNameForButton() const;
   void SetTextProperties(const SavedTabGroup& group);
   void UpdateButtonLayout();

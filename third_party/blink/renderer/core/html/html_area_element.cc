@@ -184,10 +184,10 @@ HTMLImageElement* HTMLAreaElement::ImageElement() const {
   return nullptr;
 }
 
-bool HTMLAreaElement::IsKeyboardFocusable(
+bool HTMLAreaElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   // Explicitly skip over the HTMLAnchorElementBase's keyboard focus behavior.
-  return Element::IsKeyboardFocusable(update_behavior);
+  return Element::IsKeyboardFocusableSlow(update_behavior);
 }
 
 FocusableState HTMLAreaElement::IsFocusableState(

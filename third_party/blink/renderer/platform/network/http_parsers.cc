@@ -185,7 +185,8 @@ blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
       source_list->allow_inline, source_list->allow_inline_speculation_rules,
       source_list->allow_eval, source_list->allow_wasm_eval,
       source_list->allow_wasm_unsafe_eval, source_list->allow_dynamic,
-      source_list->allow_unsafe_hashes, source_list->report_sample);
+      source_list->allow_unsafe_hashes, source_list->report_sample,
+      source_list->report_hash_algorithm);
 }
 
 blink::ContentSecurityPolicyHeaderPtr ConvertToBlink(
@@ -320,7 +321,7 @@ blink::SRIMessageSignaturePtr ConvertToBlink(const SRIMessageSignaturePtr& in) {
       ConvertToBlink(in->label), ConvertToBlink(in->signature),
       ConvertToBlink(in->components), ConvertToBlink(in->alg), in->created,
       in->expires, ConvertToBlink(in->keyid), ConvertToBlink(in->nonce),
-      ConvertToBlink(in->tag));
+      ConvertToBlink(in->tag), ConvertToBlink(in->serialized_signature_params));
 }
 
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {

@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
-import android.annotation.SuppressLint;
 import android.app.role.RoleManager;
-import android.content.Context;
 import android.content.pm.ResolveInfo;
-import android.os.Build;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
@@ -101,17 +98,5 @@ public class DefaultBrowserStateProvider {
 
     ResolveInfo getDefaultWebBrowserActivityResolveInfo() {
         return PackageManagerUtils.resolveDefaultWebBrowserActivity();
-    }
-
-    @SuppressLint("NewApi")
-    boolean isRoleAvailable(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return false;
-        }
-        RoleManager roleManager = (RoleManager) context.getSystemService(Context.ROLE_SERVICE);
-        if (roleManager == null) return false;
-        boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);
-        boolean isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);
-        return isRoleAvailable && !isRoleHeld;
     }
 }

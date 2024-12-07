@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/no_destructor.h"
@@ -41,10 +42,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // Serializes and deserializes a ClipboardFormatType for use in IPC messages.
   // The serialized string may not be human-readable.
   std::string Serialize() const;
-  static ClipboardFormatType Deserialize(const std::string& serialization);
-
-  // Gets the ClipboardFormatType corresponding to the standard formats.
-  static ClipboardFormatType GetType(const std::string& format_string);
+  static ClipboardFormatType Deserialize(std::string_view serialization);
 
   // Get format identifiers for various types.
   static const ClipboardFormatType& FilenamesType();
@@ -103,11 +101,23 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // clipboard. Derived from the provided `index` value.
   static std::string WebCustomFormatName(int index);
 
-  // Returns the ClipboardFormatType used for web custom format data,
-  // registering it with the system if needed. Pass in a value obtained from
-  // `WebCustomFormatName` above.
-  static ClipboardFormatType CustomPlatformType(
-      const std::string& format_string);
+  // Returns a `ClipboardFormatType` for a custom format. This is a low-level
+  // interface and the input must not be controlled by potentially-malicious
+  // content: for better or worse, clipboard format registrations are a finite
+  // (and shared and unreleasable) resource on some platforms.
+  //
+  // The format string must be in ASCII and should conform to general platform
+  // conventions (i.e. it should generally be a MIME type, except on Apple
+  // platforms, where it should be a Uniform Type Identifier).
+  //
+  // On Windows, some types are unnameable, e.g. the built-in text types. Use
+  // the helpers for the predefined formats instead.
+  static ClipboardFormatType CustomPlatformType(std::string_view format_string);
+
+  // Deprecated synonym for `CustomPlatformType()` that will be removed.
+  static ClipboardFormatType GetType(std::string_view format_string) {
+    return CustomPlatformType(format_string);
+  }
 
   // Returns the ClipboardFormatType used for the web custom format map that has
   // the mapping of MIME types to custom format names.
@@ -160,7 +170,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // https://docs.microsoft.com/en-us/windows/desktop/com/the-formatetc-structure
   CHROME_FORMATETC data_;
 #elif defined(USE_AURA) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-  explicit ClipboardFormatType(const std::string& native_format);
+  explicit ClipboardFormatType(std::string_view native_format);
   std::string data_;
 #elif BUILDFLAG(IS_APPLE)
 #if __OBJC__

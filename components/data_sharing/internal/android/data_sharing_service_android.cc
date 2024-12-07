@@ -167,7 +167,9 @@ void DataSharingServiceAndroid::ReadGroup(
     JNIEnv* env,
     const JavaParamRef<jstring>& group_id,
     const JavaParamRef<jobject>& j_callback) {
-  data_sharing_service_->ReadGroup(
+  // TODO(crbug.com/382033539): migrate android implementation to use
+  // synchronous ReadGroup().
+  data_sharing_service_->ReadGroupDeprecated(
       GroupId(ConvertJavaStringToUTF8(env, group_id)),
       base::BindOnce(&RunGroupDataOrFailureOutcomeCallback,
                      ScopedJavaGlobalRef<jobject>(j_callback)));

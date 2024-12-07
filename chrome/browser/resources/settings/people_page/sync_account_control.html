@@ -132,7 +132,9 @@
                   syncStatus.firstSetupInProgress,
                   prefs.signin.allowed_on_next_startup.value)]]"
           hidden="[[shouldShowAvatarRow_]]">
-        $i18n{peopleSignIn}
+          [[getSignInLabel_(
+            '$i18nPolymer{peopleSignIn}',
+            '$i18nPolymer{peopleSignInNoAccountAwareness}')]]
       </cr-button>
     </div>
     <template is="dom-if" if="[[shouldShowAvatarRow_]]">

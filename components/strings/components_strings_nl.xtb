@@ -1233,6 +1233,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3229277193950731405">Versietekenreeks kopiëren</translation>
 <translation id="323107829343500871">De CVC-code voor <ph name="CREDIT_CARD" /> invoeren</translation>
 <translation id="3234666976984236645">Altijd belangrijke content op deze site detecteren</translation>
+<translation id="323585066388831737">Lichtrood</translation>
 <translation id="3236212803136366317">Kaartvoordelen</translation>
 <translation id="3238395604961564389">Link openen in incognitovenster</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om het uiterlijk van je browser aan te passen</translation>
@@ -1848,6 +1849,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4277937682389409325">Lokaal adres</translation>
 <translation id="4278090321534187713">Kaarten die niet worden geaccepteerd door deze verkoper, zijn uitgezet</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
+<translation id="4281245629646759298">Lichtgeel</translation>
 <translation id="4281998142035485137">{0,plural, =1{Vertrouwelijk bestand openen?}other{Vertrouwelijke bestanden openen?}}</translation>
 <translation id="4282280603030594840">Voertuigen kopen</translation>
 <translation id="4282346679996504092">Meldingen voor dit product zijn uitgezet en de bookmark is verwijderd</translation>
@@ -2151,7 +2153,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4877422487531841831"><ph name="TEXT" /> zoeken</translation>
 <translation id="4877521229462766300">Ingesloten content toestaan?</translation>
 <translation id="4879491255372875719">Automatisch (standaard)</translation>
-<translation id="4880827082731008257">Geschiedenis doorzoeken</translation>
+<translation id="4880827082731008257">Zoek in de geschiedenis</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4881808915112408168">24 x 31,5 inch</translation>
 <translation id="4882314601499260499">Geen gebruikersbeleid toegepast. Als je gebruikersbeleid wilt toevoegen, moet je organisatie <ph name="LINK_BEGIN" />je domein verifiëren<ph name="LINK_END" />.</translation>
@@ -3977,7 +3979,7 @@ Aanvullende informatie:
 <translation id="8184538546369750125">Algemene standaardinstelling gebruiken (Toestaan)</translation>
 <translation id="8186706823560132848">Software</translation>
 <translation id="8188830160449823068">IBAN alleen op apparaat opgeslagen</translation>
-<translation id="8189557652711717875">De zoekmachine die je kiest, wordt gebruikt voor functies zoals zoeken via de adresbalk en vanuit afbeeldingen op webpagina's.</translation>
+<translation id="8189557652711717875">De zoekmachine die je kiest, wordt gebruikt voor functies zoals zoeken via de adresbalk en met afbeeldingen op webpagina's.</translation>
 <translation id="8190193880870196235">Beheerd door een extensie</translation>
 <translation id="8194412401381329820">Je kunt deze pagina niet gebruiken vanuit een beheerd account op dit onbeheerde apparaat. Alle beheerde accounts worden vergrendeld als je deze pagina gebruikt, behalve accounts die worden beheerd door dezelfde entiteit als dit apparaat (aangesloten accounts).</translation>
 <translation id="8194797478851900357">&amp;Verplaatsen ongedaan maken</translation>
@@ -4301,6 +4303,7 @@ Aanvullende informatie:
 <translation id="8767765348545497220">Hulpballon sluiten</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 betaalmethode}other{# betaalmethoden}}</translation>
 <translation id="8768225988514678921">Knop Presentatie maken. Activeer deze om snel een nieuwe Google-presentatie te maken in Presentaties.</translation>
+<translation id="8769662576926275897">Kaartdetails</translation>
 <translation id="8770286973007342895">Grasmaaiers</translation>
 <translation id="8772387130037509473">Yoga en pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vertrouwelijk bestand verplaatsen?}other{Vertrouwelijke bestanden verplaatsen?}}</translation>

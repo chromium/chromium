@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/scanner/scanner_session.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,16 +16,20 @@
 
 namespace ash {
 
+class ScannerCommandDelegateImpl;
 class ScannerDelegate;
 
 // This is the top level controller used for Scanner. It acts as a mediator
 // between Scanner and any consuming features.
-class ASH_EXPORT ScannerController {
+class ASH_EXPORT ScannerController : public SessionObserver {
  public:
   explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate);
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
-  ~ScannerController();
+  ~ScannerController() override;
+
+  // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // Checks system level constraints (e.g. prefs, feature flags) and returns
   // true if the constraints allow a Scanner session to be created.
@@ -56,8 +61,15 @@ class ASH_EXPORT ScannerController {
  private:
   std::unique_ptr<ScannerDelegate> delegate_;
 
+  // Delegate to handle Scanner commands for actions fetched during a session.
+  // `command_delegate_` should outlive `scanner_session_`, to allow commands to
+  // be completed in the background after the session UI has been closed.
+  std::unique_ptr<ScannerCommandDelegateImpl> command_delegate_;
+
   // May hold an active Scanner session, to allow access to the Scanner feature.
   std::unique_ptr<ScannerSession> scanner_session_;
+
+  ScopedSessionObserver session_observer_{this};
 
   base::WeakPtrFactory<ScannerController> weak_ptr_factory_{this};
 };

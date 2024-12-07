@@ -203,7 +203,7 @@ public class SharedWebViewChromium {
     }
 
     protected boolean checkNeedsPost() {
-        boolean needsPost = !mAwInit.hasStarted() || !ThreadUtils.runningOnUiThread();
+        boolean needsPost = !mAwInit.isChromiumInitialized() || !ThreadUtils.runningOnUiThread();
         if (!needsPost && mAwContents == null) {
             throw new IllegalStateException("AwContents must be created if we are not posting!");
         }

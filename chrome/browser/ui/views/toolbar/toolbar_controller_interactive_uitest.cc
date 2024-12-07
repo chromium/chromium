@@ -74,7 +74,6 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
         toolbar_controller_->toolbar_container_view_.get());
     overflow_button_ = toolbar_controller_->overflow_button_;
     dummy_button_size_ = overflow_button_->GetPreferredSize();
-    responsive_elements_ = toolbar_controller_->responsive_elements_;
     element_flex_order_start_ = toolbar_controller_->element_flex_order_start_;
     MaybeAddDummyButtonsToToolbarView();
     overflow_threshold_width_ = GetOverflowThresholdWidthInToolbarContainer();
@@ -144,7 +143,9 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   auto CheckIsManagedByController(ui::ElementIdentifier id) {
     return Check(
         [this, id]() {
-          for (const auto& el : responsive_elements_) {
+          const std::vector<ToolbarController::ResponsiveElementInfo>&
+              responsive_elements = get_responsive_elements();
+          for (const auto& el : responsive_elements) {
             if (const auto* info =
                     absl::get_if<ToolbarController::ElementIdInfo>(
                         &el.overflow_id)) {
@@ -161,7 +162,9 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   auto CheckIsManagedByController(actions::ActionId id) {
     return Check(
         [this, id]() {
-          for (const auto& el : responsive_elements_) {
+          const std::vector<ToolbarController::ResponsiveElementInfo>&
+              responsive_elements = get_responsive_elements();
+          for (const auto& el : responsive_elements) {
             if (const auto* action =
                     absl::get_if<actions::ActionId>(&el.overflow_id)) {
               if (*action == id) {
@@ -232,8 +235,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
       const ui::SimpleMenuModel* menu = GetOverflowMenu();
       EXPECT_NE(menu, nullptr);
       EXPECT_GT(menu->GetItemCount(), size_t(0));
-      const auto& responsive_elements =
-          toolbar_controller_->responsive_elements_;
+      const auto& responsive_elements = get_responsive_elements();
       for (size_t i = 0; i < responsive_elements.size(); ++i) {
         if (toolbar_controller_->IsOverflowed(responsive_elements[i])) {
           if (toolbar_controller_->GetMenuText(responsive_elements[i]) !=
@@ -249,9 +251,11 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   auto ActivateMenuItemWithElementId(
       absl::variant<ui::ElementIdentifier, actions::ActionId> id) {
     return Do([=, this]() {
+      const std::vector<ToolbarController::ResponsiveElementInfo>&
+          responsive_elements = get_responsive_elements();
       int command_id = -1;
-      for (size_t i = 0; i < responsive_elements_.size(); ++i) {
-        const auto& overflow_id = responsive_elements_[i].overflow_id;
+      for (size_t i = 0; i < responsive_elements.size(); ++i) {
+        const auto& overflow_id = responsive_elements[i].overflow_id;
         absl::visit(
             base::Overloaded(
                 [&](ToolbarController::ElementIdInfo overflow_id) {
@@ -363,8 +367,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   const views::View* overflow_button() const { return overflow_button_; }
   int element_flex_order_start() const { return element_flex_order_start_; }
   const std::vector<ToolbarController::ResponsiveElementInfo>&
-  responsive_elements() const {
-    return responsive_elements_;
+  get_responsive_elements() const {
+    return toolbar_controller_->responsive_elements_;
   }
   int overflow_threshold_width() const { return overflow_threshold_width_; }
   std::vector<const ToolbarController::ResponsiveElementInfo*>
@@ -381,7 +385,6 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   raw_ptr<ToolbarController> toolbar_controller_;
   raw_ptr<views::View> toolbar_container_view_;
   raw_ptr<views::View> overflow_button_;
-  std::vector<ToolbarController::ResponsiveElementInfo> responsive_elements_;
   int element_flex_order_start_;
   gfx::Size dummy_button_size_;
 

@@ -270,4 +270,181 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
                                       200, 1);
 }
 
+TEST_F(AutofillImageFetcherTest,
+       FetchImage_ServerFailure_FailureOnRepeatAttempt) {
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  GURL fake_url1 = GURL("https://www.example.com/fake_image1");
+  std::map<GURL, gfx::Image> expected_images = {{fake_url1, gfx::Image()}};
+
+  // Expect callback to be called with some received images.
+  std::map<GURL, gfx::Image> received_images;
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
+        for (auto& entry : card_art_images) {
+          received_images[entry->card_art_url] = entry->card_art_image;
+        }
+      });
+
+  base::HistogramTester histogram_tester;
+  // Expect to be called twice.
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
+  std::vector<GURL> urls = {fake_url1};
+
+  // Attempt 1 - Failure.
+  auto barrier_callback =
+      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+          1U, std::move(callback));
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
+      base::DoNothing());
+  task_environment().FastForwardBy(base::Milliseconds(200));
+  // Simulate failed image fetching (for image with URL) -> expect the
+  // callback to be called.
+  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
+                                                   now, gfx::Image());
+
+  ValidateResult(std::move(received_images), expected_images);
+
+  // Attempt 2 - Failure.
+  barrier_callback = base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+      1U, std::move(callback));
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
+      base::DoNothing());
+  task_environment().FastForwardBy(base::Milliseconds(100));
+  // Simulate failed image fetching (for image with URL) -> expect the
+  // callback to be called.
+  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
+                                                   now, gfx::Image());
+
+  ValidateResult(std::move(received_images), expected_images);
+  // Verify that for a given card art URL, failure is logged only once.
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+              BucketsAre(Bucket(false, 1), Bucket(true, 0)));
+  histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 1);
+}
+
+TEST_F(AutofillImageFetcherTest,
+       FetchImage_ServerFailure_SuccessOnRepeatAttempt) {
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  GURL fake_url1 = GURL("https://www.example.com/fake_image1");
+  gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
+  std::map<GURL, gfx::Image> expected_images_for_failure = {
+      {fake_url1, gfx::Image()}};
+  std::map<GURL, gfx::Image> expected_images_for_success = {
+      {fake_url1, fake_image1}};
+
+  // Expect callback to be called with some received images.
+  std::map<GURL, gfx::Image> received_images;
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
+        for (auto& entry : card_art_images) {
+          received_images[entry->card_art_url] = entry->card_art_image;
+        }
+      });
+
+  base::HistogramTester histogram_tester;
+  // Expect to be called twice.
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
+  std::vector<GURL> urls = {fake_url1};
+
+  // Attempt 1 - Failure.
+  auto barrier_callback =
+      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+          1U, std::move(callback));
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
+      base::DoNothing());
+  task_environment().FastForwardBy(base::Milliseconds(200));
+  // Simulate failed image fetching (for image with URL) -> expect the
+  // callback to be called.
+  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
+                                                   now, gfx::Image());
+
+  ValidateResult(std::move(received_images), expected_images_for_failure);
+
+  // Attempt 2 - Success.
+  barrier_callback = base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+      1U, std::move(callback));
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
+      base::DoNothing());
+  task_environment().FastForwardBy(base::Milliseconds(100));
+  // Simulate successful image fetching (for image with URL) -> expect the
+  // callback to be called.
+  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
+                                                   now, fake_image1);
+
+  ValidateResult(std::move(received_images), expected_images_for_success);
+  // Verify that if fetching asset for a card art URL succeeds after failing,
+  // both histograms are logged.
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+              BucketsAre(Bucket(false, 1), Bucket(true, 1)));
+  histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 2);
+}
+
+TEST_F(AutofillImageFetcherTest, FetchImage_Success_SuccessOnRepeatAttempt) {
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  GURL fake_url1 = GURL("https://www.example.com/fake_image1");
+  gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
+  std::map<GURL, gfx::Image> expected_images_for_success = {
+      {fake_url1, fake_image1}};
+
+  // Expect callback to be called with some received images.
+  std::map<GURL, gfx::Image> received_images;
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
+        for (auto& entry : card_art_images) {
+          received_images[entry->card_art_url] = entry->card_art_image;
+        }
+      });
+
+  base::HistogramTester histogram_tester;
+  // Expect to be called twice.
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
+  std::vector<GURL> urls = {fake_url1};
+
+  // Attempt 1 - Success.
+  auto barrier_callback =
+      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+          1U, std::move(callback));
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
+      base::DoNothing());
+  task_environment().FastForwardBy(base::Milliseconds(200));
+  // Simulate successful image fetching (for image with URL) -> expect the
+  // callback to be called.
+  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
+                                                   now, fake_image1);
+
+  ValidateResult(std::move(received_images), expected_images_for_success);
+
+  // Attempt 2 - Success. Since image fetching is an async process, it is
+  // possible that a second attempt is made before the first attempt has
+  // finished.
+  barrier_callback = base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+      1U, std::move(callback));
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
+      base::DoNothing());
+  task_environment().FastForwardBy(base::Milliseconds(100));
+  // Simulate successful image fetching (for image with URL) -> expect the
+  // callback to be called.
+  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
+                                                   now, fake_image1);
+
+  ValidateResult(std::move(received_images), expected_images_for_success);
+  // Verify that if multiple card art fetch attempts are made, and all of them
+  // are successful, the success histogram is logged only once.
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
+              BucketsAre(Bucket(false, 0), Bucket(true, 1)));
+  histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 1);
+}
+
 }  // namespace autofill

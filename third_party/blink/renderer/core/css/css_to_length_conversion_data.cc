@@ -432,32 +432,32 @@ float CSSToLengthConversionData::RcapFontSize(float zoom) const {
 }
 
 double CSSToLengthConversionData::ViewportWidth() const {
-  SetFlag(Flag::kStaticViewport);
+  SetFlag(Flag::kViewport);
   return viewport_size_.LargeWidth();
 }
 
 double CSSToLengthConversionData::ViewportHeight() const {
-  SetFlag(Flag::kStaticViewport);
+  SetFlag(Flag::kViewport);
   return viewport_size_.LargeHeight();
 }
 
 double CSSToLengthConversionData::SmallViewportWidth() const {
-  SetFlag(Flag::kStaticViewport);
+  SetFlag(Flag::kSmallLargeViewport);
   return viewport_size_.SmallWidth();
 }
 
 double CSSToLengthConversionData::SmallViewportHeight() const {
-  SetFlag(Flag::kStaticViewport);
+  SetFlag(Flag::kSmallLargeViewport);
   return viewport_size_.SmallHeight();
 }
 
 double CSSToLengthConversionData::LargeViewportWidth() const {
-  SetFlag(Flag::kStaticViewport);
+  SetFlag(Flag::kSmallLargeViewport);
   return viewport_size_.LargeWidth();
 }
 
 double CSSToLengthConversionData::LargeViewportHeight() const {
-  SetFlag(Flag::kStaticViewport);
+  SetFlag(Flag::kSmallLargeViewport);
   return viewport_size_.LargeHeight();
 }
 

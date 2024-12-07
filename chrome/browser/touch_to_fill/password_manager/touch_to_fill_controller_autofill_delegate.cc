@@ -64,9 +64,7 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     autofill::FieldRendererId focused_field_renderer_id,
     ShowHybridOption should_show_hybrid_option,
     ShowPasswordMigrationWarningCallback show_password_migration_warning,
-    std::unique_ptr<PasswordAccessLossWarningBridge> data_loss_warning_bridge,
-    std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
-        grouped_credential_sheet_controller)
+    std::unique_ptr<PasswordAccessLossWarningBridge> data_loss_warning_bridge)
     : password_client_(password_client),
       web_contents_(web_contents),
       authenticator_(std::move(authenticator)),
@@ -77,9 +75,7 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       should_show_hybrid_option_(should_show_hybrid_option),
       show_password_migration_warning_(
           std::move(show_password_migration_warning)),
-      access_loss_warning_bridge_(std::move(data_loss_warning_bridge)),
-      grouped_credential_sheet_controller_(
-          std::move(grouped_credential_sheet_controller)) {}
+      access_loss_warning_bridge_(std::move(data_loss_warning_bridge)) {}
 
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     ChromePasswordManagerClient* password_client,
@@ -106,8 +102,6 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
           base::BindRepeating(&local_password_migration::ShowWarning)),
       access_loss_warning_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
-      grouped_credential_sheet_controller_(
-          std::make_unique<AcknowledgeGroupedCredentialSheetController>()),
       source_id_(password_client->web_contents()
                      ->GetPrimaryMainFrame()
                      ->GetPageUkmSourceId()) {}
@@ -149,7 +143,18 @@ void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedCredential))
       .Record(ukm::UkmRecorder::Get());
 
-  VerifyBeforeFilling(credential);
+  if (!password_client_->IsReauthBeforeFillingRequired(authenticator_.get())) {
+    FillCredential(credential);
+    return;
+  }
+
+  // `this` notifies the authenticator when it is destructed, resulting in
+  // the callback being reset by the authenticator. Therefore, it is safe
+  // to use base::Unretained.
+  authenticator_->AuthenticateWithMessage(
+      u"",
+      base::BindOnce(&TouchToFillControllerAutofillDelegate::OnReauthCompleted,
+                     base::Unretained(this), credential));
 }
 
 void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
@@ -305,63 +310,6 @@ void TouchToFillControllerAutofillDelegate::OnReauthCompleted(
   }
 
   FillCredential(credential);
-}
-
-void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
-    const UiCredential& credential) {
-  CHECK(action_complete_);
-  CHECK(filler_);
-
-  if (credential.match_type() ==
-      password_manager_util::GetLoginMatchType::kGrouped) {
-    std::string current_origin =
-        GetDisplayOrigin(url::Origin::Create(GetFrameUrl()));
-    // Use `cred->display_name()` instead of origin here to correctly display
-    // credentials saved for android apps.
-    grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
-        std::move(current_origin), credential.display_name(),
-        web_contents_->GetTopLevelNativeWindow(),
-        base::BindOnce(
-            &TouchToFillControllerAutofillDelegate::
-                OnVerificationBeforeFillingFinished,
-            // Using `base::Unretained` is safe here because the callback is
-            // passed into the controller owned by this class.
-            base::Unretained(this), credential));
-    return;
-  }
-
-  // TODO (crbug.com/377215451): Refactor the code so that this call is only
-  // made for a grouped credential.
-  OnVerificationBeforeFillingFinished(
-      credential,
-      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
-}
-
-void TouchToFillControllerAutofillDelegate::OnVerificationBeforeFillingFinished(
-    const UiCredential& credential,
-    AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
-  if (dismiss_reason !=
-      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept) {
-    // TODO(crbug.com/372635361): Introduce new bucket to report
-    // grouped credential filling metric.
-    CleanUpFillerAndReportOutcome(TouchToFillOutcome::kSheetDismissed,
-                                  /*show_virtual_keyboard=*/false);
-    std::move(action_complete_).Run();
-    return;
-  }
-
-  if (!password_client_->IsReauthBeforeFillingRequired(authenticator_.get())) {
-    FillCredential(credential);
-    return;
-  }
-
-  // `this` notifies the authenticator when it is destructed, resulting in
-  // the callback being reset by the authenticator. Therefore, it is safe
-  // to use base::Unretained.
-  authenticator_->AuthenticateWithMessage(
-      u"",
-      base::BindOnce(&TouchToFillControllerAutofillDelegate::OnReauthCompleted,
-                     base::Unretained(this), credential));
 }
 
 void TouchToFillControllerAutofillDelegate::FillCredential(

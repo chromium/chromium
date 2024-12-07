@@ -37,7 +37,7 @@ class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
         permission_set_(false),
         permission_granted_(false) {}
 
-  ~TestPermissionContext() override {}
+  ~TestPermissionContext() override = default;
 
   bool permission_granted() { return permission_granted_; }
 

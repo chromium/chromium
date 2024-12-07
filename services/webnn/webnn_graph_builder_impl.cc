@@ -523,7 +523,8 @@ class OperationValidationContext {
  public:
   // If `operations` are valid given the passed members as context, returns a
   // mapping of operands to the operations which depend on it.
-  static std::optional<DependentOperationsMap>
+  static std::optional<
+      std::pair<base::flat_set<uint64_t>, DependentOperationsMap>>
   ValidateOperationsAndGetDependencies(
       const std::vector<mojom::OperationPtr>& operations,
       const ContextProperties& context_properties,
@@ -650,14 +651,14 @@ void OperationValidationContext::NoteDependency(uint64_t operand_id,
 }
 
 // static
-std::optional<DependentOperationsMap>
+std::optional<std::pair<base::flat_set<uint64_t>, DependentOperationsMap>>
 OperationValidationContext::ValidateOperationsAndGetDependencies(
     const std::vector<mojom::OperationPtr>& operations,
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     base::flat_set<uint64_t> processed_operands) {
   OperationValidationContext context(context_properties, id_to_operand_map,
-                                     processed_operands);
+                                     std::move(processed_operands));
 
   for (size_t i = 0; i < operations.size(); i++) {
     if (!context.ValidateOperation(*operations[i], /*operation_id=*/i)) {
@@ -665,7 +666,8 @@ OperationValidationContext::ValidateOperationsAndGetDependencies(
     }
   }
 
-  return context.operands_to_dependent_operations_;
+  return {{std::move(context.processed_operands_),
+           std::move(context.operands_to_dependent_operations_)}};
 }
 
 template <typename Operation>
@@ -960,6 +962,9 @@ bool OperationValidationContext::ValidateCumulativeSum(
     return false;
   }
   NoteDependency(cumulative_sum.input_operand_id, operation_id);
+
+  RETURN_IF_FALSE(
+      processed_operands_.insert(cumulative_sum.output_operand_id).second);
 
   auto* input = GetMojoOperand(cumulative_sum.input_operand_id);
   auto* output = GetMojoOperand(cumulative_sum.output_operand_id);
@@ -2944,18 +2949,30 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   }
 
   // Validate the operations which are sorted in the topological order.
-  std::optional<DependentOperationsMap> operands_to_dependent_operations =
-      OperationValidationContext::ValidateOperationsAndGetDependencies(
+  std::optional<std::pair<base::flat_set<uint64_t>, DependentOperationsMap>>
+      result = OperationValidationContext::ValidateOperationsAndGetDependencies(
           graph_info.operations, context_properties,
-          graph_info.id_to_operand_map, std::move(processed_operands));
-  if (!operands_to_dependent_operations.has_value()) {
+          graph_info.id_to_operand_map, processed_operands);
+  if (!result.has_value()) {
     return std::nullopt;
+  }
+
+  DependentOperationsMap operands_to_dependent_operations;
+  std::tie(processed_operands, operands_to_dependent_operations) =
+      *std::move(result);
+
+  // Now that all the operations have been processed we can check that the
+  // output operands are connected to the graph.
+  for (const uint64_t output : graph_outputs) {
+    if (!processed_operands.contains(output)) {
+      return std::nullopt;
+    }
   }
 
   return ValidateGraphSuccessResult{
       WebNNGraphImpl::ComputeResourceInfo(
           std::move(inputs), std::move(outputs),
-          *std::move(operands_to_dependent_operations),
+          std::move(operands_to_dependent_operations),
           base::PassKey<WebNNGraphBuilderImpl>()),
       std::move(graph_constants)};
 }

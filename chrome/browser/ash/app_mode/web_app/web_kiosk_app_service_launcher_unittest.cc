@@ -178,7 +178,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     auto info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     info->title = kAppTitle;
-    app_manager_->UpdateAppByAccountId(account_id_, *info);
+    app_manager_->UpdateAppFromInstallInfo(account_id_, *info);
   }
 
   bool IsAppInstalledAsPlaceholder() {

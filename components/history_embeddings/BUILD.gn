@@ -26,8 +26,6 @@ static_library("history_embeddings") {
     "mock_embedder.h",
     "mock_intent_classifier.cc",
     "mock_intent_classifier.h",
-    "passage_embeddings_service_controller.cc",
-    "passage_embeddings_service_controller.h",
     "passages_util.cc",
     "passages_util.h",
     "scheduling_embedder.cc",
@@ -48,7 +46,7 @@ static_library("history_embeddings") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser",
     "//components/page_content_annotations/core",
-    "//mojo/public/cpp/bindings",
+    "//components/passage_embeddings",
     "//services/passage_embeddings/public/mojom",
     "//sql",
     "//third_party/farmhash",
@@ -61,6 +59,19 @@ static_library("history_embeddings") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_history_embeddings_service.cc",
+    "mock_history_embeddings_service.h",
+  ]
+  deps = [
+    ":history_embeddings",
+    "//base/test:test_support",
+    "//components/history/core/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -68,8 +79,6 @@ source_set("unit_tests") {
     "ml_answerer_unittest.cc",
     "ml_embedder_unittest.cc",
     "ml_intent_classifier_unittest.cc",
-    "mock_history_embeddings_service.cc",
-    "mock_history_embeddings_service.h",
     "passages_util_unittest.cc",
     "search_strings_update_listener_unittest.cc",
     "sql_database_unittest.cc",
@@ -77,6 +86,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":history_embeddings",
+    ":test_support",
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",
@@ -87,6 +97,8 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser:test_support",
     "//components/page_content_annotations/core:test_support",
+    "//components/passage_embeddings",
+    "//mojo/public/cpp/bindings",
     "//services/passage_embeddings/public/mojom",
     "//testing/gtest",
   ]

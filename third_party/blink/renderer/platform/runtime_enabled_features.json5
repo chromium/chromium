@@ -933,6 +933,10 @@
       status: "experimental",
     },
     {
+      name: "CSPReportHash",
+      status: "experimental",
+    },
+    {
       // The AccentColor And AccentColorText CSS system color keywords
       name: "CSSAccentColorKeyword",
       status: "experimental",
@@ -942,6 +946,7 @@
       // and can be used in all properties.
       // https://drafts.csswg.org/css-values-4/#attr-notation
       name: "CSSAdvancedAttrFunction",
+      status: "test",
     },
     {
       // Let the visual position of the default anchor affect IMCB for
@@ -1018,23 +1023,6 @@
       // https://drafts.csswg.org/css-images-4/#cross-fade-function
       name: "CSSCrossFade",
       status: "experimental",
-    },
-    {
-      // This flag controls whether the deprecated :--foo syntax is enabled. It
-      // is being replaced by :state(foo), which is controlled by the
-      // CSSCustomStateNewSyntax flag.
-      // TODO(crbug.com/1514397): Remove this when the feature is fully launched.
-      name: "CSSCustomStateDeprecatedSyntax",
-      public: true,
-    },
-    {
-      // This flag controls whether the :state(foo) pseudo-class for custom
-      // elements is enabled. It is a rename of :--foo, which is being
-      // deprecated and is controlled by the CSSCustomStateDeprecatedSyntax
-      // flag.
-      // TODO(crbug.com/1514397): Remove this when the deprecation is done.
-      name: "CSSCustomStateNewSyntax",
-      status: "stable",
     },
     {
       name: "CSSDynamicRangeLimit",
@@ -1149,9 +1137,9 @@
       status: "experimental",
     },
     {
-      // Enables the :open and :closed pseudo-selectors.
+      // Enables the :open pseudo-selector.
       // https://chromestatus.com/feature/5085419215781888
-      name: "CSSPseudoOpenClosed",
+      name: "CSSPseudoOpen",
       status: "experimental",
     },
     {
@@ -1340,10 +1328,10 @@
       name: "CustomizableSelect",
       status: "experimental",
       // :open is used in the UA stylesheet for CustomizableSelect, so this feature
-      // will not work properly without CSSPseudoOpenClosed.
+      // will not work properly without CSSPseudoOpen.
       // SelectParserRelaxation is needed to allow more content in <select>
       // than just <option>s etc.
-      depends_on: ["CSSPseudoOpenClosed", "SelectParserRelaxation"],
+      depends_on: ["CSSPseudoOpen", "SelectParserRelaxation"],
     },
     {
       name: "Database",
@@ -1658,6 +1646,10 @@
     {
       name: "ElementCapture",
       status: {"Android": "", "default": "stable"},
+    },
+    {
+      name: "ElementInnerTextHandleFirstLineStyle",
+      status: "stable",
     },
     {
       name: "EnforceAnonymityExposure",
@@ -2556,11 +2548,6 @@
       public: true,
       status: "stable",
     },
-    {
-      name: "LegacyWindowsDWriteFontFallback",
-      // Enabled by features::kLegacyWindowsDWriteFontFallback;
-      base_feature: "none",
-    },
      {
       name: "LimitThirdPartyCookies",
       origin_trial_feature_name: "LimitThirdPartyCookies",
@@ -3297,6 +3284,10 @@
       settable_from_internals: true,
     },
     {
+      name: "PreferredAudioOutputDevices",
+      status: "test",
+    },
+    {
       name: "PrefersReducedData",
       status: "experimental",
     },
@@ -3556,10 +3547,6 @@
       public: true,
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      name: "ReuseShapeResultsByFonts",
-      status: "stable",
     },
     {
       // New behavior when line breaker rewinds floats. crbug.com/1499290
@@ -4639,9 +4626,10 @@
     },
     // Enables the PublicKeyCredential.getClientCapabilities() static method.
     // https://w3c.github.io/webauthn/#sctn-getClientCapabilities
+    // Enabled by default on M133. Remove flag on or after M136.
     {
       name: "WebAuthenticationClientCapabilities",
-      status: "experimental",
+      status: "stable",
     },
     // https://w3c.github.io/webauthn/#dom-clientcapability-conditionalcreate
     {
@@ -4727,6 +4715,10 @@
     },
     {
       name: "WebCryptoCurve25519",
+      status: "stable",
+    },
+    {
+      name: "WebCryptoEd25519",
       status: "experimental",
     },
     {

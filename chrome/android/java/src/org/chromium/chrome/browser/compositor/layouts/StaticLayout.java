@@ -247,12 +247,14 @@ public class StaticLayout extends Layout {
                     public void onControlsOffsetChanged(
                             int topOffset,
                             int topControlsMinHeightOffset,
+                            boolean topControlsMinHeightChanged,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate,
+                            boolean bottomControlsMinHeightChanged,
+                            boolean requestNewFrame,
                             boolean isVisibilityForced) {
                         if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                                || needsAnimate
+                                || requestNewFrame
                                 || isVisibilityForced) {
                             mModel.set(
                                     LayoutTab.CONTENT_OFFSET,

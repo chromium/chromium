@@ -26,11 +26,11 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:127-
-- chrome_os:127-
-- android:127-
-- webview_android:127-
+- chrome.*:127-132
+- chrome_os:127-132
+- android:127-132
+- webview_android:127-132
 tags: []
 type: main
-deprecated: false
+deprecated: true
 device_only: false

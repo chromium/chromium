@@ -37,7 +37,6 @@ build_webui_tests("build") {
     "cr_link_row_test.ts",
     "cr_lit_element_test.ts",
     "cr_loading_gradient_test.ts",
-    "cr_lottie_test.ts",
     "cr_menu_selector_focus_test.ts",
     "cr_page_selector_test.ts",
     "cr_policy_indicator_test.ts",

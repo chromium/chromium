@@ -452,7 +452,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
         video_resource_updater_(video_resource_updater) {
     auto shared_image_mapping = shared_image_interface->CreateSharedImage(
         {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "VideoResourceUpdater"});
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "VideoResourceUpdater"});
     shared_image_ = std::move(shared_image_mapping.shared_image);
     shared_mapping_ = std::move(shared_image_mapping.mapping);
     CHECK(shared_image_);
@@ -619,10 +619,11 @@ void VideoResourceUpdater::ObtainFrameResource(
       CreateExternalResourceFromVideoFrame(video_frame);
   frame_resource_type_ = external_resource.type;
 
+  // TODO(crbug.com/378688985): Move this close to TransferableResource::Make
   external_resource.resource.origin =
-      video_frame->metadata().texture_origin_is_top_left
-          ? kTopLeft_GrSurfaceOrigin
-          : kBottomLeft_GrSurfaceOrigin;
+      video_frame->HasSharedImage()
+          ? video_frame->shared_image()->surface_origin()
+          : kTopLeft_GrSurfaceOrigin;
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));

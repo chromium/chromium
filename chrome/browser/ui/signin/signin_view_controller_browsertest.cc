@@ -30,6 +30,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -56,6 +57,8 @@ constexpr char kConfirmationUnsyncedHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.Unsynced";
 constexpr char kConfirmationUnsyncedReauthHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.UnsyncedReauth";
+constexpr char kConfirmationSupervisedProfileHistogramName[] =
+    "Signin.ChromeSignoutConfirmationPrompt.SupervisedProfile";
 constexpr char16_t kTestExtensionName[] = u"Test extension";
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
@@ -75,6 +78,9 @@ void VerifySignoutPromptHistogram(
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
       histogram_name = kConfirmationUnsyncedReauthHistogramName;
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
+      histogram_name = kConfirmationSupervisedProfileHistogramName;
       break;
   }
 
@@ -369,6 +375,40 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
       signin_metrics::SourceForRefreshTokenOperation::
           kUserMenu_SignOutAllAccounts);
+
+  // User was signed out.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was navigated to the signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       SignoutOrReauthWithPrompt_SignOutSupervisedUser) {
+  // Setup a primary account for a supervised user.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  AccountCapabilitiesTestMutator mutator(&primary_account_info.capabilities);
+  mutator.set_is_subject_to_parental_controls(true);
+  identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Trigger the Chrome signout action.
+  views::DialogDelegate* dialog_delegate =
+      TriggerSignoutAndWaitForConfirmationPrompt();
+  ASSERT_TRUE(dialog_delegate);
+
+  // Click "Sign Out Anyway".
+  base::HistogramTester histogram_tester;
+  dialog_delegate->AcceptDialog();
+  VerifySignoutPromptHistogram(
+      histogram_tester,
+      ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls,
+      ChromeSignoutConfirmationChoice::kSignout);
 
   // User was signed out.
   EXPECT_FALSE(

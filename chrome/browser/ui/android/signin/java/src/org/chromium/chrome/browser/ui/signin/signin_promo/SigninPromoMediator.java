@@ -90,7 +90,7 @@ final class SigninPromoMediator
     }
 
     boolean canShowPromo() {
-        return !mMaxImpressionReached && mDelegate.canShowPromo();
+        return !mMaxImpressionReached && mDelegate.canShowPromo(getVisibleAccount());
     }
 
     /** Implements {@link IdentityManager.Observer} */

@@ -90,7 +90,7 @@ void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
             .AddBoolean("enumerable", descriptor.enumerable())
             .AddV8Value("value", descriptor.value())
             .AddBoolean("writable", descriptor.writable())
-            .V8Value());
+            .V8Object());
     return;
   }
   // Accessor property
@@ -101,7 +101,7 @@ void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
           .AddBoolean("enumerable", descriptor.enumerable())
           .AddV8Value("get", descriptor.get())
           .AddV8Value("set", descriptor.set())
-          .V8Value());
+          .V8Object());
 }
 
 const int32_t kMaxInt32 = 0x7fffffff;

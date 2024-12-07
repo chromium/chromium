@@ -1236,6 +1236,7 @@
 <translation id="3229277193950731405">Версиянын сабын көчүрүү</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> карточкаңыз үчүн CVC кодун киргизиңиз</translation>
 <translation id="3234666976984236645">Бул сайттагы маанилүү мазмун ар дайым аныкталсын</translation>
+<translation id="323585066388831737">Ачык кызыл</translation>
 <translation id="3236212803136366317">Картанын артыкчылыктары</translation>
 <translation id="3238395604961564389">Шилтемени жашыруун терезеде ачуу</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, серепчинин көрүнүшүн ыңгайлаштыруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
@@ -1853,6 +1854,7 @@
 <translation id="4277937682389409325">Жергиликтүү дарек</translation>
 <translation id="4278090321534187713">Бул сатуучу кабыл албаган карталар өчүрүлдү</translation>
 <translation id="4278390842282768270">Уруксат берилген</translation>
+<translation id="4281245629646759298">Ачык сары</translation>
 <translation id="4281998142035485137">{0,plural, =1{Купуя файлды ачасызбы?}other{Купуя файлдарды ачасызбы?}}</translation>
 <translation id="4282280603030594840">Унаа сатып алуу</translation>
 <translation id="4282346679996504092">Бул товар боюнча эскертүүлөр өчүрүлүп, кыстарма алынып салынды</translation>
@@ -2742,6 +2744,7 @@
 <translation id="5969199813874624822">Сактап, баасына көз салуу</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Алтынчы барабан</translation>
+<translation id="5974745851230707809">Белгилүү бир убакыттан кийин төлөө параметрлери</translation>
 <translation id="5975083100439434680">Кичирейтүү</translation>
 <translation id="5979084224081478209">Сырсөздөрдү текшерүү</translation>
 <translation id="5984570616552610254">Камерадагы нымдуулук</translation>
@@ -4305,6 +4308,7 @@
 <translation id="8767765348545497220">Жардам булутчасын жабуу</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 төлөм ыкмасы}other{# төлөм ыкмасы}}</translation>
 <translation id="8768225988514678921">"Презентация түзүү" баскычы. Slides кызматында жаңы Google презентациясын түзүү үчүн иштетиңиз</translation>
+<translation id="8769662576926275897">Картанын чоо-жайы</translation>
 <translation id="8770286973007342895">Газон тегиздегич</translation>
 <translation id="8772387130037509473">Йога жана пилатес</translation>
 <translation id="877348612833018844">{0,plural, =1{Купуя файлды жылдырасызбы?}other{Купуя файлдарды жылдырасызбы?}}</translation>
@@ -4333,6 +4337,7 @@
 <translation id="882338992931677877">Кол менен киргизилген түпкүч</translation>
 <translation id="8830320733681313421">Hagaki Ачык кат</translation>
 <translation id="8830565333350631528">Файлдарды <ph name="CLOUD_PROVIDER" /> кызматында көрүү</translation>
+<translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> жогору суммага сатып алганда жеткиликтүү</translation>
 <translation id="8833007469711500369">Кир жуугучтар жана кургаткычтар</translation>
 <translation id="8834962751196791179">Бул сайтта HTTPS колдоого алынбагандыктан жана Жашыруун режимде болгонуңуз үчүн ушул эскертүүнү көрүп жатасыз. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Илимий-фантастикалык жана фантастикалык телешоулор</translation>

@@ -14,7 +14,6 @@ source_set("tailored_security") {
   deps = [
     ":infobar_delegates",
     "//components/infobars/core",
-    "//components/keyed_service/ios",
     "//components/prefs",
     "//components/safe_browsing/core/browser/tailored_security_service",
     "//components/safe_browsing/core/common",
@@ -24,6 +23,7 @@ source_set("tailored_security") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/components/security_interstitials/safe_browsing",

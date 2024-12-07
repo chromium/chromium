@@ -42,7 +42,7 @@ class ChromePermissionMessageProviderUnittest : public ChromeManifestTest {
   ChromePermissionMessageProviderUnittest& operator=(
       const ChromePermissionMessageProviderUnittest&) = delete;
 
-  ~ChromePermissionMessageProviderUnittest() override {}
+  ~ChromePermissionMessageProviderUnittest() override = default;
 
  protected:
   PermissionMessages GetMessages(const APIPermissionSet& permissions,

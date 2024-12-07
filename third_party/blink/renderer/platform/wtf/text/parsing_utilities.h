@@ -51,9 +51,29 @@ bool SkipExactly(const CharType*& position,
   return false;
 }
 
+template <typename CharType>
+bool SkipExactly(base::span<const CharType> chars,
+                 CharType delimiter,
+                 size_t& position) {
+  if (position < chars.size() && chars[position] == delimiter) {
+    ++position;
+    return true;
+  }
+  return false;
+}
+
 template <typename CharType, bool characterPredicate(CharType)>
 bool SkipExactly(const CharType*& position, const CharType* end) {
   if (position < end && characterPredicate(*position)) {
+    ++position;
+    return true;
+  }
+  return false;
+}
+
+template <typename CharType, bool predicate(CharType)>
+bool SkipExactly(base::span<const CharType> chars, size_t& position) {
+  if (position < chars.size() && predicate(chars[position])) {
     ++position;
     return true;
   }
@@ -92,6 +112,15 @@ void SkipUntil(const CharType*& position, const CharType* end) {
     ++position;
 }
 
+template <typename CharType, bool predicate(CharType)>
+[[nodiscard]] size_t SkipUntil(base::span<const CharType> chars,
+                               size_t position) {
+  while (position < chars.size() && !predicate(chars[position])) {
+    ++position;
+  }
+  return position;
+}
+
 template <typename CharType, bool characterPredicate(CharType)>
 void SkipWhile(const CharType*& position, const CharType* end) {
   while (position < end && characterPredicate(*position))
@@ -99,7 +128,8 @@ void SkipWhile(const CharType*& position, const CharType* end) {
 }
 
 template <typename CharType, bool predicate(CharType)>
-size_t SkipWhile(base::span<const CharType> chars, size_t position) {
+[[nodiscard]] size_t SkipWhile(base::span<const CharType> chars,
+                               size_t position) {
   while (position < chars.size() && predicate(chars[position])) {
     ++position;
   }

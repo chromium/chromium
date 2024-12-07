@@ -21,12 +21,25 @@ source_set("signin_headers") {
     "//base",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/first_run/ui_bundled:interruptible_chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model:capabilities_types",
     "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/ui/authentication/signin:interruptible_chrome_coordinator",
   ]
+}
+
+source_set("interruptible_chrome_coordinator") {
+  sources = [
+    "interruptible_chrome_coordinator.h",
+    "interruptible_chrome_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("signin_protected") {
@@ -53,7 +66,6 @@ source_set("signin_impl") {
     "//components/sync/base:features",
     "//components/sync/service",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/first_run/ui_bundled:interruptible_chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
@@ -66,6 +78,7 @@ source_set("signin_impl") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/account_menu",
     "//ios/chrome/browser/ui/authentication/history_sync",
+    "//ios/chrome/browser/ui/authentication/signin:interruptible_chrome_coordinator",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin",
     "//ios/chrome/browser/ui/authentication/signin/forced_signin",

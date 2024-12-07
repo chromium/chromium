@@ -44,7 +44,6 @@ CONTENT_EXPORT void BindAuraWindowCapturer(
 // Returns whether we can use PipeWire capturer based on:
 // 1) We run Linux Wayland session
 // 2) WebRTC is built with PipeWire enabled
-// 3) Chromium has features::kWebRtcPipeWireCapturer enabled
 CONTENT_EXPORT bool CanUsePipeWire();
 
 // Whether the capturer should find windows owned by the current process.

@@ -16,7 +16,7 @@ namespace nearby::share::metrics {
 
 NearbyShareMetricLogger::NearbyShareMetricLogger() = default;
 
-NearbyShareMetricLogger::~NearbyShareMetricLogger() {}
+NearbyShareMetricLogger::~NearbyShareMetricLogger() = default;
 
 void NearbyShareMetricLogger::OnShareTargetDiscoveryStarted() {
   discovery_start_time_ = base::TimeTicks::Now();

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/ime/input_method_user_data_service_impl.h"
 
+#include <string>
+
 #include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
@@ -422,6 +424,25 @@ TEST(InputMethodUserDataServiceTest, DeleteJapaneseDictionaryOnError) {
   expected->success = false;
   expected->reason = "Unknown Error";
   EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest, ExportJapaneseDictionary) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_export_japanese_dictionary()->set_dictionary_id(999);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+  response_pb.set_export_japanese_dictionary("reading1\tword1\t人名\ttext 1");
+
+  auto c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<const std::string&> config_future;
+  service.ExportJapaneseDictionary(/*dict_id=*/999,
+                                   config_future.GetCallback());
+
+  EXPECT_EQ(config_future.Get(), "reading1\tword1\t人名\ttext 1");
 }
 
 }  // namespace

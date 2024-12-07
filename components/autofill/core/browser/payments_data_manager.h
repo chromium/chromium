@@ -44,12 +44,14 @@ class SyncService;
 
 namespace sync_pb {
 class PaymentInstrument;
+class PaymentInstrumentCreationOption;
 }  // namespace sync_pb
 
 namespace autofill {
 
 class AutofillOptimizationGuide;
 class BankAccount;
+class BnplIssuer;
 struct CreditCardArtImage;
 class Ewallet;
 class PaymentsDatabaseHelper;
@@ -244,8 +246,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // and ordered by frecency with the expired cards put at the end of the
   // vector. `should_use_legacy_algorithm` indicates if we should rank credit
   // cards using the legacy ranking algorithm.
-  std::vector<CreditCard*> GetCreditCardsToSuggest(
+  std::vector<const CreditCard*> GetCreditCardsToSuggest(
       bool should_use_legacy_algorithm = false) const;
+
+  // Returns the unlinked buy-now-pay-later issuers. This is a list of BNPL
+  // issuers that are available to be used but have NOT been linked to the
+  // payments account by the user.
+  const std::vector<BnplIssuer>& GetUnlinkedBnplIssuers() const;
 
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.
@@ -529,6 +536,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Loads the credit card benefits from the web database.
   void LoadCreditCardBenefits();
 
+  // Loads the payment instrument creation options from the web database.
+  void LoadPaymentInstrumentCreationOptions();
+
   // Cancels a pending query to the local web database.  |handle| is a pointer
   // to the query handle.
   void CancelPendingLocalQuery(WebDataServiceBase::Handle* handle);
@@ -572,6 +582,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Cached versions of the eWallet accounts.
   std::vector<Ewallet> ewallet_accounts_;
 
+  // Cached versions of the unlinked buy-now-pay-later issuers.
+  std::vector<BnplIssuer> unlinked_bnpl_issuers_;
+
   // Cached version of the CreditCardCloudTokenData obtained from the database.
   std::vector<std::unique_ptr<CreditCardCloudTokenData>>
       server_credit_card_cloud_token_data_;
@@ -607,6 +620,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
   WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;
   WebDataServiceBase::Handle pending_credit_card_benefit_query_ = 0;
+  WebDataServiceBase::Handle
+      pending_payment_instrument_creation_options_query_ = 0;
 
   // True if personal data has been loaded from the web database.
   bool is_payments_data_loaded_ = false;
@@ -644,8 +659,14 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Whether eWallet accounts are supported for the platform OS.
   bool AreEwalletAccountsSupported() const;
 
+  // Whether buy-now-pay-later issuers are supported for the platform OS.
+  bool AreBnplIssuersSupported() const;
+
   // Whether generic payment instruments are supported.
-  bool ArePaymentInsrumentsSupported() const;
+  bool ArePaymentInstrumentsSupported() const;
+
+  // Whether payment instrument creation options are supported.
+  bool ArePaymentInstrumentCreationOptionsSupported() const;
 
   // Monitors the `kAutofillPaymentCardBenefits` preference for changes and
   // controls the clearing/loading of credit card benefits into
@@ -675,6 +696,21 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // caches relevant information in `ewallet_accounts_`.
   void CacheIfEwalletPaymentInstrument(
       sync_pb::PaymentInstrument& payment_instrument);
+
+  // Invoked when the payment instrument creation options cache is refreshed.
+  // This happens when the payment instrument creation options are loaded for
+  // the first time as well as for any subsequent updates via ChromeSync
+  // invalidations.
+  void OnPaymentInstrumentCreationOptionsRefreshed(
+      const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+          payment_instrument_creation_options);
+
+  // Checks whether a payment instrument creation option contains
+  // buy-now-pay-later options. If it does, it caches relevant information in
+  // `unlinked_bnpl_issuers_`.
+  void CacheIfBnplPaymentInstrumentCreationOption(
+      const sync_pb::PaymentInstrumentCreationOption&
+          payment_instrument_creation_option);
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;

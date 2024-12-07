@@ -61,9 +61,11 @@ bool IsPdfAnnotationsEnabled(content::BrowserContext* context) {
 
 namespace get_strings = api::resources_private::GetStrings;
 
-ResourcesPrivateGetStringsFunction::ResourcesPrivateGetStringsFunction() {}
+ResourcesPrivateGetStringsFunction::ResourcesPrivateGetStringsFunction() =
+    default;
 
-ResourcesPrivateGetStringsFunction::~ResourcesPrivateGetStringsFunction() {}
+ResourcesPrivateGetStringsFunction::~ResourcesPrivateGetStringsFunction() =
+    default;
 
 ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
   std::optional<get_strings::Params> params =

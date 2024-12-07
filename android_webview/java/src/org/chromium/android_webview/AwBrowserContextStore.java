@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.TraceEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +25,9 @@ public class AwBrowserContextStore {
      * <p>Name must be non-null and valid Unicode.
      */
     public static AwBrowserContext getNamedContext(String name, boolean createIfNeeded) {
-        return AwBrowserContextStoreJni.get().getNamedContextJava(name, createIfNeeded);
+        try (TraceEvent event = TraceEvent.scoped("WebView.ProfileStore.GET_NAMED_CONTEXT")) {
+            return AwBrowserContextStoreJni.get().getNamedContextJava(name, createIfNeeded);
+        }
     }
 
     /**
@@ -49,16 +52,20 @@ public class AwBrowserContextStore {
      */
     public static boolean deleteNamedContext(String name)
             throws IllegalArgumentException, IllegalStateException {
-        final String defaultContextName = AwBrowserContextJni.get().getDefaultContextName();
-        if (name.equals(defaultContextName)) {
-            throw new IllegalArgumentException("Cannot delete the default profile");
+        try (TraceEvent event = TraceEvent.scoped("WebView.ProfileStore.DELETE_NAMED_CONTEXT")) {
+            final String defaultContextName = AwBrowserContextJni.get().getDefaultContextName();
+            if (name.equals(defaultContextName)) {
+                throw new IllegalArgumentException("Cannot delete the default profile");
+            }
+            return AwBrowserContextStoreJni.get().deleteNamedContext(name);
         }
-        return AwBrowserContextStoreJni.get().deleteNamedContext(name);
     }
 
     /** List all contexts. */
     public static List<String> listAllContexts() {
-        return Arrays.asList(AwBrowserContextStoreJni.get().listAllContexts());
+        try (TraceEvent event = TraceEvent.scoped("WebView.ProfileStore.LIST_ALL_CONTEXTS")) {
+            return Arrays.asList(AwBrowserContextStoreJni.get().listAllContexts());
+        }
     }
 
     /**
@@ -67,7 +74,10 @@ public class AwBrowserContextStore {
      * <p>Name must be non-null and valid Unicode.
      */
     public static boolean checkNamedContextExists(String name) {
-        return AwBrowserContextStoreJni.get().checkNamedContextExists(name);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.ProfileStore.CHECKED_NAMED_CONTEXT_EXISTS")) {
+            return AwBrowserContextStoreJni.get().checkNamedContextExists(name);
+        }
     }
 
     @NativeMethods

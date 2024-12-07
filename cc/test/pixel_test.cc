@@ -267,7 +267,7 @@ void PixelTest::AllocateSharedBitmapMemory(
   DCHECK(shared_image_interface);
   auto shared_image_mapping = shared_image_interface->CreateSharedImage(
       {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "PixelTestSharedBitmap"});
+       gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
 
   shared_image = std::move(shared_image_mapping.shared_image);
   mapping = std::move(shared_image_mapping.mapping);

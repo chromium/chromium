@@ -777,11 +777,13 @@ bool FilePathWatcherTest::SetupWatchWithChangeInfo(
   // Flush events before the watch begins.
   SpinEventLoopForABit();
 #endif
-  return watcher->WatchWithChangeInfo(
-      target, watch_options,
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &TestDelegateBase::OnFileChangedWithInfo, delegate->AsWeakPtr())),
-      base::DoNothingAs<void(size_t, size_t)>());
+  return watcher
+      ->WatchWithChangeInfo(
+          target, watch_options,
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
+              &TestDelegateBase::OnFileChangedWithInfo, delegate->AsWeakPtr())),
+          base::DoNothingAs<void(size_t, size_t)>())
+      .has_value();
 }
 
 bool FilePathWatcherTest::SetupWatchWithUsageChanges(
@@ -793,12 +795,14 @@ bool FilePathWatcherTest::SetupWatchWithUsageChanges(
   // Flush events before the watch begins.
   SpinEventLoopForABit();
 #endif
-  return watcher.WatchWithChangeInfo(
-      target, watch_options,
-      base::DoNothingAs<void(const FilePathWatcher::ChangeInfo&,
-                             const base::FilePath&, bool)>(),
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &TestUsageDelegate::OnUsageChange, delegate.AsWeakPtr())));
+  return watcher
+      .WatchWithChangeInfo(
+          target, watch_options,
+          base::DoNothingAs<void(const FilePathWatcher::ChangeInfo&,
+                                 const base::FilePath&, bool)>(),
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
+              &TestUsageDelegate::OnUsageChange, delegate.AsWeakPtr())))
+      .has_value();
 }
 
 // Basic test: Create the file and verify that we notice.

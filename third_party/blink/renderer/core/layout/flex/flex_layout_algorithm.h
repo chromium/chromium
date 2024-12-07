@@ -38,7 +38,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
       HeapVector<Member<LayoutBox>>* oof_children,
       bool is_computing_multiline_column_intrinsic_size = false);
 
-  void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
+  LayoutUnit CalculateTotalIntrinsicBlockSize(
+      const HeapVector<NGFlexLine>& flex_lines);
 
   bool DoesItemComputedCrossSizeHaveAuto(const BlockNode& child) const;
   bool DoesItemStretch(const BlockNode& child) const;

@@ -75,7 +75,10 @@
 // 28. "test_group" is an non-negative integer. If not specified, it defaults
 //     to 0, which is Chrome's blocklist. Any entries with a non-zero test_group
 //     ID will be appended on top of the default group entries if Chrome runs
-//     with --gpu-blocklist-test-group=ID.
+//     with --gpu-blocklist-test-group=ID. Entries with non-zero test_group ID
+//     can also be enabled via experimentation. For example:
+//     --enable-features=GPUBlockListTestGroup:test_group/117 or
+//     --enable-features=GPUDriverBugListTestGroup:test_group/119
 // 29. "intel_gpu_series" is a list of gpu series names. Currently supported
 //     series include: "broadwater", "eaglelake", "ironlake", "sandybridge",
 //     "baytrail", "ivybridge", "haswell", "cherrytrail", "broadwell",

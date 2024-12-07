@@ -1796,6 +1796,7 @@ void LensOverlayController::CloseUIPart2(
   permission_bubble_controller_.reset();
   side_panel_searchbox_handler_.reset();
   results_side_panel_coordinator_.reset();
+  pre_initialization_suggest_inputs_.reset();
 
   side_panel_shown_subscription_ = base::CallbackListSubscription();
   side_panel_coordinator_ = nullptr;
@@ -1862,6 +1863,14 @@ void LensOverlayController::InitializeOverlay(
     // Confirm initialization_data has not already been assigned.
     CHECK(!initialization_data_);
     initialization_data_ = std::move(initialization_data);
+
+    // If suggest inputs were updated before the initialization data was ready,
+    // attach them to the initialization data now.
+    if (pre_initialization_suggest_inputs_.has_value()) {
+      initialization_data_->suggest_inputs_ =
+          pre_initialization_suggest_inputs_.value();
+      pre_initialization_suggest_inputs_.reset();
+    }
   }
 
   // We can only continue once both the WebUI is bound and the initialization
@@ -1890,13 +1899,16 @@ void LensOverlayController::InitializeOverlay(
   }
 
   // Create the blur delegate so it is ready to blur once the view is visible.
-  content::RenderWidgetHost* live_page_widget_host = tab_->GetContents()
-                                                         ->GetPrimaryMainFrame()
-                                                         ->GetRenderViewHost()
-                                                         ->GetWidget();
-  lens_overlay_blur_layer_delegate_ =
-      std::make_unique<lens::LensOverlayBlurLayerDelegate>(
-          live_page_widget_host);
+  if (lens::features::GetLensOverlayUseBlur()) {
+    content::RenderWidgetHost* live_page_widget_host =
+        tab_->GetContents()
+            ->GetPrimaryMainFrame()
+            ->GetRenderViewHost()
+            ->GetWidget();
+    lens_overlay_blur_layer_delegate_ =
+        std::make_unique<lens::LensOverlayBlurLayerDelegate>(
+            live_page_widget_host);
+  }
 
   state_ = State::kOverlay;
 
@@ -1937,9 +1949,9 @@ void LensOverlayController::InitializeOverlayUI(
   // data to the overlay web UI in a single message.
   page_->ThemeReceived(CreateTheme(init_data.color_palette_));
 
-  bool should_show_contextual_search_box =
+  contextual_searchbox_shown_in_session_ =
       !init_data.page_content_bytes_.empty();
-  if (should_show_contextual_search_box) {
+  if (contextual_searchbox_shown_in_session_) {
     contextual_searchbox_focused_in_session_ = false;
     // Reset metric booleans in case they were set to true previously and the
     // overlay was reopened.
@@ -1950,7 +1962,7 @@ void LensOverlayController::InitializeOverlayUI(
   initial_page_content_type_ = init_data.page_content_type_;
   initial_document_type_ =
       StringMimeTypeToDocumentType(tab_->GetContents()->GetContentsMimeType());
-  page_->ShouldShowContextualSearchBox(should_show_contextual_search_box);
+  page_->ShouldShowContextualSearchBox(contextual_searchbox_shown_in_session_);
 
   page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
   if (!init_data.objects_.empty()) {
@@ -1963,13 +1975,8 @@ void LensOverlayController::InitializeOverlayUI(
     page_->SetPostRegionSelection(pending_region_->Clone());
   }
 
-  // Record the UMA and UKM for whether the contextual search box was shown.
-  ukm::SourceId source_id =
-      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  // Record the UMA for lens overlay invocation.
   lens::RecordInvocation(invocation_source_, initial_document_type_);
-  MaybeRecordContextualSearchBoxShown(source_id,
-                                      should_show_contextual_search_box,
-                                      init_data.page_content_type_);
 }
 
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
@@ -2407,13 +2414,12 @@ void LensOverlayController::ActivityRequestedByEvent(int event_flags) {
 }
 
 void LensOverlayController::AddBackgroundBlur() {
-  // We do not blur unless the overlay is currently active.
-  if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
+  // We do not blur unless the overlay is currently active and the blur delegate
+  // was created.
+  if (!lens_overlay_blur_layer_delegate_ ||
+      (state_ != State::kOverlay && state_ != State::kOverlayAndResults)) {
     return;
   }
-
-  // The blur layer should have been initialized earlier.
-  CHECK(lens_overlay_blur_layer_delegate_);
 
   // Add our blur layer to the view.
   overlay_view_->SetPaintToLayer();
@@ -2718,6 +2724,12 @@ void LensOverlayController::HandleInteractionURLResponse(
 
 void LensOverlayController::HandleSuggestInputsResponse(
     lens::proto::LensOverlaySuggestInputs suggest_inputs) {
+  if (!initialization_data_) {
+    // If the initialization data is not ready, store the suggest inputs to be
+    // attached to the initialization data when it is ready.
+    pre_initialization_suggest_inputs_ = std::make_optional(suggest_inputs);
+    return;
+  }
   initialization_data_->suggest_inputs_ = suggest_inputs;
 }
 
@@ -2793,12 +2805,11 @@ void LensOverlayController::RecordEndOfSessionMetrics(
 
   // UMA and UKM end of session metrics for the CSB. Only recorded if CSB is
   // shown in session.
-  if (contextual_searchbox_focused_in_session_.has_value()) {
-    lens::RecordContextualSearchboxSessionEndMetrics(
-        source_id, contextual_searchbox_focused_in_session_.value(),
-        contextual_zps_shown_in_session_, contextual_zps_used_in_session_,
-        contextual_query_issued_in_session_, initial_page_content_type_);
-  }
+  lens::RecordContextualSearchboxSessionEndMetrics(
+      source_id, contextual_searchbox_shown_in_session_,
+      contextual_searchbox_focused_in_session_,
+      contextual_zps_shown_in_session_, contextual_zps_used_in_session_,
+      contextual_query_issued_in_session_, initial_page_content_type_);
 }
 
 void LensOverlayController::RecordDocumentMetrics(

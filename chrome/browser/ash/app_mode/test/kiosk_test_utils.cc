@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/functional/function_ref.h"
 #include "base/notimplemented.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
@@ -27,7 +28,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
@@ -140,6 +144,22 @@ void CloseAppWindow(const KioskApp& app) {
       NOTIMPLEMENTED();
       break;
   }
+}
+
+void CachePolicy(const std::string& account_id,
+                 base::FunctionRef<void(policy::UserPolicyBuilder&)> setup) {
+  policy::UserPolicyBuilder builder;
+  builder.policy_data().set_policy_type(
+      policy::dm_protocol::kChromePublicAccountPolicyType);
+  builder.policy_data().set_username(account_id);
+  builder.SetDefaultSigningKey();
+
+  setup(builder);
+  builder.Build();
+
+  const std::string policy_blob = builder.GetBlob();
+  auto& manager = CHECK_DEREF(FakeSessionManagerClient::Get());
+  manager.set_device_local_account_policy(account_id, policy_blob);
 }
 
 }  // namespace ash::kiosk::test

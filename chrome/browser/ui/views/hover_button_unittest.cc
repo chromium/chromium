@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/controls/hover_button.h"
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -43,18 +39,21 @@ struct TitleSubtitlePair {
   bool tooltip;
 };
 
-const TitleSubtitlePair kTitleSubtitlePairs[] = {
+const std::array<TitleSubtitlePair, 4> kTitleSubtitlePairs{
     // Two short strings that will fit in the space given.
-    {u"Clap!", u"Clap!", false},
-    // First string fits, second string doesn't.
-    {u"If you're happy and you know it, clap your hands!", u"Clap clap!", true},
-    // Second string fits, first string doesn't.
-    {u"Clap clap!",
-     u"If you're happy and you know it, and you really want to show it,", true},
-    // Both strings don't fit.
-    {u"If you're happy and you know it, and you really want to show it,",
-     u"If you're happy and you know it, clap your hands!", true},
-};
+    {
+        {u"Clap!", u"Clap!", false},
+        // First string fits, second string doesn't.
+        {u"If you're happy and you know it, clap your hands!", u"Clap clap!",
+         true},
+        // Second string fits, first string doesn't.
+        {u"Clap clap!",
+         u"If you're happy and you know it, and you really want to show it,",
+         true},
+        // Both strings don't fit.
+        {u"If you're happy and you know it, and you really want to show it,",
+         u"If you're happy and you know it, clap your hands!", true},
+    }};
 
 // Returns the accessible name of `button`.
 std::u16string GetAccessibleName(HoverButton& button) {

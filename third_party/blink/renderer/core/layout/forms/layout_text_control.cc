@@ -185,7 +185,7 @@ float GetAvgCharWidth(const ComputedStyle& style) {
   }
 
   const UChar kCh = '0';
-  return ComputeTextWidth(StringView(&kCh, 1u), style);
+  return ComputeTextWidth(StringView(base::span_from_ref(kCh)), style);
 }
 
 }  // namespace layout_text_control

@@ -45,12 +45,12 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
 
 class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  public:
-  TabsHooksDelegateTest() {}
+  TabsHooksDelegateTest() = default;
 
   TabsHooksDelegateTest(const TabsHooksDelegateTest&) = delete;
   TabsHooksDelegateTest& operator=(const TabsHooksDelegateTest&) = delete;
 
-  ~TabsHooksDelegateTest() override {}
+  ~TabsHooksDelegateTest() override = default;
 
   // NativeExtensionBindingsSystemUnittest:
   void SetUp() override {

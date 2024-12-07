@@ -46,4 +46,27 @@ suite('Searchbox', () => {
 
     assertFalse(isVisible(lensOverlayElement.$.searchbox));
   });
+
+  test('Escape hides ghost loader', async () => {
+    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+    lensOverlayElement.$.searchbox.$.input.value = 'hello';
+
+    // Simulate searchbox being focused
+    lensOverlayElement.setSearchboxFocusForTesting(true);
+    assertTrue(isVisible(lensOverlayElement.$.searchboxGhostLoader));
+
+    // Simulate escape being pressed from the searchbox with empty input.
+    const escapeEvent = new CustomEvent('escape-searchbox', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        event: {type: 'keydown', key: 'Escape'},
+        emptyInput: false,
+      },
+    });
+    lensOverlayElement.handleEscapeSearchboxForTesting(escapeEvent);
+    await waitAfterNextRender(lensOverlayElement);
+    // Ghost loader should hide when escape is pressed.
+    assertFalse(isVisible(lensOverlayElement.$.searchboxGhostLoader));
+  });
 });

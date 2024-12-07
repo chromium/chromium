@@ -382,12 +382,10 @@ EnumTraits<crosapi::mojom::AppType, apps::AppType>::ToMojom(
       return crosapi::mojom::AppType::kWeb;
     case apps::AppType::kSystemWeb:
       return crosapi::mojom::AppType::kSystemWeb;
-    case apps::AppType::kBuiltIn:
     case apps::AppType::kCrostini:
     case apps::AppType::kChromeApp:
     case apps::AppType::kExtension:
     case apps::AppType::kPluginVm:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:

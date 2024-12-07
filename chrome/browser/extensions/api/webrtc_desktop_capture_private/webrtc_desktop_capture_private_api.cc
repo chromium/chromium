@@ -80,9 +80,9 @@ WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
 }
 
 WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction::
-    WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction() {}
+    WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction() = default;
 
 WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction::
-    ~WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction() {}
+    ~WebrtcDesktopCapturePrivateCancelChooseDesktopMediaFunction() = default;
 
 }  // namespace extensions

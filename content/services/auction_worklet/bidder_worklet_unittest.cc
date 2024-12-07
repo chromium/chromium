@@ -10847,7 +10847,10 @@ TEST_F(BidderWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
 class BidderWorkletSharedStorageAPIEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletSharedStorageAPIEnabledTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kSharedStorageAPI,
+                              blink::features::kSharedStorageWebLocks},
+        /*disabled_features=*/{});
 
     // Set the shared-storage permissions policy to allowed.
     permissions_policy_state_ =
@@ -10859,6 +10862,191 @@ class BidderWorkletSharedStorageAPIEnabledTest : public BidderWorkletTest {
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       CreateSharedStorageModifierMethod_IDLError) {
+  std::vector<std::pair<std::string, std::string>> methods_and_errors = {
+      {"new SharedStorageSetMethod('key0')",
+       "https://url.test/:5 Uncaught TypeError: SharedStorageSetMethod(): at "
+       "least 2 argument(s) are required."},
+      {"new SharedStorageAppendMethod('key0')",
+       "https://url.test/:5 Uncaught TypeError: SharedStorageAppendMethod(): "
+       "at least 2 argument(s) are required."},
+      {"new SharedStorageDeleteMethod()",
+       "https://url.test/:5 Uncaught TypeError: SharedStorageDeleteMethod(): "
+       "at least 1 argument(s) are required."},
+      {"new SharedStorageClearMethod({withLock: {toString: () => {throw 'Error "
+       "123';}}})",
+       "https://url.test/:5 Uncaught Error 123."}};
+
+  for (const auto& method_and_error : methods_and_errors) {
+    auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+        &test_shared_storage_host);
+    shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/method_and_error.first),
+        /*expected_bids=*/nullptr,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/
+        {method_and_error.second},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
+  }
+}
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       CreateSharedStorageModifierMethod_PermissionsPolicyDisallowed) {
+  permissions_policy_state_ = mojom::AuctionWorkletPermissionsPolicyState::New(
+      /*private_aggregation_allowed=*/true,
+      /*shared_storage_allowed=*/false);
+
+  std::string methods[4] = {"new SharedStorageSetMethod('key0', 'value0')",
+                            "new SharedStorageAppendMethod('key0', 'value0')",
+                            "new SharedStorageDeleteMethod('key0')",
+                            "new SharedStorageClearMethod()"};
+
+  for (const std::string& method : methods) {
+    // Skip setting up `shared_storage_hosts_`, to be consistent with the
+    // permissions policy's enabled status. This matches production behavior.
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/method),
+        /*expected_bids=*/nullptr,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/
+        {"https://url.test/:5 Uncaught TypeError: The \"shared-storage\" "
+         "Permissions Policy denied the method on sharedStorage."},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
+  }
+}
+
+TEST_F(
+    BidderWorkletSharedStorageAPIEnabledTest,
+    CreateSharedStorageModifierMethod_IDLErrorAndPermissionsPolicyDisallowed_IDLErrorReported) {
+  permissions_policy_state_ = mojom::AuctionWorkletPermissionsPolicyState::New(
+      /*private_aggregation_allowed=*/true,
+      /*shared_storage_allowed=*/false);
+
+  std::vector<std::pair<std::string, std::string>> methods_and_errors = {
+      {"new SharedStorageSetMethod('key0')",
+       "https://url.test/:5 Uncaught TypeError: SharedStorageSetMethod(): at "
+       "least 2 argument(s) are required."},
+      {"new SharedStorageAppendMethod('key0')",
+       "https://url.test/:5 Uncaught TypeError: SharedStorageAppendMethod(): "
+       "at least 2 argument(s) are required."},
+      {"new SharedStorageDeleteMethod()",
+       "https://url.test/:5 Uncaught TypeError: SharedStorageDeleteMethod(): "
+       "at least 1 argument(s) are required."},
+      {"new SharedStorageClearMethod({withLock: {toString: () => {throw 'Error "
+       "123';}}})",
+       "https://url.test/:5 Uncaught Error 123."}};
+
+  for (const auto& method_and_error : methods_and_errors) {
+    // Skip setting up `shared_storage_hosts_`, to be consistent with the
+    // permissions policy's enabled status. This matches production behavior.
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/method_and_error.first),
+        /*expected_bids=*/nullptr,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/
+        {method_and_error.second},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
+  }
+}
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       CreateSharedStorageModifierMethod_NotCalledWithNew) {
+  std::string methods[4] = {
+      "SharedStorageSetMethod()", "SharedStorageAppendMethod()",
+      "SharedStorageDeleteMethod()", "SharedStorageClearMethod()"};
+
+  for (const std::string& method : methods) {
+    auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+        &test_shared_storage_host);
+    shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/method),
+        /*expected_bids=*/nullptr,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/
+        {"https://url.test/:5 Uncaught TypeError: The shared storage method "
+         "object constructor cannot be called as a function."},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
+  }
+}
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       CreateSharedStorageModifierMethod_Success) {
+  std::string methods[4] = {"new SharedStorageSetMethod('key0', 'value0')",
+                            "new SharedStorageAppendMethod('key0', 'value0')",
+                            "new SharedStorageDeleteMethod('key0')",
+                            "new SharedStorageClearMethod()"};
+
+  for (const std::string& method : methods) {
+    auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+        &test_shared_storage_host);
+    shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/method),
+        /*expected_bids=*/
+        mojom::BidderWorkletBid::New(
+            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
+            /*bid_currency=*/std::nullopt,
+            /*ad_cost=*/std::nullopt,
+            blink::AdDescriptor(GURL("https://response.test/")),
+            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+            /*ad_component_descriptors=*/std::nullopt,
+            /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
+  }
+
+  v8_helpers_[0]->v8_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<AuctionV8Helper> v8_helper) {
+                       v8_helper->isolate()->RequestGarbageCollectionForTesting(
+                           v8::Isolate::kFullGarbageCollection);
+                     },
+                     v8_helpers_[0]));
+  task_environment_.RunUntilIdle();
+}
 
 TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
        SharedStorageWithLockOptionParsingFailure) {

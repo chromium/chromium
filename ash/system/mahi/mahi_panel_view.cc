@@ -818,6 +818,7 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
           // The Panel's title label
           views::Builder<views::Label>()
               .SetText(l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_TITLE))
+              .SetAccessibleRole(ax::mojom::Role::kHeading)
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
                   TypographyToken::kCrosButton1))

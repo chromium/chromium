@@ -122,19 +122,19 @@ TEST_F(AnimationKeyframeEffectV8Test, CanCreateAnAnimation) {
   ScriptState* script_state = scope.GetScriptState();
   NonThrowableExceptionState exception_state;
 
-  HeapVector<ScriptValue> blink_keyframes = {
+  HeapVector<ScriptObject> blink_keyframes = {
       V8ObjectBuilder(script_state)
           .AddString("width", "100px")
           .AddString("offset", "0")
           .AddString("easing", "ease-in-out")
-          .GetScriptValue(),
+          .ToScriptObject(),
       V8ObjectBuilder(script_state)
           .AddString("width", "0px")
           .AddString("offset", "1")
           .AddString("easing", "cubic-bezier(1, 1, 0.3, 0.3)")
-          .GetScriptValue()};
+          .ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
@@ -206,14 +206,14 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
           scope.GetIsolate(), effect_options, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  HeapVector<ScriptValue> blink_keyframes = {
+  HeapVector<ScriptObject> blink_keyframes = {
       V8ObjectBuilder(script_state)
           .AddString("width", "100px")
           .AddString("composite", "replace")
-          .GetScriptValue(),
-      V8ObjectBuilder(script_state).AddString("width", "0px").GetScriptValue()};
+          .ToScriptObject(),
+      V8ObjectBuilder(script_state).AddString("width", "0px").ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 

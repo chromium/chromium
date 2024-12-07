@@ -15,7 +15,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -385,6 +387,199 @@ TEST_F(NetErrorHelperCoreTest,
       page_state.strings.FindList("suggestionsSummaryList");
   ASSERT_TRUE(suggestions_summary_list);
   EXPECT_TRUE(suggestions_summary_list->empty());
+}
+
+TEST_F(NetErrorHelperCoreTest, GetErrorPageStateStringPlaceholders) {
+  // Use a URL that contains non-escaped characters to ensure they are properly
+  // escaped when embedded in HTML strings returned to the frontend.
+  const std::string failed_url_string(
+      "https://does_not_exist_url.com/foo?bar=<hello>&baz=other");
+  const std::string failed_url_string_escaped =
+      base::EscapeForHTML(failed_url_string);
+  const GURL failed_url(failed_url_string);
+  const std::string failed_url_host(failed_url.host());
+
+  struct FieldWithPlaceholder {
+    std::string_view key;
+    std::string_view value;
+  };
+
+  struct TestCase {
+    std::string_view description;
+    int error_code;
+    std::string_view error_domain;
+    std::vector<FieldWithPlaceholder> fields;
+  };
+
+  const TestCase test_cases[] = {
+      // error_page::Error::kHttpErrorDomain cases.
+
+      {
+          "case for IDS_ERRORPAGES_HEADING_NOT_FOUND, "
+          "IDS_ERRORPAGES_SUMMARY_NOT_FOUND",
+          404,
+          error_page::Error::kHttpErrorDomain,
+          {
+              {"heading.msg", failed_url_host},
+              {"summary.msg", failed_url_string_escaped},
+          },
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_GATEWAY_TIMEOUT",
+          504,
+          error_page::Error::kHttpErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_WEBSITE_CANNOT_HANDLE_REQUEST",
+          500,
+          error_page::Error::kHttpErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+
+      // error_page::DNS_PROBE_FINISHED_NXDOMAIN cases.
+
+      {
+          "case IDS_ERRORPAGES_CHECK_TYPO_SUMMARY",
+          error_page::DNS_PROBE_FINISHED_NXDOMAIN,
+          error_page::Error::kDnsProbeErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_DNS_PROBE_RUNNING",
+          error_page::DNS_PROBE_POSSIBLE,
+          error_page::Error::kDnsProbeErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+
+      // error_page::Error::kNetErrorDomain cases.
+
+      {
+          "case IDS_ERRORPAGES_HEADING_ACCESS_DENIED, "
+          "IDS_ERRORPAGES_SUMMARY_BAD_SSL_CLIENT_AUTH_CERT",
+          net::ERR_BAD_SSL_CLIENT_AUTH_CERT,
+          error_page::Error::kNetErrorDomain,
+          {
+              {"heading.msg", failed_url_host},
+              {"summary.msg", failed_url_host},
+          },
+      },
+      {
+          "case IDS_ERRORPAGES_HEADING_BLOCKED",
+          net::ERR_BLOCKED_BY_CLIENT,
+          error_page::Error::kNetErrorDomain,
+          {{"heading.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_CONNECTION_CLOSED, "
+          "IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM",
+          net::ERR_CONNECTION_CLOSED,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_CONNECTION_FAILED",
+          net::ERR_CONNECTION_FAILED,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_CONNECTION_REFUSED",
+          net::ERR_CONNECTION_REFUSED,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_EMPTY_RESPONSE",
+          net::ERR_EMPTY_RESPONSE,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_INVALID_RESPONSE",
+          net::ERR_SSL_PROTOCOL_ERROR,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_NAME_NOT_RESOLVED",
+          net::ERR_NAME_NOT_RESOLVED,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_SSL_SECURITY_ERROR",
+          net::ERR_SSL_SERVER_CERT_BAD_FORMAT,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_SSL_VERSION_OR_CIPHER_MISMATCH",
+          net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_TIMED_OUT",
+          net::ERR_TIMED_OUT,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_TOO_MANY_REDIRECTS",
+          net::ERR_TOO_MANY_REDIRECTS,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_ADDRESS_UNREACHABLE",
+          net::ERR_ADDRESS_UNREACHABLE,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_string_escaped}},
+      },
+      {
+          "case IDS_ERRORPAGES_SUMMARY_NOT_AVAILABLE",
+          net::ERR_TEMPORARILY_THROTTLED,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_string_escaped}},
+      },
+  };
+
+  for (auto& test_case : test_cases) {
+    error_page::LocalizedError::PageState page_state =
+        error_page::LocalizedError::GetPageState(
+            test_case.error_code, std::string(test_case.error_domain),
+            failed_url,
+            /*is_post=*/false,
+            /*is_secure_dns_network_error=*/false,
+            /*stale_copy_in_cache=*/false,
+            /*can_show_network_diagnostics_dialog=*/false,
+            /*is_incognito=*/false,
+            /*auto_fetch_feature_enabled=*/false, /*is_kiosk_mode=*/false,
+            /*locale=*/"",
+            /*is_blocked_by_extension=*/false,
+            /*error_page_params=*/nullptr);
+
+    // Check that no "$1", "$2", "$3" placeholders have been left in anywhere in
+    // the response strings.
+    std::string json;
+    ASSERT_TRUE(base::JSONWriter::Write(page_state.strings, &json));
+    ASSERT_EQ(json.find("$1"), std::string::npos)
+        << "Failed for: " << test_case.description << ", found: " << json;
+    ASSERT_EQ(json.find("$2"), std::string::npos)
+        << "Failed for: " << test_case.description << ", found: " << json;
+    ASSERT_EQ(json.find("$3"), std::string::npos)
+        << "Failed for: " << test_case.description << ", found: " << json;
+
+    // Check that placeholder fields have been replaced with the correct value.
+    for (auto& field : test_case.fields) {
+      auto* value = page_state.strings.FindStringByDottedPath(field.key);
+      ASSERT_TRUE(value->find(field.value) != std::string::npos)
+          << "Faild to find replacement for: " << test_case.description
+          << "for key: '" << field.key << "', found: '" << *value
+          << "', which doesn't contain: '" << field.value << "'";
+    }
+  }
 }
 
 TEST_F(NetErrorHelperCoreTest, SubFrameErrorWithCustomErrorPage) {

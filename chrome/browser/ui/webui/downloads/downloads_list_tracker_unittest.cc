@@ -76,7 +76,7 @@ class TestDownloadsListTracker : public DownloadsListTracker {
       : DownloadsListTracker(manager,
                              std::move(page),
                              base::BindRepeating(&ShouldShowItem)) {}
-  ~TestDownloadsListTracker() override {}
+  ~TestDownloadsListTracker() override = default;
 
   using DownloadsListTracker::IsIncognito;
   using DownloadsListTracker::GetItemForTesting;
@@ -94,7 +94,7 @@ class TestDownloadsListTracker : public DownloadsListTracker {
 // A fixture to test DownloadsListTracker.
 class DownloadsListTrackerTest : public testing::Test {
  public:
-  DownloadsListTrackerTest() {}
+  DownloadsListTrackerTest() = default;
 
   ~DownloadsListTrackerTest() override {
     for (const auto& mock_item : mock_items_)

@@ -15,6 +15,9 @@ def Generate(jni_objs, *, gen_jni_class, script_name):
 
 package {gen_jni_class.package_with_dots};
 
+import org.jni_zero.internal.NullUnmarked;
+
+@NullUnmarked
 public class {gen_jni_class.name} {{
 """)
 

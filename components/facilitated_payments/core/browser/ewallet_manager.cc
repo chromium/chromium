@@ -20,21 +20,36 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/util/payment_link_validator.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "url/gurl.h"
 
 namespace payments::facilitated {
 
 EwalletManager::EwalletManager(
     FacilitatedPaymentsClient* client,
-    FacilitatedPaymentsApiClientCreator api_client_creator)
+    FacilitatedPaymentsApiClientCreator api_client_creator,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : client_(CHECK_DEREF(client)),
-      api_client_creator_(std::move(api_client_creator)) {}
+      api_client_creator_(std::move(api_client_creator)),
+      optimization_guide_decider_(CHECK_DEREF(optimization_guide_decider)) {
+  optimization_guide_decider_->RegisterOptimizationTypes(
+      {optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST});
+}
 EwalletManager::~EwalletManager() = default;
 
-// TODO(crbug.com/40280186): Add tests for this method.
 void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
                                                const GURL& page_url) {
-  if (!PaymentLinkValidator().IsValid(payment_link_url.spec())) {
+  if (optimization_guide_decider_->CanApplyOptimization(
+          page_url, optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    // The merchant is not part of the allowlist, ignore the eWallet push
+    // payment.
+    return;
+  }
+
+  if (PaymentLinkValidator().GetScheme(payment_link_url) ==
+      PaymentLinkValidator::Scheme::kInvalid) {
     return;
   }
 
@@ -62,8 +77,6 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
   if (supported_ewallets_.size() == 0) {
     return;
   }
-
-  // TODO(crbug.com/40280186): check allowlist.
 
   if (!GetApiClient()) {
     return;

@@ -149,7 +149,7 @@ void LoginAsh::UnlockCurrentSession(const std::string& password,
 }
 
 void LoginAsh::LaunchSamlUserSession(const std::string& email,
-                                     const std::string& gaia_id,
+                                     const GaiaId& gaia_id,
                                      const std::string& password,
                                      const std::string& oauth_code,
                                      OptionalErrorCallback callback) {

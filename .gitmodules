@@ -362,6 +362,9 @@
 [submodule "third_party/securemessage/src"]
 	path = third_party/securemessage/src
 	url = https://chromium.googlesource.com/external/github.com/google/securemessage
+[submodule "third_party/speedometer/main"]
+	path = third_party/speedometer/main
+	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
 [submodule "third_party/speedometer/v3.0"]
 	path = third_party/speedometer/v3.0
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
@@ -589,6 +592,9 @@
 [submodule "third_party/webgpu-cts/src"]
 	path = third_party/webgpu-cts/src
 	url = https://chromium.googlesource.com/external/github.com/gpuweb/cts
+[submodule "third_party/webpagereplay"]
+	path = third_party/webpagereplay
+	url = https://chromium.googlesource.com/webpagereplay
 [submodule "third_party/webrtc"]
 	path = third_party/webrtc
 	url = https://webrtc.googlesource.com/src

@@ -230,7 +230,7 @@ OfflinePageEvaluationBridge::OfflinePageEvaluationBridge(
   request_coordinator_->GetLogger()->SetClient(this);
 }
 
-OfflinePageEvaluationBridge::~OfflinePageEvaluationBridge() {}
+OfflinePageEvaluationBridge::~OfflinePageEvaluationBridge() = default;
 
 void OfflinePageEvaluationBridge::Destroy(JNIEnv* env,
                                           const JavaParamRef<jobject>&) {

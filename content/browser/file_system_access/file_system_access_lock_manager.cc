@@ -111,14 +111,9 @@ class Lock {
       return child;
     }
 
-    // Evict on contention is only enabled when both FSA Locking Scheme and
-    // BFCache are enabled.
-    bool evict_on_contention =
-        base::FeatureList::IsEnabled(features::kFileSystemAccessBFCache);
-
     // Start eviction if we can. Otherwise, we can not take this lock since it
     // is in contention with a lock held by an active page.
-    if (!evict_on_contention || !child->IsEvictableAndStartEviction()) {
+    if (!child->IsEvictableAndStartEviction()) {
       return nullptr;
     }
 

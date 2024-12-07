@@ -14,12 +14,15 @@ namespace content {
 class WebContents;
 }
 
+namespace autofill_ai {
+class SaveAutofillAiDataController;
+}
+
 namespace autofill {
 class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
 class SaveAddressBubbleController;
-class SaveAutofillPredictionImprovementsController;
 class UpdateAddressBubbleController;
 class AddNewAddressBubbleController;
 class SaveCardBubbleController;
@@ -65,9 +68,9 @@ class AutofillBubbleHandler {
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) = 0;
 
-  virtual AutofillBubbleBase* ShowSaveAutofillPredictionImprovementsBubble(
+  virtual AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
-      SaveAutofillPredictionImprovementsController* controller) = 0;
+      autofill_ai::SaveAutofillAiDataController* controller) = 0;
 
   // Opens a save address bubble. The bubble's lifecycle is controlled by its
   // widget, and the controller must handle the widget closing to invalidate

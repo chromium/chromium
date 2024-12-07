@@ -111,17 +111,10 @@ void CardboardImageTransport::Render(WebXrPresentationState* webxr,
   // Mojo (and by extension RectF and the frame bounds), use a convention that
   // the origin is the top left; while OpenGL/Cardboard use the convention that
   // the origin for textures should be at the bottom left, so the top/bottom are
-  // intentionally inverted here. However, this inversion is already accounted
-  // for in the non-shared buffer mode where we swap the texture to a surface
-  // beforehand.
-  bool should_flip = UseSharedBuffer();
-  // WebGPU adds another wrinkle, because it produces textures that are flipped
-  // relative to WebGL. So WebGPU-produced textures should always be use an
-  // inverted orientation compared to what WebGL would have used.
-  if (IsWebGPUSession()) {
-    should_flip = !should_flip;
-  }
-
+  // typically intentionally inverted here. However, WebGPU produces textures
+  // that are flipped relative to WebGL, so WebGPU textures don't need to be
+  // flipped.
+  const bool should_flip = !IsWebGPUSession();
   if (should_flip) {
     left_eye_description_.top_v = left_bounds.bottom();
     left_eye_description_.bottom_v = left_bounds.y();

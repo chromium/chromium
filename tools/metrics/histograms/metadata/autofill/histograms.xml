@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
       summary="User chose to fill a form or field with a CVC."/>
 </variants>
 
-<!-- LINT.ThenChange(/components/autofill/core/browser/filling_product.mm:FillingProductToString) -->
+<!-- LINT.ThenChange(Autofill.FillingProduct.Condensed) -->
 
 <!-- LINT.IfChange(Autofill.FillingProduct.Condensed) -->
 
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
       summary="User chose to fill a form or field with a CVC."/>
 </variants>
 
-<!-- LINT.ThenChange(/components/autofill/core/browser/filling_product.mm:FillingProductToString) -->
+<!-- LINT.ThenChange(/components/autofill/core/browser/filling_product.cc:FillingProductToString) -->
 
 <variants name="Autofill.FormEventWithMetadata">
   <variant name="FilledWithMetadata" summary="A card with metadata was filled"/>
@@ -846,6 +846,17 @@ AutofillSaveCreditCardPromptDestination.
   <owner>battre@chromium.org</owner>
   <summary>
     Logs the overall status of a profile import attempt on form submission time.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.AddressSuggestionOnTypingAcceptance"
+    enum="BooleanAutofillAddressSuggestionOnTypingAcceptance"
+    expires_after="2025-06-13">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    During navigation, for each field where an autofill address suggestion on
+    typing is displayed, logs whether the user has accepted it or not.
   </summary>
 </histogram>
 
@@ -4972,7 +4983,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.ResetAutofillPrefToChrome" enum="Boolean"
-    expires_after="2024-12-14">
+    expires_after="2025-05-18">
   <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

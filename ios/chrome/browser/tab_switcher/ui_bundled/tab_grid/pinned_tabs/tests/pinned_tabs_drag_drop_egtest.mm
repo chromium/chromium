@@ -212,14 +212,7 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
 
 // Checks that dragging a regular tab and dropping it in the pinned view moves
 // it in the pinned view.
-// TODO(crbug.com/40285917): Test is flaky on simluator. Re-enable the test.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testDragRegularTabInPinnedView \
-  FLAKY_testDragRegularTabInPinnedView
-#else
-#define MAYBE_testDragRegularTabInPinnedView testDragRegularTabInPinnedView
-#endif
-- (void)MAYBE_testDragRegularTabInPinnedView {
+- (void)testDragRegularTabInPinnedView {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
@@ -242,7 +235,9 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
 
   // Open 2 new tabs.
   [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:2];
   [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:3];
   [ChromeEarlGreyUI openTabGrid];
 
   // Drag the second cell in the pinned view.

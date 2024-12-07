@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 <enum name="AppTypeV2">
   <int value="0" label="Unknown"/>
   <int value="1" label="Android app"/>
-  <int value="2" label="Built-in app"/>
+  <int value="2" label="(Obsolete) Built-in app"/>
   <int value="3" label="Linux app"/>
   <int value="4" label="Chrome app opened in a window"/>
   <int value="5" label="Chrome app opened in a tab"/>
@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Web app in a tab"/>
   <int value="8" label="(Obsolete) Mac OS app"/>
   <int value="9" label="Plugin VM"/>
-  <int value="10" label="Standalone browser"/>
+  <int value="10" label="(Obsolete) Standalone browser"/>
   <int value="11" label="Remote app"/>
   <int value="12" label="Borealis app"/>
   <int value="13" label="System web app"/>

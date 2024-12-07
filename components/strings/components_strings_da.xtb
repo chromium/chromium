@@ -1236,6 +1236,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3229277193950731405">Kopiér versionsstreng</translation>
 <translation id="323107829343500871">Angiv CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Registrer altid vigtigt indhold på dette website</translation>
+<translation id="323585066388831737">Lys rød</translation>
 <translation id="3236212803136366317">Kortfordele</translation>
 <translation id="3238395604961564389">Åbn link i inkognitovindue</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at tilpasse din browsers udseende</translation>
@@ -1854,6 +1855,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4277937682389409325">Lokal adresse</translation>
 <translation id="4278090321534187713">Kort, der ikke accepteres af denne sælger, er deaktiveret</translation>
 <translation id="4278390842282768270">Tilladt</translation>
+<translation id="4281245629646759298">Lysegul</translation>
 <translation id="4281998142035485137">{0,plural, =1{Vil du åbne den fortrolige fil?}one{Vil du åbne den fortrolige fil?}other{Vil du åbne de fortrolige filer?}}</translation>
 <translation id="4282280603030594840">Indkøb af køretøj</translation>
 <translation id="4282346679996504092">Underretninger for dette produkt er deaktiveret, og bogmærket er fjernet</translation>
@@ -2743,6 +2745,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5969199813874624822">Gem og overvåg pris</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sjette papirrulle</translation>
+<translation id="5974745851230707809">Valgmuligheder for afbetaling</translation>
 <translation id="5975083100439434680">Zoom ud</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
 <translation id="5984570616552610254">Fugtighed i kabinet</translation>
@@ -4308,6 +4311,7 @@ Yderligere oplysninger:
 <translation id="8767765348545497220">Luk hjælp-boble</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 betalingsmetode}one{# betalingsmetode}other{# betalingsmetoder}}</translation>
 <translation id="8768225988514678921">Knappen Opret præsentation, aktivér for hurtigt at oprette en ny Google-præsentation i Slides</translation>
+<translation id="8769662576926275897">Kortoplysninger</translation>
 <translation id="8770286973007342895">Plæneklippere</translation>
 <translation id="8772387130037509473">Yoga og pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vil du flytte den fortrolige fil?}one{Vil du flytte den fortrolige fil?}other{Vil du flytte de fortrolige filer?}}</translation>
@@ -4336,6 +4340,7 @@ Yderligere oplysninger:
 <translation id="882338992931677877">Manuel papirbakke</translation>
 <translation id="8830320733681313421">Hagaki (postkort)</translation>
 <translation id="8830565333350631528">Se filer i <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="8831783793142731637">Tilgængelig ved køb over <ph name="RANGE_MINIMUM" /></translation>
 <translation id="8833007469711500369">Vaskemaskiner og tørretumblere</translation>
 <translation id="8834962751196791179">Du ser denne advarsel, fordi dette website ikke understøtter HTTPS, og du er i inkognitotilstand. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Science-fiction- og fantasy-serier</translation>

@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using testing::Invoke;
 using testing::Return;
 
 namespace {
@@ -48,11 +49,11 @@ page_info::MerchantData CreateValidMerchantData() {
 
 class MockMerchantTrustService : public page_info::MerchantTrustService {
  public:
-  explicit MockMerchantTrustService()
+ MockMerchantTrustService()
       : MerchantTrustService(nullptr, false, nullptr) {}
-  MOCK_METHOD(std::optional<page_info::MerchantData>,
+  MOCK_METHOD(void,
               GetMerchantTrustInfo,
-              (const GURL&),
+              (const GURL&, page_info::MerchantDataCallback),
               (const, override));
 };
 
@@ -76,13 +77,14 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
                                 base::Unretained(this))));
 
     // Mock GetMerchanTrustInfo based on the requested URL.
-    ON_CALL(*service(), GetMerchantTrustInfo(_))
-        .WillByDefault(
-            [](const GURL& url) -> std::optional<page_info::MerchantData> {
-              return url == GURL(kUrlWithMerchantTrustData)
-                         ? std::make_optional(CreateValidMerchantData())
-                         : std::nullopt;
-            });
+    ON_CALL(*service(), GetMerchantTrustInfo(_, _))
+        .WillByDefault(Invoke(
+            [](const GURL& url, page_info::MerchantDataCallback callback) {
+              std::move(callback).Run(
+                  url, url == GURL(kUrlWithMerchantTrustData)
+                           ? std::make_optional(CreateValidMerchantData())
+                           : std::nullopt);
+            }));
   }
 
   GURL CreateUrl(const std::string& host) {
@@ -124,8 +126,11 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
             SidePanelEntry::Id::kMerchantTrust);
 
   // Refresh the page and check that the side panel is still open.
-  EXPECT_CALL(*service(), GetMerchantTrustInfo(_))
-      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
+      .WillRepeatedly(
+          Invoke([](const GURL& url, page_info::MerchantDataCallback callback) {
+            std::move(callback).Run(url, std::nullopt);
+          }));
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
 

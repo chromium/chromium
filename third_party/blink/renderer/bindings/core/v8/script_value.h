@@ -171,6 +171,46 @@ class CORE_EXPORT ScriptValue final {
   WorldSafeV8Reference<v8::Value> value_;
 };
 
+// ScriptObject is used when an idl specifies the type as 'object'
+class CORE_EXPORT ScriptObject final {
+  DISALLOW_NEW();
+
+ public:
+  ScriptObject() = default;
+  ScriptObject(v8::Isolate* isolate, v8::Local<v8::Value> value)
+      : object_(isolate, value) {
+    CHECK(!value.IsEmpty());
+    CHECK(value->IsObject() || value->IsNull());
+  }
+
+  static ScriptObject CreateNull(v8::Isolate* isolate) {
+    return ScriptObject(isolate, v8::Null(isolate));
+  }
+
+  v8::Local<v8::Object> V8Object() const {
+    CHECK(object_.IsObject());
+    return object_.V8Value().As<v8::Object>();
+  }
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator const ScriptValue&() const { return object_; }
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator ScriptValue&() { return object_; }
+
+  bool operator==(const ScriptObject& object) const {
+    return object_ == object.object_;
+  }
+
+  bool operator!=(const ScriptObject& object) const {
+    return !operator==(object);
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(object_); }
+
+ private:
+  ScriptValue object_;
+};
+
 }  // namespace blink
 
 namespace WTF {
@@ -179,6 +219,10 @@ namespace WTF {
 // WorldSafeV8Reference<v8::Value>.
 template <>
 struct VectorTraits<blink::ScriptValue>
+    : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
+
+template <>
+struct VectorTraits<blink::ScriptObject>
     : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
 
 }  // namespace WTF

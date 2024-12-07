@@ -29,6 +29,7 @@ source_set("media_foundation_util") {
     "//gpu/ipc/common",
     "//media:shared_memory_support",
     "//media/base",
+    "//media/gpu:command_buffer_helper",
     "//third_party/libyuv",
   ]
   libs = [

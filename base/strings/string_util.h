@@ -611,14 +611,22 @@ BASE_EXPORT std::u16string JoinString(
 // Additionally, any number of consecutive '$' characters is replaced by that
 // number less one. Eg $$->$, $$$->$$, etc. The offsets parameter here can be
 // NULL. This only allows you to use up to nine replacements.
+//
+// Calling ReplaceStringPlaceholders(u"$1", {ReturnU16string()}, nullptr) will
+// unexpectedly give you the single-u16string overload below, the same as if you
+// had written ReplaceStringPlaceholders(u"$1", ReturnU16String(), nullptr).
+// This is surprising but mostly harmless. Call the base::span constructor
+// explicitly if you need to force this overload, ie.
+// ReplaceStringPlaceholders(
+//     u"$1", base::span<const std::u16string>({ReturnU16string()}), nullptr).
 BASE_EXPORT std::u16string ReplaceStringPlaceholders(
     std::u16string_view format_string,
-    const std::vector<std::u16string>& subst,
+    base::span<const std::u16string> subst,
     std::vector<size_t>* offsets);
 
 BASE_EXPORT std::string ReplaceStringPlaceholders(
     std::string_view format_string,
-    const std::vector<std::string>& subst,
+    base::span<const std::string> subst,
     std::vector<size_t>* offsets);
 
 // Single-string shortcut for ReplaceStringHolders. |offset| may be NULL.

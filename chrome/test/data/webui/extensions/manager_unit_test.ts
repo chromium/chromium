@@ -198,7 +198,7 @@ suite('ExtensionManagerUnitTest', function() {
         assertEquals(newDescription, content.textContent!.trim());
       });
 
-  test('ProfileSettings', function() {
+  test('ProfileSettings', async () => {
     assertFalse(manager.inDevMode);
 
     service.profileStateChangedTarget.callListeners({inDeveloperMode: true});
@@ -212,6 +212,18 @@ suite('ExtensionManagerUnitTest', function() {
 
     service.profileStateChangedTarget.callListeners({canLoadUnpacked: false});
     assertFalse(manager.canLoadUnpacked);
+
+    service.profileStateChangedTarget.callListeners(
+        {isMv2DeprecationNoticeDismissed: true});
+    assertTrue(manager.isMv2DeprecationNoticeDismissed);
+    await microtasksFinished();
+    assertTrue(manager.$['items-list'].isMv2DeprecationNoticeDismissed);
+
+    service.profileStateChangedTarget.callListeners(
+        {isMv2DeprecationNoticeDismissed: false});
+    assertFalse(manager.isMv2DeprecationNoticeDismissed);
+    await microtasksFinished();
+    assertFalse(manager.$['items-list'].isMv2DeprecationNoticeDismissed);
   });
 
   test('Uninstall', async () => {

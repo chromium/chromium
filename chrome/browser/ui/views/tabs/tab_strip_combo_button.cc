@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -55,6 +56,9 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
       l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
   new_tab_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
+  subscriptions_.push_back(new_tab_button->AddStateChangedCallback(
+      base::BindRepeating(&TabStripComboButton::UpdateSeparatorVisibility,
+                          base::Unretained(this))));
 
 #if BUILDFLAG(IS_LINUX)
   // The New Tab Button can be middle-clicked on Linux.
@@ -81,6 +85,10 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
           tab_strip);
   tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
+  subscriptions_.push_back(
+      tab_search_container->tab_search_button()->AddStateChangedCallback(
+          base::BindRepeating(&TabStripComboButton::UpdateSeparatorVisibility,
+                              base::Unretained(this))));
 
   auto* button_container = AddChildView(std::make_unique<views::View>());
   auto* separator_container = AddChildView(std::make_unique<views::View>());
@@ -100,12 +108,18 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
   SetNotifyEnterExitOnChild(true);
 }
 
-void TabStripComboButton::OnMouseEntered(const ui::MouseEvent& event) {
-  separator_->SetVisible(false);
-}
+TabStripComboButton::~TabStripComboButton() {}
 
-void TabStripComboButton::OnMouseExited(const ui::MouseEvent& event) {
-  separator_->SetVisible(true);
+void TabStripComboButton::UpdateSeparatorVisibility() {
+  const views::Button::ButtonState new_tab_button_state =
+      new_tab_button_->GetState();
+  const views::Button::ButtonState tab_search_button_state =
+      tab_search_container_->tab_search_button()->GetState();
+  separator_->SetVisible(
+      new_tab_button_state != views::Button::STATE_HOVERED &&
+      new_tab_button_state != views::Button::STATE_PRESSED &&
+      tab_search_button_state != views::Button::STATE_HOVERED &&
+      tab_search_button_state != views::Button::STATE_PRESSED);
 }
 
 BEGIN_METADATA(TabStripComboButton)

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/lookup_string_in_fixed_set.h"
 
 #include <cstdint>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 namespace net {
@@ -195,11 +191,11 @@ int LookupStringInFixedSet(base::span<const uint8_t> graph,
   // Do an incremental lookup until either the end of the graph is reached, or
   // until every character in |key| is consumed.
   FixedSetIncrementalLookup lookup(graph);
-  const char* key_end = key + key_length;
+  const char* key_end = UNSAFE_TODO(key + key_length);
   while (key != key_end) {
     if (!lookup.Advance(*key))
       return kDafsaNotFound;
-    key++;
+    UNSAFE_TODO(key++);
   }
   // The entire input was consumed without reaching the end of the graph. Return
   // the result code (if present) for the current position, or kDafsaNotFound.

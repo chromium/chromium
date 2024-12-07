@@ -14,7 +14,7 @@ BlocklistCheck::BlocklistCheck(Blocklist* blocklist,
                                scoped_refptr<const Extension> extension)
     : PreloadCheck(extension), blocklist_(blocklist) {}
 
-BlocklistCheck::~BlocklistCheck() {}
+BlocklistCheck::~BlocklistCheck() = default;
 
 void BlocklistCheck::Start(ResultCallback callback) {
   callback_ = std::move(callback);

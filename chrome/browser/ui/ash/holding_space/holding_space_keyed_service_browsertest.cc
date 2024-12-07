@@ -629,8 +629,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   HoldingSpaceKeyedService* const holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           browser()->profile());
-  holding_space_service->AddPinnedFiles(
-      {file_system_url}, holding_space_metrics::EventSource::kTest);
+  holding_space_service->AddPinnedFiles({file_system_url});
 
   base::FilePath relative_path;
   ASSERT_TRUE(drive_integration_service()->GetRelativeDrivePath(

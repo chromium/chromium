@@ -88,8 +88,6 @@ namespace apps {
 
 namespace {
 
-constexpr char kChromeAppId[] = "plfjlfohfjjpmmifkbcmalnmcebkklkh";
-constexpr char kExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 constexpr char kAndroidAppId[] = "a";
 constexpr char kSystemWebAppId[] = "system_web_app_id";
 constexpr char kWebAppId1[] = "web_app_id_1";
@@ -316,12 +314,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
                  InstallSource::kSystem)});
 
     pre_installed_apps_.insert(
-        {app_constants::kLacrosAppId,
-         TestApp(app_constants::kLacrosAppId, AppType::kStandaloneBrowser,
-                 "Lacros", Readiness::kReady, InstallReason::kSystem,
-                 InstallSource::kSystem)});
-
-    pre_installed_apps_.insert(
         {"u", TestApp("u", AppType::kUnknown, "", Readiness::kReady,
                       InstallReason::kUnknown, InstallSource::kUnknown,
                       /*should_notify_initialized=*/false)});
@@ -354,14 +346,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kArc, apps::InstallReason::kUser),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kBuiltIn),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kBuiltIn, apps::InstallReason::kSystem),
         /*count=*/1);
 
     // Should be 4 Borealis apps: The installer + launcher created by the
@@ -413,14 +397,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kPluginVm, apps::InstallReason::kUser),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kStandaloneBrowser),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kStandaloneBrowser, apps::InstallReason::kSystem),
         /*count=*/1);
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -1536,39 +1512,6 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
-  // Create a StandaloneBrowser window, and set it as activated for
-  // `kLacrosAppId`.
-  auto window1 = std::make_unique<aura::Window>(nullptr);
-  window1->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(app_constants::kLacrosAppId, window1.get(),
-                 kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(5));
-
-  // Create a Chrome app window, and set it as activated for `kChromeAppId`.
-  auto window2 = std::make_unique<aura::Window>(nullptr);
-  window2->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(app_constants::kLacrosAppId, window1.get(),
-                 kInactiveInstanceState);
-  ModifyInstance(kChromeAppId, window2.get(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(4));
-
-  // Create a Extension window, and set it as activated for `kExtensionId`.
-  auto window3 = std::make_unique<aura::Window>(nullptr);
-  window3->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(kChromeAppId, window2.get(), kInactiveInstanceState);
-  ModifyInstance(kExtensionId, window3.get(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(3));
-
-  // Set the Extension window as inactived.
-  ModifyInstance(kExtensionId, window3.get(), kInactiveInstanceState);
-
-  // Set time passed 2 hours to record the usage time AppKM.
-  task_environment_.FastForwardBy(base::Minutes(108));
-  VerifyAppUsageTimeUkm(app_constants::kLacrosAppId, base::Minutes(5),
-                        AppTypeName::kStandaloneBrowser);
-}
-
 TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   for (const auto& [_, pre_installed_app] : pre_installed_apps()) {
     if (!pre_installed_app.publisher_id.empty()) {
@@ -1597,7 +1540,6 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->RegisterPublishersForTesting();
   FakePublisher fake_arc_apps(proxy, AppType::kArc);
   FakePublisher fake_borealis_apps(proxy, AppType::kBorealis);
-  FakePublisher fake_standalone_browser(proxy, AppType::kStandaloneBrowser);
 
   EXPECT_CALL(fake_borealis_apps,
               Launch(/*app_id=*/borealis::kClientAppId, ui::EF_NONE,
@@ -1642,19 +1584,6 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
                       LaunchSource::kFromChromeInternal);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kArc);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kArc);
-
-  EXPECT_CALL(fake_standalone_browser,
-              Launch(/*app_id=*/app_constants::kLacrosAppId, ui::EF_NONE,
-                     LaunchSource::kFromChromeInternal, _))
-      .Times(1);
-  proxy->Launch(
-      /*app_id=*/app_constants::kLacrosAppId, ui::EF_NONE,
-      LaunchSource::kFromChromeInternal, nullptr);
-  VerifyAppsLaunchUkm("app://" + std::string(app_constants::kLacrosAppId),
-                      AppTypeName::kStandaloneBrowser,
-                      LaunchSource::kFromChromeInternal);
-  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kStandaloneBrowser);
-  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kStandaloneBrowser);
 
   proxy->LaunchAppWithUrl(
       /*app_id=*/kWebAppId1, ui::EF_NONE, GURL("https://boo.com/a"),
@@ -2250,15 +2179,6 @@ TEST_F(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
   // Verify no more input events UKM recorded.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
   ASSERT_EQ(3U, entries.size());
-}
-
-TEST_F(AppPlatformInputMetricsTest, LacrosWindow) {
-  ModifyInstance(app_constants::kLacrosAppId, window(), kActiveInstanceState);
-  CreateInputEvent(InputEventSource::kStylus);
-  app_platform_input_metrics()->OnTwoHours();
-  VerifyUkm("app://" + std::string(app_constants::kLacrosAppId),
-            AppTypeName::kStandaloneBrowser, /*event_count=*/1,
-            InputEventSource::kStylus);
 }
 
 // Tests for app platform metrics observers.

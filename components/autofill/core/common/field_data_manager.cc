@@ -80,8 +80,10 @@ bool FieldDataManager::DidUserType(FieldRendererId id) const {
 }
 
 bool FieldDataManager::WasAutofilledOnUserTrigger(FieldRendererId id) const {
-  return HasFieldData(id) && (GetFieldPropertiesMask(id) &
-                              FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  return HasFieldData(id) &&
+         (GetFieldPropertiesMask(id) &
+          (FieldPropertiesFlags::kAutofilledOnUserTrigger |
+           FieldPropertiesFlags::kAutofilledChangePasswordFormOnPageLoad));
 }
 
 FieldDataManager::~FieldDataManager() = default;

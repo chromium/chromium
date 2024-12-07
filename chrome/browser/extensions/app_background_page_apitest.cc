@@ -183,7 +183,7 @@ class AppBackgroundPageNaClTest : public AppBackgroundPageApiTest {
   AppBackgroundPageNaClTest() : extension_(nullptr) {
     feature_list_.InitAndEnableFeature(kNaclAllow);
   }
-  ~AppBackgroundPageNaClTest() override {}
+  ~AppBackgroundPageNaClTest() override = default;
 
   void SetUpOnMainThread() override {
     AppBackgroundPageApiTest::SetUpOnMainThread();

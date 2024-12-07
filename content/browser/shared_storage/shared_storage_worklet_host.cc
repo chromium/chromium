@@ -953,6 +953,27 @@ void SharedStorageWorkletHost::SharedStorageUpdate(
       AccessScope::kSharedStorageWorklet, main_frame_id, std::move(callback));
 }
 
+void SharedStorageWorkletHost::SharedStorageBatchUpdate(
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
+    const std::optional<std::string>& with_lock,
+    SharedStorageBatchUpdateCallback callback) {
+  std::string debug_message;
+  if (!IsSharedStorageAllowed(&debug_message)) {
+    std::move(callback).Run(GetSharedStorageErrorMessage(
+        debug_message, kSharedStorageDisabledMessage));
+    return;
+  }
+
+  FrameTreeNodeId main_frame_id = document_service_
+                                      ? document_service_->main_frame_id()
+                                      : FrameTreeNodeId();
+
+  shared_storage_runtime_manager_->lock_manager().SharedStorageBatchUpdate(
+      std::move(methods_with_options), with_lock, shared_storage_origin_,
+      AccessScope::kSharedStorageWorklet, main_frame_id, std::move(callback));
+}
+
 void SharedStorageWorkletHost::SharedStorageGet(
     const std::u16string& key,
     SharedStorageGetCallback callback) {
@@ -1614,8 +1635,7 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
           private_aggregation_config->filtering_id_max_bytes);
 
   std::optional<base::TimeDelta> timeout;
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
-      PrivateAggregationManager::ShouldSendReportDeterministically(
+  if (PrivateAggregationManager::ShouldSendReportDeterministically(
           private_aggregation_config->context_id,
           private_aggregation_config->filtering_id_max_bytes)) {
     timeout = base::Seconds(5);

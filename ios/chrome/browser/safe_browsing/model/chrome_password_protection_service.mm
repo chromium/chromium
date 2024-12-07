@@ -30,6 +30,7 @@
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
 #import "components/signin/public/identity_manager/account_managed_status_finder.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/signin_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/protocol/user_event_specifics.pb.h"
@@ -65,6 +66,7 @@ using safe_browsing::ReferrerChain;
 using safe_browsing::RequestOutcome;
 using safe_browsing::ReusedPasswordAccountType;
 using safe_browsing::WarningAction;
+using signin::constants::kNoHostedDomainFound;
 using sync_pb::UserEventSpecifics;
 
 using InteractionResult = sync_pb::GaiaPasswordReuse::

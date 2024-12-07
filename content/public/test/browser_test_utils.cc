@@ -42,6 +42,7 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -2088,11 +2089,12 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
   return net::cookie_util::StripAccessResults(std::get<0>(future.Get()));
 }
 
-bool SetCookie(BrowserContext* browser_context,
-               const GURL& url,
-               const std::string& value,
-               net::CookieOptions::SameSiteCookieContext context,
-               net::CookiePartitionKey* cookie_partition_key) {
+bool SetCookie(
+    BrowserContext* browser_context,
+    const GURL& url,
+    const std::string& value,
+    net::CookieOptions::SameSiteCookieContext context,
+    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   if (cookie_partition_key) {
     DCHECK(base::Contains(base::ToLowerASCII(value), ";partitioned"));
   }
@@ -2103,7 +2105,7 @@ bool SetCookie(BrowserContext* browser_context,
   std::unique_ptr<net::CanonicalCookie> cc(
       net::CanonicalCookie::CreateForTesting(
           url, value, base::Time::Now(), std::nullopt /* server_time */,
-          base::OptionalFromPtr(cookie_partition_key)));
+          cookie_partition_key.CopyAsOptional()));
   DCHECK(cc.get());
 
   net::CookieOptions options;

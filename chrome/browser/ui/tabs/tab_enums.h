@@ -21,6 +21,7 @@ enum class TabAlertState {
   VR_PRESENTING_IN_HEADSET,  // VR content is being presented in a headset.
   AUDIO_RECORDING,           // Audio [only] being recorded, consumed by tab.
   VIDEO_RECORDING,           // Video [only] being recorded, consumed by tab.
+  GLIC_ACCESSING,            // Glic is accessing the tab's contents.
 };
 
 // State indicating if the user is following the web feed of the site loaded in

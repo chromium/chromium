@@ -43,7 +43,7 @@ constexpr char kSecondaryAccount1Email[] = "secondaryAccount1@gmail.com";
 constexpr char kSecondaryAccount2Email[] = "secondaryAccount2@gmail.com";
 
 account_manager::Account CreateAccount(const std::string& email,
-                                       const std::string& gaia_id) {
+                                       const GaiaId& gaia_id) {
   account_manager::AccountKey key(gaia_id,
                                   ::account_manager::AccountType::kGaia);
   return {key, email};

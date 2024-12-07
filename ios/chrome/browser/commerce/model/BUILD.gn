@@ -74,10 +74,10 @@ source_set("session_proto_db") {
   deps = [
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:parcel_tracking_db_content_proto",
-    "//components/keyed_service/ios:ios",
     "//components/leveldb_proto:leveldb_proto",
     "//components/session_proto_db:session_proto_db",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public:public",
   ]
 }

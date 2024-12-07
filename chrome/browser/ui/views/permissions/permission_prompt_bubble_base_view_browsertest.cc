@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
+
+#include <algorithm>
+#include <array>
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -178,27 +176,23 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
 
   void AddRequestForContentSetting(const std::string& name) {
     constexpr const char* kMultipleName = "multiple";
-    constexpr struct {
+    struct NameType {
       const char* name;
       ContentSettingsType type;
-    } kNameToType[] = {
-        {"geolocation", ContentSettingsType::GEOLOCATION},
-        {"protected_media", ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER},
-        {"notifications", ContentSettingsType::NOTIFICATIONS},
-        {"mic", ContentSettingsType::MEDIASTREAM_MIC},
-        {"camera", ContentSettingsType::MEDIASTREAM_CAMERA},
-        {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS},
-        {"midi", ContentSettingsType::MIDI_SYSEX},
-        {"storage_access", ContentSettingsType::STORAGE_ACCESS},
-        {"downloads", ContentSettingsType::AUTOMATIC_DOWNLOADS},
-        {kMultipleName, ContentSettingsType::DEFAULT}};
-    const auto* it = std::begin(kNameToType);
-    for (; it != std::end(kNameToType); ++it) {
-      if (name == it->name) {
-        break;
-      }
-    }
-    if (it == std::end(kNameToType)) {
+    };
+    static constexpr auto kNameToType = std::to_array<NameType>(
+        {{"geolocation", ContentSettingsType::GEOLOCATION},
+         {"protected_media", ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER},
+         {"notifications", ContentSettingsType::NOTIFICATIONS},
+         {"mic", ContentSettingsType::MEDIASTREAM_MIC},
+         {"camera", ContentSettingsType::MEDIASTREAM_CAMERA},
+         {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS},
+         {"midi", ContentSettingsType::MIDI_SYSEX},
+         {"storage_access", ContentSettingsType::STORAGE_ACCESS},
+         {"downloads", ContentSettingsType::AUTOMATIC_DOWNLOADS},
+         {kMultipleName, ContentSettingsType::DEFAULT}});
+    const auto it = std::ranges::find(kNameToType, name, &NameType::name);
+    if (it == kNameToType.end()) {
       ADD_FAILURE() << "Unknown: " << name;
       return;
     }

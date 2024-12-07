@@ -18,8 +18,7 @@ enum class DirtyType {
   kMessageOnly = 1 << 0,  // Used for showing instant message.
   kDot = 1 << 1,          // Used for showing dot indicator.
   kChip = 1 << 2,         // Used fow showing chip indicator (Desktop only).
-  kMessageAndChip = kMessageOnly |
-                    kChip,  // Used for showing both message and chip indicator.
+  kDotAndChip = kDot | kChip,  // Used for showing both dot and chip indicator.
   kAll = kMessageOnly | kDot | kChip,  // Used for all dirty types.
 };
 
@@ -45,6 +44,10 @@ class MessagingBackendStore {
   // Clear the dirty message for a single message.
   virtual void ClearDirtyMessage(const base::Uuid uuid,
                                  DirtyType dirty_type) = 0;
+
+  // Get all dirty messages for dirty_type.
+  virtual std::vector<collaboration_pb::Message> GetDirtyMessages(
+      DirtyType dirty_type) = 0;
 
   // Get the dirty messages for a group.
   virtual std::vector<collaboration_pb::Message> GetDirtyMessagesForGroup(

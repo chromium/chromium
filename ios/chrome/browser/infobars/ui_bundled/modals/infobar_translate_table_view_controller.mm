@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_translate_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_translate_modal_delegate.h"
+#import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_presentation_handler.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -206,16 +207,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
-  self.alwaysTranslateSourceItem =
-      [self textButtonItemForType:ItemTypeAlwaysTranslateSource
-                       buttonText:[self shouldAlwaysTranslateButtonText]];
-  self.alwaysTranslateSourceItem.buttonAccessibilityIdentifier =
-      kTranslateInfobarModalAlwaysTranslateButtonAXId;
+  if (!self.sourceLanguageIsUnknown) {
+    self.alwaysTranslateSourceItem =
+        [self textButtonItemForType:ItemTypeAlwaysTranslateSource
+                         buttonText:[self shouldAlwaysTranslateButtonText]];
+    self.alwaysTranslateSourceItem.buttonAccessibilityIdentifier =
+        kTranslateInfobarModalAlwaysTranslateButtonAXId;
 
-  [model addItem:self.alwaysTranslateSourceItem
-      toSectionWithIdentifier:SectionIdentifierContent];
+    [model addItem:self.alwaysTranslateSourceItem
+        toSectionWithIdentifier:SectionIdentifierContent];
+  }
 
-  if (self.shouldDisplayNeverTranslateLanguageButton) {
+  if (!self.sourceLanguageIsUnknown &&
+      self.shouldDisplayNeverTranslateLanguageButton) {
     self.neverTranslateSourceItem = [self
         textButtonItemForType:ItemTypeNeverTranslateSource
                    buttonText:[self shouldNeverTranslateSourceButtonText]];
@@ -238,12 +242,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)updatePersistentButtonsAndReconfigure:(BOOL)reconfigure {
-  // With Force translate, always/never translate source can be disabled in 2
-  // scenarios:
-  // - if settings for translate is disabled
-  // - if source language is unknown
-  BOOL buttonDisabled =
-      ![self isTranslateEnabled] || self.sourceLanguageIsUnknown;
+  // Always/never translate buttons are disabled if translate is disabled from
+  // settings.
+  BOOL buttonDisabled = ![self isTranslateEnabled];
   NSMutableArray* toReconfigure = [[NSMutableArray alloc] init];
 
   if (self.alwaysTranslateSourceItem) {
@@ -320,6 +321,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [prefs[kIsSiteOnNeverPromptListPrefKey] boolValue];
   [self loadModel];
   [self.tableView reloadData];
+  [self.presentationHandler resizeInfobarModal];
 }
 
 #pragma mark - UITableViewDataSource

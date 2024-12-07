@@ -62,16 +62,14 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       return ToResolvedUndefinedPromise(script_state);
     }
 
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
-
     //   b. Set reading to true.
     engine_->reading_ = true;
     //   c. Let readRequest be a read request with the following items:
     auto* read_request = MakeGarbageCollected<TeeReadRequest>(engine_);
     //   d. Perform ! ReadableStreamDefaultReaderRead(reader, readRequest).
-    ReadableStreamDefaultReader::Read(script_state, engine_->reader_,
-                                      read_request, exception_state);
+    ReadableStreamDefaultReader::Read(
+        script_state, engine_->reader_, read_request,
+        PassThroughException(script_state->GetIsolate()));
     //   e. Return a promise resolved with undefined.
     return ToResolvedUndefinedPromise(script_state);
   }

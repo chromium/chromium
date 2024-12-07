@@ -38,12 +38,7 @@
 
 namespace ash {
 
-constexpr int kWebKioskIconSize = 128;  // size of the icon in px.
-
 namespace {
-// Maximum image size is 256x256..
-constexpr int kMaxIconFileSize =
-    (2 * kWebKioskIconSize) * (2 * kWebKioskIconSize) * 4 + 1000;
 
 const char kKeyLaunchUrl[] = "launch_url";
 const char kKeyLastIconUrl[] = "last_icon_url";
@@ -102,6 +97,11 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
     network::mojom::URLLoaderFactory* loader_factory =
         system_network_context_manager->GetURLLoaderFactory();
 
+    // Assuming maximum image size is 256x256.
+    constexpr int kMaxIconFileSize = (2 * WebKioskAppData::kIconSize) *
+                                         (2 * WebKioskAppData::kIconSize) * 4 +
+                                     1000;
+
     simple_loader_->DownloadToString(
         loader_factory,
         base::BindOnce(
@@ -141,7 +141,7 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
     }
 
     int size = decoded_image.width();
-    if (size == kWebKioskIconSize) {
+    if (size == WebKioskAppData::kIconSize) {
       client_->OnDidDownloadIcon(decoded_image);
       return;
     }
@@ -150,7 +150,8 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
         FROM_HERE,
         {base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(ResizeImageBlocking, decoded_image, kWebKioskIconSize),
+        base::BindOnce(ResizeImageBlocking, decoded_image,
+                       WebKioskAppData::kIconSize),
         base::BindOnce(&WebKioskAppData::OnDidDownloadIcon, client_));
   }
 
@@ -164,7 +165,7 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 };
 
-WebKioskAppData::WebKioskAppData(KioskAppDataDelegate* delegate,
+WebKioskAppData::WebKioskAppData(KioskAppDataDelegate& delegate,
                                  const std::string& app_id,
                                  const AccountId& account_id,
                                  const GURL url,
@@ -249,17 +250,12 @@ void WebKioskAppData::UpdateAppInfo(const std::string& title,
                                     const web_app::IconBitmaps& icon_bitmaps) {
   name_ = title;
 
-  base::FilePath cache_dir;
-  if (delegate_) {
-    delegate_->GetKioskAppIconCacheDir(&cache_dir);
-  }
-
-  auto it = icon_bitmaps.any.find(kWebKioskIconSize);
+  auto it = icon_bitmaps.any.find(kIconSize);
   if (it != icon_bitmaps.any.end()) {
     const SkBitmap& bitmap = it->second;
     icon_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     icon_.MakeThreadSafe();
-    SaveIcon(bitmap, cache_dir);
+    SaveIcon(bitmap, delegate_->GetKioskAppIconCacheDir());
   }
 
   PrefService* local_state = g_browser_process->local_state();
@@ -286,7 +282,7 @@ void WebKioskAppData::SetStatus(Status status, bool notify) {
     std::move(on_loaded_closure_for_testing_).Run();
   }
 
-  if (delegate_ && notify) {
+  if (notify) {
     delegate_->OnKioskAppDataChanged(app_id());
   }
 }
@@ -327,12 +323,7 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
     return;
   }
 
-  base::FilePath cache_dir;
-  if (delegate_) {
-    delegate_->GetKioskAppIconCacheDir(&cache_dir);
-  }
-
-  SaveIcon(icon, cache_dir);
+  SaveIcon(icon, delegate_->GetKioskAppIconCacheDir());
 
   PrefService* local_state = g_browser_process->local_state();
   ScopedDictPrefUpdate dict_update(local_state, dictionary_name());

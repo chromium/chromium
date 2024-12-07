@@ -24,16 +24,16 @@ namespace apps {
 // backend enums.
 enum class AppType {
   kUnknown = 0,
-  kArc = 1,                // Android app.
-  kBuiltIn = 2,            // Built-in app. (No longer used)
-  kCrostini = 3,           // Linux (via Crostini) app.
-  kChromeApp = 4,          // Chrome app.
-  kWeb = 5,                // Web app.
-  kPluginVm = 6,           // Plugin VM app, see go/pluginvm.
-  kStandaloneBrowser = 7,  // Lacros browser app, see //docs/lacros.md.
-  kRemote = 8,             // Remote app.
-  kBorealis = 9,           // Borealis app, see go/borealis-app.
-  kSystemWeb = 10,         // System web app.
+  kArc = 1,  // Android app.
+  // kBuiltIn = 2,         Built-in app. (deleted).
+  kCrostini = 3,   // Linux (via Crostini) app.
+  kChromeApp = 4,  // Chrome app.
+  kWeb = 5,        // Web app.
+  kPluginVm = 6,   // Plugin VM app, see go/pluginvm.
+  // kStandaloneBrowser = 7,  // Removed. No longer used.
+  kRemote = 8,      // Remote app.
+  kBorealis = 9,    // Borealis app, see go/borealis-app.
+  kSystemWeb = 10,  // System web app.
   // kStandaloneBrowserChromeApp = 11,  // Removed. No longer used.
   kExtension = 12,  // Browser extension.
   // kStandaloneBrowserExtension = 13,  // Removed. No longer used.

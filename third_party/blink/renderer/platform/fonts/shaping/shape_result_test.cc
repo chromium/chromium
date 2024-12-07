@@ -81,10 +81,7 @@ class ShapeResultTest : public FontTestBase {
   }
 
   ShapeResult* CreateShapeResult(TextDirection direction) const {
-    return MakeGarbageCollected<ShapeResult>(direction == TextDirection::kLtr
-                                                 ? GetFont(kLatinFont)
-                                                 : GetFont(kArabicFont),
-                                             0, 0, direction);
+    return MakeGarbageCollected<ShapeResult>(0, 0, direction);
   }
 
   const Font* GetFont(FontType type) const {
@@ -190,8 +187,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRun) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kLatinFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
   shaper_b.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
   shaper_c.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 25u, result);
@@ -207,8 +203,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   HarfBuzzShaper shaper_c(string.Substring(7, 32));
   HarfBuzzShaper shaper_d(string.Substring(32, 34));
 
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kLatinFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
   shaper_b.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
   shaper_c.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 25u, result);
@@ -272,8 +267,7 @@ TEST_F(ShapeResultTest, CopyRangeArabicMultiRun) {
 
   // Combine three separate results into a single one to ensure we have a result
   // with multiple runs.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kArabicFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 2u, result);
   shaper_b.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 7u, result);
   shaper_c.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 8u, result);

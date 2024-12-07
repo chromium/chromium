@@ -87,6 +87,44 @@ class OnDeviceModelComponentStateManager
         ModelBasedCapabilityKey feature) {}
   };
 
+  struct RegistrationCriteria {
+    // Requirements for install. Please update `LogInstallCriteria()` when
+    // updating this.
+    bool disk_space_available = false;
+    bool device_capable = false;
+    bool on_device_feature_recently_used = false;
+    bool enabled_by_feature = false;
+    bool enabled_by_enterprise_policy = false;
+
+    // Reasons to uninstall. TODO(302327114): Add UMA for uninstall reason.
+    bool running_out_of_disk_space = false;
+    bool out_of_retention = false;
+
+    // Current state.
+
+    // We've registered the installer in the past, and haven't uninstalled yet.
+    // The component may or may not be ready.
+    bool is_already_installing = false;
+
+    bool is_model_allowed() const {
+      return device_capable && enabled_by_feature &&
+             enabled_by_enterprise_policy;
+    }
+
+    bool should_install() const {
+      if (should_uninstall()) {
+        return false;
+      }
+      return (disk_space_available && is_model_allowed() &&
+              on_device_feature_recently_used);
+    }
+
+    bool should_uninstall() const {
+      return (is_already_installing &&
+              (running_out_of_disk_space || out_of_retention));
+    }
+  };
+
   // Creates the instance if one does not already exist. Returns an existing
   // instance otherwise.
   static scoped_refptr<OnDeviceModelComponentStateManager> CreateOrGet(
@@ -137,14 +175,16 @@ class OnDeviceModelComponentStateManager
   // Returns the current OnDeviceModelStatus.
   OnDeviceModelStatus GetOnDeviceModelStatus();
 
+  // Returns the most recently computed registration criteria, or nullopt if no
+  // registration has been computed yet.
+  const RegistrationCriteria* GetRegistrationCriteria();
+
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   // Testing functionality:
   static OnDeviceModelComponentStateManager* GetInstanceForTesting();
-
-  struct RegistrationCriteria;
 
  private:
   friend class base::RefCounted<OnDeviceModelComponentStateManager>;

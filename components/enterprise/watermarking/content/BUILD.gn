@@ -8,6 +8,8 @@ static_library("content") {
     "watermark_text_container.h",
   ]
 
+  public_deps = [ "//components/enterprise/watermarking/mojom" ]
+
   deps = [
     "//base",
     "//content/public/browser",

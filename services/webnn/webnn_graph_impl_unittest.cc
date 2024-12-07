@@ -1539,7 +1539,7 @@ struct CumulativeSumTester {
   }
 };
 
-TEST_F(WebNNGraphImplTest, CumulativeSumTeste) {
+TEST_F(WebNNGraphImplTest, CumulativeSumTest) {
   {
     // Test cumulativeSum operator with default exclusive and reversed values.
     CumulativeSumTester{

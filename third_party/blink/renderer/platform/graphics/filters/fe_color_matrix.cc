@@ -122,9 +122,8 @@ static sk_sp<cc::ColorFilter> CreateColorFilter(ColorMatrixType type,
     case FECOLORMATRIX_TYPE_UNKNOWN:
       break;
     case FECOLORMATRIX_TYPE_MATRIX: {
-      if (auto maybe_matrix =
-              base::span(values).to_fixed_extent<kColorMatrixSize>()) {
-        base::span(matrix).copy_from(*maybe_matrix);
+      if (values.size() == kColorMatrixSize) {
+        base::span(matrix).copy_from(values);
       }
       break;
     }

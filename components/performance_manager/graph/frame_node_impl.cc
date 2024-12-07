@@ -764,6 +764,12 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
   DCHECK(child_frame_nodes_.empty());
 
   SeverPageRelationshipsAndMaybeReparent();
+}
+
+void FrameNodeImpl::OnUninitializing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK(child_frame_nodes_.empty());
 
   // Leave the page.
   DCHECK(graph()->NodeInGraph(page_node_));

@@ -38,7 +38,7 @@ ChromeAppIconLoader::ChromeAppIconLoader(Profile* profile,
                           ResizeFunction(),
                           delegate) {}
 
-ChromeAppIconLoader::~ChromeAppIconLoader() {}
+ChromeAppIconLoader::~ChromeAppIconLoader() = default;
 
 bool ChromeAppIconLoader::CanLoadImageForApp(const std::string& id) {
   if (map_.find(id) != map_.end())

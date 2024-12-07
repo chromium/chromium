@@ -288,7 +288,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Returns the GUIDs of the |credit_cards| passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDs(
       JNIEnv* env,
-      const std::vector<CreditCard*>& credit_cards);
+      const std::vector<const CreditCard*>& credit_cards);
 
   // Gets the labels for the |profiles| passed as parameters. These labels are
   // useful for distinguishing the profiles from one another.

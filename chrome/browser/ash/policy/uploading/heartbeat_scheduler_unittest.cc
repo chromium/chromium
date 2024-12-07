@@ -63,7 +63,7 @@ class MockGCMDriver : public testing::StrictMock<gcm::FakeGCMDriver> {
   MockGCMDriver(const MockGCMDriver&) = delete;
   MockGCMDriver& operator=(const MockGCMDriver&) = delete;
 
-  ~MockGCMDriver() override {}
+  ~MockGCMDriver() override = default;
 
   MOCK_METHOD2(RegisterImpl,
                void(const std::string&, const std::vector<std::string>&));

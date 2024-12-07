@@ -163,6 +163,11 @@ void SafeBrowsingBlockingPage::ShowInfobar() {
   client_->ShowEnhancedSafeBrowsingInfobar();
 }
 
+void SafeBrowsingBlockingPage::WasDismissed() {
+  client_->metrics_helper()->RecordUserDecision(
+      security_interstitials::MetricsHelper::DONT_PROCEED);
+}
+
 #pragma mark - SafeBrowsingBlockingPage::SafeBrowsingControllerClient
 
 SafeBrowsingBlockingPage::SafeBrowsingControllerClient::

@@ -298,6 +298,8 @@ int main(int argc, char** argv) {
     chromium_arguments.push_back(FILE_PATH_LITERAL("--no-zygote"));
     chromium_arguments.push_back(FILE_PATH_LITERAL("--disable-gpu"));
     chromium_arguments.push_back(
+        FILE_PATH_LITERAL("--enable-unsafe-swiftshader"));
+    chromium_arguments.push_back(
         FILE_PATH_LITERAL("--disable-crashpad-for-testing"));
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
     // We disable in-process stack trace handling in case we're using memory

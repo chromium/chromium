@@ -244,6 +244,16 @@ class GraphBuilderTflite final {
                                             int32_t indices_tensor_index,
                                             int32_t output_tensor_index);
 
+  // Serialize coordinates for gather and scatter elements.
+  template <typename DataType>
+    requires(std::is_same_v<DataType, int32_t> ||
+             std::is_same_v<DataType, int64_t>)
+  base::expected<int32_t, std::string> SerializeElementsCoordinates(
+      base::span<const uint32_t> indices_dimensions,
+      base::span<const DataType> indices_value,
+      base::span<const int32_t> input_dimensions,
+      int32_t axis);
+
   // This function is called by `SerializeConcat` to serialize WebNN
   // concat operator or used to emulate WebNN operations.
   OperatorOffset SerializeConcatOperation(
@@ -340,9 +350,15 @@ class GraphBuilderTflite final {
       base::span<const int32_t> input_shape,
       base::span<const uint32_t> permutation);
 
-  // This function is called by `SerializeScatterND` to serialize WebNN
-  // ScatterND operation.
-  OperatorOffset SerializeScatterNDOperation(
+  // This function is called by SerializeScatterND or SerializeScatterElements
+  // to serialize WebNN scatterND or scatterElements operation.
+  OperatorOffset SerializeWebNNScatterND(const TensorInfo& input_tensor_info,
+                                         const TensorInfo& updates_tensor_info,
+                                         int32_t indices_tensor_index,
+                                         int32_t output_tensor_index);
+  // This function is called by `SerializeWebNNScatterND` to implement WebNN
+  // scatterND operation.
+  OperatorOffset SerializeTFLiteScatterND(
       base::span<const int32_t> input_shapes,
       int32_t indices_tensor_index,
       int32_t updates_tensor_index,
@@ -628,6 +644,8 @@ class GraphBuilderTflite final {
       uint64_t output_operand_id);
   base::expected<OperatorOffset, std::string> SerializeReverse(
       const mojom::Reverse& reverse);
+  base::expected<OperatorOffset, std::string> SerializeScatterElements(
+      const mojom::ScatterElements& scatter_elements);
   base::expected<OperatorOffset, std::string> SerializeScatterND(
       const mojom::ScatterND& scatter_nd);
   base::expected<OperatorOffset, std::string> SerializeSigmoid(

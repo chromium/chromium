@@ -56,6 +56,9 @@ namespace {
   if (mojom->ap_key) {
     request.ap_key = *mojom->ap_key;
   }
+  if (mojom->install_id) {
+    request.install_id = *mojom->install_id;
+  }
   return request;
 }
 
@@ -127,7 +130,6 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
   UpdateServiceStubUntrusted(const UpdateServiceStubUntrusted&) = delete;
   UpdateServiceStubUntrusted& operator=(const UpdateServiceStubUntrusted&) =
       delete;
-  ~UpdateServiceStubUntrusted() override = default;
 
   // updater::mojom::UpdateService
   void GetVersion(GetVersionCallback callback) override {
