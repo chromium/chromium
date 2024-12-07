@@ -616,9 +616,6 @@
 [submodule "third_party/xnnpack/src"]
 	path = third_party/xnnpack/src
 	url = https://chromium.googlesource.com/external/github.com/google/XNNPACK
-[submodule "tools/page_cycler/acid3"]
-	path = tools/page_cycler/acid3
-	url = https://chromium.googlesource.com/chromium/deps/acid3
 [submodule "third_party/zstd/src"]
 	path = third_party/zstd/src
 	url = https://chromium.googlesource.com/external/github.com/facebook/zstd

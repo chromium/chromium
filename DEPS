@@ -2700,9 +2700,6 @@ deps = {
   'src/third_party/xnnpack/src':
     Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '98f1c8e5c5411bd435d994881440c3c6fc58d109',
 
-  'src/tools/page_cycler/acid3':
-    Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + 'a926d0a32e02c4c03ae95bb798e6c780e0e184ba',
-
   'src/third_party/libei/cipd': {
 
     'packages': [
