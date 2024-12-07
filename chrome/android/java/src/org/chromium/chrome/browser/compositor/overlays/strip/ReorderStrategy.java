@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import android.graphics.PointF;
-
 import androidx.annotation.NonNull;
 
 interface ReorderStrategy {
@@ -13,19 +11,15 @@ interface ReorderStrategy {
      * Begin reordering the interacting view.
      *
      * @param stripTabs The list of {@link StripLayoutTab}.
-     * @param stripGroupTitles The list of {@link StripLayoutGroupTitle}.
      * @param interactingView The interacting {@link StripLayoutView}.
      * @param effectiveTabWidth The width of a tab, accounting for overlap.
-     * @param startPoint The (x,y) coordinate that the reorder action began at.
-     * @param reorderType The {@link ReorderDelegate.ReorderType} for this reorder.
+     * @param x The x coordinate that the reorder action began at.
      */
     void startReorderMode(
             StripLayoutTab[] stripTabs,
-            StripLayoutGroupTitle[] stripGroupTitles,
             @NonNull StripLayoutView interactingView,
             float effectiveTabWidth,
-            PointF startPoint,
-            int reorderType);
+            float x);
 
     /**
      * Updates the location of the reordering tab. This 1. visually offsets the tab (clamped to the

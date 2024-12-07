@@ -4047,7 +4047,7 @@ public class StripLayoutHelperTest {
 
         // Attempt to start a drag and drop and verify that we don't start it.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[2], DRAG_START_POINT);
+        mStripLayoutHelper.startDragAndDropTab(tabs[2], DRAG_START_POINT);
         verify(mTabDragSource, never())
                 .startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());
     }
@@ -4313,7 +4313,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getActiveClickedTabForTesting() == null);
 
         // Act and verify.
-        mStripLayoutHelper.startDragAndDropTabForTesting(theClickedTab, DRAG_START_POINT);
+        mStripLayoutHelper.startDragAndDropTab(theClickedTab, DRAG_START_POINT);
 
         verify(mTabDragSource, times(1))
                 .startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());
