@@ -4005,6 +4005,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3794792524918736965">Windows Hello tekshiruvini yoqish</translation>
 <translation id="379509625511193653">Oʻchiq</translation>
 <translation id="3796215473395753611">alt + tepaga strelka</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, ovoz namunasini tinglash uchun oʻngga strelkani bosing</translation>
 <translation id="3796648294839530037">Sevimli tarmoqlar:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" />Bu <ph name="DEVICE_TYPE" /> tashkilotingiz tomonidan boshqariladi<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> qidiruv tizimidan “<ph name="SEARCH_TERMS" />” deb &amp;qidirish</translation>
@@ -5107,6 +5108,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4586275095964870617"><ph name="URL" /> muqobil brauzerda ochilmadi. Tizim administratoriga muroojat qiling.</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588749726511456218">Varaqlash tezlatkichi <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> va <ph name="DOMAIN" /> resurslari bogʻliq shekilli. Bu paroldan foydalanishdan oldin <ph name="DOMAIN" /> resursi ishonchli ekanini tekshiring.</translation>
 <translation id="4589713469967853491">Jurnallar odatda Yuklanmalar jildiga yoziladi.</translation>
 <translation id="4590785647529325123">Qurilmadan Inkognito sahifalar tarixini oʻchirish uchun barcha Inkognito varaqlarni yoping</translation>
 <translation id="459204634473266369">Hech qanday qurilma <ph name="PRIMARY_EMAIL" /> manziliga saqlanmagan</translation>
@@ -5612,6 +5614,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4946998421534856407">launcher + tepaga strelka</translation>
 <translation id="4947376546135294974">Ochilgan sayt maʼlumotlari</translation>
 <translation id="4950100687509657457">Profil yaratish</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fayl}other{# ta fayl}}</translation>
 <translation id="495170559598752135">Harakatlar</translation>
 <translation id="4951966678293618079">Bu sayt uchun parollar hech qachon saqlanmasin</translation>
@@ -5750,6 +5753,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Kirish amali bajarilmadi. Internetga ulaning va qayta urinib ko‘ring.</translation>
 <translation id="5063480226653192405">Sarfi</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> profilini ochish. Bu profil tashkilotingiz tomonidan boshqariladi.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Xavfsiz DNS parametrlarini ChromeOS sozlamalaridan boshqaring</translation>
 <translation id="5066534201484101197">Sahifalarni overskroll yordamida varaqlang</translation>
@@ -7406,6 +7410,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6266984048393265562">Profilni moslash</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> saytida haqiqiylik tekshiruvi uchun sertifikat tanlang</translation>
 <translation id="6268252012308737255"><ph name="APP" /> orqali ochish</translation>
+<translation id="6269050081341530851">Nusxalari yopilganda eng eskisi saqlanib qoladi</translation>
 <translation id="6270309713620950855">Eslatma ovozi oʻchiq</translation>
 <translation id="6270391203985052864">Saytlar bildirishnoma chiqarishga ruxsat soʻray oladi</translation>
 <translation id="6270486800167535228">Kengaytma mahkamlandi. Boshqa variantlar uchun tanlang</translation>
@@ -7947,6 +7952,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6679947539429331601">12 soat chiqmasin</translation>
 <translation id="6680442031740878064">Bo‘sh: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Nutq tezligi</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Quloqliklar</translation>
 <translation id="6683087162435654533">Barcha varaqlarni tiklash</translation>
 <translation id="6683433919380522900">Ruxsat: <ph name="PERMISSION_STATE" /></translation>
@@ -8840,6 +8846,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7330533963640151632"><ph name="USER_NAME" /> qurilmasi uchun <ph name="FEATURE_NAME" /> sozlamalari <ph name="USER_EMAIL" /> hisobi ostida yuboriladi.</translation>
 <translation id="7331646370422660166">alt + pastga strelka</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Nusxalangan varaqlar</translation>
 <translation id="7333388112938984914">Fayllar pulli ulanish orqali yuklanmaydi</translation>
 <translation id="7333669215417470379">Ilova va sozlamalarni zaxiralash va tiklash</translation>
 <translation id="7335974957018254119">Imlo tekshiruvi quyidagilar uchun ishlatilsin:</translation>

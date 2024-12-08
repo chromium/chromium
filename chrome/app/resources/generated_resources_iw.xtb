@@ -1503,6 +1503,7 @@
 <translation id="202352106777823113">ההורדה נמשכה זמן רב מדי, והיא נעצרה על ידי הרשת.</translation>
 <translation id="2024195579772565064">מחיקת מנוע החיפוש</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">לחיצה מדויקת</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> קרס. יש ללחוץ על בלון זה כדי לטעון מחדש את התוסף.</translation>
 <translation id="2026377162111110983">פיזור הקול באזור</translation>
 <translation id="2028449514182362831">תכונות שצריכות חיישני תנועה לא יפעלו</translation>
@@ -4762,6 +4763,7 @@
 <translation id="4324577459193912240">הקובץ לא הושלם</translation>
 <translation id="4325237902968425115">הסרת ההתקנה של <ph name="LINUX_APP_NAME" /> מתבצעת…</translation>
 <translation id="4325433082696797523">אחסון וחשמל</translation>
+<translation id="4325515113816851466">הבחירות של ההורה שלך לא יחולו אחרי היציאה</translation>
 <translation id="4326146840124313313">‏האבטחה הכי יעילה של Chrome מגינה עליך טוב יותר מפני תוספים, הורדות ואתרים מסוכנים</translation>
 <translation id="4327380114687339519">תפריט התוספים</translation>
 <translation id="4330191372652740264">מים עם קרח</translation>
@@ -4885,6 +4887,7 @@
 </translation>
 <translation id="4413087696295876280">‏קריאת נתונים ומידע ממכשיר ChromeOS Flex</translation>
 <translation id="44137799675104237">האזנה לטקסט בקול טבעי</translation>
+<translation id="4414051792721275732">כשמבצעים תנועה כדי ללחוץ, המהירות של העכבר יורדת כדי לאפשר שליטה טובה יותר. צריך לבצע את התנועה שוב כדי להשלים את הלחיצה.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">‏רוצה להעניק לאפליקציה "<ph name="APP_NAME" />" גישה לרשימת ההתקנים המחוברים ב-USB?</translation>
 <translation id="4414232939543644979">חלון &amp;אנונימי חדש</translation>
@@ -6213,6 +6216,7 @@
 <translation id="5389224261615877010">קשת</translation>
 <translation id="5389626883706033615">אתרים לא יכולים לבקש ממך הרשאה להשתמש במידע שנשמר עליך</translation>
 <translation id="5389794555912875905">הצגת אזהרות לפני מעבר לאתרים לא מאובטחים (מומלץ)</translation>
+<translation id="5389943529251318913">הפחתת מהירות העכבר ב-</translation>
 <translation id="5390112241331447203">‏הכללה של הקובץ system_logs.txt שנשלח בדוחות המשוב.</translation>
 <translation id="5390677308841849479">אדום כהה וכתום</translation>
 <translation id="5392192690789334093">מורשים לשלוח התראות</translation>

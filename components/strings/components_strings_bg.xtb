@@ -4534,6 +4534,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> използва неподдържан протокол.</translation>
 <translation id="918454845714257218">Проверете кода на <ph name="SIDE_OF_CARD" /> и опитайте отново</translation>
 <translation id="9186203289258525843">Бутон за задаване на Chrome като браузър по подразбиране. Активирайте, за да направите Chrome стандартен браузър за системата</translation>
+<translation id="9189789270972826888">Кликнете върху данните за картата по-долу, за да ги копирате и поставите, ако картата не е попълнена. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Темите, по-стари от 4 седмици, се изтриват автоматично</translation>
 <translation id="9191834167571392248">Перфориране долу вляво</translation>
 <translation id="9192361865877479444">Метал (матиран)</translation>

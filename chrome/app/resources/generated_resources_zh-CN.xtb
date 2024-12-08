@@ -4640,7 +4640,7 @@
 <translation id="4254813446494774748">翻译语言：</translation>
 <translation id="4255016471934258618">张大嘴</translation>
 <translation id="425573743389990240">电池放电率（单位为瓦，负值表示电池正在充电）</translation>
-<translation id="4255841059940367080">根据系统向 Google 发送的浏览数据，实时提供 AI 赋能的保护，使您免受危险网站、下载内容和扩展程序的侵害</translation>
+<translation id="4255841059940367080">根据系统向 Google 发送的浏览数据，实时提供 AI 赋能的保护，防范危险的网站、下载内容和扩展程序</translation>
 <translation id="4256316378292851214">将视频另存为(&amp;V)...</translation>
 <translation id="4258348331913189841">文件系统</translation>
 <translation id="4259388776256904261">该过程可能需要一点时间</translation>
@@ -7364,7 +7364,7 @@
 <translation id="6247620186971210352">未找到任何应用</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">系统：<ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">在设置中搜索</translation>
+<translation id="6248988683584659830">搜索设置</translation>
 <translation id="6249200942125593849">管理无障碍设置</translation>
 <translation id="6250186368828697007">当您共享屏幕时，系统会隐藏详细信息</translation>
 <translation id="6251870443722440887">GDI处理函数</translation>
@@ -9933,7 +9933,7 @@
 <translation id="8095439028686936591">ChromeOS 已是最新版本</translation>
 <translation id="8096740438774030488">使用电池时休眠</translation>
 <translation id="80974698889265265">两次输入的 PIN 码不一致</translation>
-<translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> 使用的是由某款扩展程序指定的代理设置</translation>
+<translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> 使用的是一款扩展程序的代理设置</translation>
 <translation id="8097959162767603171">您的管理员必须先接受管理控制台 Chrome 设备列表中的服务条款。</translation>
 <translation id="8098156986344908134">安装 <ph name="DEVICE_OS" /> 并清空硬盘？</translation>
 <translation id="8098616321286360457">需要连接网络</translation>

@@ -36,7 +36,7 @@
 <translation id="1154390310959620237">Μπορείτε να προσαρμόσετε μόνο 5 συντομεύσεις. Διαγράψτε μια συντόμευση, για να προσθέσετε μια νέα.</translation>
 <translation id="1155154308031262006">Εισαγάγετε μια οδηγία</translation>
 <translation id="115705039208660697">ανανάδες</translation>
-<translation id="1164939766849482256">Προστασία οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
+<translation id="1164939766849482256">Προφύλαξη οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
 <translation id="1166688493741195933">Η δημιουργία ονομάτων εγγραφών απέτυχε</translation>
 <translation id="1167755866710282443">Ανοίξτε το μενού για να προσαρμόσετε τα πλήκτρα. Σύρετε το μενού για μετακίνηση.</translation>
 <translation id="1171349345463658120">αμμώδης λιμνοθάλασσα</translation>
@@ -406,7 +406,7 @@
 <translation id="2874939134665556319">Προηγούμενο κομμάτι</translation>
 <translation id="2875812231449496375">Ενεργοποιήστε αυτή την επιλογή για καλύτερα αποτελέσματα με αυτή την ταπετσαρία. Μπορείτε να απενεργοποιήσετε αυτή τη ρύθμιση ανά πάσα στιγμή.</translation>
 <translation id="2878387241690264070">Εκφόρτιση <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
-<translation id="2880569433548999039">Προστασία οθόνης Κίνηση των σύννεφων</translation>
+<translation id="2880569433548999039">Προφύλαξη οθόνης Κίνηση των σύννεφων</translation>
 <translation id="2882230315487799269">Προσαρμογή οδηγίας AI</translation>
 <translation id="2888298276507578975">Εισαγάγετε μια οδηγία όπως "γράψε ένα ευχαριστήριο σημείωμα"</translation>
 <translation id="2890557891229184386">τροπικό νησί</translation>
@@ -714,7 +714,7 @@
 <translation id="4453205916657964690">Μάσκα υποδικτύου</translation>
 <translation id="4454245904991689773">Σάρωση σε</translation>
 <translation id="4456812688969919973">Το κουμπί αποθήκευσης APN είναι πλέον απενεργοποιημένο</translation>
-<translation id="4469288414739283461">Προστασία οθόνης Κίνηση της Γης</translation>
+<translation id="4469288414739283461">Προφύλαξη οθόνης Κίνηση της Γης</translation>
 <translation id="4474142134969976028">Δεν υπάρχουν αποτελέσματα</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
@@ -1093,7 +1093,7 @@
 <translation id="6284632978374966585">Ενεργοποίηση σκούρου θέματος</translation>
 <translation id="6285260286443238386">Εξαγωγή εγγραφής</translation>
 <translation id="628726841779494414">Διαχείριση των εκτυπωτών σας στις ρυθμίσεις εκτυπωτών</translation>
-<translation id="6292095526077353682">Κατά τη φόρτιση, να εμφανίζεται η προστασία οθόνης</translation>
+<translation id="6292095526077353682">Κατά τη φόρτιση, να εμφανίζεται η προφύλαξη οθόνης</translation>
 <translation id="629550705077076970">μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6301193653204230066">Η Επαναφορά ασφαλείας απενεργοποιεί τις επεκτάσεις του προγράμματος περιήγησης Chrome και επαναφέρει τις ρυθμίσεις δικτύου και άλλες ρυθμίσεις στις ασφαλείς προεπιλογές.
           Οι καρτέλες, τα αρχεία, τα cookie και το ιστορικό σας δεν θα αλλάξουν.</translation>
@@ -1143,7 +1143,7 @@
 <translation id="6472979596862005515">βάρκες</translation>
 <translation id="64778964625672495">σκούρο κόκκινο</translation>
 <translation id="6480327114083866287">Διαχείριση από τον τομέα <ph name="MANAGER" /></translation>
-<translation id="6488559935020624631">Αποκλειστική προστασία οθόνης για <ph name="PRODUCT_NAME" /></translation>
+<translation id="6488559935020624631">Αποκλειστική προφύλαξη οθόνης για <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Διακοπή - Εμπλοκή χαρτιού</translation>
 <translation id="6490861263572002431">Αυτόματη κύλιση</translation>
 <translation id="6492891353338939218">υποβαθμισμένο</translation>
@@ -1588,7 +1588,7 @@
 <translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
 <translation id="8505011850330200833">Το μοντέλο Gemini απαιτεί 2 GB αποθηκευτικού χώρου για την επεξεργασία μεταγραφών και τη δημιουργία συνόψεων</translation>
 <translation id="8508640263392900755">Λεπτομέρειες APN</translation>
-<translation id="8522687886059337719">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /> και στην <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />προστασία οθόνης<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
+<translation id="8522687886059337719">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /> και στην <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />προφύλαξη οθόνης<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">τσαγερί</translation>
 <translation id="8538236298648811558">Με την υποστήριξη του Google AI</translation>
