@@ -6,7 +6,7 @@ License: BSD-3-Clause
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes
-CPEPrefix: cpe:2.3:a:google:updater:
+CPEPrefix: cpe:2.3:a:google:updater:*:*:*:*:*:*:*:*
 
 Description:
 The ChromiumUpdater package contains the ChromiumUpdater app bundle, which is
