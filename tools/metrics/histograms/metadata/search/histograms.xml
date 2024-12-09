@@ -964,6 +964,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.KeywordTable.HashValidationStatus"
+    enum="KeywordTableHashValidationStatus" expires_after="2025-09-15">
+  <owner>wfh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the hash validation status for a row in the keywords table in the
+    Web Data sqlite database. This metric is recorded for each row read from the
+    keywords table for a v137 table and above, when the keywords table is
+    loaded, which happens at profile load. If the validation is not successful
+    for any reason, then the row will be dropped from the database.
+  </summary>
+</histogram>
+
+<histogram name="Search.KeywordTable.MigrationSuccess.V137"
+    enum="BooleanSuccess" expires_after="2025-09-15">
+  <owner>wfh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether or not the migration of the keywords table in the Web Data
+    sqlite database successfully completed without dropping any rows. This
+    metric is recorded when a Web Data database before v137 is loaded, which
+    happens at profile load. A failure here means one or more rows have been
+    dropped, but the table was migrated to v137 anyway.
+  </summary>
+</histogram>
+
 <histogram name="Search.Lens.ViewportDimensionsSent.Success" enum="Boolean"
     expires_after="2024-08-04">
   <owner>mercerd@google.com</owner>

@@ -10,9 +10,15 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/test_encryptor.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -23,7 +29,8 @@ using base::Time;
 
 class KeywordTableTest : public testing::Test {
  public:
-  KeywordTableTest() = default;
+  KeywordTableTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
 
   KeywordTableTest(const KeywordTableTest&) = delete;
   KeywordTableTest& operator=(const KeywordTableTest&) = delete;
@@ -34,11 +41,21 @@ class KeywordTableTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
+    InitDatabase();
+  }
 
+  // Pass in an `encryptor` if wanting to override the default one.
+  void InitDatabase(const os_crypt_async::Encryptor* encryptor = nullptr) {
     table_ = std::make_unique<KeywordTable>();
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
-    ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
+    ASSERT_EQ(sql::INIT_OK,
+              db_->Init(file_, encryptor ? encryptor : &encryptor_));
+  }
+
+  void CloseDatabase() {
+    db_.reset();
+    table_.reset();
   }
 
   void AddKeyword(const TemplateURLData& keyword) const {
@@ -97,8 +114,12 @@ class KeywordTableTest : public testing::Test {
     statement->Assign(table_->db()->GetUniqueStatement(sql));
   }
 
- private:
   base::FilePath file_;
+
+ protected:
+  os_crypt_async::TestEncryptor encryptor_;
+
+ private:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<KeywordTable> table_;
   std::unique_ptr<WebDatabase> db_;
@@ -106,9 +127,18 @@ class KeywordTableTest : public testing::Test {
 
 
 TEST_F(KeywordTableTest, Keywords) {
+  // The feature is tested elsewhere, force enable to make sure expectations
+  // match.
+  base::test::ScopedFeatureList enable_verification(
+      features::kKeywordTableHashVerification);
+
   TemplateURLData keyword(CreateAndAddKeyword());
 
+  base::HistogramTester histograms;
+
   KeywordTable::Keywords keywords(GetKeywords());
+  histograms.ExpectUniqueSample("Search.KeywordTable.HashValidationStatus",
+                                /*HashValidationStatus::kSuccess*/ 0, 1);
   EXPECT_EQ(1U, keywords.size());
   const TemplateURLData& restored_keyword = keywords.front();
 
@@ -254,5 +284,140 @@ TEST_F(KeywordTableTest, SanitizeShortName) {
     EXPECT_EQ(keyword.id, keyword_from_database.id);
     EXPECT_EQ(u"bogus name", keyword_from_database.short_name());
     RemoveKeyword(keyword.id);
+  }
+}
+
+struct TestCase {
+  bool encryption_enabled;
+  bool feature_enabled;
+  bool tamper;
+  base::HistogramBase::Sample expected_histogram_sample;
+  size_t expected_keyword_count;
+
+  std::string Name() const {
+    return base::StrCat({encryption_enabled ? "Encryption" : "NoEncryption",
+                         feature_enabled ? "FeatureEnabled" : "FeatureDisabled",
+                         tamper ? "Tamper" : "NoTamper"});
+  }
+};
+
+class KeywordTableTestEncryption
+    : public KeywordTableTest,
+      public ::testing::WithParamInterface<TestCase> {
+ public:
+  KeywordTableTestEncryption() {
+    feature_.InitWithFeatureState(features::kKeywordTableHashVerification,
+                                  GetParam().feature_enabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+TEST_P(KeywordTableTestEncryption, KeywordBadHash) {
+  TemplateURLData keyword(CreateAndAddKeyword());
+  {
+    KeywordTable::Keywords keywords(GetKeywords());
+    EXPECT_EQ(1U, keywords.size());
+  }
+  CloseDatabase();
+  if (GetParam().tamper) {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(file_));
+    EXPECT_TRUE(
+        db.Execute("UPDATE keywords SET url='http://bad.com/' WHERE id=1"));
+  }
+  encryptor_.set_decryption_available_for_testing(
+      GetParam().encryption_enabled);
+  base::HistogramTester histograms;
+  InitDatabase();
+  KeywordTable::Keywords keywords(GetKeywords());
+  // If decryption is not available, the hash is skipped, otherwise the hash
+  // should be invalid and the row dropped.
+  histograms.ExpectUniqueSample("Search.KeywordTable.HashValidationStatus",
+                                GetParam().expected_histogram_sample, 1);
+  EXPECT_EQ(GetParam().expected_keyword_count, keywords.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /*empty*/,
+    KeywordTableTestEncryption,
+    ::testing::Values(
+        TestCase{.encryption_enabled = false,
+                 .feature_enabled = false,
+                 .tamper = true,
+                 .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
+                 .expected_keyword_count = 1u},
+        TestCase{.encryption_enabled = false,
+                 .feature_enabled = true,
+                 .tamper = true,
+                 .expected_histogram_sample = /*kNotVerifiedNoCrypto*/ 4,
+                 .expected_keyword_count = 1u},
+        TestCase{.encryption_enabled = true,
+                 .feature_enabled = false,
+                 .tamper = true,
+                 .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
+                 .expected_keyword_count = 1u},
+        TestCase{.encryption_enabled = true,
+                 .feature_enabled = true,
+                 .tamper = true,
+                 .expected_histogram_sample = /*kIncorrectHash*/ 3,
+                 .expected_keyword_count = 0},
+        TestCase{.encryption_enabled = false,
+                 .feature_enabled = false,
+                 .tamper = false,
+                 .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
+                 .expected_keyword_count = 1u},
+        TestCase{.encryption_enabled = false,
+                 .feature_enabled = true,
+                 .tamper = false,
+                 .expected_histogram_sample = /*kNotVerifiedNoCrypto*/ 4,
+                 .expected_keyword_count = 1u},
+        TestCase{.encryption_enabled = true,
+                 .feature_enabled = false,
+                 .tamper = false,
+                 .expected_histogram_sample = /*kNotVerifiedFeatureDisabled*/ 5,
+                 .expected_keyword_count = 1u},
+        TestCase{.encryption_enabled = true,
+                 .feature_enabled = true,
+                 .tamper = false,
+                 .expected_histogram_sample = /*kSuccess*/ 0,
+                 .expected_keyword_count = 1u}),
+    [](const auto& info) { return info.param.Name(); });
+
+TEST_F(KeywordTableTest, KeywordBadCrypto) {
+  base::test::ScopedFeatureList enable_verification(
+      features::kKeywordTableHashVerification);
+  TemplateURLData keyword(CreateAndAddKeyword());
+  {
+    KeywordTable::Keywords keywords(GetKeywords());
+    EXPECT_EQ(1U, keywords.size());
+  }
+  CloseDatabase();
+  {
+    base::HistogramTester histograms;
+    // A replacement encryptor with a new key that will make decryption of the
+    // hash fail.
+    const auto new_encryptor = os_crypt_async::GetTestEncryptorForTesting();
+    InitDatabase(&new_encryptor);
+    {
+      KeywordTable::Keywords keywords(GetKeywords());
+      EXPECT_TRUE(keywords.empty());
+    }
+
+    // OSCrypt on non-Windows platforms simply returns the encrypted data if
+    // called with invalid data. This is a quirk of these platforms and is in
+    // the process of being removed.
+    // TODO(crbug.com/365712505): Remove this fallback.
+#if BUILDFLAG(IS_WIN)
+    // HashValidationStatus::kDecryptFailed
+    constexpr base::HistogramBase::Sample kExpectedBucket = 1;
+#else
+    // HashValidationStatus::kInvalidHash
+    constexpr base::HistogramBase::Sample kExpectedBucket = 2;
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
+        // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
+    histograms.ExpectUniqueSample("Search.KeywordTable.HashValidationStatus",
+                                  kExpectedBucket, 1);
   }
 }

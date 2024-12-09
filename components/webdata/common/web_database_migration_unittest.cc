@@ -11,6 +11,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -23,8 +25,11 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/test_encryptor.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/search_engines/keyword_table.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -68,7 +73,8 @@ std::string NormalizeSchemaForComparison(const std::string& schema) {
 // description.
 class WebDatabaseMigrationTest : public testing::Test {
  public:
-  WebDatabaseMigrationTest() = default;
+  WebDatabaseMigrationTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
 
   WebDatabaseMigrationTest(const WebDatabaseMigrationTest&) = delete;
   WebDatabaseMigrationTest& operator=(const WebDatabaseMigrationTest&) = delete;
@@ -98,7 +104,7 @@ class WebDatabaseMigrationTest : public testing::Test {
     db.AddTable(&token_service_table);
 
     // This causes the migration to occur.
-    ASSERT_EQ(sql::INIT_OK, db.Init(GetDatabasePath()));
+    ASSERT_EQ(sql::INIT_OK, db.Init(GetDatabasePath(), &encryptor_));
   }
 
  protected:
@@ -140,6 +146,8 @@ class WebDatabaseMigrationTest : public testing::Test {
   //   > .output version_nn.sql
   //   > .dump
   void LoadDatabase(const base::FilePath::StringType& file);
+
+  os_crypt_async::TestEncryptor encryptor_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -1498,3 +1506,78 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion135ToCurrent) {
         "payment_instrument_creation_options", "serialized_value_encrypted"));
   }
 }
+
+class WebDatabaseMigrationTestEncryption
+    : public WebDatabaseMigrationTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  auto& IsEncryptionAvailable() { return GetParam(); }
+};
+
+// Tests addition of the url_hash column to the keywords table.
+TEST_P(WebDatabaseMigrationTestEncryption, MigrateVersion136ToCurrent) {
+  // The feature is tested elsewhere, force enable to make sure expectations
+  // match.
+  base::test::ScopedFeatureList enable_verification(
+      features::kKeywordTableHashVerification);
+
+  encryptor_.set_encryption_available_for_testing(IsEncryptionAvailable());
+  encryptor_.set_decryption_available_for_testing(IsEncryptionAvailable());
+
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_136.sql")));
+  const char kTestUrl[] = "chrome://test/?q={searchTerms}";
+  const TemplateURLID kTestId = 1;
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(136, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "url_hash"));
+
+    // Insert a keyword to test that it is migrated correctly.
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(base::StrCat(
+        {"INSERT INTO keywords VALUES(", base::NumberToString(kTestId),
+         ",'Test','@test','','", kTestUrl,
+         "',1,'',0,0,'','',0,0,0,'','[]','','','','','',0,0,1,2,0,0);"})));
+  }
+  {
+    base::HistogramTester histograms;
+    DoMigration();
+    histograms.ExpectUniqueSample("Search.KeywordTable.MigrationSuccess.V137",
+                                  true, 1);
+  }
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("keywords", "url_hash"));
+    sql::Statement stmt(
+        connection.GetUniqueStatement("SELECT url_hash FROM keywords"));
+    EXPECT_TRUE(stmt.Step());
+    const auto type = stmt.GetColumnType(0);
+    if (!IsEncryptionAvailable()) {
+      EXPECT_EQ(type, sql::ColumnType::kNull);
+      return;
+    }
+
+    EXPECT_EQ(type, sql::ColumnType::kBlob);
+    const auto encrypted_hash = stmt.ColumnBlob(0);
+    const auto hash = encryptor_.DecryptData(encrypted_hash);
+    EXPECT_TRUE(hash.has_value());
+    TemplateURLData data;
+    data.id = kTestId;
+    data.SetURL(kTestUrl);
+    auto expected_hash = data.GenerateHash();
+    EXPECT_EQ(hash->size(), expected_hash.size());
+    EXPECT_TRUE(std::ranges::equal(
+        hash.value(), expected_hash,
+        [](char c, uint8_t b) { return static_cast<uint8_t>(c) == b; }));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(/*empty*/,
+                         WebDatabaseMigrationTestEncryption,
+                         testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "Encryption" : "NoEncryption";
+                         });

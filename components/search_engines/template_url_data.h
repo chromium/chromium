@@ -84,6 +84,9 @@ struct TemplateURLData {
   void SetURL(const std::string& url);
   const std::string& url() const { return url_; }
 
+  // Generate the deterministic hash of data within this TemplateURL.
+  std::vector<uint8_t> GenerateHash() const;
+
   // Recomputes |sync_guid| using the same logic as in the constructor. This
   // means a random GUID is generated, except for built-in search engines,
   // which generate GUIDs deterministically based on |prepopulate_id| or

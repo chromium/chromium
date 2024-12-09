@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
+#include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +19,7 @@
 #include "base/values.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/regulatory_extension_type.h"
+#include "crypto/hash.h"
 
 namespace {
 
@@ -166,6 +168,22 @@ void TemplateURLData::SetKeyword(std::u16string_view keyword) {
 void TemplateURLData::SetURL(const std::string& url) {
   DCHECK(!url.empty());
   url_ = url;
+}
+
+std::vector<uint8_t> TemplateURLData::GenerateHash() const {
+  CHECK(!url_.empty());
+  CHECK_NE(id, 0);
+  base::Pickle pickle;
+  pickle.WriteInt64(id);
+  pickle.WriteString(url_);
+  // Prepend a hash version. This would allow expanding the data contained
+  // within the hash in the future, while keeping backwards compatibility.
+  const uint8_t kHashVersion = 1u;
+  std::vector<uint8_t> result(1, kHashVersion);
+
+  const auto hash = crypto::hash::Sha256(pickle);
+  result.insert(result.end(), hash.begin(), hash.end());
+  return result;
 }
 
 void TemplateURLData::GenerateSyncGUID() {
