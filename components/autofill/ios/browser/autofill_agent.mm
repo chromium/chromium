@@ -1230,8 +1230,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   // Necessary so the values can be used inside a block.
   GURL pageURL = _webState->GetLastCommittedURL();
-  GURL frameOrigin = frame ? frame->GetSecurityOriginDeprecated()
-                           : pageURL.DeprecatedGetOriginAsURL();
+  url::Origin frameOrigin =
+      frame ? frame->GetSecurityOrigin() : url::Origin::Create(pageURL);
 
   if (auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
           _webState, frame)) {
@@ -1242,7 +1242,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       FieldDataManagerFactoryIOS::GetRetainable(frame);
   const auto callback = [](FormFetchCompletion completion, BOOL filtered,
                            const std::u16string& formName, const GURL& pageURL,
-                           const GURL& frameOrigin,
+                           const url::Origin& frameOrigin,
                            scoped_refptr<FieldDataManager> fieldDataManager,
                            const std::string& frame_id, NSString* formJSON) {
     std::optional<std::vector<FormData>> formData =

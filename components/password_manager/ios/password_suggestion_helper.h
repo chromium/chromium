@@ -6,11 +6,12 @@
 #define COMPONENTS_PASSWORD_MANAGER_IOS_PASSWORD_SUGGESTION_HELPER_H_
 
 #import <Foundation/Foundation.h>
-#include <memory>
 
-#include "components/autofill/core/common/unique_ids.h"
+#import <memory>
+
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
-#include "url/gurl.h"
+#import "url/origin.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -102,7 +103,7 @@ class WebState;
             (const autofill::PasswordFormFillData&)formData
                              forFrameId:(const std::string&)frameId
                             isMainFrame:(BOOL)isMainFrame
-                      forSecurityOrigin:(const GURL&)origin;
+                      forSecurityOrigin:(const url::Origin&)origin;
 
 // Processes the case in which no saved credentials are available when
 // extracting forms in the renderer. Will complete the pending check query

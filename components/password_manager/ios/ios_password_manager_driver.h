@@ -9,12 +9,13 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#include "components/autofill/core/common/aliases.h"
+#import "components/autofill/core/common/aliases.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager_driver.h"
 #import "components/password_manager/ios/password_manager_driver_bridge.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace autofill {
 struct PasswordFormFillData;
@@ -79,7 +80,7 @@ class IOSPasswordManagerDriver final
   const GURL& GetLastCommittedURL() const override;
   base::WeakPtr<PasswordManagerDriver> AsWeakPtr() override;
   const std::string& web_frame_id() const { return frame_id_; }
-  const GURL& security_origin() const { return security_origin_; }
+  const url::Origin& security_origin() const { return security_origin_; }
   autofill::FieldDataManager& field_data_manager() {
     return *field_data_manager_;
   }
@@ -129,7 +130,7 @@ class IOSPasswordManagerDriver final
 
   bool is_in_main_frame_;
   // The security origin associated with |web_frame_|.
-  GURL security_origin_;
+  url::Origin security_origin_;
 
   // True when the conditions are met to display the proactive password
   // generation bottom sheet, the sheet that is automatically triggered when you

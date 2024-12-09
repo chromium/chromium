@@ -570,7 +570,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
       processPasswordFormFillData:form_data
                        forFrameId:frame->GetFrameId()
                       isMainFrame:frame->IsMainFrame()
-                forSecurityOrigin:frame->GetSecurityOriginDeprecated()];
+                forSecurityOrigin:frame->GetSecurityOrigin()];
 
   __block BOOL block_was_called = NO;
 
@@ -1106,8 +1106,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       processPasswordFormFillData:form_data
                        forFrameId:expected_frame->GetFrameId()
                       isMainFrame:expected_frame->IsMainFrame()
-                forSecurityOrigin:expected_frame
-                                      ->GetSecurityOriginDeprecated()];
+                forSecurityOrigin:expected_frame->GetSecurityOrigin()];
 
   // clang-format off
   SuggestionTestData test_data[] = {
@@ -1620,8 +1619,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
       processPasswordFormFillData:form_data
                        forFrameId:expected_frame->GetFrameId()
                       isMainFrame:expected_frame->IsMainFrame()
-                forSecurityOrigin:expected_frame
-                                      ->GetSecurityOriginDeprecated()];
+                forSecurityOrigin:expected_frame->GetSecurityOrigin()];
 
   // clang-format off
   SuggestionTestData test_data[] = {

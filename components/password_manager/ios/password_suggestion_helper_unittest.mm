@@ -157,8 +157,7 @@ TEST_F(PasswordSuggestionHelperTest,
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   __block BOOL retrieved_suggestions = NO;
   __block BOOL completion_called = NO;
@@ -196,8 +195,7 @@ TEST_F(PasswordSuggestionHelperTest,
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   __block BOOL retrieved_suggestions = NO;
   __block BOOL completion_called = NO;
@@ -294,8 +292,7 @@ TEST_F(PasswordSuggestionHelperTest,
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   // Now the completion should be called since the triggered forms extraction
   // was done.
@@ -375,8 +372,7 @@ TEST_F(PasswordSuggestionHelperTest,
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   // Now the queued completion blocks should be called since the triggered forms
   // extraction was done.
@@ -491,12 +487,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form1_renderer_id, username1_renderer_id, password1_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:main_frame_->GetFrameId()
-                            isMainFrame:main_frame_->IsMainFrame()
-                      forSecurityOrigin:main_frame_
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:main_frame_->GetFrameId()
+                                 isMainFrame:main_frame_->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
   // Queries for the forms in main frame should be completed after processing
   // the fill data for that frame.
@@ -511,12 +505,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form1_renderer_id, username1_renderer_id, password1_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:frame1_ptr->GetFrameId()
-                            isMainFrame:frame1_ptr->IsMainFrame()
-                      forSecurityOrigin:frame1_ptr
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:frame1_ptr->GetFrameId()
+                                 isMainFrame:frame1_ptr->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
   // Queries for the forms in first subframe should be completed after
   // processing the fill data for that frame.
@@ -529,12 +521,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form1_renderer_id, username1_renderer_id, password1_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:frame2_ptr->GetFrameId()
-                            isMainFrame:frame2_ptr->IsMainFrame()
-                      forSecurityOrigin:frame2_ptr
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:frame2_ptr->GetFrameId()
+                                 isMainFrame:frame2_ptr->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
   // Queries for the forms in second subframe should be completed after
   // processing the fill data for that frame.
@@ -606,12 +596,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form_renderer_id, username_renderer_id, password_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:main_frame_->GetFrameId()
-                            isMainFrame:main_frame_->IsMainFrame()
-                      forSecurityOrigin:main_frame_
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:main_frame_->GetFrameId()
+                                 isMainFrame:main_frame_->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
   // Process the fill data a second time to verify that all the queries for
   // the main frame were popped out of the queue in which case the query
@@ -619,12 +607,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form_renderer_id, username_renderer_id, password_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:main_frame_->GetFrameId()
-                            isMainFrame:main_frame_->IsMainFrame()
-                      forSecurityOrigin:main_frame_
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:main_frame_->GetFrameId()
+                                 isMainFrame:main_frame_->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
 
   // Process fill data for the first subframe.
@@ -634,12 +620,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form_renderer_id, username_renderer_id, password_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:frame1_ptr->GetFrameId()
-                            isMainFrame:frame1_ptr->IsMainFrame()
-                      forSecurityOrigin:frame1_ptr
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:frame1_ptr->GetFrameId()
+                                 isMainFrame:frame1_ptr->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
   // Process the fill data a second time to verify that all the queries for
   // the first subframe were popped out of the queue in which case the query
@@ -647,12 +631,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form_renderer_id, username_renderer_id, password_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:frame1_ptr->GetFrameId()
-                            isMainFrame:frame1_ptr->IsMainFrame()
-                      forSecurityOrigin:frame1_ptr
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:frame1_ptr->GetFrameId()
+                                 isMainFrame:frame1_ptr->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
 
   // Process fill data  for the second subframe.
@@ -662,12 +644,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form_renderer_id, username_renderer_id, password_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:frame2_ptr->GetFrameId()
-                            isMainFrame:frame2_ptr->IsMainFrame()
-                      forSecurityOrigin:frame2_ptr
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:frame2_ptr->GetFrameId()
+                                 isMainFrame:frame2_ptr->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
   // Process the fill data a second time to verify that all the queries for
   // the second subframe were popped out of the queue in which case the query
@@ -675,12 +655,10 @@ TEST_F(PasswordSuggestionHelperTest,
   {
     PasswordFormFillData form_fill_data = CreatePasswordFillData(
         form_renderer_id, username_renderer_id, password_renderer_id);
-    [helper_
-        processWithPasswordFormFillData:form_fill_data
-                             forFrameId:frame2_ptr->GetFrameId()
-                            isMainFrame:frame2_ptr->IsMainFrame()
-                      forSecurityOrigin:frame2_ptr
-                                            ->GetSecurityOriginDeprecated()];
+    [helper_ processWithPasswordFormFillData:form_fill_data
+                                  forFrameId:frame2_ptr->GetFrameId()
+                                 isMainFrame:frame2_ptr->IsMainFrame()
+                           forSecurityOrigin:main_frame_->GetSecurityOrigin()];
   }
 
   // Reaching this line means the no CHECK were triggered and that the queued
@@ -700,8 +678,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnUsernameField) {
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   NSArray<FormSuggestion*>* suggestions =
       [helper_ retrieveSuggestionsWithForm:query];
@@ -727,8 +704,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   NSArray<FormSuggestion*>* suggestions =
       [helper_ retrieveSuggestionsWithForm:query];
@@ -755,8 +731,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnSingleUsernameForm) {
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   NSArray<FormSuggestion*>* suggestions =
       [helper_ retrieveSuggestionsWithForm:query];
@@ -786,8 +761,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_Empty) {
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   // Try to get suggestions for form1 which doesn't have fill data.
   NSArray<FormSuggestion*>* suggestions =
@@ -809,8 +783,7 @@ TEST_F(PasswordSuggestionHelperTest, GetPasswordFillData) {
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   // Get suggestions first before getting the fill data for the selected
   // suggestion because this is a mandatory step.
@@ -865,8 +838,7 @@ TEST_F(PasswordSuggestionHelperTest, ResetForNewPage) {
   [helper_ processWithPasswordFormFillData:form_fill_data
                                 forFrameId:main_frame_->GetFrameId()
                                isMainFrame:main_frame_->IsMainFrame()
-                         forSecurityOrigin:main_frame_
-                                               ->GetSecurityOriginDeprecated()];
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
   {
     // Get suggestions and fill data for main frame when there is still fill

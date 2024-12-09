@@ -87,7 +87,6 @@ using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
-using password_manager::JsonStringToFormData;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManagerClient;
@@ -756,7 +755,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
             (const autofill::PasswordFormFillData&)formData
                          forFrameId:(const std::string&)frameId
                         isMainFrame:(BOOL)isMainFrame
-                  forSecurityOrigin:(const GURL&)origin {
+                  forSecurityOrigin:(const url::Origin&)origin {
   // Biometric auth is always enabled on iOS so wait_for_username is
   // specifically set to prevent filling without user confirmation.
   DCHECK(formData.wait_for_username);

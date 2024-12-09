@@ -312,7 +312,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
 - (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData
                              forFrameId:(const std::string&)frameId
                             isMainFrame:(BOOL)isMainFrame
-                      forSecurityOrigin:(const GURL&)origin {
+                      forSecurityOrigin:(const url::Origin&)origin {
   DCHECK(_webState.get());
   [self fillDataForFrameId:frameId]->Add(
       formData, [self shouldAlwaysPopulateRealmForFrame:frameId
@@ -402,7 +402,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
 // is not specified.
 - (bool)shouldAlwaysPopulateRealmForFrame:(const std::string&)frameId
                               isMainFrame:(BOOL)isMainFrame
-                        forSecurityOrigin:(const GURL&)origin {
+                        forSecurityOrigin:(const url::Origin&)origin {
   CHECK(_webState.get());
   if (IsCrossOriginIframe(_webState.get(), isMainFrame, origin)) {
     return true;
