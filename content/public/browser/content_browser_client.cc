@@ -4,6 +4,7 @@
 
 #include "content/public/browser/content_browser_client.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -21,6 +22,9 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "components/language_detection/content/browser/content_language_detection_driver.h"
+#include "components/language_detection/content/common/language_detection.mojom.h"
+#include "components/language_detection/core/browser/language_detection_model_provider.h"
 #include "content/browser/ai/echo_ai_manager_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
@@ -76,6 +80,7 @@
 #include "services/video_effects/public/cpp/buildflags.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -1805,6 +1810,43 @@ void ContentBrowserClient::BindTranslationManager(
     base::SupportsUserData* context_user_data,
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {}
+
+namespace {
+// TODO(https://crbug.com/383035345): Use BASE_FEATURE_PARAM.
+const base::FeatureParam<std::string> kLanguageDetectionLocalFileModelPath{
+    &blink::features::kLanguageDetectionAPI,
+    "language_detection_local_file_model_path", ""};
+
+// Returns a singleton of `ContentLanguageDetectionDriver`. This will provide
+// the model from a flag-param path.
+language_detection::ContentLanguageDetectionDriver&
+GetContentLanguageDetectionDriver() {
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+
+  static base::NoDestructor<language_detection::LanguageDetectionModelProvider>
+      provider(background_task_runner);
+  provider->ReplaceModelFile(
+      base::FilePath(base::FilePath::kCurrentDirectory)
+          .AppendASCII(kLanguageDetectionLocalFileModelPath.Get())
+          .NormalizePathSeparators());
+
+  static base::NoDestructor<language_detection::ContentLanguageDetectionDriver>
+      driver(provider.get());
+  return *driver.get();
+}
+}  // namespace
+
+void ContentBrowserClient::BindLanguageDetectionDriver(
+    content::BrowserContext* browser_context,
+    base::SupportsUserData* context_user_data,
+    mojo::PendingReceiver<
+        language_detection::mojom::ContentLanguageDetectionDriver> receiver) {
+  if (base::FeatureList::IsEnabled(blink::features::kLanguageDetectionAPI)) {
+    GetContentLanguageDetectionDriver().AddReceiver(std::move(receiver));
+  }
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 void ContentBrowserClient::QueryInstalledWebAppsByManifestId(

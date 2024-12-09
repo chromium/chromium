@@ -87,6 +87,7 @@
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
+#include "chrome/browser/language_detection/language_detection_model_service_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/media/audio_service_util.h"
@@ -262,6 +263,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language_detection/content/browser/content_language_detection_driver.h"
+#include "components/language_detection/content/common/language_detection.mojom.h"
 #include "components/lens/buildflags.h"
 #include "components/live_caption/caption_util.h"
 #include "components/media_device_salt/media_device_salt_service.h"
@@ -8593,6 +8596,27 @@ void ChromeContentBrowserClient::BindTranslationManager(
       browser_context, context_user_data, origin, std::move(receiver));
 }
 #endif
+
+namespace {
+
+const char kContentLanguageDetectionDriverUserDataKey[] =
+    "ContentLanguageDetectionDriverUserDataKey";
+
+}  // namespace
+
+void ChromeContentBrowserClient::BindLanguageDetectionDriver(
+    content::BrowserContext* browser_context,
+    base::SupportsUserData* context_user_data,
+    mojo::PendingReceiver<
+        language_detection::mojom::ContentLanguageDetectionDriver> receiver) {
+  auto language_detection_driver =
+      std::make_unique<language_detection::ContentLanguageDetectionDriver>(
+          LanguageDetectionModelServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(browser_context)));
+  language_detection_driver->AddReceiver(std::move(receiver));
+  context_user_data->SetUserData(kContentLanguageDetectionDriverUserDataKey,
+                                 std::move(language_detection_driver));
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(

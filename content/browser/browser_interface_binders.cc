@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/language_detection/content/common/language_detection.mojom.h"
 #include "components/viz/host/gpu_client.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
@@ -106,6 +107,7 @@
 #include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 #include "media/mojo/services/webrtc_video_perf_recorder.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
 #include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
@@ -1126,6 +1128,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
         base::Unretained(GetContentClient()->browser()),
         base::Unretained(host)));
   }
+
   if (base::FeatureList::IsEnabled(blink::features::kTranslationAPI)) {
     map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
         [](RenderFrameHostImpl* host,
@@ -1135,6 +1138,20 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
               host->GetLastCommittedOrigin(), std::move(receiver));
         },
         base::Unretained(host)));
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kLanguageDetectionAPI)) {
+    map->Add<language_detection::mojom::ContentLanguageDetectionDriver>(
+        base::BindRepeating(
+            [](RenderFrameHostImpl* host,
+               mojo::PendingReceiver<
+                   language_detection::mojom::ContentLanguageDetectionDriver>
+                   receiver) {
+              GetContentClient()->browser()->BindLanguageDetectionDriver(
+                  host->GetBrowserContext(), &host->document_associated_data(),
+                  std::move(receiver));
+            },
+            base::Unretained(host)));
   }
 }
 

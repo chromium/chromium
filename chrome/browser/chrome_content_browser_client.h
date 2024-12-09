@@ -1097,6 +1097,18 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       override;
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
+  // Binds to a new instance of
+  // `language_detection::ContentLanguageDetectionDriver` which receives the
+  // model from Optimization Guide. The instance becomes owned
+  // `context_user_data` to ensure it does not outlive the execution context for
+  // which it was created.
+  void BindLanguageDetectionDriver(
+      content::BrowserContext* browser_context,
+      base::SupportsUserData* context_user_data,
+      mojo::PendingReceiver<
+          language_detection::mojom::ContentLanguageDetectionDriver> receiver)
+      override;
+
 #if !BUILDFLAG(IS_ANDROID)
   void QueryInstalledWebAppsByManifestId(
       const GURL& frame_url,
